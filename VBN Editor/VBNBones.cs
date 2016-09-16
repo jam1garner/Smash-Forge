@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 public struct Bone
 {
     public char[] boneName;
     public UInt32 boneType;
-    public UInt32 treeDepth;
+    public UInt32 parentIndex;
     public UInt32 boneId;
     public float[] position;
     public float[] rotation;
     public float[] scale;
+    public List<int> children;
 }
 
 public class VBN
@@ -40,9 +42,12 @@ public class VBN
             bones = new Bone[totalBoneCount];
             for (int i = 0; i < totalBoneCount;i++)
             {
+                bones[i].children = new List<int>();
                 bones[i].boneName = file.ReadChars(64);
                 bones[i].boneType = file.ReadUInt32();
-                bones[i].treeDepth = file.ReadUInt32();
+                bones[i].parentIndex = file.ReadUInt32();
+                if (bones[i].parentIndex != 0x0FFFFFFF)
+                    bones[bones[i].parentIndex].children.Add(i);
                 bones[i].boneId = file.ReadUInt32();
             }
 
@@ -83,7 +88,7 @@ public class VBN
             {
                 file.Write(bones[i].boneName);
                 file.Write(bones[i].boneType);
-                file.Write(bones[i].treeDepth);
+                file.Write(bones[i].parentIndex);
                 file.Write(bones[i].boneId);
             }
 

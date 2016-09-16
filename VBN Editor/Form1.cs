@@ -18,16 +18,22 @@ namespace VBN_Editor
         {
             InitializeComponent();
         }
-
-        private void buildBoneTree()
+        
+        private TreeNode buildBoneTree(int index)
         {
-            foreach (Bone bone in vbn.bones)
+            List<TreeNode> children = new List<TreeNode>();
+            foreach (int i in vbn.bones[index].children)
             {
-                string name = new String(bone.boneName);
-                TreeNode tempNode = new TreeNode(name);
-                //tempNode
-                treeView1.Nodes.Add(tempNode);
+                children.Add(buildBoneTree(i));
             }
+            
+            TreeNode temp = new TreeNode(new string(vbn.bones[index].boneName),children.ToArray());
+
+            if (index == 0)
+                treeView1.Nodes.Add(temp);
+
+            return temp;
+
         }
 
         private void openNUDToolStripMenuItem_Click(object sender, EventArgs e)
@@ -56,7 +62,7 @@ namespace VBN_Editor
                 filename = open.FileName;
                 vbn = new VBN(filename);
             }
-            buildBoneTree();
+            buildBoneTree(0);
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
