@@ -1,21 +1,19 @@
 ﻿using System;
 using System.IO;
 
-/// <summary>
-/// Summary description for Class1
-/// </summary>
+public struct Bone
+{
+    public char[] boneName;
+    public UInt32 boneType;
+    public UInt32 treeDepth;
+    public UInt32 boneId;
+    public float[] position;
+    public float[] rotation;
+    public float[] scale;
+}
+
 public class VBN
 {
-    public struct Bone
-    {
-        public char[] boneName;
-        public UInt32 boneType;
-        public UInt32 treeDepth;
-        public UInt32 boneId;
-        public float[] position;
-        public float[] rotation;
-        public float[] scale;
-    }
 
     public UInt16 unk_1,unk_2;
     public UInt32 totalBoneCount;
