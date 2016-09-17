@@ -72,7 +72,7 @@
             // 
             this.openVBNToolStripMenuItem.Name = "openVBNToolStripMenuItem";
             this.openVBNToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openVBNToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openVBNToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.openVBNToolStripMenuItem.Text = "Open";
             this.openVBNToolStripMenuItem.Click += new System.EventHandler(this.openVBNToolStripMenuItem_Click);
             // 
@@ -80,7 +80,7 @@
             // 
             this.openNUDToolStripMenuItem.Name = "openNUDToolStripMenuItem";
             this.openNUDToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.openNUDToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openNUDToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.openNUDToolStripMenuItem.Text = "Save";
             this.openNUDToolStripMenuItem.Click += new System.EventHandler(this.openNUDToolStripMenuItem_Click);
             // 
@@ -95,7 +95,8 @@
             // addBoneToolStripMenuItem
             // 
             this.addBoneToolStripMenuItem.Name = "addBoneToolStripMenuItem";
-            this.addBoneToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.addBoneToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.addBoneToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.addBoneToolStripMenuItem.Text = "Add Bone";
             this.addBoneToolStripMenuItem.Click += new System.EventHandler(this.addBoneToolStripMenuItem_Click);
             // 
