@@ -87,6 +87,8 @@ public class VBN
             for (int i = 0; i < totalBoneCount; i++)
             {
                 file.Write(bones[i].boneName);
+                for (int j = 0; j < 64 - bones[i].boneName.Length; j++)
+                    file.Write((char)0);
                 file.Write(bones[i].boneType);
                 file.Write(bones[i].parentIndex);
                 file.Write(bones[i].boneId);
@@ -105,5 +107,29 @@ public class VBN
                 file.Write(bones[i].scale[2]);
             }
         }
+    }
+
+    public Bone bone(string name)
+    {
+        foreach(Bone b in bones)
+        {
+            if (new string(b.boneName) == name)
+            {
+                return b;
+            }
+        }
+        throw new Exception("No bone of char[] name");
+    }
+
+    public int boneIndex(string name)
+    {
+        for(int i = 0; i < bones.Length; i++)
+        {
+            if (new string(bones[i].boneName) == name)
+            {
+                return i;
+            }
+        }
+        throw new Exception("No bone of char[] name");
     }
 }

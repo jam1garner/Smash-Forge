@@ -17,6 +17,7 @@ namespace VBN_Editor
         public VBN vbn;
         public bool vbnSet = false;
         public bool loaded = false;
+        public DataTable tbl;
 
         public VBNRebuilder()
         {
@@ -65,6 +66,7 @@ namespace VBN_Editor
             {
                 filename = open.FileName;
                 vbn = new VBN(filename);
+                treeView1.Nodes.Clear();
                 buildBoneTree(0);
                 vbnSet = true;
             }
@@ -91,7 +93,6 @@ namespace VBN_Editor
             GL.MatrixMode(MatrixMode.Projection);
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
-            GL.Ortho(0, w, 0, h, -1, 1);
             GL.Viewport(0, 0, w, h);
         }
 
@@ -105,8 +106,9 @@ namespace VBN_Editor
             {
                 foreach (Bone bone in vbn.bones)
                 {
-                    foreach (int i in bone.children)
+                    if (bone.parentIndex != 0x0FFFFFFF)
                     {
+                        uint i = bone.parentIndex;
                         GL.Color3(Color.Green);
                         GL.LineWidth(1f);
                         GL.Begin(BeginMode.Lines);
@@ -142,6 +144,47 @@ namespace VBN_Editor
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
             textBox1.Text = treeView1.SelectedNode.Text;
+            tbl = new DataTable();
+            tbl.Columns.Add(new DataColumn("Name") { ReadOnly = true });
+            tbl.Columns.Add("Value");
+            dataGridView1.DataSource = tbl;
+            tbl.Rows.Clear();
+
+            tbl.Rows.Add("Bone Hash",vbn.bone(treeView1.SelectedNode.Text).boneId.ToString("X"));
+            tbl.Rows.Add("Bone Type", vbn.bone(treeView1.SelectedNode.Text).boneType);
+            tbl.Rows.Add("X Pos", vbn.bone(treeView1.SelectedNode.Text).position[0]);
+            tbl.Rows.Add("Y Pos", vbn.bone(treeView1.SelectedNode.Text).position[1]);
+            tbl.Rows.Add("Z Pos", vbn.bone(treeView1.SelectedNode.Text).position[2]);
+            tbl.Rows.Add("X Rot", vbn.bone(treeView1.SelectedNode.Text).rotation[0]);
+            tbl.Rows.Add("Y Rot", vbn.bone(treeView1.SelectedNode.Text).rotation[1]);
+            tbl.Rows.Add("Z Rot", vbn.bone(treeView1.SelectedNode.Text).rotation[2]);
+            tbl.Rows.Add("X Scale", vbn.bone(treeView1.SelectedNode.Text).scale[0]);
+            tbl.Rows.Add("Y Scale", vbn.bone(treeView1.SelectedNode.Text).scale[1]);
+            tbl.Rows.Add("Z Scale", vbn.bone(treeView1.SelectedNode.Text).scale[2]);
+        }
+
+        private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            vbn.bones[vbn.boneIndex(treeView1.SelectedNode.Text)].boneId = (uint)int.Parse(tbl.Rows[0][1].ToString(), System.Globalization.NumberStyles.HexNumber);
+            vbn.bones[vbn.boneIndex(treeView1.SelectedNode.Text)].boneType = Convert.ToUInt32(tbl.Rows[1][1]);
+
+            vbn.bone(treeView1.SelectedNode.Text).position[0] = Convert.ToSingle(tbl.Rows[2][1]);
+            vbn.bone(treeView1.SelectedNode.Text).position[1] = Convert.ToSingle(tbl.Rows[3][1]);
+            vbn.bone(treeView1.SelectedNode.Text).position[2] = Convert.ToSingle(tbl.Rows[4][1]);
+
+            vbn.bone(treeView1.SelectedNode.Text).rotation[0] = Convert.ToSingle(tbl.Rows[5][1]);
+            vbn.bone(treeView1.SelectedNode.Text).rotation[1] = Convert.ToSingle(tbl.Rows[6][1]);
+            vbn.bone(treeView1.SelectedNode.Text).rotation[2] = Convert.ToSingle(tbl.Rows[7][1]);
+
+            vbn.bone(treeView1.SelectedNode.Text).scale[0] = Convert.ToSingle(tbl.Rows[8][1]);
+            vbn.bone(treeView1.SelectedNode.Text).scale[1] = Convert.ToSingle(tbl.Rows[9][1]);
+            vbn.bone(treeView1.SelectedNode.Text).scale[2] = Convert.ToSingle(tbl.Rows[10][1]);
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            vbn.bones[vbn.boneIndex(treeView1.SelectedNode.Text)].boneName = textBox1.Text.ToCharArray();
+            treeView1.SelectedNode.Text = textBox1.Text;
         }
     }
 }
