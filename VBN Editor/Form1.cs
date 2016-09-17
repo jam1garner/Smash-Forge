@@ -86,7 +86,7 @@ namespace VBN_Editor
         private void glControl1_Load(object sender, EventArgs e)
         {
             loaded = true;
-            GL.ClearColor(Color.SkyBlue);
+            GL.ClearColor(Color.White);
             Application.Idle += AppIdle;
             SetupViewPort();
         }
@@ -114,7 +114,7 @@ namespace VBN_Editor
                     if (bone.parentIndex != 0x0FFFFFFF)
                     {
                         uint i = bone.parentIndex;
-                        GL.Color3(Color.Green);
+                        GL.Color3(Color.Blue);
                         GL.LineWidth(1f);
                         GL.Begin(BeginMode.Lines);
                         GL.Vertex3(vbn.bones[(int)i].position[0], vbn.bones[(int)i].position[1], vbn.bones[(int)i].position[2]);
