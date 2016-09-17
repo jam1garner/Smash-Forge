@@ -94,6 +94,7 @@
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(236, 300);
             this.treeView1.TabIndex = 1;
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
             // textBox1
             // 
@@ -136,6 +137,8 @@
             this.glControl1.Size = new System.Drawing.Size(741, 638);
             this.glControl1.TabIndex = 6;
             this.glControl1.VSync = false;
+            this.glControl1.Load += new System.EventHandler(this.glControl1_Load);
+            this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
             // 
             // VBNRebuilder
             // 
