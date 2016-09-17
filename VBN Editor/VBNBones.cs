@@ -141,4 +141,39 @@ public class VBN
         }
         throw new Exception("No bone of char[] name");
     }
+
+    public void deleteBone(int index)
+    {
+        boneCountPerType[bones[index].boneType]--;
+        totalBoneCount--;
+        bones[(int)bones[index].parentIndex].children.Remove(index);
+        for (int j = 0; j < bones.Count; j++)
+        {
+            if (bones[j].parentIndex > (uint)index)
+            {
+                Bone tmp = bones[j];
+                tmp.parentIndex -= 1;
+                bones[j] = tmp;
+            }
+
+            for(int i = 0; i < bones[j].children.Count; i++)
+            {
+                if (bones[j].children[i] > index)
+                {
+                    bones[j].children[i]--; 
+                }
+            }
+        }
+        List<int> temp = bones[index].children;
+        bones.Remove(bones[index]);
+        foreach (int i in temp)
+        {
+            deleteBone(i);
+        }
+    }
+
+    public void deleteBone(string name)
+    {
+        deleteBone(boneIndex(name));
+    }
 }

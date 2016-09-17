@@ -18,6 +18,8 @@ namespace VBN_Editor
         public bool vbnSet = false;
         public bool loaded = false;
         public DataTable tbl;
+        private bool delete = false;
+        private string toDelete;
 
         public VBNRebuilder()
         {
@@ -143,6 +145,12 @@ namespace VBN_Editor
             while (glControl1.IsIdle)
             {
                 Render();
+                if (delete)
+                {
+                    vbn.deleteBone(toDelete);
+                    treeRefresh();
+                    delete = false;
+                }
             }
         }
 
@@ -241,6 +249,16 @@ namespace VBN_Editor
         {
             e.Effect = DragDropEffects.Move;
         }
-        
+
+        private void treeView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            /*if(e.KeyCode == Keys.Delete)
+            {
+                delete = true;
+                toDelete = treeView1.SelectedNode.Text;
+            }*/
+
+            //Deleting is currently broken... gotta find a fix
+        }
     }
 }
