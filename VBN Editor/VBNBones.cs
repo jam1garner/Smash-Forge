@@ -20,7 +20,7 @@ public class VBN
     public UInt16 unk_1,unk_2;
     public UInt32 totalBoneCount;
     public UInt32[] boneCountPerType = new UInt32[4];
-    public Bone[] bones;
+    public List<Bone> bones = new List<Bone>();
 
     public VBN()
     {
@@ -39,23 +39,28 @@ public class VBN
             boneCountPerType[1] = file.ReadUInt32();
             boneCountPerType[2] = file.ReadUInt32();
             boneCountPerType[3] = file.ReadUInt32();
-            bones = new Bone[totalBoneCount];
+            
             for (int i = 0; i < totalBoneCount;i++)
             {
-                bones[i].children = new List<int>();
-                bones[i].boneName = file.ReadChars(64);
-                bones[i].boneType = file.ReadUInt32();
-                bones[i].parentIndex = file.ReadUInt32();
-                if (bones[i].parentIndex != 0x0FFFFFFF)
-                    bones[bones[i].parentIndex].children.Add(i);
-                bones[i].boneId = file.ReadUInt32();
+                Bone temp = new Bone();
+                temp.children = new List<int>();
+                char[] foo = file.ReadChars(64);
+                int j = foo.Length - 1;
+                while (foo[j] == (char)0)
+                    --j;
+                temp.boneName = new char[j + 1];
+                Array.Copy(foo, temp.boneName, j + 1);
+                temp.boneType = file.ReadUInt32();
+                temp.parentIndex = file.ReadUInt32();
+                temp.boneId = file.ReadUInt32();
+                temp.position = new float[3];
+                temp.rotation = new float[3];
+                temp.scale = new float[3];
+                bones.Add(temp);
             }
 
             for (int i = 0; i < totalBoneCount; i++)
             {
-                bones[i].position = new float[3];
-                bones[i].rotation = new float[3];
-                bones[i].scale = new float[3];
                 bones[i].position[0] = file.ReadSingle();
                 bones[i].position[1] = file.ReadSingle();
                 bones[i].position[2] = file.ReadSingle();
@@ -65,6 +70,10 @@ public class VBN
                 bones[i].scale[0] = file.ReadSingle();
                 bones[i].scale[1] = file.ReadSingle();
                 bones[i].scale[2] = file.ReadSingle();
+                Bone temp = bones[i];
+                if (temp.parentIndex != 0x0FFFFFFF)
+                    bones[(int)temp.parentIndex].children.Add(i);
+                bones[i] = temp;
             }
         }
 
@@ -123,7 +132,7 @@ public class VBN
 
     public int boneIndex(string name)
     {
-        for(int i = 0; i < bones.Length; i++)
+        for(int i = 0; i < bones.Count; i++)
         {
             if (new string(bones[i].boneName) == name)
             {

@@ -33,6 +33,8 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openVBNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.edittToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addBoneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -49,6 +51,7 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
+            this.edittToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -81,6 +84,21 @@
             this.openNUDToolStripMenuItem.Text = "Save";
             this.openNUDToolStripMenuItem.Click += new System.EventHandler(this.openNUDToolStripMenuItem_Click);
             // 
+            // edittToolStripMenuItem
+            // 
+            this.edittToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addBoneToolStripMenuItem});
+            this.edittToolStripMenuItem.Name = "edittToolStripMenuItem";
+            this.edittToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.edittToolStripMenuItem.Text = "Edit";
+            // 
+            // addBoneToolStripMenuItem
+            // 
+            this.addBoneToolStripMenuItem.Name = "addBoneToolStripMenuItem";
+            this.addBoneToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.addBoneToolStripMenuItem.Text = "Add bone";
+            this.addBoneToolStripMenuItem.Click += new System.EventHandler(this.addBoneToolStripMenuItem_Click);
+            // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
@@ -90,11 +108,15 @@
             // 
             // treeView1
             // 
+            this.treeView1.AllowDrop = true;
             this.treeView1.Location = new System.Drawing.Point(12, 27);
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(236, 300);
             this.treeView1.TabIndex = 1;
+            this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView1_ItemDrag);
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            this.treeView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeView1_DragDrop);
+            this.treeView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeView1_DragEnter);
             // 
             // textBox1
             // 
@@ -179,6 +201,8 @@
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private OpenTK.GLControl glControl1;
+        private System.Windows.Forms.ToolStripMenuItem edittToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addBoneToolStripMenuItem;
     }
 }
 

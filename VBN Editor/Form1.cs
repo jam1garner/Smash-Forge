@@ -41,6 +41,12 @@ namespace VBN_Editor
 
         }
 
+        public void treeRefresh()
+        {
+            treeView1.Nodes.Clear();
+            buildBoneTree(0);
+        }
+
         private void openNUDToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string filename = "";
@@ -66,8 +72,7 @@ namespace VBN_Editor
             {
                 filename = open.FileName;
                 vbn = new VBN(filename);
-                treeView1.Nodes.Clear();
-                buildBoneTree(0);
+                treeRefresh();
                 vbnSet = true;
             }
         }
@@ -112,7 +117,7 @@ namespace VBN_Editor
                         GL.Color3(Color.Green);
                         GL.LineWidth(1f);
                         GL.Begin(BeginMode.Lines);
-                        GL.Vertex3(vbn.bones[i].position[0], vbn.bones[i].position[1], vbn.bones[i].position[2]);
+                        GL.Vertex3(vbn.bones[(int)i].position[0], vbn.bones[(int)i].position[1], vbn.bones[(int)i].position[2]);
                         GL.Vertex3(bone.position[0], bone.position[1], bone.position[2]);
                         //GL.Vertex3(0, 0, 0);
                         //GL.Vertex3(100, 100, 0);
@@ -165,8 +170,10 @@ namespace VBN_Editor
 
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            vbn.bones[vbn.boneIndex(treeView1.SelectedNode.Text)].boneId = (uint)int.Parse(tbl.Rows[0][1].ToString(), System.Globalization.NumberStyles.HexNumber);
-            vbn.bones[vbn.boneIndex(treeView1.SelectedNode.Text)].boneType = Convert.ToUInt32(tbl.Rows[1][1]);
+            Bone editingBone = vbn.bones[vbn.boneIndex(treeView1.SelectedNode.Text)];
+            editingBone.boneId = (uint)int.Parse(tbl.Rows[0][1].ToString(), System.Globalization.NumberStyles.HexNumber);
+            editingBone.boneType = Convert.ToUInt32(tbl.Rows[1][1]);
+            vbn.bones[vbn.boneIndex(treeView1.SelectedNode.Text)] = editingBone;
 
             vbn.bone(treeView1.SelectedNode.Text).position[0] = Convert.ToSingle(tbl.Rows[2][1]);
             vbn.bone(treeView1.SelectedNode.Text).position[1] = Convert.ToSingle(tbl.Rows[3][1]);
@@ -183,8 +190,56 @@ namespace VBN_Editor
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            vbn.bones[vbn.boneIndex(treeView1.SelectedNode.Text)].boneName = textBox1.Text.ToCharArray();
+            Bone temp = vbn.bones[vbn.boneIndex(treeView1.SelectedNode.Text)];
+            temp.boneName = textBox1.Text.ToCharArray();
+            vbn.bones[vbn.boneIndex(treeView1.SelectedNode.Text)] = temp;
             treeView1.SelectedNode.Text = textBox1.Text;
+        }
+
+        private void addBoneToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var newForm = new Form3(this);
+            newForm.ShowDialog();
+        }
+
+        private bool isAChildOfB(TreeNode a, TreeNode b)
+        {
+            return (a.Parent != null && (a.Parent == b || isAChildOfB(a.Parent, b)));
+        }
+
+        private void treeView1_DragDrop(object sender, DragEventArgs e)
+        {
+            Point targetPoint = treeView1.PointToClient(new Point(e.X, e.Y));
+            
+            TreeNode targetNode = treeView1.GetNodeAt(targetPoint);
+            
+            TreeNode draggedNode = (TreeNode)e.Data.GetData(typeof(TreeNode));
+            
+            if (!draggedNode.Equals(targetNode) && targetNode != null && !isAChildOfB(targetNode, draggedNode))
+            {
+                int oldParent = (int)vbn.bones[vbn.boneIndex(draggedNode.Text)].parentIndex;
+                vbn.bones[oldParent].children.Remove(vbn.boneIndex(draggedNode.Text));
+                int newParent = vbn.boneIndex(targetNode.Text);
+                Bone temp = vbn.bones[vbn.boneIndex(draggedNode.Text)];
+                temp.parentIndex = (uint)newParent;
+                vbn.bones[vbn.boneIndex(draggedNode.Text)] = temp;
+                vbn.bones[newParent].children.Add(vbn.boneIndex(draggedNode.Text));
+
+                draggedNode.Remove();
+                targetNode.Nodes.Add(draggedNode);
+                
+                targetNode.Expand();
+            }
+        }
+
+        private void treeView1_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            DoDragDrop(e.Item, DragDropEffects.Move);
+        }
+
+        private void treeView1_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Move;
         }
     }
 }
