@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
@@ -67,15 +68,23 @@ namespace VBN_Editor
         {
             string filename = "";
             OpenFileDialog open = new OpenFileDialog();
-            open.Filter = "Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
+            open.Filter = "Smash 4 Boneset|*.vbn|COLLADA|*.dae|All files(*.*)|*.*";
             DialogResult result = open.ShowDialog();
 
             if(result == DialogResult.OK)
             {
                 filename = open.FileName;
-                vbn = new VBN(filename);
-                treeRefresh();
-                vbnSet = true;
+                if (filename.EndsWith("dae") || filename.EndsWith("DAE"))
+                {
+                    vbn = new VBN();
+                    //vbn
+                }
+                else
+                {
+                    vbn = new VBN(filename);
+                    treeRefresh();
+                    vbnSet = true;
+                }
             }
         }
 
@@ -93,42 +102,100 @@ namespace VBN_Editor
             SetupViewPort();
         }
 
+        // for drawing
+        public static Matrix4 scale = Matrix4.CreateScale(new Vector3(0.5f, 0.5f, 0.5f));
+        Matrix4 v;
+        float rot = 0;
+        float mouseLast = 0;
+
         private void SetupViewPort()
         {
             int h = glControl1.Height;
             int w = glControl1.Width;
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.Viewport(0, 0, w, h);
+            v = Matrix4.CreateRotationX(0.2f) * Matrix4.CreateTranslation(0, -5f, -15f) * Matrix4.CreatePerspectiveFieldOfView(1.3f, glControl1.Width / (float)glControl1.Height, 1.0f, 40.0f);
         }
 
         private void Render()
         {
             if (!loaded)
                 return;
+            // clear the gf buffer
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+            // enable depth test for grid...
+            GL.Enable(EnableCap.DepthTest);
+
+            // set up the viewport projection and send it to GPU
+            GL.MatrixMode(MatrixMode.Projection);
+
+            if (OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Left))
+            {
+                v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f) * Matrix4.CreateTranslation(0, -5f, -15f) * Matrix4.CreatePerspectiveFieldOfView(1.3f, glControl1.Width / (float)glControl1.Height, 1.0f, 40.0f);
+                rot += 0.05f * (OpenTK.Input.Mouse.GetState().X - mouseLast);
+            }
+            mouseLast = OpenTK.Input.Mouse.GetState().X;
+            GL.LoadMatrix(ref v);
+
+            // ready to start drawing model stuff
+            GL.MatrixMode(MatrixMode.Modelview);
+
+            // draw the grid floor first
+            drawGridFloor(Matrix4.CreateTranslation(Vector3.Zero));
+
+            // clear the buffer bit so the skeleton will be drawn
+            // on top of everything
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            // drawing the bones
             if (vbnSet)
             {
                 foreach (Bone bone in vbn.bones)
                 {
+                    // first calcuate the point and draw a point
+                    GL.PointSize(3.5f);
+                    GL.Begin(BeginMode.Points);
+                    Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform * scale);
+                    GL.Vertex3(pos_c);
+                    GL.End();
+
+                    // now draw line between parent
+                    GL.Color3(Color.Blue);
+                    GL.LineWidth(1f);
+
+                    GL.Begin(BeginMode.Lines);
                     if (bone.parentIndex != 0x0FFFFFFF)
                     {
                         uint i = bone.parentIndex;
-                        GL.Color3(Color.Blue);
-                        GL.LineWidth(1f);
-                        GL.Begin(BeginMode.Lines);
-                        GL.Vertex3(vbn.bones[(int)i].position[0], vbn.bones[(int)i].position[1], vbn.bones[(int)i].position[2]);
-                        GL.Vertex3(bone.position[0], bone.position[1], bone.position[2]);
-                        //GL.Vertex3(0, 0, 0);
-                        //GL.Vertex3(100, 100, 0);
-                        GL.End();
+                        Vector3 pos_p = Vector3.Transform(Vector3.Zero, vbn.bones[(int)i].transform * scale);
+                        GL.Vertex3(pos_c);
+                        GL.Vertex3(pos_p);
                     }
+                    GL.End();
+
                 }
             }
 
             glControl1.SwapBuffers();
+        }
+
+
+        public void drawGridFloor(Matrix4 s)
+        {
+
+            // Dropping some grid lines
+            GL.Color3(Color.Blue);
+            GL.LineWidth(1f);
+            GL.Begin(BeginMode.Lines);
+            for (var i = -10; i <= 10; i++)
+            {
+                GL.Vertex3(Vector3.Transform(new Vector3(-10f, 0f, i), s));
+                GL.Vertex3(Vector3.Transform(new Vector3(10f, 0f, i), s));
+                GL.Vertex3(Vector3.Transform(new Vector3(i, 0f, -10f), s));
+                GL.Vertex3(Vector3.Transform(new Vector3(i, 0f, 10f), s));
+            }
+            GL.End();
         }
 
         private void glControl1_Paint(object sender, PaintEventArgs e)

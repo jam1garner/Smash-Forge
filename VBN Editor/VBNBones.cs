@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
 
-public struct Bone
+public class Bone
 {
     public char[] boneName;
     public UInt32 boneType;
@@ -12,23 +15,36 @@ public struct Bone
     public float[] rotation;
     public float[] scale;
     public List<int> children;
+    public Matrix4 transform;
 }
 
 public class VBN
 {
 
-    public UInt16 unk_1,unk_2;
+    public UInt16 unk_1, unk_2;
     public UInt32 totalBoneCount;
     public UInt32[] boneCountPerType = new UInt32[4];
     public List<Bone> bones = new List<Bone>();
 
     public VBN()
     {
-        
+
+    }
+
+    public static Matrix4 FromEulerAngles(float z, float y, float x)
+    {
+        {
+            Quaternion xRotation = Quaternion.FromAxisAngle(Vector3.UnitX, x);
+            Quaternion yRotation = Quaternion.FromAxisAngle(Vector3.UnitY, y);
+            Quaternion zRotation = Quaternion.FromAxisAngle(Vector3.UnitZ, z);
+
+            //return xRotation * yRotation * zRotation;
+            return Matrix4.CreateFromQuaternion(zRotation * yRotation * xRotation);
+        }
     }
 
     public VBN(string filename)
-	{
+    {
         using (BinaryReader file = new BinaryReader(File.Open(filename, FileMode.Open)))
         {
             file.ReadInt32(); //Skip past magic
@@ -39,8 +55,8 @@ public class VBN
             boneCountPerType[1] = file.ReadUInt32();
             boneCountPerType[2] = file.ReadUInt32();
             boneCountPerType[3] = file.ReadUInt32();
-            
-            for (int i = 0; i < totalBoneCount;i++)
+
+            for (int i = 0; i < totalBoneCount; i++)
             {
                 Bone temp = new Bone();
                 temp.children = new List<int>();
@@ -74,9 +90,14 @@ public class VBN
                 if (temp.parentIndex != 0x0FFFFFFF)
                     bones[(int)temp.parentIndex].children.Add(i);
                 bones[i] = temp;
+
+                bones[i].transform = FromEulerAngles(bones[i].rotation[2], bones[i].rotation[1], bones[i].rotation[0]) * Matrix4.CreateTranslation(bones[i].position[0], bones[i].position[1], bones[i].position[2]);
+                if (bones[i].parentIndex != 0x0FFFFFFF)
+                {
+                    bones[i].transform = bones[i].transform * bones[(int)bones[i].parentIndex].transform;
+                }
             }
         }
-
     }
 
     public void save(string filename)
@@ -90,7 +111,7 @@ public class VBN
             file.Write(unk_1);
             file.Write(unk_2);
             file.Write(totalBoneCount);
-            for(int i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++)
                 file.Write(boneCountPerType[i]);
 
             for (int i = 0; i < totalBoneCount; i++)
@@ -120,7 +141,7 @@ public class VBN
 
     public Bone bone(string name)
     {
-        foreach(Bone b in bones)
+        foreach (Bone b in bones)
         {
             if (new string(b.boneName) == name)
             {
@@ -132,7 +153,7 @@ public class VBN
 
     public int boneIndex(string name)
     {
-        for(int i = 0; i < bones.Count; i++)
+        for (int i = 0; i < bones.Count; i++)
         {
             if (new string(bones[i].boneName) == name)
             {
@@ -156,11 +177,11 @@ public class VBN
                 bones[j] = tmp;
             }
 
-            for(int i = 0; i < bones[j].children.Count; i++)
+            for (int i = 0; i < bones[j].children.Count; i++)
             {
                 if (bones[j].children[i] > index)
                 {
-                    bones[j].children[i]--; 
+                    bones[j].children[i]--;
                 }
             }
         }
