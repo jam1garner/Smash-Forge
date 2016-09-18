@@ -185,7 +185,7 @@ namespace VBN_Editor
         {
 
             // Dropping some grid lines
-            GL.Color3(Color.Blue);
+            GL.Color3(Color.MediumPurple);
             GL.LineWidth(1f);
             GL.Begin(PrimitiveType.Lines);
             for (var i = -10; i <= 10; i++)
