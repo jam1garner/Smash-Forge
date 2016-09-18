@@ -7,7 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBN Editor", "VBN Editor\VB
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6B274031-6057-4B6F-8152-9917435D7483}"
 	ProjectSection(SolutionItems) = preProject
-		VBN Editor\collada_schema_1_4.cs = VBN Editor\collada_schema_1_4.cs
 		..\..\..\Documents\Visual Studio 2015\Projects\VBN Editor\VBN Editor\Form2.cs = ..\..\..\Documents\Visual Studio 2015\Projects\VBN Editor\VBN Editor\Form2.cs
 		..\..\..\Documents\Visual Studio 2015\Projects\VBN Editor\VBN Editor\Form2.Designer.cs = ..\..\..\Documents\Visual Studio 2015\Projects\VBN Editor\VBN Editor\Form2.Designer.cs
 		..\..\..\Documents\Visual Studio 2015\Projects\VBN Editor\VBN Editor\Form2.resx = ..\..\..\Documents\Visual Studio 2015\Projects\VBN Editor\VBN Editor\Form2.resx

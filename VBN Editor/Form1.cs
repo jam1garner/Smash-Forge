@@ -261,6 +261,8 @@ namespace VBN_Editor
             vbn.bone(treeView1.SelectedNode.Text).scale[0] = Convert.ToSingle(tbl.Rows[8][1]);
             vbn.bone(treeView1.SelectedNode.Text).scale[1] = Convert.ToSingle(tbl.Rows[9][1]);
             vbn.bone(treeView1.SelectedNode.Text).scale[2] = Convert.ToSingle(tbl.Rows[10][1]);
+
+            vbn.update();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
