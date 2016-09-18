@@ -155,7 +155,7 @@ namespace VBN_Editor
                 {
                     // first calcuate the point and draw a point
                     GL.PointSize(3.5f);
-                    GL.Begin(BeginMode.Points);
+                    GL.Begin(PrimitiveType.Points);
                     Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform * scale);
                     GL.Vertex3(pos_c);
                     GL.End();
@@ -164,7 +164,7 @@ namespace VBN_Editor
                     GL.Color3(Color.Blue);
                     GL.LineWidth(1f);
 
-                    GL.Begin(BeginMode.Lines);
+                    GL.Begin(PrimitiveType.Lines);
                     if (bone.parentIndex != 0x0FFFFFFF)
                     {
                         uint i = bone.parentIndex;
@@ -187,7 +187,7 @@ namespace VBN_Editor
             // Dropping some grid lines
             GL.Color3(Color.Blue);
             GL.LineWidth(1f);
-            GL.Begin(BeginMode.Lines);
+            GL.Begin(PrimitiveType.Lines);
             for (var i = -10; i <= 10; i++)
             {
                 GL.Vertex3(Vector3.Transform(new Vector3(-10f, 0f, i), s));
