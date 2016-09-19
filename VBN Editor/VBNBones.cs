@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using grendgine_collada;
 
 public class Bone
 {
@@ -16,15 +14,10 @@ public class Bone
     public float[] rotation;
     public float[] scale;
     public List<int> children;
-    public Matrix4 transform;
 
-    public Bone(){}
-    
-    public Bone(float[] pos,int boneNum)
-    {
-        position = pos;
-        boneName = ("Bone" + boneNum.ToString()).ToCharArray();
-    }
+    public Vector3 pos = Vector3.Zero, sca = Vector3.Zero;
+    public Quaternion rot = Quaternion.FromMatrix(Matrix3.Zero);
+    public Matrix4 transform;
 }
 
 public class VBN
@@ -32,18 +25,15 @@ public class VBN
 
     public UInt16 unk_1, unk_2;
     public UInt32 totalBoneCount;
-    public UInt32[] boneCountPerType;
+    public UInt32[] boneCountPerType = new UInt32[4];
     public List<Bone> bones = new List<Bone>();
 
     public VBN()
     {
-        unk_1 = 2;
-        unk_2 = 1;
-        totalBoneCount = 0;
-        boneCountPerType = new UInt32[4] {0, 0, 0, 0 };
+
     }
 
-    public static Matrix4 FromEulerAngles(float z, float y, float x)
+    public static Quaternion FromEulerAngles(float z, float y, float x)
     {
         {
             Quaternion xRotation = Quaternion.FromAxisAngle(Vector3.UnitX, x);
@@ -51,7 +41,7 @@ public class VBN
             Quaternion zRotation = Quaternion.FromAxisAngle(Vector3.UnitZ, z);
 
             //return xRotation * yRotation * zRotation;
-            return Matrix4.CreateFromQuaternion(zRotation * yRotation * xRotation);
+            return (zRotation * yRotation * xRotation);
         }
     }
 
@@ -59,7 +49,7 @@ public class VBN
     {
         for (int i = 0; i < totalBoneCount; i++)
         {
-            bones[i].transform = FromEulerAngles(bones[i].rotation[2], bones[i].rotation[1], bones[i].rotation[0]) * Matrix4.CreateTranslation(bones[i].position[0], bones[i].position[1], bones[i].position[2]);
+            bones[i].transform = Matrix4.CreateFromQuaternion(bones[i].rot) * Matrix4.CreateTranslation(bones[i].pos);
             if (bones[i].parentIndex != 0x0FFFFFFF)
             {
                 bones[i].transform = bones[i].transform * bones[(int)bones[i].parentIndex].transform;
@@ -115,12 +105,11 @@ public class VBN
                     bones[(int)temp.parentIndex].children.Add(i);
                 bones[i] = temp;
 
-                bones[i].transform = FromEulerAngles(bones[i].rotation[2], bones[i].rotation[1], bones[i].rotation[0]) * Matrix4.CreateTranslation(bones[i].position[0], bones[i].position[1], bones[i].position[2]);
-                if (bones[i].parentIndex != 0x0FFFFFFF)
-                {
-                    bones[i].transform = bones[i].transform * bones[(int)bones[i].parentIndex].transform;
-                }
+                bones[i].pos = new Vector3(bones[i].position[0], bones[i].position[1], bones[i].position[2]);
+                bones[i].rot = (FromEulerAngles(bones[i].rotation[2], bones[i].rotation[1], bones[i].rotation[0]));
             }
+
+            update();
         }
     }
 
@@ -221,18 +210,4 @@ public class VBN
     {
         deleteBone(boneIndex(name));
     }
-
-    public void fromDae(string filename)
-    {
-        /*Grendgine_Collada loaded_file = null;
-        loaded_file = Grendgine_Collada.Grendgine_Load_File(filename);
-        if(loaded_file != null){
-            foreach(var Node in loaded_file.Library_Nodes.Controller)
-            {
-                Console.WriteLine(Node.name);
-                Console.WriteLine(Node.id);
-            }
-        }*/
-    }
 }
-
