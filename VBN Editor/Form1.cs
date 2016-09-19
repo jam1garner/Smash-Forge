@@ -329,5 +329,10 @@ namespace VBN_Editor
 
             //Deleting is currently broken... gotta find a fix
         }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
