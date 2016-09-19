@@ -315,7 +315,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "VBNRebuilder";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Easy VBN Editor";
+            this.Text = "Skeletal Animation Tool";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);

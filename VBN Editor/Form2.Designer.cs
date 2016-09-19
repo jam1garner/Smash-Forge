@@ -50,21 +50,21 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(96, 124);
+            this.label1.Location = new System.Drawing.Point(82, 124);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(85, 13);
+            this.label1.Size = new System.Drawing.Size(118, 13);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Easy VBN Editor";
+            this.label1.Text = "Skeletal Animation Tool";
             this.label1.Click += new System.EventHandler(this.label1_Click_1);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(79, 150);
+            this.label2.Location = new System.Drawing.Point(58, 150);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(128, 13);
+            this.label2.Size = new System.Drawing.Size(175, 13);
             this.label2.TabIndex = 2;
-            this.label2.Text = "Developed by jam1garner";
+            this.label2.Text = "Developed by jam1garner and Ploaj";
             // 
             // label3
             // 
@@ -82,7 +82,8 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(100, 13);
             this.label4.TabIndex = 4;
-            this.label4.Text = "Version: DEV-0.04a";
+            this.label4.Text = "Version: DEV-0.06a";
+            this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // Form2
             // 
