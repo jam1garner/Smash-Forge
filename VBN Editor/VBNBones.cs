@@ -207,12 +207,12 @@ public class VBN
 
     public void updateChildren()
     {
-        for (int i = 0; i < totalBoneCount; i++)
+		for (int i = 0; i < bones.Count; i++)
         {
             bones[i].children = new List<int>();
         }
 
-        for (int i = 0; i < totalBoneCount; i++)
+		for (int i = 0; i < bones.Count; i++)
         {
             if (bones[i].parentIndex != 0x0FFFFFFF)
                 bones[(int)bones[i].parentIndex].children.Add(i);
