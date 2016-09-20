@@ -12,8 +12,8 @@ public class Bone
 	public UInt32 boneId;
 	public float[] position;
 	public float[] rotation;
-	public float[] scale;
-	public List<int> children;
+    public float[] scale;
+    public List<int> children;
 
 	public Vector3 pos = Vector3.Zero, sca = new Vector3(1f,1f,1f);
 	public Quaternion rot = Quaternion.FromMatrix(Matrix3.Zero);

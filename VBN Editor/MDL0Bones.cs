@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace VBN_Editor
 {
@@ -14,6 +15,7 @@ namespace VBN_Editor
 
         public VBN GetVBN(FileData d)
         {
+
             VBN v = new VBN();
 
             d.littleEndian = false;
@@ -55,12 +57,14 @@ namespace VBN_Editor
 
             Random rng = new Random();
             uint boneID = (uint)rng.Next(1, 0xFFFFFF);
+
             // BONES-----------------------------------------------
             d.seek(boneSec);
             d.skip(4); // length
             int bseccount = d.readInt();
             for (int i = 0; i < bseccount; i++)
             {
+                Debug.Write(i);
                 d.skip(4); // entry id and unknown
                 d.skip(4); // left and right index
                 int name = d.readInt() + boneSec;
@@ -77,6 +81,10 @@ namespace VBN_Editor
                     d.skip(4); // index
                     d.skip(8); // idk billboard settings and padding
                     Bone n = new Bone();
+                    
+                    n.scale = new float[3];
+                    n.position = new float[3];
+                    n.rotation = new float[3];
                     n.scale[0] = d.readFloat();
                     n.scale[1] = d.readFloat();
                     n.scale[2] = d.readFloat();
@@ -86,6 +94,7 @@ namespace VBN_Editor
                     n.position[0] = d.readFloat();
                     n.position[1] = d.readFloat();
                     n.position[2] = d.readFloat();
+
                     d.skip(24);
 
                     d.seek(data + 0x5C);
@@ -94,9 +103,11 @@ namespace VBN_Editor
                     if (d.pos() != data + 12)
                         parentid = d.readInt();
                     n.parentIndex = (uint)parentid;
+
                     n.boneName = d.readString(nameOff, -1).ToCharArray();
                     n.boneId = boneID;
                     boneID++;
+
                     v.bones.Add(n);
                 }
                 else
@@ -105,6 +116,7 @@ namespace VBN_Editor
                 d.seek(temp);
             }
             v.updateChildren();
+
             return v;
         }
     }

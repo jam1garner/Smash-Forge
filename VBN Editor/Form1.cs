@@ -74,9 +74,9 @@ namespace VBN_Editor
 
 		private void openVBNToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			string filename = "";
+			string filename = " ";
 			OpenFileDialog open = new OpenFileDialog();
-			open.Filter = "Supported Formats|*.vbn;*.mdl0|Smash 4 Boneset|*.vbn|Brawl/Wii Model Format|*.mdl0|All files(*.*)|*.*";
+            open.Filter = "Supported Formats|*.vbn;*.mdl0|Smash 4 Boneset|*.vbn|Brawl/Wii Model Format|*.mdl0|All files(*.*)|*.*";
 			DialogResult result = open.ShowDialog();
 
 			if(result == DialogResult.OK)
@@ -87,8 +87,7 @@ namespace VBN_Editor
                 
                 if (filename.EndsWith(".mdl0")) {
                     MDL0Bones mdl0 = new MDL0Bones();
-                    FileData d = new FileData(filename);
-                    vbn = mdl0.GetVBN(d);
+                    vbn = mdl0.GetVBN(new FileData(filename));
                 }
 
                 treeRefresh();
