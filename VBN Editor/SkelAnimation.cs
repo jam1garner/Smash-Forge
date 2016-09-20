@@ -246,7 +246,7 @@ namespace VBN_Editor
 					if (base_frames.Count > 1)
 						for (int j = 0; j < base_frames.Count - 1; j++) {
 							if (base_frames [j].frame <= i && base_frames [j + 1].frame >= i
-								&& base_frames[j].contains(id) && && base_frames[j + 1].contains(id)) {
+								&& base_frames[j].contains(id) &&base_frames[j + 1].contains(id)) {
 								f1 = base_frames [j];
 								f2 = base_frames [j + 1];
 								break;
