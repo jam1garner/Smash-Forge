@@ -102,7 +102,7 @@ namespace VBN_Editor
                     int parentid = 0x0FFFFFFF;
                     if (d.pos() != data + 12)
                         parentid = d.readInt();
-                    n.parentIndex = parentid;
+                    n.parentIndex = (uint)parentid;
 
                     n.boneName = d.readString(nameOff, -1).ToCharArray();
                     n.boneId = boneID;
