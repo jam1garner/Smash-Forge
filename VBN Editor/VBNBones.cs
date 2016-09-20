@@ -15,7 +15,7 @@ public class Bone
 	public float[] scale;
 	public List<int> children;
 
-	public Vector3 pos = Vector3.Zero, sca = Vector3.Zero;
+	public Vector3 pos = Vector3.Zero, sca = new Vector3(1f,1f,1f);
 	public Quaternion rot = Quaternion.FromMatrix(Matrix3.Zero);
 	public Matrix4 transform;
 }
@@ -46,7 +46,7 @@ public class VBN
 
 	public void update(){
 		for (int i = 0; i < totalBoneCount; i++) {
-			bones [i].transform = Matrix4.CreateFromQuaternion (bones [i].rot) * Matrix4.CreateTranslation (bones[i].pos);
+			bones [i].transform = Matrix4.CreateScale (bones [i].sca) * Matrix4.CreateFromQuaternion (bones [i].rot) * Matrix4.CreateTranslation (bones[i].pos);
 			if (bones [i].parentIndex != 0x0FFFFFFF) {
 				bones [i].transform = bones [i].transform * bones [(int)bones [i].parentIndex].transform;
 			}

@@ -119,8 +119,9 @@ namespace VBN_Editor
 					b.rot = n.r;
 				}
 				if (n.s_type != -1) {
-					//b.sca = n.s;
-				}
+					b.sca = n.s;
+				} else
+					b.sca = new Vector3 (b.scale[0], b.scale[1], b.scale[2]);
 			}
 
 			vbn.update ();
