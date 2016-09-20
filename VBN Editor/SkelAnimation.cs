@@ -82,11 +82,12 @@ namespace VBN_Editor
 		public List<int> getNodes(){
 			List<int> node = new List<int>();
 
-			foreach(KeyFrame f in frames)
-				foreach(KeyNode n in f.nodes)
-					if(!node.Contains(n.id) && n.id != -1){
-						node.Add(n.id);
+			foreach (KeyFrame f in frames)
+				foreach (KeyNode n in f.nodes) {
+					if (!node.Contains (n.id) && n.id != -1) {
+						node.Add (n.id);
 					}
+				}
 
 			return node;
 		}
@@ -215,6 +216,80 @@ namespace VBN_Editor
 
 		}
 
+		/*
+		 * TODO: Fix this
+		 * the key frame needs to check if it occurs within a time frame AND
+		 * it has the node it is looking for
+		*/
+		public void bakeFramesLinear(){
+
+			List<int> nodeids = getNodes ();
+			List<KeyFrame> base_frames = frames;
+			frames = new List<KeyFrame>();
+			int fCount = 0;
+
+			foreach (KeyFrame k in base_frames) {
+				if (k.frame > fCount)
+					fCount = k.frame;
+			}
+
+
+			for (int i = 0; i < fCount; i++) {
+				KeyFrame k = new KeyFrame();
+				k.frame = i;
+				frames.Add (k);
+
+				// add all the nodes at this frame
+				foreach (int id in nodeids) {
+					KeyFrame f1 = base_frames[0], f2 = base_frames[0];
+
+					if (base_frames.Count > 1)
+						for (int j = 0; j < base_frames.Count - 1; j++) {
+							if (base_frames [j].frame <= i && base_frames [j + 1].frame >= i
+								&& base_frames[j].contains(id) && && base_frames[j + 1].contains(id)) {
+								f1 = base_frames [j];
+								f2 = base_frames [j + 1];
+								break;
+							}
+						}
+
+					// interpolate the values
+					KeyNode n =new KeyNode();
+					n.id = id;
+
+					KeyNode k1 = f1.getNodeid(id), k2 = f2.getNodeid(id);
+
+					n.t_type = k1.t_type;
+					n.r_type = k1.r_type;
+					n.s_type = k1.s_type;
+
+					n.t.X = lerp (k1.t.X, k2.t.X, f1.frame, f2.frame, i);
+					n.t.Y = lerp (k1.t.Y, k2.t.Y, f1.frame, f2.frame, i);
+					n.t.Z = lerp (k1.t.Z, k2.t.Z, f1.frame, f2.frame, i);
+
+					n.r.X = lerp (k1.r.X, k2.r.X, f1.frame, f2.frame, i);
+					n.r.Y = lerp (k1.r.Y, k2.r.Y, f1.frame, f2.frame, i);
+					n.r.Z = lerp (k1.r.Z, k2.r.Z, f1.frame, f2.frame, i);
+					n.r.W = lerp (k1.r.W, k2.r.W, f1.frame, f2.frame, i);
+
+					/*TODO: Scale
+					n.t.X = lerp (k1.t.X, k2.t.X, f1.frame, f2.frame, i);
+					n.t.Y = lerp (k1.t.Y, k2.t.Y, f1.frame, f2.frame, i);
+					n.t.Z = lerp (k1.t.Z, k2.t.Z, f1.frame, f2.frame, i);
+					*/
+
+					k.addNode(n);
+				}
+
+			}
+		}
+
+		public static float lerp(float av, float bv, float v0, float v1, float t) {
+			if (v0 == v1) return av;
+
+			float mu = (t - v0) / (v1 - v0);
+			return ((av * (1 - mu)) + (bv * mu));
+		}
 	}
 }
 

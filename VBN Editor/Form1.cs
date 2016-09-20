@@ -93,18 +93,28 @@ namespace VBN_Editor
 		{
 			string filename = "";
 			OpenFileDialog open = new OpenFileDialog();
-			open.Filter = "Supported Formats|*.omo;*.chr0;*.anim|Object Motion|*.omo|Maya Animation|*.anim|Wii Animation|*.chr0|All files(*.*)|*.*";
+			open.Filter = "Supported Formats|*.omo;*.chr0;*.anim;*.smd|Object Motion|*.omo|Maya Animation|*.anim|Wii Animation|*.chr0|All files(*.*)|*.*";
 			DialogResult result = open.ShowDialog();
 
-			if(result == DialogResult.OK && vbn != null)
+			if(result == DialogResult.OK)
 			{
 				filename = open.FileName;
-				if(open.FileName.Contains(".omo"))
-					loadAnimation(OMO.read (new FileData (filename), vbn));
-				if(open.FileName.Contains(".chr0"))
-					loadAnimation(CHR0.read (new FileData(filename), vbn));
-				if(open.FileName.Contains(".anim"))
-					loadAnimation(ANIM.read (filename, vbn));
+				if (open.FileName.Contains (".smd")) {
+					anim = new SkelAnimation ();
+					vbn = new VBN ();
+					SMD.read (filename, anim, vbn);
+					treeRefresh();
+					vbnSet = true;
+					loadAnimation (anim);
+				}
+				if (vbn != null) {
+					if (open.FileName.Contains (".omo"))
+						loadAnimation (OMO.read (new FileData (filename), vbn));
+					if (open.FileName.Contains (".chr0"))
+						loadAnimation (CHR0.read (new FileData (filename), vbn));
+					if (open.FileName.Contains (".anim"))
+						loadAnimation (ANIM.read (filename, vbn));
+				}
 			}
 		}
 
@@ -238,10 +248,10 @@ namespace VBN_Editor
 					GL.LineWidth(1f);
 
 					GL.Begin(PrimitiveType.Lines);
-					if (bone.parentIndex != 0x0FFFFFFF)
+					if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex != -1)
 					{
-						uint i = bone.parentIndex;
-						Vector3 pos_p = Vector3.Transform (Vector3.Zero, vbn.bones [(int)i].transform * scale);
+						int i = bone.parentIndex;
+						Vector3 pos_p = Vector3.Transform (Vector3.Zero, vbn.bones [i].transform * scale);
 						GL.Vertex3 (pos_c);
 						GL.Vertex3 (pos_p);
 					}
@@ -302,7 +312,7 @@ namespace VBN_Editor
 		// loads a skeletal animation into the viewing system
 		public void loadAnimation(SkelAnimation a){
 			anim = a;
-			this.numericUpDown1.Value = anim.size () - 1;
+			this.numericUpDown1.Value = anim.size () > 1 ? anim.size() - 1 : anim.size();
 			anim.nextFrame (vbn);
 		}
 
@@ -427,7 +437,7 @@ namespace VBN_Editor
 				vbn.bones[oldParent].children.Remove(vbn.boneIndex(draggedNode.Text));
 				int newParent = vbn.boneIndex(targetNode.Text);
 				Bone temp = vbn.bones[vbn.boneIndex(draggedNode.Text)];
-				temp.parentIndex = (uint)newParent;
+				temp.parentIndex = (int)newParent;
 				vbn.bones[vbn.boneIndex(draggedNode.Text)] = temp;
 				vbn.bones[newParent].children.Add(vbn.boneIndex(draggedNode.Text));
 
