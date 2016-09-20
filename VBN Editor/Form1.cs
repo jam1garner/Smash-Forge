@@ -303,6 +303,9 @@ namespace VBN_Editor
 		// events for controls
 		// this is the function that will actually update the skeleton
 		private void NumericUpDown1_ValueChanged(Object sender, EventArgs e) {
+			if (anim == null)
+				return;
+
 			if (this.numericUpDown2.Value >= anim.size ()){
 				this.numericUpDown2.Value = 0;
 				return;

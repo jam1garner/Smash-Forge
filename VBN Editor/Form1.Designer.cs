@@ -258,6 +258,7 @@
 			this.numericUpDown1.Size = new System.Drawing.Size(52, 20);
 			this.numericUpDown1.TabIndex = 5;
 			this.numericUpDown1.Enabled = false;
+			this.numericUpDown1.Maximum = 1000;
 			// 
 			// label1
 			// 
@@ -275,6 +276,7 @@
 			this.numericUpDown2.Size = new System.Drawing.Size(52, 20);
 			this.numericUpDown2.TabIndex = 7;
 			this.numericUpDown2.ValueChanged += new System.EventHandler (this.NumericUpDown1_ValueChanged);
+			this.numericUpDown2.Maximum  = 1000;
 			// 
 			// label2
 			// 
