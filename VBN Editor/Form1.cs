@@ -22,8 +22,10 @@ namespace VBN_Editor
 		public DataTable tbl;
 		private bool delete = false;
 		private string toDelete;
+        private string currentNode;
 
-		public VBNRebuilder()
+
+        public VBNRebuilder()
 		{
 			InitializeComponent();
 		}
@@ -41,7 +43,11 @@ namespace VBN_Editor
 			if (index == 0)
 				treeView1.Nodes.Add(temp);
 
-			return temp;
+            temp.Expand();
+            foreach (TreeNode t in children)
+            t.Expand();
+
+            return temp;
 
 		}
 
@@ -327,11 +333,12 @@ namespace VBN_Editor
 				this.numericUpDown2.Value -= 1;
 		}
 		private void button3_Click(object sender, EventArgs e){
-			this.numericUpDown2.Value = anim.size() - 1;
+            if (anim != null)
+                this.numericUpDown2.Value = anim.size() - 1;
 		}
 		private void button4_Click(object sender, EventArgs e){
-			if(this.numericUpDown2.Value + 1  < anim.size())
-				this.numericUpDown2.Value += 1;
+            if (anim != null)
+                this.numericUpDown2.Value += 1;
 		}
 		private void button5_Click(object sender, EventArgs e){
 			isPlaying = !isPlaying;
@@ -342,10 +349,10 @@ namespace VBN_Editor
 		}
 
 
-
-		private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
 		{
-			textBox1.Text = treeView1.SelectedNode.Text;
+            currentNode = treeView1.SelectedNode.Text;
+            textBox1.Text = treeView1.SelectedNode.Text;
 			tbl = new DataTable();
 			tbl.Columns.Add(new DataColumn("Name") { ReadOnly = true });
 			tbl.Columns.Add("Value");
@@ -367,31 +374,31 @@ namespace VBN_Editor
 
 		private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
 		{
-			Bone editingBone = vbn.bones[vbn.boneIndex(treeView1.SelectedNode.Text)];
+			Bone editingBone = vbn.bones[vbn.boneIndex(currentNode)];
 			editingBone.boneId = (uint)int.Parse(tbl.Rows[0][1].ToString(), System.Globalization.NumberStyles.HexNumber);
 			editingBone.boneType = Convert.ToUInt32(tbl.Rows[1][1]);
-			vbn.bones[vbn.boneIndex(treeView1.SelectedNode.Text)] = editingBone;
+			vbn.bones[vbn.boneIndex(currentNode)] = editingBone;
 
-			vbn.bone(treeView1.SelectedNode.Text).position[0] = Convert.ToSingle(tbl.Rows[2][1]);
-			vbn.bone(treeView1.SelectedNode.Text).position[1] = Convert.ToSingle(tbl.Rows[3][1]);
-			vbn.bone(treeView1.SelectedNode.Text).position[2] = Convert.ToSingle(tbl.Rows[4][1]);
+			vbn.bone(currentNode).position[0] = Convert.ToSingle(tbl.Rows[2][1]);
+			vbn.bone(currentNode).position[1] = Convert.ToSingle(tbl.Rows[3][1]);
+			vbn.bone(currentNode).position[2] = Convert.ToSingle(tbl.Rows[4][1]);
 
-			vbn.bone(treeView1.SelectedNode.Text).rotation[0] = Convert.ToSingle(tbl.Rows[5][1]);
-			vbn.bone(treeView1.SelectedNode.Text).rotation[1] = Convert.ToSingle(tbl.Rows[6][1]);
-			vbn.bone(treeView1.SelectedNode.Text).rotation[2] = Convert.ToSingle(tbl.Rows[7][1]);
+			vbn.bone(currentNode).rotation[0] = Convert.ToSingle(tbl.Rows[5][1]);
+			vbn.bone(currentNode).rotation[1] = Convert.ToSingle(tbl.Rows[6][1]);
+			vbn.bone(currentNode).rotation[2] = Convert.ToSingle(tbl.Rows[7][1]);
 
-			vbn.bone(treeView1.SelectedNode.Text).scale[0] = Convert.ToSingle(tbl.Rows[8][1]);
-			vbn.bone(treeView1.SelectedNode.Text).scale[1] = Convert.ToSingle(tbl.Rows[9][1]);
-			vbn.bone(treeView1.SelectedNode.Text).scale[2] = Convert.ToSingle(tbl.Rows[10][1]);
+			vbn.bone(currentNode).scale[0] = Convert.ToSingle(tbl.Rows[8][1]);
+			vbn.bone(currentNode).scale[1] = Convert.ToSingle(tbl.Rows[9][1]);
+			vbn.bone(currentNode).scale[2] = Convert.ToSingle(tbl.Rows[10][1]);
 
 			vbn.update ();
 		}
 
 		private void textBox1_TextChanged(object sender, EventArgs e)
 		{
-			Bone temp = vbn.bones[vbn.boneIndex(treeView1.SelectedNode.Text)];
+			Bone temp = vbn.bones[vbn.boneIndex(currentNode)];
 			temp.boneName = textBox1.Text.ToCharArray();
-			vbn.bones[vbn.boneIndex(treeView1.SelectedNode.Text)] = temp;
+			vbn.bones[vbn.boneIndex(currentNode)] = temp;
 			treeView1.SelectedNode.Text = textBox1.Text;
 		}
 
