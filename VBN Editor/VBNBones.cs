@@ -8,7 +8,7 @@ public class Bone
 {
 	public char[] boneName;
 	public UInt32 boneType;
-	public UInt32 parentIndex;
+	public int parentIndex;
 	public UInt32 boneId;
 	public float[] position;
 	public float[] rotation;
@@ -45,9 +45,9 @@ public class VBN
 	}
 
 	public void update(){
-		for (int i = 0; i < totalBoneCount; i++) {
+		for (int i = 0; i < bones.Count; i++) {
 			bones [i].transform = Matrix4.CreateScale (bones [i].sca) * Matrix4.CreateFromQuaternion (bones [i].rot) * Matrix4.CreateTranslation (bones[i].pos);
-			if (bones [i].parentIndex != 0x0FFFFFFF) {
+			if (bones [i].parentIndex != 0x0FFFFFFF && bones[i].parentIndex!=-1) {
 				bones [i].transform = bones [i].transform * bones [(int)bones [i].parentIndex].transform;
 			}
 		}
@@ -75,7 +75,7 @@ public class VBN
 				temp.boneName = new char[j + 1];
 				Array.Copy (foo, temp.boneName, j + 1);
 				temp.boneType = file.ReadUInt32 ();
-				temp.parentIndex = file.ReadUInt32 ();
+				temp.parentIndex = file.ReadInt32 ();
 				temp.boneId = file.ReadUInt32 ();
 				temp.position = new float[3];
 				temp.rotation = new float[3];
@@ -115,7 +115,7 @@ public class VBN
 			file.Write('V');
 			file.Write(unk_1);
 			file.Write(unk_2);
-			file.Write(totalBoneCount);
+			file.Write(bones.Count);
 			for(int i = 0; i < 4; i++)
 				file.Write(boneCountPerType[i]);
 

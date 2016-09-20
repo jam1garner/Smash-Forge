@@ -111,6 +111,7 @@
     <Compile Include="FileOutput.cs" />
     <Compile Include="OMO.cs" />
     <Compile Include="SkelAnimation.cs" />
+    <Compile Include="SMD.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
