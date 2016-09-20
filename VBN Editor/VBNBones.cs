@@ -23,7 +23,7 @@ public class Bone
 public class VBN
 {
 
-	public UInt16 unk_1,unk_2;
+	public UInt16 unk_1 = 2,unk_2 = 1;
 	public UInt32 totalBoneCount;
 	public UInt32[] boneCountPerType = new UInt32[4];
 	public List<Bone> bones = new List<Bone>();
@@ -97,7 +97,6 @@ public class VBN
 				if (temp.parentIndex != 0x0FFFFFFF)
 					bones [(int)temp.parentIndex].children.Add (i);
 				bones [i] = temp;
-
 				bones [i].pos = new Vector3 (bones[i].position[0], bones[i].position[1], bones[i].position[2]);
 				bones [i].rot = (FromEulerAngles (bones [i].rotation [2], bones [i].rotation [1], bones [i].rotation [0]));
 			}
@@ -205,4 +204,18 @@ public class VBN
 	{
 		deleteBone(boneIndex(name));
 	}
+
+    public void updateChildren()
+    {
+        for (int i = 0; i < totalBoneCount; i++)
+        {
+            bones[i].children = new List<int>();
+        }
+
+        for (int i = 0; i < totalBoneCount; i++)
+        {
+            if (bones[i].parentIndex != 0x0FFFFFFF)
+                bones[(int)bones[i].parentIndex].children.Add(i);
+        }
+    }
 }

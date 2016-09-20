@@ -76,15 +76,24 @@ namespace VBN_Editor
 		{
 			string filename = "";
 			OpenFileDialog open = new OpenFileDialog();
-			open.Filter = "Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
+			open.Filter = "Supported Formats|*.vbn;*.mdl0|Smash 4 Boneset|*.vbn|Brawl/Wii Model Format|*.mdl0|All files(*.*)|*.*";
 			DialogResult result = open.ShowDialog();
 
 			if(result == DialogResult.OK)
 			{
 				filename = open.FileName;
-				vbn = new VBN(filename);
-				treeRefresh();
-				vbnSet = true;
+                if (filename.EndsWith(".vbn"))
+                    vbn = new VBN(filename);
+                
+                if (filename.EndsWith(".mdl0")) {
+                    MDL0Bones mdl0 = new MDL0Bones();
+                    FileData d = new FileData(filename);
+                    vbn = mdl0.GetVBN(d);
+                }
+
+                treeRefresh();
+                vbnSet = true;
+                
 				//loadAnimation (ANIM.read ("C:\\Users\\ploaj_000\\Desktop\\WebGL\\Wait1.anim", vbn));
 			}
 		}
