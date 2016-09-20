@@ -178,7 +178,7 @@ namespace VBN_Editor
 			int h = glControl1.Height;
 			int w = glControl1.Width;
 			GL.LoadIdentity();
-			GL.Viewport(0, 0, w*1.5, h*1.5);
+			GL.Viewport(0, 0,(int)(w*1.5),(int)(h*1.5));
 			v = Matrix4.CreateRotationY (0.5f * rot) * Matrix4.CreateRotationX (0.2f * lookup) * Matrix4.CreateTranslation (5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView (1.3f, glControl1.Width / (float)glControl1.Height, 1.0f, 40.0f);
 
 			glControl1.GotFocus += (object sender, EventArgs e) => {
