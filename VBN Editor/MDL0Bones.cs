@@ -85,7 +85,8 @@ namespace VBN_Editor
                     
                     n.scale = new float[3];
                     n.position = new float[3];
-                    n.rotation = new float[3];
+					n.rotation = new float[3];
+					d.skip(4); // index
 
                     n.scale[0] = d.readFloat();
                     n.scale[1] = d.readFloat();
@@ -99,7 +100,7 @@ namespace VBN_Editor
 
 					n.pos = new Vector3 (n.position[0], n.position[1], n.position[2]);
 					n.sca = new Vector3 (n.scale[0], n.scale[1], n.scale[2]);
-					n.rot = (VBN.FromEulerAngles (n.rotation [0], n.rotation [1], n.rotation [2]));
+					n.rot = (VBN.FromEulerAngles (n.rotation [2], n.rotation [1], n.rotation [0]));
 
                     d.skip(24);
 
