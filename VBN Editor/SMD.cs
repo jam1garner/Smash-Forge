@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using OpenTK;
 
 namespace VBN_Editor
@@ -22,6 +23,7 @@ namespace VBN_Editor
 			VBN vbn = v;
 
 			while ((line = reader.ReadLine ()) != null) {
+				line = Regex.Replace (line, @"\s+", " ");
 				string[] args = line.Replace (";", "").TrimStart().Split (' ');
 
 				if (args [0].Equals ("nodes") || args [0].Equals ("skeleton") || args [0].Equals ("end") || args [0].Equals ("time")) {

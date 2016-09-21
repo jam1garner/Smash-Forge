@@ -21,7 +21,9 @@ namespace VBN_Editor
 		public bool loaded = false;
 		public DataTable tbl;
 		private bool delete = false;
+		private string toDelete;
         private string currentNode;
+
 
         public VBNRebuilder()
 		{
@@ -107,7 +109,8 @@ namespace VBN_Editor
 				filename = open.FileName;
 				if (open.FileName.Contains (".smd")) {
 					anim = new SkelAnimation ();
-					vbn = new VBN ();
+					if(vbn == null)
+						vbn = new VBN ();
 					SMD.read (filename, anim, vbn);
 					treeRefresh();
 					vbnSet = true;
@@ -316,6 +319,13 @@ namespace VBN_Editor
 			{
 				Render ();
 				System.Threading.Thread.Sleep(1000/60);
+				if (delete)
+				{
+					vbn.deleteBone(toDelete);
+					treeRefresh();
+					delete = false;
+				}
+
 			}
 		}
 
