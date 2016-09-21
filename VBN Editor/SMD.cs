@@ -17,10 +17,11 @@ namespace VBN_Editor
 			int frame = 0, prevframe = 0;
 			KeyFrame k = new KeyFrame();
 
+			VBN vbn = v;
 			if (v.bones.Count == 0) {
 				readBones = true;
-			} 
-			VBN vbn = v;
+			} else
+				vbn = new VBN ();
 
 			while ((line = reader.ReadLine ()) != null) {
 				line = Regex.Replace (line, @"\s+", " ");
@@ -43,7 +44,7 @@ namespace VBN_Editor
 					continue;
 				}
 
-				if (readBones && current.Equals ("nodes")) {
+				if (current.Equals ("nodes")) {
 					Bone b = new Bone ();
 					b.boneName = args [1].Replace ("\"", "").ToCharArray();
 					b.parentIndex = int.Parse(args [2]);
@@ -92,10 +93,8 @@ namespace VBN_Editor
 				}
 			}
 
-			vbn.unk_1 = 2;
-			vbn.unk_2 = 1;
-			vbn.boneCountPerType [0] = (uint)vbn.bones.Count;
-			vbn.update ();
+			v.boneCountPerType [0] = (uint)vbn.bones.Count;
+			v.update ();
 			a.bakeFramesLinear ();
 		}
 
