@@ -52,6 +52,13 @@ public class VBN
 			}
 		}
 	}
+	public void reset(){
+		for (int i = 0; i < bones.Count; i++) {
+			bones [i].pos = new Vector3 (bones [i].position [0], bones [i].position [1], bones [i].position [2]);
+			bones [i].rot = (FromEulerAngles (bones [i].rotation [2], bones [i].rotation [1], bones [i].rotation [0]));
+		}
+		update ();
+	}
 
 	public VBN(string filename)
 	{
@@ -97,11 +104,9 @@ public class VBN
 				if (temp.parentIndex != 0x0FFFFFFF)
 					bones [(int)temp.parentIndex].children.Add (i);
 				bones [i] = temp;
-				bones [i].pos = new Vector3 (bones[i].position[0], bones[i].position[1], bones[i].position[2]);
-				bones [i].rot = (FromEulerAngles (bones [i].rotation [2], bones [i].rotation [1], bones [i].rotation [0]));
 			}
 
-			update ();
+			reset ();
 		}
 	}
 

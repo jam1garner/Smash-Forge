@@ -238,7 +238,7 @@ namespace VBN_Editor
 			a.setFrame(0);
 
 			for (int i = 0; i < a.size(); i++) {
-				a.nextFrameNoRender(vbn);
+				a.nextFrame(vbn);
 
 				for (int j = 0; j < nodeid.Count; j++) {
 					Bone node = getNodeId(vbn, nodeid[j]);
@@ -444,7 +444,7 @@ namespace VBN_Editor
 			a.setFrame(0);
 
 			for (int i = 0; i < a.size(); i++) {
-				a.nextFrameNoRender(vbn);
+				a.nextFrame(vbn);
 				for (int j = 0; j < nodeid.Count; j++) {
 					Bone node = getNodeId(vbn, nodeid[j]);
 

@@ -106,6 +106,9 @@ namespace VBN_Editor
 
 		public void nextFrame(VBN vbn){
 
+			if(frame == 0)
+				vbn.reset ();
+
 			KeyFrame key = frames [frame];
 
 			foreach (KeyNode n in key.nodes) {
@@ -125,11 +128,11 @@ namespace VBN_Editor
 					b.sca = new Vector3 (b.scale[0], b.scale[1], b.scale[2]);
 			}
 
-			vbn.update ();
 
 			frame++;
-			if (frame >= frames.Count)
+			if (frame >= frames.Count) 
 				frame = 0;
+			vbn.update ();
 
 		}	
 
@@ -186,34 +189,6 @@ namespace VBN_Editor
 			}
 
 			return 0;
-		}
-
-
-
-		public void nextFrameNoRender(VBN vbn){
-
-			KeyFrame key = frames [frame];
-
-			foreach (KeyNode n in key.nodes) {
-				if (n.id == -1)
-					continue;
-				Bone b = vbn.bones [n.id];
-
-				if (n.t_type != -1) {
-					b.pos = n.t;
-				}
-				if (n.r_type != -1) {
-					b.rot = n.r;
-				}
-				if (n.s_type != -1) {
-					//b.sca = n.s;
-				}
-			}
-
-			frame++;
-			if (frame >= frames.Count)
-				frame = 0;
-
 		}
 
 		/*

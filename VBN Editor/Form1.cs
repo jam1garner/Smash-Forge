@@ -130,13 +130,17 @@ namespace VBN_Editor
 		{
 			string filename = "";
 			SaveFileDialog save = new SaveFileDialog();
-			save.Filter = "Object Motion|*.omo|All files(*.*)|*.*";
+			save.Filter = "Object Motion|*.omo|Maya Anim (Baked)|*.anim";
 			DialogResult result = save.ShowDialog();
+
+			if (save.FileName.EndsWith (".anim"))
+				ANIM.createANIM (save.FileName, anim, vbn);
 
 			if(result == DialogResult.OK && vbn != null && anim != null)
 			{
 				filename = save.FileName;
-				OMO.createOMO (anim, vbn, filename, -1, -1);
+				if(filename.EndsWith(".omo"))
+					OMO.createOMO (anim, vbn, filename, -1, -1);
 			}
 		}
 
