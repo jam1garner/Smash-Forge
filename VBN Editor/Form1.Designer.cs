@@ -364,6 +364,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
+			this.Resize += new System.EventHandler (this.onResize);
 
 		}
 
