@@ -36,6 +36,24 @@ namespace VBN_Editor
 
         }
 
+		public List<Bone> getBoneTreeOrder(){
+			List<Bone> bone = new List<Bone> ();
+			Queue<Bone> q = new Queue<Bone> ();
+
+			queueBones (bones[0], q);
+
+			while (q.Count > 0) {
+				bone.Add (q.Dequeue());
+			}
+			return bone;
+		}
+
+		public void queueBones(Bone b, Queue<Bone> q){
+			q.Enqueue (b);
+			foreach (int c in b.children)
+				queueBones (bones[c], q);
+		}
+
         public static Quaternion FromEulerAngles(float z, float y, float x)
         {
             {

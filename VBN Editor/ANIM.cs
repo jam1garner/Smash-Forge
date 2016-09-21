@@ -202,8 +202,10 @@ namespace VBN_Editor
 
 				List<int> nodes = a.getNodes ();
 				int i = 0;
+
 				// writing node attributes
-				foreach (Bone b in vbn.bones) {
+				foreach (Bone b in vbn.getBoneTreeOrder()) {
+					i = vbn.boneIndex (new string(b.boneName));
 						
 					if (nodes.Contains (i)) {
 						// write the bone attributes
@@ -246,7 +248,6 @@ namespace VBN_Editor
 					} else {
 						file.WriteLine ("anim " + new string (b.boneName) + " 0 0 0;");
 					}
-					i++;
 				}
 			}
 		}
