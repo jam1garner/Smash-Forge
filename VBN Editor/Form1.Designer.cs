@@ -250,7 +250,7 @@
             this.numericUpDown2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.numericUpDown2.Location = new System.Drawing.Point(613, 14);
             this.numericUpDown2.Maximum = new decimal(new int[] {
-            1000,
+            2147483647,
             0,
             0,
             0});
@@ -275,7 +275,7 @@
             this.numericUpDown1.Enabled = false;
             this.numericUpDown1.Location = new System.Drawing.Point(683, 14);
             this.numericUpDown1.Maximum = new decimal(new int[] {
-            1000,
+            2147483647,
             0,
             0,
             0});
@@ -354,6 +354,7 @@
             this.Name = "VBNRebuilder";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Skeletal Animation Tool";
+            this.Resize += new System.EventHandler(this.onResize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -364,7 +365,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
-			this.Resize += new System.EventHandler (this.onResize);
 
 		}
 

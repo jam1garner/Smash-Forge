@@ -491,5 +491,6 @@ namespace VBN_Editor
 
 			//Deleting is currently broken... gotta find a fix
 		}
-	}
+        
+    }
 }
