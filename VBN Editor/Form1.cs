@@ -16,7 +16,7 @@ namespace VBN_Editor
 {
 	public partial class VBNRebuilder : Form
 	{
-		public VBN vbn;
+		public VBN vbn = new VBN();
 		public bool vbnSet = false;
 		public bool loaded = false;
 		public DataTable tbl;

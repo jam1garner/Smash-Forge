@@ -26,15 +26,18 @@ namespace VBN_Editor
             temp.boneName = textBox1.Text.ToCharArray();
             temp.boneId = (uint)int.Parse(textBox2.Text, System.Globalization.NumberStyles.HexNumber);
             temp.boneType = Convert.ToUInt32(textBox3.Text);
-            temp.parentIndex = 0;
+            if (otherForm.vbn.bones.Count > 0)
+                temp.parentIndex = 0;
+            else
+                temp.parentIndex = 0x0FFFFFFF;
             temp.children = new List<int>();
             temp.position = new float[] {0f,0f,0f};
             temp.rotation = new float[] { 0f,0f,0f};
-            temp.scale = new float[] { 0f,0f,0f};
+            temp.scale = new float[] { 1f,1f,1f};
             otherForm.vbn.bones.Add(temp);
             otherForm.vbn.totalBoneCount++;
             otherForm.vbn.boneCountPerType[temp.boneType]++;
-            otherForm.vbn.bones[0].children.Add((int)otherForm.vbn.totalBoneCount-1);
+            otherForm.vbn.updateChildren();
             otherForm.treeRefresh();
             Close();
         }
