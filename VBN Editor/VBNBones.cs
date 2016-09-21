@@ -119,7 +119,7 @@ public class VBN
 			for(int i = 0; i < 4; i++)
 				file.Write(boneCountPerType[i]);
 
-			for (int i = 0; i < totalBoneCount; i++)
+			for (int i = 0; i < bones.Count; i++)
 			{
 				file.Write(bones[i].boneName);
 				for (int j = 0; j < 64 - bones[i].boneName.Length; j++)
@@ -129,7 +129,7 @@ public class VBN
 				file.Write(bones[i].boneId);
 			}
 
-			for (int i = 0; i < totalBoneCount; i++)
+			for (int i = 0; i < bones.Count; i++)
 			{
 				file.Write(bones[i].position[0]);
 				file.Write(bones[i].position[1]);
