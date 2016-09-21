@@ -222,24 +222,24 @@ namespace VBN_Editor
 							file.WriteLine ("}");
 						}
 						if (n.r_type != -1) {
-							file.WriteLine ("anim translate.rotateX rotateX " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
+							file.WriteLine ("anim rotate.rotateX rotateX " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
 							writeKey(file, a, i, "rotateX", n.r_type);
 							file.WriteLine ("}");
-							file.WriteLine ("anim translate.rotateY rotateY " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
+							file.WriteLine ("anim rotate.rotateY rotateY " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
 							writeKey(file, a, i, "rotateY", n.r_type);
 							file.WriteLine ("}");
-							file.WriteLine ("anim translate.rotateZ rotateZ " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
+							file.WriteLine ("anim rotate.rotateZ rotateZ " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
 							writeKey(file, a, i, "rotateZ", n.r_type);
 							file.WriteLine ("}");
 						}
 						if (n.s_type != -1) {
-							file.WriteLine ("anim translate.scaleX scaleX " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
+							file.WriteLine ("anim scale.scaleX scaleX " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
 							writeKey(file, a, i, "scaleX", n.s_type);
 							file.WriteLine ("}");
-							file.WriteLine ("anim translate.scaleY scaleY " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
+							file.WriteLine ("anim scale.scaleY scaleY " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
 							writeKey(file, a, i, "scaleY", n.s_type);
 							file.WriteLine ("}");
-							file.WriteLine ("anim translate.scaleZ scaleZ " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
+							file.WriteLine ("anim scale.scaleZ scaleZ " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
 							writeKey(file, a, i, "scaleZ", n.s_type);
 							file.WriteLine ("}");
 						}
@@ -263,8 +263,6 @@ namespace VBN_Editor
 				KeyNode node = a.getNode (f, i);
 
 				float v = 0;
-
-
 
 				switch (type) {
 				case "translateX":
