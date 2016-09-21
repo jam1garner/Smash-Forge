@@ -21,9 +21,7 @@ namespace VBN_Editor
 		public bool loaded = false;
 		public DataTable tbl;
 		private bool delete = false;
-		private string toDelete;
         private string currentNode;
-
 
         public VBNRebuilder()
 		{
@@ -318,13 +316,6 @@ namespace VBN_Editor
 			{
 				Render ();
 				System.Threading.Thread.Sleep(1000/60);
-				if (delete)
-				{
-					vbn.deleteBone(toDelete);
-					treeRefresh();
-					delete = false;
-				}
-
 			}
 		}
 
