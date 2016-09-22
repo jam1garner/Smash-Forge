@@ -167,6 +167,10 @@ namespace VBN_Editor
 
 
 		public float getBaseNodeValue(int nid, String type, VBN vbn){
+			//UNSAFE: Hacky fix
+			if (nid == -1)
+				return 0;
+
 			switch(type){
 			case "X":
 				return vbn.bones[nid].position[0];
