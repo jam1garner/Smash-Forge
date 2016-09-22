@@ -69,9 +69,9 @@ namespace VBN_Editor
 					else if (args [0].Equals ("angularUnit"))
 						angularUnit = args [1];
 					else if (args [0].Equals ("endTime"))
-						endTime = int.Parse (args [1]);
+						endTime = (int)Math.Ceiling(float.Parse (args [1]));
 					else if (args [0].Equals ("startTime"))
-						startTime = int.Parse (args [1]);
+						startTime = (int)Math.Ceiling(float.Parse (args [1]));
 				}
 
 				if (!isHeader) {
