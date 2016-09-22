@@ -92,7 +92,16 @@ namespace VBN_Editor
 
                 treeRefresh();
                 vbnSet = true;
-                
+                if (vbn.littleEndian)
+                {
+                    radioButton1.Checked = false;
+                    radioButton2.Checked = true;
+                }
+                else
+                {
+                    radioButton2.Checked = false;
+                    radioButton1.Checked = true;
+                }
 				//loadAnimation (ANIM.read ("C:\\Users\\ploaj_000\\Desktop\\WebGL\\Wait1.anim", vbn));
 			}
 		}
@@ -491,6 +500,15 @@ namespace VBN_Editor
 
 			//Deleting is currently broken... gotta find a fix
 		}
-        
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            vbn.littleEndian = false;
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            vbn.littleEndian = true;
+        }
     }
 }

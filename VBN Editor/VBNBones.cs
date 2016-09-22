@@ -169,9 +169,9 @@ namespace VBN_Editor
 
                 for (int i = 0; i < bones.Count; i++)
                 {
-                    file.writeString(bones[i].boneName.ToString());
+                    file.writeString(new string(bones[i].boneName));
                     for (int j = 0; j < 64 - bones[i].boneName.Length; j++)
-                        file.writeString("\000");
+                        file.writeByte(0);
                     file.writeInt((int)bones[i].boneType);
                     file.writeInt(bones[i].parentIndex);
                     file.writeInt((int)bones[i].boneId);
@@ -190,6 +190,7 @@ namespace VBN_Editor
                     file.writeFloat(bones[i].scale[2]);
                 }
             }
+            file.save(filename);
         }
 
         public Bone bone(string name)
