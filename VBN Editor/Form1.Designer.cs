@@ -382,6 +382,7 @@
             this.Name = "VBNRebuilder";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Skeletal Animation Tool";
+            this.Load += new System.EventHandler(this.VBNRebuilder_Load);
             this.Resize += new System.EventHandler(this.onResize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

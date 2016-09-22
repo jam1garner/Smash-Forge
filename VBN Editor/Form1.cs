@@ -510,5 +510,10 @@ namespace VBN_Editor
         {
             vbn.littleEndian = true;
         }
+
+        private void VBNRebuilder_Load(object sender, EventArgs e)
+        {
+            radioButton2.Checked = true;
+        }
     }
 }
