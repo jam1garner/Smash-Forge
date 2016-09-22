@@ -38,6 +38,8 @@ namespace VBN_Editor
             otherForm.vbn.totalBoneCount++;
             otherForm.vbn.boneCountPerType[temp.boneType]++;
             otherForm.vbn.updateChildren();
+            otherForm.vbn.reset();
+            otherForm.vbnSet = true;
             otherForm.treeRefresh();
             Close();
         }
