@@ -433,7 +433,8 @@ namespace VBN_Editor
 			vbn.bone(currentNode).scale[1] = Convert.ToSingle(tbl.Rows[9][1]);
 			vbn.bone(currentNode).scale[2] = Convert.ToSingle(tbl.Rows[10][1]);
 
-			vbn.update ();
+			//vbn.update ();
+            vbn.reset();
 		}
 
 		private void textBox1_TextChanged(object sender, EventArgs e)
