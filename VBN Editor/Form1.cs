@@ -439,9 +439,8 @@ namespace VBN_Editor
 
 		private void textBox1_TextChanged(object sender, EventArgs e)
 		{
-			Bone temp = vbn.bones[vbn.boneIndex(currentNode)];
-			temp.boneName = textBox1.Text.ToCharArray();
-			vbn.bones[vbn.boneIndex(currentNode)] = temp;
+            vbn.bones[vbn.boneIndex(currentNode)].boneName = textBox1.Text.ToCharArray();
+            currentNode = textBox1.Text;
 			treeView1.SelectedNode.Text = textBox1.Text;
 		}
 
