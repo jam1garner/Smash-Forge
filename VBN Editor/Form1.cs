@@ -30,7 +30,17 @@ namespace VBN_Editor
 			InitializeComponent();
 		}
 
-		private TreeNode buildBoneTree(int index)
+
+        private bool MouseIsOverViewport()
+        {
+            if (glControl1.ClientRectangle.Contains(glControl1.PointToClient(Cursor.Position)))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private TreeNode buildBoneTree(int index)
 		{
 			List<TreeNode> children = new List<TreeNode>();
 			foreach (int i in vbn.bones[index].children)
@@ -232,7 +242,7 @@ namespace VBN_Editor
 			// set up the viewport projection and send it to GPU
 			GL.MatrixMode(MatrixMode.Projection);
 
-			if (glControl1.Focused) {
+			if (glControl1.Focused && MouseIsOverViewport()) {
 				if (OpenTK.Input.Mouse.GetState ().IsButtonDown (OpenTK.Input.MouseButton.Right)) {
 					height += 0.025f * (OpenTK.Input.Mouse.GetState ().Y - mouseYLast);
 					width += 0.025f * (OpenTK.Input.Mouse.GetState ().X - mouseXLast);
@@ -437,7 +447,7 @@ namespace VBN_Editor
             vbn.reset();
 		}
 
-		private void textBox1_TextChanged(object sender, EventArgs e)
+        private void textBox1_TextChanged(object sender, EventArgs e)
 		{
             vbn.bones[vbn.boneIndex(currentNode)].boneName = textBox1.Text.ToCharArray();
             currentNode = textBox1.Text;
