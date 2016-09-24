@@ -86,7 +86,7 @@ namespace VBN_Editor
 		{
 			string filename = " ";
 			OpenFileDialog open = new OpenFileDialog();
-            open.Filter = "Supported Formats|*.vbn;*.mdl0|Smash 4 Boneset|*.vbn|Brawl/Wii Model Format|*.mdl0|All files(*.*)|*.*";
+			open.Filter = "Supported Formats|*.vbn;*.mdl0*.smd|Smash 4 Boneset|*.vbn|Brawl/Wii Model Format|*.mdl0|Source Model (SMD)|*.smd|All files(*.*)|*.*";
 			DialogResult result = open.ShowDialog();
 
 			if(result == DialogResult.OK)
@@ -98,7 +98,12 @@ namespace VBN_Editor
                 if (filename.EndsWith(".mdl0")) {
                     MDL0Bones mdl0 = new MDL0Bones();
                     vbn = mdl0.GetVBN(new FileData(filename));
-                }
+				}
+
+				if (filename.EndsWith(".smd")) {
+					vbn = new VBN();
+					SMD.read(filename, new SkelAnimation(), vbn);
+				}
 
                 treeRefresh();
                 vbnSet = true;
@@ -120,7 +125,7 @@ namespace VBN_Editor
 		{
 			string filename = "";
 			OpenFileDialog open = new OpenFileDialog();
-			open.Filter = "Supported Formats|*.omo;*.chr0;*.anim;*.smd|Object Motion|*.omo|Maya Animation|*.anim|Wii Animation|*.chr0|All files(*.*)|*.*";
+			open.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd|Object Motion|*.omo|Maya Animation|*.anim|Wii Animation|*.chr0|Source Animation (SMD)|*.smd|All files(*.*)|*.*";
 			DialogResult result = open.ShowDialog();
 
 			if(result == DialogResult.OK)
@@ -153,12 +158,13 @@ namespace VBN_Editor
 			save.Filter = "Object Motion|*.omo|Maya Anim (Baked)|*.anim";
 			DialogResult result = save.ShowDialog();
 
-			if (save.FileName.EndsWith (".anim"))
-				ANIM.createANIM (save.FileName, anim, vbn);
-
 			if(result == DialogResult.OK && vbn != null && anim != null)
 			{
 				filename = save.FileName;
+
+				if(filename.EndsWith (".anim"))
+					ANIM.createANIM (filename, anim, vbn);
+				
 				if(filename.EndsWith(".omo"))
 					OMO.createOMO (anim, vbn, filename, -1, -1);
 			}
@@ -223,6 +229,14 @@ namespace VBN_Editor
 
 		}
 
+		private float clampControl(float f){
+			if (f < -5)
+				f = -5;
+			if (f > 5)
+				f = 5;
+			return f;
+		}
+
 		private void Render()
 		{
 			if (!loaded)
@@ -246,18 +260,24 @@ namespace VBN_Editor
 				if (OpenTK.Input.Mouse.GetState ().IsButtonDown (OpenTK.Input.MouseButton.Right)) {
 					height += 0.025f * (OpenTK.Input.Mouse.GetState ().Y - mouseYLast);
 					width += 0.025f * (OpenTK.Input.Mouse.GetState ().X - mouseXLast);
+					height = clampControl (height);
+					width = clampControl (width);
 				}
 				if (OpenTK.Input.Mouse.GetState ().IsButtonDown (OpenTK.Input.MouseButton.Left)) {
-					rot += 0.05f * (OpenTK.Input.Mouse.GetState ().X - mouseXLast);
-					lookup += 0.05f * (OpenTK.Input.Mouse.GetState ().Y - mouseYLast);
+					rot += 0.025f * (OpenTK.Input.Mouse.GetState ().X - mouseXLast);
+					lookup += 0.025f * (OpenTK.Input.Mouse.GetState ().Y - mouseYLast);
+					rot = clampControl (rot);
+					lookup = clampControl (lookup);
 				}
 				v = Matrix4.CreateRotationY (0.5f * rot) * Matrix4.CreateRotationX (0.2f * lookup) * Matrix4.CreateTranslation (5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView (1.3f, glControl1.Width / (float)glControl1.Height, 1.0f, 40.0f);
 
 				mouseXLast = OpenTK.Input.Mouse.GetState ().X;
 				mouseYLast = OpenTK.Input.Mouse.GetState ().Y;
-				mouseSLast = zoom;
-				zoom = OpenTK.Input.Mouse.GetState ().WheelPrecise;
+
+				zoom += OpenTK.Input.Mouse.GetState ().WheelPrecise - mouseSLast;
+				zoom = clampControl (zoom);
 			}
+			mouseSLast = OpenTK.Input.Mouse.GetState ().WheelPrecise;
 
 			GL.LoadMatrix(ref v);
 

@@ -22,10 +22,16 @@ namespace VBN_Editor
 
         private void button1_Click(object sender, EventArgs e)
         {
+			if (textBox1.Text.Equals (""))
+				return;
             Bone temp = new Bone();
-            temp.boneName = textBox1.Text.ToCharArray();
-            temp.boneId = (uint)int.Parse(textBox2.Text, System.Globalization.NumberStyles.HexNumber);
-            temp.boneType = Convert.ToUInt32(textBox3.Text);
+			temp.boneName = textBox1.Text.ToCharArray();
+			if(!textBox2.Text.Equals(""))
+            	temp.boneId = (uint)int.Parse(textBox2.Text, System.Globalization.NumberStyles.HexNumber);
+
+			if(!textBox3.Text.Equals(""))
+				temp.boneType = Convert.ToUInt32(textBox3.Text);
+			
             if (otherForm.vbn.bones.Count > 0)
                 temp.parentIndex = 0;
             else
