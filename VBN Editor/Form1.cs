@@ -131,7 +131,7 @@ namespace VBN_Editor
 			if(result == DialogResult.OK)
 			{
 				filename = open.FileName;
-				if (open.FileName.Contains (".smd")) {
+				if (open.FileName.EndsWith (".smd")) {
 					anim = new SkelAnimation ();
 					if(vbn == null)
 						vbn = new VBN ();
@@ -140,12 +140,12 @@ namespace VBN_Editor
 					vbnSet = true;
 					loadAnimation (anim);
 				}
-				if (vbn != null) {
-					if (open.FileName.Contains (".omo"))
+				if (vbn.bones.Count > 0) {
+					if (open.FileName.EndsWith (".omo"))
 						loadAnimation (OMO.read (new FileData (filename), vbn));
-					if (open.FileName.Contains (".chr0"))
+					if (open.FileName.EndsWith (".chr0"))
 						loadAnimation (CHR0.read (new FileData (filename), vbn));
-					if (open.FileName.Contains (".anim"))
+					if (open.FileName.EndsWith (".anim"))
 						loadAnimation (ANIM.read (filename, vbn));
 				}
 			}
@@ -243,6 +243,7 @@ namespace VBN_Editor
 				return;
 			// clear the gf buffer
 			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+			GL.DepthRange (-10f, 5000f);
 
 
 			if (anim != null && isPlaying) {

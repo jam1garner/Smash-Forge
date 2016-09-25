@@ -51,7 +51,7 @@ namespace VBN_Editor
 
 		public int id;
 		public int t_type, r_type, s_type;
-		public Vector3 t, s;
+		public Vector3 t, s = new Vector3(1f,1f,1f);
 		public Quaternion r;
 
 		public Vector3 t2, s2, rv, rv2;
@@ -251,11 +251,10 @@ namespace VBN_Editor
 					n.r.Z = lerp (k1.r.Z, k2.r.Z, f1.frame, f2.frame, i);
 					n.r.W = lerp (k1.r.W, k2.r.W, f1.frame, f2.frame, i);
 
-					/*TODO: Scale
-					n.t.X = lerp (k1.t.X, k2.t.X, f1.frame, f2.frame, i);
-					n.t.Y = lerp (k1.t.Y, k2.t.Y, f1.frame, f2.frame, i);
-					n.t.Z = lerp (k1.t.Z, k2.t.Z, f1.frame, f2.frame, i);
-					*/
+					//n.s.X = lerp (k1.s.X, k2.s.X, f1.frame, f2.frame, i);
+					//n.s.Y = lerp (k1.s.Y, k2.s.Y, f1.frame, f2.frame, i);
+					//n.s.Z = lerp (k1.s.Z, k2.s.Z, f1.frame, f2.frame, i);
+
 
 					k.addNode(n);
 				}

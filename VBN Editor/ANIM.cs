@@ -22,7 +22,7 @@ namespace VBN_Editor
 			public float getValue(int frame){
 				AnimKey f1 = null, f2 = null;
 				for (int i = 0; i < keys.Count-1; i++) {
-					if (keys [i].input-1 <= frame && keys [i + 1].input-1 >= frame) {
+					if ((keys [i].input-1 <= frame && keys [i + 1].input-1 >= frame)) {
 						f1 = keys [i];
 						f2 = keys [i + 1];
 						break;
