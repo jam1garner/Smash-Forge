@@ -87,9 +87,12 @@ namespace VBN_Editor
 						k.output = float.Parse (args [1]);
 						k.intan = (args [2]);
 						k.outtan = (args [3]);
-						if (att.weighted) {
+						if (args.Length > 6 && att.weighted) {
 							k.t1 = float.Parse (args [7]) * (float)(Math.PI / 180f);
 							k.w1 = float.Parse (args [8]);
+						} else {
+							k.t1 = 0f;
+							k.w1 = 1f;
 						}
 					}
 
