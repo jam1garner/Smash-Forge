@@ -554,7 +554,7 @@ namespace VBN_Editor
             {
                 for(int i = 0;i < csv.names.Count; i++)
                 {
-                    if (csv.names[i].ToCharArray() == bone.boneName)
+                    if (csv.names[i] == new string(bone.boneName))
                     {
                         bone.boneId = csv.ids[i];
                     }
