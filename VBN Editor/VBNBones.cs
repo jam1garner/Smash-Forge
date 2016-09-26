@@ -287,7 +287,7 @@ namespace VBN_Editor
                 var values = line.Split(',');
 
                 names.Add(values[0]);
-                ids.Add(Convert.ToUInt32(values[1],16));
+                ids.Add(Convert.ToUInt32(values[1]));
             }
         }
     }

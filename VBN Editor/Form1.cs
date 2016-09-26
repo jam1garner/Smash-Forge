@@ -535,11 +535,15 @@ namespace VBN_Editor
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
             vbn.littleEndian = false;
+            vbn.unk_1 = 1;
+            vbn.unk_2 = 2;
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
             vbn.littleEndian = true;
+            vbn.unk_1 = 2;
+            vbn.unk_2 = 1;
         }
 
         private void VBNRebuilder_Load(object sender, EventArgs e)
@@ -560,6 +564,7 @@ namespace VBN_Editor
                     }
                 }
             }
+            treeRefresh();
         }
     }
 }
