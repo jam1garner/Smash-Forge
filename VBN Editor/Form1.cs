@@ -546,5 +546,20 @@ namespace VBN_Editor
         {
             radioButton2.Checked = true;
         }
+
+        private void hashMatchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            csvHashes csv = new csvHashes("hashTable.csv");
+            foreach(Bone bone in vbn.bones)
+            {
+                for(int i = 0;i < csv.names.Count; i++)
+                {
+                    if (csv.names[i].ToCharArray() == bone.boneName)
+                    {
+                        bone.boneId = csv.ids[i];
+                    }
+                }
+            }
+        }
     }
 }

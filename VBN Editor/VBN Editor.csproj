@@ -34,10 +34,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="OpenTK">
-      <HintPath>..\packages\OpenTK\OpenTK.dll</HintPath>
+      <HintPath>..\..\..\..\Documents\Visual Studio 2015\Projects\VBN Editor\packages\OpenTK\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK.GLControl">
-      <HintPath>..\packages\OpenTK\OpenTK.GLControl.dll</HintPath>
+      <HintPath>..\..\..\..\Documents\Visual Studio 2015\Projects\VBN Editor\packages\OpenTK\OpenTK.GLControl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

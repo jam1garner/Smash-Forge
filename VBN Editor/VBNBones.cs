@@ -269,3 +269,26 @@ namespace VBN_Editor
         }
     }
 }
+
+namespace VBN_Editor
+{
+    class csvHashes
+    {
+        public List<string> names = new List<string>();
+        public List<uint> ids = new List<uint>();
+
+        public csvHashes(string filename)
+        {
+            var reader = new StreamReader(File.OpenRead(filename));
+            
+            while (!reader.EndOfStream)
+            {
+                var line = reader.ReadLine();
+                var values = line.Split(',');
+
+                names.Add(values[0]);
+                ids.Add(Convert.ToUInt32(values[1],16));
+            }
+        }
+    }
+}
