@@ -243,7 +243,6 @@ namespace VBN_Editor
 				return;
 			// clear the gf buffer
 			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-			GL.DepthRange (-10f, 5000f);
 
 
 			if (anim != null && isPlaying) {
