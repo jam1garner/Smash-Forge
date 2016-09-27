@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace VBN_Editor
 {
-    public partial class Form2 : Form
+    public partial class About : Form
     {
-        public Form2()
+        public About()
         {
             InitializeComponent();
         }

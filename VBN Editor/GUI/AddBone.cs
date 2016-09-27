@@ -10,11 +10,11 @@ using System.Windows.Forms;
 
 namespace VBN_Editor
 {
-    public partial class Form3 : Form
+    public partial class AddBone : Form
     {
-        public VBNRebuilder otherForm;
+        public MainForm otherForm;
 
-        public Form3(VBNRebuilder mainForm)
+        public AddBone(MainForm mainForm)
         {
             otherForm = mainForm;
             InitializeComponent();
