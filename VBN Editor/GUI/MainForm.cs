@@ -14,7 +14,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace VBN_Editor
 {
-	public partial class VBNRebuilder : Form
+	public partial class MainForm : Form
 	{
 		public VBN vbn = new VBN();
 		public bool vbnSet = false;
@@ -25,7 +25,7 @@ namespace VBN_Editor
         private string currentNode;
 
 
-        public VBNRebuilder()
+        public MainForm()
 		{
 			InitializeComponent();
 		}
@@ -170,10 +170,9 @@ namespace VBN_Editor
 			}
 		}
 
-
 		private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			var newForm = new Form2 ();
+			var newForm = new About ();
 			newForm.ShowDialog();
 		}
 
@@ -476,7 +475,7 @@ namespace VBN_Editor
 
 		private void addBoneToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			var newForm = new Form3(this);
+			var newForm = new AddBone(this);
 			newForm.ShowDialog();
 		}
 

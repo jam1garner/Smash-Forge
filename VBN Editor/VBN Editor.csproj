@@ -33,11 +33,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="OpenTK">
-      <HintPath>..\..\..\..\Documents\Visual Studio 2015\Projects\VBN Editor\packages\OpenTK\OpenTK.dll</HintPath>
+    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\OpenTK.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTK.GLControl">
-      <HintPath>..\..\..\..\Documents\Visual Studio 2015\Projects\VBN Editor\packages\OpenTK\OpenTK.GLControl.dll</HintPath>
+    <Reference Include="OpenTK.GLControl, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\OpenTK.GLControl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,36 +55,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="GUI\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="GUI\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form2.cs">
+    <Compile Include="GUI\About.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form2.Designer.cs">
-      <DependentUpon>Form2.cs</DependentUpon>
+    <Compile Include="GUI\About.Designer.cs">
+      <DependentUpon>About.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form3.cs">
+    <Compile Include="GUI\AddBone.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form3.Designer.cs">
-      <DependentUpon>Form3.cs</DependentUpon>
+    <Compile Include="GUI\AddBone.Designer.cs">
+      <DependentUpon>AddBone.cs</DependentUpon>
     </Compile>
-    <Compile Include="MDL0Bones.cs" />
+    <Compile Include="Filetypes\MDL0Bones.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VBNBones.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Filetypes\VBNBones.cs" />
+    <EmbeddedResource Include="GUI\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form2.resx">
-      <DependentUpon>Form2.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\About.resx">
+      <DependentUpon>About.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form3.resx">
-      <DependentUpon>Form3.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\AddBone.resx">
+      <DependentUpon>AddBone.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -96,7 +98,6 @@
     <None Include="hashTable.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -106,18 +107,21 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="ANIM.cs" />
-    <Compile Include="CHR0.cs" />
-    <Compile Include="FileData.cs" />
-    <Compile Include="FileOutput.cs" />
-    <Compile Include="OMO.cs" />
+    <Compile Include="Filetypes\ANIM.cs" />
+    <Compile Include="Filetypes\CHR0.cs" />
+    <Compile Include="IO\FileData.cs" />
+    <Compile Include="IO\FileOutput.cs" />
+    <Compile Include="Filetypes\OMO.cs" />
     <Compile Include="SkelAnimation.cs" />
-    <Compile Include="SMD.cs" />
+    <Compile Include="Filetypes\SMD.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="OpenTK.dll" />
+    <Content Include="OpenTK.GLControl.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
