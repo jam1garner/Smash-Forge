@@ -16,7 +16,7 @@ namespace VBN_Editor
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new VBNRebuilder());
+            Application.Run(new MainForm());
         }
     }
 }
