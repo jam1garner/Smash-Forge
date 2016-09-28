@@ -169,7 +169,7 @@ namespace VBN_Editor
 
         private void AppIdle(object sender, EventArgs e)
         {
-            while (vbnViewport1.IsIdle)
+            while (Viewport.IsIdle)
             {
                 if (isPlaying)
                 {
@@ -184,7 +184,7 @@ namespace VBN_Editor
                     }
                 }
 
-                vbnViewport1.Render(TargetVBN);
+                Viewport.Render(TargetVBN);
                 System.Threading.Thread.Sleep(1000 / 60);
                 if (delete)
                 {
@@ -388,6 +388,7 @@ namespace VBN_Editor
 
         private void VBNRebuilder_Load(object sender, EventArgs e)
         {
+            loaded = true;
             radioButton2.Checked = true;
         }
 

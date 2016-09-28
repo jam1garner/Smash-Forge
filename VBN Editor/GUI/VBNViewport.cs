@@ -17,6 +17,14 @@ namespace VBN_Editor.GUI
         public VBNViewport()
         {
             InitializeComponent();
+            this.Load += VBNViewport_Load;
+        }
+
+        private void VBNViewport_Load(object sender, EventArgs e)
+        {
+            GL.ClearColor(Color.White);
+            SetupViewPort();
+            render = true;
         }
 
         // for drawing
@@ -30,12 +38,7 @@ namespace VBN_Editor.GUI
         float mouseXLast = 0;
         float mouseYLast = 0;
         float mouseSLast = 0;
-
-        private void glControl1_Load(object sender, EventArgs e)
-        {
-            GL.ClearColor(Color.White);
-            SetupViewPort();
-        }
+        bool render = false;
 
         private void SetupViewPort()
         {
@@ -45,7 +48,7 @@ namespace VBN_Editor.GUI
             GL.Viewport(0, 0, w, h);
             v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 40.0f);
 
-            GotFocus += (object sender, EventArgs e) => 
+            GotFocus += (object sender, EventArgs e) =>
             {
                 mouseXLast = OpenTK.Input.Mouse.GetState().X;
                 mouseYLast = OpenTK.Input.Mouse.GetState().Y;
@@ -64,6 +67,8 @@ namespace VBN_Editor.GUI
 
         public void Render(VBN skeleton)
         {
+            if (!render)
+                return;
             // clear the gf buffer
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 

@@ -49,7 +49,6 @@
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.vbnViewport1 = new VBN_Editor.GUI.VBNViewport();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
@@ -60,6 +59,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.Viewport = new VBN_Editor.GUI.VBNViewport();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -254,22 +254,11 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.vbnViewport1);
+            this.splitContainer1.Panel2.Controls.Add(this.Viewport);
             this.splitContainer1.Panel2.Controls.Add(this.groupBox2);
             this.splitContainer1.Size = new System.Drawing.Size(1009, 659);
             this.splitContainer1.SplitterDistance = 262;
             this.splitContainer1.TabIndex = 11;
-            // 
-            // vbnViewport1
-            // 
-            this.vbnViewport1.BackColor = System.Drawing.Color.Black;
-            this.vbnViewport1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.vbnViewport1.Location = new System.Drawing.Point(0, 0);
-            this.vbnViewport1.Name = "vbnViewport1";
-            this.vbnViewport1.Size = new System.Drawing.Size(743, 568);
-            this.vbnViewport1.TabIndex = 8;
-            this.vbnViewport1.TabStop = false;
-            this.vbnViewport1.VSync = false;
             // 
             // groupBox2
             // 
@@ -392,6 +381,16 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // Viewport
+            // 
+            this.Viewport.BackColor = System.Drawing.Color.Black;
+            this.Viewport.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Viewport.Location = new System.Drawing.Point(0, 0);
+            this.Viewport.Name = "Viewport";
+            this.Viewport.Size = new System.Drawing.Size(743, 568);
+            this.Viewport.TabIndex = 0;
+            this.Viewport.VSync = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -457,7 +456,7 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
-        private GUI.VBNViewport vbnViewport1;
+        private GUI.VBNViewport Viewport;
     }
 }
 
