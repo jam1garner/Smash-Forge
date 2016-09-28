@@ -29,6 +29,8 @@
 		private void InitializeComponent()
 		{
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,6 +61,9 @@
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.listView1 = new System.Windows.Forms.ListView();
             this.Viewport = new VBN_Editor.GUI.VBNViewport();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -70,6 +75,8 @@
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            this.panel1.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -91,14 +98,14 @@
             this.openVBNToolStripMenuItem,
             this.openNUDToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // openVBNToolStripMenuItem
             // 
             this.openVBNToolStripMenuItem.Name = "openVBNToolStripMenuItem";
             this.openVBNToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openVBNToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.openVBNToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.openVBNToolStripMenuItem.Text = "Open";
             this.openVBNToolStripMenuItem.Click += new System.EventHandler(this.openVBNToolStripMenuItem_Click);
             // 
@@ -106,7 +113,7 @@
             // 
             this.openNUDToolStripMenuItem.Name = "openNUDToolStripMenuItem";
             this.openNUDToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.openNUDToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.openNUDToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.openNUDToolStripMenuItem.Text = "Save";
             this.openNUDToolStripMenuItem.Click += new System.EventHandler(this.openNUDToolStripMenuItem_Click);
             // 
@@ -116,21 +123,21 @@
             this.addBoneToolStripMenuItem,
             this.hashMatchToolStripMenuItem});
             this.edittToolStripMenuItem.Name = "edittToolStripMenuItem";
-            this.edittToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.edittToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.edittToolStripMenuItem.Text = "Edit";
             // 
             // addBoneToolStripMenuItem
             // 
             this.addBoneToolStripMenuItem.Name = "addBoneToolStripMenuItem";
             this.addBoneToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.addBoneToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.addBoneToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.addBoneToolStripMenuItem.Text = "Add Bone";
             this.addBoneToolStripMenuItem.Click += new System.EventHandler(this.addBoneToolStripMenuItem_Click);
             // 
             // hashMatchToolStripMenuItem
             // 
             this.hashMatchToolStripMenuItem.Name = "hashMatchToolStripMenuItem";
-            this.hashMatchToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.hashMatchToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.hashMatchToolStripMenuItem.Text = "Hash Match";
             this.hashMatchToolStripMenuItem.Click += new System.EventHandler(this.hashMatchToolStripMenuItem_Click);
             // 
@@ -140,28 +147,29 @@
             this.importToolStripMenuItem,
             this.exportToolStripMenuItem});
             this.animationToolStripMenuItem.Name = "animationToolStripMenuItem";
-            this.animationToolStripMenuItem.Size = new System.Drawing.Size(66, 20);
+            this.animationToolStripMenuItem.Size = new System.Drawing.Size(75, 20);
             this.animationToolStripMenuItem.Text = "Animation";
             // 
             // importToolStripMenuItem
             // 
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.importToolStripMenuItem.Text = "Import";
             this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
             // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.exportToolStripMenuItem.Text = "Export";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // treeView1
             // 
@@ -170,7 +178,7 @@
             this.treeView1.HideSelection = false;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(262, 339);
+            this.treeView1.Size = new System.Drawing.Size(212, 339);
             this.treeView1.TabIndex = 1;
             this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView1_ItemDrag);
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
@@ -183,7 +191,7 @@
             this.textBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.textBox1.Location = new System.Drawing.Point(0, 339);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(262, 20);
+            this.textBox1.Size = new System.Drawing.Size(212, 20);
             this.textBox1.TabIndex = 2;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
@@ -193,7 +201,7 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.groupBox1.Location = new System.Drawing.Point(0, 359);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(262, 300);
+            this.groupBox1.Size = new System.Drawing.Size(212, 300);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Bone Info";
@@ -202,12 +210,28 @@
             // 
             this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.Window;
             this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.GridColor = System.Drawing.SystemColors.ButtonFace;
             this.dataGridView1.Location = new System.Drawing.Point(3, 16);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(256, 281);
+            this.dataGridView1.Size = new System.Drawing.Size(206, 281);
             this.dataGridView1.TabIndex = 6;
             this.dataGridView1.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellValueChanged);
             // 
@@ -223,7 +247,6 @@
             this.radioButton1.Name = "radioButton1";
             this.radioButton1.Size = new System.Drawing.Size(53, 17);
             this.radioButton1.TabIndex = 9;
-            this.radioButton1.TabStop = true;
             this.radioButton1.Text = "Stage";
             this.radioButton1.UseVisualStyleBackColor = true;
             this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
@@ -231,11 +254,11 @@
             // radioButton2
             // 
             this.radioButton2.AutoSize = true;
+            this.radioButton2.Checked = true;
             this.radioButton2.Location = new System.Drawing.Point(870, 4);
             this.radioButton2.Name = "radioButton2";
             this.radioButton2.Size = new System.Drawing.Size(71, 17);
             this.radioButton2.TabIndex = 10;
-            this.radioButton2.TabStop = true;
             this.radioButton2.Text = "Character";
             this.radioButton2.UseVisualStyleBackColor = true;
             this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
@@ -243,6 +266,7 @@
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer1.Location = new System.Drawing.Point(0, 24);
             this.splitContainer1.Name = "splitContainer1";
             // 
@@ -256,8 +280,9 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.Viewport);
             this.splitContainer1.Panel2.Controls.Add(this.groupBox2);
+            this.splitContainer1.Panel2.Controls.Add(this.panel1);
             this.splitContainer1.Size = new System.Drawing.Size(1009, 659);
-            this.splitContainer1.SplitterDistance = 262;
+            this.splitContainer1.SplitterDistance = 212;
             this.splitContainer1.TabIndex = 11;
             // 
             // groupBox2
@@ -274,7 +299,7 @@
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.groupBox2.Location = new System.Drawing.Point(0, 568);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(743, 91);
+            this.groupBox2.Size = new System.Drawing.Size(593, 91);
             this.groupBox2.TabIndex = 7;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Animations";
@@ -283,7 +308,7 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(574, 17);
+            this.label2.Location = new System.Drawing.Point(427, 17);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(39, 13);
             this.label2.TabIndex = 8;
@@ -292,7 +317,7 @@
             // numericUpDown2
             // 
             this.numericUpDown2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown2.Location = new System.Drawing.Point(615, 14);
+            this.numericUpDown2.Location = new System.Drawing.Point(468, 14);
             this.numericUpDown2.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -307,7 +332,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(670, 17);
+            this.label1.Location = new System.Drawing.Point(523, 17);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(12, 13);
             this.label1.TabIndex = 6;
@@ -317,7 +342,7 @@
             // 
             this.numericUpDown1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.numericUpDown1.Enabled = false;
-            this.numericUpDown1.Location = new System.Drawing.Point(685, 14);
+            this.numericUpDown1.Location = new System.Drawing.Point(538, 14);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -331,9 +356,9 @@
             // 
             this.button5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.button5.Location = new System.Drawing.Point(102, 40);
+            this.button5.Location = new System.Drawing.Point(94, 40);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(539, 44);
+            this.button5.Size = new System.Drawing.Size(402, 44);
             this.button5.TabIndex = 4;
             this.button5.Text = "Play";
             this.button5.UseVisualStyleBackColor = true;
@@ -342,9 +367,9 @@
             // button4
             // 
             this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button4.Location = new System.Drawing.Point(647, 40);
+            this.button4.Location = new System.Drawing.Point(502, 40);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(42, 44);
+            this.button4.Size = new System.Drawing.Size(35, 44);
             this.button4.TabIndex = 3;
             this.button4.Text = ">";
             this.button4.UseVisualStyleBackColor = true;
@@ -353,9 +378,9 @@
             // button3
             // 
             this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.Location = new System.Drawing.Point(695, 40);
+            this.button3.Location = new System.Drawing.Point(544, 40);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(42, 44);
+            this.button3.Size = new System.Drawing.Size(35, 44);
             this.button3.TabIndex = 2;
             this.button3.Text = ">|";
             this.button3.UseVisualStyleBackColor = true;
@@ -363,9 +388,9 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(54, 40);
+            this.button2.Location = new System.Drawing.Point(53, 40);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(42, 44);
+            this.button2.Size = new System.Drawing.Size(35, 44);
             this.button2.TabIndex = 1;
             this.button2.Text = "<";
             this.button2.UseVisualStyleBackColor = true;
@@ -373,13 +398,42 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(6, 40);
+            this.button1.Location = new System.Drawing.Point(12, 40);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(42, 44);
+            this.button1.Size = new System.Drawing.Size(35, 44);
             this.button1.TabIndex = 0;
             this.button1.Text = "|<";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.groupBox3);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel1.Location = new System.Drawing.Point(593, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(200, 659);
+            this.panel1.TabIndex = 8;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.listView1);
+            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox3.Location = new System.Drawing.Point(0, 0);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(200, 659);
+            this.groupBox3.TabIndex = 0;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Animations";
+            // 
+            // listView1
+            // 
+            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listView1.Location = new System.Drawing.Point(3, 16);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(194, 640);
+            this.listView1.TabIndex = 0;
+            this.listView1.UseCompatibleStateImageBehavior = false;
             // 
             // Viewport
             // 
@@ -387,7 +441,7 @@
             this.Viewport.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Viewport.Location = new System.Drawing.Point(0, 0);
             this.Viewport.Name = "Viewport";
-            this.Viewport.Size = new System.Drawing.Size(743, 568);
+            this.Viewport.Size = new System.Drawing.Size(593, 568);
             this.Viewport.TabIndex = 0;
             this.Viewport.VSync = false;
             // 
@@ -420,6 +474,8 @@
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -457,6 +513,9 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
         private GUI.VBNViewport Viewport;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.ListView listView1;
     }
 }
 

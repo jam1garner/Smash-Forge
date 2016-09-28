@@ -35,6 +35,8 @@ namespace VBN_Editor
 
         private TreeNode buildBoneTree(int index)
         {
+            treeView1.BeginUpdate();
+
             List<TreeNode> children = new List<TreeNode>();
             foreach (int i in TargetVBN.bones[index].children)
             {
@@ -50,6 +52,7 @@ namespace VBN_Editor
             foreach (TreeNode t in children)
                 t.Expand();
 
+            treeView1.EndUpdate();
             return temp;
 
         }
@@ -406,6 +409,14 @@ namespace VBN_Editor
                 }
             }
             treeRefresh();
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using(var abt = new About())
+            {
+                abt.ShowDialog();
+            }
         }
     }
 }

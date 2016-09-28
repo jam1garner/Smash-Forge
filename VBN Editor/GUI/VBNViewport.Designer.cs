@@ -35,8 +35,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.Name = "VBNViewport";
             this.Size = new System.Drawing.Size(640, 536);
-            this.ResumeLayout(false);
             this.Load += new System.EventHandler(this.VBNViewport_Load);
+            this.Resize += new System.EventHandler(this.VBNViewport_Resize);
+            this.ResumeLayout(false);
+
         }
 
         #endregion

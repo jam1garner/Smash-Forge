@@ -23,7 +23,7 @@ namespace VBN_Editor.GUI
         {
             if (!DesignMode)
             {
-                GL.ClearColor(Color.White);
+                GL.ClearColor(Color.LightSteelBlue);
                 SetupViewPort();
             }
             render = true;
@@ -162,7 +162,16 @@ namespace VBN_Editor.GUI
         public void drawGridFloor(Matrix4 s)
         {
             // Dropping some grid lines
-            GL.Color3(Color.Green);
+            GL.Disable(EnableCap.DepthTest);
+            GL.Color3(Color.DarkGray);
+            GL.Begin(PrimitiveType.Quads);
+            GL.Vertex3(-10f, 0f, -10f);
+            GL.Vertex3(10f, 0f, -10f);
+            GL.Vertex3(10f, 0f, 10f);
+            GL.Vertex3(-10f, 0f, 10f);
+            GL.End();
+
+            GL.Color3(Color.DimGray);
             GL.LineWidth(1f);
             GL.Begin(PrimitiveType.Lines);
             for (var i = -10; i <= 10; i++)
@@ -173,6 +182,16 @@ namespace VBN_Editor.GUI
                 GL.Vertex3(Vector3.Transform(new Vector3(i, 0f, 10f), s));
             }
             GL.End();
+            GL.Enable(EnableCap.DepthTest);
+        }
+
+        private void VBNViewport_Resize(object sender, EventArgs e)
+        {
+            int h = Height;
+            int w = Width;
+            GL.LoadIdentity();
+            GL.Viewport(0, 0, w, h);
+            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 40.0f);
         }
     }
 }
