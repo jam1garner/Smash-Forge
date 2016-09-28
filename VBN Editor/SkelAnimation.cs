@@ -5,269 +5,306 @@ using OpenTK;
 
 namespace VBN_Editor
 {
-	public class KeyFrame {
-		public List<KeyNode> nodes = new List<KeyNode>();
-		public int frame = 0;
+    public class KeyFrame
+    {
+        public List<KeyNode> nodes = new List<KeyNode>();
+        public int frame = 0;
 
-		public void addNode(KeyNode n){
-			nodes.Add (n);
-		}
-			
-		public bool contains(int id){
-			for(int j = 0; j < nodes.Count ; j++){
-				if(nodes[j].id == id)
-					return true;
-			}
-			return false;
-		}
+        public void addNode(KeyNode n)
+        {
+            nodes.Add(n);
+        }
 
-		public KeyNode getNodeid(int id){
-			for(int j = 0; j < nodes.Count ; j++){
-				if(nodes[j].id == id)
-					return nodes[j];
-			}
-			return null;
-		}
+        public bool contains(int id)
+        {
+            for (int j = 0; j < nodes.Count; j++)
+            {
+                if (nodes[j].id == id)
+                    return true;
+            }
+            return false;
+        }
 
-		public KeyNode getNode(int i){
-			for(int j = 0; j < nodes.Count ; j++){
-				if(nodes[j].id == i)
-					return nodes[j];
-			}
+        public KeyNode getNodeid(int id)
+        {
+            for (int j = 0; j < nodes.Count; j++)
+            {
+                if (nodes[j].id == id)
+                    return nodes[j];
+            }
+            return null;
+        }
 
-			KeyNode ne = new KeyNode();
-			ne.id = i;
+        public KeyNode getNode(int i)
+        {
+            for (int j = 0; j < nodes.Count; j++)
+            {
+                if (nodes[j].id == i)
+                    return nodes[j];
+            }
 
-			addNode(ne);
+            KeyNode ne = new KeyNode();
+            ne.id = i;
 
-			return ne;
-		}
+            addNode(ne);
 
-	}
+            return ne;
+        }
+    }
 
-	public class KeyNode {
-		public const int INTERPOLATED = 0;
-		public const int CONSTANT = 1;
+    public class KeyNode
+    {
+        public const int INTERPOLATED = 0;
+        public const int CONSTANT = 1;
 
-		public int id;
-		public int t_type, r_type, s_type;
-		public Vector3 t, s = new Vector3(1f,1f,1f);
-		public Quaternion r;
+        public int id;
+        public int t_type, r_type, s_type;
+        public Vector3 t, s = new Vector3(1f, 1f, 1f);
+        public Quaternion r;
 
-		public Vector3 t2, s2, rv, rv2;
-		public Quaternion r2;
+        public Vector3 t2, s2, rv, rv2;
+        public Quaternion r2;
 
-		public KeyNode(){
-			t_type = -1;
-			r_type = -1;
-			s_type = -1;
-		}
-	}
+        public KeyNode()
+        {
+            t_type = -1;
+            r_type = -1;
+            s_type = -1;
+        }
+    }
 
-	public class SkelAnimation
-	{
+    public class SkelAnimation
+    {
 
-		public List<KeyFrame> frames = new List<KeyFrame>();
-		private int frame = 0;
+        public List<KeyFrame> frames = new List<KeyFrame>();
+        private int frame = 0;
 
-		public SkelAnimation ()
-		{
+        public SkelAnimation()
+        {
 
-		}
+        }
 
-		public void addKeyframe(KeyFrame k){
-			frames.Add (k);
-		}
+        public void addKeyframe(KeyFrame k)
+        {
+            frames.Add(k);
+        }
 
-		public List<int> getNodes(){
-			List<int> node = new List<int>();
+        public List<int> getNodes()
+        {
+            List<int> node = new List<int>();
 
-			foreach (KeyFrame f in frames)
-				foreach (KeyNode n in f.nodes) {
-					if (!node.Contains (n.id) && n.id != -1) {
-						node.Add (n.id);
-					}
-				}
+            foreach (KeyFrame f in frames)
+                foreach (KeyNode n in f.nodes)
+                {
+                    if (!node.Contains(n.id) && n.id != -1)
+                    {
+                        node.Add(n.id);
+                    }
+                }
 
-			return node;
-		}
+            return node;
+        }
 
-		public void setFrame(int i){
-			frame = i;
-		}
+        public void setFrame(int i)
+        {
+            frame = i;
+        }
 
-		public int getFrame(){
-			return frame;
-		}
+        public int getFrame()
+        {
+            return frame;
+        }
 
-		public int size(){
-			return frames.Count;
-		}
+        public int size()
+        {
+            return frames.Count;
+        }
 
-		public void nextFrame(VBN vbn){
+        public void nextFrame(VBN vbn)
+        {
 
-			if(frame == 0)
-				vbn.reset ();
+            if (frame == 0)
+                vbn.reset();
 
-			KeyFrame key = frames [frame];
+            KeyFrame key = frames[frame];
 
-			foreach (KeyNode n in key.nodes) {
-				if (n.id == -1)
-					continue;
-				Bone b = vbn.bones [n.id];
+            foreach (KeyNode n in key.nodes)
+            {
+                if (n.id == -1)
+                    continue;
+                Bone b = vbn.bones[n.id];
 
-				if (n.t_type != -1) {
-					b.pos = n.t;
-				}
-				if (n.r_type != -1) {
-					b.rot = n.r;
-				}
-				if (n.s_type != -1) {
-					b.sca = n.s;
-				} else
-					b.sca = new Vector3 (b.scale[0], b.scale[1], b.scale[2]);
-			}
-
-
-			frame++;
-			if (frame >= frames.Count) 
-				frame = 0;
-			vbn.update ();
-
-		}	
-
-
-		public KeyNode getFirstNode(int nodeIndex){
-			foreach(KeyFrame k in frames)
-				if(k.contains(nodeIndex)){
-					return k.getNodeid(nodeIndex);
-				}
-
-			return null;
-		}
-
-
-		public int getNodeIndex(string n, VBN vbn){
-			for(int i = 0 ;i < vbn.bones.Count ; i++){
-				if(new string(vbn.bones[i].boneName).Equals(n)){
-					return i;
-				}
-			}
-			return -1;
-		}
-
-		public KeyNode getNode(int frame, int nodeIndex){
-			while(frames.Count <= frame)
-				frames.Add(new KeyFrame());
-
-			KeyFrame f = frames[frame];
-
-			return f.getNode(nodeIndex);
-		}
+                if (n.t_type != -1)
+                {
+                    b.pos = n.t;
+                }
+                if (n.r_type != -1)
+                {
+                    b.rot = n.r;
+                }
+                if (n.s_type != -1)
+                {
+                    b.sca = n.s;
+                }
+                else
+                    b.sca = new Vector3(b.scale[0], b.scale[1], b.scale[2]);
+            }
 
 
-		public float getBaseNodeValue(int nid, String type, VBN vbn){
-			//UNSAFE: Hacky fix
-			if (nid == -1)
-				return 0;
+            frame++;
+            if (frame >= frames.Count)
+                frame = 0;
+            vbn.update();
 
-			switch(type){
-			case "X":
-				return vbn.bones[nid].position[0];
-			case "Y":
-				return vbn.bones[nid].position[1];
-			case "Z":
-				return vbn.bones[nid].position[2];
-			case "RX":
-				return vbn.bones[nid].rotation[0];
-			case "RY":
-				return vbn.bones[nid].rotation[1];
-			case "RZ":
-				return vbn.bones[nid].rotation[2];
-			case "SX":
-				return vbn.bones[nid].scale[0];
-			case "SY":
-				return vbn.bones[nid].scale[1];
-			case "SZ":
-				return vbn.bones[nid].scale[2];
-			}
+        }
 
-			return 0;
-		}
 
-		/*
+        public KeyNode getFirstNode(int nodeIndex)
+        {
+            foreach (KeyFrame k in frames)
+                if (k.contains(nodeIndex))
+                {
+                    return k.getNodeid(nodeIndex);
+                }
+
+            return null;
+        }
+
+
+        public int getNodeIndex(string n, VBN vbn)
+        {
+            for (int i = 0; i < vbn.bones.Count; i++)
+            {
+                if (new string(vbn.bones[i].boneName).Equals(n))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        public KeyNode getNode(int frame, int nodeIndex)
+        {
+            while (frames.Count <= frame)
+                frames.Add(new KeyFrame());
+
+            KeyFrame f = frames[frame];
+
+            return f.getNode(nodeIndex);
+        }
+
+
+        public float getBaseNodeValue(int nid, String type, VBN vbn)
+        {
+            //UNSAFE: Hacky fix
+            if (nid == -1)
+                return 0;
+
+            switch (type)
+            {
+                case "X":
+                    return vbn.bones[nid].position[0];
+                case "Y":
+                    return vbn.bones[nid].position[1];
+                case "Z":
+                    return vbn.bones[nid].position[2];
+                case "RX":
+                    return vbn.bones[nid].rotation[0];
+                case "RY":
+                    return vbn.bones[nid].rotation[1];
+                case "RZ":
+                    return vbn.bones[nid].rotation[2];
+                case "SX":
+                    return vbn.bones[nid].scale[0];
+                case "SY":
+                    return vbn.bones[nid].scale[1];
+                case "SZ":
+                    return vbn.bones[nid].scale[2];
+            }
+
+            return 0;
+        }
+
+        /*
 		 * TODO: Fix this
 		 * the key frame needs to check if it occurs within a time frame AND
 		 * it has the node it is looking for
 		*/
-		public void bakeFramesLinear(){
+        public void bakeFramesLinear()
+        {
 
-			List<int> nodeids = getNodes ();
-			List<KeyFrame> base_frames = frames;
-			frames = new List<KeyFrame>();
-			int fCount = 0;
+            List<int> nodeids = getNodes();
+            List<KeyFrame> base_frames = frames;
+            frames = new List<KeyFrame>();
+            int fCount = 0;
 
-			foreach (KeyFrame k in base_frames) {
-				if (k.frame > fCount)
-					fCount = k.frame;
-			}
-
-
-			for (int i = 0; i < fCount; i++) {
-				KeyFrame k = new KeyFrame();
-				k.frame = i;
-				frames.Add (k);
-
-				// add all the nodes at this frame
-				foreach (int id in nodeids) {
-					KeyFrame f1 = base_frames[0], f2 = base_frames[0];
-
-					if (base_frames.Count > 1)
-						for (int j = 0; j < base_frames.Count - 1; j++) {
-							if (base_frames [j].frame <= i && base_frames [j + 1].frame >= i
-								&& base_frames[j].contains(id) && base_frames[j + 1].contains(id)) {
-								f1 = base_frames [j];
-								f2 = base_frames [j + 1];
-								break;
-							}
-						}
-
-					// interpolate the values
-					KeyNode n =new KeyNode();
-					n.id = id;
-
-					KeyNode k1 = f1.getNodeid(id), k2 = f2.getNodeid(id);
-
-					n.t_type = k1.t_type;
-					n.r_type = k1.r_type;
-					n.s_type = k1.s_type;
-
-					n.t.X = lerp (k1.t.X, k2.t.X, f1.frame, f2.frame, i);
-					n.t.Y = lerp (k1.t.Y, k2.t.Y, f1.frame, f2.frame, i);
-					n.t.Z = lerp (k1.t.Z, k2.t.Z, f1.frame, f2.frame, i);
-
-					n.r.X = lerp (k1.r.X, k2.r.X, f1.frame, f2.frame, i);
-					n.r.Y = lerp (k1.r.Y, k2.r.Y, f1.frame, f2.frame, i);
-					n.r.Z = lerp (k1.r.Z, k2.r.Z, f1.frame, f2.frame, i);
-					n.r.W = lerp (k1.r.W, k2.r.W, f1.frame, f2.frame, i);
-
-					//n.s.X = lerp (k1.s.X, k2.s.X, f1.frame, f2.frame, i);
-					//n.s.Y = lerp (k1.s.Y, k2.s.Y, f1.frame, f2.frame, i);
-					//n.s.Z = lerp (k1.s.Z, k2.s.Z, f1.frame, f2.frame, i);
+            foreach (KeyFrame k in base_frames)
+            {
+                if (k.frame > fCount)
+                    fCount = k.frame;
+            }
 
 
-					k.addNode(n);
-				}
+            for (int i = 0; i < fCount; i++)
+            {
+                KeyFrame k = new KeyFrame();
+                k.frame = i;
+                frames.Add(k);
 
-			}
-		}
+                // add all the nodes at this frame
+                foreach (int id in nodeids)
+                {
+                    KeyFrame f1 = base_frames[0], f2 = base_frames[0];
 
-		public static float lerp(float av, float bv, float v0, float v1, float t) {
-			if (v0 == v1) return av;
+                    if (base_frames.Count > 1)
+                        for (int j = 0; j < base_frames.Count - 1; j++)
+                        {
+                            if (base_frames[j].frame <= i && base_frames[j + 1].frame >= i
+                                && base_frames[j].contains(id) && base_frames[j + 1].contains(id))
+                            {
+                                f1 = base_frames[j];
+                                f2 = base_frames[j + 1];
+                                break;
+                            }
+                        }
 
-			float mu = (t - v0) / (v1 - v0);
-			return ((av * (1 - mu)) + (bv * mu));
-		}
-	}
+                    // interpolate the values
+                    KeyNode n = new KeyNode();
+                    n.id = id;
+
+                    KeyNode k1 = f1.getNodeid(id), k2 = f2.getNodeid(id);
+
+                    n.t_type = k1.t_type;
+                    n.r_type = k1.r_type;
+                    n.s_type = k1.s_type;
+
+                    n.t.X = lerp(k1.t.X, k2.t.X, f1.frame, f2.frame, i);
+                    n.t.Y = lerp(k1.t.Y, k2.t.Y, f1.frame, f2.frame, i);
+                    n.t.Z = lerp(k1.t.Z, k2.t.Z, f1.frame, f2.frame, i);
+
+                    n.r.X = lerp(k1.r.X, k2.r.X, f1.frame, f2.frame, i);
+                    n.r.Y = lerp(k1.r.Y, k2.r.Y, f1.frame, f2.frame, i);
+                    n.r.Z = lerp(k1.r.Z, k2.r.Z, f1.frame, f2.frame, i);
+                    n.r.W = lerp(k1.r.W, k2.r.W, f1.frame, f2.frame, i);
+
+                    //n.s.X = lerp (k1.s.X, k2.s.X, f1.frame, f2.frame, i);
+                    //n.s.Y = lerp (k1.s.Y, k2.s.Y, f1.frame, f2.frame, i);
+                    //n.s.Z = lerp (k1.s.Z, k2.s.Z, f1.frame, f2.frame, i);
+
+
+                    k.addNode(n);
+                }
+
+            }
+        }
+
+        public static float lerp(float av, float bv, float v0, float v1, float t)
+        {
+            if (v0 == v1) return av;
+
+            float mu = (t - v0) / (v1 - v0);
+            return ((av * (1 - mu)) + (bv * mu));
+        }
+    }
 }
 

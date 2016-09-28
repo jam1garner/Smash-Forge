@@ -74,6 +74,12 @@
       <DependentUpon>AddBone.cs</DependentUpon>
     </Compile>
     <Compile Include="Filetypes\MDL0Bones.cs" />
+    <Compile Include="GUI\VBNViewport.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\VBNViewport.Designer.cs">
+      <DependentUpon>VBNViewport.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Filetypes\VBNBones.cs" />
@@ -85,6 +91,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\AddBone.resx">
       <DependentUpon>AddBone.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\VBNViewport.resx">
+      <DependentUpon>VBNViewport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
