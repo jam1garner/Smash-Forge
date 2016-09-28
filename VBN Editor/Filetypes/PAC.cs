@@ -14,8 +14,8 @@ namespace VBN_Editor
         {
             Files = new Dictionary<string, byte[]>();
         }
-        public override Endianness Endian { get; set; }
 
+        public override Endianness Endian { get; set; }
         public Dictionary<string, byte[]> Files { get; set; }
 
         public override void Read(string filename)
@@ -57,13 +57,7 @@ namespace VBN_Editor
                 }
             }
         }
-        public override void Rebuild()
-        {
-            // Nothing really to rebuild here. All file and header data can be 
-            // generated from Files
-            return;
-        }
-        public override byte[] GetBytes()
+        public override byte[] Rebuild()
         {
             using (var stream = new MemoryStream())
             {

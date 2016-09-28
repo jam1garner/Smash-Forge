@@ -11,15 +11,12 @@ namespace VBN_Editor
     {
         public abstract Endianness Endian { get; set; }
 
-        public abstract byte[] GetBytes();
         public abstract void Read(string filename);
-        public abstract void Rebuild();
+        public abstract byte[] Rebuild();
 
         public void Save(string filename)
         {
-            Rebuild();
-
-            var Data = GetBytes();
+            var Data = Rebuild();
             if (Data.Length <= 0)
                 throw new Exception("Warning: Data was empty!");
 
