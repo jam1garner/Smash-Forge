@@ -69,7 +69,7 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.lstMoveset = new System.Windows.Forms.ListBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.Viewport = new VBN_Editor.GUI.VBNViewport();
+            this.Viewport = new VBN_Editor.VBNViewport();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.importToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -622,7 +622,7 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
-        private GUI.VBNViewport Viewport;
+        private VBNViewport Viewport;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.ListBox lstAnims;

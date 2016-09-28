@@ -1,4 +1,4 @@
-﻿namespace VBN_Editor.GUI
+﻿namespace VBN_Editor
 {
     partial class VBNViewport
     {
