@@ -17,13 +17,15 @@ namespace VBN_Editor.GUI
         public VBNViewport()
         {
             InitializeComponent();
-            this.Load += VBNViewport_Load;
         }
 
         private void VBNViewport_Load(object sender, EventArgs e)
         {
-            GL.ClearColor(Color.White);
-            SetupViewPort();
+            if (!DesignMode)
+            {
+                GL.ClearColor(Color.White);
+                SetupViewPort();
+            }
             render = true;
         }
 

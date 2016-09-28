@@ -36,7 +36,7 @@
             this.Name = "VBNViewport";
             this.Size = new System.Drawing.Size(640, 536);
             this.ResumeLayout(false);
-
+            this.Load += new System.EventHandler(this.VBNViewport_Load);
         }
 
         #endregion
