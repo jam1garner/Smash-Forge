@@ -41,6 +41,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\OpenTK.GLControl.dll</HintPath>
     </Reference>
+    <Reference Include="SALT, Version=1.2.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\SALT.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
@@ -81,17 +85,8 @@
     <Compile Include="GUI\VBNViewport.Designer.cs">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </Compile>
-    <Compile Include="IO\Endianness.cs" />
-    <Compile Include="IO\Extensions\ByteExtension.cs" />
-    <Compile Include="IO\Extensions\Int16Extension.cs" />
-    <Compile Include="IO\Extensions\Int32Extension.cs" />
-    <Compile Include="IO\Extensions\LinqExtension.cs" />
-    <Compile Include="IO\Extensions\SingleExtension.cs" />
-    <Compile Include="IO\Extensions\StreamExtensions.cs" />
-    <Compile Include="IO\Extensions\StringExtension.cs" />
-    <Compile Include="IO\Extensions\UInt16Extension.cs" />
-    <Compile Include="IO\Extensions\UInt32Extension.cs" />
     <Compile Include="IO\FileBase.cs" />
+    <Compile Include="MovesetManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Filetypes\VBNBones.cs" />
@@ -142,6 +137,7 @@
   <ItemGroup>
     <Content Include="OpenTK.dll" />
     <Content Include="OpenTK.GLControl.dll" />
+    <Content Include="SALT.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

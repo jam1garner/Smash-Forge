@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Text;
+using System.Linq;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Timers;
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
 
 namespace VBN_Editor
 {
@@ -29,13 +23,13 @@ namespace VBN_Editor
         {
             get
             {
-                if (listBox1.SelectedItem == null)
+                if (lstAnims.SelectedItem == null)
                 {
                     return null;
                 }
-                if (Animations.ContainsKey(listBox1.SelectedItem.ToString()))
+                if (Animations.ContainsKey(lstAnims.SelectedItem.ToString()))
                 {
-                    return Animations[listBox1.SelectedItem.ToString()];
+                    return Animations[lstAnims.SelectedItem.ToString()];
                 }
                 else
                 {
@@ -149,7 +143,7 @@ namespace VBN_Editor
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    listBox1.BeginUpdate();
+                    lstAnims.BeginUpdate();
                     if (ofd.FileName.EndsWith(".smd"))
                     {
                         var anim = new SkelAnimation();
@@ -158,7 +152,7 @@ namespace VBN_Editor
                         SMD.read(ofd.FileName, anim, TargetVBN);
                         treeRefresh();
                         Animations.Add(ofd.FileName, anim);
-                        listBox1.Items.Add(ofd.FileName);
+                        lstAnims.Items.Add(ofd.FileName);
                     }
                     else if (ofd.FileName.EndsWith(".pac"))
                     {
@@ -168,7 +162,7 @@ namespace VBN_Editor
                         foreach (var pair in p.Files)
                         {
                             var anim = OMO.read(new FileData(pair.Value), TargetVBN);
-                            listBox1.Items.Add(pair.Key);
+                            lstAnims.Items.Add(pair.Key);
                             Animations.Add(pair.Key, anim);
                         }
                     }
@@ -177,26 +171,29 @@ namespace VBN_Editor
                         if (ofd.FileName.EndsWith(".omo"))
                         {
                             Animations.Add(ofd.FileName, OMO.read(new FileData(ofd.FileName), TargetVBN));
-                            listBox1.Items.Add(ofd.FileName);
+                            lstAnims.Items.Add(ofd.FileName);
                         }
                         if (ofd.FileName.EndsWith(".chr0"))
                         {
                             Animations.Add(ofd.FileName, CHR0.read(new FileData(ofd.FileName), TargetVBN));
-                            listBox1.Items.Add(ofd.FileName);
+                            lstAnims.Items.Add(ofd.FileName);
                         }
                         if (ofd.FileName.EndsWith(".anim"))
                         {
                             Animations.Add(ofd.FileName, ANIM.read(ofd.FileName, TargetVBN));
-                            listBox1.Items.Add(ofd.FileName);
+                            lstAnims.Items.Add(ofd.FileName);
                         }
                     }
-                    listBox1.EndUpdate();
+                    lstAnims.EndUpdate();
                 }
             }
         }
 
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (TargetVBN == null || TargetAnim == null)
+                return;
+
             using (var sfd = new SaveFileDialog())
             {
                 sfd.Filter = "Supported Files (.omo, .anim, .pac)|*.omo;*.anim;*.pac|" +
@@ -204,9 +201,8 @@ namespace VBN_Editor
                              "Maya Anim (.anim)|*.anim|" +
                              "OMO Pack (.pac)|*.pac|" +
                              "All Files (*.*)|*.*";
-                DialogResult result = sfd.ShowDialog();
 
-                if (result == DialogResult.OK && TargetVBN != null && TargetAnim != null)
+                if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     sfd.FileName = sfd.FileName;
 
@@ -229,6 +225,7 @@ namespace VBN_Editor
                 }
             }
         }
+
         private void AppIdle(object sender, EventArgs e)
         {
             while (Viewport.IsIdle)
@@ -483,9 +480,14 @@ namespace VBN_Editor
 
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            listBox1.Items.Clear();
+            lstAnims.Items.Clear();
             Animations.Clear();
             TargetVBN.reset();
+        }
+
+        private void importToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
