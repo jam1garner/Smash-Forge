@@ -21,8 +21,9 @@ namespace VBN_Editor
             InitializeComponent();
             Application.Idle += AppIdle;
 
-            Animations = new Dictionary<string, SkelAnimation>();
+            Animations = new Dictionary<string, SkelAnimation>(); ;
         }
+
         public VBN TargetVBN { get; set; }
         public SkelAnimation TargetAnim
         {
@@ -42,7 +43,7 @@ namespace VBN_Editor
                 }
             }
         }
-        public Dictionary<string,SkelAnimation> Animations { get; set; }
+        public Dictionary<string, SkelAnimation> Animations { get; set; }
 
         public bool isPlaying = false;
         public DataTable tbl;
@@ -139,15 +140,16 @@ namespace VBN_Editor
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd;*.pac|"+
-                             "Object Motion|*.omo|"+
-                             "Maya Animation|*.anim|"+
-                             "NW4R Animation|*.chr0|"+
-                             "Source Animation (SMD)|*.smd|"+
+                ofd.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd;*.pac|" +
+                             "Object Motion|*.omo|" +
+                             "Maya Animation|*.anim|" +
+                             "NW4R Animation|*.chr0|" +
+                             "Source Animation (SMD)|*.smd|" +
                              "All files(*.*)|*.*";
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
+                    listBox1.BeginUpdate();
                     if (ofd.FileName.EndsWith(".smd"))
                     {
                         var anim = new SkelAnimation();
@@ -156,55 +158,77 @@ namespace VBN_Editor
                         SMD.read(ofd.FileName, anim, TargetVBN);
                         treeRefresh();
                         Animations.Add(ofd.FileName, anim);
-                        //loadAnimation(TargetAnim);
+                        listBox1.Items.Add(ofd.FileName);
                     }
-
-                    if (ofd.FileName.EndsWith(".pac"))
+                    else if (ofd.FileName.EndsWith(".pac"))
                     {
-                        PAC p = new PAC(ofd.FileName);
-                        listBox1.BeginUpdate();
+                        PAC p = new PAC();
+                        p.Read(ofd.FileName);
+
                         foreach (var pair in p.Files)
                         {
                             var anim = OMO.read(new FileData(pair.Value), TargetVBN);
                             listBox1.Items.Add(pair.Key);
                             Animations.Add(pair.Key, anim);
                         }
-                        listBox1.EndUpdate();
                     }
-
                     if (TargetVBN.bones.Count > 0)
                     {
-                        
                         if (ofd.FileName.EndsWith(".omo"))
+                        {
                             Animations.Add(ofd.FileName, OMO.read(new FileData(ofd.FileName), TargetVBN));
+                            listBox1.Items.Add(ofd.FileName);
+                        }
                         if (ofd.FileName.EndsWith(".chr0"))
-                            Animations.Add(ofd.FileName,CHR0.read(new FileData(ofd.FileName), TargetVBN));
+                        {
+                            Animations.Add(ofd.FileName, CHR0.read(new FileData(ofd.FileName), TargetVBN));
+                            listBox1.Items.Add(ofd.FileName);
+                        }
                         if (ofd.FileName.EndsWith(".anim"))
+                        {
                             Animations.Add(ofd.FileName, ANIM.read(ofd.FileName, TargetVBN));
+                            listBox1.Items.Add(ofd.FileName);
+                        }
                     }
+                    listBox1.EndUpdate();
                 }
             }
         }
 
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string filename = "";
-            SaveFileDialog save = new SaveFileDialog();
-            save.Filter = "Object Motion|*.omo|Maya Anim (Baked)|*.anim";
-            DialogResult result = save.ShowDialog();
-
-            if (result == DialogResult.OK && TargetVBN != null && TargetAnim != null)
+            using (var sfd = new SaveFileDialog())
             {
-                filename = save.FileName;
+                sfd.Filter = "Supported Files (.omo, .anim, .pac)|*.omo;*.anim;*.pac|" +
+                             "Object Motion (.omo)|*.omo|" +
+                             "Maya Anim (.anim)|*.anim|" +
+                             "OMO Pack (.pac)|*.pac|" +
+                             "All Files (*.*)|*.*";
+                DialogResult result = sfd.ShowDialog();
 
-                if (filename.EndsWith(".anim"))
-                    ANIM.createANIM(filename, TargetAnim, TargetVBN);
+                if (result == DialogResult.OK && TargetVBN != null && TargetAnim != null)
+                {
+                    sfd.FileName = sfd.FileName;
 
-                if (filename.EndsWith(".omo"))
-                    OMO.createOMO(TargetAnim, TargetVBN, filename, -1, -1);
+                    if (sfd.FileName.EndsWith(".anim"))
+                        ANIM.createANIM(sfd.FileName, TargetAnim, TargetVBN);
+
+                    if (sfd.FileName.EndsWith(".omo"))
+                        OMO.createOMO(TargetAnim, TargetVBN, sfd.FileName, -1, -1);
+
+                    if (sfd.FileName.EndsWith(".pac"))
+                    {
+                        var pac = new PAC();
+                        foreach (var anim in Animations)
+                        {
+                            var bytes = OMO.createOMO(anim.Value, TargetVBN, -1, -1);
+                            pac.Files.Add(anim.Key, bytes);
+                        }
+                        pac.Save(sfd.FileName);
+                    }
+                }
             }
         }
-
         private void AppIdle(object sender, EventArgs e)
         {
             while (Viewport.IsIdle)
@@ -233,12 +257,10 @@ namespace VBN_Editor
             }
         }
 
-
-        // Animation Controls-------------------------------------------------------
-
         // loads a skeletal animation into the viewing system
         public void loadAnimation(SkelAnimation a)
         {
+            a.setFrame(0);
             a.nextFrame(TargetVBN);
             this.numericUpDown1.Value = a.size() > 1 ? a.size() - 1 : a.size();
             this.numericUpDown2.Value = 0;
@@ -447,7 +469,7 @@ namespace VBN_Editor
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using(var abt = new About())
+            using (var abt = new About())
             {
                 abt.ShowDialog();
             }
@@ -457,6 +479,13 @@ namespace VBN_Editor
         {
             if (TargetAnim != null)
                 loadAnimation(TargetAnim);
+        }
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            listBox1.Items.Clear();
+            Animations.Clear();
+            TargetVBN.reset();
         }
     }
 }

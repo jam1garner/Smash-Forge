@@ -81,6 +81,17 @@
     <Compile Include="GUI\VBNViewport.Designer.cs">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </Compile>
+    <Compile Include="IO\Endianness.cs" />
+    <Compile Include="IO\Extensions\ByteExtension.cs" />
+    <Compile Include="IO\Extensions\Int16Extension.cs" />
+    <Compile Include="IO\Extensions\Int32Extension.cs" />
+    <Compile Include="IO\Extensions\LinqExtension.cs" />
+    <Compile Include="IO\Extensions\SingleExtension.cs" />
+    <Compile Include="IO\Extensions\StreamExtensions.cs" />
+    <Compile Include="IO\Extensions\StringExtension.cs" />
+    <Compile Include="IO\Extensions\UInt16Extension.cs" />
+    <Compile Include="IO\Extensions\UInt32Extension.cs" />
+    <Compile Include="IO\FileBase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Filetypes\VBNBones.cs" />

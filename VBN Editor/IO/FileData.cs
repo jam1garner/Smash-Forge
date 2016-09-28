@@ -206,10 +206,5 @@ namespace VBN_Editor
         }
 
     }
-    public enum Endianness
-    {
-        Big,
-        Little
-    }
 }
 

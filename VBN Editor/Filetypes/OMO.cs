@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using OpenTK;
+using System.IO;
 
 namespace VBN_Editor
 {
     public class OMO
     {
-        public OMO()
-        {
-
-        }
-
         public static SkelAnimation read(FileData d, VBN v)
         {
 
@@ -216,9 +212,8 @@ namespace VBN_Editor
             return vbn.bones[node];
         }
 
-        public static void createOMO(SkelAnimation a, VBN vbn, String fname, int startNode, int sizeNode)
+        public static byte[] createOMO(SkelAnimation a, VBN vbn, int startNode, int sizeNode)
         {
-
             List<int> nodeid = a.getNodes();
 
             startNode = 0;
@@ -522,8 +517,11 @@ namespace VBN_Editor
             }
 
             o.writeOutput(t2);
-
-            o.save(fname);
+            return o.getBytes();
+        }
+        public static void createOMO(SkelAnimation a, VBN vbn, String fname, int startNode, int sizeNode)
+        {
+            File.WriteAllBytes(fname, createOMO(a, vbn, startNode, sizeNode));
         }
     }
 }

@@ -9,9 +9,14 @@ namespace VBN_Editor
 
 		List<byte> data = new List<byte>();
 
-		public bool littleEndian = false;
 
-		public void writeString(String s){
+		public bool littleEndian = false;
+        public byte[] getBytes()
+        {
+            return data.ToArray();
+        }
+
+        public void writeString(String s){
 			char[] c = s.ToCharArray();
 			for(int i = 0; i < c.Length ; i++)
 				data.Add((byte)c[i]);

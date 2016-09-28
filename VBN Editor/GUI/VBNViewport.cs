@@ -71,6 +71,10 @@ namespace VBN_Editor.GUI
         {
             if (!render)
                 return;
+
+            // Push all attributes so we don't have to clean up later
+            GL.PushAttrib(AttribMask.AllAttribBits);
+
             // clear the gf buffer
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
@@ -93,16 +97,16 @@ namespace VBN_Editor.GUI
                 {
                     rot += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
                     lookup += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                    rot = clampControl(rot);
-                    lookup = clampControl(lookup);
+                    //rot = clampControl(rot);
+                    //lookup = clampControl(lookup);
                 }
-                v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 40.0f);
+                v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 80.0f);
 
                 mouseXLast = OpenTK.Input.Mouse.GetState().X;
                 mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
                 zoom += OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast;
-                zoom = clampControl(zoom);
+                //zoom = clampControl(zoom);
             }
             mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
 
@@ -114,8 +118,8 @@ namespace VBN_Editor.GUI
             // draw the grid floor first
             drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
 
-            // clear the buffer bit so the skeleton will be drawn
-            // on top of everything
+            // clear the buffer bit so the skeleton 
+            // will be drawn on top of everything
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             // drawing the bones
@@ -149,6 +153,8 @@ namespace VBN_Editor.GUI
                 }
             }
 
+            // Clean up
+            GL.PopAttrib();
             SwapBuffers();
         }
         private float clampControl(float f)
@@ -161,9 +167,9 @@ namespace VBN_Editor.GUI
         }
         public void drawFloor(Matrix4 s)
         {
-            // Dropping some grid lines
             GL.Disable(EnableCap.DepthTest);
 
+            // Draw floor plane
             GL.Color3(Color.LightGray);
             GL.Begin(PrimitiveType.Quads);
             GL.Vertex3(-10f, 0f, -10f);
@@ -172,6 +178,7 @@ namespace VBN_Editor.GUI
             GL.Vertex3(-10f, 0f, 10f);
             GL.End();
 
+            // Draw grid over it
             GL.Color3(Color.DimGray);
             GL.LineWidth(1f);
             GL.Begin(PrimitiveType.Lines);
@@ -183,7 +190,6 @@ namespace VBN_Editor.GUI
                 GL.Vertex3(Vector3.Transform(new Vector3(i, 0f, 10f), s));
             }
             GL.End();
-
             GL.Enable(EnableCap.DepthTest);
         }
 
