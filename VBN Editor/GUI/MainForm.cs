@@ -16,22 +16,39 @@ namespace VBN_Editor
 {
     public partial class MainForm : Form
     {
-        public VBN TargetVBN = new VBN();
-        public SkelAnimation TargetAnim = new SkelAnimation();
-        public bool vbnSet = false;
-        public bool loaded = false;
+        public MainForm()
+        {
+            InitializeComponent();
+            Application.Idle += AppIdle;
+
+            Animations = new Dictionary<string, SkelAnimation>();
+        }
+        public VBN TargetVBN { get; set; }
+        public SkelAnimation TargetAnim
+        {
+            get
+            {
+                if (listBox1.SelectedItem == null)
+                {
+                    return null;
+                }
+                if (Animations.ContainsKey(listBox1.SelectedItem.ToString()))
+                {
+                    return Animations[listBox1.SelectedItem.ToString()];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+        public Dictionary<string,SkelAnimation> Animations { get; set; }
+
         public bool isPlaying = false;
         public DataTable tbl;
         private bool delete = false;
         private string toDelete;
         private string currentNode;
-
-
-        public MainForm()
-        {
-            InitializeComponent();
-            Application.Idle += AppIdle;
-        }
 
         private TreeNode buildBoneTree(int index)
         {
@@ -105,7 +122,6 @@ namespace VBN_Editor
                     }
 
                     treeRefresh();
-                    vbnSet = true;
                     if (TargetVBN.littleEndian)
                     {
                         radioButton2.Checked = true;
@@ -121,32 +137,51 @@ namespace VBN_Editor
 
         private void importToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string filename = "";
-            OpenFileDialog open = new OpenFileDialog();
-            open.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd|Object Motion|*.omo|Maya Animation|*.anim|Wii Animation|*.chr0|Source Animation (SMD)|*.smd|All files(*.*)|*.*";
-            DialogResult result = open.ShowDialog();
-
-            if (result == DialogResult.OK)
+            using (var ofd = new OpenFileDialog())
             {
-                filename = open.FileName;
-                if (open.FileName.EndsWith(".smd"))
+                ofd.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd;*.pac|"+
+                             "Object Motion|*.omo|"+
+                             "Maya Animation|*.anim|"+
+                             "NW4R Animation|*.chr0|"+
+                             "Source Animation (SMD)|*.smd|"+
+                             "All files(*.*)|*.*";
+
+                if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    TargetAnim = new SkelAnimation();
-                    if (TargetVBN == null)
-                        TargetVBN = new VBN();
-                    SMD.read(filename, TargetAnim, TargetVBN);
-                    treeRefresh();
-                    vbnSet = true;
-                    loadAnimation(TargetAnim);
-                }
-                if (TargetVBN.bones.Count > 0)
-                {
-                    if (open.FileName.EndsWith(".omo"))
-                        loadAnimation(OMO.read(new FileData(filename), TargetVBN));
-                    if (open.FileName.EndsWith(".chr0"))
-                        loadAnimation(CHR0.read(new FileData(filename), TargetVBN));
-                    if (open.FileName.EndsWith(".anim"))
-                        loadAnimation(ANIM.read(filename, TargetVBN));
+                    if (ofd.FileName.EndsWith(".smd"))
+                    {
+                        var anim = new SkelAnimation();
+                        if (TargetVBN == null)
+                            TargetVBN = new VBN();
+                        SMD.read(ofd.FileName, anim, TargetVBN);
+                        treeRefresh();
+                        Animations.Add(ofd.FileName, anim);
+                        //loadAnimation(TargetAnim);
+                    }
+
+                    if (ofd.FileName.EndsWith(".pac"))
+                    {
+                        PAC p = new PAC(ofd.FileName);
+                        listBox1.BeginUpdate();
+                        foreach (var pair in p.Files)
+                        {
+                            var anim = OMO.read(new FileData(pair.Value), TargetVBN);
+                            listBox1.Items.Add(pair.Key);
+                            Animations.Add(pair.Key, anim);
+                        }
+                        listBox1.EndUpdate();
+                    }
+
+                    if (TargetVBN.bones.Count > 0)
+                    {
+                        
+                        if (ofd.FileName.EndsWith(".omo"))
+                            Animations.Add(ofd.FileName, OMO.read(new FileData(ofd.FileName), TargetVBN));
+                        if (ofd.FileName.EndsWith(".chr0"))
+                            Animations.Add(ofd.FileName,CHR0.read(new FileData(ofd.FileName), TargetVBN));
+                        if (ofd.FileName.EndsWith(".anim"))
+                            Animations.Add(ofd.FileName, ANIM.read(ofd.FileName, TargetVBN));
+                    }
                 }
             }
         }
@@ -204,9 +239,9 @@ namespace VBN_Editor
         // loads a skeletal animation into the viewing system
         public void loadAnimation(SkelAnimation a)
         {
-            TargetAnim = a;
-            TargetAnim.nextFrame(TargetVBN);
+            a.nextFrame(TargetVBN);
             this.numericUpDown1.Value = a.size() > 1 ? a.size() - 1 : a.size();
+            this.numericUpDown2.Value = 0;
         }
 
         // events for controls
@@ -391,7 +426,6 @@ namespace VBN_Editor
 
         private void VBNRebuilder_Load(object sender, EventArgs e)
         {
-            loaded = true;
             radioButton2.Checked = true;
         }
 
@@ -417,6 +451,12 @@ namespace VBN_Editor
             {
                 abt.ShowDialog();
             }
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (TargetAnim != null)
+                loadAnimation(TargetAnim);
         }
     }
 }

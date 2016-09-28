@@ -23,7 +23,7 @@ namespace VBN_Editor.GUI
         {
             if (!DesignMode)
             {
-                GL.ClearColor(Color.LightSteelBlue);
+                GL.ClearColor(Color.AliceBlue);
                 SetupViewPort();
             }
             render = true;
@@ -112,7 +112,7 @@ namespace VBN_Editor.GUI
             GL.MatrixMode(MatrixMode.Modelview);
 
             // draw the grid floor first
-            drawGridFloor(Matrix4.CreateTranslation(Vector3.Zero));
+            drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
 
             // clear the buffer bit so the skeleton will be drawn
             // on top of everything
@@ -159,11 +159,12 @@ namespace VBN_Editor.GUI
                 f = 5;
             return f;
         }
-        public void drawGridFloor(Matrix4 s)
+        public void drawFloor(Matrix4 s)
         {
             // Dropping some grid lines
             GL.Disable(EnableCap.DepthTest);
-            GL.Color3(Color.DarkGray);
+
+            GL.Color3(Color.LightGray);
             GL.Begin(PrimitiveType.Quads);
             GL.Vertex3(-10f, 0f, -10f);
             GL.Vertex3(10f, 0f, -10f);
@@ -182,6 +183,7 @@ namespace VBN_Editor.GUI
                 GL.Vertex3(Vector3.Transform(new Vector3(i, 0f, 10f), s));
             }
             GL.End();
+
             GL.Enable(EnableCap.DepthTest);
         }
 

@@ -19,7 +19,7 @@ namespace VBN_Editor
 
             VBN v = new VBN();
 
-            d.littleEndian = false;
+            d.Endian = Endianness.Big;
             d.seek(8);
             int ver = d.readInt();
             d.skip(4); //outer offset to brres

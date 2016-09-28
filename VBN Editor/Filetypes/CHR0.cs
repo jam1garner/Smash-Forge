@@ -7,7 +7,7 @@ namespace VBN_Editor
 	{
 
 		public static SkelAnimation read(FileData d, VBN m){
-			d.littleEndian = false;
+			d.Endian = Endianness.Big;
 			d.seek(0x8);
 
 			int versionNum = d.readInt();

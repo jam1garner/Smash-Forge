@@ -92,18 +92,15 @@ namespace VBN_Editor
             FileData file = new FileData(filename);
             if(file != null)
             {
-                file.littleEndian = true;
+                file.Endian = Endianness.Little;
+                littleEndian = true;
                 string magic = file.readString(0,4);
                 if (magic == "VBN ")
                 {
-                    file.littleEndian = false;
+                    file.Endian = Endianness.Big;
                     littleEndian = false;
                 }
-                else
-                {
-                    file.littleEndian = true;
-                    littleEndian = true;
-                }
+
                 file.seek(4);
 
                 unk_1 = (short)file.readShort();
