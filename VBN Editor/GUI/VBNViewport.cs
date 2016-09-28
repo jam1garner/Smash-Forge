@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
 
-namespace VBN_Editor.GUI
+namespace VBN_Editor
 {
     public partial class VBNViewport : GLControl
     {
