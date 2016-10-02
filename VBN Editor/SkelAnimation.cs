@@ -142,7 +142,6 @@ namespace VBN_Editor
                 if (n.r_type != -1)
                 {
                     b.rot = n.r;
-					Console.WriteLine (frame + " " + new string(b.boneName)  + " " + b.rot);
                 }
                 if (n.s_type != -1)
                 {
