@@ -11,7 +11,7 @@ namespace VBN_Editor
 		private class AnimKey{
 			public float input, output;
 			public string intan, outtan;
-			public float t1, w1;
+			public float t1 = 0, w1 = 1;
 		}
 
 		private class AnimData{

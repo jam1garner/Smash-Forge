@@ -210,14 +210,14 @@ namespace VBN_Editor
                         ANIM.createANIM(sfd.FileName, TargetAnim, TargetVBN);
 
                     if (sfd.FileName.EndsWith(".omo"))
-                        OMO.createOMO(TargetAnim, TargetVBN, sfd.FileName, -1, -1);
+                        OMO.createOMO(TargetAnim, TargetVBN, sfd.FileName);
 
                     if (sfd.FileName.EndsWith(".pac"))
                     {
                         var pac = new PAC();
                         foreach (var anim in Animations)
                         {
-                            var bytes = OMO.createOMO(anim.Value, TargetVBN, -1, -1);
+                            var bytes = OMO.createOMO(anim.Value, TargetVBN);
                             pac.Files.Add(anim.Key, bytes);
                         }
                         pac.Save(sfd.FileName);

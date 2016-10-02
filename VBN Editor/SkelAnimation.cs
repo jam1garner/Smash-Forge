@@ -126,12 +126,13 @@ namespace VBN_Editor
             if (frame == 0)
                 vbn.reset();
 
-            KeyFrame key = frames[frame];
+			KeyFrame key = frames[frame];
 
             foreach (KeyNode n in key.nodes)
             {
                 if (n.id == -1)
                     continue;
+				
                 Bone b = vbn.bones[n.id];
 
                 if (n.t_type != -1)
@@ -141,6 +142,7 @@ namespace VBN_Editor
                 if (n.r_type != -1)
                 {
                     b.rot = n.r;
+					Console.WriteLine (frame + " " + new string(b.boneName)  + " " + b.rot);
                 }
                 if (n.s_type != -1)
                 {

@@ -85,13 +85,13 @@ namespace VBN_Editor
                 }
                 if (hasRot)
                 {
-                    if (rFlag == 0x50)
+					if ((rFlag&0xF0) == 0x50)
                     { // interpolated
                         node.r_type = KeyNode.INTERPOLATED;
                         node.rv = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                         node.rv2 = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                     }
-                    if (rFlag == 0x70)
+					if ((rFlag&0xF0) == 0x70)
                     { // constant
                         node.r_type = KeyNode.CONSTANT;
                         node.rv = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
@@ -106,7 +106,7 @@ namespace VBN_Editor
                         node.s = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                         node.s2 = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                     }
-                    if (rFlag == 0x02)
+					if ((rFlag&0xF) == 0x02)
                     { // constant
                         node.s_type = KeyNode.CONSTANT;
                         node.s = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
@@ -164,6 +164,8 @@ namespace VBN_Editor
                         float z = baseNode[j].rv.Z + (baseNode[j].rv2.Z * (i3));
 
                         float w = (float)Math.Sqrt(Math.Abs(1 - (x * x + y * y + z * z)));
+						//if (1 - (x * x + y * y + z * z) < 0)
+						//	w *= -1;
 
                         node.r = new Quaternion(new Vector3(x, y, z), w);
                         node.r.Normalize();
@@ -212,12 +214,12 @@ namespace VBN_Editor
             return vbn.bones[node];
         }
 
-        public static byte[] createOMO(SkelAnimation a, VBN vbn, int startNode, int sizeNode)
+        public static byte[] createOMO(SkelAnimation a, VBN vbn)
         {
             List<int> nodeid = a.getNodes();
 
-            startNode = 0;
-            sizeNode = nodeid.Count;
+            int startNode = 0;
+            int sizeNode = nodeid.Count;
 
             FileOutput o = new FileOutput();
             o.littleEndian = true;
@@ -375,28 +377,23 @@ namespace VBN_Editor
                 if (hasScale[i])
                     flag |= 0x04000000;
 
-                if (conTrans[i])
+				if (conTrans[i] && hasTrans[i])
                     flag |= 0x00200000;
                 else
                     flag |= 0x00080000;
 
-                if (conRot[i])
+				if (conRot[i] && hasRot[i])
                     flag |= 0x00007000;
                 else
                     flag |= 0x00005000;
-                if (conScale[i] && hasScale[i])
+				
+				if (conScale[i] && hasScale[i])
                     flag |= 0x00000200;
                 else
                     flag |= 0x00000080;
 
                 flag |= 0x00000001;
 
-                //			if(m.getNodeId(nodeid.get(i)).name.equals("RLegJ")){
-                //				System.out.println(minmax[i].rx + "\t" + minmax[i].rx2);
-                //				int e = (int)(((-3.6667287 - minmax[i].rx) / (minmax[i].rx2 - minmax[i].rx)) * 0xFFFF);
-                //				System.out.println(e);
-                //				System.out.println(minmax[i].rx + ((minmax[i].rx2 - minmax[i].rx) * ((e / 0xFFFF))));
-                //			}
                 int hash = (int)getNodeId(vbn, nodeid[i]).boneId;
                 //if(hash == -1)
                 //hash = (int)FileData.crc32(getNodeId(nodeid.get(i)).name);
@@ -519,9 +516,9 @@ namespace VBN_Editor
             o.writeOutput(t2);
             return o.getBytes();
         }
-        public static void createOMO(SkelAnimation a, VBN vbn, String fname, int startNode, int sizeNode)
+        public static void createOMO(SkelAnimation a, VBN vbn, String fname)
         {
-            File.WriteAllBytes(fname, createOMO(a, vbn, startNode, sizeNode));
+            File.WriteAllBytes(fname, createOMO(a, vbn));
         }
     }
 }

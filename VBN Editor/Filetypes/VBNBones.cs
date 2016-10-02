@@ -61,8 +61,13 @@ namespace VBN_Editor
                 Quaternion yRotation = Quaternion.FromAxisAngle(Vector3.UnitY, y);
                 Quaternion zRotation = Quaternion.FromAxisAngle(Vector3.UnitZ, z);
 
+				Quaternion q = (zRotation * yRotation * xRotation);
+
+				if (q.W < 0)
+					q *= -1;
+
                 //return xRotation * yRotation * zRotation;
-                return (zRotation * yRotation * xRotation);
+                return q;
             }
         }
 
