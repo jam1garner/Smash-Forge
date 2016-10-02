@@ -63,7 +63,7 @@ namespace VBN_Editor
             int curFrame = 0;
             var commands = new List<ACMDCommand>();
             // Only do game.bin scripts for now
-            if ((Game?.Scripts).ContainsKey(System.Security.Cryptography.Crc32.Compute(animation)))
+           // if ((Game?.Scripts).ContainsKey(System.Security.Cryptography.Crc32.Compute(animation)))
                 foreach (ACMDCommand cmd in TargetScript.Commands)
                 {
                     if (curFrame < frame)

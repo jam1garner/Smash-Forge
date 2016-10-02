@@ -9,8 +9,8 @@ namespace VBN_Editor
 
 		List<byte> data = new List<byte>();
 
-
 		public bool littleEndian = false;
+
         public byte[] getBytes()
         {
             return data.ToArray();
@@ -25,11 +25,6 @@ namespace VBN_Editor
 		public int size(){
 			return data.Count;
 		}
-
-		/*public void writeFileData(FileData d){
-			for(byte b : d.getData())
-				data.Add(b);
-		}*/
 
 		public void writeOutput(FileOutput d){
 			foreach(byte b in d.data)
@@ -88,17 +83,10 @@ namespace VBN_Editor
 
 		public void writeFloat(float f){
 			int i = SingleToInt32Bits (f, littleEndian);
-			if(!littleEndian){
 				data.Add((byte)((i)&0xFF));
 				data.Add((byte)((i>>8)&0xFF));
 				data.Add((byte)((i>>16)&0xFF));
 				data.Add((byte)((i>>24)&0xFF));
-			} else {
-				data.Add((byte)((i>>24)&0xFF));
-				data.Add((byte)((i>>16)&0xFF));
-				data.Add((byte)((i>>8)&0xFF));
-				data.Add((byte)((i)&0xFF));
-			}
 		}
 
 		public static int SingleToInt32Bits(float value, bool littleEndian) {
@@ -113,14 +101,10 @@ namespace VBN_Editor
 
 		public void writeHalfFloat(float f){
 			int i = FileData.fromFloat(f, littleEndian);
-			if(!littleEndian){
-				data.Add((byte)((i)&0xFF));
-				data.Add((byte)((i>>8)&0xFF));
-			} else {
-				data.Add((byte)((i>>8)&0xFF));
-				data.Add((byte)((i)&0xFF));
-			}
+			data.Add((byte)((i)&0xFF));
+			data.Add((byte)((i>>8)&0xFF));
 		}
+
 		public void writeShort(int i){
 			if(!littleEndian){
 				data.Add((byte)((i)&0xFF));
@@ -138,16 +122,6 @@ namespace VBN_Editor
 		public void save(String fname){
 
 			File.WriteAllBytes (fname, data.ToArray());
-			/*try {
-				FileOutputStream out = new FileOutputStream(new File(fname));
-				byte[] b = new byte[data.size()];
-				for (int i = 0; i < b.length; i++)
-					b[i] = data.get(i);
-				out.write(b);
-				out.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}*/
 		}
 	}
 }
