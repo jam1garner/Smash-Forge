@@ -14,7 +14,7 @@ deploy:
   provider: GitHub
   auth_token:
     secure: sOhbJkt9LSK7BiyRJ6MdRvHGEkA66eMjbJJ0sCf9VnnmlfrnRLJ0/RBuYWxHlxrJ
-  artifact: SAT-[LatestCommit].zip
+  artifact: SAT-Latest_Commit.zip
   draft: false
   prerelease: true
   force_update: true
@@ -23,7 +23,7 @@ deploy:
 
   
 after_build:
-  - 7z a "SAT-[LatestCommit].zip" "%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\VBN Editor.exe"
-  - 7z a "SAT-[LatestCommit].zip" "%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\*.dll"
-  - 7z a "SAT-[LatestCommit].zip" "%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\*.csv"
-  - appveyor PushArtifact "SAT-[LatestCommit].zip"
+  - 7z a "SAT-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\VBN Editor.exe"
+  - 7z a "SAT-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\*.dll"
+  - 7z a "SAT-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\*.csv"
+  - appveyor PushArtifact "SAT-Latest_Commit.zip"
