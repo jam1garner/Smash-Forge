@@ -14,7 +14,7 @@ deploy:
   provider: GitHub
   auth_token:
     secure: sOhbJkt9LSK7BiyRJ6MdRvHGEkA66eMjbJJ0sCf9VnnmlfrnRLJ0/RBuYWxHlxrJ
-  artifact: SAT-[Latest Commit].zip
+  artifact: "SAT-[Latest Commit].zip"
   draft: false
   prerelease: true
   force_update: true
