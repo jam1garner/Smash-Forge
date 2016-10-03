@@ -1,0 +1,30 @@
+configuration: Release
+
+branches:
+  only:
+    - master
+
+build:
+  verbosity: minimal
+
+deploy:
+  tag: LatestCommit
+  release: Skeletal Animation Tool [Latest Commit]
+  description: 'This build is updated every time a commit is pushed.\n$(APPVEYOR_REPO_COMMIT_MESSAGE)\n Timestamp: $(APPVEYOR_REPO_COMMIT_TIMESTAMP)'
+  provider: GitHub
+  auth_token:
+    secure: sOhbJkt9LSK7BiyRJ6MdRvHGEkA66eMjbJJ0sCf9VnnmlfrnRLJ0/RBuYWxHlxrJ
+  artifact: SAT-[Latest Commit].zip
+  draft: false
+  prerelease: true
+  force_update: true
+  on:
+    branch: master
+
+  
+after_build:
+  - 7z a SAT-[Latest Commit].zip '%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\VBN Editor.exe'
+  - 7z a SAT-[Latest Commit].zip '%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\Events.cfg'
+  - 7z a SAT-[Latest Commit].zip '%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\*.dll'
+  - 7z a SAT-[Latest Commit].zip '%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\*.csv'
+  - appveyor PushArtifact SAT-[Latest Commit].zip
