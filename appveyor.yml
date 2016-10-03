@@ -23,8 +23,7 @@ deploy:
 
   
 after_build:
-  - 7z a 'SAT-[Latest Commit].zip' '%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\VBN Editor.exe'
-  - 7z a 'SAT-[Latest Commit].zip' '%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\Events.cfg'
-  - 7z a 'SAT-[Latest Commit].zip' '%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\*.dll'
-  - 7z a 'SAT-[Latest Commit].zip' '%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\*.csv'
+  - 7z a "SAT-[Latest Commit].zip" "%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\VBN Editor.exe"
+  - 7z a "SAT-[Latest Commit].zip" "%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\*.dll"
+  - 7z a "SAT-[Latest Commit].zip" "%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\*.csv"
   - appveyor PushArtifact SAT-[Latest Commit].zip
