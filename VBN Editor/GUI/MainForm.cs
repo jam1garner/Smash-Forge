@@ -15,8 +15,6 @@ namespace VBN_Editor
         public MainForm()
         {
             InitializeComponent();
-            CultureInfo us = new CultureInfo("en-US");
-            Thread.CurrentThread.CurrentCulture = us;
             Application.Idle += AppIdle;
 
             Animations = new Dictionary<string, SkelAnimation>(); ;
