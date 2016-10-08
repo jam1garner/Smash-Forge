@@ -18,7 +18,7 @@ namespace VBN_Editor
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US"); ;
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             Application.Run(new MainForm());
         }
     }

@@ -13,6 +13,7 @@ namespace VBN_Editor
         public UInt32 boneType;
         public int parentIndex;
         public UInt32 boneId;
+        public int boneIndex;
         public float[] position;
         public float[] rotation;
         public float[] scale;
@@ -36,23 +37,26 @@ namespace VBN_Editor
 
         }
 
-		public List<Bone> getBoneTreeOrder(){
-			List<Bone> bone = new List<Bone> ();
-			Queue<Bone> q = new Queue<Bone> ();
+        public List<Bone> getBoneTreeOrder()
+        {
+            List<Bone> bone = new List<Bone>();
+            Queue<Bone> q = new Queue<Bone>();
 
-			queueBones (bones[0], q);
+            queueBones(bones[0], q);
 
-			while (q.Count > 0) {
-				bone.Add (q.Dequeue());
-			}
-			return bone;
-		}
+            while (q.Count > 0)
+            {
+                bone.Add(q.Dequeue());
+            }
+            return bone;
+        }
 
-		public void queueBones(Bone b, Queue<Bone> q){
-			q.Enqueue (b);
-			foreach (int c in b.children)
-				queueBones (bones[c], q);
-		}
+        public void queueBones(Bone b, Queue<Bone> q)
+        {
+            q.Enqueue(b);
+            foreach (int c in b.children)
+                queueBones(bones[c], q);
+        }
 
         public static Quaternion FromEulerAngles(float z, float y, float x)
         {
@@ -61,10 +65,10 @@ namespace VBN_Editor
                 Quaternion yRotation = Quaternion.FromAxisAngle(Vector3.UnitY, y);
                 Quaternion zRotation = Quaternion.FromAxisAngle(Vector3.UnitZ, z);
 
-				Quaternion q = (zRotation * yRotation * xRotation);
+                Quaternion q = (zRotation * yRotation * xRotation);
 
-				if (q.W < 0)
-					q *= -1;
+                if (q.W < 0)
+                    q *= -1;
 
                 //return xRotation * yRotation * zRotation;
                 return q;
@@ -95,11 +99,11 @@ namespace VBN_Editor
         public VBN(string filename)
         {
             FileData file = new FileData(filename);
-            if(file != null)
+            if (file != null)
             {
                 file.Endian = Endianness.Little;
                 littleEndian = true;
-                string magic = file.readString(0,4);
+                string magic = file.readString(0, 4);
                 if (magic == "VBN ")
                 {
                     file.Endian = Endianness.Big;
@@ -115,22 +119,23 @@ namespace VBN_Editor
                 boneCountPerType[1] = (UInt32)file.readInt();
                 boneCountPerType[2] = (UInt32)file.readInt();
                 boneCountPerType[3] = (UInt32)file.readInt();
-                
+
                 for (int i = 0; i < totalBoneCount; i++)
                 {
                     Bone temp = new Bone();
                     temp.children = new List<int>();
-                    temp.boneName = file.readString(file.pos(),-1).ToCharArray();
+                    temp.boneName = file.readString(file.pos(), -1).ToCharArray();
                     file.skip(64);
                     temp.boneType = (UInt32)file.readInt();
                     temp.parentIndex = file.readInt();
+                    temp.boneIndex = i;
                     temp.boneId = (UInt32)file.readInt();
                     temp.position = new float[3];
                     temp.rotation = new float[3];
                     temp.scale = new float[3];
                     bones.Add(temp);
                 }
-                
+
                 for (int i = 0; i < bones.Count; i++)
                 {
                     bones[i].position[0] = file.readFloat();
@@ -155,7 +160,7 @@ namespace VBN_Editor
         public void save(string filename)
         {
             FileOutput file = new FileOutput();
-            if(file != null)
+            if (file != null)
             {
                 file.littleEndian = !littleEndian; //Blame Ploaj for his terrible code that is labelled wrong
                 if (littleEndian)
@@ -282,7 +287,7 @@ namespace VBN_Editor
         public csvHashes(string filename)
         {
             var reader = new StreamReader(File.OpenRead(filename));
-            
+
             while (!reader.EndOfStream)
             {
                 var line = reader.ReadLine();

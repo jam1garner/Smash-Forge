@@ -7,6 +7,7 @@ using System.Linq;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace VBN_Editor
 {
@@ -40,6 +41,7 @@ namespace VBN_Editor
             }
         }
         public Dictionary<string, SkelAnimation> Animations { get; set; }
+        public MovesetManager ACMDManager { get; set; }
 
         public bool isPlaying = false;
         public DataTable tbl;
@@ -117,6 +119,7 @@ namespace VBN_Editor
                         TargetVBN = new VBN();
                         SMD.read(ofd.FileName, new SkelAnimation(), TargetVBN);
                     }
+                    Viewport.TargetVBN = TargetVBN;
 
                     treeRefresh();
                     if (TargetVBN.littleEndian)
@@ -146,6 +149,8 @@ namespace VBN_Editor
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     lstAnims.BeginUpdate();
+                    Animations.Clear();
+
                     if (ofd.FileName.EndsWith(".smd"))
                     {
                         var anim = new SkelAnimation();
@@ -164,8 +169,18 @@ namespace VBN_Editor
                         foreach (var pair in p.Files)
                         {
                             var anim = OMO.read(new FileData(pair.Value), TargetVBN);
-                            lstAnims.Items.Add(pair.Key);
-                            Animations.Add(pair.Key, anim);
+                            string AnimName = Regex.Match(pair.Key, @"(.*)([A-Z])([0-9][0-9])(.*)").Groups[4].ToString();
+                            AnimName = AnimName.TrimEnd(new char[] { '.', 'o', 'm', 'o' });
+                            if (!string.IsNullOrEmpty(AnimName))
+                            {
+                                lstAnims.Items.Add(AnimName);
+                                Animations.Add(AnimName, anim);
+                            }
+                            else
+                            {
+                                lstAnims.Items.Add(pair.Key);
+                                Animations.Add(pair.Key, anim);
+                            }
                         }
                     }
                     if (TargetVBN.bones.Count > 0)
@@ -244,9 +259,8 @@ namespace VBN_Editor
                         button5.Text = "Play";
                     }
                 }
+                UpdateViewport();
 
-                Viewport.Render(TargetVBN);
-                System.Threading.Thread.Sleep(1000 / 60);
                 if (delete)
                 {
                     TargetVBN.deleteBone(toDelete);
@@ -255,7 +269,15 @@ namespace VBN_Editor
                 }
             }
         }
-
+        private void UpdateViewport()
+        {
+            if (ACMDManager != null && lstAnims.SelectedItem != null)
+            {
+                Viewport.acmdInfo = ACMDManager.CommandsAtFrame(lstAnims.SelectedItem.ToString(), (int)numericUpDown2.Value);
+            }
+            Viewport.Render();
+            Thread.Sleep(1000 / 60);
+        }
         // loads a skeletal animation into the viewing system
         public void loadAnimation(SkelAnimation a)
         {
@@ -319,7 +341,6 @@ namespace VBN_Editor
             else
                 button5.Text = "Play";
         }
-
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
@@ -445,11 +466,6 @@ namespace VBN_Editor
             TargetVBN.unk_2 = 1;
         }
 
-        private void VBNRebuilder_Load(object sender, EventArgs e)
-        {
-            radioButton2.Checked = true;
-        }
-
         private void hashMatchToolStripMenuItem_Click(object sender, EventArgs e)
         {
             csvHashes csv = new csvHashes("hashTable.csv");
@@ -489,7 +505,13 @@ namespace VBN_Editor
 
         private void importToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-
+            using (var ofd = new OpenFileDialog() { Filter = "Motion Table (.mtable)|*.mtable|All Files (*.*)|*.*" })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    ACMDManager = new MovesetManager(ofd.FileName);
+                }
+            }
         }
     }
 }
