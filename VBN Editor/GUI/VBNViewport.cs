@@ -157,7 +157,7 @@ namespace VBN_Editor
                                     {
                                         Hitbox h = new Hitbox();
                                         int id = (int)cmd.Parameters[0];
-                                        h.Bone = (int)cmd.Parameters[2];
+                                        h.Bone = (int)cmd.Parameters[2] - 1;
                                         h.Damage = (float)cmd.Parameters[3];
                                         h.Angle = (int)cmd.Parameters[4];
                                         h.KnockbackGrowth = (int)cmd.Parameters[5];
@@ -204,10 +204,10 @@ namespace VBN_Editor
                             foreach (var pair in pairs)
                             {
                                 Hitbox h = pair.Value;
-                                var v = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), bone.transform);
+								var va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), bone.transform.ClearScale ());
 
                                 GL.DepthMask(false);
-                                drawSphere(v, h.Size, 30);
+                                drawSphere(va, h.Size, 30);
 
                             }
 
