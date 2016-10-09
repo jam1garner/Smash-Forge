@@ -217,9 +217,6 @@ namespace VBN_Editor
                         }
                     }
 
-                    //GL.Vertex3(pos_c);
-                    GL.End();
-
                     // now draw line between parent 
                     GL.Color3(Color.Blue);
                     GL.LineWidth(1f);
