@@ -98,7 +98,7 @@ namespace VBN_Editor
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd)|*.vbn;*.mdl0*.smd|" +
+                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd)|*.vbn;*.mdl0;*.smd|" +
                              "Smash 4 Boneset (.vbn)|*.vbn|" +
                              "NW4R Model (.mdl0)|*.mdl0|" +
                              "Source Model (.SMD)|*.smd|" +
@@ -112,6 +112,7 @@ namespace VBN_Editor
                     if (ofd.FileName.EndsWith(".mdl0"))
                     {
                         MDL0Bones mdl0 = new MDL0Bones();
+                        TargetVBN = mdl0.GetVBN(new FileData(ofd.FileName));
                     }
 
                     if (ofd.FileName.EndsWith(".smd"))
