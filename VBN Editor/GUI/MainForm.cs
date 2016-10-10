@@ -444,11 +444,11 @@ namespace VBN_Editor
 
         private void treeView1_KeyDown(object sender, KeyEventArgs e)
         {
-            /*if(e.KeyCode == Keys.Delete)
+            if(e.KeyCode == Keys.Delete)
             {
                 delete = true;
                 toDelete = treeView1.SelectedNode.Text;
-            }*/
+            }
 
             //Deleting is currently broken... gotta find a fix
         }

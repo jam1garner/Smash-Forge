@@ -226,38 +226,37 @@ namespace VBN_Editor
             //throw new Exception("No bone of char[] name");
         }
 
-        public void deleteBone(int index)
+        public void deleteBone(int index)//Please don't call this directly, use the one by string kthx
         {
-            boneCountPerType[bones[index].boneType]--;
-            totalBoneCount--;
-            bones[(int)bones[index].parentIndex].children.Remove(index);
-            for (int j = 0; j < bones.Count; j++)
+            foreach (Bone b in bones)
             {
-                if (bones[j].parentIndex > (uint)index)
+                for (int i = 0; i < b.children.Count; i++)
                 {
-                    Bone tmp = bones[j];
-                    tmp.parentIndex -= 1;
-                    bones[j] = tmp;
-                }
-
-                for (int i = 0; i < bones[j].children.Count; i++)
-                {
-                    if (bones[j].children[i] > index)
+                    if (b.children[i] > index)
                     {
-                        bones[j].children[i]--;
+                        b.children[i]--;
                     }
                 }
             }
-            List<int> temp = bones[index].children;
-            bones.Remove(bones[index]);
+
+            List<int> temp = new List<int>();
+            foreach (int i in bones[index].children)
+            {
+                temp.Add(i);
+            }
+
+            bones.RemoveAt(index);
+
             foreach (int i in temp)
             {
                 deleteBone(i);
             }
+            
         }
 
         public void deleteBone(string name)
         {
+            bones[bones[boneIndex(name)].parentIndex].children.Remove(boneIndex(name));
             deleteBone(boneIndex(name));
         }
 
