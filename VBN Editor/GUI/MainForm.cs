@@ -260,7 +260,8 @@ namespace VBN_Editor
                         button5.Text = "Play";
                     }
                 }
-                UpdateViewport();
+                Viewport.Render();
+                Thread.Sleep(1000 / 60);
 
                 if (delete)
                 {
@@ -270,15 +271,7 @@ namespace VBN_Editor
                 }
             }
         }
-        private void UpdateViewport()
-        {
-            if (ACMDManager != null && lstAnims.SelectedItem != null)
-            {
-                Viewport.acmdInfo = ACMDManager.CommandsAtFrame(lstAnims.SelectedItem.ToString(), (int)numericUpDown2.Value);
-            }
-            Viewport.Render();
-            Thread.Sleep(1000 / 60);
-        }
+
         // loads a skeletal animation into the viewing system
         public void loadAnimation(SkelAnimation a)
         {
@@ -307,6 +300,7 @@ namespace VBN_Editor
             }
             TargetAnim.setFrame((int)this.numericUpDown2.Value);
             TargetAnim.nextFrame(TargetVBN);
+            Viewport.Frame = (int)this.numericUpDown2.Value;
         }
 
         // play and frame increment buttons
@@ -444,7 +438,7 @@ namespace VBN_Editor
 
         private void treeView1_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.Delete)
+            if (e.KeyCode == Keys.Delete)
             {
                 delete = true;
                 toDelete = treeView1.SelectedNode.Text;
@@ -494,7 +488,10 @@ namespace VBN_Editor
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (TargetAnim != null)
+            {
                 loadAnimation(TargetAnim);
+                Viewport.SetTarget(lstAnims.SelectedItem.ToString(), TargetAnim, TargetVBN);
+            }
         }
 
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
@@ -510,7 +507,7 @@ namespace VBN_Editor
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    ACMDManager = new MovesetManager(ofd.FileName);
+                    Viewport.Moveset = new MovesetManager(ofd.FileName);
                 }
             }
         }

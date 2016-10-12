@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
+using System.Security.Cryptography;
+using SALT.Scripting.AnimCMD;
 
 namespace VBN_Editor
 {
@@ -17,6 +19,7 @@ namespace VBN_Editor
         public VBNViewport()
         {
             InitializeComponent();
+            toRender = new SortedList<int, Hitbox>();
         }
 
         private void VBNViewport_Load(object sender, EventArgs e)
@@ -28,11 +31,50 @@ namespace VBN_Editor
             }
             render = true;
         }
-        public acmd_frame acmdInfo { get; set; }
+
+        public event EventHandler FrameChanged;
+        protected virtual void OnFrameChanged(EventArgs e)
+        {
+            FrameChanged?.Invoke(this, e);
+            HandleACMD(AnimName);
+        }
+
+
+        public int Frame
+        {
+            get
+            {
+                return _frame;
+            }
+            set
+            {
+                _frame = value;
+                OnFrameChanged(new EventArgs());
+            }
+        }
+        private int _frame = 0;
+
+        public MovesetManager Moveset { get; set; }
+        public SortedList<int, Hitbox> toRender { get; set; }
 
         // for drawing
         public static Matrix4 scale = Matrix4.CreateScale(new Vector3(0.5f, 0.5f, 0.5f));
+
         public VBN TargetVBN { get; set; }
+        public SkelAnimation TargetAnim { get; set; }
+        public string AnimName { get; set; }
+
+        public void SetTarget(string animName, SkelAnimation animation, VBN boneset)
+        {
+            TargetVBN = boneset;
+            TargetAnim = animation;
+            AnimName = animName;
+        }
+        public void SetFrame(int frame)
+        {
+            TargetAnim.setFrame(frame);
+            TargetAnim.nextFrame(TargetVBN);
+        }
 
         Matrix4 v;
         float rot = 0;
@@ -92,7 +134,7 @@ namespace VBN_Editor
 
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.LineSmooth); // This is Optional 
-            //GL.Enable(EnableCap.Normalize);  // These is critical to have
+            GL.Enable(EnableCap.Normalize);  // These is critical to have
             GL.Enable(EnableCap.RescaleNormal);
 
             // set up the viewport projection and send it to GPU
@@ -117,51 +159,8 @@ namespace VBN_Editor
             // drawing the bones
             if (TargetVBN != null)
             {
-                if (acmdInfo != null)
-                {
-                    if (acmdInfo.Game != null)
-                    {
-                        foreach (var cmd in acmdInfo.Game)
-                        {
-                            switch (cmd.Ident)
-                            {
-                                case 0xB738EABD://hitbox commands
-                                case 0xFAA85333:
-                                case 0x321297B0:
-                                case 0x2988D50F:
-                                case 0xED67D5DA:
-                                case 0x14FCC7E4:
-                                case 0x7640AEEB:
-                                case 0x7075DC5A:
-                                    {
-                                        Hitbox h = new Hitbox();
-                                        int id = (int)cmd.Parameters[0];
-                                        h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
-                                        h.Damage = (float)cmd.Parameters[3];
-                                        h.Angle = (int)cmd.Parameters[4];
-                                        h.KnockbackGrowth = (int)cmd.Parameters[5];
-                                        //FKB = (float)cmd.Parameters[6]
-                                        h.KnockbackBase = (int)cmd.Parameters[7];
-                                        h.Size = (float)cmd.Parameters[8];
-                                        h.X = (float)cmd.Parameters[9];
-                                        h.Y = (float)cmd.Parameters[10];
-                                        h.Z = (float)cmd.Parameters[11];
-                                        acmdInfo.ActiveHitboxes.Add(id, h);
-                                        break;
-                                    }
-                                case 0x9245E1A8: // clear all hitboxes
-                                    acmdInfo.ActiveHitboxes.Clear();
-                                    break;
-                                case 0xFF379EB6: // delete hitbox
-                                    if (acmdInfo.ActiveHitboxes.ContainsKey((int)cmd.Parameters[0]))
-                                    {
-                                        acmdInfo.ActiveHitboxes.Remove((int)cmd.Parameters[0]);
-                                    }
-                                    break;
-                            }
-                        }
-                    }
-                }
+                // Render the hitboxes
+                RenderHitboxes();
 
                 foreach (Bone bone in TargetVBN.bones)
                 {
@@ -170,9 +169,6 @@ namespace VBN_Editor
 
                     Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform/* * scale*/);
                     drawCube(pos_c, .085f);
-
-                    // Render the hitboxes attatched to this bone
-                    RenderHitboxes(bone);
 
                     // now draw line between parent 
                     GL.Color3(Color.Blue);
@@ -219,33 +215,91 @@ namespace VBN_Editor
                 mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
             }
         }
-        public void RenderHitboxes(Bone bone)
+        public void RenderHitboxes()
         {
-            if (acmdInfo != null)
+            if (toRender.Count > 0)
             {
-                if (acmdInfo.ActiveHitboxes.Count > 0)
+                GL.Color4(Color.FromArgb(85, Color.Red));
+                GL.Enable(EnableCap.DepthTest);
+                GL.Enable(EnableCap.Blend);
+
+                foreach (var pair in toRender)
                 {
-                    GL.Color4(Color.FromArgb(85, Color.Red));
-                    GL.Enable(EnableCap.DepthTest);
-                    GL.Enable(EnableCap.Blend);
+                    var h = pair.Value;
+                    var va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), TargetVBN.bones[h.Bone].transform.ClearScale());
 
-                    var pairs = acmdInfo.ActiveHitboxes.Where(x => x.Value.Bone == bone.boneIndex);
-                    foreach (var pair in pairs)
-                    {
-                        Hitbox h = pair.Value;
-                        var va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), bone.transform.ClearScale());
-
-                        GL.DepthMask(false);
-                        drawSphere(va, h.Size, 30);
-                    }
-
-                    GL.Disable(EnableCap.Blend);
-                    GL.Disable(EnableCap.DepthTest);
-                    GL.DepthMask(true);
+                    GL.DepthMask(false);
+                    drawSphere(va, h.Size, 30);
                 }
+
+                GL.Disable(EnableCap.Blend);
+                GL.Disable(EnableCap.DepthTest);
             }
         }
 
+        public void HandleACMD(string animname)
+        {
+            var crc = Crc32.Compute(animname.ToLower());
+
+            if (Moveset == null)
+                return;
+
+            if (!Moveset.Game.Scripts.ContainsKey(crc))
+                return;
+
+            int frame = 0;
+            foreach (var cmd in Moveset.CommandsAtFrame((ACMDScript)Moveset.Game.Scripts[crc], Frame))
+            {
+                switch (cmd.Ident)
+                {
+                    case 0x4B7B6E51: // Synchronous Timer
+                        frame++;
+                        break;
+                    case 0x42ACFE7D: // Asynchronous Timer
+                        frame = (int)cmd.Parameters[0];
+                        break;
+                    case 0xB738EABD: // hitbox commands
+                    case 0xFAA85333:
+                    case 0x321297B0:
+                    case 0x2988D50F:
+                    case 0xED67D5DA:
+                    case 0x14FCC7E4:
+                    case 0x7640AEEB:
+                    case 0x7075DC5A:
+                        {
+                            Hitbox h = new Hitbox();
+                            int id = (int)cmd.Parameters[0];
+                            h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
+                            h.Damage = (float)cmd.Parameters[3];
+                            h.Angle = (int)cmd.Parameters[4];
+                            h.KnockbackGrowth = (int)cmd.Parameters[5];
+                            //FKB = (float)cmd.Parameters[6]
+                            h.KnockbackBase = (int)cmd.Parameters[7];
+                            h.Size = (float)cmd.Parameters[8];
+                            h.X = (float)cmd.Parameters[9];
+                            h.Y = (float)cmd.Parameters[10];
+                            h.Z = (float)cmd.Parameters[11];
+                            // I don't really know how the game handles hitboxes
+                            // that use the same id, so i'm just gonna assume one
+                            // replaces the other.
+                            if (!toRender.ContainsKey(id))
+                                toRender.Add(id, h);
+                            else
+                                toRender[id] = h;
+                            break;
+                        }
+                    case 0x9245E1A8: // clear all hitboxes
+                        toRender.Clear();
+                        break;
+                    case 0xFF379EB6: // delete hitbox
+                        if (toRender.ContainsKey((int)cmd.Parameters[0]))
+                        {
+                            toRender.Remove((int)cmd.Parameters[0]);
+                        }
+                        break;
+                }
+            }
+        }
         private float clampControl(float f)
         {
             if (f < -5)

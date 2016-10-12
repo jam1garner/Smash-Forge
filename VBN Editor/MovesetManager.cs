@@ -49,6 +49,8 @@ namespace VBN_Editor
                 MotionTable = new MTable(mtablePath, Endian);
         }
 
+        public Dictionary<int, Hitbox> Hitboxes { get; set; }
+
         public Endianness Endian { get; set; }
         public MTable MotionTable { get; set; }
 
@@ -131,8 +133,8 @@ namespace VBN_Editor
             }
             return commands.ToArray();
         }
+        
     }
-
     public class acmd_frame
     {
         public acmd_frame()
@@ -151,6 +153,8 @@ namespace VBN_Editor
 
     public class Hitbox
     {
+        public int Duration { get; set; }
+
         public float Damage { get; set; }
         public float Angle { get; set; }
         public float KnockbackGrowth { get; set; }
