@@ -99,29 +99,8 @@ namespace VBN_Editor
             GL.MatrixMode(MatrixMode.Projection);
             GL.ShadeModel(ShadingModel.Flat);
 
-            if (MouseIsOverViewport())
-            {
-                if (OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
-                {
-                    height += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                    width += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                    height = clampControl(height);
-                    width = clampControl(width);
-                }
-                if (OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Left))
-                {
-                    rot += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                    lookup += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                }
-                v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 80.0f);
-
-                mouseXLast = OpenTK.Input.Mouse.GetState().X;
-                mouseYLast = OpenTK.Input.Mouse.GetState().Y;
-
-                zoom += OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast;
-                mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
-            }
-
+            // Poll the mouse for changes
+            UpdateMousePosition();
 
             GL.LoadMatrix(ref v);
 
@@ -157,7 +136,7 @@ namespace VBN_Editor
                                     {
                                         Hitbox h = new Hitbox();
                                         int id = (int)cmd.Parameters[0];
-                                        h.Bone = (int)cmd.Parameters[2] - 1;
+                                        h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
                                         h.Damage = (float)cmd.Parameters[3];
                                         h.Angle = (int)cmd.Parameters[4];
                                         h.KnockbackGrowth = (int)cmd.Parameters[5];
@@ -186,36 +165,14 @@ namespace VBN_Editor
 
                 foreach (Bone bone in TargetVBN.bones)
                 {
-
                     // first calcuate the point and draw a point
                     GL.Color3(Color.GreenYellow);
 
                     Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform/* * scale*/);
                     drawCube(pos_c, .085f);
-                    if (acmdInfo != null)
-                    {
-                        if (acmdInfo.ActiveHitboxes.Count > 0)
-                        {
-                            GL.Color4(Color.FromArgb(85, Color.Red));
-                            GL.Enable(EnableCap.DepthTest);
-                            GL.Enable(EnableCap.Blend);
 
-                            var pairs = acmdInfo.ActiveHitboxes.Where(x => x.Value.Bone == bone.boneIndex);
-                            foreach (var pair in pairs)
-                            {
-                                Hitbox h = pair.Value;
-								var va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), bone.transform.ClearScale ());
-
-                                GL.DepthMask(false);
-                                drawSphere(va, h.Size, 30);
-
-                            }
-
-                            GL.Disable(EnableCap.Blend);
-                            GL.Disable(EnableCap.DepthTest);
-                            GL.DepthMask(true);
-                        }
-                    }
+                    // Render the hitboxes attatched to this bone
+                    RenderHitboxes(bone);
 
                     // now draw line between parent 
                     GL.Color3(Color.Blue);
@@ -237,16 +194,58 @@ namespace VBN_Editor
             GL.PopAttrib();
             SwapBuffers();
         }
-        public void RenderACMD()
+        public void UpdateMousePosition()
+        {
+            if (MouseIsOverViewport())
+            {
+                if (OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
+                {
+                    height += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                    width += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                    height = clampControl(height);
+                    width = clampControl(width);
+                }
+                if (OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Left))
+                {
+                    rot += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                    lookup += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                }
+                v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 80.0f);
+
+                mouseXLast = OpenTK.Input.Mouse.GetState().X;
+                mouseYLast = OpenTK.Input.Mouse.GetState().Y;
+
+                zoom += OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast;
+                mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
+            }
+        }
+        public void RenderHitboxes(Bone bone)
         {
             if (acmdInfo != null)
             {
-                foreach (var h in acmdInfo.ActiveHitboxes)
+                if (acmdInfo.ActiveHitboxes.Count > 0)
                 {
+                    GL.Color4(Color.FromArgb(85, Color.Red));
+                    GL.Enable(EnableCap.DepthTest);
+                    GL.Enable(EnableCap.Blend);
 
+                    var pairs = acmdInfo.ActiveHitboxes.Where(x => x.Value.Bone == bone.boneIndex);
+                    foreach (var pair in pairs)
+                    {
+                        Hitbox h = pair.Value;
+                        var va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), bone.transform.ClearScale());
+
+                        GL.DepthMask(false);
+                        drawSphere(va, h.Size, 30);
+                    }
+
+                    GL.Disable(EnableCap.Blend);
+                    GL.Disable(EnableCap.DepthTest);
+                    GL.DepthMask(true);
                 }
             }
         }
+
         private float clampControl(float f)
         {
             if (f < -5)
