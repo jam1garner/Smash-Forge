@@ -133,7 +133,6 @@ namespace VBN_Editor
             }
             return commands.ToArray();
         }
-        
     }
     public class acmd_frame
     {
@@ -153,7 +152,8 @@ namespace VBN_Editor
 
     public class Hitbox
     {
-        public int Duration { get; set; }
+        public int StartFrame { get; set; }
+        public int EndFrame { get; set; }
 
         public float Damage { get; set; }
         public float Angle { get; set; }

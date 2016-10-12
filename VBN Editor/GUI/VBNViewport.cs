@@ -19,24 +19,39 @@ namespace VBN_Editor
         public VBNViewport()
         {
             InitializeComponent();
-            toRender = new SortedList<int, Hitbox>();
+            Hitboxes = new SortedList<int, Hitbox>();
         }
 
-        private void VBNViewport_Load(object sender, EventArgs e)
+        public bool _controlLoaded;
+        protected override void OnLoad(EventArgs e)
         {
+            base.OnLoad(e);
             if (!DesignMode)
             {
                 GL.ClearColor(Color.AliceBlue);
                 SetupViewPort();
             }
             render = true;
+            _controlLoaded = true;
+        }
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            int h = Height;
+            int w = Width;
+            if (!DesignMode && _controlLoaded)
+            {
+                GL.LoadIdentity();
+                GL.Viewport(0, 0, w, h);
+                v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 40.0f);
+            }
         }
 
         public event EventHandler FrameChanged;
         protected virtual void OnFrameChanged(EventArgs e)
         {
             FrameChanged?.Invoke(this, e);
-            HandleACMD(AnimName);
+            //HandleACMD(AnimName);
         }
 
 
@@ -55,7 +70,7 @@ namespace VBN_Editor
         private int _frame = 0;
 
         public MovesetManager Moveset { get; set; }
-        public SortedList<int, Hitbox> toRender { get; set; }
+        public SortedList<int, Hitbox> Hitboxes { get; set; }
 
         // for drawing
         public static Matrix4 scale = Matrix4.CreateScale(new Vector3(0.5f, 0.5f, 0.5f));
@@ -111,14 +126,6 @@ namespace VBN_Editor
             }
             return false;
         }
-        private void VBNViewport_Resize(object sender, EventArgs e)
-        {
-            int h = Height;
-            int w = Width;
-            GL.LoadIdentity();
-            GL.Viewport(0, 0, w, h);
-            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 40.0f);
-        }
 
         public void Render()
         {
@@ -160,6 +167,8 @@ namespace VBN_Editor
             if (TargetVBN != null)
             {
                 // Render the hitboxes
+                if (!string.IsNullOrEmpty(AnimName))
+                    HandleACMD(AnimName);
                 RenderHitboxes();
 
                 foreach (Bone bone in TargetVBN.bones)
@@ -217,19 +226,22 @@ namespace VBN_Editor
         }
         public void RenderHitboxes()
         {
-            if (toRender.Count > 0)
+            if (Hitboxes.Count > 0)
             {
                 GL.Color4(Color.FromArgb(85, Color.Red));
                 GL.Enable(EnableCap.DepthTest);
                 GL.Enable(EnableCap.Blend);
 
-                foreach (var pair in toRender)
+                foreach (var pair in Hitboxes)
                 {
                     var h = pair.Value;
-                    var va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), TargetVBN.bones[h.Bone].transform.ClearScale());
+                    if (Frame < h.EndFrame && Frame >= h.StartFrame)
+                    {
+                        var va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), TargetVBN.bones[h.Bone].transform.ClearScale());
 
-                    GL.DepthMask(false);
-                    drawSphere(va, h.Size, 30);
+                        GL.DepthMask(false);
+                        drawSphere(va, h.Size, 30);
+                    }
                 }
 
                 GL.Disable(EnableCap.Blend);
@@ -248,15 +260,15 @@ namespace VBN_Editor
                 return;
 
             int frame = 0;
-            foreach (var cmd in Moveset.CommandsAtFrame((ACMDScript)Moveset.Game.Scripts[crc], Frame))
+            foreach (var cmd in (ACMDScript)Moveset.Game.Scripts[crc])
             {
                 switch (cmd.Ident)
                 {
                     case 0x4B7B6E51: // Synchronous Timer
-                        frame++;
+                        frame += (int)(float)cmd.Parameters[0];
                         break;
                     case 0x42ACFE7D: // Asynchronous Timer
-                        frame = (int)cmd.Parameters[0];
+                        frame = (int)(float)cmd.Parameters[0];
                         break;
                     case 0xB738EABD: // hitbox commands
                     case 0xFAA85333:
@@ -268,6 +280,7 @@ namespace VBN_Editor
                     case 0x7075DC5A:
                         {
                             Hitbox h = new Hitbox();
+                            h.StartFrame = frame;
                             int id = (int)cmd.Parameters[0];
                             h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
                             h.Damage = (float)cmd.Parameters[3];
@@ -282,19 +295,21 @@ namespace VBN_Editor
                             // I don't really know how the game handles hitboxes
                             // that use the same id, so i'm just gonna assume one
                             // replaces the other.
-                            if (!toRender.ContainsKey(id))
-                                toRender.Add(id, h);
+                            if (!Hitboxes.ContainsKey(id))
+                                Hitboxes.Add(id, h);
                             else
-                                toRender[id] = h;
+                                Hitboxes[id] = h;
                             break;
                         }
                     case 0x9245E1A8: // clear all hitboxes
-                        toRender.Clear();
+                        if (Hitboxes.Count > 0)
+                            foreach (var hitbox in Hitboxes)
+                                hitbox.Value.EndFrame = frame;
                         break;
                     case 0xFF379EB6: // delete hitbox
-                        if (toRender.ContainsKey((int)cmd.Parameters[0]))
+                        if (Hitboxes.ContainsKey((int)cmd.Parameters[0]))
                         {
-                            toRender.Remove((int)cmd.Parameters[0]);
+                            Hitboxes[(int)cmd.Parameters[0]].EndFrame = frame;
                         }
                         break;
                 }
