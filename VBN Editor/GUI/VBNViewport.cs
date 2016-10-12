@@ -54,8 +54,9 @@ namespace VBN_Editor
             //HandleACMD(AnimName);
         }
 
-
-        public int Frame
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [ReadOnly(true)]
+        internal int Frame
         {
             get
             {
@@ -69,15 +70,25 @@ namespace VBN_Editor
         }
         private int _frame = 0;
 
-        public MovesetManager Moveset { get; set; }
-        public SortedList<int, Hitbox> Hitboxes { get; set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [ReadOnly(true)]
+        internal MovesetManager Moveset { get; set; }
 
-        // for drawing
-        public static Matrix4 scale = Matrix4.CreateScale(new Vector3(0.5f, 0.5f, 0.5f));
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [ReadOnly(true)]
+        private SortedList<int, Hitbox> Hitboxes { get; set; }
 
-        public VBN TargetVBN { get; set; }
-        public SkelAnimation TargetAnim { get; set; }
-        public string AnimName { get; set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [ReadOnly(true)]
+        internal VBN TargetVBN { get; set; }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [ReadOnly(true)]
+        internal SkelAnimation TargetAnim { get; set; }
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [ReadOnly(true)]
+        internal string AnimName { get; set; }
 
         public void SetTarget(string animName, SkelAnimation animation, VBN boneset)
         {
@@ -328,10 +339,10 @@ namespace VBN_Editor
             // Draw floor plane
             GL.Color3(Color.LightGray);
             GL.Begin(PrimitiveType.Quads);
-            GL.Vertex3(-10f, 0f, -10f);
-            GL.Vertex3(10f, 0f, -10f);
-            GL.Vertex3(10f, 0f, 10f);
-            GL.Vertex3(-10f, 0f, 10f);
+            GL.Vertex3(-20f, 0f, -20f);
+            GL.Vertex3(20f, 0f, -20f);
+            GL.Vertex3(20f, 0f, 20f);
+            GL.Vertex3(-20f, 0f, 20f);
             GL.End();
             // Draw grid over it
             GL.Disable(EnableCap.DepthTest);
