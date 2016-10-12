@@ -352,10 +352,10 @@ namespace VBN_Editor
             GL.Begin(PrimitiveType.Lines);
             for (var i = -10; i <= 10; i++)
             {
-                GL.Vertex3(Vector3.Transform(new Vector3(-10f, 0f, i), s));
-                GL.Vertex3(Vector3.Transform(new Vector3(10f, 0f, i), s));
-                GL.Vertex3(Vector3.Transform(new Vector3(i, 0f, -10f), s));
-                GL.Vertex3(Vector3.Transform(new Vector3(i, 0f, 10f), s));
+                GL.Vertex3(Vector3.Transform(new Vector3(-10f*2, 0f, i*2), s));
+                GL.Vertex3(Vector3.Transform(new Vector3(10f*2, 0f, i*2), s));
+                GL.Vertex3(Vector3.Transform(new Vector3(i*2, 0f, -10f*2), s));
+                GL.Vertex3(Vector3.Transform(new Vector3(i*2, 0f, 10f*2), s));
             }
             GL.End();
 

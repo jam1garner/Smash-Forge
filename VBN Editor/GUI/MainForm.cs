@@ -120,6 +120,7 @@ namespace VBN_Editor
                         TargetVBN = new VBN();
                         SMD.read(ofd.FileName, new SkelAnimation(), TargetVBN);
                     }
+                    Viewport.TargetVBN = TargetVBN;
 
                     treeRefresh();
                     if (TargetVBN.littleEndian)
