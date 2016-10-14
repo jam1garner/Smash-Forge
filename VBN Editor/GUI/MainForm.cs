@@ -521,5 +521,10 @@ namespace VBN_Editor
         {
 
         }
+
+        private void numericUpDown3_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
