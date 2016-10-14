@@ -43,7 +43,6 @@ namespace VBN_Editor
             d.skip(4);
             int boneCount = d.readInt();
             v.totalBoneCount = (uint)boneCount;
-            v.boneCountPerType[0] = (uint)boneCount;
             for (int i = 0; i < 3; i++)
                 v.boneCountPerType[i + 1] = 0;
             d.skip(4);
@@ -125,6 +124,7 @@ namespace VBN_Editor
             }
 			v.update ();
             v.updateChildren();
+            v.boneCountPerType[0] = (uint)v.bones.Count;
 
             return v;
         }

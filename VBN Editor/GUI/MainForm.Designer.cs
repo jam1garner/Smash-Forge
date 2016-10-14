@@ -58,7 +58,6 @@
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.Viewport = new VBN_Editor.VBNViewport();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
@@ -75,6 +74,10 @@
             this.lstAnims = new System.Windows.Forms.ListBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.lstMoveset = new System.Windows.Forms.ListBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
+            this.Viewport = new VBN_Editor.VBNViewport();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -92,6 +95,7 @@
             this.splitContainer2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -351,18 +355,11 @@
             this.splitContainer1.SplitterDistance = 212;
             this.splitContainer1.TabIndex = 11;
             // 
-            // Viewport
-            // 
-            this.Viewport.BackColor = System.Drawing.Color.Black;
-            this.Viewport.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Viewport.Location = new System.Drawing.Point(0, 0);
-            this.Viewport.Name = "Viewport";
-            this.Viewport.Size = new System.Drawing.Size(593, 568);
-            this.Viewport.TabIndex = 0;
-            this.Viewport.VSync = false;
-            // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label3);
+            this.groupBox2.Controls.Add(this.numericUpDown3);
+            this.groupBox2.Controls.Add(this.checkBox1);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.numericUpDown2);
             this.groupBox2.Controls.Add(this.label1);
@@ -550,6 +547,44 @@
             this.lstMoveset.Size = new System.Drawing.Size(194, 292);
             this.lstMoveset.TabIndex = 0;
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(109, 20);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(50, 17);
+            this.checkBox1.TabIndex = 12;
+            this.checkBox1.Text = "Loop";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // numericUpDown3
+            // 
+            this.numericUpDown3.Location = new System.Drawing.Point(51, 17);
+            this.numericUpDown3.Name = "numericUpDown3";
+            this.numericUpDown3.Size = new System.Drawing.Size(52, 20);
+            this.numericUpDown3.TabIndex = 13;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(9, 20);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(41, 13);
+            this.label3.TabIndex = 14;
+            this.label3.Text = "Speed:";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
+            // 
+            // Viewport
+            // 
+            this.Viewport.BackColor = System.Drawing.Color.Black;
+            this.Viewport.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Viewport.Location = new System.Drawing.Point(0, 0);
+            this.Viewport.Name = "Viewport";
+            this.Viewport.Size = new System.Drawing.Size(593, 568);
+            this.Viewport.TabIndex = 0;
+            this.Viewport.VSync = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -585,6 +620,7 @@
             this.splitContainer2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -635,6 +671,9 @@
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.NumericUpDown numericUpDown3;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 
