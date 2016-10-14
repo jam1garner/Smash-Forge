@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
 using System.Security.Cryptography;
@@ -50,7 +51,7 @@ namespace VBN_Editor
         public event EventHandler FrameChanged;
         protected virtual void OnFrameChanged(EventArgs e)
         {
-            FrameChanged?.Invoke(this, e);
+            //FrameChanged.Invoke(this, e);
             //HandleACMD(AnimName);
         }
 
@@ -113,8 +114,30 @@ namespace VBN_Editor
         float mouseSLast = 0;
         bool render = false;
 
+		// opentk shader stuffs
+		Shader shader;
+
         private void SetupViewPort()
         {
+			shader = new Shader();
+
+			if (File.Exists ("vs.glsl")) {
+				shader.vertexShader ("vs.glsl");
+				shader.fragmentShader ("fr.glsl");
+
+				shader.addAttribute ("vPosition", false);
+				shader.addAttribute ("vColor", false);
+				shader.addAttribute ("vNormal", false);
+				shader.addAttribute ("vUV", false);
+				shader.addAttribute ("vBone", false);
+				shader.addAttribute ("vWeight", false);
+
+				shader.addAttribute ("tex", true);
+				shader.addAttribute ("modelview", true);
+				shader.addAttribute ("bones", true);
+			}
+
+
             int h = Height;
             int w = Width;
             GL.LoadIdentity();
@@ -138,7 +161,7 @@ namespace VBN_Editor
             return false;
         }
 
-        public void Render()
+		public void Render(VBN skeleton, NUD model)
         {
             if (!render)
                 return;
@@ -166,6 +189,24 @@ namespace VBN_Editor
 
             // ready to start drawing model stuff
             GL.MatrixMode(MatrixMode.Modelview);
+
+			// draw models
+			if (model != null && skeleton != null) {
+				GL.UseProgram (shader.programID);
+
+				GL.UniformMatrix4 (shader.getAttribute("modelview"), false, ref v);
+
+				float[] f = skeleton.getShaderMatrix ();
+
+				GL.UniformMatrix4 (shader.getAttribute("bone"), f.Length, false, f);
+
+				shader.enableAttrib ();
+				model.Render (shader);
+				shader.disableAttrib ();
+			}
+
+
+			GL.UseProgram (0);
 
             // draw the grid floor first
             drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
@@ -345,7 +386,6 @@ namespace VBN_Editor
             GL.Vertex3(-20f, 0f, 20f);
             GL.End();
             // Draw grid over it
-            GL.Disable(EnableCap.DepthTest);
 
             GL.Color3(Color.DimGray);
             GL.LineWidth(1f);

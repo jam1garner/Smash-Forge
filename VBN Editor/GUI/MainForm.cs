@@ -21,7 +21,8 @@ namespace VBN_Editor
             Animations = new Dictionary<string, SkelAnimation>(); ;
         }
 
-        public VBN TargetVBN { get; set; }
+		public VBN TargetVBN { get; set; }
+		public NUD TargetNUD { get; set; }
         public SkelAnimation TargetAnim
         {
             get
@@ -260,7 +261,7 @@ namespace VBN_Editor
                         button5.Text = "Play";
                     }
                 }
-                Viewport.Render();
+				Viewport.Render(TargetVBN, TargetNUD);
                 Thread.Sleep(1000 / 60);
 
                 if (delete)

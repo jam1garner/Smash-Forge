@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>VBN_Editor</RootNamespace>
     <AssemblyName>VBN Editor</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
@@ -33,18 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\OpenTK.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK.GLControl, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\OpenTK.GLControl.dll</HintPath>
-    </Reference>
-    <Reference Include="SALT, Version=1.2.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\SALT.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
@@ -57,9 +45,17 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="OpenTK">
+      <HintPath>OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.GLControl">
+      <HintPath>OpenTK.GLControl.dll</HintPath>
+    </Reference>
+    <Reference Include="SALT">
+      <HintPath>SALT.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Filetypes\JTB.cs" />
     <Compile Include="Filetypes\PAC.cs" />
     <Compile Include="GUI\MainForm.cs">
       <SubType>Form</SubType>
@@ -131,6 +127,10 @@
     <Compile Include="Filetypes\OMO.cs" />
     <Compile Include="SkelAnimation.cs" />
     <Compile Include="Filetypes\SMD.cs" />
+    <Compile Include="Shader.cs" />
+    <Compile Include="DDS.cs" />
+    <Compile Include="Filetypes\NUD.cs" />
+    <Compile Include="Filetypes\NUT.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -11,12 +11,12 @@ namespace VBN_Editor
 
 		public bool littleEndian = false;
 
-        public byte[] getBytes()
-        {
-            return data.ToArray();
-        }
+		public byte[] getBytes()
+		{
+			return data.ToArray();
+		}
 
-        public void writeString(String s){
+		public void writeString(String s){
 			char[] c = s.ToCharArray();
 			for(int i = 0; i < c.Length ; i++)
 				data.Add((byte)c[i]);
@@ -70,12 +70,12 @@ namespace VBN_Editor
 			}
 		}
 
-		/*public void align(int i){
-			while(data.size() % i != 0)
+		public void align(int i){
+			while(data.Count % i != 0)
 				writeByte(0);
 		}
 
-		public void align(int i, int value){
+		/*public void align(int i, int value){
 			while(data.size() % i != 0)
 				writeByte(value);
 		}*/
@@ -83,10 +83,10 @@ namespace VBN_Editor
 
 		public void writeFloat(float f){
 			int i = SingleToInt32Bits (f, littleEndian);
-				data.Add((byte)((i)&0xFF));
-				data.Add((byte)((i>>8)&0xFF));
-				data.Add((byte)((i>>16)&0xFF));
-				data.Add((byte)((i>>24)&0xFF));
+			data.Add((byte)((i)&0xFF));
+			data.Add((byte)((i>>8)&0xFF));
+			data.Add((byte)((i>>16)&0xFF));
+			data.Add((byte)((i>>24)&0xFF));
 		}
 
 		public static int SingleToInt32Bits(float value, bool littleEndian) {
@@ -100,7 +100,7 @@ namespace VBN_Editor
 		}
 
 		public void writeHalfFloat(float f){
-			int i = FileData.fromFloat(f, littleEndian);
+			int i = FileData.fromFloat(f, !littleEndian);
 			data.Add((byte)((i)&0xFF));
 			data.Add((byte)((i>>8)&0xFF));
 		}
