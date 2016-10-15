@@ -57,7 +57,8 @@ namespace VBN_Editor
         public const int INTERPOLATED = 0;
         public const int CONSTANT = 1;
 
-        public int id;
+        public int id = -1;
+		public uint hash = 0;
         public int t_type, r_type, s_type;
         public Vector3 t, s = new Vector3(1f, 1f, 1f);
         public Quaternion r;
@@ -130,10 +131,24 @@ namespace VBN_Editor
 
             foreach (KeyNode n in key.nodes)
             {
-                if (n.id == -1)
-                    continue;
+				if (n.id == -1)
+					continue;
 				
-                Bone b = vbn.bones[n.id];
+				if (n.hash == 0) {
+					n.hash = vbn.bones [n.id].boneId;
+				}
+
+				int id = -1;
+
+				foreach (Bone bo in vbn.bones) {
+					if (bo.boneId == n.hash)
+						id = vbn.bones.IndexOf (bo);
+				}
+
+				if (id == -1)
+					continue;
+
+                Bone b = vbn.bones[id];
 
                 if (n.t_type != -1)
                 {

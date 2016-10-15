@@ -58,12 +58,9 @@ namespace VBN_Editor
                     if ((int)no.boneId == (int)hash)
                     {
                         node.id = v.bones.IndexOf(no);
+						node.hash = no.boneId;
                         break;
                     }
-                }
-
-                if (node.id == -99)
-                {
                 }
 
                 int temp = d.pos();
