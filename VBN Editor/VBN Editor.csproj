@@ -54,9 +54,25 @@
     <Reference Include="SALT">
       <HintPath>SALT.dll</HintPath>
     </Reference>
+    <Reference Include="WeifenLuo.WinFormsUI.Docking, Version=2.9.0.0, Culture=neutral, PublicKeyToken=5cded1a1a0a7b481, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Filetypes\PAC.cs" />
+    <Compile Include="GUI\Editors\AnimList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\AnimList.Designer.cs">
+      <DependentUpon>AnimList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\BoneTree.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BoneTree.Designer.cs">
+      <DependentUpon>BoneTree.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -76,10 +92,10 @@
       <DependentUpon>AddBone.cs</DependentUpon>
     </Compile>
     <Compile Include="Filetypes\MDL0Bones.cs" />
-    <Compile Include="GUI\VBNViewport.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="GUI\Editors\VBNViewport.cs">
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\VBNViewport.Designer.cs">
+    <Compile Include="GUI\Editors\VBNViewport.Designer.cs">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </Compile>
     <Compile Include="IO\FileBase.cs" />
@@ -87,6 +103,12 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Filetypes\VBNBones.cs" />
+    <EmbeddedResource Include="GUI\Editors\AnimList.resx">
+      <DependentUpon>AnimList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\BoneTree.resx">
+      <DependentUpon>BoneTree.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -96,7 +118,7 @@
     <EmbeddedResource Include="GUI\AddBone.resx">
       <DependentUpon>AddBone.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\VBNViewport.resx">
+    <EmbeddedResource Include="GUI\Editors\VBNViewport.resx">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -125,10 +147,11 @@
     <Compile Include="IO\FileData.cs" />
     <Compile Include="IO\FileOutput.cs" />
     <Compile Include="Filetypes\OMO.cs" />
+    <Compile Include="Runtime.cs" />
     <Compile Include="SkelAnimation.cs" />
     <Compile Include="Filetypes\SMD.cs" />
     <Compile Include="Shader.cs" />
-    <Compile Include="DDS.cs" />
+    <Compile Include="Filetypes\DDS.cs" />
     <Compile Include="Filetypes\NUD.cs" />
     <Compile Include="Filetypes\NUT.cs" />
   </ItemGroup>
@@ -139,7 +162,9 @@
     <Content Include="OpenTK.dll" />
     <Content Include="OpenTK.GLControl.dll" />
     <Content Include="SALT.dll" />
+    <Content Include="WeifenLuo.WinFormsUI.Docking.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -14,6 +14,7 @@ using SALT.Scripting.AnimCMD;
 using OpenTK.Graphics;
 using System.Diagnostics;
 using WeifenLuo.WinFormsUI.Docking;
+using System.IO;
 
 namespace VBN_Editor
 {
@@ -69,6 +70,7 @@ namespace VBN_Editor
         float mouseSLast = 0;
         bool render = false;
         bool isPlaying = false;
+        Shader shader;
         #endregion
 
         #region Event Handlers
@@ -203,6 +205,25 @@ namespace VBN_Editor
         #region Rendering
         private void SetupViewPort()
         {
+            shader = new Shader();
+
+            if (File.Exists("vs.glsl"))
+            {
+                shader.vertexShader("vs.glsl");
+                shader.fragmentShader("fr.glsl");
+
+                shader.addAttribute("vPosition", false);
+                shader.addAttribute("vColor", false);
+                shader.addAttribute("vNormal", false);
+                shader.addAttribute("vUV", false);
+                shader.addAttribute("vBone", false);
+                shader.addAttribute("vWeight", false);
+
+                shader.addAttribute("tex", true);
+                shader.addAttribute("modelview", true);
+                shader.addAttribute("bones", true);
+            }
+
             int h = Height - groupBox2.ClientRectangle.Top;
             int w = Width;
             GL.LoadIdentity();
@@ -234,6 +255,7 @@ namespace VBN_Editor
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 
+            GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.LineSmooth); // This is Optional 
             GL.Enable(EnableCap.Normalize);  // These is critical to have
             GL.Enable(EnableCap.RescaleNormal);
@@ -258,6 +280,25 @@ namespace VBN_Editor
 
             // ready to start drawing model stuff
             GL.MatrixMode(MatrixMode.Modelview);
+
+            // draw models
+            if (Runtime.TargetNUD != null && Runtime.TargetVBN != null)
+            {
+                GL.UseProgram(shader.programID);
+
+                GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref v);
+
+                float[] f = Runtime.TargetVBN.getShaderMatrix();
+
+                GL.UniformMatrix4(shader.getAttribute("bone"), f.Length, false, f);
+
+                shader.enableAttrib();
+                Runtime.TargetNUD.Render(shader);
+                shader.disableAttrib();
+            }
+
+
+            GL.UseProgram(0);
 
             // draw the grid floor first
             drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
