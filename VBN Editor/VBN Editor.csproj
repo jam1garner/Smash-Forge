@@ -64,16 +64,16 @@
   <ItemGroup>
     <Compile Include="Filetypes\JTB.cs" />
     <Compile Include="Filetypes\PAC.cs" />
-    <Compile Include="GUI\Editors\AnimList.cs">
+    <Compile Include="GUI\AnimList.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\AnimList.Designer.cs">
+    <Compile Include="GUI\AnimList.Designer.cs">
       <DependentUpon>AnimList.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\BoneTree.cs">
+    <Compile Include="GUI\BoneTree.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\BoneTree.Designer.cs">
+    <Compile Include="GUI\BoneTree.Designer.cs">
       <DependentUpon>BoneTree.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\MainForm.cs">
@@ -95,10 +95,10 @@
       <DependentUpon>AddBone.cs</DependentUpon>
     </Compile>
     <Compile Include="Filetypes\MDL0Bones.cs" />
-    <Compile Include="GUI\Editors\VBNViewport.cs">
+    <Compile Include="GUI\VBNViewport.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\VBNViewport.Designer.cs">
+    <Compile Include="GUI\VBNViewport.Designer.cs">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </Compile>
     <Compile Include="IO\FileBase.cs" />
@@ -106,10 +106,10 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Filetypes\VBNBones.cs" />
-    <EmbeddedResource Include="GUI\Editors\AnimList.resx">
+    <EmbeddedResource Include="GUI\AnimList.resx">
       <DependentUpon>AnimList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\BoneTree.resx">
+    <EmbeddedResource Include="GUI\BoneTree.resx">
       <DependentUpon>BoneTree.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\MainForm.resx">
@@ -121,7 +121,7 @@
     <EmbeddedResource Include="GUI\AddBone.resx">
       <DependentUpon>AddBone.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\VBNViewport.resx">
+    <EmbeddedResource Include="GUI\VBNViewport.resx">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
