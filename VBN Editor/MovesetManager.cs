@@ -157,6 +157,12 @@ namespace VBN_Editor
         public float KnockbackGrowth { get; set; }
         public float KnockbackBase { get; set; }
 
+        public int Type { get; set; }
+
+        public const int HITBOX = 0;
+        public const int GRABBOX = 1;
+        public const int WINDBOX = 2;
+
         public int Bone { get; set; }
         public float Size { get; set; }
         public float X { get; set; }

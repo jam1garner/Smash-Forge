@@ -388,15 +388,35 @@ namespace VBN_Editor
                 foreach (var pair in Hitboxes)
                 {
                     var h = pair.Value;
-                    //if (Frame < h.EndFrame && Frame >= h.StartFrame)
-                    //{
-                        var va = new Vector3(h.X, h.Y, h.Z);
+                    var va = new Vector3(h.X, h.Y, h.Z);
 
-                        if(h.Bone != -1)
-                            va = Vector3.Transform(va, Runtime.TargetVBN.bones[h.Bone].transform.ClearScale());
+                    if(h.Bone != -1)
+                        va = Vector3.Transform(va, Runtime.TargetVBN.bones[h.Bone].transform.ClearScale());
 
-						GL.DepthMask(false);
-                        if (h.X2 != 0) {
+
+                    // Draw angle marker
+                    /*GL.LineWidth(7f);
+                    GL.Begin(PrimitiveType.Lines);
+                    GL.Color3(Color.Black);
+                    GL.Vertex3(va);
+                    GL.Vertex3(va + Vector3.Transform(new Vector3(0,0,h.Size), Matrix4.CreateRotationX(-h.Angle * ((float)Math.PI / 180f))));
+                    GL.End();*/
+
+                    switch (h.Type)
+                    {
+                        case Hitbox.HITBOX:
+                            GL.Color4(Color.FromArgb(85, Color.Red));
+                            break;
+                        case Hitbox.GRABBOX:
+                            GL.Color4(Color.FromArgb(85, Color.Purple));
+                            break;
+                        case Hitbox.WINDBOX:
+                            GL.Color4(Color.FromArgb(85, Color.Blue));
+                            break;
+                    }
+
+					GL.DepthMask(false);
+                    if (h.X2 != 0 && h.Y2!=0&&h.Z2!=0) {
                             var va2 = new Vector3(h.X2, h.Y2, h.Z2);
 
                             if(h.Bone != -1)
@@ -406,7 +426,6 @@ namespace VBN_Editor
 						} else {
 							drawSphere(va, h.Size, 30);
 						}
-                    //}
                 }
 
                 GL.Disable(EnableCap.Blend);
@@ -444,6 +463,7 @@ namespace VBN_Editor
                             int id = (int)cmd.Parameters[0];
                             if (Hitboxes.ContainsKey(id))
                                 Hitboxes.Remove(id);
+                            h.Type = Hitbox.HITBOX;
                             h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
                             h.Damage = (float)cmd.Parameters[3];
                             h.Angle = (int)cmd.Parameters[4];
@@ -463,6 +483,7 @@ namespace VBN_Editor
                             int id = (int)cmd.Parameters[0];
                             if (Hitboxes.ContainsKey(id))
                                 Hitboxes.Remove(id);
+                            h.Type = Hitbox.HITBOX;
                             h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
                             h.Damage = (float)cmd.Parameters[3];
                             h.Angle = (int)cmd.Parameters[4];
@@ -485,6 +506,7 @@ namespace VBN_Editor
                             int id = (int)cmd.Parameters[0];
                             if (Hitboxes.ContainsKey(id))
                                 Hitboxes.Remove(id);
+                            h.Type = Hitbox.HITBOX;
                             h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
                             h.Damage = (float)cmd.Parameters[3];
                             h.Angle = (int)cmd.Parameters[4];
@@ -504,6 +526,7 @@ namespace VBN_Editor
                             int id = (int)cmd.Parameters[0];
                             if (Hitboxes.ContainsKey(id))
                                 Hitboxes.Remove(id);
+                            h.Type = Hitbox.HITBOX;
                             h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
                             h.Damage = (float)cmd.Parameters[3];
                             h.Angle = (int)cmd.Parameters[4];
@@ -542,6 +565,38 @@ namespace VBN_Editor
                             e = setLoop;
                             iterations -= 1;
                         }
+                        break;
+
+                    case 0x7B48FE1C: // grabbox 
+                        {
+                            Hitbox h = new Hitbox();
+                            int id = (int)cmd.Parameters[0];
+                            h.Type = Hitbox.GRABBOX;
+                            h.Bone = (int.Parse(cmd.Parameters[2]+"") - 1).Clamp(0, int.MaxValue);
+                            h.Size = (float)cmd.Parameters[2];
+                            h.X = (float)cmd.Parameters[3];
+                            h.Y = (float)cmd.Parameters[4];
+                            h.Z = (float)cmd.Parameters[5];
+
+                            if (cmd.Parameters.Count > 8)
+                            {
+                                h.X2 = float.Parse(cmd.Parameters[8]+"");
+                                h.Y2 = float.Parse(cmd.Parameters[9]+"");
+                                h.Z2 = float.Parse(cmd.Parameters[10]+"");
+                            }
+
+                            Hitboxes.Add(id, h);
+                            break;
+                        }
+                    case 0xF3A464AC: // Terminate_Grab_Collisions
+                        List<Hitbox> toDelete = new List<Hitbox>();
+                        for(int i =0 ; i < Hitboxes.Count ; i++)
+                        {
+                            if (Hitboxes.Values[i].Type == Hitbox.GRABBOX)
+                                toDelete.Add(Hitboxes.Values[i]);
+                        }
+                        foreach (Hitbox h in toDelete)
+                            Hitboxes.Remove(Hitboxes.IndexOfValue(h));
                         break;
                     case 0xFAA85333:
                         break;
