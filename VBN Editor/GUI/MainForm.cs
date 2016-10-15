@@ -139,8 +139,9 @@ namespace VBN_Editor
                         foreach (var pair in p.Files)
                         {
                             var anim = OMO.read(new FileData(pair.Value), Runtime.TargetVBN);
-                            string AnimName = Regex.Match(pair.Key, @"(.*)([A-Z])([0-9][0-9])(.*)").Groups[4].ToString();
-                            AnimName = AnimName.TrimEnd(new char[] { '.', 'o', 'm', 'o' });
+                            string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
+                            AnimName = AnimName.Remove(AnimName.Length - 4);
+                            AnimName = AnimName.Insert(3, "_");
                             if (!string.IsNullOrEmpty(AnimName))
                             {
                                 rightPanel.lstAnims.Items.Add(AnimName);

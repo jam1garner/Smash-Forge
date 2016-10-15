@@ -19,7 +19,6 @@ namespace VBN_Editor
         private static SkelAnimation _targetAnim;
 
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
-
         public static MovesetManager Moveset { get; set; }
 
         public static void StartupFromConfig(string config)
@@ -32,7 +31,8 @@ namespace VBN_Editor
         public static event EventHandler AnimationChanged;
         private static void OnAnimationChanged()
         {
-            AnimationChanged?.Invoke(typeof(Runtime), EventArgs.Empty);
+            if (AnimationChanged != null)
+                AnimationChanged(typeof(Runtime), EventArgs.Empty);
         }
     }
 }
