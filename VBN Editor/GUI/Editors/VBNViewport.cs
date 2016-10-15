@@ -157,6 +157,7 @@ namespace VBN_Editor
             }
             Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value);
             Runtime.TargetAnim.nextFrame(Runtime.TargetVBN);
+            
             Frame = (int)this.nupdFrame.Value;
 
             if(script != null)
@@ -285,6 +286,8 @@ namespace VBN_Editor
             // ready to start drawing model stuff
             GL.MatrixMode(MatrixMode.Modelview);
 
+            GL.Disable(EnableCap.AlphaTest);
+
             // draw models
             if (Runtime.TargetNUD != null && Runtime.TargetVBN != null)
             {
@@ -315,12 +318,14 @@ namespace VBN_Editor
             // will be drawn on top of everything
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
+
             // drawing the bones
             if (Runtime.TargetVBN != null)
             {
                 // Render the hitboxes
                 if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
                     HandleACMD(Runtime.TargetAnimString.Substring(4));
+
                 RenderHitboxes();
 
                 foreach (Bone bone in Runtime.TargetVBN.bones)
@@ -399,13 +404,22 @@ namespace VBN_Editor
                     int gr = 0;
                     if (bid > 1000)
                     {
-                        bid -= 1000;
+                        bid = bid >> 8;
                         gr = 1;
                     }
-                    
 
-                    if(h.Bone != -1)
-                        va = Vector3.Transform(va, Runtime.TargetVBN.bones[Runtime.TargetVBN.jointTable[gr][bid]].transform.ClearScale());
+                    Bone b = new Bone();
+
+                    if (h.Bone != -1)
+                    {
+                        if(Runtime.TargetVBN.jointTable.Count < 1)
+
+                            b = Runtime.TargetVBN.bones[bid];
+                        else
+                            b = Runtime.TargetVBN.bones[Runtime.TargetVBN.jointTable[gr][bid]];
+                    }
+
+                    va = Vector3.Transform(va, b.transform.ClearScale());
 
 
                     // Draw angle marker
@@ -415,6 +429,8 @@ namespace VBN_Editor
                     GL.Vertex3(va);
                     GL.Vertex3(va + Vector3.Transform(new Vector3(0,0,h.Size), Matrix4.CreateRotationX(-h.Angle * ((float)Math.PI / 180f))));
                     GL.End();*/
+
+                    GL.Color4(Color.FromArgb(85, Color.Red));
 
                     switch (h.Type)
                     {
@@ -430,12 +446,12 @@ namespace VBN_Editor
                     }
 
 					GL.DepthMask(false);
-                    if (h.X2 != 0 && h.Y2!=0&&h.Z2!=0) {
+                    if (h.Extended) {
                             var va2 = new Vector3(h.X2, h.Y2, h.Z2);
 
                             if(h.Bone != -1)
-                            va2 = Vector3.Transform(va, Runtime.TargetVBN.bones[Runtime.TargetVBN.jointTable[gr][bid]].transform.ClearScale());
-                            
+                                va2 = Vector3.Transform(va2, b.transform.ClearScale());
+
 							drawCylinder (va, va2, h.Size);
 						} else {
 							drawSphere(va, h.Size, 30);
@@ -463,12 +479,12 @@ namespace VBN_Editor
                 {
                     case 0x42ACFE7D: // Asynchronous Timer
                         {
-                            halt = (int)(float)cmd.Parameters[0] - 1;
+                            halt = (int)(float)cmd.Parameters[0] - 2;
                             break;
                         }
                     case 0x4B7B6E51: // Synchronous Timer
                         {
-                            halt += (int)(float)cmd.Parameters[0] - 1;
+                            halt += (int)(float)cmd.Parameters[0];
                             break;
                         }
                     case 0xB738EABD: // hitbox 
@@ -498,6 +514,7 @@ namespace VBN_Editor
                             if (Hitboxes.ContainsKey(id))
                                 Hitboxes.Remove(id);
                             h.Type = Hitbox.HITBOX;
+                            h.Extended = true;
                             h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
                             h.Damage = (float)cmd.Parameters[3];
                             h.Angle = (int)cmd.Parameters[4];
@@ -541,6 +558,7 @@ namespace VBN_Editor
                             if (Hitboxes.ContainsKey(id))
                                 Hitboxes.Remove(id);
                             h.Type = Hitbox.HITBOX;
+                            h.Extended = true;
                             h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
                             h.Damage = (float)cmd.Parameters[3];
                             h.Angle = (int)cmd.Parameters[4];
@@ -586,7 +604,7 @@ namespace VBN_Editor
                             Hitbox h = new Hitbox();
                             int id = (int)cmd.Parameters[0];
                             h.Type = Hitbox.GRABBOX;
-                            h.Bone = (int.Parse(cmd.Parameters[2]+"") - 1).Clamp(0, int.MaxValue);
+                            h.Bone = (int.Parse(cmd.Parameters[1]+"") - 1).Clamp(0, int.MaxValue);
                             h.Size = (float)cmd.Parameters[2];
                             h.X = (float)cmd.Parameters[3];
                             h.Y = (float)cmd.Parameters[4];

@@ -159,6 +159,8 @@ namespace VBN_Editor
 
         public int Type { get; set; }
 
+        public bool Extended { get; set; }
+
         public const int HITBOX = 0;
         public const int GRABBOX = 1;
         public const int WINDBOX = 2;
