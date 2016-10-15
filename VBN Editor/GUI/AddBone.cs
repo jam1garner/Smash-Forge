@@ -46,7 +46,7 @@ namespace VBN_Editor
             Runtime.TargetVBN.boneCountPerType[temp.boneType]++;
             Runtime.TargetVBN.updateChildren();
             Runtime.TargetVBN.reset();
-            otherForm.treeRefresh();
+            otherForm.leftPanel.treeRefresh();
             Close();
         }
     }

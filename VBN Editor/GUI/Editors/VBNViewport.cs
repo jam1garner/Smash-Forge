@@ -256,7 +256,7 @@ namespace VBN_Editor
             GL.MatrixMode(MatrixMode.Projection);
             GL.ShadeModel(ShadingModel.Flat);
 
-            if (IsMouseOverViewport())
+            if (IsMouseOverViewport() && glControl1.Focused)
                 UpdateMousePosition();
 
             GL.LoadMatrix(ref v);
