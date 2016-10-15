@@ -21,6 +21,7 @@ namespace VBN_Editor
         private void lstAnims_SelectedIndexChanged(object sender, EventArgs e)
         {
             Runtime.TargetAnim = Runtime.Animations[lstAnims.SelectedItem.ToString()];
+            Runtime.TargetAnimString = lstAnims.SelectedItem.ToString();
         }
     }
 }

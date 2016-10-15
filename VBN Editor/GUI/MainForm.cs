@@ -250,7 +250,7 @@ namespace VBN_Editor
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    Viewport.Moveset = new MovesetManager(ofd.FileName);
+                    Runtime.Moveset = new MovesetManager(ofd.FileName);
                 }
             }
         }

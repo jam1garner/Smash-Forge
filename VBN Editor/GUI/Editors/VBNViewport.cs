@@ -170,8 +170,9 @@ namespace VBN_Editor
         public event EventHandler FrameChanged;
         protected virtual void OnFrameChanged(EventArgs e)
         {
-            FrameChanged?.Invoke(this, e);
-            //HandleACMD(AnimName);
+            if (FrameChanged != null)
+                FrameChanged(this, e);
+            //HandleACMD(Runtime.TargetAnimString);
         }
         #endregion
 
@@ -196,13 +197,7 @@ namespace VBN_Editor
         private int _animSpeed = 60;
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        internal MovesetManager Moveset { get; set; }
-
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         private SortedList<int, Hitbox> Hitboxes { get; set; }
-
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        internal string AnimName { get; set; }
         #endregion
 
         #region Rendering
@@ -275,8 +270,8 @@ namespace VBN_Editor
             if (Runtime.TargetVBN != null)
             {
                 // Render the hitboxes
-                if (!string.IsNullOrEmpty(AnimName))
-                    HandleACMD(AnimName);
+                if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
+                    HandleACMD(Runtime.TargetAnimString.Substring(4));
                 RenderHitboxes();
 
                 foreach (Bone bone in Runtime.TargetVBN.bones)
@@ -284,7 +279,7 @@ namespace VBN_Editor
                     // first calcuate the point and draw a point
                     GL.Color3(Color.GreenYellow);
 
-                    Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform/* * scale*/);
+                    Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform);
                     drawCube(pos_c, .085f);
 
                     // now draw line between parent 
@@ -295,7 +290,7 @@ namespace VBN_Editor
                     if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex != -1)
                     {
                         int i = bone.parentIndex;
-                        Vector3 pos_p = Vector3.Transform(Vector3.Zero, Runtime.TargetVBN.bones[i].transform/* * scale*/);
+                        Vector3 pos_p = Vector3.Transform(Vector3.Zero, Runtime.TargetVBN.bones[i].transform);
                         GL.Vertex3(pos_c);
                         GL.Vertex3(pos_p);
                     }
@@ -367,14 +362,14 @@ namespace VBN_Editor
         {
             var crc = Crc32.Compute(animname.ToLower());
 
-            if (Moveset == null)
+            if (Runtime.Moveset == null)
                 return;
 
-            if (!Moveset.Game.Scripts.ContainsKey(crc))
+            if (!Runtime.Moveset.Game.Scripts.ContainsKey(crc))
                 return;
 
             int frame = 0;
-            foreach (var cmd in (ACMDScript)Moveset.Game.Scripts[crc])
+            foreach (var cmd in (ACMDScript)Runtime.Moveset.Game.Scripts[crc])
             {
                 switch (cmd.Ident)
                 {
