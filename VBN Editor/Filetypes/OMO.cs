@@ -219,13 +219,13 @@ namespace VBN_Editor
             int sizeNode = nodeid.Count;
 
             FileOutput o = new FileOutput();
-            o.littleEndian = true;
+            o.Endian = Endianness.Big;
 
             FileOutput t1 = new FileOutput();
-            t1.littleEndian = true;
+            t1.Endian = Endianness.Big;
 
             FileOutput t2 = new FileOutput();
-            t2.littleEndian = true;
+            t2.Endian = Endianness.Big;
 
             o.writeString("OMO ");
             o.writeShort(1); //idk

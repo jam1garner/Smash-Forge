@@ -1,8 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Diagnostics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
 
@@ -79,9 +81,10 @@ namespace VBN_Editor
 		public NUT nut;
 		int[] textureIds;
 
-		public NUD (string fname)
+        public NUD (string fname, NUT nut)
 		{
-			nut = new NUT (new FileData("C:\\s\\Smash\\extract\\data\\fighter\\bayonetta\\model.nut"));
+            if(nut!=null)
+            this.nut = nut; //new NUT (new FileData("C:\\s\\Smash\\extract\\data\\fighter\\bayonetta\\model.nut"));
 
 			GL.GenBuffers(1, out vbo_position);
 			GL.GenBuffers(1, out vbo_color);
@@ -492,7 +495,7 @@ namespace VBN_Editor
 		// Creating---------------------------------------------------------
 		public void saveNUD(String fname, VBN vbn){
 			FileOutput d = new FileOutput(); // data
-			d.littleEndian = true;
+            d.Endian = Endianness.Big;
 
 			// mesh optimize
 
@@ -521,19 +524,19 @@ namespace VBN_Editor
 
 			// other sections....
 			FileOutput obj = new FileOutput(); // data
-			obj.littleEndian = true;
+            obj.Endian = Endianness.Big;
 			FileOutput tex = new FileOutput(); // data
-			tex.littleEndian = true;
+            tex.Endian = Endianness.Big;
 
 			FileOutput poly = new FileOutput(); // data
-			poly.littleEndian = true;
+            poly.Endian = Endianness.Big;
 			FileOutput vert = new FileOutput(); // data
-			vert.littleEndian = true;
+            vert.Endian = Endianness.Big;
 			FileOutput vertadd = new FileOutput(); // data
-			vertadd.littleEndian = true;
+            vertadd.Endian = Endianness.Big;
 
 			FileOutput str = new FileOutput(); // data
-			str.littleEndian = true;
+            str.Endian = Endianness.Big;
 
 
 			// obj descriptor
@@ -605,7 +608,7 @@ namespace VBN_Editor
 					// MATERIAL SECTION TODO:---------------------------------------------------------------------------------
 
 					FileOutput te = new FileOutput();
-					te.littleEndian = true;
+                    te.Endian = Endianness.Big;
 
 					uint testflags = 0x9A013063;
 					te.writeInt((int)testflags); // flags 9A013063

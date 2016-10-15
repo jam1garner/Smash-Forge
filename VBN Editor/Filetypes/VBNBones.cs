@@ -31,6 +31,8 @@ namespace VBN_Editor
 		public UInt32[] boneCountPerType = new UInt32[4];
 		public List<Bone> bones = new List<Bone>();
 
+        public List<List<int>> jointTable = new List<List<int>>();
+
 		public VBN()
 		{
 
@@ -161,8 +163,8 @@ namespace VBN_Editor
 			FileOutput file = new FileOutput();
 			if(file != null)
 			{
-				file.littleEndian = !littleEndian; //Blame Ploaj for his terrible code that is labelled wrong
-				if (littleEndian)
+                file.Endian = Endianness.Little;
+                if (littleEndian)
 					file.writeString(" NBV");
 				if (!littleEndian)
 					file.writeString("VBN ");
@@ -198,6 +200,26 @@ namespace VBN_Editor
 			}
 			file.save(filename);
 		}
+
+        public void readJointTable(string fname){
+            FileData d = new FileData(fname);
+            d.Endian = Endianness.Big;
+
+            int table1 = d.readShort();
+            int table2 = d.readShort();
+
+            List<int> t1 = new List<int>();
+            for (int i = 0; i < table1; i++)
+                t1.Add(d.readShort());
+            
+            List<int> t2 = new List<int>();
+            for (int i = 0; i < table2; i++)
+                t2.Add(d.readShort());
+
+            jointTable.Clear();
+            jointTable.Add(t1);
+            jointTable.Add(t2);
+        }
 
 		public Bone bone(string name)
 		{

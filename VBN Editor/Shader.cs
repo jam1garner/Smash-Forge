@@ -59,13 +59,13 @@ namespace VBN_Editor
 			GL.LinkProgram (programID);
 		}
 
-		void loadShader(String filename, ShaderType type, int program, out int address)
+        void loadShader(string shader, ShaderType type, int program, out int address)
 		{
 			address = GL.CreateShader(type);
-			using (StreamReader sr = new StreamReader(filename))
-			{
-				GL.ShaderSource(address, sr.ReadToEnd());
-			}
+			//using (StreamReader sr = new StreamReader(filename))
+			//{
+				GL.ShaderSource(address, shader);
+			//}
 			GL.CompileShader(address);
 			GL.AttachShader(program, address);
 			Console.WriteLine(GL.GetShaderInfoLog(address));

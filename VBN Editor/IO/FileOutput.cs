@@ -9,7 +9,7 @@ namespace VBN_Editor
 
 		List<byte> data = new List<byte>();
 
-		public bool littleEndian = false;
+        public Endianness Endian;
 
 		public byte[] getBytes()
 		{
@@ -32,7 +32,7 @@ namespace VBN_Editor
 		}
 
 		public void writeInt(int i){
-			if(!littleEndian){
+            if(Endian == Endianness.Little){
 				data.Add((byte)((i)&0xFF));
 				data.Add((byte)((i>>8)&0xFF));
 				data.Add((byte)((i>>16)&0xFF));
@@ -48,7 +48,7 @@ namespace VBN_Editor
 
 
 		public void writeIntAt(int i, int p){
-			if(!littleEndian){
+            if(Endian == Endianness.Little){
 				data[p++] = (byte)((i)&0xFF);
 				data[p++] = (byte)((i>>8)&0xFF);
 				data[p++] = (byte)((i>>16)&0xFF);
@@ -61,7 +61,7 @@ namespace VBN_Editor
 			}
 		}
 		public void writeShortAt(int i, int p){
-			if(!littleEndian){
+            if(Endian == Endianness.Little){
 				data[p++] =  (byte)((i)&0xFF);
 				data[p++] = (byte)((i>>8)&0xFF);
 			}else{
@@ -82,7 +82,7 @@ namespace VBN_Editor
 
 
 		public void writeFloat(float f){
-			int i = SingleToInt32Bits (f, littleEndian);
+            int i = SingleToInt32Bits (f, Endian == Endianness.Big);
 			data.Add((byte)((i)&0xFF));
 			data.Add((byte)((i>>8)&0xFF));
 			data.Add((byte)((i>>16)&0xFF));
@@ -100,13 +100,13 @@ namespace VBN_Editor
 		}
 
 		public void writeHalfFloat(float f){
-			int i = FileData.fromFloat(f, !littleEndian);
+            int i = FileData.fromFloat(f, Endian == Endianness.Little);
 			data.Add((byte)((i)&0xFF));
 			data.Add((byte)((i>>8)&0xFF));
 		}
 
 		public void writeShort(int i){
-			if(!littleEndian){
+            if(Endian == Endianness.Little){
 				data.Add((byte)((i)&0xFF));
 				data.Add((byte)((i>>8)&0xFF));
 			} else {

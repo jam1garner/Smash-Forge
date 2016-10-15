@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Diagnostics;
+using System.IO;
 
 namespace VBN_Editor
 {
@@ -112,7 +113,7 @@ namespace VBN_Editor
 					foreach (String s in mem)
 						o.writeByte (byte.Parse(s, System.Globalization.NumberStyles.HexNumber));
 
-					o.littleEndian = true;
+                    o.Endian = Endianness.Big;
 					o.writeIntAt (1, 0x50);
 					o.writeIntAt (DDSSize, 0xF0);
 
