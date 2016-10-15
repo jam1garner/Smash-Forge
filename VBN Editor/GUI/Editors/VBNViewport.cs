@@ -158,6 +158,9 @@ namespace VBN_Editor
             Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value);
             Runtime.TargetAnim.nextFrame(Runtime.TargetVBN);
             Frame = (int)this.nupdFrame.Value;
+
+            if(script != null)
+                ProcessFrame();
         }
         private void nupdSpeed_ValueChanged(object sender, EventArgs e)
         {
@@ -385,13 +388,25 @@ namespace VBN_Editor
                 foreach (var pair in Hitboxes)
                 {
                     var h = pair.Value;
-                    if (Frame < h.EndFrame && Frame >= h.StartFrame)
-                    {
-                        var va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), Runtime.TargetVBN.bones[h.Bone].transform.ClearScale());
+                    //if (Frame < h.EndFrame && Frame >= h.StartFrame)
+                    //{
+                        var va = new Vector3(h.X, h.Y, h.Z);
 
-                        GL.DepthMask(false);
-                        drawSphere(va, h.Size, 30);
-                    }
+                        if(h.Bone != -1)
+                            va = Vector3.Transform(va, Runtime.TargetVBN.bones[h.Bone].transform.ClearScale());
+
+						GL.DepthMask(false);
+                        if (h.X2 != 0) {
+                            var va2 = new Vector3(h.X2, h.Y2, h.Z2);
+
+                            if(h.Bone != -1)
+                                va2 = Vector3.Transform(va, Runtime.TargetVBN.bones[h.Bone].transform.ClearScale());
+                            
+							drawCylinder (va, va2, h.Size);
+						} else {
+							drawSphere(va, h.Size, 30);
+						}
+                    //}
                 }
 
                 GL.Disable(EnableCap.Blend);
@@ -399,39 +414,36 @@ namespace VBN_Editor
             }
         }
 
-        public void HandleACMD(string animname)
-        {
-            var crc = Crc32.Compute(animname.ToLower());
+        ACMDScript script;
 
-            if (Runtime.Moveset == null)
-                return;
+        public void ProcessFrame(){
+            Hitboxes.Clear ();
+            int halt = 0;
+            int e = 0;
+            int setLoop = 0;
+            int iterations = 0;
+            var cmd = script[e];
 
-            if (!Runtime.Moveset.Game.Scripts.ContainsKey(crc))
-                return;
-
-            int frame = 0;
-            foreach (var cmd in (ACMDScript)Runtime.Moveset.Game.Scripts[crc])
+            while (halt < Frame)
             {
                 switch (cmd.Ident)
                 {
-                    case 0x4B7B6E51: // Synchronous Timer
-                        frame += (int)(float)cmd.Parameters[0];
-                        break;
                     case 0x42ACFE7D: // Asynchronous Timer
-                        frame = (int)(float)cmd.Parameters[0];
-                        break;
-                    case 0xB738EABD: // hitbox commands
-                    case 0xFAA85333:
-                    case 0x321297B0:
-                    case 0x2988D50F:
-                    case 0xED67D5DA:
-                    case 0x14FCC7E4:
-                    case 0x7640AEEB:
-                    case 0x7075DC5A:
+                        {
+                            halt = (int)(float)cmd.Parameters[0] - 1;
+                            break;
+                        }
+                    case 0x4B7B6E51: // Synchronous Timer
+                        {
+                            halt += (int)(float)cmd.Parameters[0] - 1;
+                            break;
+                        }
+                    case 0xB738EABD: // hitbox 
                         {
                             Hitbox h = new Hitbox();
-                            h.StartFrame = frame;
                             int id = (int)cmd.Parameters[0];
+                            if (Hitboxes.ContainsKey(id))
+                                Hitboxes.Remove(id);
                             h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
                             h.Damage = (float)cmd.Parameters[3];
                             h.Angle = (int)cmd.Parameters[4];
@@ -442,28 +454,134 @@ namespace VBN_Editor
                             h.X = (float)cmd.Parameters[9];
                             h.Y = (float)cmd.Parameters[10];
                             h.Z = (float)cmd.Parameters[11];
-                            // I don't really know how the game handles hitboxes
-                            // that use the same id, so i'm just gonna assume one
-                            // replaces the other.
-                            if (!Hitboxes.ContainsKey(id))
-                                Hitboxes.Add(id, h);
-                            else
-                                Hitboxes[id] = h;
+                            Hitboxes.Add(id, h);
+                            break;
+                        }
+                    case 0x2988D50F: // Extended hitbox
+                        {
+                            Hitbox h = new Hitbox();
+                            int id = (int)cmd.Parameters[0];
+                            if (Hitboxes.ContainsKey(id))
+                                Hitboxes.Remove(id);
+                            h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
+                            h.Damage = (float)cmd.Parameters[3];
+                            h.Angle = (int)cmd.Parameters[4];
+                            h.KnockbackGrowth = (int)cmd.Parameters[5];
+                            //FKB = (float)cmd.Parameters[6]
+                            h.KnockbackBase = (int)cmd.Parameters[7];
+                            h.Size = (float)cmd.Parameters[8];
+                            h.X = (float)cmd.Parameters[9];
+                            h.Y = (float)cmd.Parameters[10];
+                            h.Z = (float)cmd.Parameters[11];
+                            h.X2 = (float)cmd.Parameters[24];
+                            h.Y2 = (float)cmd.Parameters[25];
+                            h.Z2 = (float)cmd.Parameters[26];
+                            Hitboxes.Add(id, h);
+                            break;
+                        }
+                    case 0x14FCC7E4: // special hitbox
+                        {
+                            Hitbox h = new Hitbox();
+                            int id = (int)cmd.Parameters[0];
+                            if (Hitboxes.ContainsKey(id))
+                                Hitboxes.Remove(id);
+                            h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
+                            h.Damage = (float)cmd.Parameters[3];
+                            h.Angle = (int)cmd.Parameters[4];
+                            h.KnockbackGrowth = (int)cmd.Parameters[5];
+                            //FKB = (float)cmd.Parameters[6]
+                            h.KnockbackBase = (int)cmd.Parameters[7];
+                            h.Size = (float)cmd.Parameters[8];
+                            h.X = (float)cmd.Parameters[9];
+                            h.Y = (float)cmd.Parameters[10];
+                            h.Z = (float)cmd.Parameters[11];
+                            Hitboxes.Add(id, h);
+                            break;
+                        }
+                    case 0x7075DC5A: // Extended special hitbox
+                        {
+                            Hitbox h = new Hitbox();
+                            int id = (int)cmd.Parameters[0];
+                            if (Hitboxes.ContainsKey(id))
+                                Hitboxes.Remove(id);
+                            h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
+                            h.Damage = (float)cmd.Parameters[3];
+                            h.Angle = (int)cmd.Parameters[4];
+                            h.KnockbackGrowth = (int)cmd.Parameters[5];
+                            //FKB = (float)cmd.Parameters[6]
+                            h.KnockbackBase = (int)cmd.Parameters[7];
+                            h.Size = (float)cmd.Parameters[8];
+                            h.X = (float)cmd.Parameters[9];
+                            h.Y = (float)cmd.Parameters[10];
+                            h.Z = (float)cmd.Parameters[11];
+                            h.X2 = (float)cmd.Parameters[40];
+                            h.Y2 = (float)cmd.Parameters[41];
+                            h.Z2 = (float)cmd.Parameters[42];
+                            Hitboxes.Add(id, h);
                             break;
                         }
                     case 0x9245E1A8: // clear all hitboxes
-                        if (Hitboxes.Count > 0)
-                            foreach (var hitbox in Hitboxes)
-                                hitbox.Value.EndFrame = frame;
+                        Hitboxes.Clear ();
                         break;
                     case 0xFF379EB6: // delete hitbox
                         if (Hitboxes.ContainsKey((int)cmd.Parameters[0]))
                         {
-                            Hitboxes[(int)cmd.Parameters[0]].EndFrame = frame;
+                            Hitboxes.Remove((int)cmd.Parameters[0]);
                         }
                         break;
+                    case 0x7698BB42: // deactivate previous hitbox
+                        Hitboxes.Remove(Hitboxes.Keys.Max());
+                        break;
+                    case 0xEB375E3: // Set Loop
+                        iterations = int.Parse(cmd.Parameters[0] + "");
+                        setLoop = e;
+                        break;
+                    case 0x38A3EC78: // goto
+                        if (iterations > 0)
+                        {
+                            e = setLoop;
+                            iterations -= 1;
+                        }
+                        break;
+                    case 0xFAA85333:
+                        break;
+                    case 0x321297B0:
+                        break;
+                    case 0xED67D5DA:
+                        break;
+                    case 0x7640AEEB:
+                        break;
+                    
                 }
+
+                e++;
+                if (e >= script.Count)
+                    break;
+                else
+                    cmd = script[e];
+
+                if (halt > Frame)
+                    break;
             }
+        }
+
+        public void HandleACMD(string animname)
+        {
+            var crc = Crc32.Compute(animname.ToLower());
+
+            if (Runtime.Moveset == null)
+            {
+                script = null;
+                return;
+            }
+
+            if (!Runtime.Moveset.Game.Scripts.ContainsKey(crc))
+            {
+                script = null;
+                return;
+            }
+
+            script = (ACMDScript)Runtime.Moveset.Game.Scripts[crc];
         }
         private float clampControl(float f)
         {
@@ -476,13 +594,13 @@ namespace VBN_Editor
         public void drawFloor(Matrix4 s)
         {
             // Draw floor plane
-            GL.Color3(Color.LightGray);
+            /*GL.Color3(Color.LightGray);
             GL.Begin(PrimitiveType.Quads);
             GL.Vertex3(-20f, 0f, -20f);
             GL.Vertex3(20f, 0f, -20f);
             GL.Vertex3(20f, 0f, 20f);
             GL.Vertex3(-20f, 0f, 20f);
-            GL.End();
+            GL.End();*/
 
             // Draw grid over it
             GL.Disable(EnableCap.DepthTest);
@@ -652,6 +770,73 @@ namespace VBN_Editor
                 GL.End();
             }
         }
+
+		public static void drawCylinder(Vector3 p1, Vector3 p2, float R){
+			int q = 8, p = 20;
+
+			Vector3 yAxis = new Vector3 (0, 1, 0);
+			Vector3 d = p2 - p1;
+			float height = (float)Math.Sqrt (d.X*d.X + d.Y*d.Y + d.Z*d.Z) / 2;
+
+			Vector3 mid = (p1 + p2) / 2;
+
+			Vector3 axis = Vector3.Cross (d, yAxis);
+			float angle = (float)Math.Acos (Vector3.Dot(d.Normalized(), yAxis));
+
+			GL.PushMatrix ();
+			GL.Translate(p1);
+			GL.Rotate (-(float)((angle) * (180/Math.PI)), axis);
+			for(int j = 0; j < q; j++)
+			{
+				GL.Begin(PrimitiveType.TriangleStrip);
+				for(int i = 0; i <= p; i++)
+				{
+					GL.Vertex3( R * Math.Cos( (float)(j+1)/q * Math.PI/2.0 ) * Math.Cos( 2.0 * (float)i/p * Math.PI ),
+						-R * Math.Sin( (float)(j+1)/q * Math.PI/2.0 ),
+						R * Math.Cos( (float)(j+1)/q * Math.PI/2.0 ) * Math.Sin( 2.0 * (float)i/p * Math.PI ) );
+					GL.Vertex3( R * Math.Cos( (float)j/q * Math.PI/2.0 ) * Math.Cos( 2.0 * (float)i/p * Math.PI ),
+						-R * Math.Sin( (float)j/q * Math.PI/2.0 ),
+						R * Math.Cos( (float)j/q * Math.PI/2.0 ) * Math.Sin( 2.0 * (float)i/p * Math.PI ) );         
+				}
+				GL.End();
+			}
+			GL.PopMatrix ();
+
+			GL.PushMatrix ();
+			GL.Translate(p2);
+			GL.Rotate (-(float)(angle * (180/Math.PI)), axis);
+			for(int j = 0; j < q; j++)
+			{
+				GL.Begin(PrimitiveType.TriangleStrip);
+				for(int i = 0; i <= p; i++)
+				{
+					GL.Vertex3( R * Math.Cos( (float)(j+1)/q * Math.PI/2.0 ) * Math.Cos( 2.0 * (float)i/p * Math.PI ),
+						R * Math.Sin( (float)(j+1)/q * Math.PI/2.0 ),
+						R * Math.Cos( (float)(j+1)/q * Math.PI/2.0 ) * Math.Sin( 2.0 * (float)i/p * Math.PI ) );
+					GL.Vertex3( R * Math.Cos( (float)j/q * Math.PI/2.0 ) * Math.Cos( 2.0 * (float)i/p * Math.PI ),
+						R * Math.Sin( (float)j/q * Math.PI/2.0 ),
+						R * Math.Cos( (float)j/q * Math.PI/2.0 ) * Math.Sin( 2.0 * (float)i/p * Math.PI ) );         
+				}
+				GL.End();
+			}
+			GL.PopMatrix ();
+
+
+			/*  sides */
+			GL.PushMatrix ();
+
+			GL.Translate(mid);
+			GL.Rotate (-(float)(angle * (180/Math.PI)), axis);
+
+			GL.Begin(PrimitiveType.QuadStrip);
+			for (int j=0;j<=360;j+=1) {
+				GL.Vertex3(Math.Cos(j)*R,+height,Math.Sin(j)*R);
+				GL.Vertex3(Math.Cos(j)*R,-height,Math.Sin(j)*R);
+			}
+			GL.End();
+
+			GL.PopMatrix ();
+		}
         #endregion
 
         public void SetFrame(int frame)

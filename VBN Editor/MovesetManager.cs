@@ -152,9 +152,6 @@ namespace VBN_Editor
 
     public class Hitbox
     {
-        public int StartFrame { get; set; }
-        public int EndFrame { get; set; }
-
         public float Damage { get; set; }
         public float Angle { get; set; }
         public float KnockbackGrowth { get; set; }
@@ -164,6 +161,9 @@ namespace VBN_Editor
         public float Size { get; set; }
         public float X { get; set; }
         public float Y { get; set; }
-        public float Z { get; set; }
+		public float Z { get; set; }
+		public float X2 { get; set; }
+		public float Y2 { get; set; }
+		public float Z2 { get; set; }
     }
 }
