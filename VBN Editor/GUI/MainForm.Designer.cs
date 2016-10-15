@@ -29,8 +29,6 @@
 		private void InitializeComponent()
 		{
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,53 +47,18 @@
             this.exportToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.treeView1 = new System.Windows.Forms.TreeView();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.propertiesWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.animationsWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.boneTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewportWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
-            this.label1 = new System.Windows.Forms.Label();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.lstAnims = new System.Windows.Forms.ListBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.lstMoveset = new System.Windows.Forms.ListBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
-            this.Viewport = new VBN_Editor.VBNViewport();
+            this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.menuStrip1.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
-            this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            this.groupBox4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -105,7 +68,7 @@
             this.edittToolStripMenuItem,
             this.animationToolStripMenuItem,
             this.toolStripMenuItem1,
-            this.aboutToolStripMenuItem});
+            this.viewToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1009, 24);
@@ -233,76 +196,59 @@
             this.toolStripMenuItem2.Size = new System.Drawing.Size(110, 22);
             this.toolStripMenuItem2.Text = "Clear";
             // 
-            // aboutToolStripMenuItem
+            // viewToolStripMenuItem
             // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
-            this.aboutToolStripMenuItem.Text = "About";
-            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.propertiesWindowToolStripMenuItem,
+            this.animationsWindowToolStripMenuItem,
+            this.boneTreeToolStripMenuItem,
+            this.viewportWindowToolStripMenuItem,
+            this.toolStripSeparator3,
+            this.aboutToolStripMenuItem1});
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Text = "View";
             // 
-            // treeView1
+            // propertiesWindowToolStripMenuItem
             // 
-            this.treeView1.AllowDrop = true;
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView1.HideSelection = false;
-            this.treeView1.Location = new System.Drawing.Point(0, 0);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(212, 339);
-            this.treeView1.TabIndex = 1;
-            this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView1_ItemDrag);
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
-            this.treeView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeView1_DragDrop);
-            this.treeView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeView1_DragEnter);
-            this.treeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
+            this.propertiesWindowToolStripMenuItem.CheckOnClick = true;
+            this.propertiesWindowToolStripMenuItem.Name = "propertiesWindowToolStripMenuItem";
+            this.propertiesWindowToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.propertiesWindowToolStripMenuItem.Text = "Properties Window";
             // 
-            // textBox1
+            // animationsWindowToolStripMenuItem
             // 
-            this.textBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.textBox1.Location = new System.Drawing.Point(0, 339);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(212, 20);
-            this.textBox1.TabIndex = 2;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.animationsWindowToolStripMenuItem.CheckOnClick = true;
+            this.animationsWindowToolStripMenuItem.Name = "animationsWindowToolStripMenuItem";
+            this.animationsWindowToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.animationsWindowToolStripMenuItem.Text = "Animations";
+            this.animationsWindowToolStripMenuItem.Click += new System.EventHandler(this.animationsWindowToolStripMenuItem_Click);
             // 
-            // groupBox1
+            // boneTreeToolStripMenuItem
             // 
-            this.groupBox1.Controls.Add(this.dataGridView1);
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox1.Location = new System.Drawing.Point(0, 359);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(212, 300);
-            this.groupBox1.TabIndex = 5;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Bone Info";
+            this.boneTreeToolStripMenuItem.Name = "boneTreeToolStripMenuItem";
+            this.boneTreeToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.boneTreeToolStripMenuItem.Text = "Bone Tree";
+            this.boneTreeToolStripMenuItem.Click += new System.EventHandler(this.boneTreeToolStripMenuItem_Click);
             // 
-            // dataGridView1
+            // viewportWindowToolStripMenuItem
             // 
-            this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.Window;
-            this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
-            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView1.GridColor = System.Drawing.SystemColors.ButtonFace;
-            this.dataGridView1.Location = new System.Drawing.Point(3, 16);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(206, 281);
-            this.dataGridView1.TabIndex = 6;
-            this.dataGridView1.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellValueChanged);
+            this.viewportWindowToolStripMenuItem.Name = "viewportWindowToolStripMenuItem";
+            this.viewportWindowToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.viewportWindowToolStripMenuItem.Text = "Viewport";
+            this.viewportWindowToolStripMenuItem.Click += new System.EventHandler(this.viewportWindowToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(171, 6);
+            // 
+            // aboutToolStripMenuItem1
+            // 
+            this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(174, 22);
+            this.aboutToolStripMenuItem1.Text = "About";
+            this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // contextMenuStrip1
             // 
@@ -333,302 +279,40 @@
             this.radioButton2.UseVisualStyleBackColor = true;
             this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
             // 
-            // splitContainer1
+            // dockPanel1
             // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 24);
-            this.splitContainer1.Name = "splitContainer1";
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.treeView1);
-            this.splitContainer1.Panel1.Controls.Add(this.textBox1);
-            this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.Viewport);
-            this.splitContainer1.Panel2.Controls.Add(this.groupBox2);
-            this.splitContainer1.Panel2.Controls.Add(this.panel1);
-            this.splitContainer1.Size = new System.Drawing.Size(1009, 659);
-            this.splitContainer1.SplitterDistance = 212;
-            this.splitContainer1.TabIndex = 11;
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.label3);
-            this.groupBox2.Controls.Add(this.numericUpDown3);
-            this.groupBox2.Controls.Add(this.checkBox1);
-            this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Controls.Add(this.numericUpDown2);
-            this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Controls.Add(this.numericUpDown1);
-            this.groupBox2.Controls.Add(this.button5);
-            this.groupBox2.Controls.Add(this.button4);
-            this.groupBox2.Controls.Add(this.button3);
-            this.groupBox2.Controls.Add(this.button2);
-            this.groupBox2.Controls.Add(this.button1);
-            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox2.Location = new System.Drawing.Point(0, 568);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(593, 91);
-            this.groupBox2.TabIndex = 7;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Animations";
-            // 
-            // label2
-            // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(427, 17);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(39, 13);
-            this.label2.TabIndex = 8;
-            this.label2.Text = "Frame:";
-            // 
-            // numericUpDown2
-            // 
-            this.numericUpDown2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown2.Location = new System.Drawing.Point(468, 14);
-            this.numericUpDown2.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
-            this.numericUpDown2.Name = "numericUpDown2";
-            this.numericUpDown2.Size = new System.Drawing.Size(52, 20);
-            this.numericUpDown2.TabIndex = 7;
-            this.numericUpDown2.ValueChanged += new System.EventHandler(this.NumericUpDown1_ValueChanged);
-            // 
-            // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(523, 17);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(12, 13);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "/";
-            // 
-            // numericUpDown1
-            // 
-            this.numericUpDown1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown1.Enabled = false;
-            this.numericUpDown1.Location = new System.Drawing.Point(538, 14);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(52, 20);
-            this.numericUpDown1.TabIndex = 5;
-            // 
-            // button5
-            // 
-            this.button5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.button5.Location = new System.Drawing.Point(94, 40);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(402, 44);
-            this.button5.TabIndex = 4;
-            this.button5.Text = "Play";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
-            // button4
-            // 
-            this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button4.Location = new System.Drawing.Point(502, 40);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(35, 44);
-            this.button4.TabIndex = 3;
-            this.button4.Text = ">";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // button3
-            // 
-            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.Location = new System.Drawing.Point(544, 40);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(35, 44);
-            this.button3.TabIndex = 2;
-            this.button3.Text = ">|";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(53, 40);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(35, 44);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "<";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(12, 40);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(35, 44);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "|<";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.splitContainer2);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel1.Location = new System.Drawing.Point(593, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(200, 659);
-            this.panel1.TabIndex = 8;
-            // 
-            // splitContainer2
-            // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Name = "splitContainer2";
-            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer2.Panel1
-            // 
-            this.splitContainer2.Panel1.Controls.Add(this.groupBox3);
-            // 
-            // splitContainer2.Panel2
-            // 
-            this.splitContainer2.Panel2.Controls.Add(this.groupBox4);
-            this.splitContainer2.Size = new System.Drawing.Size(200, 659);
-            this.splitContainer2.SplitterDistance = 344;
-            this.splitContainer2.TabIndex = 1;
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.lstAnims);
-            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox3.Location = new System.Drawing.Point(0, 0);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(200, 344);
-            this.groupBox3.TabIndex = 0;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Animations";
-            // 
-            // lstAnims
-            // 
-            this.lstAnims.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lstAnims.FormattingEnabled = true;
-            this.lstAnims.Location = new System.Drawing.Point(3, 16);
-            this.lstAnims.Name = "lstAnims";
-            this.lstAnims.Size = new System.Drawing.Size(194, 325);
-            this.lstAnims.TabIndex = 0;
-            this.lstAnims.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
-            // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.lstMoveset);
-            this.groupBox4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox4.Location = new System.Drawing.Point(0, 0);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(200, 311);
-            this.groupBox4.TabIndex = 1;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Moveset";
-            // 
-            // lstMoveset
-            // 
-            this.lstMoveset.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lstMoveset.FormattingEnabled = true;
-            this.lstMoveset.Location = new System.Drawing.Point(3, 16);
-            this.lstMoveset.Name = "lstMoveset";
-            this.lstMoveset.Size = new System.Drawing.Size(194, 292);
-            this.lstMoveset.TabIndex = 0;
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(109, 20);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(50, 17);
-            this.checkBox1.TabIndex = 12;
-            this.checkBox1.Text = "Loop";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
-            // 
-            // numericUpDown3
-            // 
-            this.numericUpDown3.Location = new System.Drawing.Point(51, 17);
-            this.numericUpDown3.Name = "numericUpDown3";
-            this.numericUpDown3.Size = new System.Drawing.Size(52, 20);
-            this.numericUpDown3.TabIndex = 13;
-            this.numericUpDown3.Value = new decimal(new int[] {
-            60,
-            0,
-            0,
-            0});
-            this.numericUpDown3.ValueChanged += new System.EventHandler(this.numericUpDown3_ValueChanged);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 20);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(41, 13);
-            this.label3.TabIndex = 14;
-            this.label3.Text = "Speed:";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
-            // 
-            // Viewport
-            // 
-            this.Viewport.BackColor = System.Drawing.Color.Black;
-            this.Viewport.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Viewport.Location = new System.Drawing.Point(0, 0);
-            this.Viewport.Name = "Viewport";
-            this.Viewport.Size = new System.Drawing.Size(593, 568);
-            this.Viewport.TabIndex = 0;
-            this.Viewport.VSync = false;
+            this.dockPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dockPanel1.DockBackColor = System.Drawing.SystemColors.AppWorkspace;
+            this.dockPanel1.DockBottomPortion = 150D;
+            this.dockPanel1.DockLeftPortion = 200D;
+            this.dockPanel1.DockRightPortion = 200D;
+            this.dockPanel1.DockTopPortion = 150D;
+            this.dockPanel1.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, ((byte)(0)));
+            this.dockPanel1.Location = new System.Drawing.Point(0, 24);
+            this.dockPanel1.Name = "dockPanel1";
+            this.dockPanel1.RightToLeftLayout = true;
+            this.dockPanel1.Size = new System.Drawing.Size(1009, 659);
+            this.dockPanel1.TabIndex = 16;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1009, 683);
-            this.Controls.Add(this.splitContainer1);
+            this.Controls.Add(this.dockPanel1);
             this.Controls.Add(this.radioButton2);
             this.Controls.Add(this.radioButton1);
             this.Controls.Add(this.menuStrip1);
             this.ForeColor = System.Drawing.Color.Black;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.IsMdiContainer = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Skeletal Animation Tool";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel1.PerformLayout();
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
-            this.panel1.ResumeLayout(false);
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox4.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -640,11 +324,6 @@
 		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem openVBNToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem openNUDToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
-		private System.Windows.Forms.TreeView treeView1;
-		private System.Windows.Forms.TextBox textBox1;
-		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.DataGridView dataGridView1;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
 		private System.Windows.Forms.ToolStripMenuItem edittToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem addBoneToolStripMenuItem;
@@ -654,34 +333,22 @@
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.ToolStripMenuItem hashMatchToolStripMenuItem;
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.NumericUpDown numericUpDown2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
         private VBNViewport Viewport;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.ListBox lstAnims;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
-        private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.ListBox lstMoveset;
-        private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.NumericUpDown numericUpDown3;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel1;
+        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem propertiesWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem animationsWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewportWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem boneTreeToolStripMenuItem;
     }
 }
 

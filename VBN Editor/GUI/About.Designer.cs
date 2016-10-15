@@ -36,6 +36,7 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -90,7 +91,7 @@
             this.textBox1.Size = new System.Drawing.Size(267, 81);
             this.textBox1.TabIndex = 0;
             this.textBox1.TabStop = false;
-            this.textBox1.Text = "Y2K\r\nSammi Husky";
+            this.textBox1.Text = "Y2K";
             // 
             // groupBox1
             // 
@@ -105,11 +106,20 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(118, 65);
+            this.label5.Location = new System.Drawing.Point(118, 80);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(119, 13);
             this.label5.TabIndex = 2;
             this.label5.Text = "Copyright (c) 2016 Ploaj";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(118, 66);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(160, 13);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "Copyright (c) 2016 Sammi Husky";
             // 
             // About
             // 
@@ -118,6 +128,7 @@
             this.ClientSize = new System.Drawing.Size(297, 219);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -144,5 +155,6 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label3;
     }
 }

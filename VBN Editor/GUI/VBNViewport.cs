@@ -7,20 +7,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
 using System.Security.Cryptography;
 using SALT.Scripting.AnimCMD;
+using OpenTK.Graphics;
+using System.Diagnostics;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace VBN_Editor
 {
-    public partial class VBNViewport : GLControl
+    public partial class VBNViewport : DockContent
     {
         public VBNViewport()
         {
             InitializeComponent();
+            this.TabText = "Renderer";
             Hitboxes = new SortedList<int, Hitbox>();
+            Application.Idle += Application_Idle;
+            Runtime.AnimationChanged += Runtime_AnimationChanged;
+        }
+
+        // Explicitly unsubscribe from the static event to 
+        // prevent hanging Garbage Collection.
+        ~VBNViewport()
+        {
+            Runtime.AnimationChanged -= Runtime_AnimationChanged;
         }
 
         public bool _controlLoaded;
@@ -29,7 +41,6 @@ namespace VBN_Editor
             base.OnLoad(e);
             if (!DesignMode)
             {
-                GL.ClearColor(Color.AliceBlue);
                 SetupViewPort();
             }
             render = true;
@@ -38,25 +49,135 @@ namespace VBN_Editor
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-            int h = Height;
-            int w = Width;
             if (!DesignMode && _controlLoaded)
             {
                 GL.LoadIdentity();
-                GL.Viewport(0, 0, w, h);
+                GL.Viewport(glControl1.ClientRectangle);
                 v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 40.0f);
             }
+        }
+
+        #region Members
+        Matrix4 v;
+        float rot = 0;
+        float lookup = 0;
+        float height = 0;
+        float width = 0;
+        float zoom = 0;
+        float mouseXLast = 0;
+        float mouseYLast = 0;
+        float mouseSLast = 0;
+        bool render = false;
+        bool isPlaying = false;
+        #endregion
+
+        #region Event Handlers
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            // Fix accessing the control after 
+            // the editor has been closed 
+            if (this.IsDisposed == true)
+                return;
+
+            while (glControl1.IsIdle && render && _controlLoaded)
+            {
+                if (isPlaying)
+                {
+                    if (nupdFrame.Value < nupdMaxFrame.Value)
+                    {
+                        nupdFrame.Value++;
+                    }
+                    else if (nupdFrame.Value == nupdMaxFrame.Value)
+                    {
+                        isPlaying = false;
+                        btnPlay.Text = "Play";
+                    }
+                }
+                Render();
+                System.Threading.Thread.Sleep(1000 / 60);
+            }
+        }
+        private void Runtime_AnimationChanged(object sender, EventArgs e)
+        {
+            loadAnimation(Runtime.TargetAnim);
+        }
+
+        private void btnFirstFrame_Click(object sender, EventArgs e)
+        {
+            this.nupdFrame.Value = 0;
+        }
+        private void btnPrevFrame_Click(object sender, EventArgs e)
+        {
+            if (this.nupdFrame.Value - 1 >= 0)
+                this.nupdFrame.Value -= 1;
+        }
+        private void btnLastFrame_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetAnim != null)
+                this.nupdFrame.Value = Runtime.TargetAnim.size() - 1;
+        }
+        private void btnNextFrame_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetAnim != null)
+                this.nupdFrame.Value += 1;
+        }
+        private void btnPlay_Click(object sender, EventArgs e)
+        {
+            // If we're already at final frame and we hit play again
+            // start from the beginning of the anim
+            if (nupdMaxFrame.Value == nupdFrame.Value)
+                nupdFrame.Value = 0;
+
+            isPlaying = !isPlaying;
+            if (isPlaying)
+            {
+                btnPlay.Text = "Pause";
+            }
+            else
+            {
+                btnPlay.Text = "Play";
+            }
+        }
+        private void nupdFrame_ValueChanged(Object sender, EventArgs e)
+        {
+            if (Runtime.TargetAnim == null)
+                return;
+
+            if (this.nupdFrame.Value >= Runtime.TargetAnim.size())
+            {
+                this.nupdFrame.Value = 0;
+                return;
+            }
+            if (this.nupdFrame.Value < 0)
+            {
+                this.nupdFrame.Value = Runtime.TargetAnim.size() - 1;
+                return;
+            }
+            Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value);
+            Runtime.TargetAnim.nextFrame(Runtime.TargetVBN);
+            Frame = (int)this.nupdFrame.Value;
+        }
+        private void nupdSpeed_ValueChanged(object sender, EventArgs e)
+        {
+            AnimationSpeed = (int)nupdFrameRate.Value;
+        }
+
+        private void glControl1_MouseMove(object sender, MouseEventArgs e)
+        {
+            UpdateMousePosition();
         }
 
         public event EventHandler FrameChanged;
         protected virtual void OnFrameChanged(EventArgs e)
         {
-            //FrameChanged.Invoke(this, e);
-            //HandleACMD(AnimName);
+            if (FrameChanged != null)
+                FrameChanged(this, e);
+            //HandleACMD(Runtime.TargetAnimString);
         }
+        #endregion
 
+        #region Properties
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [ReadOnly(true)]
         internal int Frame
         {
             get
@@ -71,77 +192,21 @@ namespace VBN_Editor
         }
         private int _frame = 0;
 
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [ReadOnly(true)]
-        internal MovesetManager Moveset { get; set; }
+        [DefaultValue(60)]
+        internal int AnimationSpeed { get { return _animSpeed; } set { _animSpeed = value; } }
+        private int _animSpeed = 60;
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [ReadOnly(true)]
         private SortedList<int, Hitbox> Hitboxes { get; set; }
+        #endregion
 
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [ReadOnly(true)]
-        internal VBN TargetVBN { get; set; }
-
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [ReadOnly(true)]
-        internal SkelAnimation TargetAnim { get; set; }
-
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [ReadOnly(true)]
-        internal string AnimName { get; set; }
-
-        public void SetTarget(string animName, SkelAnimation animation, VBN boneset)
-        {
-            TargetVBN = boneset;
-            TargetAnim = animation;
-            AnimName = animName;
-        }
-        public void SetFrame(int frame)
-        {
-            TargetAnim.setFrame(frame);
-            TargetAnim.nextFrame(TargetVBN);
-        }
-
-        Matrix4 v;
-        float rot = 0;
-        float lookup = 0;
-        float height = 0;
-        float width = 0;
-        float zoom = 0;
-        float mouseXLast = 0;
-        float mouseYLast = 0;
-        float mouseSLast = 0;
-        bool render = false;
-
-		// opentk shader stuffs
-		Shader shader;
-
+        #region Rendering
         private void SetupViewPort()
         {
-			shader = new Shader();
-
-			if (File.Exists ("vs.glsl")) {
-				shader.vertexShader ("vs.glsl");
-				shader.fragmentShader ("fr.glsl");
-
-				shader.addAttribute ("vPosition", false);
-				shader.addAttribute ("vColor", false);
-				shader.addAttribute ("vNormal", false);
-				shader.addAttribute ("vUV", false);
-				shader.addAttribute ("vBone", false);
-				shader.addAttribute ("vWeight", false);
-
-				shader.addAttribute ("tex", true);
-				shader.addAttribute ("modelview", true);
-				shader.addAttribute ("bones", true);
-			}
-
-
-            int h = Height;
+            int h = Height - groupBox2.ClientRectangle.Top;
             int w = Width;
             GL.LoadIdentity();
-            GL.Viewport(0, 0, w, h);
+            GL.Viewport(glControl1.ClientRectangle);
             v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 40.0f);
 
             GotFocus += (object sender, EventArgs e) =>
@@ -152,61 +217,47 @@ namespace VBN_Editor
                 mouseSLast = zoom;
             };
         }
-        private bool MouseIsOverViewport()
-        {
-            if (ClientRectangle.Contains(PointToClient(Cursor.Position)))
-            {
-                return true;
-            }
-            return false;
-        }
 
-		public void Render(VBN skeleton, NUD model)
+        public void Render()
         {
             if (!render)
                 return;
+
+            GL.ClearColor(Color.AliceBlue);
 
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
 
             // clear the gf buffer
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 
-            GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.LineSmooth); // This is Optional 
             GL.Enable(EnableCap.Normalize);  // These is critical to have
             GL.Enable(EnableCap.RescaleNormal);
+
+            GL.ClearDepth(1.0);
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Less);
+
+
+            GL.Enable(EnableCap.AlphaTest);
+            GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
 
             // set up the viewport projection and send it to GPU
             GL.MatrixMode(MatrixMode.Projection);
             GL.ShadeModel(ShadingModel.Flat);
 
-            // Poll the mouse for changes
-            UpdateMousePosition();
+            if (IsMouseOverViewport() && glControl1.Focused)
+                UpdateMousePosition();
 
             GL.LoadMatrix(ref v);
 
             // ready to start drawing model stuff
             GL.MatrixMode(MatrixMode.Modelview);
-
-			// draw models
-			if (model != null && skeleton != null) {
-				GL.UseProgram (shader.programID);
-
-				GL.UniformMatrix4 (shader.getAttribute("modelview"), false, ref v);
-
-				float[] f = skeleton.getShaderMatrix ();
-
-				GL.UniformMatrix4 (shader.getAttribute("bone"), f.Length, false, f);
-
-				shader.enableAttrib ();
-				model.Render (shader);
-				shader.disableAttrib ();
-			}
-
-
-			GL.UseProgram (0);
 
             // draw the grid floor first
             drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
@@ -216,19 +267,19 @@ namespace VBN_Editor
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             // drawing the bones
-            if (TargetVBN != null)
+            if (Runtime.TargetVBN != null)
             {
                 // Render the hitboxes
-                if (!string.IsNullOrEmpty(AnimName))
-                    HandleACMD(AnimName);
+                if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
+                    HandleACMD(Runtime.TargetAnimString.Substring(4));
                 RenderHitboxes();
 
-                foreach (Bone bone in TargetVBN.bones)
+                foreach (Bone bone in Runtime.TargetVBN.bones)
                 {
                     // first calcuate the point and draw a point
                     GL.Color3(Color.GreenYellow);
 
-                    Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform/* * scale*/);
+                    Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform);
                     drawCube(pos_c, .085f);
 
                     // now draw line between parent 
@@ -239,7 +290,7 @@ namespace VBN_Editor
                     if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex != -1)
                     {
                         int i = bone.parentIndex;
-                        Vector3 pos_p = Vector3.Transform(Vector3.Zero, TargetVBN.bones[i].transform/* * scale*/);
+                        Vector3 pos_p = Vector3.Transform(Vector3.Zero, Runtime.TargetVBN.bones[i].transform);
                         GL.Vertex3(pos_c);
                         GL.Vertex3(pos_p);
                     }
@@ -249,32 +300,38 @@ namespace VBN_Editor
 
             // Clean up
             GL.PopAttrib();
-            SwapBuffers();
+            glControl1.SwapBuffers();
         }
+
         public void UpdateMousePosition()
         {
-            if (MouseIsOverViewport())
+            if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
             {
-                if (OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
-                {
-                    height += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                    width += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                    height = clampControl(height);
-                    width = clampControl(width);
-                }
-                if (OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Left))
-                {
-                    rot += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                    lookup += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                }
-                v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 80.0f);
-
-                mouseXLast = OpenTK.Input.Mouse.GetState().X;
-                mouseYLast = OpenTK.Input.Mouse.GetState().Y;
-
-                zoom += OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast;
-                mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
+                height += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                width += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                height = clampControl(height);
+                width = clampControl(width);
             }
+            if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
+            {
+                rot += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                lookup += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+            }
+
+            mouseXLast = OpenTK.Input.Mouse.GetState().X;
+            mouseYLast = OpenTK.Input.Mouse.GetState().Y;
+
+            zoom += OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast;
+            mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
+
+            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 80.0f);
+        }
+        public bool IsMouseOverViewport()
+        {
+            if (glControl1.ClientRectangle.Contains(PointToClient(Cursor.Position)))
+                return true;
+            else
+                return false;
         }
         public void RenderHitboxes()
         {
@@ -289,7 +346,7 @@ namespace VBN_Editor
                     var h = pair.Value;
                     if (Frame < h.EndFrame && Frame >= h.StartFrame)
                     {
-                        var va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), TargetVBN.bones[h.Bone].transform.ClearScale());
+                        var va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), Runtime.TargetVBN.bones[h.Bone].transform.ClearScale());
 
                         GL.DepthMask(false);
                         drawSphere(va, h.Size, 30);
@@ -305,14 +362,14 @@ namespace VBN_Editor
         {
             var crc = Crc32.Compute(animname.ToLower());
 
-            if (Moveset == null)
+            if (Runtime.Moveset == null)
                 return;
 
-            if (!Moveset.Game.Scripts.ContainsKey(crc))
+            if (!Runtime.Moveset.Game.Scripts.ContainsKey(crc))
                 return;
 
             int frame = 0;
-            foreach (var cmd in (ACMDScript)Moveset.Game.Scripts[crc])
+            foreach (var cmd in (ACMDScript)Runtime.Moveset.Game.Scripts[crc])
             {
                 switch (cmd.Ident)
                 {
@@ -385,17 +442,19 @@ namespace VBN_Editor
             GL.Vertex3(20f, 0f, 20f);
             GL.Vertex3(-20f, 0f, 20f);
             GL.End();
+
             // Draw grid over it
+            GL.Disable(EnableCap.DepthTest);
 
             GL.Color3(Color.DimGray);
             GL.LineWidth(1f);
             GL.Begin(PrimitiveType.Lines);
             for (var i = -10; i <= 10; i++)
             {
-                GL.Vertex3(Vector3.Transform(new Vector3(-10f*2, 0f, i*2), s));
-                GL.Vertex3(Vector3.Transform(new Vector3(10f*2, 0f, i*2), s));
-                GL.Vertex3(Vector3.Transform(new Vector3(i*2, 0f, -10f*2), s));
-                GL.Vertex3(Vector3.Transform(new Vector3(i*2, 0f, 10f*2), s));
+                GL.Vertex3(Vector3.Transform(new Vector3(-10f * 2, 0f, i * 2), s));
+                GL.Vertex3(Vector3.Transform(new Vector3(10f * 2, 0f, i * 2), s));
+                GL.Vertex3(Vector3.Transform(new Vector3(i * 2, 0f, -10f * 2), s));
+                GL.Vertex3(Vector3.Transform(new Vector3(i * 2, 0f, 10f * 2), s));
             }
             GL.End();
 
@@ -551,6 +610,20 @@ namespace VBN_Editor
                 }
                 GL.End();
             }
+        }
+        #endregion
+
+        public void SetFrame(int frame)
+        {
+            Runtime.TargetAnim.setFrame(frame);
+            Runtime.TargetAnim.nextFrame(Runtime.TargetVBN);
+        }
+        public void loadAnimation(SkelAnimation a)
+        {
+            a.setFrame(0);
+            a.nextFrame(Runtime.TargetVBN);
+            nupdMaxFrame.Value = a.size() > 1 ? a.size() - 1 : a.size();
+            nupdFrame.Value = 0;
         }
     }
 }
