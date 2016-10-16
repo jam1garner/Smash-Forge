@@ -315,6 +315,7 @@
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_Close);
 
 		}
 

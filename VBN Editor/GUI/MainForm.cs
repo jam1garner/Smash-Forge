@@ -32,6 +32,12 @@ namespace VBN_Editor
             AddDockedControl(leftPanel);
         }
 
+        private void MainForm_Close(object sender, EventArgs e)
+        {
+            if (Runtime.TargetNUD != null)
+                Runtime.TargetNUD.Destroy();
+        }
+
         public void AddDockedControl(DockContent content)
         {
             if (dockPanel1.DocumentStyle == DocumentStyle.SystemMdi)
@@ -122,9 +128,9 @@ namespace VBN_Editor
                                 Runtime.TargetVBN.readJointTable(pjtb);
                         }
 
-                        NUT nut = null;
-                        //if (!pnut.Equals(""))
-                        //    nut = new NUT(new FileData(pnut));
+                        /*NUT nut = null;
+                        if (!pnut.Equals(""))
+                            nut = new NUT(new FileData(pnut));*/
 
                         if (!pnud.Equals(""))
                             Runtime.TargetNUD = new NUD(pnud, nut);

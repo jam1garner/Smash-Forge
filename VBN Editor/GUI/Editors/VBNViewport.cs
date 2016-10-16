@@ -54,6 +54,30 @@ namespace VBN_Editor
             {
                 GL.LoadIdentity();
                 GL.Viewport(glControl1.ClientRectangle);
+
+                if (shader != null)
+                    GL.DeleteShader(shader.programID);
+                
+                {
+                shader = new Shader();
+
+                {
+                        shader.vertexShader(vs);
+                        shader.fragmentShader(fs);
+
+                        shader.addAttribute("vPosition", false);
+                        shader.addAttribute("vColor", false);
+                        shader.addAttribute("vNormal", false);
+                        shader.addAttribute("vUV", false);
+                        shader.addAttribute("vBone", false);
+                        shader.addAttribute("vWeight", false);
+
+                        shader.addAttribute("tex", true);
+                        shader.addAttribute("modelview", true);
+                        shader.addAttribute("bones", true);
+                    }
+                }
+
                 v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 40.0f);
             }
         }
@@ -214,22 +238,25 @@ namespace VBN_Editor
 
         private void SetupViewPort()
         {
-            shader = new Shader();
-
+            if (shader == null)
             {
-                shader.vertexShader(vs);
-                shader.fragmentShader(fs);
+                shader = new Shader();
 
-                shader.addAttribute("vPosition", false);
-                shader.addAttribute("vColor", false);
-                shader.addAttribute("vNormal", false);
-                shader.addAttribute("vUV", false);
-                shader.addAttribute("vBone", false);
-                shader.addAttribute("vWeight", false);
+                {
+                    shader.vertexShader(vs);
+                    shader.fragmentShader(fs);
 
-                shader.addAttribute("tex", true);
-                shader.addAttribute("modelview", true);
-                shader.addAttribute("bones", true);
+                    shader.addAttribute("vPosition", false);
+                    shader.addAttribute("vColor", false);
+                    shader.addAttribute("vNormal", false);
+                    shader.addAttribute("vUV", false);
+                    shader.addAttribute("vBone", false);
+                    shader.addAttribute("vWeight", false);
+
+                    shader.addAttribute("tex", true);
+                    shader.addAttribute("modelview", true);
+                    shader.addAttribute("bones", true);
+                }
             }
 
             int h = Height - groupBox2.ClientRectangle.Top;
@@ -267,7 +294,6 @@ namespace VBN_Editor
 
             // set up the viewport projection and send it to GPU
             GL.MatrixMode(MatrixMode.Projection);
-            GL.ShadeModel(ShadingModel.Flat);
 
             if (IsMouseOverViewport() && glControl1.Focused)
                 UpdateMousePosition();

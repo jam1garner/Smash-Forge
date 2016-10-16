@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Diagnostics;
 using System.IO;
+using OpenTK;
+using OpenTK.Graphics.OpenGL;
 
 namespace VBN_Editor
 {
@@ -152,6 +154,14 @@ namespace VBN_Editor
 				draw.Add (filen[i], NUD.loadImage(textures[i]));
 			}
 		}
+
+        public void Destroy(){
+            List<int> keyList = new List<int>(draw.Keys);
+            for (int i = 0; i < keyList.Count; i++)
+            {
+                GL.DeleteTexture(keyList[i]);
+            }
+        }
 	}
 }
 
