@@ -66,49 +66,6 @@ namespace VBN_Editor
         }
         private void openVBNToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-            /*OpenFileDialog fbd = new OpenFileDialog();
-
-            DialogResult result = fbd.ShowDialog();
-
-            if (!string.IsNullOrWhiteSpace(fbd.FileName))
-            {
-                string[] files = Directory.GetFiles(System.IO.Path.GetDirectoryName(fbd.FileName));
-
-                string pnud = "";
-                string pnut = "";
-                string pjtb = "";
-                string pvbn = "";
-
-                foreach (string s in files)
-                {
-                    if (s.EndsWith(".nud"))
-                        pnud = s;
-                    if (s.EndsWith(".nut"))
-                        pnut = s;
-                    if (s.EndsWith(".vbn"))
-                        pvbn = s;
-                    if (s.EndsWith(".jtb"))
-                        pjtb = s;
-                }
-
-                if (!pvbn.Equals(""))
-                {
-                    Runtime.TargetVBN = new VBN(pvbn);
-                    if (!pjtb.Equals(""))
-                        Runtime.TargetVBN.readJointTable(pjtb);
-                }
-
-                NUT nut = null;
-                if (!pnut.Equals(""))
-                    nut = new NUT(new FileData(pnut));
-
-                if (!pnud.Equals(""))
-                    Runtime.TargetNUD = new NUD(pnud, nut);
-                
-            }
-
-            if(1==2)*/
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd)|*.vbn;*.mdl0;*.smd|" +
@@ -116,6 +73,8 @@ namespace VBN_Editor
                              "NW4R Model (.mdl0)|*.mdl0|" +
                              "Source Model (.SMD)|*.smd|" +
                              "All files(*.*)|*.*";
+
+                // "Namco Universal Data Folder (.NUD)|*.nud|" +
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
@@ -133,7 +92,43 @@ namespace VBN_Editor
                         Runtime.TargetVBN = new VBN();
                         SMD.read(ofd.FileName, new SkelAnimation(), Runtime.TargetVBN);
                     }
-                    //Viewport.Runtime.TargetVBN = Runtime.TargetVBN;
+                        //Viewport.Runtime.TargetVBN = Runtime.TargetVBN;
+
+                    if (ofd.FileName.EndsWith(".nud"))
+                    {
+                        string[] files = Directory.GetFiles(System.IO.Path.GetDirectoryName(ofd.FileName));
+
+                        string pnud = "";
+                        string pnut = "";
+                        string pjtb = "";
+                        string pvbn = "";
+
+                        foreach (string s in files)
+                        {
+                            if (s.EndsWith(".nud"))
+                                pnud = s;
+                            if (s.EndsWith(".nut"))
+                                pnut = s;
+                            if (s.EndsWith(".vbn"))
+                                pvbn = s;
+                            if (s.EndsWith(".jtb"))
+                                pjtb = s;
+                        }
+
+                        if (!pvbn.Equals(""))
+                        {
+                            Runtime.TargetVBN = new VBN(pvbn);
+                            if (!pjtb.Equals(""))
+                                Runtime.TargetVBN.readJointTable(pjtb);
+                        }
+
+                        NUT nut = null;
+                        //if (!pnut.Equals(""))
+                        //    nut = new NUT(new FileData(pnut));
+
+                        if (!pnud.Equals(""))
+                            Runtime.TargetNUD = new NUD(pnud, nut);
+                    }
 
                     leftPanel.treeRefresh();
                     if (Runtime.TargetVBN.littleEndian)

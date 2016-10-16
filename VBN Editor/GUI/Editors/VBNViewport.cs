@@ -216,8 +216,7 @@ namespace VBN_Editor
         {
             shader = new Shader();
 
-            //if (File.Exists("vs.glsl"))
-            //{
+            {
                 shader.vertexShader(vs);
                 shader.fragmentShader(fs);
 
@@ -231,7 +230,7 @@ namespace VBN_Editor
                 shader.addAttribute("tex", true);
                 shader.addAttribute("modelview", true);
                 shader.addAttribute("bones", true);
-            //}
+            }
 
             int h = Height - groupBox2.ClientRectangle.Top;
             int w = Width;
@@ -261,18 +260,10 @@ namespace VBN_Editor
             // clear the gf buffer
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-
             GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.LineSmooth); // This is Optional 
-            GL.Enable(EnableCap.Normalize);  // These is critical to have
-            GL.Enable(EnableCap.RescaleNormal);
 
             GL.ClearDepth(1.0);
 
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Less);
 
             // set up the viewport projection and send it to GPU
             GL.MatrixMode(MatrixMode.Projection);
@@ -286,7 +277,9 @@ namespace VBN_Editor
             // ready to start drawing model stuff
             GL.MatrixMode(MatrixMode.Modelview);
 
-            GL.Disable(EnableCap.AlphaTest);
+            GL.UseProgram(0);
+
+            drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
 
             // draw models
             if (Runtime.TargetNUD != null && Runtime.TargetVBN != null)
@@ -307,12 +300,22 @@ namespace VBN_Editor
 
             GL.UseProgram(0);
 
+            GL.Enable(EnableCap.LineSmooth); // This is Optional 
+            GL.Enable(EnableCap.Normalize);  // These is critical to have
+            GL.Enable(EnableCap.RescaleNormal);
+
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Less);
 
             GL.Enable(EnableCap.AlphaTest);
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
 
+        
             // draw the grid floor first
-            drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
+
 
             // clear the buffer bit so the skeleton 
             // will be drawn on top of everything
@@ -588,7 +591,7 @@ namespace VBN_Editor
                         Hitboxes.Remove(Hitboxes.Keys.Max());
                         break;
                     case 0xEB375E3: // Set Loop
-                        iterations = int.Parse(cmd.Parameters[0] + "");
+                        iterations = int.Parse(cmd.Parameters[0] + "") - 1;
                         setLoop = e;
                         break;
                     case 0x38A3EC78: // goto

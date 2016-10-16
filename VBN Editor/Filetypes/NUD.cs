@@ -308,7 +308,8 @@ namespace VBN_Editor
 					// temp tex id;
 					d.seek(p.texprop1 + 0x20);
 					int texid = -1;
-					nut.draw.TryGetValue (d.readInt(), out texid);
+                    if(nut!=null)
+					    nut.draw.TryGetValue (d.readInt(), out texid);
 					m.polygons [m.polygons.Count - 1].dif = texid;
 
 					d.seek (temp);
