@@ -55,28 +55,6 @@ namespace VBN_Editor
                 GL.LoadIdentity();
                 GL.Viewport(glControl1.ClientRectangle);
 
-                if (shader != null)
-                    GL.DeleteShader(shader.programID);
-                
-                {
-                shader = new Shader();
-
-                {
-                        shader.vertexShader(vs);
-                        shader.fragmentShader(fs);
-
-                        shader.addAttribute("vPosition", false);
-                        shader.addAttribute("vColor", false);
-                        shader.addAttribute("vNormal", false);
-                        shader.addAttribute("vUV", false);
-                        shader.addAttribute("vBone", false);
-                        shader.addAttribute("vWeight", false);
-
-                        shader.addAttribute("tex", true);
-                        shader.addAttribute("modelview", true);
-                        shader.addAttribute("bones", true);
-                    }
-                }
 
                 v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 40.0f);
             }
@@ -238,6 +216,10 @@ namespace VBN_Editor
 
         private void SetupViewPort()
         {
+
+            if (shader != null)
+                GL.DeleteShader(shader.programID);
+
             if (shader == null)
             {
                 shader = new Shader();
@@ -433,8 +415,15 @@ namespace VBN_Editor
                     int gr = 0;
                     if (bid > 1000)
                     {
-                        bid = bid >> 8;
-                        gr = 1;
+                        /*while (bid >= 1000)
+                        {
+                            bid -= 1000;
+                            gr++;
+                        }
+                        gr = gr % 2;
+                        //bid = bid >> 6;
+                        Console.WriteLine(h.Bone + " " + gr + " " + bid);*/
+                        bid >>= 8;
                     }
 
                     Bone b = new Bone();
@@ -442,7 +431,6 @@ namespace VBN_Editor
                     if (h.Bone != -1)
                     {
                         if(Runtime.TargetVBN.jointTable.Count < 1)
-
                             b = Runtime.TargetVBN.bones[bid];
                         else
                             b = Runtime.TargetVBN.bones[Runtime.TargetVBN.jointTable[gr][bid]];

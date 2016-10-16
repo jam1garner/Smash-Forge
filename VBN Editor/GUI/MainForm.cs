@@ -128,8 +128,8 @@ namespace VBN_Editor
                                 Runtime.TargetVBN.readJointTable(pjtb);
                         }
 
-                        /*NUT nut = null;
-                        if (!pnut.Equals(""))
+                        NUT nut = null;
+                        /*if (!pnut.Equals(""))
                             nut = new NUT(new FileData(pnut));*/
 
                         if (!pnud.Equals(""))
