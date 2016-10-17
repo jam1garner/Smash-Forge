@@ -13,7 +13,9 @@ Smash 4 Skeletal Animation Tool
 
 ##Known Bugs/Issues##
 - Viewport zooms out when window in minimized
+
 This is due to the viewport still technically being "active" while the window is minimised, so then if you use your mouse wheel when your mouse is hovering over the area where the viewport would be, it will interact with it. We are working on a fix.
 
 - Custom MDL0 to VBN bonesets crash the game when loading
+
 I (Y2K) do not currently know what causes this issue, or if it even has been fixed, but I do know from experience it is an issue. We are looking for a fix.
