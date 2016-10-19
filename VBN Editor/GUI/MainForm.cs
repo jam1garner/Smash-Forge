@@ -129,8 +129,8 @@ namespace VBN_Editor
                         }
 
                         NUT nut = null;
-                        /*if (!pnut.Equals(""))
-                            nut = new NUT(new FileData(pnut));*/
+                        if (!pnut.Equals(""))
+                            nut = new NUT(new FileData(pnut));
 
                         if (!pnud.Equals(""))
                             Runtime.TargetNUD = new NUD(pnud, nut);
