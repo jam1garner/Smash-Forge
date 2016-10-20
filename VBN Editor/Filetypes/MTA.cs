@@ -243,7 +243,5 @@ namespace VBN_Editor.Filetypes
             }
         }
     }
-
-
     
 }
