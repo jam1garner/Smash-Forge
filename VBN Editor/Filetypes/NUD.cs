@@ -106,6 +106,8 @@ namespace VBN_Editor
 			GL.DeleteBuffer (vbo_uv);
 			GL.DeleteBuffer (vbo_weight);
 			GL.DeleteBuffer (vbo_bone);
+            if (this.nut != null)
+                nut.Destroy();
 		}
 
 		/*
@@ -189,8 +191,7 @@ namespace VBN_Editor
 			GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(facedata.Length * sizeof(int)), facedata, BufferUsageHint.StaticDraw);
 
 
-			mesh [0].polygons [0].isVisible = false;
-
+			//mesh [0].polygons [0].isVisible = false;
 
 			int indiceat = 0;
 			foreach (Mesh m in mesh) {
@@ -204,7 +205,7 @@ namespace VBN_Editor
 					}
 
 					if(p.isVisible)
-						GL.DrawElements (BeginMode.Triangles, p.faces.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(uint));
+                        GL.DrawElements (PrimitiveType.Triangles, p.faces.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(uint));
 					indiceat += p.faces.Count;
 				}
 			}

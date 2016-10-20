@@ -208,6 +208,9 @@ namespace VBN_Editor
             int table1 = d.readShort();
             int table2 = d.readShort();
 
+            if (table2 == 0)
+                d.seek(d.pos() - 2);
+
             List<int> t1 = new List<int>();
             for (int i = 0; i < table1; i++)
                 t1.Add(d.readShort());

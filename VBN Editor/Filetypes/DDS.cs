@@ -82,6 +82,7 @@ namespace VBN_Editor
 
 			if (header.dwFourCC == 0x31545844)
 				decodeDXT1 (pixels, data, header.width, header.height);
+            else
 			if (header.dwFourCC == 0x35545844)
 				decodeDXT5 (pixels, data, header.width, header.height);
 			else
@@ -89,9 +90,7 @@ namespace VBN_Editor
 
 			Bitmap bmp = new Bitmap(header.width, header.height, PixelFormat.Format32bppArgb);  
 
-			BitmapData bmpData = bmp.LockBits(
-				new Rectangle(0, 0, bmp.Width, bmp.Height),   
-				ImageLockMode.WriteOnly, bmp.PixelFormat);
+			BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
 
 			Marshal.Copy(pixels, 0, bmpData.Scan0, pixels.Length);
 

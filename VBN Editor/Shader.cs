@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System.Windows.Forms;
 
 namespace VBN_Editor
 {
@@ -67,7 +68,9 @@ namespace VBN_Editor
 				GL.ShaderSource(address, shader);
 			//}
 			GL.CompileShader(address);
-			GL.AttachShader(program, address);
+            GL.AttachShader(program, address);
+            //File.WriteAllText("log.txt", GL.GetShaderInfoLog(address).ToLower() + "Shader Log");
+            //MessageBox.Show(GL.GetShaderInfoLog(address));
 			Console.WriteLine(GL.GetShaderInfoLog(address));
 		}
 	}
