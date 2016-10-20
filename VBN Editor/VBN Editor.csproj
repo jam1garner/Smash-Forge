@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Filetypes\MTA.cs" />
     <Compile Include="Filetypes\PAC.cs" />
     <Compile Include="GUI\Editors\AnimList.cs">
       <SubType>Form</SubType>

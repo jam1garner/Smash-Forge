@@ -19,6 +19,11 @@ namespace VBN_Editor
 			this.b = b;
 		}
 
+        public int eof()
+        {
+            return b.Length;
+        }
+
 		public byte[] read(int length)
 		{
 			if (length + p > b.Length)
