@@ -107,7 +107,7 @@ namespace VBN_Editor
         }
         private void treeView1_DragDrop(object sender, DragEventArgs e)
         {
-            Point targetPoint = treeView1.PointToClient(new Point(e.X, e.Y));
+            System.Drawing.Point targetPoint = treeView1.PointToClient(new System.Drawing.Point(e.X, e.Y));
 
             TreeNode targetNode = treeView1.GetNodeAt(targetPoint);
 
