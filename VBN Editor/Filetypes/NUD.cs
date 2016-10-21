@@ -230,6 +230,10 @@ namespace VBN_Editor
                         {
                             me.isVisible = false;
                         }
+                        else
+                        {
+                            me.isVisible = true;
+                        }
                         break;
                     }
                 }

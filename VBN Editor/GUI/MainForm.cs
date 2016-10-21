@@ -138,7 +138,7 @@ namespace VBN_Editor
                         /*PAC p = new PAC();
                         p.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\model\\body\\c00\\material_anime_face.pac");
                         byte[] data;
-                        p.Files.TryGetValue ("default.mta", out data);
+                        p.Files.TryGetValue ("display.mta", out data);
                         MTA m = new MTA();
                         m.read(new FileData(data));
                         Runtime.TargetNUD.applyMTA (m, 0);
@@ -146,7 +146,7 @@ namespace VBN_Editor
 
                         p = new PAC();
                         p.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\model\\body\\c00\\material_anime_eyelid.pac");
-                        p.Files.TryGetValue ("default.mta", out data);
+                        p.Files.TryGetValue ("display.mta", out data);
                         m = new MTA();
                         m.read(new FileData(data));
                         Runtime.TargetNUD.applyMTA (m, 0);*/
@@ -205,7 +205,7 @@ namespace VBN_Editor
                         {
                             var anim = OMO.read(new FileData(pair.Value), Runtime.TargetVBN);
                             string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
-                            AnimName = pair.Key;
+                            //AnimName = pair.Key;
                             AnimName = AnimName.Remove(AnimName.Length - 4);
                             AnimName = AnimName.Insert(3, "_");
                             if (!string.IsNullOrEmpty(AnimName))
