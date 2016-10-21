@@ -210,7 +210,7 @@ namespace VBN_Editor
 
         #region Rendering
 
-        string vs = "#version 330\n \nin vec3 vPosition;\nin vec3 vColor;\nin vec3 vNormal;\nin vec2 vUV;\nin vec4 vBone;\nin vec4 vWeight;\n\nout vec2 f_texcoord;\nout float normal;\nout vec4 color;\n\nuniform mat4 modelview;\nuniform mat4 bones[150];\n \nvoid\nmain()\n{\n    ivec4 index = ivec4(vBone); \n\n    vec4 objPos = bones[index.x] * vec4(vPosition, 1.0) * vWeight.x;\n    objPos += bones[index.y] * vec4(vPosition, 1.0) * vWeight.y;\n    objPos += bones[index.z] * vec4(vPosition, 1.0) * vWeight.z;\n    objPos += bones[index.w] * vec4(vPosition, 1.0) * vWeight.w;\n\n    gl_Position = modelview * vec4(objPos.xyz, 1.0);\n\n    vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;\n\n    f_texcoord = vUV;\n    normal = dot(vec4(vNormal, 1.0), vec4(1.0,1.0,1.0,1.0)) ;\t/// vec4(distance, 1.0)\n    color = vec4( vColor, 1.0);\n}";
+        string vs = "#version 330\n \nin vec3 vPosition;\nin vec3 vColor;\nin vec3 vNormal;\nin vec2 vUV;\nin vec4 vBone;\nin vec4 vWeight;\n\nout vec2 f_texcoord;\nout float normal;\nout vec4 color;\n\nuniform mat4 modelview;\nuniform mat4 bones[150];\n \nvoid\nmain()\n{\n    ivec4 index = ivec4(vBone); \n\n    vec4 objPos = vec4(vPosition.xyz, 1.0);\n\n    if(vBone.x != -1){\n        objPos = bones[index.x] * vec4(vPosition, 1.0) * vWeight.x;\n        objPos += bones[index.y] * vec4(vPosition, 1.0) * vWeight.y;\n        objPos += bones[index.z] * vec4(vPosition, 1.0) * vWeight.z;\n        objPos += bones[index.w] * vec4(vPosition, 1.0) * vWeight.w;\n    } \n\n    gl_Position = modelview * vec4(objPos.xyz, 1.0);\n\n    vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;\n\n    f_texcoord = vUV;\n    normal = dot(vec4(vNormal, 1.0), vec4(0.25,0.25,0.25,1.0)) ;// vec4(distance, 1.0)\n    color = vec4( vColor, 1.0);\n}";
 
         string fs = "#version 330\n\nin vec2 f_texcoord;\nin vec4 color;\nin float normal;\n\nuniform sampler2D tex;\n\nvoid\nmain()\n{\n    vec4 ambiant = vec4(0.3,0.3,0.3,1.0) * texture(tex, f_texcoord).rgba;\n\n    vec4 alpha = texture2D(tex, f_texcoord).aaaa;\n    vec4 outputColor = ambiant + (vec4(texture(tex, f_texcoord).rgb, 1) * normal);\n    gl_FragColor = vec4((alpha*outputColor).xyz, alpha.x);\n}";
 
@@ -306,15 +306,17 @@ namespace VBN_Editor
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
 
             // draw models
-            if (Runtime.TargetNUD != null && Runtime.TargetVBN != null)
+            if (Runtime.TargetNUD != null)
             {
                 GL.UseProgram(shader.programID);
 
                 GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref v);
 
-                float[] f = Runtime.TargetVBN.getShaderMatrix();
-
-                GL.UniformMatrix4(shader.getAttribute("bone"), f.Length, false, f);
+                if (Runtime.TargetVBN != null)
+                {
+                    float[] f = Runtime.TargetVBN.getShaderMatrix();
+                    GL.UniformMatrix4(shader.getAttribute("bone"), f.Length, false, f);
+                }
 
                 shader.enableAttrib();
                 Runtime.TargetNUD.Render(shader);
@@ -433,10 +435,12 @@ namespace VBN_Editor
 
                     if (h.Bone != -1)
                     {
-                        if(Runtime.TargetVBN.jointTable.Count < 1)
+                        if (Runtime.TargetVBN.jointTable.Count < 1)
                             b = Runtime.TargetVBN.bones[bid];
                         else
+                        {
                             b = Runtime.TargetVBN.bones[Runtime.TargetVBN.jointTable[gr][bid]];
+                        }
                     }
 
                     va = Vector3.Transform(va, b.transform.ClearScale());

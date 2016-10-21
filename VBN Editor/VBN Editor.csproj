@@ -155,6 +155,7 @@
     <Compile Include="Filetypes\NUD.cs" />
     <Compile Include="Filetypes\NUT.cs" />
     <Compile Include="Filetypes\GTX.cs" />
+    <Compile Include="Filetypes\JTB.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
