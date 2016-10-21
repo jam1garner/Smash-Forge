@@ -204,24 +204,35 @@ namespace VBN_Editor
         public void readJointTable(string fname){
             FileData d = new FileData(fname);
             d.Endian = Endianness.Big;
+            
+            int tableSize = 2;
 
             int table1 = d.readShort();
-            int table2 = d.readShort();
 
-            if (table2 == 0)
-                d.seek(d.pos() - 2);
+            if (table1 * 2 + 2 >= d.size())
+                tableSize = 1;
+
+            int table2 = -1;
+            if(tableSize != 1)
+                table2 = d.readShort();
+
+            //if (table2 == 0)
+            //    d.seek(d.pos() - 2);
 
             List<int> t1 = new List<int>();
             for (int i = 0; i < table1; i++)
                 t1.Add(d.readShort());
             
-            List<int> t2 = new List<int>();
-            for (int i = 0; i < table2; i++)
-                t2.Add(d.readShort());
-
             jointTable.Clear();
             jointTable.Add(t1);
-            jointTable.Add(t2);
+
+            if (tableSize != 1)
+            {
+                List<int> t2 = new List<int>();
+                for (int i = 0; i < table2; i++)
+                    t2.Add(d.readShort());
+                jointTable.Add(t2);
+            }
         }
 
 		public Bone bone(string name)

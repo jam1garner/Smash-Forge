@@ -50,6 +50,8 @@ namespace VBN_Editor
 			public string name;
 			public List<Polygon> polygons = new List<Polygon>();
 
+            public bool isVisible = true;
+
 			public void addVertex (Vertex v){
 				if (polygons.Count == 0) 
 					polygons.Add (new Polygon());
@@ -77,9 +79,9 @@ namespace VBN_Editor
 		public const int POKKEN = 1;
 		public int type = SMASH;
 
+        public bool hasBones = false;
 		public List<Mesh> mesh = new List<Mesh>();
 		public NUT nut;
-		int[] textureIds;
 
         public NUD (string fname, NUT nut)
 		{
@@ -193,6 +195,8 @@ namespace VBN_Editor
 
 			//mesh [0].polygons [0].isVisible = false;
 
+            //GL.Uniform1(shader.getAttribute("hasBones"), hasBones ? 1 : 0);
+
 			int indiceat = 0;
 			foreach (Mesh m in mesh) {
 				foreach (Polygon p in m.polygons) {
@@ -204,7 +208,7 @@ namespace VBN_Editor
 						GL.Uniform1(shader.getAttribute("tex"), 0);
 					}
 
-					if(p.isVisible)
+                    if(p.isVisible && m.isVisible)
                         GL.DrawElements (PrimitiveType.Triangles, p.faces.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(uint));
 					indiceat += p.faces.Count;
 				}
@@ -213,6 +217,29 @@ namespace VBN_Editor
 			//GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
 		}
 
+
+		public void applyMTA(MTA m, int frame){
+            foreach (VisEntry e in m.visEntries)
+            {
+                int state = e.getState(frame);
+                foreach(Mesh me in mesh){
+                    if (me.name.Equals(e.name))
+                    {
+                        Console.WriteLine("Set " + me.name + " to " + state);
+                        if (state == 0)
+                        {
+                            me.isVisible = false;
+                        }
+                        else
+                        {
+                            me.isVisible = true;
+                        }
+                        break;
+                    }
+                }
+            }
+
+		}
 
 
 		//----------------------------------------------------------
@@ -475,16 +502,16 @@ namespace VBN_Editor
 				}
 
 				if (weight == 4) {
-					v [i].node.Add (d.readByte ());
-					v [i].node.Add (d.readByte ());
-					v [i].node.Add (d.readByte ());
-					v [i].node.Add (d.readByte ());
+                    v [i].node.Add (d.readByte ());
+                    v [i].node.Add (d.readByte ());
+                    v [i].node.Add (d.readByte ());
+                    v [i].node.Add (d.readByte ());
 					v [i].weight.Add ((float)d.readByte () / 255f);
 					v [i].weight.Add ((float)d.readByte () / 255f);
 					v [i].weight.Add ((float)d.readByte () / 255f);
 					v [i].weight.Add ((float)d.readByte () / 255f);
 				} else if (weight == 0) {
-					v [i].node.Add (o.singlebind);
+                    v [i].node.Add ((short)o.singlebind);
 					v [i].weight.Add (1);
 				}
 			}

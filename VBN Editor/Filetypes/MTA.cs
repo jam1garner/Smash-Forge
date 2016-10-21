@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VBN_Editor.Filetypes
+namespace VBN_Editor
 {
     //self.nameOffset = uint32(mta)
     //        self.matHash = uint32(mta)
@@ -36,7 +36,7 @@ namespace VBN_Editor.Filetypes
     //            for off in self.matDataPos:
     //                mta.seek(off)
     //                self.mtaProps.append(MatData(mta))
-    class PatData
+    public class PatData
     {
         public struct keyframe
         {
@@ -70,7 +70,7 @@ namespace VBN_Editor.Filetypes
         }
     }
 
-    class MatData
+    public class MatData
     {
         public struct frame
         {
@@ -107,7 +107,7 @@ namespace VBN_Editor.Filetypes
         }
     }
 
-    class MatEntry
+    public class MatEntry
     {
         public int matHash;
         public int matHash2;
@@ -161,7 +161,7 @@ namespace VBN_Editor.Filetypes
         }
     }
 
-    class VisEntry
+    public class VisEntry
     {
         public struct frame
         {
@@ -173,7 +173,7 @@ namespace VBN_Editor.Filetypes
         int unk1;
         short unk2;
         int frameCount;
-        string name;
+        public string name;
         List<frame> frames = new List<frame>();
 
         public VisEntry() { }
@@ -197,11 +197,26 @@ namespace VBN_Editor.Filetypes
                 tempFrame.frameNum = (short)f.readShort();
                 tempFrame.state = (byte)f.readByte();
                 tempFrame.unknown = (byte)f.readByte();
+                frames.Add(tempFrame);
+                tempFrame = new frame();
             }
+        }
+
+        public int getState(int frame){
+            int state = -1;
+            foreach (frame f in frames)
+            {
+                if (f.frameNum > frame)
+                {
+                    break;
+                }
+                state = f.state;
+            }
+            return state;
         }
     }
 
-    class MTA
+    public class MTA
     {
         public uint unknown;
         public uint numFrames;
@@ -213,6 +228,7 @@ namespace VBN_Editor.Filetypes
         
         public void read(FileData f)
         {
+            f.Endian = System.IO.Endianness.Big;
             f.seek(4);
             unknown = (uint)f.readInt();
             numFrames = (uint)f.readInt();
@@ -231,6 +247,7 @@ namespace VBN_Editor.Filetypes
                 MatEntry tempMatEntry = new MatEntry();
                 tempMatEntry.read(f);
                 matEntries.Add(tempMatEntry);
+                f.seek(returnPos);
             }
             f.seek(visOffset);
             for (int i = 0; i < visCount; i++)
@@ -240,6 +257,7 @@ namespace VBN_Editor.Filetypes
                 VisEntry tempVisEntry = new VisEntry();
                 tempVisEntry.read(f);
                 visEntries.Add(tempVisEntry);
+                f.seek(returnPos);
             }
         }
     }
