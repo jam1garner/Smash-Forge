@@ -214,8 +214,6 @@ namespace VBN_Editor
 
         string fs = "#version 330\n\nin vec2 f_texcoord;\nin vec4 color;\nin float normal;\n\nuniform sampler2D tex;\n\nvoid\nmain()\n{\n    vec4 ambiant = vec4(0.3,0.3,0.3,1.0) * texture(tex, f_texcoord).rgba;\n\n    vec4 alpha = texture2D(tex, f_texcoord).aaaa;\n    vec4 outputColor = ambiant + (vec4(texture(tex, f_texcoord).rgb, 1) * normal);\n    gl_FragColor = vec4((alpha*outputColor).xyz, alpha.x);\n}";
 
-
-
         private void SetupViewPort()
         {
 
@@ -327,13 +325,67 @@ namespace VBN_Editor
 
             GL.UseProgram(0);
 
-        
-            // draw the grid floor first
-
 
             // clear the buffer bit so the skeleton 
             // will be drawn on top of everything
             GL.Clear(ClearBufferMask.DepthBufferBit);
+
+
+            // draw lvd
+            /*if (lvd != null)
+            {
+                foreach (Collision c in lvd.collisions)
+                {
+                    // draw the ground quads
+                    int dir = 1;
+                    int cg = 0;
+                    GL.LineWidth(2);
+                    GL.Color3(Color.Red);
+                    GL.Begin(PrimitiveType.Quads);
+                    foreach (Vector2D vi in c.verts)
+                    {
+                        GL.Vertex3(vi.x, vi.y, 5 * dir);
+                        GL.Vertex3(vi.x, vi.y, -5 * dir);
+                        if (cg>0)
+                        {
+                            GL.Vertex3(vi.x, vi.y, 5 * dir);
+                            GL.Vertex3(vi.x, vi.y, -5 * dir);
+                        }
+                        cg++;
+                        dir *= -1;
+                    }
+                    GL.Vertex3(c.verts[0].x, c.verts[0].y, 5 * dir);
+                    GL.Vertex3(c.verts[0].x, c.verts[0].y, -5 * dir);
+                    GL.End();
+
+
+                    // draw outside borders
+                    GL.Color3(Color.Black);
+                    GL.Begin(PrimitiveType.LineLoop);
+                    foreach (Vector2D vi in c.verts)
+                    {
+                        GL.Vertex3(vi.x, vi.y, 5);
+                    }
+                    GL.End();
+                    GL.Begin(PrimitiveType.LineLoop);
+                    foreach (Vector2D vi in c.verts)
+                    {
+                        GL.Vertex3(vi.x, vi.y, -5);
+                    }
+                    GL.End();
+
+
+                    // draw vertices
+                    GL.Color3(Color.White);
+                    GL.Begin(PrimitiveType.Lines);
+                    foreach (Vector2D vi in c.verts)
+                    {
+                        GL.Vertex3(vi.x, vi.y, 5);
+                        GL.Vertex3(vi.x, vi.y, -5);
+                    }
+                    GL.End();
+                }
+            }*/
 
 
             // drawing the bones
