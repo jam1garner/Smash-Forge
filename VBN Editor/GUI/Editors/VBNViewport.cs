@@ -285,10 +285,10 @@ namespace VBN_Editor
 
             if (Runtime.TargetPath != null && checkBox1.Checked)
             {
-                if (cf > Runtime.TargetPath.frames.Count)
+                if (cf >= Runtime.TargetPath.frames.Count)
                     cf = 0;
                 pathFrame f = Runtime.TargetPath.frames[cf];
-                v = (Matrix4.CreateTranslation(-f.x, -f.y, -f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
+                v = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
                 cf++;
             }else
             if (Runtime.TargetCMR0 != null)
