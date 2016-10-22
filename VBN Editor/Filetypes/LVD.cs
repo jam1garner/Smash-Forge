@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace VBN_Editor
 {
-    struct Vector2D
+    public struct Vector2D
     {
         public float x;
         public float y;
     }
 
-    struct Point
+    public struct Point
     {
         public string name;
         public string subname;
@@ -20,7 +20,7 @@ namespace VBN_Editor
         public float y;
     }
 
-    struct Bounds //Either Camera bounds or Blast zones
+    public struct Bounds //Either Camera bounds or Blast zones
     {
         public string name;
         public string subname;
@@ -30,12 +30,12 @@ namespace VBN_Editor
         public float right;
     }
 
-    struct CollisionMat
+    public struct CollisionMat
     {
         public Byte[] rawMat;
     }
 
-    class Collision
+    public class Collision
     {
         public string name;
         public string subname;
@@ -52,8 +52,10 @@ namespace VBN_Editor
         {
             f.skip(0xD);
             name = f.readString(f.pos(), 0x38);
-            subname = f.readString(f.pos(), 0x38);
-            f.skip(0x6A);//TODO: Read in collision header
+            f.skip(0x38);
+            f.skip(1);//Seperation char
+            subname = f.readString(f.pos(), 0x40);
+            f.skip(0xAA);//TODO: Read in collision header
 
             int vertCount = f.readInt();
             for(int i = 0; i < vertCount; i++)
@@ -87,12 +89,13 @@ namespace VBN_Editor
                 f.skip(1);//Seperation char
                 CollisionMat temp;
                 temp.rawMat = f.read(0xC);//Temporary, will work on fleshing out material more later
+                materials.Add(temp);
             }
 
         }
     }
 
-    class LVD
+    public class LVD
     {
         List<Collision> collisions = new List<Collision>();
         List<Point> spawns = new List<Point>();
@@ -110,7 +113,7 @@ namespace VBN_Editor
         {
             f.seek(0xB);//It's magic
             int collisionCount = f.readInt();
-            for (int i = 0; i < entryCount; i++)
+            for (int i = 0; i < collisionCount; i++)
             {
                 Collision temp = new Collision();
                 temp.read(f);
@@ -124,9 +127,10 @@ namespace VBN_Editor
                 Point temp;
                 f.skip(0xD);
                 temp.name = f.readString(f.pos(), 0x38);
+                f.skip(0x38);
                 f.skip(1);//Seperation char
                 temp.subname = f.readString(f.pos(), 0x40);
-                f.skip(0x65);
+                f.skip(0xA6);
                 temp.x = f.readFloat();
                 temp.y = f.readFloat();
                 spawns.Add(temp);
@@ -139,9 +143,10 @@ namespace VBN_Editor
                 Point temp;
                 f.skip(0xD);
                 temp.name = f.readString(f.pos(), 0x38);
+                f.skip(0x38);
                 f.skip(1);//Seperation char
                 temp.subname = f.readString(f.pos(), 0x40);
-                f.skip(0x65);
+                f.skip(0xA6);
                 temp.x = f.readFloat();
                 temp.y = f.readFloat();
                 respawns.Add(temp);
@@ -154,9 +159,10 @@ namespace VBN_Editor
                 Bounds temp;
                 f.skip(0xD);
                 temp.name = f.readString(f.pos(), 0x38);
+                f.skip(0x38);
                 f.skip(1);//Seperation char
                 temp.subname = f.readString(f.pos(), 0x40);
-                f.skip(0x65);
+                f.skip(0xA6);
                 temp.left = f.readFloat();
                 temp.right = f.readFloat();
                 temp.top = f.readFloat();
@@ -171,9 +177,10 @@ namespace VBN_Editor
                 Bounds temp;
                 f.skip(0xD);
                 temp.name = f.readString(f.pos(), 0x38);
+                f.skip(0x38);
                 f.skip(1);//Seperation char
                 temp.subname = f.readString(f.pos(), 0x40);
-                f.skip(0x65);
+                f.skip(0xA6);
                 temp.left = f.readFloat();
                 temp.right = f.readFloat();
                 temp.top = f.readFloat();
@@ -182,7 +189,7 @@ namespace VBN_Editor
             }
             f.skip(1);//Seperation char
 
-            int unk_type_1 = f.readInt();
+            /*int unk_type_1 = f.readInt();
             f.skip(1);//Seperation char
 
             int unk_type_2 = f.readInt();
@@ -219,7 +226,7 @@ namespace VBN_Editor
                 temp.y = f.readFloat();
                 f.skip(0x14);
                 generalPoints.Add(temp);
-            }
+            }*/
             //LVD doesn't end here and neither does my confusion, will update this part later
         }
     }
