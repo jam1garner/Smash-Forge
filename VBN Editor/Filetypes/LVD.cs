@@ -32,7 +32,9 @@ namespace VBN_Editor
 
     public struct CollisionMat
     {
-        public Byte[] rawMat;
+        public bool leftLedge;
+        public bool rightLedge;
+        public byte physicsType;
     }
 
     public class Collision
@@ -88,7 +90,10 @@ namespace VBN_Editor
             {
                 f.skip(1);//Seperation char
                 CollisionMat temp;
-                temp.rawMat = f.read(0xC);//Temporary, will work on fleshing out material more later
+                byte[] mat = f.read(0xC);//Temporary, will work on fleshing out material more later
+                temp.leftLedge = ((mat[10] & 0x40) != 0);
+                temp.rightLedge = ((mat[10] & 0x80) != 0);
+                temp.physicsType = mat[4];
                 materials.Add(temp);
             }
 
@@ -97,7 +102,7 @@ namespace VBN_Editor
 
     public class LVD
     {
-        List<Collision> collisions = new List<Collision>();
+        public List<Collision> collisions = new List<Collision>();
         List<Point> spawns = new List<Point>();
         List<Point> respawns = new List<Point>();
         List<Bounds> cameraBounds = new List<Bounds>();
@@ -191,28 +196,28 @@ namespace VBN_Editor
 
             /*int unk_type_1 = f.readInt();
             f.skip(1);//Seperation char
-
+ 
             int unk_type_2 = f.readInt();
             f.skip(1);//Seperation char
-
+ 
             int enemyGeneratorCount = f.readInt();
             f.skip(1);//Seperation char
-
+ 
             int unk_type_4 = f.readInt();
             f.skip(1);//Seperation char
-
+ 
             int unk_type_5 = f.readInt();
             f.skip(1);//Seperation char
-
+ 
             int unk_type_6 = f.readInt();
             f.skip(1);//Seperation char
-
+ 
             int damageSphere = f.readInt();
             f.skip(1);//Seperation char
-
+ 
             if (unk_type_1 != 0 || unk_type_2 != 0 || unk_type_4 != 0 || unk_type_5 != 0 || unk_type_6 != 0 || enemyGeneratorCount != 0 || damageSphere != 0)
                 throw new NotImplementedException();
-
+ 
             int generalPointCount = f.readInt();
             for(int i = 0; i < generalPointCount; i++)
             {
