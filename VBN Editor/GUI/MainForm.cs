@@ -98,6 +98,12 @@ namespace VBN_Editor
                         Runtime.TargetPath = new PathBin();
                         Runtime.TargetPath.read(new FileData(ofd.FileName));
                     }
+                    else
+                    if (ofd.FileName.EndsWith(".bin"))
+                    {
+                        Runtime.TargetCMR0 = new CMR0();
+                        Runtime.TargetCMR0.read(new FileData(ofd.FileName));
+                    }
 
                     if (ofd.FileName.EndsWith(".mdl0"))
                     {

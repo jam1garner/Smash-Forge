@@ -256,6 +256,8 @@ namespace VBN_Editor
             };
         }
 
+        int cf = 0;
+
         public void Render()
         {
             if (!render)
@@ -280,6 +282,23 @@ namespace VBN_Editor
 
             if (IsMouseOverViewport() && glControl1.Focused)
                 UpdateMousePosition();
+
+            if (Runtime.TargetPath != null)
+            {
+                if (cf > Runtime.TargetPath.frames.Count)
+                    cf = 0;
+                pathFrame f = Runtime.TargetPath.frames[cf];
+                v = (Matrix4.CreateTranslation(-f.x, -f.y, -f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
+                cf++;
+            }else
+            if (Runtime.TargetCMR0 != null)
+            {
+                if (cf >= Runtime.TargetCMR0.frames.Count)
+                    cf = 0;
+                Matrix4 m = Runtime.TargetCMR0.frames[cf].Inverted();
+                v =  Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
+                cf++;
+            }
 
             GL.LoadMatrix(ref v);
 
@@ -331,7 +350,7 @@ namespace VBN_Editor
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             // draw path.bin
-            if(Runtime.TargetPath != null)
+            /*if(Runtime.TargetPath != null)
             {
                 GL.Color3(Color.Yellow);
                 GL.LineWidth(2);
@@ -342,7 +361,7 @@ namespace VBN_Editor
                     GL.Vertex3(Runtime.TargetPath.frames[i - 1].x, Runtime.TargetPath.frames[i - 1].y, Runtime.TargetPath.frames[i - 1].z);
                     GL.End();
                 }
-            }
+            }*/
 
             // draw lvd
             if (Runtime.TargetLVD != null)

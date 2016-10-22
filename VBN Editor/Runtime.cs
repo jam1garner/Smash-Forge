@@ -17,6 +17,7 @@ namespace VBN_Editor
         public static NUD TargetNUD { get; set; }
         public static LVD TargetLVD { get; set; }
         public static PathBin TargetPath { get; set; }
+        public static CMR0 TargetCMR0 { get; set; }
         public static SkelAnimation TargetAnim { get { return _targetAnim; } set { _targetAnim = value; OnAnimationChanged(); } }
         private static SkelAnimation _targetAnim;
 
