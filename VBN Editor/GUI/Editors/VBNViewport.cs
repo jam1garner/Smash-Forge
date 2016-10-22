@@ -283,7 +283,7 @@ namespace VBN_Editor
             if (IsMouseOverViewport() && glControl1.Focused)
                 UpdateMousePosition();
 
-            if (Runtime.TargetPath != null)
+            if (Runtime.TargetPath != null && checkBox1.Checked)
             {
                 if (cf > Runtime.TargetPath.frames.Count)
                     cf = 0;
@@ -344,13 +344,8 @@ namespace VBN_Editor
 
             GL.UseProgram(0);
 
-
-            // clear the buffer bit so the skeleton 
-            // will be drawn on top of everything
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-
             // draw path.bin
-            /*if(Runtime.TargetPath != null)
+            if(Runtime.TargetPath != null && !checkBox1.Checked)
             {
                 GL.Color3(Color.Yellow);
                 GL.LineWidth(2);
@@ -361,7 +356,12 @@ namespace VBN_Editor
                     GL.Vertex3(Runtime.TargetPath.frames[i - 1].x, Runtime.TargetPath.frames[i - 1].y, Runtime.TargetPath.frames[i - 1].z);
                     GL.End();
                 }
-            }*/
+            }
+
+            // clear the buffer bit so the skeleton 
+            // will be drawn on top of everything
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+            
 
             // draw lvd
             if (Runtime.TargetLVD != null)

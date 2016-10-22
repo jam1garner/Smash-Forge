@@ -41,6 +41,7 @@
             this.btnPrevFrame = new System.Windows.Forms.Button();
             this.btnFirstFrame = new System.Windows.Forms.Button();
             this.glControl1 = new OpenTK.GLControl();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nupdFrameRate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nupdFrame)).BeginInit();
@@ -49,6 +50,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.checkBox1);
             this.groupBox2.Controls.Add(this.nupdFrameRate);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.label2);
@@ -211,6 +213,16 @@
             this.glControl1.VSync = false;
             this.glControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseMove);
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(112, 17);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(139, 17);
+            this.checkBox1.TabIndex = 10;
+            this.checkBox1.Text = "Use path.bin for camera";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // VBNViewport
             // 
             this.ClientSize = new System.Drawing.Size(624, 498);
@@ -241,5 +253,6 @@
         private OpenTK.GLControl glControl1;
         private System.Windows.Forms.NumericUpDown nupdFrameRate;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
