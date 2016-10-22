@@ -62,6 +62,7 @@
     <Compile Include="Filetypes\LVD.cs" />
     <Compile Include="Filetypes\MTA.cs" />
     <Compile Include="Filetypes\PAC.cs" />
+    <Compile Include="Filetypes\PATH.cs" />
     <Compile Include="GUI\Editors\AnimList.cs">
       <SubType>Form</SubType>
     </Compile>
