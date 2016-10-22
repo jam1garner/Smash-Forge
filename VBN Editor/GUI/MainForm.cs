@@ -93,6 +93,12 @@ namespace VBN_Editor
                         Runtime.TargetLVD.read(new FileData(ofd.FileName));
                     }
 
+                    if (ofd.FileName.EndsWith("path.bin"))
+                    {
+                        Runtime.TargetPath = new PathBin();
+                        Runtime.TargetPath.read(new FileData(ofd.FileName));
+                    }
+
                     if (ofd.FileName.EndsWith(".mdl0"))
                     {
                         MDL0Bones mdl0 = new MDL0Bones();

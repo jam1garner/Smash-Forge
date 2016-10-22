@@ -4,18 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VBN_Editor.Filetypes
+namespace VBN_Editor
 {
     public struct pathFrame
     {
         public float x, y, z, qx, qy, qz, qw;
     }
 
-    class Path
+    public class PathBin
     {
         public List<pathFrame> frames = new List<pathFrame>();
 
-        public Path()
+        public PathBin()
         {
 
         }
@@ -27,16 +27,15 @@ namespace VBN_Editor.Filetypes
             for (int i = 0; i < frameCount; i++)
             {
                 pathFrame temp;
-                temp.x = f.readFloat();
-                temp.y = f.readFloat();
-                temp.z = f.readFloat();
                 temp.qx = f.readFloat();
                 temp.qy = f.readFloat();
                 temp.qz = f.readFloat();
                 temp.qw = f.readFloat();
+                temp.x = f.readFloat();
+                temp.y = f.readFloat();
+                temp.z = f.readFloat();
                 frames.Add(temp);
             }
-                frames.append([float32(f), float32(f), float32(f), float32(f), float32(f), float32(f), float32(f)])
         }
     }
 }

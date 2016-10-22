@@ -330,6 +330,19 @@ namespace VBN_Editor
             // will be drawn on top of everything
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
+            // draw path.bin
+            if(Runtime.TargetPath != null)
+            {
+                GL.Color3(Color.Yellow);
+                GL.LineWidth(2);
+                for (int i = 1; i < Runtime.TargetPath.frames.Count; i++)
+                {
+                    GL.Begin(PrimitiveType.Lines);
+                    GL.Vertex3(Runtime.TargetPath.frames[i].x, Runtime.TargetPath.frames[i].y, Runtime.TargetPath.frames[i].z);
+                    GL.Vertex3(Runtime.TargetPath.frames[i - 1].x, Runtime.TargetPath.frames[i - 1].y, Runtime.TargetPath.frames[i - 1].z);
+                    GL.End();
+                }
+            }
 
             // draw lvd
             if (Runtime.TargetLVD != null)
