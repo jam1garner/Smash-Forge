@@ -291,7 +291,7 @@ namespace VBN_Editor
                 v = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
                 cf++;
             }else
-            if (Runtime.TargetCMR0 != null)
+            if (Runtime.TargetCMR0 != null && checkBox1.Checked)
             {
                 if (cf >= Runtime.TargetCMR0.frames.Count)
                     cf = 0;
@@ -354,6 +354,19 @@ namespace VBN_Editor
                     GL.Begin(PrimitiveType.Lines);
                     GL.Vertex3(Runtime.TargetPath.frames[i].x, Runtime.TargetPath.frames[i].y, Runtime.TargetPath.frames[i].z);
                     GL.Vertex3(Runtime.TargetPath.frames[i - 1].x, Runtime.TargetPath.frames[i - 1].y, Runtime.TargetPath.frames[i - 1].z);
+                    GL.End();
+                }
+            }
+
+            if (Runtime.TargetCMR0 != null && !checkBox1.Checked)
+            {
+                GL.Color3(Color.Yellow);
+                GL.LineWidth(2);
+                for (int i = 1; i < Runtime.TargetCMR0.frames.Count; i++)
+                {
+                    GL.Begin(PrimitiveType.Lines);
+                    GL.Vertex3(Runtime.TargetCMR0.frames[i].M14, Runtime.TargetCMR0.frames[i].M24, Runtime.TargetCMR0.frames[i].M34);
+                    GL.Vertex3(Runtime.TargetCMR0.frames[i - 1].M14, Runtime.TargetCMR0.frames[i - 1].M24, Runtime.TargetCMR0.frames[i - 1].M34);
                     GL.End();
                 }
             }

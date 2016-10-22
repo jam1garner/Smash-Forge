@@ -218,9 +218,9 @@
             this.checkBox1.AutoSize = true;
             this.checkBox1.Location = new System.Drawing.Point(112, 17);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(139, 17);
+            this.checkBox1.Size = new System.Drawing.Size(133, 17);
             this.checkBox1.TabIndex = 10;
-            this.checkBox1.Text = "Use path.bin for camera";
+            this.checkBox1.Text = "Use Camera Animation";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // VBNViewport
