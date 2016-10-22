@@ -332,9 +332,9 @@ namespace VBN_Editor
 
 
             // draw lvd
-            /*if (lvd != null)
+            if (Runtime.TargetLVD != null)
             {
-                foreach (Collision c in lvd.collisions)
+                foreach (Collision c in Runtime.TargetLVD.collisions)
                 {
                     // draw the ground quads
                     int dir = 1;
@@ -385,7 +385,7 @@ namespace VBN_Editor
                     }
                     GL.End();
                 }
-            }*/
+            }
 
 
             // drawing the bones
