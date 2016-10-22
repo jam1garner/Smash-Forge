@@ -32,7 +32,9 @@ namespace VBN_Editor
 
     public struct CollisionMat
     {
-        public Byte[] rawMat;
+        public bool leftLedge;
+        public bool rightLedge;
+        public byte physicsType;
     }
 
     public class Collision
@@ -88,7 +90,10 @@ namespace VBN_Editor
             {
                 f.skip(1);//Seperation char
                 CollisionMat temp;
-                temp.rawMat = f.read(0xC);//Temporary, will work on fleshing out material more later
+                byte[] mat = f.read(0xC);//Temporary, will work on fleshing out material more later
+                temp.leftLedge = ((mat[10] & 0x40) != 0);
+                temp.rightLedge = ((mat[10] & 0x80) != 0);
+                temp.physicsType = mat[4];
                 materials.Add(temp);
             }
 
