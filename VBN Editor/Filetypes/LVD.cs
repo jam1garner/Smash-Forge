@@ -34,6 +34,7 @@ namespace VBN_Editor
     {
         public bool leftLedge;
         public bool rightLedge;
+        public bool noWallJump;
         public byte physicsType;
     }
 
@@ -91,6 +92,7 @@ namespace VBN_Editor
                 f.skip(1);//Seperation char
                 CollisionMat temp;
                 byte[] mat = f.read(0xC);//Temporary, will work on fleshing out material more later
+                temp.noWallJump = ((mat[10] & 0x10) != 0);
                 temp.leftLedge = ((mat[10] & 0x40) != 0);
                 temp.rightLedge = ((mat[10] & 0x80) != 0);
                 temp.physicsType = mat[4];
