@@ -60,7 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Filetypes\LVD.cs" />
-    <Compile Include="Filetypes\MTA.cs" />
+    <Compile Include="Filetypes\Models\MTA.cs" />
     <Compile Include="Filetypes\PAC.cs" />
     <Compile Include="Filetypes\PATH.cs" />
     <Compile Include="GUI\Editors\AnimList.cs">
@@ -99,7 +99,7 @@
     <Compile Include="GUI\AddBone.Designer.cs">
       <DependentUpon>AddBone.cs</DependentUpon>
     </Compile>
-    <Compile Include="Filetypes\MDL0Bones.cs" />
+    <Compile Include="Filetypes\Models\MDL0Bones.cs" />
     <Compile Include="GUI\Editors\VBNViewport.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -117,7 +117,7 @@
     <Compile Include="MovesetManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Filetypes\VBNBones.cs" />
+    <Compile Include="Filetypes\Models\VBNBones.cs" />
     <EmbeddedResource Include="GUI\Editors\AnimList.resx">
       <DependentUpon>AnimList.cs</DependentUpon>
     </EmbeddedResource>
@@ -160,21 +160,21 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Filetypes\ANIM.cs" />
-    <Compile Include="Filetypes\CHR0.cs" />
+    <Compile Include="Filetypes\Animation\ANIM.cs" />
+    <Compile Include="Filetypes\Animation\CHR0.cs" />
     <Compile Include="IO\FileData.cs" />
     <Compile Include="IO\FileOutput.cs" />
-    <Compile Include="Filetypes\OMO.cs" />
+    <Compile Include="Filetypes\Animation\OMO.cs" />
     <Compile Include="Runtime.cs" />
     <Compile Include="SkelAnimation.cs" />
     <Compile Include="Filetypes\SMD.cs" />
     <Compile Include="Shader.cs" />
-    <Compile Include="Filetypes\DDS.cs" />
-    <Compile Include="Filetypes\NUD.cs" />
-    <Compile Include="Filetypes\NUT.cs" />
-    <Compile Include="Filetypes\GTX.cs" />
-    <Compile Include="Filetypes\JTB.cs" />
-    <Compile Include="Filetypes\CMR0.cs" />
+    <Compile Include="Filetypes\Textures\DDS.cs" />
+    <Compile Include="Filetypes\Models\NUD.cs" />
+    <Compile Include="Filetypes\Textures\NUT.cs" />
+    <Compile Include="Filetypes\Textures\GTX.cs" />
+    <Compile Include="Filetypes\Models\JTB.cs" />
+    <Compile Include="Filetypes\Animation\CMR0.cs" />
     <Compile Include="GUI\Editors\RenderTools.cs" />
   </ItemGroup>
   <ItemGroup>

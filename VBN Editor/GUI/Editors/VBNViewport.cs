@@ -182,13 +182,13 @@ namespace VBN_Editor
 
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
-                if(m.vbn != null)
+                if (m.vbn != null)
                     Runtime.TargetAnim.nextFrame(m.vbn);
             }
 
             Frame = (int)this.nupdFrame.Value;
 
-            if(script != null)
+            if (script != null)
                 ProcessFrame();
         }
         private void nupdSpeed_ValueChanged(object sender, EventArgs e)
@@ -343,7 +343,7 @@ namespace VBN_Editor
             // will be drawn on top of everything
             GL.Clear(ClearBufferMask.DepthBufferBit);
             // draw lvd
-            if(Runtime.renderLVD)
+            if (Runtime.renderLVD)
                 DrawLVD();
             // drawing the bones
             if (Runtime.renderBones)
@@ -385,7 +385,8 @@ namespace VBN_Editor
                 return false;
         }
 
-        private void SetCameraAnimation(){
+        private void SetCameraAnimation()
+        {
             if (Runtime.TargetPath != null && checkBox1.Checked)
             {
                 if (cf >= Runtime.TargetPath.frames.Count)
@@ -393,18 +394,19 @@ namespace VBN_Editor
                 pathFrame f = Runtime.TargetPath.frames[cf];
                 v = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
                 cf++;
-            }else
-                if (Runtime.TargetCMR0 != null && checkBox1.Checked)
-                {
-                    if (cf >= Runtime.TargetCMR0.frames.Count)
-                        cf = 0;
-                    Matrix4 m = Runtime.TargetCMR0.frames[cf].Inverted();
-                    v =  Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
-                    cf++;
-                }
+            }
+            else if (Runtime.TargetCMR0 != null && checkBox1.Checked)
+            {
+                if (cf >= Runtime.TargetCMR0.frames.Count)
+                    cf = 0;
+                Matrix4 m = Runtime.TargetCMR0.frames[cf].Inverted();
+                v = Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
+                cf++;
+            }
         }
 
-        private void DrawModels(){
+        private void DrawModels()
+        {
             GL.UseProgram(shader.programID);
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
@@ -425,7 +427,8 @@ namespace VBN_Editor
             }
         }
 
-        private void DrawBones(){
+        private void DrawBones()
+        {
             if (Runtime.ModelContainers.Count > 0)
             {
                 // Render the hitboxes
@@ -465,7 +468,8 @@ namespace VBN_Editor
             }
         }
 
-        public void DrawLVD(){
+        public void DrawLVD()
+        {
             if (Runtime.TargetLVD != null)
             {
                 if (Runtime.renderCollisions)
@@ -668,8 +672,9 @@ namespace VBN_Editor
             }
         }
 
-        private void DrawPathDisplay(){
-            if(Runtime.TargetPath != null && !checkBox1.Checked)
+        private void DrawPathDisplay()
+        {
+            if (Runtime.TargetPath != null && !checkBox1.Checked)
             {
                 GL.Color3(Color.Yellow);
                 GL.LineWidth(2);
@@ -769,14 +774,17 @@ namespace VBN_Editor
                     }
 
                     GL.DepthMask(false);
-                    if (h.Extended) {
+                    if (h.Extended)
+                    {
                         var va2 = new Vector3(h.X2, h.Y2, h.Z2);
 
-                        if(h.Bone != -1)
+                        if (h.Bone != -1)
                             va2 = Vector3.Transform(va2, b.transform.ClearScale());
 
-                        RenderTools.drawCylinder (va, va2, h.Size);
-                    } else {
+                        RenderTools.drawCylinder(va, va2, h.Size);
+                    }
+                    else
+                    {
                         RenderTools.drawSphere(va, h.Size, 30);
                     }
                 }
@@ -788,8 +796,9 @@ namespace VBN_Editor
 
         ACMDScript script;
 
-        public void ProcessFrame(){
-            Hitboxes.Clear ();
+        public void ProcessFrame()
+        {
+            Hitboxes.Clear();
             int halt = 0;
             int e = 0;
             int setLoop = 0;
@@ -899,7 +908,7 @@ namespace VBN_Editor
                             break;
                         }
                     case 0x9245E1A8: // clear all hitboxes
-                        Hitboxes.Clear ();
+                        Hitboxes.Clear();
                         break;
                     case 0xFF379EB6: // delete hitbox
                         if (Hitboxes.ContainsKey((int)cmd.Parameters[0]))
@@ -927,7 +936,7 @@ namespace VBN_Editor
                             Hitbox h = new Hitbox();
                             int id = (int)cmd.Parameters[0];
                             h.Type = Hitbox.GRABBOX;
-                            h.Bone = (int.Parse(cmd.Parameters[1]+"") - 1).Clamp(0, int.MaxValue);
+                            h.Bone = (int.Parse(cmd.Parameters[1] + "") - 1).Clamp(0, int.MaxValue);
                             h.Size = (float)cmd.Parameters[2];
                             h.X = (float)cmd.Parameters[3];
                             h.Y = (float)cmd.Parameters[4];
@@ -935,9 +944,9 @@ namespace VBN_Editor
 
                             if (cmd.Parameters.Count > 8)
                             {
-                                h.X2 = float.Parse(cmd.Parameters[8]+"");
-                                h.Y2 = float.Parse(cmd.Parameters[9]+"");
-                                h.Z2 = float.Parse(cmd.Parameters[10]+"");
+                                h.X2 = float.Parse(cmd.Parameters[8] + "");
+                                h.Y2 = float.Parse(cmd.Parameters[9] + "");
+                                h.Z2 = float.Parse(cmd.Parameters[10] + "");
                             }
 
                             Hitboxes.Add(id, h);
@@ -945,7 +954,7 @@ namespace VBN_Editor
                         }
                     case 0xF3A464AC: // Terminate_Grab_Collisions
                         List<Hitbox> toDelete = new List<Hitbox>();
-                        for(int i =0 ; i < Hitboxes.Count ; i++)
+                        for (int i = 0; i < Hitboxes.Count; i++)
                         {
                             if (Hitboxes.Values[i].Type == Hitbox.GRABBOX)
                                 toDelete.Add(Hitboxes.Values[i]);
@@ -1001,7 +1010,7 @@ namespace VBN_Editor
             Runtime.TargetAnim.setFrame(frame);
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
-                if(m.vbn != null)
+                if (m.vbn != null)
                     Runtime.TargetAnim.nextFrame(m.vbn);
             }
         }
@@ -1010,7 +1019,7 @@ namespace VBN_Editor
             a.setFrame(0);
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
-                if(m.vbn != null)
+                if (m.vbn != null)
                     Runtime.TargetAnim.nextFrame(m.vbn);
             }
             nupdMaxFrame.Value = a.size() > 1 ? a.size() - 1 : a.size();
