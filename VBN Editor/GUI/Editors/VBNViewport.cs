@@ -475,7 +475,7 @@ namespace VBN_Editor
                         // draw the ground quads
                         int dir = 1;
                         int cg = 0;
-                        GL.LineWidth(2);
+                        GL.LineWidth(3);
                         GL.Color3(Color.FromArgb(50, Color.Red));
                         GL.Begin(PrimitiveType.Quads);
                         foreach (Vector2D vi in c.verts)
@@ -494,7 +494,7 @@ namespace VBN_Editor
 
 
                         // draw outside borders
-                        GL.Color3(Color.Black);
+                        GL.Color3(Color.DarkRed);
                         GL.Begin(PrimitiveType.LineStrip);
                         foreach (Vector2D vi in c.verts)
                         {
@@ -652,7 +652,7 @@ namespace VBN_Editor
 
                 if (Runtime.renderOtherLVDEntries)
                 {
-                    GL.Color4(Color.FromArgb(128, Color.Red));
+                    GL.Color4(Color.FromArgb(128, Color.Yellow));
                     foreach (Sphere s in Runtime.TargetLVD.damageSpheres)
                     {
                         RenderTools.drawSphere(new Vector3(s.x, s.y, s.z), s.radius, 24);
@@ -663,6 +663,8 @@ namespace VBN_Editor
                         RenderTools.drawCylinder(new Vector3(c.x, c.y, c.z), new Vector3(c.x + c.dx, c.y + c.dy, c.z + c.dz), c.r);
                     }
                 }
+
+
             }
         }
 

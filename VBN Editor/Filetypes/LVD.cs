@@ -324,11 +324,13 @@ namespace VBN_Editor
                 throw new NotImplementedException();
             f.skip(1);//Seperation char
 
-            if (f.readInt() != 0)//5
+            int fsAreaCamCount = f.readInt();
+            if (fsAreaCamCount != 0)
                 throw new NotImplementedException();
             f.skip(1);//Seperation char
 
-            if (f.readInt() != 0)//6
+            int fsCamLimitCount = f.readInt();
+            if (fsCamLimitCount != 0)
                 throw new NotImplementedException();
             f.skip(1);//Seperation char
 
