@@ -26,14 +26,14 @@ namespace VBN_Editor
     {
         public string name;
         public string subname;
-        public float x;
-        public float y;
-        public float z;
-        public float r;
-        public float dx;
-        public float dy;
-        public float dz;
-        public float unk;
+        public float x1;
+        public float y1;
+        public float z1;
+        public float r1;
+        public float x2;
+        public float y2;
+        public float z2;
+        public float r2;
     }
 
     public struct Point
@@ -359,14 +359,14 @@ namespace VBN_Editor
                     Capsule temp;
                     temp.name = tempName;
                     temp.subname = tempSubname;
-                    temp.x = f.readFloat();
-                    temp.y = f.readFloat();
-                    temp.z = f.readFloat();
-                    temp.dx = f.readFloat();
-                    temp.dy = f.readFloat();
-                    temp.dz = f.readFloat();
-                    temp.r = f.readFloat();
-                    temp.unk = f.readFloat();
+                    temp.x1 = f.readFloat();
+                    temp.r1 = f.readFloat();
+                    temp.y1 = f.readFloat();
+                    temp.z1 = f.readFloat();
+                    temp.x2 = f.readFloat();
+                    temp.y2 = f.readFloat();
+                    temp.r2 = f.readFloat();
+                    temp.z2 = f.readFloat();
                     f.skip(1);
                     damageCapsules.Add(temp);
                 }
