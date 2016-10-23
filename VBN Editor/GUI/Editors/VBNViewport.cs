@@ -660,7 +660,7 @@ namespace VBN_Editor
 
                     foreach (Capsule c in Runtime.TargetLVD.damageCapsules)
                     {
-                        //render capsule
+                        RenderTools.drawCylinder(new Vector3(c.x, c.y, c.z), new Vector3(c.x + c.dx, c.y + c.dy, c.z + c.dz), c.r);
                     }
                 }
             }
