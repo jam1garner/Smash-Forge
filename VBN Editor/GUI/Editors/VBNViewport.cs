@@ -652,10 +652,15 @@ namespace VBN_Editor
 
                 if (Runtime.renderOtherLVDEntries)
                 {
-                    foreach(Sphere s in Runtime.TargetLVD.damageSpheres)
+                    GL.Color4(Color.FromArgb(128, Color.Red));
+                    foreach (Sphere s in Runtime.TargetLVD.damageSpheres)
                     {
-                        GL.Color4(Color.FromArgb(128, Color.Red));
-                        
+                        RenderTools.drawSphere(new Vector3(s.x, s.y, s.z), s.radius, 24);
+                    }
+
+                    foreach (Capsule c in Runtime.TargetLVD.damageCapsules)
+                    {
+                        //render capsule
                     }
                 }
             }
