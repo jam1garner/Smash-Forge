@@ -23,7 +23,8 @@ namespace VBN_Editor
          * */
         public void Destroy()
         {
-            nud.Destroy();
+            if(nud != null)
+                nud.Destroy();
         }
     }
 }
