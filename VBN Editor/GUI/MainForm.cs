@@ -81,10 +81,11 @@ namespace VBN_Editor
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd)|*.vbn;*.mdl0;*.smd|" +
+                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud)|*.vbn;*.mdl0;*.smd;*.nud|" +
                              "Smash 4 Boneset (.vbn)|*.vbn|" +
                              "NW4R Model (.mdl0)|*.mdl0|" +
                              "Source Model (.SMD)|*.smd|" +
+                             "Namco Model (.NUD)|*.nud|" +
                              "All files(*.*)|*.*";
 
                 // "Namco Universal Data Folder (.NUD)|*.nud|" +
