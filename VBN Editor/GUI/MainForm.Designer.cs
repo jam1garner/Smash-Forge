@@ -33,6 +33,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openVBNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openStageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.edittToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addBoneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,7 +59,7 @@
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
-            this.openStageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -81,7 +82,8 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openVBNToolStripMenuItem,
             this.openStageToolStripMenuItem,
-            this.openNUDToolStripMenuItem});
+            this.openNUDToolStripMenuItem,
+            this.clearWorkspaceToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -90,15 +92,22 @@
             // 
             this.openVBNToolStripMenuItem.Name = "openVBNToolStripMenuItem";
             this.openVBNToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openVBNToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openVBNToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.openVBNToolStripMenuItem.Text = "Open";
             this.openVBNToolStripMenuItem.Click += new System.EventHandler(this.openVBNToolStripMenuItem_Click);
+            // 
+            // openStageToolStripMenuItem
+            // 
+            this.openStageToolStripMenuItem.Name = "openStageToolStripMenuItem";
+            this.openStageToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.openStageToolStripMenuItem.Text = "Open Stage";
+            this.openStageToolStripMenuItem.Click += new System.EventHandler(this.openStageToolStripMenuItem_Click);
             // 
             // openNUDToolStripMenuItem
             // 
             this.openNUDToolStripMenuItem.Name = "openNUDToolStripMenuItem";
             this.openNUDToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.openNUDToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openNUDToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.openNUDToolStripMenuItem.Text = "Save";
             this.openNUDToolStripMenuItem.Click += new System.EventHandler(this.openNUDToolStripMenuItem_Click);
             // 
@@ -296,12 +305,12 @@
             this.dockPanel1.Size = new System.Drawing.Size(1009, 659);
             this.dockPanel1.TabIndex = 16;
             // 
-            // openStageToolStripMenuItem
+            // clearWorkspaceToolStripMenuItem
             // 
-            this.openStageToolStripMenuItem.Name = "openStageToolStripMenuItem";
-            this.openStageToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.openStageToolStripMenuItem.Text = "Open Stage";
-            this.openStageToolStripMenuItem.Click += new System.EventHandler(this.openStageToolStripMenuItem_Click);
+            this.clearWorkspaceToolStripMenuItem.Name = "clearWorkspaceToolStripMenuItem";
+            this.clearWorkspaceToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.clearWorkspaceToolStripMenuItem.Text = "Clear Workspace";
+            this.clearWorkspaceToolStripMenuItem.Click += new System.EventHandler(this.clearWorkspaceToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -360,6 +369,7 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem boneTreeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openStageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearWorkspaceToolStripMenuItem;
     }
 }
 

@@ -34,12 +34,13 @@ namespace VBN_Editor
             throw new NotImplementedException();
         }
 
+        public static bool killWorkspace { get; set; }
         // Make sure subscribers unsubscribe or this
         // will prevent garbage collection!
         public static event EventHandler AnimationChanged;
         private static void OnAnimationChanged()
         {
-            if (AnimationChanged != null)
+            if (AnimationChanged != null && !killWorkspace)
                 AnimationChanged(typeof(Runtime), EventArgs.Empty);
         }
     }

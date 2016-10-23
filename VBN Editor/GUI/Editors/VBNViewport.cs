@@ -80,6 +80,19 @@ namespace VBN_Editor
         {
             // Fix accessing the control after 
             // the editor has been closed 
+            if (Runtime.killWorkspace)
+            {
+                Runtime.ModelContainers = new List<ModelContainer>();
+                Runtime.TextureContainers = new List<NUT>();
+                Runtime.TargetVBN = null;
+                Runtime.TargetAnim = null;
+                Runtime.TargetLVD = null;
+                Runtime.TargetPath = null;
+                Runtime.TargetCMR0 = null;
+                Runtime.TargetNUD = null;
+                Runtime.killWorkspace = false;
+            }
+
             if (this.IsDisposed == true)
                 return;
 

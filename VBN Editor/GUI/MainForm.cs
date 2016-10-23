@@ -125,8 +125,10 @@ namespace VBN_Editor
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud|" +
+                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud|" +
                              "Smash 4 Boneset (.vbn)|*.vbn|" +
+                             "Namco Model (.nud)|*.nud|" +
+                             "Smash 4 Level Data (.lvd)|*.lvd|" +
                              "NW4R Model (.mdl0)|*.mdl0|" +
                              "Source Model (.SMD)|*.smd|" +
                              "All files(*.*)|*.*";
@@ -467,6 +469,11 @@ namespace VBN_Editor
                     }
                 }
             }
+        }
+
+        private void clearWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Runtime.killWorkspace = true;
         }
     }
 }
