@@ -185,7 +185,7 @@ namespace VBN_Editor
                 if(m.vbn != null)
                     Runtime.TargetAnim.nextFrame(m.vbn);
             }
-            
+
             Frame = (int)this.nupdFrame.Value;
 
             if(script != null)
@@ -274,12 +274,12 @@ namespace VBN_Editor
             v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 2500.0f);
 
             GotFocus += (object sender, EventArgs e) =>
-            {
-                mouseXLast = OpenTK.Input.Mouse.GetState().X;
-                mouseYLast = OpenTK.Input.Mouse.GetState().Y;
-                zoom = OpenTK.Input.Mouse.GetState().WheelPrecise;
-                mouseSLast = zoom;
-            };
+                {
+                    mouseXLast = OpenTK.Input.Mouse.GetState().X;
+                    mouseYLast = OpenTK.Input.Mouse.GetState().Y;
+                    zoom = OpenTK.Input.Mouse.GetState().WheelPrecise;
+                    mouseSLast = zoom;
+                };
         }
 
         int cf = 0;
@@ -660,7 +660,7 @@ namespace VBN_Editor
 
                     foreach (Capsule c in Runtime.TargetLVD.damageCapsules)
                     {
-                        //render capsule
+                        RenderTools.drawCylinder(new Vector3(c.x, c.y, c.z), new Vector3(c.x + c.dx, c.y + c.dy, c.z + c.dz), c.r);
                     }
                 }
             }
@@ -766,17 +766,17 @@ namespace VBN_Editor
                             break;
                     }
 
-					GL.DepthMask(false);
+                    GL.DepthMask(false);
                     if (h.Extended) {
-                            var va2 = new Vector3(h.X2, h.Y2, h.Z2);
+                        var va2 = new Vector3(h.X2, h.Y2, h.Z2);
 
-                            if(h.Bone != -1)
-                                va2 = Vector3.Transform(va2, b.transform.ClearScale());
+                        if(h.Bone != -1)
+                            va2 = Vector3.Transform(va2, b.transform.ClearScale());
 
-                            RenderTools.drawCylinder (va, va2, h.Size);
-						} else {
-                            RenderTools.drawSphere(va, h.Size, 30);
-						}
+                        RenderTools.drawCylinder (va, va2, h.Size);
+                    } else {
+                        RenderTools.drawSphere(va, h.Size, 30);
+                    }
                 }
 
                 GL.Disable(EnableCap.Blend);
@@ -959,7 +959,7 @@ namespace VBN_Editor
                         break;
                     case 0x7640AEEB:
                         break;
-                    
+
                 }
 
                 e++;
