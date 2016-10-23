@@ -38,6 +38,50 @@ namespace VBN_Editor
         public byte physicsType;
     }
 
+    public struct ItemSection
+    {
+        public List<Vector2D> points;
+    }
+
+    public class ItemSpawner
+    {
+        public string name;
+        public string subname;
+        public List<ItemSection> sections = new List<ItemSection>();
+
+        public ItemSpawner()
+        {
+
+        }
+
+        public void read(FileData f)
+        {
+            f.skip(0xD);
+            name = f.readString(f.pos(), 0x38);
+            f.skip(0x38);
+            f.skip(1);//Seperation char
+            subname = f.readString(f.pos(), 0x40);
+            f.skip(0xAC);
+            int sectionCount = f.readInt();
+            for(int i = 0; i < sectionCount; i++)
+            {
+                f.skip(0x18);// unknown data
+                ItemSection temp;
+                temp.points = new List<Vector2D>();
+                int vertCount = f.readInt();
+                for(int j = 0; j < vertCount; j++)
+                {
+                    f.skip(1);//Seperation char
+                    Vector2D point;
+                    point.x = f.readFloat();
+                    point.y = f.readFloat();
+                    temp.points.Add(point);
+                }
+                sections.Add(temp);
+            }
+        }
+    }
+
     public class Collision
     {
         public string name;
@@ -105,11 +149,12 @@ namespace VBN_Editor
     public class LVD
     {
         public List<Collision> collisions = new List<Collision>();
-        List<Point> spawns = new List<Point>();
-        List<Point> respawns = new List<Point>();
-        List<Bounds> cameraBounds = new List<Bounds>();
-        List<Bounds> blastzones = new List<Bounds>();
-        List<Point> generalPoints = new List<Point>();
+        public List<Point> spawns = new List<Point>();
+        public List<Point> respawns = new List<Point>();
+        public List<Bounds> cameraBounds = new List<Bounds>();
+        public List<Bounds> blastzones = new List<Bounds>();
+        public List<Point> generalPoints = new List<Point>();
+        public List<ItemSpawner> items = new List<ItemSpawner>();
 
         public LVD()
         {
@@ -196,44 +241,62 @@ namespace VBN_Editor
             }
             f.skip(1);//Seperation char
 
-            /*int unk_type_1 = f.readInt();
-            f.skip(1);//Seperation char
- 
-            int unk_type_2 = f.readInt();
-            f.skip(1);//Seperation char
- 
-            int enemyGeneratorCount = f.readInt();
-            f.skip(1);//Seperation char
- 
-            int unk_type_4 = f.readInt();
-            f.skip(1);//Seperation char
- 
-            int unk_type_5 = f.readInt();
-            f.skip(1);//Seperation char
- 
-            int unk_type_6 = f.readInt();
-            f.skip(1);//Seperation char
- 
-            int damageSphere = f.readInt();
-            f.skip(1);//Seperation char
- 
-            if (unk_type_1 != 0 || unk_type_2 != 0 || unk_type_4 != 0 || unk_type_5 != 0 || unk_type_6 != 0 || enemyGeneratorCount != 0 || damageSphere != 0)
+            if (f.readInt() != 0)//1
                 throw new NotImplementedException();
- 
+            f.skip(1);
+
+            if (f.readInt() != 0)//2
+                throw new NotImplementedException();
+            f.skip(1);
+
+            if (f.readInt() != 0)//3
+                throw new NotImplementedException();
+            f.skip(1);
+
+            if (f.readInt() != 0)//4
+                throw new NotImplementedException();
+            f.skip(1);
+
+            if (f.readInt() != 0)//5
+                throw new NotImplementedException();
+            f.skip(1);
+
+            if (f.readInt() != 0)//6
+                throw new NotImplementedException();
+            f.skip(1);
+
+            if (f.readInt() != 0)//7
+                throw new NotImplementedException();
+            f.skip(1);
+
+            int itemCount = f.readInt();
+            for(int i = 0; i < itemCount; i++)
+            {
+                ItemSpawner temp = new ItemSpawner();
+                temp.read(f);
+                items.Add(temp);
+            }
+            f.skip(1);//Seperation char
+
+            if (f.readInt() != 0)//8
+                throw new NotImplementedException();
+            f.skip(1);
+            
             int generalPointCount = f.readInt();
             for(int i = 0; i < generalPointCount; i++)
             {
                 Point temp;
                 f.skip(0xD);
                 temp.name = f.readString(f.pos(), 0x38);
+                f.skip(0x38);
                 f.skip(1);//Seperation char
                 temp.subname = f.readString(f.pos(), 0x40);
-                f.skip(0x6F);
+                f.skip(0xAF);
                 temp.x = f.readFloat();
                 temp.y = f.readFloat();
                 f.skip(0x14);
                 generalPoints.Add(temp);
-            }*/
+            }
             //LVD doesn't end here and neither does my confusion, will update this part later
         }
     }

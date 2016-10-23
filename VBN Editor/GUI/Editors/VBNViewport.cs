@@ -385,7 +385,7 @@ namespace VBN_Editor
                     int dir = 1;
                     int cg = 0;
                     GL.LineWidth(2);
-                    GL.Color3(Color.Red);
+                    GL.Color3(Color.FromArgb(50,Color.Red));
                     GL.Begin(PrimitiveType.Quads);
                     foreach (Vector2D vi in c.verts)
                     {
@@ -429,6 +429,122 @@ namespace VBN_Editor
                         GL.Vertex3(vi.x, vi.y, -5);
                     }
                     GL.End();
+                }
+
+                foreach (ItemSpawner c in Runtime.TargetLVD.items)
+                {
+                    foreach (ItemSection s in c.sections) {
+                        // draw the item spawn quads
+                        int dir = 1;
+                        int cg = 0;
+                        GL.LineWidth(2);
+
+                        // draw outside borders
+                        GL.Color3(Color.Black);
+                        GL.Begin(PrimitiveType.LineLoop);
+                        foreach (Vector2D vi in s.points)
+                        {
+                            GL.Vertex3(vi.x, vi.y, 5);
+                        }
+                        GL.End();
+                        GL.Begin(PrimitiveType.LineLoop);
+                        foreach (Vector2D vi in s.points)
+                        {
+                            GL.Vertex3(vi.x, vi.y, -5);
+                        }
+                        GL.End();
+
+
+                        // draw vertices
+                        GL.Color3(Color.White);
+                        GL.Begin(PrimitiveType.Lines);
+                        foreach (Vector2D vi in s.points)
+                        {
+                            GL.Vertex3(vi.x, vi.y, 5);
+                            GL.Vertex3(vi.x, vi.y, -5);
+                        }
+                        GL.End();
+                    }
+
+                    foreach(Point s in Runtime.TargetLVD.spawns)
+                    {
+                        GL.Color4(Color.FromArgb(100, Color.Blue));
+                        GL.Begin(PrimitiveType.QuadStrip);
+                        GL.Vertex3(s.x - 3f, s.y, 0f);
+                        GL.Vertex3(s.x + 3f, s.y, 0f);
+                        GL.Vertex3(s.x - 3f, s.y + 10f, 0f);
+                        GL.Vertex3(s.x + 3f, s.y + 10f, 0f);
+                        GL.End();
+                    }
+
+                    foreach (Point s in Runtime.TargetLVD.respawns)
+                    {
+                        GL.Color4(Color.FromArgb(100, Color.Blue));
+                        GL.Begin(PrimitiveType.QuadStrip);
+                        GL.Vertex3(s.x - 3f, s.y, 0f);
+                        GL.Vertex3(s.x + 3f, s.y, 0f);
+                        GL.Vertex3(s.x - 3f, s.y + 10f, 0f);
+                        GL.Vertex3(s.x + 3f, s.y + 10f, 0f);
+                        GL.End();
+
+                        //Draw respawn platform
+                        GL.Color4(Color.FromArgb(200, Color.Gray));
+                        GL.Begin(PrimitiveType.Triangles);
+                        GL.Vertex3(s.x - 5, s.y, 0);
+                        GL.Vertex3(s.x + 5, s.y, 0);
+                        GL.Vertex3(s.x, s.y, 5);
+
+                        GL.Vertex3(s.x - 5, s.y, 0);
+                        GL.Vertex3(s.x + 5, s.y, 0);
+                        GL.Vertex3(s.x, s.y, -5);
+
+                        GL.Vertex3(s.x - 5, s.y, 0);
+                        GL.Vertex3(s.x, s.y - 5, 0);
+                        GL.Vertex3(s.x, s.y, 5);
+
+                        GL.Vertex3(s.x + 5, s.y, 0);
+                        GL.Vertex3(s.x, s.y - 5, 0);
+                        GL.Vertex3(s.x, s.y, -5);
+
+                        GL.Vertex3(s.x + 5, s.y, 0);
+                        GL.Vertex3(s.x, s.y - 5, 0);
+                        GL.Vertex3(s.x, s.y, 5);
+
+                        GL.Vertex3(s.x - 5, s.y, 0);
+                        GL.Vertex3(s.x, s.y - 5, 0);
+                        GL.Vertex3(s.x, s.y, -5);
+                        GL.End();
+
+                        GL.Color4(Color.FromArgb(200, Color.Black));
+                        GL.Begin(PrimitiveType.Lines);
+                        GL.Vertex3(s.x - 5, s.y, 0);
+                        GL.Vertex3(s.x, s.y - 5, 0);
+                        GL.Vertex3(s.x + 5, s.y, 0);
+                        GL.Vertex3(s.x, s.y - 5, 0);
+
+                        GL.Vertex3(s.x, s.y, -5);
+                        GL.Vertex3(s.x, s.y - 5, 0);
+                        GL.Vertex3(s.x, s.y, 5);
+                        GL.Vertex3(s.x, s.y - 5, 0);
+
+                        GL.Vertex3(s.x, s.y, -5);
+                        GL.Vertex3(s.x + 5, s.y, 0);
+                        GL.Vertex3(s.x, s.y, -5);
+                        GL.Vertex3(s.x - 5, s.y, 0);
+
+                        GL.Vertex3(s.x, s.y, 5);
+                        GL.Vertex3(s.x + 5, s.y, 0);
+                        GL.Vertex3(s.x, s.y, 5);
+                        GL.Vertex3(s.x - 5, s.y, 0);
+
+                        GL.End();
+                    }
+
+                    foreach (Point g in Runtime.TargetLVD.generalPoints)
+                    {
+                        GL.Color4(Color.FromArgb(200,Color.Fuchsia));
+                        drawCubeWireframe(new Vector3(g.x, g.y, 0), 3);
+                    }
                 }
             }
 
@@ -833,6 +949,7 @@ namespace VBN_Editor
         {
             drawCircle(new Vector3(x, y, z), radius, precision);
         }
+
         public void drawCircle(Vector3 center, float radius, uint precision)
         {
             float theta = 2.0f * (float)Math.PI / precision;
