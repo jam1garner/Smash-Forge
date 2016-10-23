@@ -106,12 +106,19 @@ namespace VBN_Editor
                     }
                     else if (nupdFrame.Value == nupdMaxFrame.Value)
                     {
-                        isPlaying = false;
-                        btnPlay.Text = "Play";
+                        if (!checkBox2.Checked)
+                        {
+                            isPlaying = false;
+                            btnPlay.Text = "Play";
+                        }
+                        else
+                        {
+                            nupdFrame.Value = 0;
+                        }
                     }
                 }
                 Render();
-                System.Threading.Thread.Sleep(1000 / 60);
+                System.Threading.Thread.Sleep(1000 / AnimationSpeed);
             }
         }
         private void Runtime_AnimationChanged(object sender, EventArgs e)

@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.nupdFrameRate = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -41,7 +42,7 @@
             this.btnPrevFrame = new System.Windows.Forms.Button();
             this.btnFirstFrame = new System.Windows.Forms.Button();
             this.glControl1 = new OpenTK.GLControl();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nupdFrameRate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nupdFrame)).BeginInit();
@@ -50,6 +51,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.checkBox2);
             this.groupBox2.Controls.Add(this.checkBox1);
             this.groupBox2.Controls.Add(this.nupdFrameRate);
             this.groupBox2.Controls.Add(this.label3);
@@ -68,6 +70,16 @@
             this.groupBox2.Size = new System.Drawing.Size(624, 91);
             this.groupBox2.TabIndex = 8;
             this.groupBox2.TabStop = false;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(112, 17);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(133, 17);
+            this.checkBox1.TabIndex = 10;
+            this.checkBox1.Text = "Use Camera Animation";
+            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // nupdFrameRate
             // 
@@ -213,15 +225,15 @@
             this.glControl1.VSync = false;
             this.glControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseMove);
             // 
-            // checkBox1
+            // checkBox2
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(112, 17);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(133, 17);
-            this.checkBox1.TabIndex = 10;
-            this.checkBox1.Text = "Use Camera Animation";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(251, 17);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(50, 17);
+            this.checkBox2.TabIndex = 11;
+            this.checkBox2.Text = "Loop";
+            this.checkBox2.UseVisualStyleBackColor = true;
             // 
             // VBNViewport
             // 
@@ -254,5 +266,6 @@
         private System.Windows.Forms.NumericUpDown nupdFrameRate;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox checkBox2;
     }
 }
