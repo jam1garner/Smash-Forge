@@ -305,7 +305,8 @@ namespace VBN_Editor
 
             GL.UseProgram(0);
             // drawing floor---------------------------
-            drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
+            if (Runtime.renderFloor)
+                drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
 
 
             GL.Enable(EnableCap.LineSmooth); // This is Optional 
@@ -323,18 +324,22 @@ namespace VBN_Editor
 
 
             // draw models
-            DrawModels();
+            if (Runtime.renderModel)
+                DrawModels();
 
             GL.UseProgram(0);
             // draw path.bin
-            DrawPathDisplay();
+            if (Runtime.renderPath)
+                DrawPathDisplay();
             // clear the buffer bit so the skeleton 
             // will be drawn on top of everything
             GL.Clear(ClearBufferMask.DepthBufferBit);
             // draw lvd
-            DrawLVD();
+            if(Runtime.renderLVD)
+                DrawLVD();
             // drawing the bones
-            DrawBones();
+            if (Runtime.renderBones)
+                DrawBones();
 
             // Clean up
             GL.PopAttrib();
@@ -455,74 +460,41 @@ namespace VBN_Editor
         public void DrawLVD(){
             if (Runtime.TargetLVD != null)
             {
-                foreach (Collision c in Runtime.TargetLVD.collisions)
+                if (Runtime.renderCollisions)
                 {
-                    // draw the ground quads
-                    int dir = 1;
-                    int cg = 0;
-                    GL.LineWidth(2);
-                    GL.Color3(Color.FromArgb(50,Color.Red));
-                    GL.Begin(PrimitiveType.Quads);
-                    foreach (Vector2D vi in c.verts)
+                    foreach (Collision c in Runtime.TargetLVD.collisions)
                     {
-                        GL.Vertex3(vi.x, vi.y, 5 * dir);
-                        GL.Vertex3(vi.x, vi.y, -5 * dir);
-                        if (cg>0)
-                        {
-                            GL.Vertex3(vi.x, vi.y, 5 * dir);
-                            GL.Vertex3(vi.x, vi.y, -5 * dir);
-                        }
-                        cg++;
-                        dir *= -1;
-                    }
-                    GL.End();
-
-
-                    // draw outside borders
-                    GL.Color3(Color.Black);
-                    GL.Begin(PrimitiveType.LineStrip);
-                    foreach (Vector2D vi in c.verts)
-                    {
-                        GL.Vertex3(vi.x, vi.y, 5);
-                    }
-                    GL.End();
-                    GL.Begin(PrimitiveType.LineStrip);
-                    foreach (Vector2D vi in c.verts)
-                    {
-                        GL.Vertex3(vi.x, vi.y, -5);
-                    }
-                    GL.End();
-
-
-                    // draw vertices
-                    GL.Color3(Color.White);
-                    GL.Begin(PrimitiveType.Lines);
-                    foreach (Vector2D vi in c.verts)
-                    {
-                        GL.Vertex3(vi.x, vi.y, 5);
-                        GL.Vertex3(vi.x, vi.y, -5);
-                    }
-                    GL.End();
-                }
-
-                foreach (ItemSpawner c in Runtime.TargetLVD.items)
-                {
-                    foreach (Section s in c.sections) {
-                        // draw the item spawn quads
+                        // draw the ground quads
                         int dir = 1;
                         int cg = 0;
                         GL.LineWidth(2);
+                        GL.Color3(Color.FromArgb(50, Color.Red));
+                        GL.Begin(PrimitiveType.Quads);
+                        foreach (Vector2D vi in c.verts)
+                        {
+                            GL.Vertex3(vi.x, vi.y, 5 * dir);
+                            GL.Vertex3(vi.x, vi.y, -5 * dir);
+                            if (cg > 0)
+                            {
+                                GL.Vertex3(vi.x, vi.y, 5 * dir);
+                                GL.Vertex3(vi.x, vi.y, -5 * dir);
+                            }
+                            cg++;
+                            dir *= -1;
+                        }
+                        GL.End();
+
 
                         // draw outside borders
                         GL.Color3(Color.Black);
                         GL.Begin(PrimitiveType.LineStrip);
-                        foreach (Vector2D vi in s.points)
+                        foreach (Vector2D vi in c.verts)
                         {
                             GL.Vertex3(vi.x, vi.y, 5);
                         }
                         GL.End();
                         GL.Begin(PrimitiveType.LineStrip);
-                        foreach (Vector2D vi in s.points)
+                        foreach (Vector2D vi in c.verts)
                         {
                             GL.Vertex3(vi.x, vi.y, -5);
                         }
@@ -532,15 +504,58 @@ namespace VBN_Editor
                         // draw vertices
                         GL.Color3(Color.White);
                         GL.Begin(PrimitiveType.Lines);
-                        foreach (Vector2D vi in s.points)
+                        foreach (Vector2D vi in c.verts)
                         {
                             GL.Vertex3(vi.x, vi.y, 5);
                             GL.Vertex3(vi.x, vi.y, -5);
                         }
                         GL.End();
                     }
+                }
 
-                    foreach(Point s in Runtime.TargetLVD.spawns)
+                if (Runtime.renderItemSpawners)
+                {
+                    foreach (ItemSpawner c in Runtime.TargetLVD.items)
+                    {
+                        foreach (Section s in c.sections)
+                        {
+                            // draw the item spawn quads
+                            int dir = 1;
+                            int cg = 0;
+                            GL.LineWidth(2);
+
+                            // draw outside borders
+                            GL.Color3(Color.Black);
+                            GL.Begin(PrimitiveType.LineStrip);
+                            foreach (Vector2D vi in s.points)
+                            {
+                                GL.Vertex3(vi.x, vi.y, 5);
+                            }
+                            GL.End();
+                            GL.Begin(PrimitiveType.LineStrip);
+                            foreach (Vector2D vi in s.points)
+                            {
+                                GL.Vertex3(vi.x, vi.y, -5);
+                            }
+                            GL.End();
+
+
+                            // draw vertices
+                            GL.Color3(Color.White);
+                            GL.Begin(PrimitiveType.Lines);
+                            foreach (Vector2D vi in s.points)
+                            {
+                                GL.Vertex3(vi.x, vi.y, 5);
+                                GL.Vertex3(vi.x, vi.y, -5);
+                            }
+                            GL.End();
+                        }
+                    }
+                }
+
+                if (Runtime.renderSpawns)
+                {
+                    foreach (Point s in Runtime.TargetLVD.spawns)
                     {
                         GL.Color4(Color.FromArgb(100, Color.Blue));
                         GL.Begin(PrimitiveType.QuadStrip);
@@ -550,7 +565,10 @@ namespace VBN_Editor
                         GL.Vertex3(s.x + 3f, s.y + 10f, 0f);
                         GL.End();
                     }
+                }
 
+                if (Runtime.renderRespawns)
+                {
                     foreach (Point s in Runtime.TargetLVD.respawns)
                     {
                         GL.Color4(Color.FromArgb(100, Color.Blue));
@@ -613,10 +631,13 @@ namespace VBN_Editor
 
                         GL.End();
                     }
+                }
 
+                if (Runtime.renderGeneralPoints)
+                {
                     foreach (Point g in Runtime.TargetLVD.generalPoints)
                     {
-                        GL.Color4(Color.FromArgb(200,Color.Fuchsia));
+                        GL.Color4(Color.FromArgb(200, Color.Fuchsia));
                         drawCubeWireframe(new Vector3(g.x, g.y, 0), 3);
                     }
                 }

@@ -35,6 +35,7 @@
             this.openVBNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openStageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.edittToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addBoneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hashMatchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,7 +60,7 @@
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
-            this.clearWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.renderSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -110,6 +111,13 @@
             this.openNUDToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.openNUDToolStripMenuItem.Text = "Save";
             this.openNUDToolStripMenuItem.Click += new System.EventHandler(this.openNUDToolStripMenuItem_Click);
+            // 
+            // clearWorkspaceToolStripMenuItem
+            // 
+            this.clearWorkspaceToolStripMenuItem.Name = "clearWorkspaceToolStripMenuItem";
+            this.clearWorkspaceToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.clearWorkspaceToolStripMenuItem.Text = "Clear Workspace";
+            this.clearWorkspaceToolStripMenuItem.Click += new System.EventHandler(this.clearWorkspaceToolStripMenuItem_Click);
             // 
             // edittToolStripMenuItem
             // 
@@ -214,6 +222,7 @@
             this.animationsWindowToolStripMenuItem,
             this.boneTreeToolStripMenuItem,
             this.viewportWindowToolStripMenuItem,
+            this.renderSettingsToolStripMenuItem,
             this.toolStripSeparator3,
             this.aboutToolStripMenuItem1});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
@@ -305,12 +314,12 @@
             this.dockPanel1.Size = new System.Drawing.Size(1009, 659);
             this.dockPanel1.TabIndex = 16;
             // 
-            // clearWorkspaceToolStripMenuItem
+            // renderSettingsToolStripMenuItem
             // 
-            this.clearWorkspaceToolStripMenuItem.Name = "clearWorkspaceToolStripMenuItem";
-            this.clearWorkspaceToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.clearWorkspaceToolStripMenuItem.Text = "Clear Workspace";
-            this.clearWorkspaceToolStripMenuItem.Click += new System.EventHandler(this.clearWorkspaceToolStripMenuItem_Click);
+            this.renderSettingsToolStripMenuItem.Name = "renderSettingsToolStripMenuItem";
+            this.renderSettingsToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.renderSettingsToolStripMenuItem.Text = "Render Settings";
+            this.renderSettingsToolStripMenuItem.Click += new System.EventHandler(this.renderSettingsToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -370,6 +379,7 @@
         private System.Windows.Forms.ToolStripMenuItem boneTreeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openStageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearWorkspaceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem renderSettingsToolStripMenuItem;
     }
 }
 

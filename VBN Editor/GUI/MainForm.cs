@@ -30,6 +30,14 @@ namespace VBN_Editor
 
             AddDockedControl(rightPanel);
             AddDockedControl(leftPanel);
+
+            Runtime.renderBones = true;
+            Runtime.renderLVD = true;
+            Runtime.renderFloor = true;
+            Runtime.renderHitboxes = true;
+            Runtime.renderModel = true;
+            Runtime.renderPath = true;
+            Runtime.renderCollisions = true;
         }
 
         private void MainForm_Close(object sender, EventArgs e)
@@ -474,6 +482,14 @@ namespace VBN_Editor
         private void clearWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Runtime.killWorkspace = true;
+        }
+
+        private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var rndr = new GUI.RenderSettings())
+            {
+                rndr.ShowDialog();
+            }
         }
     }
 }

@@ -24,6 +24,18 @@ namespace VBN_Editor
         public static SkelAnimation TargetAnim { get { return _targetAnim; } set { _targetAnim = value; OnAnimationChanged(); } }
         private static SkelAnimation _targetAnim;
 
+        public static bool renderLVD { get; set; }
+        public static bool renderModel { get; set; }
+        public static bool renderBones { get; set; }
+        public static bool renderCollisions { get; set; }
+        public static bool renderHitboxes { get; set; }
+        public static bool renderFloor { get; set; }
+        public static bool renderPath { get; set; }
+        public static bool renderRespawns { get; set; }
+        public static bool renderSpawns { get; set; }
+        public static bool renderItemSpawners { get; set; }
+        public static bool renderGeneralPoints { get; set; }
+
         public static string TargetAnimString { get; set; }
 
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
