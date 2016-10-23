@@ -188,6 +188,10 @@ namespace VBN_Editor
 
                     if (Runtime.TargetVBN != null)
                     {
+                        ModelContainer m = new ModelContainer();
+                        m.vbn = Runtime.TargetVBN;
+                        Runtime.ModelContainers.Add(m);
+
                         leftPanel.treeRefresh();
                         if (Runtime.TargetVBN.littleEndian)
                         {
@@ -196,6 +200,17 @@ namespace VBN_Editor
                         else
                         {
                             radioButton1.Checked = true;
+                        }
+                    }
+                    else
+                    {
+                        foreach (ModelContainer m in Runtime.ModelContainers)
+                        {
+                            if (m.vbn != null)
+                            {
+                                Runtime.TargetVBN = Runtime.ModelContainers[0].vbn;
+                                break;
+                            }
                         }
                     }
                 }
@@ -277,14 +292,6 @@ namespace VBN_Editor
 
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
-                foreach (ModelContainer m in Runtime.ModelContainers)
-                {
-                    if (m.vbn != null)
-                    {
-                        Runtime.TargetVBN = Runtime.ModelContainers[0].vbn;
-                        break;
-                    }
-                }
 
             if (Runtime.TargetVBN == null)
             {
