@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using WeifenLuo.WinFormsUI.Docking;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace VBN_Editor
 {
@@ -436,11 +437,17 @@ namespace VBN_Editor
 
         private void openStageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var ofd = new FolderBrowserDialog())
+            using (var ofd = new CommonOpenFileDialog())
             {
-                if (ofd.ShowDialog() == DialogResult.OK)
+                ofd.EnsureReadOnly = true;
+                ofd.IsFolderPicker = true;
+                ofd.AllowNonFileSystemItems = false;
+                ofd.Multiselect = false;
+                //ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder);
+                ofd.Title = "Stage Folder";
+                if (ofd.ShowDialog() == CommonFileDialogResult.Ok)
                 {
-                    string stagePath = ofd.SelectedPath;
+                    string stagePath = ofd.FileName;
                     string modelPath = stagePath + "\\model\\";
                     string paramPath = stagePath + "\\param\\";
                     string animationPath = stagePath + "\\animation\\";
@@ -486,6 +493,7 @@ namespace VBN_Editor
 
         private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
             using (var rndr = new GUI.RenderSettings())
             {
                 rndr.ShowDialog();
