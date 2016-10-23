@@ -108,12 +108,6 @@
     <Compile Include="GUI\Editors\VBNViewport.Designer.cs">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\RenderSettings.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\RenderSettings.Designer.cs">
-      <DependentUpon>RenderSettings.cs</DependentUpon>
-    </Compile>
     <Compile Include="IO\FileBase.cs" />
     <Compile Include="MovesetManager.cs" />
     <Compile Include="Program.cs" />
@@ -136,9 +130,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\VBNViewport.resx">
       <DependentUpon>VBNViewport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\RenderSettings.resx">
-      <DependentUpon>RenderSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -178,6 +169,12 @@
     <Compile Include="Filetypes\JTB.cs" />
     <Compile Include="Filetypes\CMR0.cs" />
     <Compile Include="GUI\ModelContainer.cs" />
+    <Compile Include="GUI\Editors\RenderTools.cs" />
+    <Compile Include="GUI\RenderSettings.cs" />
+    <Compile Include="GUI\RenderSettings.Designer.cs" />
+    <None Include="GUI\RenderSettings.resx">
+      <DependentUpon>RenderSettings.cs</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

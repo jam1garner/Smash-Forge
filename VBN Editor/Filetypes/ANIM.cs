@@ -149,9 +149,10 @@ namespace VBN_Editor
 				foreach (AnimBone b in bones) {
 					KeyNode n = new KeyNode ();
 					n.id = vbn.boneIndex (b.name);
-                    n.hash = vbn.bones[n.id].boneId;
 					if (n.id == -1)
 						continue;
+                    else
+                        n.hash = vbn.bones[n.id].boneId;
 					foreach (AnimData d in b.atts) {
 						if (d.type.Contains ("translate")) {
 							n.t_type = KeyNode.INTERPOLATED;

@@ -111,36 +111,20 @@ namespace VBN_Editor
 
 
                 //Console.WriteLine("Texture " + w + " " + h + " " + format + " " + tm + " " + swizzle + " " +  (offheader - 0x80));
-                if (header == 0x4E545755) {
-                byte[] data = GTX.swizzleBC(d.getSection(offset1 + padfix, DDSSize), w, h, format, tm, pitch, swizzle);
-                    switch (typet)
-                    {
-                        case 0x0:
-                            image = DDS.toBitmap(data, width, height, DDS.DDSFormat.DXT1);
-                            break;
-                        case 0x2:
-                            image = DDS.toBitmap(data, width, height, DDS.DDSFormat.DXT5);
-                            break;
-                        default:
-                            Console.WriteLine("\t" + headerSize + " Type 0x" + typet);
-                            break;
-                    }
-                }
-                if (header == 0x4E545033)
+
+                byte[] data = header == 0x4E545755 ?GTX.swizzleBC(d.getSection(offset1 + padfix, DDSSize), w, h, format, tm, pitch, swizzle):d.getSection(offset1 + padfix, DDSSize);
+
+                switch (typet)
                 {
-                    byte[] data = d.getSection(offset1 + padfix, DDSSize);
-                    switch (typet)
-                    {
-                        case 0x0:
-                            image = DDS.toBitmap(data, width, height, DDS.DDSFormat.DXT1);
-                            break;
-                        case 0x2:
-                            image = DDS.toBitmap(data, width, height, DDS.DDSFormat.DXT5);
-                            break;
-                        default:
-                            Console.WriteLine("\t" + headerSize + " Type 0x" + typet);
-                            break;
-                    }
+                    case 0x0:
+                        image = DDS.toBitmap(data, width, height, DDS.DDSFormat.DXT1);
+                        break;
+                    case 0x2:
+                        image = DDS.toBitmap(data, width, height, DDS.DDSFormat.DXT5);
+                        break;
+                    default:
+                        Console.WriteLine("\t" + headerSize + " Type 0x" + typet);
+                        break;
                 }
 
                 
