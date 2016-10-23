@@ -58,6 +58,7 @@
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
+            this.openStageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -79,6 +80,7 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openVBNToolStripMenuItem,
+            this.openStageToolStripMenuItem,
             this.openNUDToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -88,7 +90,7 @@
             // 
             this.openVBNToolStripMenuItem.Name = "openVBNToolStripMenuItem";
             this.openVBNToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openVBNToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.openVBNToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.openVBNToolStripMenuItem.Text = "Open";
             this.openVBNToolStripMenuItem.Click += new System.EventHandler(this.openVBNToolStripMenuItem_Click);
             // 
@@ -96,7 +98,7 @@
             // 
             this.openNUDToolStripMenuItem.Name = "openNUDToolStripMenuItem";
             this.openNUDToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.openNUDToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.openNUDToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.openNUDToolStripMenuItem.Text = "Save";
             this.openNUDToolStripMenuItem.Click += new System.EventHandler(this.openNUDToolStripMenuItem_Click);
             // 
@@ -294,6 +296,13 @@
             this.dockPanel1.Size = new System.Drawing.Size(1009, 659);
             this.dockPanel1.TabIndex = 16;
             // 
+            // openStageToolStripMenuItem
+            // 
+            this.openStageToolStripMenuItem.Name = "openStageToolStripMenuItem";
+            this.openStageToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openStageToolStripMenuItem.Text = "Open Stage";
+            this.openStageToolStripMenuItem.Click += new System.EventHandler(this.openStageToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -310,12 +319,12 @@
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Skeletal Animation Tool";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_Close);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_Close);
 
 		}
 
@@ -350,6 +359,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem boneTreeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openStageToolStripMenuItem;
     }
 }
 

@@ -77,11 +77,55 @@ namespace VBN_Editor
                 //OMO.createOMO (anim, vbn, "C:\\Users\\ploaj_000\\Desktop\\WebGL\\test_outut.omo", -1, -1);
             }
         }
+
+        private void openNud(string filename)
+        {
+            string[] files = Directory.GetFiles(System.IO.Path.GetDirectoryName(filename));
+
+            string pnud = "";
+            string pnut = "";
+            string pjtb = "";
+            string pvbn = "";
+
+            foreach (string s in files)
+            {
+                if (s.EndsWith(".nud"))
+                    pnud = s;
+                if (s.EndsWith(".nut"))
+                    pnut = s;
+                if (s.EndsWith(".vbn"))
+                    pvbn = s;
+                if (s.EndsWith(".jtb"))
+                    pjtb = s;
+            }
+
+            ModelContainer model = new ModelContainer();
+
+            if (!pvbn.Equals(""))
+            {
+                model.vbn = new VBN(pvbn);
+                if (!pjtb.Equals(""))
+                    model.vbn.readJointTable(pjtb);
+
+            }
+
+            if (!pnut.Equals(""))
+            {
+                NUT nut = new NUT(new FileData(pnut));
+                Runtime.TextureContainers.Add(nut);
+            }
+
+            if (!pnud.Equals(""))
+                model.nud = new NUD(pnud);
+
+            Runtime.ModelContainers.Add(model);
+        }
+
         private void openVBNToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd)|*.vbn;*.mdl0;*.smd|" +
+                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud|" +
                              "Smash 4 Boneset (.vbn)|*.vbn|" +
                              "NW4R Model (.mdl0)|*.mdl0|" +
                              "Source Model (.SMD)|*.smd|" +
@@ -127,46 +171,8 @@ namespace VBN_Editor
 
                     if (ofd.FileName.EndsWith(".nud"))
                     {
-                        string[] files = Directory.GetFiles(System.IO.Path.GetDirectoryName(ofd.FileName));
 
-                        string pnud = "";
-                        string pnut = "";
-                        string pjtb = "";
-                        string pvbn = "";
-
-                        foreach (string s in files)
-                        {
-                            if (s.EndsWith(".nud"))
-                                pnud = s;
-                            if (s.EndsWith(".nut"))
-                                pnut = s;
-                            if (s.EndsWith(".vbn"))
-                                pvbn = s;
-                            if (s.EndsWith(".jtb"))
-                                pjtb = s;
-                        }
-
-                        ModelContainer model = new ModelContainer();
-
-                        if (!pvbn.Equals(""))
-                        {
-                            model.vbn =  new VBN(pvbn);
-                            if (!pjtb.Equals(""))
-                                model.vbn.readJointTable(pjtb);
-                            
-                        }
-
-                        if (!pnut.Equals(""))
-                        {
-                            NUT nut = new NUT(new FileData(pnut));
-                            Runtime.TextureContainers.Add(nut);
-                        }
-
-                        if (!pnud.Equals(""))
-                            model.nud = new NUD(pnud);
-
-                        Runtime.ModelContainers.Add(model);
-
+                        openNud(ofd.FileName);
                         /*PAC p = new PAC();
                         p.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\model\\body\\c00\\material_anime_face.pac");
                         byte[] data;
@@ -418,6 +424,49 @@ namespace VBN_Editor
             Runtime.TargetVBN.unk_2 = 1;
         }
 
+        private void openStageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new FolderBrowserDialog())
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string stagePath = ofd.SelectedPath;
+                    string modelPath = stagePath + "\\model\\";
+                    string paramPath = stagePath + "\\param\\";
+                    string animationPath = stagePath + "\\animation\\";
+                    List<string> nuds = new List<string>();
+                    foreach (string d in Directory.GetDirectories(modelPath))
+                    {
+                        foreach (string f in Directory.GetFiles(d))
+                        {
+                            if (f.EndsWith(".nud"))
+                                openNud(f);
+                        }
+                    }
 
+                    foreach (string f in Directory.GetFiles(paramPath))
+                    {
+                        if (f.EndsWith(".lvd"))
+                        {
+                            Runtime.TargetLVD = new LVD();
+                            Runtime.TargetLVD.read(new FileData(f));
+                            break;
+                        }
+                    }
+
+                    foreach (string d in Directory.GetDirectories(animationPath))
+                    {
+                        foreach(string f in Directory.GetFiles(d))
+                        {
+                            if (f.EndsWith(".omo"))
+                            {
+                                Runtime.Animations.Add(f, OMO.read(new FileData(f)));
+                                rightPanel.lstAnims.Items.Add(f);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
