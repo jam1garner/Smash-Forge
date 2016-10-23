@@ -159,6 +159,7 @@
     <Compile Include="Filetypes\GTX.cs" />
     <Compile Include="Filetypes\JTB.cs" />
     <Compile Include="Filetypes\CMR0.cs" />
+    <Compile Include="GUI\ModelContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

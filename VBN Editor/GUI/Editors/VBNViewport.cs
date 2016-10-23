@@ -158,7 +158,12 @@ namespace VBN_Editor
                 return;
             }
             Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value);
-            Runtime.TargetAnim.nextFrame(Runtime.TargetVBN);
+
+            foreach (ModelContainer m in Runtime.ModelContainers)
+            {
+                if(m.vbn != null)
+                    Runtime.TargetAnim.nextFrame(m.vbn);
+            }
             
             Frame = (int)this.nupdFrame.Value;
 
@@ -264,16 +269,11 @@ namespace VBN_Editor
                 return;
 
             GL.ClearColor(Color.AliceBlue);
-
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
-
             // clear the gf buffer
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
             GL.Enable(EnableCap.DepthTest);
-
-
             GL.ClearDepth(1.0);
 
 
@@ -283,30 +283,15 @@ namespace VBN_Editor
             if (IsMouseOverViewport() && glControl1.Focused)
                 UpdateMousePosition();
 
-            if (Runtime.TargetPath != null && checkBox1.Checked)
-            {
-                if (cf >= Runtime.TargetPath.frames.Count)
-                    cf = 0;
-                pathFrame f = Runtime.TargetPath.frames[cf];
-                v = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
-                cf++;
-            }else
-            if (Runtime.TargetCMR0 != null && checkBox1.Checked)
-            {
-                if (cf >= Runtime.TargetCMR0.frames.Count)
-                    cf = 0;
-                Matrix4 m = Runtime.TargetCMR0.frames[cf].Inverted();
-                v =  Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
-                cf++;
-            }
+            SetCameraAnimation();
 
             GL.LoadMatrix(ref v);
-
             // ready to start drawing model stuff
             GL.MatrixMode(MatrixMode.Modelview);
 
-            GL.UseProgram(0);
 
+            GL.UseProgram(0);
+            // drawing floor---------------------------
             drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
 
 
@@ -323,60 +308,138 @@ namespace VBN_Editor
             GL.Enable(EnableCap.AlphaTest);
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
 
+
             // draw models
-            if (Runtime.TargetNUD != null)
-            {
-                GL.UseProgram(shader.programID);
-
-                GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref v);
-
-                if (Runtime.TargetVBN != null)
-                {
-                    float[] f = Runtime.TargetVBN.getShaderMatrix();
-                    GL.UniformMatrix4(shader.getAttribute("bone"), f.Length, false, f);
-                }
-
-                shader.enableAttrib();
-                Runtime.TargetNUD.Render(shader);
-                shader.disableAttrib();
-            }
-
+            DrawModels();
 
             GL.UseProgram(0);
-
             // draw path.bin
-            if(Runtime.TargetPath != null && !checkBox1.Checked)
-            {
-                GL.Color3(Color.Yellow);
-                GL.LineWidth(2);
-                for (int i = 1; i < Runtime.TargetPath.frames.Count; i++)
-                {
-                    GL.Begin(PrimitiveType.Lines);
-                    GL.Vertex3(Runtime.TargetPath.frames[i].x, Runtime.TargetPath.frames[i].y, Runtime.TargetPath.frames[i].z);
-                    GL.Vertex3(Runtime.TargetPath.frames[i - 1].x, Runtime.TargetPath.frames[i - 1].y, Runtime.TargetPath.frames[i - 1].z);
-                    GL.End();
-                }
-            }
-
-            if (Runtime.TargetCMR0 != null && !checkBox1.Checked)
-            {
-                GL.Color3(Color.Yellow);
-                GL.LineWidth(2);
-                for (int i = 1; i < Runtime.TargetCMR0.frames.Count; i++)
-                {
-                    GL.Begin(PrimitiveType.Lines);
-                    GL.Vertex3(Runtime.TargetCMR0.frames[i].M14, Runtime.TargetCMR0.frames[i].M24, Runtime.TargetCMR0.frames[i].M34);
-                    GL.Vertex3(Runtime.TargetCMR0.frames[i - 1].M14, Runtime.TargetCMR0.frames[i - 1].M24, Runtime.TargetCMR0.frames[i - 1].M34);
-                    GL.End();
-                }
-            }
-
+            DrawPathDisplay();
             // clear the buffer bit so the skeleton 
             // will be drawn on top of everything
             GL.Clear(ClearBufferMask.DepthBufferBit);
-            
-
             // draw lvd
+            DrawLVD();
+            // drawing the bones
+            DrawBones();
+
+            // Clean up
+            GL.PopAttrib();
+            glControl1.SwapBuffers();
+        }
+
+        public void UpdateMousePosition()
+        {
+            if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
+            {
+                height += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                width += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                //height = clampControl(height);
+                //width = clampControl(width);
+            }
+            if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
+            {
+                rot += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                lookup += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+            }
+
+            mouseXLast = OpenTK.Input.Mouse.GetState().X;
+            mouseYLast = OpenTK.Input.Mouse.GetState().Y;
+
+            zoom += OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast;
+            mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
+
+            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 2500.0f);
+        }
+        public bool IsMouseOverViewport()
+        {
+            if (glControl1.ClientRectangle.Contains(PointToClient(Cursor.Position)))
+                return true;
+            else
+                return false;
+        }
+
+        private void SetCameraAnimation(){
+            if (Runtime.TargetPath != null && checkBox1.Checked)
+            {
+                if (cf >= Runtime.TargetPath.frames.Count)
+                    cf = 0;
+                pathFrame f = Runtime.TargetPath.frames[cf];
+                v = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
+                cf++;
+            }else
+                if (Runtime.TargetCMR0 != null && checkBox1.Checked)
+                {
+                    if (cf >= Runtime.TargetCMR0.frames.Count)
+                        cf = 0;
+                    Matrix4 m = Runtime.TargetCMR0.frames[cf].Inverted();
+                    v =  Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
+                    cf++;
+                }
+        }
+
+        private void DrawModels(){
+            GL.UseProgram(shader.programID);
+            foreach (ModelContainer m in Runtime.ModelContainers)
+            {
+                if (m.nud != null)
+                {
+                    GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref v);
+
+                    if (m.vbn != null)
+                    {
+                        float[] f = m.vbn.getShaderMatrix();
+                        GL.UniformMatrix4(shader.getAttribute("bone"), f.Length, false, f);
+                    }
+
+                    shader.enableAttrib();
+                    m.nud.Render(shader);
+                    shader.disableAttrib();
+                }
+            }
+        }
+
+        private void DrawBones(){
+            if (Runtime.ModelContainers.Count > 0)
+            {
+                // Render the hitboxes
+                if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
+                    HandleACMD(Runtime.TargetAnimString.Substring(4));
+
+                RenderHitboxes();
+
+                foreach (ModelContainer m in Runtime.ModelContainers)
+                {
+                    if (m.vbn != null)
+                    {
+                        foreach (Bone bone in m.vbn.bones)
+                        {
+                            // first calcuate the point and draw a point
+                            GL.Color3(Color.GreenYellow);
+
+                            Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform);
+                            drawCube(pos_c, .085f);
+
+                            // now draw line between parent 
+                            GL.Color3(Color.Blue);
+                            GL.LineWidth(1f);
+
+                            GL.Begin(PrimitiveType.Lines);
+                            if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex != -1)
+                            {
+                                int i = bone.parentIndex;
+                                Vector3 pos_p = Vector3.Transform(Vector3.Zero, m.vbn.bones[i].transform);
+                                GL.Vertex3(pos_c);
+                                GL.Vertex3(pos_p);
+                            }
+                            GL.End();
+                        }
+                    }
+                }
+            }
+        }
+
+        public void DrawLVD(){
             if (Runtime.TargetLVD != null)
             {
                 foreach (Collision c in Runtime.TargetLVD.collisions)
@@ -399,20 +462,18 @@ namespace VBN_Editor
                         cg++;
                         dir *= -1;
                     }
-                    GL.Vertex3(c.verts[0].x, c.verts[0].y, 5 * dir);
-                    GL.Vertex3(c.verts[0].x, c.verts[0].y, -5 * dir);
                     GL.End();
 
 
                     // draw outside borders
                     GL.Color3(Color.Black);
-                    GL.Begin(PrimitiveType.LineLoop);
+                    GL.Begin(PrimitiveType.LineStrip);
                     foreach (Vector2D vi in c.verts)
                     {
                         GL.Vertex3(vi.x, vi.y, 5);
                     }
                     GL.End();
-                    GL.Begin(PrimitiveType.LineLoop);
+                    GL.Begin(PrimitiveType.LineStrip);
                     foreach (Vector2D vi in c.verts)
                     {
                         GL.Vertex3(vi.x, vi.y, -5);
@@ -547,76 +608,36 @@ namespace VBN_Editor
                     }
                 }
             }
+        }
 
-
-            // drawing the bones
-            if (Runtime.TargetVBN != null)
+        private void DrawPathDisplay(){
+            if(Runtime.TargetPath != null && !checkBox1.Checked)
             {
-                // Render the hitboxes
-                if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
-                    HandleACMD(Runtime.TargetAnimString.Substring(4));
-
-                RenderHitboxes();
-
-                foreach (Bone bone in Runtime.TargetVBN.bones)
+                GL.Color3(Color.Yellow);
+                GL.LineWidth(2);
+                for (int i = 1; i < Runtime.TargetPath.frames.Count; i++)
                 {
-                    // first calcuate the point and draw a point
-                    GL.Color3(Color.GreenYellow);
-
-                    Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform);
-                    drawCube(pos_c, .085f);
-
-                    // now draw line between parent 
-                    GL.Color3(Color.Blue);
-                    GL.LineWidth(1f);
-
                     GL.Begin(PrimitiveType.Lines);
-                    if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex != -1)
-                    {
-                        int i = bone.parentIndex;
-                        Vector3 pos_p = Vector3.Transform(Vector3.Zero, Runtime.TargetVBN.bones[i].transform);
-                        GL.Vertex3(pos_c);
-                        GL.Vertex3(pos_p);
-                    }
+                    GL.Vertex3(Runtime.TargetPath.frames[i].x, Runtime.TargetPath.frames[i].y, Runtime.TargetPath.frames[i].z);
+                    GL.Vertex3(Runtime.TargetPath.frames[i - 1].x, Runtime.TargetPath.frames[i - 1].y, Runtime.TargetPath.frames[i - 1].z);
                     GL.End();
                 }
             }
 
-            // Clean up
-            GL.PopAttrib();
-            glControl1.SwapBuffers();
-        }
-
-        public void UpdateMousePosition()
-        {
-            if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
+            if (Runtime.TargetCMR0 != null && !checkBox1.Checked)
             {
-                height += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                width += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                //height = clampControl(height);
-                //width = clampControl(width);
+                GL.Color3(Color.Yellow);
+                GL.LineWidth(2);
+                for (int i = 1; i < Runtime.TargetCMR0.frames.Count; i++)
+                {
+                    GL.Begin(PrimitiveType.Lines);
+                    GL.Vertex3(Runtime.TargetCMR0.frames[i].M14, Runtime.TargetCMR0.frames[i].M24, Runtime.TargetCMR0.frames[i].M34);
+                    GL.Vertex3(Runtime.TargetCMR0.frames[i - 1].M14, Runtime.TargetCMR0.frames[i - 1].M24, Runtime.TargetCMR0.frames[i - 1].M34);
+                    GL.End();
+                }
             }
-            if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
-            {
-                rot += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                lookup += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-            }
-
-            mouseXLast = OpenTK.Input.Mouse.GetState().X;
-            mouseYLast = OpenTK.Input.Mouse.GetState().Y;
-
-            zoom += OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast;
-            mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
-
-            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 2500.0f);
         }
-        public bool IsMouseOverViewport()
-        {
-            if (glControl1.ClientRectangle.Contains(PointToClient(Cursor.Position)))
-                return true;
-            else
-                return false;
-        }
+
         public void RenderHitboxes()
         {
             if (Hitboxes.Count > 0)
@@ -649,11 +670,17 @@ namespace VBN_Editor
 
                     if (h.Bone != -1)
                     {
-                        if (Runtime.TargetVBN.jointTable.Count < 1)
-                            b = Runtime.TargetVBN.bones[bid];
-                        else
+                        foreach (ModelContainer m in Runtime.ModelContainers)
                         {
-                            b = Runtime.TargetVBN.bones[Runtime.TargetVBN.jointTable[gr][bid]];
+                            if (m.vbn != null)
+                            {
+                                if (m.vbn.jointTable.Count < 1)
+                                    b = m.vbn.bones[bid];
+                                else
+                                {
+                                    b = m.vbn.bones[m.vbn.jointTable[gr][bid]];
+                                }
+                            }
                         }
                     }
 
@@ -1168,12 +1195,20 @@ namespace VBN_Editor
         public void SetFrame(int frame)
         {
             Runtime.TargetAnim.setFrame(frame);
-            Runtime.TargetAnim.nextFrame(Runtime.TargetVBN);
+            foreach (ModelContainer m in Runtime.ModelContainers)
+            {
+                if(m.vbn != null)
+                    Runtime.TargetAnim.nextFrame(m.vbn);
+            }
         }
         public void loadAnimation(SkelAnimation a)
         {
             a.setFrame(0);
-            a.nextFrame(Runtime.TargetVBN);
+            foreach (ModelContainer m in Runtime.ModelContainers)
+            {
+                if(m.vbn != null)
+                    Runtime.TargetAnim.nextFrame(m.vbn);
+            }
             nupdMaxFrame.Value = a.size() > 1 ? a.size() - 1 : a.size();
             nupdFrame.Value = 0;
         }

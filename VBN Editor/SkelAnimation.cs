@@ -131,18 +131,22 @@ namespace VBN_Editor
 
             foreach (KeyNode n in key.nodes)
             {
-				if (n.id == -1)
-					continue;
+				//if (n.id == -1)
+				//	continue;
 				
-				if (n.hash == 0) {
-					n.hash = vbn.bones [n.id].boneId;
-				}
+				//if (n.hash == 0) {
+                    //continue;
+					//n.hash = vbn.bones [n.id].boneId;
+				//}
 
 				int id = -1;
 
 				foreach (Bone bo in vbn.bones) {
-					if (bo.boneId == n.hash)
-						id = vbn.bones.IndexOf (bo);
+                    if (bo.boneId == n.hash)
+                    {
+                        id = vbn.bones.IndexOf(bo);
+                        break;
+                    }
 				}
 
 				if (id == -1)

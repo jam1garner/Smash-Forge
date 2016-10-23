@@ -36,6 +36,13 @@ namespace VBN_Editor
         {
             if (Runtime.TargetNUD != null)
                 Runtime.TargetNUD.Destroy();
+
+            foreach(ModelContainer n in Runtime.ModelContainers){
+                n.Destroy();
+            }
+            foreach(NUT n in Runtime.TextureContainers){
+                n.Destroy();
+            }
         }
 
         public void AddDockedControl(DockContent content)
@@ -139,19 +146,26 @@ namespace VBN_Editor
                                 pjtb = s;
                         }
 
+                        ModelContainer model = new ModelContainer();
+
                         if (!pvbn.Equals(""))
                         {
-                            Runtime.TargetVBN = new VBN(pvbn);
+                            model.vbn =  new VBN(pvbn);
                             if (!pjtb.Equals(""))
-                                Runtime.TargetVBN.readJointTable(pjtb);
+                                model.vbn.readJointTable(pjtb);
+                            
                         }
 
-                        NUT nut = null;
                         if (!pnut.Equals(""))
-                            nut = new NUT(new FileData(pnut));
+                        {
+                            NUT nut = new NUT(new FileData(pnut));
+                            Runtime.TextureContainers.Add(nut);
+                        }
 
                         if (!pnud.Equals(""))
-                            Runtime.TargetNUD = new NUD(pnud, nut);
+                            model.nud = new NUD(pnud);
+
+                        Runtime.ModelContainers.Add(model);
 
                         /*PAC p = new PAC();
                         p.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\model\\body\\c00\\material_anime_face.pac");
@@ -221,7 +235,7 @@ namespace VBN_Editor
 
                         foreach (var pair in p.Files)
                         {
-                            var anim = OMO.read(new FileData(pair.Value), Runtime.TargetVBN);
+                            var anim = OMO.read(new FileData(pair.Value));
                             string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
                             //AnimName = pair.Key;
                             AnimName = AnimName.Remove(AnimName.Length - 4);
@@ -238,11 +252,11 @@ namespace VBN_Editor
                             }
                         }
                     }
-                    if (Runtime.TargetVBN.bones.Count > 0)
-                    {
+                    //if (Runtime.TargetVBN.bones.Count > 0)
+                    //{
                         if (ofd.FileName.EndsWith(".omo"))
                         {
-                            Runtime.Animations.Add(ofd.FileName, OMO.read(new FileData(ofd.FileName), Runtime.TargetVBN));
+                            Runtime.Animations.Add(ofd.FileName, OMO.read(new FileData(ofd.FileName)));
                             rightPanel.lstAnims.Items.Add(ofd.FileName);
                         }
                         if (ofd.FileName.EndsWith(".chr0"))
@@ -255,7 +269,7 @@ namespace VBN_Editor
                             Runtime.Animations.Add(ofd.FileName, ANIM.read(ofd.FileName, Runtime.TargetVBN));
                             rightPanel.lstAnims.Items.Add(ofd.FileName);
                         }
-                    }
+                    //}
                     rightPanel.lstAnims.EndUpdate();
                 }
             }
@@ -263,8 +277,19 @@ namespace VBN_Editor
 
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Runtime.TargetVBN == null || Runtime.TargetVBN == null)
+                foreach (ModelContainer m in Runtime.ModelContainers)
+                {
+                    if (m.vbn != null)
+                    {
+                        Runtime.TargetVBN = Runtime.ModelContainers[0].vbn;
+                        break;
+                    }
+                }
+
+            if (Runtime.TargetVBN == null)
+            {
                 return;
+            }
 
             using (var sfd = new SaveFileDialog())
             {

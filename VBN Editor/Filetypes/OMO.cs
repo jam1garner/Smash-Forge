@@ -7,7 +7,7 @@ namespace VBN_Editor
 {
     public class OMO
     {
-        public static SkelAnimation read(FileData d, VBN v)
+        public static SkelAnimation read(FileData d)
         {
 
             d.Endian = Endianness.Big;
@@ -52,16 +52,7 @@ namespace VBN_Editor
                 KeyNode node = new KeyNode();
                 baseNode[i] = node;
 
-                // find the nodes id
-                foreach (Bone no in v.bones)
-                {
-                    if ((int)no.boneId == (int)hash)
-                    {
-                        node.id = v.bones.IndexOf(no);
-						node.hash = no.boneId;
-                        break;
-                    }
-                }
+                node.hash = (uint)hash;
 
                 int temp = d.pos();
                 d.seek(off1);
@@ -130,6 +121,7 @@ namespace VBN_Editor
                     node.s_type = baseNode[j].s_type;
 
                     node.id = baseNode[j].id;
+                    node.hash = baseNode[j].hash;
 
                     d.seek(off + framekey[j]);
 
@@ -161,8 +153,6 @@ namespace VBN_Editor
                         float z = baseNode[j].rv.Z + (baseNode[j].rv2.Z * (i3));
 
                         float w = (float)Math.Sqrt(Math.Abs(1 - (x * x + y * y + z * z)));
-						//if (1 - (x * x + y * y + z * z) < 0)
-						//	w *= -1;
 
                         node.r = new Quaternion(new Vector3(x, y, z), w);
                         node.r.Normalize();

@@ -81,13 +81,9 @@ namespace VBN_Editor
 
         public bool hasBones = false;
 		public List<Mesh> mesh = new List<Mesh>();
-		public NUT nut;
 
-        public NUD (string fname, NUT nut)
+        public NUD (string fname)
 		{
-            if(nut!=null)
-            this.nut = nut; //new NUT (new FileData("C:\\s\\Smash\\extract\\data\\fighter\\bayonetta\\model.nut"));
-
 			GL.GenBuffers(1, out vbo_position);
 			GL.GenBuffers(1, out vbo_color);
 			GL.GenBuffers(1, out vbo_nrm);
@@ -108,8 +104,6 @@ namespace VBN_Editor
 			GL.DeleteBuffer (vbo_uv);
 			GL.DeleteBuffer (vbo_weight);
 			GL.DeleteBuffer (vbo_bone);
-            if (this.nut != null)
-                nut.Destroy();
 		}
 
 		/*
@@ -203,10 +197,17 @@ namespace VBN_Editor
 					if (p.faces.Count <= 3)
 						continue;
 
-					if (p.dif != -1) {
-						GL.BindTexture(TextureTarget.Texture2D, p.dif);
-						GL.Uniform1(shader.getAttribute("tex"), 0);
-					}
+                    foreach (NUT nut in Runtime.TextureContainers)
+                    {
+                        int tex = -1;
+                        nut.draw.TryGetValue(p.dif, out tex);
+
+                        if (tex != 0) {
+                            GL.BindTexture(TextureTarget.Texture2D, tex);
+                            GL.Uniform1(shader.getAttribute("tex"), 0);
+                            break;
+                        }
+                    }
 
                     if(p.isVisible && m.isVisible)
                         GL.DrawElements (PrimitiveType.Triangles, p.faces.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(uint));
@@ -335,10 +336,10 @@ namespace VBN_Editor
 
 					// temp tex id;
 					d.seek(p.texprop1 + 0x20);
-					int texid = -1;
-                    if(nut!=null)
-					    nut.draw.TryGetValue (d.readInt(), out texid);
-					m.polygons [m.polygons.Count - 1].dif = texid;
+					//int texid = -1;
+                    //if(nut!=null)
+					//    nut.draw.TryGetValue (d.readInt(), out texid);
+                    m.polygons [m.polygons.Count - 1].dif = d.readInt();
 
 					d.seek (temp);
 				}
