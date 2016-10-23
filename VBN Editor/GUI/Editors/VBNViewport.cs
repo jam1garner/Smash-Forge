@@ -406,13 +406,13 @@ namespace VBN_Editor
 
                     // draw outside borders
                     GL.Color3(Color.Black);
-                    GL.Begin(PrimitiveType.LineLoop);
+                    GL.Begin(PrimitiveType.LineStrip);
                     foreach (Vector2D vi in c.verts)
                     {
                         GL.Vertex3(vi.x, vi.y, 5);
                     }
                     GL.End();
-                    GL.Begin(PrimitiveType.LineLoop);
+                    GL.Begin(PrimitiveType.LineStrip);
                     foreach (Vector2D vi in c.verts)
                     {
                         GL.Vertex3(vi.x, vi.y, -5);
@@ -433,7 +433,7 @@ namespace VBN_Editor
 
                 foreach (ItemSpawner c in Runtime.TargetLVD.items)
                 {
-                    foreach (ItemSection s in c.sections) {
+                    foreach (Section s in c.sections) {
                         // draw the item spawn quads
                         int dir = 1;
                         int cg = 0;
@@ -441,13 +441,13 @@ namespace VBN_Editor
 
                         // draw outside borders
                         GL.Color3(Color.Black);
-                        GL.Begin(PrimitiveType.LineLoop);
+                        GL.Begin(PrimitiveType.LineStrip);
                         foreach (Vector2D vi in s.points)
                         {
                             GL.Vertex3(vi.x, vi.y, 5);
                         }
                         GL.End();
-                        GL.Begin(PrimitiveType.LineLoop);
+                        GL.Begin(PrimitiveType.LineStrip);
                         foreach (Vector2D vi in s.points)
                         {
                             GL.Vertex3(vi.x, vi.y, -5);

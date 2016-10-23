@@ -12,6 +12,30 @@ namespace VBN_Editor
         public float y;
     }
 
+    public struct Sphere
+    {
+        public string name;
+        public string subname;
+        public float x;
+        public float y;
+        public float z;
+        public float radius;
+    }
+
+    public struct Capsule
+    {
+        public string name;
+        public string subname;
+        public float x1;
+        public float y1;
+        public float z1;
+        public float r1;
+        public float x2;
+        public float y2;
+        public float z2;
+        public float r2;
+    }
+
     public struct Point
     {
         public string name;
@@ -38,16 +62,17 @@ namespace VBN_Editor
         public byte physicsType;
     }
 
-    public struct ItemSection
+    public struct Section
     {
         public List<Vector2D> points;
     }
+    
 
     public class ItemSpawner
     {
         public string name;
         public string subname;
-        public List<ItemSection> sections = new List<ItemSection>();
+        public List<Section> sections = new List<Section>();
 
         public ItemSpawner()
         {
@@ -66,10 +91,49 @@ namespace VBN_Editor
             for(int i = 0; i < sectionCount; i++)
             {
                 f.skip(0x18);// unknown data
-                ItemSection temp;
+                Section temp;
                 temp.points = new List<Vector2D>();
                 int vertCount = f.readInt();
                 for(int j = 0; j < vertCount; j++)
+                {
+                    f.skip(1);//Seperation char
+                    Vector2D point;
+                    point.x = f.readFloat();
+                    point.y = f.readFloat();
+                    temp.points.Add(point);
+                }
+                sections.Add(temp);
+            }
+        }
+    }
+
+    public class EnemyGenerator
+    {
+        public string name;
+        public string subname;
+        public List<Section> sections = new List<Section>();
+
+        public EnemyGenerator()
+        {
+
+        }
+
+        public void read(FileData f)
+        {
+            f.skip(0xD);
+            name = f.readString(f.pos(), 0x38);
+            f.skip(0x38);
+            f.skip(1);//Seperation char
+            subname = f.readString(f.pos(), 0x40);
+            f.skip(0xAC);
+            int sectionCount = f.readInt();
+            for (int i = 0; i < sectionCount; i++)
+            {
+                f.skip(0x18);// unknown data
+                Section temp;
+                temp.points = new List<Vector2D>();
+                int vertCount = f.readInt();
+                for (int j = 0; j < vertCount; j++)
                 {
                     f.skip(1);//Seperation char
                     Vector2D point;
@@ -154,7 +218,9 @@ namespace VBN_Editor
         public List<Bounds> cameraBounds = new List<Bounds>();
         public List<Bounds> blastzones = new List<Bounds>();
         public List<Point> generalPoints = new List<Point>();
+        public List<Sphere> damageSpheres = new List<Sphere>();
         public List<ItemSpawner> items = new List<ItemSpawner>();
+        public List<Capsule> damageCapsules = new List<Capsule>();
 
         public LVD()
         {
@@ -243,31 +309,75 @@ namespace VBN_Editor
 
             if (f.readInt() != 0)//1
                 throw new NotImplementedException();
-            f.skip(1);
+            f.skip(1);//Seperation char
 
             if (f.readInt() != 0)//2
                 throw new NotImplementedException();
-            f.skip(1);
+            f.skip(1);//Seperation char
 
-            if (f.readInt() != 0)//3
-                throw new NotImplementedException();
-            f.skip(1);
+            int enemyGeneratorCount = f.readInt();
+            for(int i = 0; i < enemyGeneratorCount; i++)
+            {
+                
+            }
+            f.skip(1);//Seperation char
 
             if (f.readInt() != 0)//4
                 throw new NotImplementedException();
-            f.skip(1);
+            f.skip(1);//Seperation char
 
             if (f.readInt() != 0)//5
                 throw new NotImplementedException();
-            f.skip(1);
+            f.skip(1);//Seperation char
 
             if (f.readInt() != 0)//6
                 throw new NotImplementedException();
-            f.skip(1);
+            f.skip(1);//Seperation char
 
-            if (f.readInt() != 0)//7
-                throw new NotImplementedException();
-            f.skip(1);
+            int damageShapeCount = f.readInt();
+            for(int i=0; i < damageShapeCount; i++)
+            {
+                f.skip(0xD);
+                
+                string tempName = f.readString(f.pos(), 0x38);
+                f.skip(0x38);
+                f.skip(1);//Seperation char
+                string tempSubname = f.readString(f.pos(), 0x40);
+                f.skip(0xA6);
+                int shapeType = f.readInt();
+                if (shapeType == 2) {
+                    Sphere temp;
+                    temp.name = tempName;
+                    temp.subname = tempSubname;
+                    temp.x = f.readFloat();
+                    temp.y = f.readFloat();
+                    temp.z = f.readFloat();
+                    temp.radius = f.readFloat();
+                    f.skip(0x11);
+                    damageSpheres.Add(temp);
+                }
+                else if(shapeType == 3)
+                {
+                    Capsule temp;
+                    temp.name = tempName;
+                    temp.subname = tempSubname;
+                    temp.x1 = f.readFloat();
+                    temp.r1 = f.readFloat();
+                    temp.y1 = f.readFloat();
+                    temp.z1 = f.readFloat();
+                    temp.x2 = f.readFloat();
+                    temp.y2 = f.readFloat();
+                    temp.r2 = f.readFloat();
+                    temp.z2 = f.readFloat();
+                    f.skip(1);
+                    damageCapsules.Add(temp);
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+            }
+            f.skip(1);//Seperation char
 
             int itemCount = f.readInt();
             for(int i = 0; i < itemCount; i++)
