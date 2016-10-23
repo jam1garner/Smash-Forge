@@ -296,7 +296,7 @@ namespace VBN_Editor
 			deleteBone(boneIndex(name));
 		}
 
-        public float[] f = new float[16];
+        public float[] f = null;
 
 		public float[] getShaderMatrix(){
 			Matrix4[] bonemat = new Matrix4[bones.Count];
@@ -305,7 +305,7 @@ namespace VBN_Editor
 				bonemat[i] = bones[i].invert * bones [i].transform;
 			}
 
-            if(f.Length == 16)
+            if(f == null)
 				f = new float[bonemat.Length * 16];
 
 			int b = 0;
