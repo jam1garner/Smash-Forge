@@ -1,16 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
-using System.Globalization;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using System.Data;
-using System.Drawing;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using WeifenLuo.WinFormsUI.Docking;
-using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace VBN_Editor
 {
@@ -438,17 +431,12 @@ namespace VBN_Editor
 
         private void openStageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var ofd = new CommonOpenFileDialog())
+            using (var ofd = new FolderSelectDialog())
             {
-                ofd.EnsureReadOnly = true;
-                ofd.IsFolderPicker = true;
-                ofd.AllowNonFileSystemItems = false;
-                ofd.Multiselect = false;
-                //ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder);
                 ofd.Title = "Stage Folder";
-                if (ofd.ShowDialog() == CommonFileDialogResult.Ok)
+                if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    string stagePath = ofd.FileName;
+                    string stagePath = ofd.SelectedPath;
                     string modelPath = stagePath + "\\model\\";
                     string paramPath = stagePath + "\\param\\";
                     string animationPath = stagePath + "\\animation\\";
