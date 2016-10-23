@@ -457,7 +457,10 @@ namespace VBN_Editor
                         foreach (string f in Directory.GetFiles(d))
                         {
                             if (f.EndsWith(".nud"))
+                            {
+                                //Console.WriteLine(f);
                                 openNud(f);
+                            }
                         }
                     }
 

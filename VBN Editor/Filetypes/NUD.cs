@@ -461,6 +461,8 @@ namespace VBN_Editor
 			int weight = size >> 4;
 			int nrm = size & 0xF;
 
+            //Console.WriteLine(weight + " " + nrm);
+
 			Vertex[] v = new Vertex[p.vertamt];
 
 			d.seek (p.vertStart);
@@ -479,10 +481,15 @@ namespace VBN_Editor
 				v[i].pos.Y = d.readFloat();
 				v[i].pos.Z = d.readFloat();
 
-				v[i].nrm.X = d.readHalfFloat();
-				v[i].nrm.Y = d.readHalfFloat();
-				v[i].nrm.Z = d.readHalfFloat();
-				d.skip(2); // n1?
+                if (nrm > 0)
+                {
+                    v[i].nrm.X = d.readHalfFloat();
+                    v[i].nrm.Y = d.readHalfFloat();
+                    v[i].nrm.Z = d.readHalfFloat();
+                    d.skip(2); // n1?
+                }
+                else
+                    d.skip(4);
 
 				if(nrm == 7)
 					d.skip(16); // bn and tan half floats
