@@ -389,7 +389,7 @@ namespace VBN_Editor
             f.skip(1);//Seperation char
 
             if (f.readInt() != 0)//8
-                throw new NotImplementedException();
+                return; //no clue how to be consistent in reading these so...
             f.skip(1);
             
             int generalPointCount = f.readInt();

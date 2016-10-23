@@ -91,6 +91,7 @@ namespace VBN_Editor
                 Runtime.TargetCMR0 = null;
                 Runtime.TargetNUD = null;
                 Runtime.killWorkspace = false;
+                Runtime.Animations = new Dictionary<string, SkelAnimation>();
             }
 
             if (this.IsDisposed == true)
