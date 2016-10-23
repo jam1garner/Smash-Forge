@@ -35,6 +35,7 @@ namespace VBN_Editor
         public static bool renderSpawns { get; set; }
         public static bool renderItemSpawners { get; set; }
         public static bool renderGeneralPoints { get; set; }
+        public static bool renderOtherLVDEntries { get; set; }
 
         public static string TargetAnimString { get; set; }
 

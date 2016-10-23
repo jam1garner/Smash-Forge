@@ -649,6 +649,15 @@ namespace VBN_Editor
                         RenderTools.drawCubeWireframe(new Vector3(g.x, g.y, 0), 3);
                     }
                 }
+
+                if (Runtime.renderOtherLVDEntries)
+                {
+                    foreach(Sphere s in Runtime.TargetLVD.damageSpheres)
+                    {
+                        GL.Color4(Color.FromArgb(128, Color.Red));
+                        
+                    }
+                }
             }
         }
 

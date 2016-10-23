@@ -39,6 +39,7 @@ namespace VBN_Editor
             Runtime.renderModel = true;
             Runtime.renderPath = true;
             Runtime.renderCollisions = true;
+            Runtime.renderOtherLVDEntries = true;
         }
 
         private void MainForm_Close(object sender, EventArgs e)

@@ -316,10 +316,8 @@ namespace VBN_Editor
             f.skip(1);//Seperation char
 
             int enemyGeneratorCount = f.readInt();
-            for(int i = 0; i < enemyGeneratorCount; i++)
-            {
-                
-            }
+            if (enemyGeneratorCount != 0)
+                throw new NotImplementedException();
             f.skip(1);//Seperation char
 
             if (f.readInt() != 0)//4
