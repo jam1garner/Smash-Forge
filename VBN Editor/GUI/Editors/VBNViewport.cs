@@ -481,7 +481,7 @@ namespace VBN_Editor
                         int dir = 1;
                         int cg = 0;
                         GL.LineWidth(3);
-                        GL.Color3(Color.FromArgb(50, Color.Red));
+                        GL.Color4(Color.FromArgb(100, Color.Red));
                         GL.Begin(PrimitiveType.Quads);
                         foreach (Vector2D vi in c.verts)
                         {
