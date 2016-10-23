@@ -26,14 +26,14 @@ namespace VBN_Editor
     {
         public string name;
         public string subname;
-        public float x1;
-        public float y1;
-        public float z1;
-        public float r1;
-        public float x2;
-        public float y2;
-        public float z2;
-        public float r2;
+        public float x;
+        public float y;
+        public float z;
+        public float r;
+        public float dx;
+        public float dy;
+        public float dz;
+        public float unk;
     }
 
     public struct Point
@@ -66,7 +66,7 @@ namespace VBN_Editor
     {
         public List<Vector2D> points;
     }
-    
+
 
     public class ItemSpawner
     {
@@ -336,7 +336,7 @@ namespace VBN_Editor
             for(int i=0; i < damageShapeCount; i++)
             {
                 f.skip(0xD);
-                
+
                 string tempName = f.readString(f.pos(), 0x38);
                 f.skip(0x38);
                 f.skip(1);//Seperation char
@@ -359,14 +359,14 @@ namespace VBN_Editor
                     Capsule temp;
                     temp.name = tempName;
                     temp.subname = tempSubname;
-                    temp.x1 = f.readFloat();
-                    temp.r1 = f.readFloat();
-                    temp.y1 = f.readFloat();
-                    temp.z1 = f.readFloat();
-                    temp.x2 = f.readFloat();
-                    temp.y2 = f.readFloat();
-                    temp.r2 = f.readFloat();
-                    temp.z2 = f.readFloat();
+                    temp.x = f.readFloat();
+                    temp.y = f.readFloat();
+                    temp.z = f.readFloat();
+                    temp.dx = f.readFloat();
+                    temp.dy = f.readFloat();
+                    temp.dz = f.readFloat();
+                    temp.r = f.readFloat();
+                    temp.unk = f.readFloat();
                     f.skip(1);
                     damageCapsules.Add(temp);
                 }
@@ -389,7 +389,7 @@ namespace VBN_Editor
             if (f.readInt() != 0)//8
                 return; //no clue how to be consistent in reading these so...
             f.skip(1);
-            
+
             int generalPointCount = f.readInt();
             for(int i = 0; i < generalPointCount; i++)
             {
