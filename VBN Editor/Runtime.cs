@@ -13,6 +13,9 @@ namespace VBN_Editor
             Animations = new Dictionary<string, SkelAnimation>();
         }
 
+        public static List<ModelContainer> ModelContainers = new List<ModelContainer>();
+        public static List<NUT> TextureContainers = new List<NUT>();
+
         public static VBN TargetVBN { get; set; }
         public static NUD TargetNUD { get; set; }
         public static LVD TargetLVD { get; set; }
