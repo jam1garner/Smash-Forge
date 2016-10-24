@@ -227,6 +227,26 @@ namespace VBN_Editor
 
         }
 
+        /*type 1  - collisions
+          type 2  - spawns
+          type 3  - respawns
+          type 4  - camera bounds
+          type 5  - death boundaries
+          type 6  - ???
+          type 7  - 
+          type 8  - enemyGenerator
+          type 9  - ITEMPT
+          type 10 - fsAreaCam (and other fsArea's ? )
+          type 11 - fsCamLimit
+          type 12 - damageShapes (damage sphere and damage capsule are the only ones I've seen, type 2 and 3 respectively)
+          type 13 - item spawners
+          type 14 - general shapes (general rect, general path, etc.)
+          type 15 - general points
+          type 16 - ???
+          type 17 - FsStartPoint
+          type 18 - ???
+          type 19 - ???*/
+
         public void read(FileData f)
         {
             f.seek(0xB);//It's magic
@@ -407,6 +427,31 @@ namespace VBN_Editor
                 f.skip(0x14);
                 generalPoints.Add(temp);
             }
+
+            if (f.readInt() != 0)//8
+                return; //no clue how to be consistent in reading these so...
+            f.skip(1);
+
+            if (f.readInt() != 0)//8
+                return; //no clue how to be consistent in reading these so...
+            f.skip(1);
+
+            if (f.readInt() != 0)//8
+                return; //no clue how to be consistent in reading these so...
+            f.skip(1);
+
+            if (f.readInt() != 0)//8
+                return; //no clue how to be consistent in reading these so...
+            f.skip(1);
+
+            if (f.readInt() != 0)//8
+                return; //no clue how to be consistent in reading these so...
+            f.skip(1);
+
+            if (f.readInt() != 0)//8
+                return; //no clue how to be consistent in reading these so...
+            f.skip(1);
+
             //LVD doesn't end here and neither does my confusion, will update this part later
         }
     }

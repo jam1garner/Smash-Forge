@@ -82,6 +82,14 @@ namespace VBN_Editor
             // the editor has been closed 
             if (Runtime.killWorkspace)
             {
+                foreach (ModelContainer n in Runtime.ModelContainers)
+                {
+                    n.Destroy();
+                }
+                foreach (NUT n in Runtime.TextureContainers)
+                {
+                    n.Destroy();
+                }
                 Runtime.ModelContainers = new List<ModelContainer>();
                 Runtime.TextureContainers = new List<NUT>();
                 Runtime.TargetVBN = null;

@@ -32,6 +32,10 @@ namespace VBN_Editor
             Runtime.renderModel = true;
             Runtime.renderPath = true;
             Runtime.renderCollisions = true;
+            Runtime.renderGeneralPoints = true;
+            Runtime.renderItemSpawners = true;
+            Runtime.renderSpawns = true;
+            Runtime.renderRespawns = true;
             Runtime.renderOtherLVDEntries = true;
         }
 
