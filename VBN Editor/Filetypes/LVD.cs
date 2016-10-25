@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -210,22 +211,35 @@ namespace VBN_Editor
         }
     }
 
-    public class LVD
-    {
-        public List<Collision> collisions = new List<Collision>();
-        public List<Point> spawns = new List<Point>();
-        public List<Point> respawns = new List<Point>();
-        public List<Bounds> cameraBounds = new List<Bounds>();
-        public List<Bounds> blastzones = new List<Bounds>();
-        public List<Point> generalPoints = new List<Point>();
-        public List<Sphere> damageSpheres = new List<Sphere>();
-        public List<ItemSpawner> items = new List<ItemSpawner>();
-        public List<Capsule> damageCapsules = new List<Capsule>();
-
+    public class LVD : FileBase
+    { 
         public LVD()
         {
-
+            collisions = new List<Collision>();
+            spawns = new List<Point>();
+            respawns = new List<Point>();
+            cameraBounds = new List<Bounds>();
+            blastzones = new List<Bounds>();
+            generalPoints = new List<Point>();
+            damageSpheres = new List<Sphere>();
+            items = new List<ItemSpawner>();
+            damageCapsules = new List<Capsule>();
         }
+        public LVD(string filename) : this()
+        {
+            Read(filename);
+        }
+        public List<Collision> collisions { get; set; }
+        public List<Point> spawns { get; set; }
+        public List<Point> respawns { get; set; }
+        public List<Bounds> cameraBounds { get; set; }
+        public List<Bounds> blastzones { get; set; }
+        public List<Point> generalPoints { get; set; }
+        public List<Sphere> damageSpheres { get; set; }
+        public List<ItemSpawner> items { get; set; }
+        public List<Capsule> damageCapsules { get; set; }
+
+        public override Endianness Endian { get; set; }
 
         /*type 1  - collisions
           type 2  - spawns
@@ -247,8 +261,9 @@ namespace VBN_Editor
           type 18 - ???
           type 19 - ???*/
 
-        public void read(FileData f)
+        public override void Read(string filename)
         {
+            FileData f = new FileData(filename);
             f.seek(0xB);//It's magic
             int collisionCount = f.readInt();
             for (int i = 0; i < collisionCount; i++)
@@ -453,6 +468,10 @@ namespace VBN_Editor
             f.skip(1);
 
             //LVD doesn't end here and neither does my confusion, will update this part later
+        }
+        public override byte[] Rebuild()
+        {
+            throw new NotImplementedException("Yell at jam to implement this");
         }
     }
 }

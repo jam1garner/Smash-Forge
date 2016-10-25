@@ -44,10 +44,12 @@ namespace VBN_Editor
             if (Runtime.TargetNUD != null)
                 Runtime.TargetNUD.Destroy();
 
-            foreach(ModelContainer n in Runtime.ModelContainers){
+            foreach (ModelContainer n in Runtime.ModelContainers)
+            {
                 n.Destroy();
             }
-            foreach(NUT n in Runtime.TextureContainers){
+            foreach (NUT n in Runtime.TextureContainers)
+            {
                 n.Destroy();
             }
         }
@@ -81,7 +83,7 @@ namespace VBN_Editor
             if (result == DialogResult.OK)
             {
                 filename = save.FileName;
-                Runtime.TargetVBN.save(filename);
+                Runtime.TargetVBN.Save(filename);
                 //OMO.createOMO (anim, vbn, "C:\\Users\\ploaj_000\\Desktop\\WebGL\\test_outut.omo", -1, -1);
             }
         }
@@ -150,14 +152,12 @@ namespace VBN_Editor
 
                     if (ofd.FileName.EndsWith(".lvd"))
                     {
-                        Runtime.TargetLVD = new LVD();
-                        Runtime.TargetLVD.read(new FileData(ofd.FileName));
+                        Runtime.TargetLVD = new LVD(ofd.FileName);
                     }
 
                     if (ofd.FileName.EndsWith("path.bin"))
                     {
-                        Runtime.TargetPath = new PathBin();
-                        Runtime.TargetPath.read(new FileData(ofd.FileName));
+                        Runtime.TargetPath = new PathBin(ofd.FileName);
                     }
                     else
                     if (ofd.FileName.EndsWith(".bin"))
@@ -183,7 +183,7 @@ namespace VBN_Editor
                         Runtime.TargetVBN = new VBN();
                         SMD.read(ofd.FileName, new SkelAnimation(), Runtime.TargetVBN);
                     }
-                        //Viewport.Runtime.TargetVBN = Runtime.TargetVBN;
+                    //Viewport.Runtime.TargetVBN = Runtime.TargetVBN;
 
                     if (ofd.FileName.EndsWith(".nud"))
                     {
@@ -204,7 +204,7 @@ namespace VBN_Editor
                         m = new MTA();
                         m.read(new FileData(data));
                         Runtime.TargetNUD.applyMTA (m, 0);*/
-						
+
 
                     }
 
@@ -215,7 +215,7 @@ namespace VBN_Editor
                         Runtime.ModelContainers.Add(m);
 
                         leftPanel.treeRefresh();
-                        if (Runtime.TargetVBN.littleEndian)
+                        if (Runtime.TargetVBN.Endian == Endianness.Little)
                         {
                             radioButton2.Checked = true;
                         }
@@ -291,21 +291,21 @@ namespace VBN_Editor
                     }
                     //if (Runtime.TargetVBN.bones.Count > 0)
                     //{
-                        if (ofd.FileName.EndsWith(".omo"))
-                        {
-                            Runtime.Animations.Add(ofd.FileName, OMO.read(new FileData(ofd.FileName)));
-                            rightPanel.lstAnims.Items.Add(ofd.FileName);
-                        }
-                        if (ofd.FileName.EndsWith(".chr0"))
-                        {
-                            Runtime.Animations.Add(ofd.FileName, CHR0.read(new FileData(ofd.FileName), Runtime.TargetVBN));
-                            rightPanel.lstAnims.Items.Add(ofd.FileName);
-                        }
-                        if (ofd.FileName.EndsWith(".anim"))
-                        {
-                            Runtime.Animations.Add(ofd.FileName, ANIM.read(ofd.FileName, Runtime.TargetVBN));
-                            rightPanel.lstAnims.Items.Add(ofd.FileName);
-                        }
+                    if (ofd.FileName.EndsWith(".omo"))
+                    {
+                        Runtime.Animations.Add(ofd.FileName, OMO.read(new FileData(ofd.FileName)));
+                        rightPanel.lstAnims.Items.Add(ofd.FileName);
+                    }
+                    if (ofd.FileName.EndsWith(".chr0"))
+                    {
+                        Runtime.Animations.Add(ofd.FileName, CHR0.read(new FileData(ofd.FileName), Runtime.TargetVBN));
+                        rightPanel.lstAnims.Items.Add(ofd.FileName);
+                    }
+                    if (ofd.FileName.EndsWith(".anim"))
+                    {
+                        Runtime.Animations.Add(ofd.FileName, ANIM.read(ofd.FileName, Runtime.TargetVBN));
+                        rightPanel.lstAnims.Items.Add(ofd.FileName);
+                    }
                     //}
                     rightPanel.lstAnims.EndUpdate();
                 }
@@ -428,14 +428,14 @@ namespace VBN_Editor
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.TargetVBN.littleEndian = false;
+            Runtime.TargetVBN.Endian = Endianness.Big;
             Runtime.TargetVBN.unk_1 = 1;
             Runtime.TargetVBN.unk_2 = 2;
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.TargetVBN.littleEndian = true;
+            Runtime.TargetVBN.Endian = Endianness.Little;
             Runtime.TargetVBN.unk_1 = 2;
             Runtime.TargetVBN.unk_2 = 1;
         }
@@ -468,15 +468,14 @@ namespace VBN_Editor
                     {
                         if (f.EndsWith(".lvd"))
                         {
-                            Runtime.TargetLVD = new LVD();
-                            Runtime.TargetLVD.read(new FileData(f));
+                            Runtime.TargetLVD = new LVD(f);
                             break;
                         }
                     }
 
                     foreach (string d in Directory.GetDirectories(animationPath))
                     {
-                        foreach(string f in Directory.GetFiles(d))
+                        foreach (string f in Directory.GetFiles(d))
                         {
                             if (f.EndsWith(".omo"))
                             {

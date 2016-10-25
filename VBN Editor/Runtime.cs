@@ -11,10 +11,13 @@ namespace VBN_Editor
         static Runtime()
         {
             Animations = new Dictionary<string, SkelAnimation>();
+            OpenedFiles = new SortedList<string, FileBase>();
         }
 
         public static List<ModelContainer> ModelContainers = new List<ModelContainer>();
         public static List<NUT> TextureContainers = new List<NUT>();
+
+        public static SortedList<string, FileBase> OpenedFiles { get; set; }
 
         public static VBN TargetVBN { get; set; }
         public static NUD TargetNUD { get; set; }
@@ -48,6 +51,7 @@ namespace VBN_Editor
         }
 
         public static bool killWorkspace { get; set; }
+
         // Make sure subscribers unsubscribe or this
         // will prevent garbage collection!
         public static event EventHandler AnimationChanged;
