@@ -48,6 +48,10 @@ namespace VBN_Editor
         private void openParam(string f)
         {
             p = new ParamFile(f);
+            for(int i = 0; i < p.Groups.Count; i++)
+            {
+                treeView1.Nodes.Add("Group [" + i + "]");
+            }
             fillTable(0);
         }
     }
