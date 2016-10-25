@@ -247,7 +247,7 @@ namespace VBN_Editor
           type 4  - camera bounds
           type 5  - death boundaries
           type 6  - ???
-          type 7  - 
+          type 7  - ITEMPT_transform
           type 8  - enemyGenerator
           type 9  - ITEMPT
           type 10 - fsAreaCam (and other fsArea's ? )
