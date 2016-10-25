@@ -75,16 +75,31 @@ namespace VBN_Editor
         #region ToolStripMenu
         private void openNUDToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string filename = "";
-            SaveFileDialog save = new SaveFileDialog();
-            save.Filter = "Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
-            DialogResult result = save.ShowDialog();
-
-            if (result == DialogResult.OK)
+            PARAMEditor currentParam = null;
+            foreach(PARAMEditor p in paramEditors)
             {
-                filename = save.FileName;
-                Runtime.TargetVBN.Save(filename);
-                //OMO.createOMO (anim, vbn, "C:\\Users\\ploaj_000\\Desktop\\WebGL\\test_outut.omo", -1, -1);
+                if(p.ContainsFocus)
+                {
+                    currentParam = p;
+                }
+            }
+            if(currentParam != null)
+            {
+                currentParam.saveAs();
+            }
+            else
+            {
+                string filename = "";
+                SaveFileDialog save = new SaveFileDialog();
+                save.Filter = "Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
+                DialogResult result = save.ShowDialog();
+
+                if (result == DialogResult.OK)
+                {
+                    filename = save.FileName;
+                    Runtime.TargetVBN.Save(filename);
+                    //OMO.createOMO (anim, vbn, "C:\\Users\\ploaj_000\\Desktop\\WebGL\\test_outut.omo", -1, -1);
+                }
             }
         }
 

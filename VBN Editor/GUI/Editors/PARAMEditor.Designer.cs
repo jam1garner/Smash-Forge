@@ -52,6 +52,7 @@
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView1.Size = new System.Drawing.Size(284, 457);
             this.dataGridView1.TabIndex = 5;
+            this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.edit);
             // 
             // treeView1
             // 
@@ -61,6 +62,7 @@
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(145, 457);
             this.treeView1.TabIndex = 6;
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.select);
             // 
             // PARAMEditor
             // 

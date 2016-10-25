@@ -54,13 +54,13 @@
             this.animationsWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.boneTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewportWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.renderSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
-            this.renderSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -258,6 +258,13 @@
             this.viewportWindowToolStripMenuItem.Text = "Viewport";
             this.viewportWindowToolStripMenuItem.Click += new System.EventHandler(this.viewportWindowToolStripMenuItem_Click);
             // 
+            // renderSettingsToolStripMenuItem
+            // 
+            this.renderSettingsToolStripMenuItem.Name = "renderSettingsToolStripMenuItem";
+            this.renderSettingsToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.renderSettingsToolStripMenuItem.Text = "Render Settings";
+            this.renderSettingsToolStripMenuItem.Click += new System.EventHandler(this.renderSettingsToolStripMenuItem_Click);
+            // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
@@ -313,13 +320,6 @@
             this.dockPanel1.RightToLeftLayout = true;
             this.dockPanel1.Size = new System.Drawing.Size(1009, 659);
             this.dockPanel1.TabIndex = 16;
-            // 
-            // renderSettingsToolStripMenuItem
-            // 
-            this.renderSettingsToolStripMenuItem.Name = "renderSettingsToolStripMenuItem";
-            this.renderSettingsToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
-            this.renderSettingsToolStripMenuItem.Text = "Render Settings";
-            this.renderSettingsToolStripMenuItem.Click += new System.EventHandler(this.renderSettingsToolStripMenuItem_Click);
             // 
             // MainForm
             // 
