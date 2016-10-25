@@ -169,11 +169,15 @@ namespace VBN_Editor
             FileOutput file = new FileOutput();
             if (file != null)
             {
-                file.Endian = Endianness.Little;
-                if (Endian == Endianness.Little)
+                
+                if (Endian == Endianness.Little) {
+                    file.Endian = Endianness.Little;
                     file.writeString(" NBV");
-                if (Endian == Endianness.Big)
+                }
+                if (Endian == Endianness.Big) {
+                    file.Endian = Endianness.Big;
                     file.writeString("VBN ");
+                }
 
                 file.writeShort(unk_1);
                 file.writeShort(unk_2);
