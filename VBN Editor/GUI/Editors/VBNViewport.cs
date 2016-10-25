@@ -397,9 +397,9 @@ namespace VBN_Editor
         {
             if (Runtime.TargetPath != null && checkBox1.Checked)
             {
-                if (cf >= Runtime.TargetPath.frames.Count)
+                if (cf >= Runtime.TargetPath.Frames.Count)
                     cf = 0;
-                pathFrame f = Runtime.TargetPath.frames[cf];
+                pathFrame f = Runtime.TargetPath.Frames[cf];
                 v = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
                 cf++;
             }
@@ -687,11 +687,11 @@ namespace VBN_Editor
             {
                 GL.Color3(Color.Yellow);
                 GL.LineWidth(2);
-                for (int i = 1; i < Runtime.TargetPath.frames.Count; i++)
+                for (int i = 1; i < Runtime.TargetPath.Frames.Count; i++)
                 {
                     GL.Begin(PrimitiveType.Lines);
-                    GL.Vertex3(Runtime.TargetPath.frames[i].x, Runtime.TargetPath.frames[i].y, Runtime.TargetPath.frames[i].z);
-                    GL.Vertex3(Runtime.TargetPath.frames[i - 1].x, Runtime.TargetPath.frames[i - 1].y, Runtime.TargetPath.frames[i - 1].z);
+                    GL.Vertex3(Runtime.TargetPath.Frames[i].x, Runtime.TargetPath.Frames[i].y, Runtime.TargetPath.Frames[i].z);
+                    GL.Vertex3(Runtime.TargetPath.Frames[i - 1].x, Runtime.TargetPath.Frames[i - 1].y, Runtime.TargetPath.Frames[i - 1].z);
                     GL.End();
                 }
             }

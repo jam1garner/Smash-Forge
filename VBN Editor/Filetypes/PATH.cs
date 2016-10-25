@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,20 +9,32 @@ namespace VBN_Editor
 {
     public struct pathFrame
     {
-        public float x, y, z, qx, qy, qz, qw;
+        public float x;
+        public float y;
+        public float z;
+        public float qx;
+        public float qy;
+        public float qz;
+        public float qw;
     }
 
-    public class PathBin
+    public class PathBin : FileBase
     {
-        public List<pathFrame> frames = new List<pathFrame>();
-
         public PathBin()
         {
-
+            Frames = new List<pathFrame>();
+        }
+        public PathBin(string filename) : this()
+        {
+            Read(filename);
         }
 
-        public void read(FileData f)
+        public List<pathFrame> Frames { get; set; }
+        public override Endianness Endian { get; set; }
+
+        public override void Read(string filename)
         {
+            FileData f = new FileData(filename);
             byte[] magic = f.read(0xC); ;
             int frameCount = f.readInt();
             for (int i = 0; i < frameCount; i++)
@@ -34,8 +47,12 @@ namespace VBN_Editor
                 temp.x = f.readFloat();
                 temp.y = f.readFloat();
                 temp.z = f.readFloat();
-                frames.Add(temp);
+                Frames.Add(temp);
             }
+        }
+        public override byte[] Rebuild()
+        {
+            throw new NotImplementedException("Yell at jam to implement this");
         }
     }
 }
