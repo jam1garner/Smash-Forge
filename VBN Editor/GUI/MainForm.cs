@@ -66,6 +66,7 @@ namespace VBN_Editor
         #region Members
         public AnimListPanel rightPanel = new AnimListPanel() { ShowHint = DockState.DockRight };
         public BoneTreePanel leftPanel = new BoneTreePanel() { ShowHint = DockState.DockLeft };
+        private List<PARAMEditor> paramEditors = new List<PARAMEditor>() {};
         private List<VBNViewport> viewports = new List<VBNViewport>() { new VBNViewport() }; // Default viewport
         #endregion
 
@@ -161,8 +162,14 @@ namespace VBN_Editor
                     else
                     if (ofd.FileName.EndsWith(".bin"))
                     {
-                        Runtime.TargetCMR0 = new CMR0();
-                        Runtime.TargetCMR0.read(new FileData(ofd.FileName));
+                        //Note to whoever is readin this: 
+                        //Eventually we need to look at the magic here (and also make all .bins look at magic)
+                        //Runtime.TargetCMR0 = new CMR0();
+                        //Runtime.TargetCMR0.read(new FileData(ofd.FileName));
+                        PARAMEditor p = new PARAMEditor(ofd.FileName) { ShowHint = DockState.Document };
+                        p.Text = Path.GetFileName(ofd.FileName);
+                        AddDockedControl(p);
+                        paramEditors.Add(p);
                     }
 
                     if (ofd.FileName.EndsWith(".mdl0"))
