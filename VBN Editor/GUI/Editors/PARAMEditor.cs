@@ -104,12 +104,66 @@ namespace VBN_Editor
             IParamCollection i = p.Groups[currentEntry[0]];
             if (i is ParamGroup)
             {
-                ParamGroup p = (ParamGroup)i;
-                p.Values[p.EntrySize * currentEntry[1] + e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
+                ParamGroup pg = (ParamGroup)i;
+                switch(pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Type)
+                {
+                    case ParamType.str:
+                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
+                        break;
+                    case ParamType.s8:
+                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToSByte(tbl.Rows[e.RowIndex][1]);
+                        break;
+                    case ParamType.u8:
+                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
+                        break;
+                    case ParamType.s16:
+                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToInt16(tbl.Rows[e.RowIndex][1]);
+                        break;
+                    case ParamType.u16:
+                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToUInt16(tbl.Rows[e.RowIndex][1]);
+                        break;
+                    case ParamType.s32:
+                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToInt32(tbl.Rows[e.RowIndex][1]);
+                        break;
+                    case ParamType.u32:
+                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToUInt32(tbl.Rows[e.RowIndex][1]);
+                        break;
+                    case ParamType.f32:
+                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToSingle(tbl.Rows[e.RowIndex][1]);
+                        break;
+                }
+                //pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
             }
             else
             {
-                i.Values[e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
+                switch (i.Values[e.RowIndex].Type)
+                {
+                    case ParamType.str:
+                        i.Values[e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
+                        break;
+                    case ParamType.s8:
+                        i.Values[e.RowIndex].Value = Convert.ToSByte(tbl.Rows[e.RowIndex][1]);
+                        break;
+                    case ParamType.u8:
+                        i.Values[e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
+                        break;
+                    case ParamType.s16:
+                        i.Values[e.RowIndex].Value = Convert.ToInt16(tbl.Rows[e.RowIndex][1]);
+                        break;
+                    case ParamType.u16:
+                        i.Values[e.RowIndex].Value = Convert.ToUInt16(tbl.Rows[e.RowIndex][1]);
+                        break;
+                    case ParamType.s32:
+                        i.Values[e.RowIndex].Value = Convert.ToInt32(tbl.Rows[e.RowIndex][1]);
+                        break;
+                    case ParamType.u32:
+                        i.Values[e.RowIndex].Value = Convert.ToUInt32(tbl.Rows[e.RowIndex][1]);
+                        break;
+                    case ParamType.f32:
+                        i.Values[e.RowIndex].Value = Convert.ToSingle(tbl.Rows[e.RowIndex][1]);
+                        break;
+                }
+                //i.Values[e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
             }
             if (!notSaved)
             {
