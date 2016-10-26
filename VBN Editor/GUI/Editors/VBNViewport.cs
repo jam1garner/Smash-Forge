@@ -354,8 +354,7 @@ namespace VBN_Editor
             if (Runtime.renderLVD)
                 DrawLVD();
             // drawing the bones
-            if (Runtime.renderBones)
-                DrawBones();
+            DrawBones();
 
             // Clean up
             GL.PopAttrib();
@@ -444,11 +443,12 @@ namespace VBN_Editor
                 if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
                     HandleACMD(Runtime.TargetAnimString.Substring(4));
 
-                RenderHitboxes();
+                if(Runtime.renderHitboxes)
+                    RenderHitboxes();
 
                 foreach (ModelContainer m in Runtime.ModelContainers)
                 {
-                    if (m.vbn != null)
+                    if (m.vbn != null && Runtime.renderBones)
                     {
                         foreach (Bone bone in m.vbn.bones)
                         {
@@ -541,8 +541,6 @@ namespace VBN_Editor
                         foreach (Section s in c.sections)
                         {
                             // draw the item spawn quads
-                            int dir = 1;
-                            int cg = 0;
                             GL.LineWidth(2);
 
                             // draw outside borders
