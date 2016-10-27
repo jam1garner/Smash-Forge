@@ -8,7 +8,10 @@ Smash 4 Skeletal Animation Tool
  - Can import bones from .mdl0 models
  - Can preview Namco models (.nud), Namco textures (.nut) and Smash 4 Level Data (.lvd)
  - Can view and preview stage camera animation (path.bin and CMR0 types)
-
+ - Can edit ACMD files, just use file -> open then select a .mtable 
+ - Can edit Parameter files (Certain .bins)
+ 
+NOTE: this entire program is still very much a WIP. There may be bugs or incomplete features. Please stick with us as we're working on it!
  
 ##Building##
 ###Windows###
@@ -36,3 +39,9 @@ Project:
 - [SALT](https://github.com/Sammi-Husky/Sm4sh-Tools)
 - Copyright (c) 2014 - 2016 Sammi Husky <Sammi-Husky@live.com>
 - MIT License: https://github.com/Sammi-Husky/Sm4sh-Tools/blob/master/SALT/License.txt
+
+Project:
+- [FITX](https://github.com/Sammi-Husky/Sm4sh-Tools)
+- Copyright (c) 2014 - 2016 Sammi Husky <Sammi-Husky@live.com>
+- FITD MIT License: https://github.com/Sammi-Husky/Sm4sh-Tools/blob/master/FITD/LICENSE.txt
+- FITC MIT License: https://github.com/Sammi-Husky/Sm4sh-Tools/blob/master/FITC/LICENSE.txt
