@@ -165,7 +165,7 @@ namespace VBN_Editor
                     foreach (NUT nut in Runtime.TextureContainers)
                     {
                         int tex = -1;
-                        nut.draw.TryGetValue(p.dif, out tex);
+                        nut.draw.TryGetValue(p.materials[0].textures[0].hash, out tex);
 
                         if (tex != 0)
                         {
@@ -305,14 +305,10 @@ namespace VBN_Editor
                     int temp = d.pos();
 
                     // read vertex
-                    m.polygons.Add(readVertex(d, p, o));
+                    Polygon pol = readVertex(d, p, o);
+                    m.polygons.Add(pol);
 
-                    // temp tex id;
-                    d.seek(p.texprop1 + 0x20);
-                    //int texid = -1;
-                    //if(nut!=null)
-                    //    nut.draw.TryGetValue (d.readInt(), out texid);
-                    m.polygons[m.polygons.Count - 1].dif = d.readInt();
+                    pol.materials = readMaterial(d, p, nameStart);
 
                     d.seek(temp);
                 }
@@ -321,12 +317,89 @@ namespace VBN_Editor
 
         //VERTEX TYPES----------------------------------------------------------------------------------------
 
+        private static List<Material> readMaterial(FileData d, _s_Poly p, int nameOffset)
+        {
+            int propoff = p.texprop1;
+            List<Material> mats = new List<Material>();
+
+            while (propoff != 0)
+            {
+                d.seek(propoff);
+
+                Material m = new Material();
+                mats.Add(m);
+
+                m.flags = d.readInt();
+                d.skip(4);
+                m.data1 = d.readShort();
+
+                int propCount = d.readShort();
+                m.trans1 = d.readInt();
+                m.trans2 = d.readInt();
+                d.skip(12); // dunno what this part is padding
+
+                for (int i = 0; i < propCount; i++)
+                {
+                    Mat_Texture tex = new Mat_Texture();
+                    tex.hash = d.readInt();
+                    d.skip(8); // padding?
+                    tex.data1 = d.readInt();
+                    d.skip(4); // padding?
+                    tex.data2 = d.readInt();
+                    m.textures.Add(tex);
+                }
+
+                int head = 0x20;
+
+
+                while (head != 0)
+                {
+                    head = d.readInt();
+                    int nameStart = d.readInt();
+
+                    string name = d.readString(nameOffset + nameStart, -1);
+                
+                    int pos = d.pos();
+                    int c = d.readInt();
+                    d.skip(4);
+                    float[] f = new float[c];
+                    for (int i = 0; i < c; i++)
+                    {
+                        f[i] = d.readFloat();
+                    }
+
+                    m.entries.Add(name, f);
+
+                    d.seek(pos);
+
+                    if (head == 0)
+                        d.skip(0x20 - 8);
+                    else
+                        d.skip(head - 8);
+                }
+
+                if(propoff == p.texprop1)
+                    propoff = p.texprop2;
+                else
+                if(propoff == p.texprop2)
+                    propoff = p.texprop3;
+                else
+                if(propoff == p.texprop3)
+                    propoff = p.texprop4;
+            }
+
+            return mats;
+        }
+
         private static Polygon readVertex(FileData d, _s_Poly p, _s_Object o)
         {
 
             Polygon m = new Polygon();
 
             readVertex(d, p, o, m, p.vertSize);
+
+            m.vertSize = p.vertSize;
+            m.UVSize = p.UVSize;
 
             // faces
             d.seek(p.polyStart);
@@ -838,19 +911,25 @@ namespace VBN_Editor
             }
         }
 
+
+        public class Mat_Texture
+        {
+            public int hash;
+            public int data1, data2;
+        }
+
         public class Material
         {
-            Dictionary<string, float[]> entries = new Dictionary<string, float[]>();
-            Dictionary<string, float[]> anims = new Dictionary<string, float[]>();
+            public Dictionary<string, float[]> entries = new Dictionary<string, float[]>();
+            public Dictionary<string, float[]> anims = new Dictionary<string, float[]>();
+            public List<Mat_Texture> textures = new List<Mat_Texture>();
+
+            public int flags;
+            public int data1;
+            public int trans1, trans2;
 
             public Material()
             {
-                float[] f = new float[4];
-                f[0] = 1;
-                f[1] = 1;
-                f[2] = 0;
-                f[3] = 0;
-                entries.Add("NU_colorSamplerUV", f);
             }
         }
 
@@ -860,13 +939,13 @@ namespace VBN_Editor
             public List<int> faces = new List<int>();
 
             // Material
-            Material material = new Material();
-            public int dif = -1;
+            public List<Material> materials = new List<Material>();
 
             public bool isVisible = true;
 
             // for nud stuff
             public int vertSize = 0x46; // defaults to a basic bone weighted vertex format
+            public int UVSize = 0x12;
 
             public void AddVertex(Vertex v)
             {
