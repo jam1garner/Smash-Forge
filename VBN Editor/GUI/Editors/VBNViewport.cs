@@ -105,7 +105,7 @@ namespace VBN_Editor
             if (this.IsDisposed == true)
                 return;
 
-            while (glControl1.IsIdle && render && _controlLoaded)
+            while (render && _controlLoaded && glControl1.IsIdle)
             {
                 if (isPlaying)
                 {

@@ -9,9 +9,12 @@ namespace VBN_Editor
 {
     public partial class MainForm : Form
     {
+        public static MainForm Instance;
+
         public MainForm()
         {
             InitializeComponent();
+            Instance = this;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -23,7 +26,7 @@ namespace VBN_Editor
             boneTreeToolStripMenuItem.Checked = true;
 
             AddDockedControl(rightPanel);
-            AddDockedControl(leftPanel);
+            AddDockedControl(project);
 
             Runtime.renderBones = true;
             Runtime.renderLVD = true;
@@ -68,7 +71,9 @@ namespace VBN_Editor
         #region Members
         public AnimListPanel rightPanel = new AnimListPanel() { ShowHint = DockState.DockRight };
         public BoneTreePanel leftPanel = new BoneTreePanel() { ShowHint = DockState.DockLeft };
-        private List<PARAMEditor> paramEditors = new List<PARAMEditor>() {};
+        public ProjectTree project = new ProjectTree() { ShowHint = DockState.DockLeft };
+        public List<PARAMEditor> paramEditors = new List<PARAMEditor>() { };
+        public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() { };
         private List<VBNViewport> viewports = new List<VBNViewport>() { new VBNViewport() }; // Default viewport
         #endregion
 
@@ -76,6 +81,7 @@ namespace VBN_Editor
         private void openNUDToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PARAMEditor currentParam = null;
+            ACMDEditor currentACMD = null;
             foreach(PARAMEditor p in paramEditors)
             {
                 if(p.ContainsFocus)
@@ -83,9 +89,21 @@ namespace VBN_Editor
                     currentParam = p;
                 }
             }
+            foreach(ACMDEditor a in ACMDEditors)
+            {
+                if (a.ContainsFocus)
+                {
+                    currentACMD = a;
+                }
+            }
             if(currentParam != null)
             {
                 currentParam.saveAs();
+            }
+            else
+            if(currentACMD != null)
+            {
+                currentACMD.save();
             }
             else
             {
@@ -150,7 +168,7 @@ namespace VBN_Editor
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud|" +
+                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable|" +
                              "Smash 4 Boneset (.vbn)|*.vbn|" +
                              "Namco Model (.nud)|*.nud|" +
                              "Smash 4 Level Data (.lvd)|*.lvd|" +
@@ -168,6 +186,11 @@ namespace VBN_Editor
                     if (ofd.FileName.EndsWith(".lvd"))
                     {
                         Runtime.TargetLVD = new LVD(ofd.FileName);
+                    }
+
+                    if (ofd.FileName.EndsWith(".mtable"))
+                    {
+                        project.openACMD(ofd.FileName);
                     }
 
                     if (ofd.FileName.EndsWith("path.bin"))
