@@ -47,5 +47,10 @@ namespace VBN_Editor
             if (!Text.EndsWith("*"))
                 Text += "*";
         }
+
+        private void ACMDEditor_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            MainForm.Instance.ACMDEditors.Remove(this);
+        }
     }
 }
