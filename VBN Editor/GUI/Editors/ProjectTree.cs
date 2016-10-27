@@ -39,7 +39,7 @@ namespace VBN_Editor
             if(Directory.Exists("/workspace/"))
                 Directory.Delete("workspace/");
             ProcessStartInfo start = new ProcessStartInfo();
-            start.Arguments = "-m C:/Smash/ACMD/FITX/motion/ -o workspace \"" + filename + "\"";
+            start.Arguments = "-o workspace \"" + filename + "\"";
             start.FileName = "FITD.exe";
             start.WindowStyle = ProcessWindowStyle.Hidden;
             start.CreateNoWindow = true;
