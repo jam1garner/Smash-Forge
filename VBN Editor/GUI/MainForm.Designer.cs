@@ -54,6 +54,8 @@
             this.animationsWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.boneTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewportWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.meshListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.projectTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renderSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -222,6 +224,8 @@
             this.animationsWindowToolStripMenuItem,
             this.boneTreeToolStripMenuItem,
             this.viewportWindowToolStripMenuItem,
+            this.meshListToolStripMenuItem,
+            this.projectTreeToolStripMenuItem,
             this.renderSettingsToolStripMenuItem,
             this.toolStripSeparator3,
             this.aboutToolStripMenuItem1});
@@ -257,6 +261,20 @@
             this.viewportWindowToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.viewportWindowToolStripMenuItem.Text = "Viewport";
             this.viewportWindowToolStripMenuItem.Click += new System.EventHandler(this.viewportWindowToolStripMenuItem_Click);
+            // 
+            // meshListToolStripMenuItem
+            // 
+            this.meshListToolStripMenuItem.Name = "meshListToolStripMenuItem";
+            this.meshListToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.meshListToolStripMenuItem.Text = "Mesh List";
+            this.meshListToolStripMenuItem.Click += new System.EventHandler(this.meshListToolStripMenuItem_Click);
+            // 
+            // projectTreeToolStripMenuItem
+            // 
+            this.projectTreeToolStripMenuItem.Name = "projectTreeToolStripMenuItem";
+            this.projectTreeToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.projectTreeToolStripMenuItem.Text = "Project Tree";
+            this.projectTreeToolStripMenuItem.Click += new System.EventHandler(this.projectTreeToolStripMenuItem_Click);
             // 
             // renderSettingsToolStripMenuItem
             // 
@@ -380,6 +398,8 @@
         private System.Windows.Forms.ToolStripMenuItem openStageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearWorkspaceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem renderSettingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem meshListToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem projectTreeToolStripMenuItem;
     }
 }
 

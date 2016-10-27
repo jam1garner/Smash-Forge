@@ -74,6 +74,7 @@ namespace VBN_Editor
         public ProjectTree project = new ProjectTree() { ShowHint = DockState.DockLeft };
         public List<PARAMEditor> paramEditors = new List<PARAMEditor>() { };
         public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() { };
+        public MeshList meshList = new MeshList() { ShowHint = DockState.DockRight };
         private List<VBNViewport> viewports = new List<VBNViewport>() { new VBNViewport() }; // Default viewport
         #endregion
 
@@ -162,6 +163,7 @@ namespace VBN_Editor
                 model.nud = new NUD(pnud);
 
             Runtime.ModelContainers.Add(model);
+            meshList.refresh();
         }
 
         private void openVBNToolStripMenuItem_Click(object sender, EventArgs e)
@@ -538,6 +540,20 @@ namespace VBN_Editor
             {
                 rndr.ShowDialog();
             }
+        }
+
+        private void meshListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            meshList.refresh();
+            AddDockedControl(meshList);
+        }
+
+        private void projectTreeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (project.DockState == DockState.Unknown)
+                project = new ProjectTree();
+            else
+                project.Focus();
         }
     }
 }
