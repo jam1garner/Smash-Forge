@@ -151,9 +151,6 @@
     <EmbeddedResource Include="GUI\Editors\BoneTree.resx">
       <DependentUpon>BoneTree.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\MeshList.resx">
-      <DependentUpon>MeshList.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\PARAMEditor.resx">
       <DependentUpon>PARAMEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -212,6 +209,9 @@
     <Compile Include="Filetypes\Models\JTB.cs" />
     <Compile Include="Filetypes\Animation\CMR0.cs" />
     <Compile Include="GUI\Editors\RenderTools.cs" />
+    <None Include="GUI\Editors\MeshList.resx">
+      <DependentUpon>MeshList.cs</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

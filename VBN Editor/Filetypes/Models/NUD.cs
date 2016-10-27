@@ -174,6 +174,7 @@ namespace VBN_Editor
                             break;
                         }
                     }
+                    GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1,1,0,0));
 
                     if (p.isVisible && m.isVisible)
                         GL.DrawElements(PrimitiveType.Triangles, p.faces.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(uint));
@@ -837,13 +838,31 @@ namespace VBN_Editor
             }
         }
 
+        public class Material
+        {
+            Dictionary<string, float[]> entries = new Dictionary<string, float[]>();
+            Dictionary<string, float[]> anims = new Dictionary<string, float[]>();
+
+            public Material()
+            {
+                float[] f = new float[4];
+                f[0] = 1;
+                f[1] = 1;
+                f[2] = 0;
+                f[3] = 0;
+                entries.Add("NU_colorSamplerUV", f);
+            }
+        }
+
         public class Polygon
         {
             public List<Vertex> vertices = new List<Vertex>();
             public List<int> faces = new List<int>();
 
             // Material
+            Material material = new Material();
             public int dif = -1;
+
             public bool isVisible = true;
 
             // for nud stuff
