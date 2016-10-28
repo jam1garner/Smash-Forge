@@ -88,7 +88,7 @@ namespace VBN_Editor
                         vert.Add(v.pos);
                         col.Add(v.col);
                         nrm.Add(v.nrm);
-                        uv.AddRange(v.tx);
+                        uv.AddRange(v.tx0);
                         while (v.node.Count < 4)
                         {
                             v.node.Add(0);
@@ -386,17 +386,17 @@ namespace VBN_Editor
             // faces
             d.seek(p.polyStart);
 
-            //if (p.polsize == 0x40)
-            //{
+            if (p.polsize == 0x40)
+            {
                 for (int x = 0; x < p.polyamt / 3; x++)
                 {
                     m.faces.Add(d.readShort());
                     m.faces.Add(d.readShort());
                     m.faces.Add(d.readShort());
                 }
-            //}
+            }
 
-            /*if (p.polsize == 0x00 || p.polsize == 0x04)
+            if (p.polsize == 0x00 || p.polsize == 0x04)
             {
                 int faceCount = p.polyamt;
                 int faceStart = d.pos();
@@ -439,7 +439,7 @@ namespace VBN_Editor
                     }
                 } while (d.pos() != (verStart));
 
-            }*/
+            }
 
             return m;
         }
@@ -454,18 +454,30 @@ namespace VBN_Editor
             {
                 v[i] = new Vertex();
                 if (uvType == 0x2)
-                {
                     v[i].col = new Vector4(d.readByte(), d.readByte(), d.readByte(), d.readByte());
-                    for(int j = 0; j < uvCount ; j++)
-                        v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                int numOfUVS = (p.UVSize >> 4);
+                if (numOfUVS >= 1)
+                {
+                    v[i].tx0.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                    if (numOfUVS >= 2)
+                    {
+                        v[i].tx1.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                        if (numOfUVS >= 3)
+                        {
+                            v[i].tx2.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                            if (numOfUVS >= 4)
+                            {
+                                v[i].tx3.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                            }
+                        }
+                    }
                 }
-                else
-                    throw new NotImplementedException("UV type not supported");
             }
         }
 
         private static void readVertex(FileData d, _s_Poly p, _s_Object o, Polygon m)
         {
+            Console.WriteLine($"UVSize: 0x{p.UVSize:X} vertSize: 0x{p.vertSize:X}\n");
             int weight = p.vertSize >> 4;
             int nrm = p.vertSize & 0xF;
 
@@ -503,11 +515,13 @@ namespace VBN_Editor
                     d.skip(4);
 
                 if (nrm == 7)
-                    d.skip(16); // bn and tan half floats
+                    d.skip(0x10); // bn and tan half floats
+                if (nrm == 8)
+                    d.skip(10); // ???
 
                 if (weight == 0)
                 {
-                    if (p.UVSize >= 18)
+                    if (p.UVSize >= 0x12)
                     {
                         v[i].col.X = (int)d.readByte();
                         v[i].col.Y = (int)d.readByte();
@@ -516,8 +530,24 @@ namespace VBN_Editor
                         //v.a = (int) (d.readByte());
                     }
 
-                    for(int j = 0; j < (p.UVSize >> 4) ; j++)
-                        v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                    int numOfUVS = (p.UVSize >> 4);
+                    if (numOfUVS >= 1)
+                    {
+                        v[i].tx0.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                        if (numOfUVS >= 2)
+                        {
+                            v[i].tx1.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                            if (numOfUVS >= 3)
+                            {
+                                v[i].tx2.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                                if (numOfUVS >= 4)
+                                {
+                                    v[i].tx3.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                                }
+                                }
+                            }
+                        }
+                            
 
                     // UV layers
                     //d.skip(4 * ((p.UVSize >> 4) - 1));
@@ -635,7 +665,7 @@ namespace VBN_Editor
                     obj.writeShort(mesh[i].polygons[k].vertices.Count);
                     obj.writeByte(mesh[i].polygons[k].vertSize); // type of vert
 
-                    int maxUV = mesh[i].polygons[k].vertices[0].tx.Count; // TODO: multi uv stuff  mesh[i].polygons[k].maxUV() + 
+                    int maxUV = mesh[i].polygons[k].vertices[0].tx0.Count; // TODO: multi uv stuff  mesh[i].polygons[k].maxUV() + 
 
                     obj.writeByte((maxUV << 4) | 2); // type of UV 0x12 for vertex color
 
@@ -721,10 +751,10 @@ namespace VBN_Editor
                     d.writeByte((int)m.vertices[i].col.Y);
                     d.writeByte((int)m.vertices[i].col.Z);
                     d.writeByte((int)m.vertices[i].col.W);
-                    for (int j = 0; j < m.vertices[i].tx.Count; j++)
+                    for (int j = 0; j < m.vertices[i].tx0.Count; j++)
                     {
-                        d.writeHalfFloat(m.vertices[i].tx[j].X);
-                        d.writeHalfFloat(m.vertices[i].tx[j].Y);
+                        d.writeHalfFloat(m.vertices[i].tx0[j].X);
+                        d.writeHalfFloat(m.vertices[i].tx0[j].Y);
                     }
                 }
                 else
@@ -780,10 +810,10 @@ namespace VBN_Editor
                         d.writeByte((int)m.vertices[i].col.W);
                     }
 
-                    for (int j = 0; j < m.vertices[i].tx.Count; j++)
+                    for (int j = 0; j < m.vertices[i].tx0.Count; j++)
                     {
-                        d.writeHalfFloat(m.vertices[i].tx[j].X);
-                        d.writeHalfFloat(m.vertices[i].tx[j].Y);
+                        d.writeHalfFloat(m.vertices[i].tx0[j].X);
+                        d.writeHalfFloat(m.vertices[i].tx0[j].Y);
                     }
 
                     // UV layers
@@ -890,7 +920,10 @@ namespace VBN_Editor
         {
             public Vector3 pos = new Vector3(0, 0, 0), nrm = new Vector3(0, 0, 0);
             public Vector4 col = new Vector4(1, 1, 1, 1);
-            public List<Vector2> tx = new List<Vector2>();
+            public List<Vector2> tx0 = new List<Vector2>();
+            public List<Vector2> tx1 = new List<Vector2>();
+            public List<Vector2> tx2 = new List<Vector2>();
+            public List<Vector2> tx3 = new List<Vector2>();
             public List<int> node = new List<int>();
             public List<float> weight = new List<float>();
 
