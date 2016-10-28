@@ -90,7 +90,7 @@ namespace VBN_Editor
             frames.Add(k);
         }
 
-        public List<int> getNodes()
+        public List<int> getNodes(bool fromHash, VBN vbn = null)
         {
             List<int> node = new List<int>();
 
@@ -99,7 +99,18 @@ namespace VBN_Editor
                 {
                     if (!node.Contains(n.id) && n.id != -1)
                     {
-                        node.Add(n.id);
+                        if (fromHash && vbn != null)
+                        {
+                            foreach (Bone bo in vbn.bones) {
+                                if (bo.boneId == n.hash)
+                                {
+                                    node.Add(vbn.bones.IndexOf(bo));
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                            node.Add(n.id);
                     }
                 }
 
@@ -123,7 +134,6 @@ namespace VBN_Editor
 
         public void nextFrame(VBN vbn)
         {
-
             if (frame == 0)
                 vbn.reset();
 
@@ -145,6 +155,7 @@ namespace VBN_Editor
                     if (bo.boneId == n.hash)
                     {
                         id = vbn.bones.IndexOf(bo);
+                        n.id = id;
                         break;
                     }
 				}
@@ -253,7 +264,7 @@ namespace VBN_Editor
         public void bakeFramesLinear()
         {
 
-            List<int> nodeids = getNodes();
+            List<int> nodeids = getNodes(false);
             List<KeyFrame> base_frames = frames;
             frames = new List<KeyFrame>();
             int fCount = 0;

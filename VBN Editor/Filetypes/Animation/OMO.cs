@@ -203,7 +203,7 @@ namespace VBN_Editor
 
         public static byte[] createOMO(SkelAnimation a, VBN vbn)
         {
-            List<int> nodeid = a.getNodes();
+            List<int> nodeid = a.getNodes(true, vbn);
 
             int startNode = 0;
             int sizeNode = nodeid.Count;

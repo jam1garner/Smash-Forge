@@ -203,7 +203,7 @@ namespace VBN_Editor
 				file.WriteLine ("mayaVersion 2014 x64;\ntimeUnit ntscf;\nlinearUnit cm;\nangularUnit deg;\nstartTime 1;\nendTime "+(a.size())+";");
 
 
-				List<int> nodes = a.getNodes ();
+				List<int> nodes = a.getNodes (true, vbn);
 				int i = 0;
 
 				// writing node attributes
