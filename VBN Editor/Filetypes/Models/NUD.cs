@@ -48,6 +48,7 @@ namespace VBN_Editor
         public int boneCount = 0;
         public bool hasBones = false;
         public List<Mesh> mesh = new List<Mesh>();
+        public float[] param = new float[4];
 
         public override Endianness Endian { get; set; }
 
@@ -76,7 +77,6 @@ namespace VBN_Editor
             List<int> face = new List<int>();
 
             int i = 0;
-            int uvTest = 1;
 
             foreach (Mesh m in mesh)
             {
@@ -89,11 +89,9 @@ namespace VBN_Editor
                         vert.Add(v.pos);
                         col.Add(v.col);
                         nrm.Add(v.nrm);
-                        if(uvTest == 1)
-                            uv.AddRange(v.tx);
-                        if(p.UVSize >> 4 == uvTest)
-                            uvTest = 0;
-                        uvTest++;
+
+                        uv.Add(v.tx[0]);
+
                         while (v.node.Count < 4)
                         {
                             v.node.Add(0);
@@ -104,7 +102,7 @@ namespace VBN_Editor
                     }
 
                     // rearrange faces
-                    int[] ia = p.faces.ToArray();
+                    int[] ia = p.getDisplayFace().ToArray();
                     for (int j = 0; j < ia.Length; j++)
                     {
                         ia[j] += i;
@@ -154,10 +152,7 @@ namespace VBN_Editor
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(facedata.Length * sizeof(int)), facedata, BufferUsageHint.StaticDraw);
 
-
-            //mesh [0].polygons [0].isVisible = false;
-
-            //GL.Uniform1(shader.getAttribute("hasBones"), hasBones ? 1 : 0);
+            //GL.Enable(EnableCap.PrimitiveRestartFixedIndex);
 
             int indiceat = 0;
             foreach (Mesh m in mesh)
@@ -183,13 +178,12 @@ namespace VBN_Editor
 
                     if (p.isVisible && m.isVisible)
                     {
-                        GL.DrawElements((p.strip >> 4) == 4 ? PrimitiveType.Triangles : PrimitiveType.TriangleStrip, p.faces.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(uint));
+                        //(p.strip >> 4) == 4 ? PrimitiveType.Triangles : PrimitiveType.TriangleStrip
+                        GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
                     }
-                    indiceat += p.faces.Count;
+                    indiceat += p.displayFaceSize;
                 }
             }
-
-            //GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
         }
 
 
@@ -244,32 +238,49 @@ namespace VBN_Editor
             int vertaddClumpStart = vertClumpStart + vertClumpSize;
             int vertaddClumpSize = d.readInt();
             int nameStart = vertaddClumpStart + vertaddClumpSize;
-            d.skip(16); // some floats
+            param[0] = d.readFloat();
+            param[1] = d.readFloat();
+            param[2] = d.readFloat();
+            param[3] = d.readFloat();
 
             // object descriptors
 
             _s_Object[] obj = new _s_Object[polysets];
+            List<float[]> unknown = new List<float[]>();
+            int[] boneflags = new int[polysets];
             for (int i = 0; i < polysets; i++)
             {
-                d.skip(32);
+                float[] un = new float[8];
+                un[0] = d.readFloat();
+                un[1] = d.readFloat();
+                un[2] = d.readFloat();
+                un[3] = d.readFloat();
+                un[4] = d.readFloat();
+                un[5] = d.readFloat();
+                un[6] = d.readFloat();
+                un[7] = d.readFloat();
+                unknown.Add(un);
                 int temp = d.pos() + 4;
                 d.seek(nameStart + d.readInt());
                 obj[i].name = (d.readString());
                 // read name string
                 d.seek(temp);
-                obj[i].id = d.readInt();
+                boneflags[i] = d.readInt();
                 obj[i].singlebind = d.readShort();
                 obj[i].polyamt = d.readShort();
                 obj[i].positionb = d.readInt();
             }
 
             // reading polygon data
+            int mi = 0;
             foreach (var o in obj)
             {
                 Mesh m = new Mesh();
                 m.name = o.name;
                 mesh.Add(m);
+                m.boneflag = boneflags[mi];
                 m.singlebind = (short)o.singlebind;
+                m.bbox = unknown[mi++];
 
                 for (int i = 0; i < o.polyamt; i++)
                 {
@@ -319,26 +330,38 @@ namespace VBN_Editor
 
                 m.flags = d.readInt();
                 d.skip(4);
-                m.data1 = d.readShort();
+                m.blendMode = d.readByte();
+                m.dstFactor = d.readByte();
 
                 int propCount = d.readShort();
-                m.trans1 = d.readInt();
-                m.trans2 = d.readInt();
-                d.skip(12); // dunno what this part is padding
+                m.srcFactor = d.readShort();
+                m.alphaFunc = d.readByte();
+                m.ref1 = d.readByte();
+                d.skip(1); // unknown
+                m.drawPriority = d.readByte();
+                m.cullMode = d.readByte();
+                m.unknown1 = d.readByte();
+                d.skip(4); // padding
+                m.unkownWater = d.readInt();
+                m.zBufferOffset = d.readInt();
 
                 for (int i = 0; i < propCount; i++)
                 {
                     Mat_Texture tex = new Mat_Texture();
                     tex.hash = d.readInt();
-                    d.skip(8); // padding?
-                    tex.data1 = d.readInt();
-                    d.skip(4); // padding?
-                    tex.data2 = d.readInt();
+                    d.skip(6); // padding?
+                    tex.MapMode = d.readShort();
+                    tex.WrapMode1 = d.readByte();
+                    tex.WrapMode2 = d.readByte();
+                    tex.minFilter = d.readByte();
+                    tex.magFilter = d.readByte();
+                    tex.mipDetail = d.readByte();
+                    tex.unknown = d.readShort();
+                    d.skip(5);
                     m.textures.Add(tex);
                 }
 
                 int head = 0x20;
-
 
                 while (head != 0)
                 {
@@ -384,6 +407,7 @@ namespace VBN_Editor
             Polygon m = new Polygon();
             m.vertSize = p.vertSize;
             m.UVSize = p.UVSize;
+            m.polflag = p.polflag;
             m.strip = p.polsize;
 
             readVertex(d, p, o, m);
@@ -391,59 +415,9 @@ namespace VBN_Editor
             // faces
             d.seek(p.polyStart);
 
-            if (p.polsize == 0x40)
-            {
-            for (int x = 0; x < p.polyamt / 3; x++)
+            for (int x = 0; x < p.polyamt; x++)
             {
                 m.faces.Add(d.readShort());
-                m.faces.Add(d.readShort());
-                m.faces.Add(d.readShort());
-            }
-            }
-
-            if (p.polsize == 0x00 || p.polsize == 0x04)
-            {
-                int faceCount = p.polyamt;
-                int faceStart = d.pos();
-                int verStart = (faceCount * 2) + faceStart;
-
-                int startDirection = 1;
-                int f1 = d.readShort();
-                int f2 = d.readShort();
-                int faceDirection = startDirection;
-                int f3;
-                do
-                {
-                    f3 = d.readShort();
-                    if (f3 == 0xFFFF)
-                    {
-                        f1 = d.readShort();
-                        f2 = d.readShort();
-                        faceDirection = startDirection;
-                    }
-                    else
-                    {
-                        faceDirection *= -1;
-                        if ((f1 != f2) && (f2 != f3) && (f3 != f1))
-                        {
-                            if (faceDirection > 0)
-                            {
-                                m.faces.Add(f3);
-                                m.faces.Add(f2);
-                                m.faces.Add(f1);
-                            }
-                            else
-                            {
-                                m.faces.Add(f2);
-                                m.faces.Add(f3);
-                                m.faces.Add(f1);
-                            }
-                        }
-                        f1 = f2;
-                        f2 = f3;
-                    }
-                } while (d.pos() != (verStart));
-
             }
 
             return m;
@@ -508,7 +482,16 @@ namespace VBN_Editor
                     d.skip(4);
 
                 if (nrm == 7)
-                    d.skip(16); // bn and tan half floats
+                {
+                    v[i].bitan.X = d.readHalfFloat();
+                    v[i].bitan.Y = d.readHalfFloat();
+                    v[i].bitan.Z = d.readHalfFloat();
+                    v[i].bitan.W = d.readHalfFloat();
+                    v[i].tan.X = d.readHalfFloat();
+                    v[i].tan.Y = d.readHalfFloat();
+                    v[i].tan.Z = d.readHalfFloat();
+                    v[i].tan.W = d.readHalfFloat();
+                }
 
                 if (weight == 0)
                 {
@@ -571,10 +554,10 @@ namespace VBN_Editor
             d.writeInt(0); // vertexaddcump size
 
             // some floats.. TODO: I dunno what these are for
-            d.writeFloat(0);
-            d.writeFloat(0);
-            d.writeFloat(0);
-            d.writeFloat(0);
+            d.writeFloat(param[0]);
+            d.writeFloat(param[1]);
+            d.writeFloat(param[2]);
+            d.writeFloat(param[3]);
 
             // other sections....
             FileOutput obj = new FileOutput(); // data
@@ -610,15 +593,8 @@ namespace VBN_Editor
             for (int i = 0; i < mesh.Count; i++)
             {
                 // more floats TODO: I dunno what these are for
-                d.writeFloat(0);
-                d.writeFloat(0);
-                d.writeFloat(0);
-                d.writeFloat(0);
-
-                d.writeFloat(0);
-                d.writeFloat(0);
-                d.writeFloat(0);
-                d.writeFloat(0);
+                foreach (float f in mesh[i].bbox)
+                    d.writeFloat(f);
 
                 d.writeInt(tempstring.size());
 
@@ -626,7 +602,7 @@ namespace VBN_Editor
                 tempstring.writeByte(0);
                 tempstring.align(16);
 
-                d.writeInt(0x04); // ID
+                d.writeInt(mesh[i].boneflag); // ID
                 d.writeShort(mesh[i].singlebind); // Single Bind 
                 d.writeShort(mesh[i].polygons.Count); // poly count
                 d.writeInt(obj.size() + 0x30 + mesh.Count * 0x30); // position start for obj
@@ -659,9 +635,9 @@ namespace VBN_Editor
                     obj.writeInt(texoff[3] > 0 ? texoff[3] + 0x30 + mesh.Count * 0x30 + polyCount * 0x30 : 0);
 
                     obj.writeShort(mesh[i].polygons[k].faces.Count); // polyamt
-                    obj.writeByte(0x40); // polysize 0x04 is strips and 0x40 is easy
+                    obj.writeByte(mesh[i].polygons[k].strip); // polysize 0x04 is strips and 0x40 is easy
                                          // :D
-                    obj.writeByte(0x04); // polyflag
+                    obj.writeByte(mesh[i].polygons[k].polflag); // polyflag
 
                     obj.writeInt(0); // idk, nothing padding??
                     obj.writeInt(0);
@@ -770,10 +746,14 @@ namespace VBN_Editor
                 if (nrm == 7)
                 {
                     // bn and tan half floats
-                    d.writeInt(0);
-                    d.writeInt(0);
-                    d.writeInt(0);
-                    d.writeInt(0);
+                    d.writeHalfFloat(m.vertices[i].bitan.X);
+                    d.writeHalfFloat(m.vertices[i].bitan.Y);
+                    d.writeHalfFloat(m.vertices[i].bitan.Z);
+                    d.writeHalfFloat(m.vertices[i].bitan.W);
+                    d.writeHalfFloat(m.vertices[i].tan.X);
+                    d.writeHalfFloat(m.vertices[i].tan.Y);
+                    d.writeHalfFloat(m.vertices[i].tan.Z);
+                    d.writeHalfFloat(m.vertices[i].tan.W);
                 }
 
                 if (weight == 0)
@@ -818,23 +798,35 @@ namespace VBN_Editor
             {
                 offs[c++] = d.size();
                 d.writeInt(mat.flags);
-                d.writeInt(0);//padding
-                d.writeShort(mat.data1);
+                d.writeInt(0); // padding
+                d.writeByte(mat.blendMode);
+                d.writeByte(mat.dstFactor);
                 d.writeShort(mat.textures.Count);
-                d.writeInt(mat.trans1);
-                d.writeInt(mat.trans2);
-                d.writeInt(0);
-                d.writeInt(0);
-                d.writeInt(0);
+                d.writeShort(mat.srcFactor);
+                d.writeByte(mat.alphaFunc);
+                d.writeByte(mat.ref1);
+                d.writeByte(0); // unknown padding?
+                d.writeByte(mat.drawPriority);
+                d.writeByte(mat.cullMode);
+                d.writeByte(mat.unknown1);
+                d.writeInt(0); // padding
+                d.writeInt(mat.unkownWater); 
+                d.writeInt(mat.zBufferOffset); 
 
                 foreach (Mat_Texture tex in mat.textures)
                 {
                     d.writeInt(tex.hash);
                     d.writeInt(0);
-                    d.writeInt(0);
-                    d.writeInt(tex.data1);
-                    d.writeInt(0);
-                    d.writeInt(tex.data2);
+                    d.writeShort(0);
+                    d.writeShort(tex.MapMode);
+                    d.writeByte(tex.WrapMode1);
+                    d.writeByte(tex.WrapMode2);
+                    d.writeByte(tex.minFilter);
+                    d.writeByte(tex.magFilter);
+                    d.writeByte(tex.mipDetail);
+                    d.writeShort(tex.unknown);
+                    d.writeInt(0); // padding
+                    d.writeByte(0); // padding
                 }
 
                 for (int i = 0; i < mat.entries.Count; i++)
@@ -895,6 +887,7 @@ namespace VBN_Editor
         public class Vertex
         {
             public Vector3 pos = new Vector3(0, 0, 0), nrm = new Vector3(0, 0, 0);
+            public Vector4 bitan = new Vector4(0, 0, 0, 1), tan = new Vector4(0, 0, 0, 1);
             public Vector4 col = new Vector4(1, 1, 1, 1);
             public List<Vector2> tx = new List<Vector2>();
             public List<int> node = new List<int>();
@@ -914,7 +907,23 @@ namespace VBN_Editor
         public class Mat_Texture
         {
             public int hash;
-            public int data1, data2;
+            public int MapMode = 0;
+            public int WrapMode1 = 0;
+            public int WrapMode2 = 0;
+            public int minFilter = 0;
+            public int magFilter = 0;
+            public int mipDetail = 0;
+            public int unknown = 0;
+        }
+
+        public enum SrcFactors 
+        {
+            Nothing = 0x0,
+            SourceAlpha = 0x1,
+            One = 0x2,
+            InverseSourceAlpha = 0x3,
+            SourceColor = 0x4,
+            Zero = 0xA
         }
 
         public class Material
@@ -924,8 +933,17 @@ namespace VBN_Editor
             public List<Mat_Texture> textures = new List<Mat_Texture>();
 
             public int flags;
-            public int data1;
-            public int trans1, trans2;
+            public int blendMode = 0;
+            public int dstFactor = 0;
+            public int srcFactor = (int)SrcFactors.Zero;
+            public int alphaFunc = 0;
+            public int ref1 = 0;
+            public int drawPriority = 0;
+            public int cullMode = 0;
+
+            public int unknown1 = 0;
+            public int unkownWater = 0;
+            public int zBufferOffset = 0;
 
             public Material()
             {
@@ -936,20 +954,76 @@ namespace VBN_Editor
         {
             public List<Vertex> vertices = new List<Vertex>();
             public List<int> faces = new List<int>();
+            public int displayFaceSize = 0;
+
+            public bool isVisible = true;
 
             // Material
             public List<Material> materials = new List<Material>();
-
-            public bool isVisible = true;
 
             // for nud stuff
             public int vertSize = 0x46; // defaults to a basic bone weighted vertex format
             public int UVSize = 0x12;
             public int strip = 0x40;
+            public int polflag = 0x04;
 
             public void AddVertex(Vertex v)
             {
                 vertices.Add(v);
+            }
+
+            public List<int> getDisplayFace()
+            {
+                if ((strip >> 4) == 4)
+                {
+                    displayFaceSize = faces.Count;
+                    return faces;
+                }
+                else
+                {
+                    List<int> f = new List<int>();
+
+                    int startDirection = 1;
+                    int p = 0;
+                    int f1 = faces[p++];
+                    int f2 = faces[p++];
+                    int faceDirection = startDirection;
+                    int f3;
+                    do
+                    {
+                        f3 = faces[p++];
+                        if (f3 == 0xFFFF)
+                        {
+                            f1 = faces[p++];
+                            f2 = faces[p++];
+                            faceDirection = startDirection;
+                        }
+                        else
+                        {
+                            faceDirection *= -1;
+                            if ((f1 != f2) && (f2 != f3) && (f3 != f1))
+                            {
+                                if (faceDirection > 0)
+                                {
+                                    f.Add(f3);
+                                    f.Add(f2);
+                                    f.Add(f1);
+                                }
+                                else
+                                {
+                                    f.Add(f2);
+                                    f.Add(f3);
+                                    f.Add(f1);
+                                }
+                            }
+                            f1 = f2;
+                            f2 = f3;
+                        }
+                    } while (p < faces.Count);
+
+                    displayFaceSize = f.Count;
+                    return f;
+                }
             }
         }
 
@@ -959,9 +1033,11 @@ namespace VBN_Editor
         {
             public string name;
             public List<Polygon> polygons = new List<Polygon>();
+            public int boneflag = 4; // 0 not rigged 4 rigged 8 singlebind
             public short singlebind = -1;
 
             public bool isVisible = true;
+            public float[] bbox = new float[8];
 
             public void addVertex(Vertex v)
             {
