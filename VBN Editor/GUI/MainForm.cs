@@ -227,8 +227,8 @@ namespace VBN_Editor
 
                     if (ofd.FileName.EndsWith(".nud"))
                     {
-
                         openNud(ofd.FileName);
+                        //File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\model_new.nud",Runtime.ModelContainers[0].nud.Rebuild());
                         /*PAC p = new PAC();
                         p.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\model\\body\\c00\\material_anime_face.pac");
                         byte[] data;

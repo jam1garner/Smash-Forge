@@ -38,9 +38,9 @@ namespace VBN_Editor
         int ibo_elements;
 
         Vector2[] uvdata;
-        Vector3[] vertdata, coldata, nrmdata;
+        Vector3[] vertdata, nrmdata;
         int[] facedata;
-        Vector4[] bonedata, weightdata;
+        Vector4[] bonedata, coldata, weightdata;
 
         public const int SMASH = 0;
         public const int POKKEN = 1;
@@ -69,7 +69,7 @@ namespace VBN_Editor
         {
             List<Vector3> vert = new List<Vector3>();
             List<Vector2> uv = new List<Vector2>();
-            List<Vector3> col = new List<Vector3>();
+            List<Vector4> col = new List<Vector4>();
             List<Vector3> nrm = new List<Vector3>();
             List<Vector4> bone = new List<Vector4>();
             List<Vector4> weight = new List<Vector4>();
@@ -88,7 +88,7 @@ namespace VBN_Editor
                         vert.Add(v.pos);
                         col.Add(v.col);
                         nrm.Add(v.nrm);
-                        uv.Add(v.tx);
+                        uv.AddRange(v.tx);
                         while (v.node.Count < 4)
                         {
                             v.node.Add(0);
@@ -127,8 +127,8 @@ namespace VBN_Editor
             GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_color);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(coldata.Length * Vector3.SizeInBytes), coldata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("vColor"), 3, VertexAttribPointerType.Float, false, 0, 0);
+            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(coldata.Length * Vector4.SizeInBytes), coldata, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_nrm);
             GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(nrmdata.Length * Vector3.SizeInBytes), nrmdata, BufferUsageHint.StaticDraw);
@@ -177,7 +177,9 @@ namespace VBN_Editor
                     GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1,1,0,0));
 
                     if (p.isVisible && m.isVisible)
-                        GL.DrawElements(PrimitiveType.Triangles, p.faces.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(uint));
+                    {
+                        GL.DrawElements((p.strip>>4) == 4 ? PrimitiveType.Triangles : PrimitiveType.TriangleStrip, p.faces.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(uint));
+                    }
                     indiceat += p.faces.Count;
                 }
             }
@@ -212,25 +214,6 @@ namespace VBN_Editor
         }
 
 
-        //texture----------------------------------------------------------
-
-        public static int loadImage(Bitmap image)
-        {
-            int texID = GL.GenTexture();
-
-            GL.BindTexture(TextureTarget.Texture2D, texID);
-            BitmapData data = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
-                ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
-                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-
-            image.UnlockBits(data);
-
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-            return texID;
-        }
 
         //------------------------------------------------------------------------------------------------------------------------
         /*
@@ -278,10 +261,10 @@ namespace VBN_Editor
             // reading polygon data
             foreach (var o in obj)
             {
-
                 Mesh m = new Mesh();
                 m.name = o.name;
                 mesh.Add(m);
+                m.singlebind = (short)o.singlebind;
 
                 for (int i = 0; i < o.polyamt; i++)
                 {
@@ -393,28 +376,27 @@ namespace VBN_Editor
 
         private static Polygon readVertex(FileData d, _s_Poly p, _s_Object o)
         {
-
             Polygon m = new Polygon();
-
-            readVertex(d, p, o, m, p.vertSize);
-
             m.vertSize = p.vertSize;
             m.UVSize = p.UVSize;
+            m.strip = p.polsize;
+
+            readVertex(d, p, o, m);
 
             // faces
             d.seek(p.polyStart);
 
-            if (p.polsize == 0x40)
-            {
+            //if (p.polsize == 0x40)
+            //{
                 for (int x = 0; x < p.polyamt / 3; x++)
                 {
                     m.faces.Add(d.readShort());
                     m.faces.Add(d.readShort());
                     m.faces.Add(d.readShort());
                 }
-            }
+            //}
 
-            if (p.polsize == 0x00 || p.polsize == 0x04)
+            /*if (p.polsize == 0x00 || p.polsize == 0x04)
             {
                 int faceCount = p.polyamt;
                 int faceStart = d.pos();
@@ -457,7 +439,7 @@ namespace VBN_Editor
                     }
                 } while (d.pos() != (verStart));
 
-            }
+            }*/
 
             return m;
         }
@@ -465,7 +447,6 @@ namespace VBN_Editor
         //VERTEX TYPES----------------------------------------------------------------------------------------
         private static void readUV(FileData d, _s_Poly p, _s_Object o, Polygon m, Vertex[] v)
         {
-
             int uvCount = (p.UVSize >> 4);
             int uvType = (p.UVSize) & 0xF;
 
@@ -474,25 +455,24 @@ namespace VBN_Editor
                 v[i] = new Vertex();
                 if (uvType == 0x2)
                 {
-                    v[i].col = new Vector3(d.readByte() / 127f, d.readByte() / 127f, d.readByte() / 127f);
-                    d.skip(1);
-                    v[i].tx = new Vector2(d.readHalfFloat(), d.readHalfFloat());
+                    v[i].col = new Vector4(d.readByte(), d.readByte(), d.readByte(), d.readByte());
+                    for(int j = 0; j < uvCount ; j++)
+                        v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
                 }
                 else
-                    Console.WriteLine("No uv found");
+                    throw new NotImplementedException("UV type not supported");
             }
         }
 
-        private static void readVertex(FileData d, _s_Poly p, _s_Object o, Polygon m, int size)
+        private static void readVertex(FileData d, _s_Poly p, _s_Object o, Polygon m)
         {
-            int weight = size >> 4;
-            int nrm = size & 0xF;
-
-            //Console.WriteLine(weight + " " + nrm);
+            int weight = p.vertSize >> 4;
+            int nrm = p.vertSize & 0xF;
 
             Vertex[] v = new Vertex[p.vertamt];
 
             d.seek(p.vertStart);
+
             if (weight > 0)
             {
                 readUV(d, p, o, m, v);
@@ -505,7 +485,6 @@ namespace VBN_Editor
                     v[i] = new Vertex();
                 }
             }
-
 
             for (int i = 0; i < p.vertamt; i++)
             {
@@ -530,17 +509,18 @@ namespace VBN_Editor
                 {
                     if (p.UVSize >= 18)
                     {
-                        v[i].col.X = (int)d.readByte() / 0xFF;
-                        v[i].col.Y = (int)d.readByte() / 0xFF;
-                        v[i].col.Z = (int)d.readByte() / 0xFF;
-                        d.skip(1);
+                        v[i].col.X = (int)d.readByte();
+                        v[i].col.Y = (int)d.readByte();
+                        v[i].col.Z = (int)d.readByte();
+                        v[i].col.W = (int)d.readByte();
                         //v.a = (int) (d.readByte());
                     }
 
-                    v[i].tx = new Vector2(d.readHalfFloat(), d.readHalfFloat());
+                    for(int j = 0; j < (p.UVSize >> 4) ; j++)
+                        v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
 
                     // UV layers
-                    d.skip(4 * ((p.UVSize >> 4) - 1));
+                    //d.skip(4 * ((p.UVSize >> 4) - 1));
                 }
 
                 if (weight == 4)
@@ -572,11 +552,6 @@ namespace VBN_Editor
             d.Endian = Endianness.Big;
 
             // mesh optimize
-
-            int vertexType = 0x46;
-            if (boneCount == 0)
-                vertexType = 0x06;
-            int UVType = 0x12;
 
             d.writeString("NDP3");
             d.writeInt(0); //FileSize
@@ -629,7 +604,6 @@ namespace VBN_Editor
 
             for (int i = 0; i < mesh.Count; i++)
             {
-
                 // more floats TODO: I dunno what these are for
                 d.writeFloat(0);
                 d.writeFloat(0);
@@ -643,34 +617,41 @@ namespace VBN_Editor
 
                 d.writeInt(tempstring.size());
 
-                // TODO: Write String here
                 tempstring.writeString(mesh[i].name);
                 tempstring.writeByte(0);
                 tempstring.align(16);
 
                 d.writeInt(0x04); // ID
-                d.writeShort(-1); // Single Bind 
+                d.writeShort(mesh[i].singlebind); // Single Bind 
                 d.writeShort(mesh[i].polygons.Count); // poly count
                 d.writeInt(obj.size() + 0x30 + mesh.Count * 0x30); // position start for obj
 
                 // write obj info here...
                 for (int k = 0; k < mesh[i].polygons.Count; k++)
                 {
-
                     obj.writeInt(poly.size());
                     obj.writeInt(vert.size());
-                    obj.writeInt(vertadd.size());
+                    obj.writeInt(mesh[i].polygons[k].vertSize>>4 > 0 ? vertadd.size() : 0);
                     obj.writeShort(mesh[i].polygons[k].vertices.Count);
-                    obj.writeByte(vertexType); // type of vert
+                    obj.writeByte(mesh[i].polygons[k].vertSize); // type of vert
 
-                    int maxUV = 1; // TODO: multi uv stuff  mesh[i].polygons[k].maxUV() + 
+                    int maxUV = mesh[i].polygons[k].vertices[0].tx.Count; // TODO: multi uv stuff  mesh[i].polygons[k].maxUV() + 
 
                     obj.writeByte((maxUV << 4) | 2); // type of UV 0x12 for vertex color
 
-                    obj.writeInt(tex.size() + 0x30 + mesh.Count * 0x30 + polyCount * 0x30); // Tex properties... This is tex offset
-                    obj.writeInt(0);// TODO: perhaps figure out??
-                    obj.writeInt(0);
-                    obj.writeInt(0);
+                    // MATERIAL SECTION 
+
+                    FileOutput te = new FileOutput();
+                    te.Endian = Endianness.Big;
+
+                    int[] texoff = writeMaterial(tex, mesh[i].polygons[k], str);
+                    //tex.writeOutput(te);
+
+                    //obj.writeInt(tex.size() + 0x30 + mesh.Count * 0x30 + polyCount * 0x30); // Tex properties... This is tex offset
+                    obj.writeInt(texoff[0] + 0x30 + mesh.Count * 0x30 + polyCount * 0x30);
+                    obj.writeInt(texoff[1] > 0 ? texoff[1] + 0x30 + mesh.Count * 0x30 + polyCount * 0x30 : 0);
+                    obj.writeInt(texoff[2] > 0 ? texoff[2] + 0x30 + mesh.Count * 0x30 + polyCount * 0x30 : 0);
+                    obj.writeInt(texoff[3] > 0 ? texoff[3] + 0x30 + mesh.Count * 0x30 + polyCount * 0x30 : 0);
 
                     obj.writeShort(mesh[i].polygons[k].faces.Count); // polyamt
                     obj.writeByte(0x40); // polysize 0x04 is strips and 0x40 is easy
@@ -681,143 +662,13 @@ namespace VBN_Editor
                     obj.writeInt(0);
                     obj.writeInt(0);
 
-                    // Write the texture.... TODO: skip for now
-                    // MATERIAL SECTION TODO:---------------------------------------------------------------------------------
-
-                    FileOutput te = new FileOutput();
-                    te.Endian = Endianness.Big;
-
-                    uint testflags = 0x9A013063;
-                    te.writeInt((int)testflags); // flags 9A013063
-                    te.writeInt(0);
-                    te.writeInt(1); // number of tex
-                    te.writeInt(0x00010204);
-                    te.writeInt(0x405);
-                    te.writeInt(0);
-                    te.writeInt(0);
-                    te.writeInt(0);
-
-                    te.writeInt(0 + i); // texid
-                    te.writeInt(0);
-                    te.writeInt(0);
-                    te.writeInt(0x01010302);
-                    te.writeByte(0x2);// 6 when not ending
-                    te.writeByte(0);
-                    te.writeShort(0);
-                    te.writeInt(0);
-
-                    // write properties
-                    // color sample UV
-                    int propCount = 0;
-                    te.writeInt(propCount-- > 0 ? 0x20 : 0x00);
-                    te.writeInt(str.size());
-                    te.writeInt(4);
-                    te.writeInt(0);
-                    te.writeFloat(1f);
-                    te.writeFloat(1f);
-                    te.writeFloat(0f);
-                    te.writeFloat(0f);
-                    str.writeString("NU_colorSamplerUV");
-                    str.writeByte(0);
-                    str.align(16);
-
-                    tex.writeOutput(te);
-
-                    // Actually Create Texture
-                    // TODO:
-
                     // Write the poly...
                     foreach (int face in mesh[i].polygons[k].faces)
                         poly.writeShort(face);
 
                     // Write the vertex....
 
-                    if (vertexType == 0x06)
-                    {
-                        foreach (Vertex v in mesh[i].polygons[k].vertices)
-                        {
-                            vert.writeFloat(v.pos.X);
-                            vert.writeFloat(v.pos.Y);
-                            vert.writeFloat(v.pos.Z);
-
-                            vert.writeHalfFloat(v.nrm.X);
-                            vert.writeHalfFloat(v.nrm.Y);
-                            vert.writeHalfFloat(v.nrm.Z);
-                            vert.writeHalfFloat(1);
-
-                            vert.writeByte((int)(v.col.X * 127));
-                            vert.writeByte((int)(v.col.Y * 127));
-                            vert.writeByte((int)(v.col.Z * 127));
-                            vert.writeByte(255 / 2);
-
-                            vert.writeHalfFloat(v.tx.X);
-                            vert.writeHalfFloat(v.tx.Y);
-
-                            // TODO: Multiuv
-                            /*for(int l = 0 ; l < maxUV-1 ; l++){
-								vert.writeHalfFloat(v.uvx.get(l));
-								vert.writeHalfFloat(v.uvy.get(l));
-							}*/
-                        }
-                    }
-                    else if (vertexType == 0x46)
-                    {
-                        foreach (Vertex v in mesh[i].polygons[k].vertices)
-                        {
-                            vert.writeByte((int)(v.col.X * 127)); // +1 for stages
-                            vert.writeByte((int)(v.col.Y * 127));
-                            vert.writeByte((int)(v.col.Z * 127));
-                            vert.writeByte(255 / 2);
-
-                            vert.writeHalfFloat(v.tx.X);
-                            vert.writeHalfFloat(v.tx.Y);
-                            // TODO: MultiUV
-                            /*for(int l = 0 ; l < maxUV-1 ; l++){
-								vert.writeHalfFloat(v.uvx.get(l));
-								vert.writeHalfFloat(v.uvy.get(l));
-							}*/
-                        }
-
-                        // Write the Vertex add??
-
-                        foreach (Vertex v in mesh[i].polygons[k].vertices)
-                        {
-                            vertadd.writeFloat(v.pos.X);
-                            vertadd.writeFloat(v.pos.Y);
-                            vertadd.writeFloat(v.pos.Z);
-
-                            vertadd.writeHalfFloat(v.nrm.X);
-                            vertadd.writeHalfFloat(v.nrm.Y);
-                            vertadd.writeHalfFloat(v.nrm.Z);
-                            vertadd.writeHalfFloat(1f);
-
-                            // weight cannot go over 4 here anyway...
-                            /*int vsize = v.node.size();
-							if (vsize > 4) {
-								//System.out.println("Weight Problem!!!");
-								vsize = 4;
-								float scalefactor = (1 - (v.weight.get(0)
-									+ v.weight.get(1) + v.weight.get(2) + v.weight
-									.get(3))) / 4;
-								v.weight.set(0, v.weight.get(0) + scalefactor);
-								v.weight.set(1, v.weight.get(1) + scalefactor);
-								v.weight.set(2, v.weight.get(2) + scalefactor);
-								v.weight.set(3, v.weight.get(3) + scalefactor);
-							}*/
-
-                            for (int j = 0; j < v.node.Count; j++)
-                                vertadd.writeByte(v.node[j]);
-
-                            for (int j = v.node.Count; j < v.node.Count + (4 - v.node.Count); j++)
-                                vertadd.writeByte(0);
-
-                            for (int j = 0; j < v.node.Count; j++)
-                                vertadd.writeByte((int)(v.weight[j] * 255f));
-
-                            for (int j = v.node.Count; j < v.node.Count + (4 - v.node.Count); j++)
-                                vertadd.writeByte(0);
-                        }
-                    }
+                    writeVertex(vert, vertadd, mesh[i].polygons[k]);
 
                 }
             }
@@ -825,6 +676,7 @@ namespace VBN_Editor
             //
             d.writeOutput(obj);
             d.writeOutput(tex);
+            d.align(16);
 
             d.writeIntAt(d.size() - 0x30, 0x10);
             d.writeIntAt(poly.size(), 0x14);
@@ -858,6 +710,147 @@ namespace VBN_Editor
 
             return d.getBytes();
         }
+
+        private static void writeUV(FileOutput d, Polygon m)
+        {
+            for (int i = 0; i < m.vertices.Count; i++)
+            {
+                if ((m.UVSize&0xF) == 0x2)
+                {
+                    d.writeByte((int)m.vertices[i].col.X);
+                    d.writeByte((int)m.vertices[i].col.Y);
+                    d.writeByte((int)m.vertices[i].col.Z);
+                    d.writeByte((int)m.vertices[i].col.W);
+                    for (int j = 0; j < m.vertices[i].tx.Count; j++)
+                    {
+                        d.writeHalfFloat(m.vertices[i].tx[j].X);
+                        d.writeHalfFloat(m.vertices[i].tx[j].Y);
+                    }
+                }
+                else
+                    throw new NotImplementedException("Unsupported UV format");
+            }
+        }
+
+        private static void writeVertex(FileOutput d, FileOutput add, Polygon m)
+        {
+            int weight = m.vertSize >> 4;
+            int nrm = m.vertSize & 0xF;
+
+            //d.seek(p.vertStart);
+            if (weight > 0)
+            {
+                writeUV(d, m);
+                //d.seek(p.verAddStart);
+                d = add;
+            }
+
+            for (int i = 0; i < m.vertices.Count; i++)
+            {
+                Vertex v = m.vertices[i];
+                d.writeFloat(v.pos.X);
+                d.writeFloat(v.pos.Y);
+                d.writeFloat(v.pos.Z);
+
+                if (nrm > 0)
+                {
+                    d.writeHalfFloat(v.nrm.X);
+                    d.writeHalfFloat(v.nrm.Y);
+                    d.writeHalfFloat(v.nrm.Z);
+                    d.writeHalfFloat(1);
+                }
+                else
+                    d.writeInt(0);
+
+                if (nrm == 7){
+                    // bn and tan half floats
+                    d.writeInt(0);
+                    d.writeInt(0);
+                    d.writeInt(0);
+                    d.writeInt(0);
+                }
+
+                if (weight == 0)
+                {
+                    if (m.UVSize >= 18)
+                    {
+                        d.writeByte((int)m.vertices[i].col.X);
+                        d.writeByte((int)m.vertices[i].col.Y);
+                        d.writeByte((int)m.vertices[i].col.Z);
+                        d.writeByte((int)m.vertices[i].col.W);
+                    }
+
+                    for (int j = 0; j < m.vertices[i].tx.Count; j++)
+                    {
+                        d.writeHalfFloat(m.vertices[i].tx[j].X);
+                        d.writeHalfFloat(m.vertices[i].tx[j].Y);
+                    }
+
+                    // UV layers
+                    //d.skip(4 * ((m.UVSize >> 4) - 1));
+                }
+
+                if (weight == 4)
+                {
+                    d.writeByte(v.node[0]);
+                    d.writeByte(v.node[1]);
+                    d.writeByte(v.node[2]);
+                    d.writeByte(v.node[3]);
+                    d.writeByte((int)(v.weight[0] * 255f));
+                    d.writeByte((int)(v.weight[1] * 255f));
+                    d.writeByte((int)(v.weight[2] * 255f));
+                    d.writeByte((int)(v.weight[3] * 255f));
+                }
+            }
+        }
+
+        private static int[] writeMaterial(FileOutput d, Polygon p, FileOutput str)
+        {
+            int[] offs = new int[4];
+            int c = 0;
+            foreach(Material mat in p.materials)
+            {
+                offs[c++] = d.size();
+                d.writeInt(mat.flags);
+                d.writeInt(0);//padding
+                d.writeShort(mat.data1);
+                d.writeShort(mat.textures.Count);
+                d.writeInt(mat.trans1);
+                d.writeInt(mat.trans2);
+                d.writeInt(0);
+                d.writeInt(0);
+                d.writeInt(0);
+
+                foreach (Mat_Texture tex in mat.textures)
+                {
+                    d.writeInt(tex.hash);
+                    d.writeInt(0);
+                    d.writeInt(0);
+                    d.writeInt(tex.data1);
+                    d.writeInt(0);
+                    d.writeInt(tex.data2);
+                }
+
+                for (int i = 0; i < mat.entries.Count; i++)
+                {
+                    float[] data;
+                    mat.entries.TryGetValue(mat.entries.ElementAt(i).Key, out data);
+                    d.writeInt(i == mat.entries.Count-1 ? 0 : 16+4*data.Length);
+                    d.writeInt(str.size());
+
+                    str.writeString(mat.entries.ElementAt(i).Key);
+                    str.writeByte(0);
+                    str.align(16);
+
+                    d.writeInt(data.Length);
+                    d.writeInt(0);
+                    foreach (float f in data)
+                        d.writeFloat(f);
+                }
+            }
+            return offs;
+        }
+
 
         // HELPERS FOR READING
         /*private struct header{
@@ -896,8 +889,8 @@ namespace VBN_Editor
         public class Vertex
         {
             public Vector3 pos = new Vector3(0, 0, 0), nrm = new Vector3(0, 0, 0);
-            public Vector3 col = new Vector3(1, 1, 1);
-            public Vector2 tx = new Vector2(0, 0);
+            public Vector4 col = new Vector4(1, 1, 1, 1);
+            public List<Vector2> tx = new List<Vector2>();
             public List<int> node = new List<int>();
             public List<float> weight = new List<float>();
 
@@ -946,6 +939,7 @@ namespace VBN_Editor
             // for nud stuff
             public int vertSize = 0x46; // defaults to a basic bone weighted vertex format
             public int UVSize = 0x12;
+            public int strip = 0x40;
 
             public void AddVertex(Vertex v)
             {
@@ -959,6 +953,7 @@ namespace VBN_Editor
         {
             public string name;
             public List<Polygon> polygons = new List<Polygon>();
+            public short singlebind = -1;
 
             public bool isVisible = true;
 

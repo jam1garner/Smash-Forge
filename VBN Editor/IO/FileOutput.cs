@@ -101,8 +101,8 @@ namespace VBN_Editor
 
 		public void writeHalfFloat(float f){
             int i = FileData.fromFloat(f, Endian == Endianness.Little);
+            data.Add((byte)((i>>8)&0xFF));
 			data.Add((byte)((i)&0xFF));
-			data.Add((byte)((i>>8)&0xFF));
 		}
 
 		public void writeShort(int i){

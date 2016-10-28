@@ -136,7 +136,7 @@ namespace VBN_Editor
 			}
 
 			for (int i = 0; i < filen.Length; i++) {
-				draw.Add (filen[i], NUD.loadImage(textures[i]));
+				draw.Add (filen[i], loadImage(textures[i]));
 			}
 		}
 
@@ -146,6 +146,26 @@ namespace VBN_Editor
             {
                 GL.DeleteTexture(keyList[i]);
             }
+        }
+
+        //texture----------------------------------------------------------
+
+        public static int loadImage(Bitmap image)
+        {
+            int texID = GL.GenTexture();
+
+            GL.BindTexture(TextureTarget.Texture2D, texID);
+            BitmapData data = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
+                ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
+                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+
+            image.UnlockBits(data);
+
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+            return texID;
         }
 	}
 }
