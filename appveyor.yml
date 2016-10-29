@@ -13,7 +13,7 @@ deploy:
   description: 'This build is updated every time a commit is pushed.\n\n$(APPVEYOR_REPO_COMMIT_MESSAGE)\n\n Timestamp: $(APPVEYOR_REPO_COMMIT_TIMESTAMP)'
   provider: GitHub
   auth_token:
-    secure: sOhbJkt9LSK7BiyRJ6MdRvHGEkA66eMjbJJ0sCf9VnnmlfrnRLJ0/RBuYWxHlxrJ
+    secure: 4ebqOCir67guBkJ24KTokNSNVkW0E36XGG+xLwDcNQ16W3+0Uon0zB21H6OPS020
   artifact: Smash-Forge-Latest_Commit.zip
   draft: false
   prerelease: true
