@@ -417,16 +417,20 @@ namespace VBN_Editor
         {
             // Bounding Box Render
             /*foreach (ModelContainer m in Runtime.ModelContainers)
+            {
+                RenderTools.drawCubeWireframe(new Vector3(m.nud.param[0], m.nud.param[1], m.nud.param[2]), m.nud.param[3]);
                 foreach (NUD.Mesh mesh in m.nud.mesh)
                 {
                     RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
-                }*/
+                }
+            }*/
             
             GL.UseProgram(shader.programID);
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
                 if (m.nud != null)
                 {
+                    
                     GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref v);
 
                     if (m.vbn != null)

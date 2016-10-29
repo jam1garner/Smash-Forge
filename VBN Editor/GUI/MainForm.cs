@@ -122,6 +122,199 @@ namespace VBN_Editor
             }
         }
 
+        private void openDAE(string fname)
+        {
+            COLLADA model = COLLADA.Load(fname);
+
+            NUD n = new NUD();
+            VBN vbn = new VBN();
+            vbn.Read("C:\\s\\Smash\\extract\\data\\fighter\\murabito\\model\\body\\c00\\model.vbn");
+            ModelContainer con = new ModelContainer();
+            con.nud = n;
+            con.vbn = vbn;
+            Runtime.ModelContainers.Add(con);
+
+            // Iterate on libraries
+            foreach (var item in model.Items)
+            {
+                var geometries = item as library_geometries;
+                if (geometries != null)
+                {
+                    // Iterate on geomerty in library_geometries 
+                    foreach (var geom in geometries.geometry)
+                    {
+                        var mesh = geom.Item as mesh;
+                        if (mesh == null)
+                            continue;
+
+                        NUD.Mesh n_mesh = new NUD.Mesh();
+                        n.mesh.Add(n_mesh);
+                        n_mesh.name = geom.name;
+
+                        Dictionary<string, double[]> sources = new Dictionary<string, double[]>();
+                        Dictionary<string, string> semantic = new Dictionary<string, string>();
+
+                        // Dump source[] for geom
+                        foreach (var source in mesh.source)
+                        {
+                            var float_array = source.Item as float_array;
+                            if (float_array == null)
+                                continue;
+                            sources.Add(source.id, float_array.Values);
+                        }
+                        {
+                            var inputs = mesh.vertices.input;
+                            foreach (var input in inputs)
+                            {
+                                semantic.Add(input.semantic, input.source);
+                            }
+                        }
+                        // Dump Items[] for geom
+                        foreach (var meshItem in mesh.Items)
+                        {
+                            if (meshItem is vertices)
+                            {
+                                var vertices = meshItem as vertices;
+                                var inputs = vertices.input;
+                                foreach (var input in inputs)
+                                    semantic.Add(input.semantic, input.source);                             
+                            }
+                            else if (meshItem is triangles)
+                            {
+                                var triangles = meshItem as triangles;
+                                var inputs = triangles.input;
+
+                                NUD.Polygon poly = new NUD.Polygon();
+                                poly.setDefaultMaterial();
+                                n_mesh.polygons.Add(poly);
+                                string[] ps = triangles.p.Split(' ');
+                                int vCount = 0;
+                                for (int i = 0; i < ps.Length; i++)
+                                {
+                                    poly.faces.Add(int.Parse(ps[i]));
+                                    if (int.Parse(ps[i]) > vCount)
+                                        vCount = int.Parse(ps[i]);
+                                }
+
+                                for (int i = 0; i < vCount + 1; i++)
+                                {
+                                    NUD.Vertex v = new NUD.Vertex();
+
+                                    // iterate semantics
+                                    foreach (string s in semantic.Keys)
+                                    {
+                                        string src;
+                                        double[] bank;
+                                        semantic.TryGetValue(s, out src);
+                                        src = src.Replace("#", "");
+                                        sources.TryGetValue(src, out bank);
+                                        switch (s)
+                                        {
+                                            case "POSITION":
+                                                v.pos.X = (float)bank[i * 3 + 0];
+                                                v.pos.Y = (float)bank[i * 3 + 1];
+                                                v.pos.Z = (float)bank[i * 3 + 2];
+                                                break;
+                                            case "NORMAL":
+                                                v.nrm.X = (float)bank[i * 3 + 0];
+                                                v.nrm.Y = (float)bank[i * 3 + 1];
+                                                v.nrm.Z = (float)bank[i * 3 + 2];
+                                                break;
+                                            case "TEXCOORD":
+                                                v.tx.Add(new OpenTK.Vector2((float)bank[i * 2 + 0], (float)bank[i * 2 + 1]));
+                                                break;
+                                        }
+                                    }
+                                    poly.AddVertex(v);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                var controllers = item as library_controllers;
+                if (controllers != null)
+                {
+                    int cid = 0;
+                    // Iterate on controllers in library_controllers 
+                    foreach (var cont in controllers.controller)
+                    {
+                        var control = cont as controller;
+                        //if (control == null)
+                        //    continue;
+
+                        var skin = control.Item as skin;
+
+                        string[] boneNames = null;
+                        Dictionary<string, double[]> sources = new Dictionary<string, double[]>();
+                        Dictionary<string, string> semantic = new Dictionary<string, string>();
+
+                        // Dump source[] for geom
+                        foreach (var source in skin.source)
+                        {
+                            var float_array = source.Item as float_array;
+                            if (float_array != null)
+                            {
+                                sources.Add(source.id, float_array.Values);
+                            }
+                            var name_array = source.Item as Name_array;
+                            if (name_array != null)
+                            {
+                                //Console.WriteLine(name_array._Text_);
+                                boneNames = name_array._Text_.Split(' ');
+                                //Console.WriteLine(boneNames.Length);
+                            }
+                        }
+                        {
+                            var inputs = skin.joints.input;
+                            foreach (var input in inputs)
+                            {
+                                if(input.semantic.Equals(""))
+                                semantic.Add(input.semantic, input.source);
+                            }
+                        }
+                        // Dump Items[] for geom
+                        NUD.Mesh m = n.mesh[cid];
+                        List<NUD.Vertex> v = m.polygons[0].vertices;
+                        string[] vcount = skin.vertex_weights.vcount.Split(' ');
+                        string[] vi = skin.vertex_weights.v.Split(' ');
+                        int pos = 0;
+
+                        for (int i = 0; i < (int)skin.vertex_weights.count; i++)
+                        {
+                            NUD.Vertex vert = v[i];
+
+                            for (int j = 0; j < int.Parse(vcount[i]); j++)
+                                foreach (var sem in skin.vertex_weights.input)
+                                {
+                                    switch (sem.semantic)
+                                    {
+                                        case "JOINT":
+                                            // find joint name in vbn
+                                            int ind = int.Parse(vi[pos++]);
+                                            //Console.WriteLine(boneNames[ind].Substring(5));
+                                            //Console.WriteLine(boneNames[ind].Substring(5));
+                                            vert.node.Add(vbn.boneIndex(boneNames[ind].Substring(6)));
+                                            break;
+                                        case "WEIGHT":
+                                            // find weight int weight list
+                                            double[] weight;
+                                            sources.TryGetValue(sem.source.Replace("#", ""), out weight);
+                                            vert.weight.Add((float)weight[int.Parse(vi[pos++])]);
+                                            break;
+                                    }
+                                }
+
+                        }
+                        cid++;
+                    }
+                }
+            }
+
+            n.PreRender();
+            File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\murabito\\isa.nud",n.Rebuild());
+        }
+
         private void openNud(string filename)
         {
             string[] files = Directory.GetFiles(System.IO.Path.GetDirectoryName(filename));
@@ -224,6 +417,12 @@ namespace VBN_Editor
                         SMD.read(ofd.FileName, new SkelAnimation(), Runtime.TargetVBN);
                     }
                     //Viewport.Runtime.TargetVBN = Runtime.TargetVBN;
+
+
+                    if (ofd.FileName.EndsWith(".dae"))
+                    {
+                        //openDAE(ofd.FileName);
+                    }
 
                     if (ofd.FileName.EndsWith(".nud"))
                     {

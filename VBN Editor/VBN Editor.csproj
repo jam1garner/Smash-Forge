@@ -63,8 +63,6 @@
     <Compile Include="Filetypes\Models\MTA.cs" />
     <Compile Include="Filetypes\PAC.cs" />
     <Compile Include="Filetypes\Animation\PATH.cs" />
-    <Compile Include="Filetypes\UI\LM.cs" />
-    <Compile Include="Filetypes\UI\Texlist.cs" />
     <Compile Include="GUI\Editors\ACMDEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -214,6 +212,7 @@
     <None Include="GUI\Editors\MeshList.resx">
       <DependentUpon>MeshList.cs</DependentUpon>
     </None>
+    <Compile Include="Filetypes\DAE.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

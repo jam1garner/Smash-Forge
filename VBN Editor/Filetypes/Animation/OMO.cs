@@ -79,22 +79,24 @@ namespace VBN_Editor
                         node.rv = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                         node.rv2 = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                     }
-					if ((rFlag&0xF0) == 0x70)
+                    if ((rFlag&0xF0) == 0x70 || (rFlag&0xF0) == 0x60)
                     { // constant
                         node.r_type = KeyNode.CONSTANT;
                         node.rv = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
+                        if((rFlag&0xF0) == 0x60)
+                            d.skip(4);
                     }
                 }
 
                 if (hasScale)
                 {
-                    if (sFlag == 0x81)
+                    if ((sFlag&0xF0) == 0x80)
                     { // interpolated
                         node.s_type = KeyNode.INTERPOLATED;
                         node.s = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                         node.s2 = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                     }
-					if ((rFlag&0xF) == 0x02)
+                    if ((rFlag&0x0F) == 0x02 || (rFlag&0x0F) == 0x03)
                     { // constant
                         node.s_type = KeyNode.CONSTANT;
                         node.s = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());

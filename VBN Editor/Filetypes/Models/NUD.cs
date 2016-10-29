@@ -66,7 +66,7 @@ namespace VBN_Editor
         /*
 		 * Not sure if update is needed here
 		*/
-        private void PreRender()
+        public void PreRender()
         {
             List<Vector3> vert = new List<Vector3>();
             List<Vector2> uv = new List<Vector2>();
@@ -328,7 +328,7 @@ namespace VBN_Editor
                 Material m = new Material();
                 mats.Add(m);
 
-                m.flags = d.readInt();
+                m.flags = (uint)d.readInt();
                 d.skip(4);
                 m.blendMode = d.readByte();
                 m.dstFactor = d.readByte();
@@ -797,7 +797,7 @@ namespace VBN_Editor
             foreach (Material mat in p.materials)
             {
                 offs[c++] = d.size();
-                d.writeInt(mat.flags);
+                d.writeInt((int)mat.flags);
                 d.writeInt(0); // padding
                 d.writeByte(mat.blendMode);
                 d.writeByte(mat.dstFactor);
@@ -932,7 +932,7 @@ namespace VBN_Editor
             public Dictionary<string, float[]> anims = new Dictionary<string, float[]>();
             public List<Mat_Texture> textures = new List<Mat_Texture>();
 
-            public int flags;
+            public uint flags;
             public int blendMode = 0;
             public int dstFactor = 0;
             public int srcFactor = (int)SrcFactors.Zero;
@@ -970,6 +970,31 @@ namespace VBN_Editor
             public void AddVertex(Vertex v)
             {
                 vertices.Add(v);
+            }
+
+            public void setDefaultMaterial()
+            {
+                Material mat = new Material();
+                mat.flags = 0x9a011063;
+                mat.entries.Add("NU_colorSamplerUV", new float[]{1, 1, 0, 0});
+                mat.entries.Add("NU_diffuseColor", new float[]{1, 1, 1, 1});
+                materials.Add(mat);
+                Mat_Texture dif = new Mat_Texture();
+                dif.WrapMode1 = 0;
+                dif.WrapMode2 = 1;
+                dif.minFilter = 3;
+                dif.magFilter = 2;
+                dif.unknown = 6;
+                dif.hash = 0x10080000;
+                mat.textures.Add(dif);
+                Mat_Texture nrm = new Mat_Texture();
+                nrm.WrapMode1 = 0;
+                nrm.WrapMode2 = 1;
+                nrm.minFilter = 3;
+                nrm.magFilter = 2;
+                nrm.unknown = 6;
+                nrm.hash = 0x10080000;
+                mat.textures.Add(nrm);
             }
 
             public List<int> getDisplayFace()
