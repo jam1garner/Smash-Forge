@@ -22,14 +22,49 @@ namespace VBN_Editor
 
         private string acmdDirectory;
 
-        private void fillTree()
+        private Dictionary<TreeNode, ModelContainer> modelLinks = new Dictionary<TreeNode, ModelContainer>();
+        private Dictionary<TreeNode, NUT> textureLinks = new Dictionary<TreeNode, NUT>();
+
+        public void fillTree()
         {
+            treeView1.Nodes.Clear();
             List<TreeNode> acmdFiles = new List<TreeNode>();
             foreach (string f in Directory.GetFiles("workspace/animcmd/"))
             {
                 acmdFiles.Add(new TreeNode(Path.GetFileName(f)));
             }
             treeView1.Nodes.Add(new TreeNode("ACMD", acmdFiles.ToArray()));
+
+
+            /*List<TreeNode> models = new List<TreeNode>();
+            modelLinks.Clear();
+            foreach (ModelContainer con in Runtime.ModelContainers)
+            {
+                List<TreeNode> modelCon = new List<TreeNode>();
+
+                if(con.nud != null)
+                    modelCon.Add(new TreeNode("Mesh"));
+                
+                if(con.vbn != null)
+                    modelCon.Add(new TreeNode("Bones"));
+                
+                TreeNode node = new TreeNode(con.name, modelCon.ToArray());
+                modelLinks.Add(node, con);
+                models.Add(node);
+            }
+            treeView1.Nodes.Add(new TreeNode("Models", models.ToArray()));
+
+
+            List<TreeNode> textures = new List<TreeNode>();
+            modelLinks.Clear();
+            foreach (NUT n in Runtime.TextureContainers)
+            {
+                TreeNode node = new TreeNode("NUT");
+                textureLinks.Add(node, n);
+                textures.Add(node);
+            }
+            treeView1.Nodes.Add(new TreeNode("Textures", textures.ToArray()));*/
+
         }
 
         public void openACMD(string file)
@@ -98,9 +133,12 @@ namespace VBN_Editor
 
             if(e.Node.Level == 1)
             {
-                ACMDEditor temp = new ACMDEditor("workspace/animcmd/" + e.Node.Text, this);
-                MainForm.Instance.ACMDEditors.Add(temp);
-                MainForm.Instance.AddDockedControl(temp);
+                if (e.Node.Parent.Text.Equals("ACMD"))
+                {
+                    ACMDEditor temp = new ACMDEditor("workspace/animcmd/" + e.Node.Text, this);
+                    MainForm.Instance.ACMDEditors.Add(temp);
+                    MainForm.Instance.AddDockedControl(temp);
+                }
             }
         }
     }

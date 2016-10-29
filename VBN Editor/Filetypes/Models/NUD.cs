@@ -546,6 +546,13 @@ namespace VBN_Editor
             d.writeShort(0x200); //  version num
             d.writeShort(mesh.Count); // polysets
             d.writeShort(2); // type
+
+            foreach (ModelContainer con in Runtime.ModelContainers)
+            {
+                if (con.nud == this)
+                    boneCount = con.vbn.bones.Count;
+            }
+
             d.writeShort(boneCount - 1); // Number of bones
 
             d.writeInt(0); // polyClump start
@@ -888,7 +895,7 @@ namespace VBN_Editor
         {
             public Vector3 pos = new Vector3(0, 0, 0), nrm = new Vector3(0, 0, 0);
             public Vector4 bitan = new Vector4(0, 0, 0, 1), tan = new Vector4(0, 0, 0, 1);
-            public Vector4 col = new Vector4(1, 1, 1, 1);
+            public Vector4 col = new Vector4(127, 127, 127, 127);
             public List<Vector2> tx = new List<Vector2>();
             public List<int> node = new List<int>();
             public List<float> weight = new List<float>();

@@ -122,17 +122,15 @@ namespace VBN_Editor
             }
         }
 
-        private void openDAE(string fname)
+        private void openDAE(string fname, ModelContainer con)
         {
             COLLADA model = COLLADA.Load(fname);
 
             NUD n = new NUD();
-            VBN vbn = new VBN();
-            vbn.Read("C:\\s\\Smash\\extract\\data\\fighter\\murabito\\model\\body\\c00\\model.vbn");
-            ModelContainer con = new ModelContainer();
+            if (con.vbn == null)
+                return;
+            VBN vbn = con.vbn;
             con.nud = n;
-            con.vbn = vbn;
-            Runtime.ModelContainers.Add(con);
 
             // Iterate on libraries
             foreach (var item in model.Items)
@@ -220,6 +218,12 @@ namespace VBN_Editor
                                                 v.nrm.Y = (float)bank[i * 3 + 1];
                                                 v.nrm.Z = (float)bank[i * 3 + 2];
                                                 break;
+                                            case "COLOR":
+                                                v.col.X = (float)bank[i * 3 + 0] * 255;
+                                                v.col.Y = (float)bank[i * 3 + 1] * 255;
+                                                v.col.Z = (float)bank[i * 3 + 2] * 255;
+                                                v.col.W = (float)bank[i * 3 + 2] * 255;
+                                                break;
                                             case "TEXCOORD":
                                                 v.tx.Add(new OpenTK.Vector2((float)bank[i * 2 + 0], (float)bank[i * 2 + 1]));
                                                 break;
@@ -260,9 +264,7 @@ namespace VBN_Editor
                             var name_array = source.Item as Name_array;
                             if (name_array != null)
                             {
-                                //Console.WriteLine(name_array._Text_);
                                 boneNames = name_array._Text_.Split(' ');
-                                //Console.WriteLine(boneNames.Length);
                             }
                         }
                         {
@@ -421,7 +423,7 @@ namespace VBN_Editor
 
                     if (ofd.FileName.EndsWith(".dae"))
                     {
-                        //openDAE(ofd.FileName);
+                        openDAE(ofd.FileName, Runtime.ModelContainers[0]);
                     }
 
                     if (ofd.FileName.EndsWith(".nud"))
@@ -450,6 +452,7 @@ namespace VBN_Editor
                     if (Runtime.TargetVBN != null)
                     {
                         ModelContainer m = new ModelContainer();
+                        m.name = new DirectoryInfo(ofd.FileName).Name;
                         m.vbn = Runtime.TargetVBN;
                         Runtime.ModelContainers.Add(m);
 
@@ -474,6 +477,7 @@ namespace VBN_Editor
                             }
                         }
                     }
+                    project.fillTree();
                 }
             }
         }

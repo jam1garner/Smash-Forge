@@ -57,8 +57,6 @@ namespace VBN_Editor
                 int temp = d.pos();
                 d.seek(off1);
 
-                if(rFlag == 0xA0)
-                    Console.WriteLine(d.pos());
                 if (hasTrans)
                 {
                     if (tFlag == 0x8)
@@ -77,7 +75,7 @@ namespace VBN_Editor
                 {
                     if ((rFlag & 0xF) != 0x50 && (rFlag & 0xF0) != 0x70 && (rFlag & 0xF0) != 0x60 && (rFlag&0xF0) != 0xA0)
                     {
-                        Console.WriteLine(rFlag);
+                        //Console.WriteLine(rFlag);
                     }
 
                     if((rFlag&0xF0) == 0xA0)

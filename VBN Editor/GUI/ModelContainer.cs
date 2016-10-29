@@ -5,6 +5,7 @@ namespace VBN_Editor
 {
     public class ModelContainer
     {
+        public string name = "";
         public NUD nud;
         public VBN vbn;
 
@@ -14,8 +15,6 @@ namespace VBN_Editor
         public ModelContainer()
         {
         }
-
-
 
         /*
          * This method is for clearing all the GL stuff
