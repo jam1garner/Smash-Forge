@@ -426,6 +426,19 @@ namespace VBN_Editor
                         openDAE(ofd.FileName, Runtime.ModelContainers[0]);
                     }
 
+                    if (ofd.FileName.EndsWith(".mbn"))
+                    {
+                        MBN m = new MBN();
+                        m.Read(ofd.FileName);
+                        ModelContainer con = new ModelContainer();
+                        con.mbn = m;
+                        Runtime.ModelContainers.Add(con);
+                        //m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\test.mbn");
+                        /*NUD n = m.toNUD();
+                        n.PreRender();
+                        n.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\mbn.nud");*/
+                    }
+
                     if (ofd.FileName.EndsWith(".nud"))
                     {
                         openNud(ofd.FileName);

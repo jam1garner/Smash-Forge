@@ -9,6 +9,8 @@ namespace VBN_Editor
         public NUD nud;
         public VBN vbn;
 
+        public MBN mbn;
+
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
         public static MovesetManager Moveset { get; set; }
 

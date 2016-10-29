@@ -222,6 +222,10 @@ namespace VBN_Editor
 			return str2;
 		}
 
+        public void align(int i){
+            while (p % i != 0)
+                p++;
+        }
 	}
 }
 

@@ -428,6 +428,17 @@ namespace VBN_Editor
             GL.UseProgram(shader.programID);
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
+                if (m.mbn != null)
+                {
+                    GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref v);
+
+                    // Bone
+
+                    shader.enableAttrib();
+                    m.mbn.Render(shader);
+                    shader.disableAttrib();
+                }
+
                 if (m.nud != null)
                 {
                     

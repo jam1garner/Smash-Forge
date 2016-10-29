@@ -73,7 +73,12 @@ namespace VBN_Editor
 		public void align(int i){
 			while(data.Count % i != 0)
 				writeByte(0);
-		}
+        }
+
+        public void align(int i, int v){
+            while(data.Count % i != 0)
+                writeByte(v);
+        }
 
 		/*public void align(int i, int value){
 			while(data.size() % i != 0)

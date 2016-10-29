@@ -213,6 +213,7 @@
       <DependentUpon>MeshList.cs</DependentUpon>
     </None>
     <Compile Include="Filetypes\DAE.cs" />
+    <Compile Include="Filetypes\Models\MBN.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
