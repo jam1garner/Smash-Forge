@@ -431,9 +431,9 @@ namespace VBN_Editor
 
                     if (m.vbn != null)
                     {
-                        m.vbn.getShaderMatrix();
+                        Matrix4[] f = m.vbn.getShaderMatrix();
                         int shad = shader.getAttribute("bone");
-                        GL.UniformMatrix4(shad, m.vbn.f.Length, false, m.vbn.f);
+                        GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
                     }
 
 

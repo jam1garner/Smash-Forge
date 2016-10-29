@@ -309,7 +309,7 @@ namespace VBN_Editor
 
         public float[] f = null;
 
-        public float[] getShaderMatrix()
+        public Matrix4[] getShaderMatrix()
         {
             Matrix4[] bonemat = new Matrix4[bones.Count];
 
@@ -318,19 +318,7 @@ namespace VBN_Editor
                 bonemat[i] = bones[i].invert * bones[i].transform;
             }
 
-            if (f == null)
-                f = new float[bonemat.Length * 16];
-
-            int b = 0;
-            foreach (Matrix4 m in bonemat)
-            {
-                f[b++] = m.M11; f[b++] = m.M12; f[b++] = m.M13; f[b++] = m.M14;
-                f[b++] = m.M21; f[b++] = m.M22; f[b++] = m.M23; f[b++] = m.M24;
-                f[b++] = m.M31; f[b++] = m.M32; f[b++] = m.M33; f[b++] = m.M34;
-                f[b++] = m.M41; f[b++] = m.M42; f[b++] = m.M43; f[b++] = m.M44;
-            }
-
-            return f;
+            return bonemat;
         }
 
 
