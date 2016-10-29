@@ -27,6 +27,9 @@ namespace VBN_Editor
 
         public void fillTree()
         {
+            if(!Directory.Exists("workspace/animcmd/"))
+                Directory.CreateDirectory("workspace/animcmd/");
+            
             treeView1.Nodes.Clear();
             List<TreeNode> acmdFiles = new List<TreeNode>();
             foreach (string f in Directory.GetFiles("workspace/animcmd/"))
