@@ -57,6 +57,8 @@ namespace VBN_Editor
                 int temp = d.pos();
                 d.seek(off1);
 
+                if(rFlag == 0xA0)
+                    Console.WriteLine(d.pos());
                 if (hasTrans)
                 {
                     if (tFlag == 0x8)
@@ -73,7 +75,15 @@ namespace VBN_Editor
                 }
                 if (hasRot)
                 {
-					if ((rFlag&0xF0) == 0x50)
+                    if ((rFlag & 0xF) != 0x50 && (rFlag & 0xF0) != 0x70 && (rFlag & 0xF0) != 0x60 && (rFlag&0xF0) != 0xA0)
+                    {
+                        Console.WriteLine(rFlag);
+                    }
+
+                    if((rFlag&0xF0) == 0xA0)
+                        node.r_type = 3;
+                    
+                    if ((rFlag&0xF0) == 0x50)
                     { // interpolated
                         node.r_type = KeyNode.INTERPOLATED;
                         node.rv = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
@@ -144,6 +154,19 @@ namespace VBN_Editor
                         node.t = baseNode[j].t;
                     }
 
+                    if (baseNode[j].r_type == 3)
+                    {
+                        float i4 = ((float)d.readShort() / (0xffff));
+                        float i1 = ((float)d.readShort() / (0xffff));
+                        float i2 = ((float)d.readShort() / (0xffff));
+                        float i3 = ((float)d.readShort() / (0xffff));
+
+                        node.r = new Quaternion(new Vector3(i1, i2, i3), i4);
+                        node.r = VBN.FromEulerAngles(i4*i1, i4*i2, i4*i3);
+                        node.r_type = KeyNode.INTERPOLATED;
+                        //node.r.Normalize();
+                    }
+                    else
                     if (baseNode[j].r_type == KeyNode.INTERPOLATED)
                     {
                         float i1 = ((float)d.readShort() / (0xffff));
