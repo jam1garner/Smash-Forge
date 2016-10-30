@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Smash_Forge
 {
@@ -349,6 +350,127 @@ namespace Smash_Forge
          * With help by Aelan!
          * 
          *---------------------------------------*/
+
+        /*var s_textureFormats[] = {
+            // internalFormat,  gxFormat,                                 glFormat,                         fourCC,    nutFormat, name, bpp, compressed
+            { FORMAT_RGBA_8888, GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM, GL_RGBA8,                         0x00000000, 0x11, "RGBA_8888", 0x20, 0 },
+            { FORMAT_ABGR_8888, GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM, GL_RGBA8,                         0x00000000, 0x0E, "ABGR_8888 (WIP)", 0x20, 0 },
+            { FORMAT_DXT1,      GX2_SURFACE_FORMAT_T_BC1_UNORM,           GL_COMPRESSED_RGBA_S3TC_DXT1_EXT, 0x31545844, 0x00, "DXT1",  0x40,     1 },
+            { FORMAT_DXT3,      GX2_SURFACE_FORMAT_T_BC2_UNORM,           GL_COMPRESSED_RGBA_S3TC_DXT3_EXT, 0x33545844, 0x01, "DXT3",  0x80,     1 },
+            { FORMAT_DXT5,      GX2_SURFACE_FORMAT_T_BC3_UNORM,           GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, 0x35545844, 0x02, "DXT5",  0x80,     1 },
+            { FORMAT_ATI1,      GX2_SURFACE_FORMAT_T_BC4_UNORM,           GL_COMPRESSED_RED_RGTC1,          0x31495441, 0x15, "ATI1",  0x40,     1 },
+            { FORMAT_ATI2,      GX2_SURFACE_FORMAT_T_BC5_UNORM,           GL_COMPRESSED_RG_RGTC2,           0x32495441, 0x16, "ATI2",  0x80,     1 },
+            { FORMAT_INVALID,   GX2_SURFACE_FORMAT_INVALID,               0,                                0xFFFFFFFF, 0x00, nullptr, 0x00,     0 }
+        };*/
+
+
+        public static byte[] swizzleBC(byte[] data, int width, int height, int format, int tileMode, int pitch, int swizzle)
+        {
+            GX2Surface sur = new GX2Surface();
+            sur.width = width;
+            sur.height = height;
+            sur.tileMode = tileMode;
+            sur.format = format;
+            sur.swizzle = swizzle;
+            sur.pitch = pitch;
+            sur.data = data;
+            sur.imageSize = data.Length;
+            //return swizzleBC(sur);
+            return swizzleSurface(sur, (GX2SurfaceFormat)sur.format != GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM);
+        }
+
+        public static int getBPP(int i)
+        {
+        switch((GX2SurfaceFormat)i){
+            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM:
+                return 0x20;
+            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_UNORM:
+                return 0x40;
+            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC2_UNORM:
+                return 0x80;
+            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC3_UNORM:
+                return 0x80;
+            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM:
+                return 0x40;
+            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC5_UNORM:
+                return 0x80;
+            }
+            return -1;
+        }
+
+    public static byte[] swizzleSurface(GX2Surface surface, bool isCompressed)
+        {
+            byte[] original = new byte[surface.data.Length];
+
+            surface.data.CopyTo(original, 0);
+
+            int swizzle = ((surface.swizzle >> 8) & 1) + (((surface.swizzle >> 9) & 3) << 1);
+            int blockSize;
+            int width = surface.width;
+            int height = surface.height;
+
+            int format = getBPP(surface.format);
+
+            if (isCompressed) {
+                width  /= 4;
+                height /= 4;
+
+            if ((GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_UNORM || (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM) {
+                    blockSize = 8;
+                } else {
+                    blockSize = 16;
+                }
+            } else {
+                blockSize = format / 8;
+            }
+
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    int pos = surfaceAddrFromCoordMacroTiled(x, y, format, surface.pitch, swizzle);
+                    int pos_ = (y * width + x) * blockSize;
+                    
+                    for(int k = 0; k < blockSize ; k++)
+                        surface.data[pos_+k] = original[pos+k];
+                }
+            }
+            return surface.data;
+        }
+
+    public static int surfaceAddrFromCoordMacroTiled (int x, int y, int bpp, int pitch, int swizzle)
+        {
+            int pixelIndex = computePixelIndexWithinMicroTile(x, y, bpp);
+            int elemOffset = (bpp * pixelIndex) >> 3;
+
+            int pipe = computePipeFromCoordWoRotation(x, y);
+            int bank = computeBankFromCoordWoRotation(x, y);
+            int bankPipe = ((pipe + 2 * bank) ^ swizzle) % 9;
+
+            pipe = bankPipe % 2;
+            bank = bankPipe / 2;
+
+            int macroTileBytes = (bpp * 512 + 7) >> 3;
+            int macroTileOffset = (x / 32 + pitch / 32 * (y / 16)) * macroTileBytes;
+
+            int unk1 = elemOffset + (macroTileOffset >> 3);
+            int unk2 = unk1 & ~0xFF;
+
+            return (unk2 << 3) | (0xFF & unk1) | (pipe << 8) | (bank << 9);
+        }
+
+    public static int computePixelIndexWithinMicroTile (int x, int y, int bpp)
+    {
+        int bits = ((x & 4) << 1) | ((y & 2) << 3) | ((y & 4) << 3);
+
+        if (bpp == 0x20 || bpp == 0x60) {
+            bits |= (x & 1) | (x & 2)        | ((y & 1) << 2);
+        } else if (bpp == 0x40) {
+            bits |= (x & 1) | ((y & 1) << 1) | ((x & 2) << 1);
+        } else if (bpp == 0x80) {
+            bits |= (y & 1) | ((x & 1) << 1) | ((x & 2) << 1);
+        }
+
+        return bits;
+    }
 
         public static int getFormatBpp(int format)
         {
@@ -819,20 +941,6 @@ namespace Smash_Forge
             int subOffset2 = groupMask & unk4;
 
             return subOffset1 | subOffset2 | p4 | p5;
-        }
-
-        public static byte[] swizzleBC(byte[] data, int width, int height, int format, int tileMode, int pitch, int swizzle)
-        {
-            GX2Surface sur = new GX2Surface();
-            sur.width = width;
-            sur.height = height;
-            sur.tileMode = tileMode;
-            sur.format = format;
-            sur.swizzle = swizzle;
-            sur.pitch = pitch;
-            sur.data = data;
-            sur.imageSize = data.Length;
-            return swizzleBC(sur);
         }
 
         public static byte[] swizzleBC(GX2Surface surface)

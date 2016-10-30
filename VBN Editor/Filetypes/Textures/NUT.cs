@@ -122,6 +122,9 @@ namespace Smash_Forge
                     case 0x2:
                         image = DDS.toBitmap(data, width, height, DDS.DDSFormat.DXT5);
                         break;
+                    case 14:
+                        image = Pixel.fromRGBA(new FileData(data), width, height);
+                        break;
                     default:
                         Console.WriteLine("\t" + headerSize + " Type 0x" + typet);
                         break;

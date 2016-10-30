@@ -214,6 +214,7 @@
     </None>
     <Compile Include="Filetypes\DAE.cs" />
     <Compile Include="Filetypes\Models\MBN.cs" />
+    <Compile Include="Filetypes\Textures\Pixel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
