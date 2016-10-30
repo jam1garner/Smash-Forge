@@ -123,6 +123,9 @@ namespace Smash_Forge
                         image = DDS.toBitmap(data, width, height, DDS.DDSFormat.DXT5);
                         break;
                     case 14:
+                        image = Pixel.fromBGRA(new FileData(data), width, height);
+                        break;
+                    case 17:
                         image = Pixel.fromRGBA(new FileData(data), width, height);
                         break;
                     default:
