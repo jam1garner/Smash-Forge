@@ -9,29 +9,38 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge
 {
-	public class NUT
-	{
-		public Dictionary<int,int> draw = new Dictionary<int, int>();
+    public class NUT
+    {
+        public class NUD_Texture
+        {
+            public byte[] data;
+            public int width;
+            public int height;
+            public int mipCount;
+            public PixelInternalFormat type;
+            public OpenTK.Graphics.OpenGL.PixelFormat utype;
+        }
 
-		public List<Bitmap> textures = new List<Bitmap>();
+        public Dictionary<int,int> draw = new Dictionary<int, int>();
+        public List<NUD_Texture> textures = new List<NUD_Texture>();
 
-		public NUT (FileData d)
-		{
-			//if (type == SMASH)
-			// TODO: Pokken uses LE
-			d.Endian = System.IO.Endianness.Big;
-			d.seek (0);
-			int header = d.readInt();
-			d.seek(0x6);
-			int count = d.readShort();
+        public NUT (FileData d)
+        {
+            //if (type == SMASH)
+            // TODO: Pokken uses LE
+            d.Endian = System.IO.Endianness.Big;
+            d.seek (0);
+            int header = d.readInt();
+            d.seek(0x6);
+            int count = d.readShort();
 
-			d.seek(0x10);
+            d.seek(0x10);
 
-			int padfix = 0;
-			int headerSize = 0;
-			int offheader = 0;
+            int padfix = 0;
+            int headerSize = 0;
+            int offheader = 0;
 
-			int[] filen = new int[count];
+            int[] filen = new int[count];
 
             for (int i = 0; i < count; i++) {
                 padfix += headerSize;
@@ -47,11 +56,12 @@ namespace Smash_Forge
                 width = d.readShort();
                 height = d.readShort();
 
-                d.skip(8);// mipmaps and padding
+                int mipCount = d.readInt();
+                d.skip(4);// mipmaps and padding
 
                 int offset1 = d.readInt() + 16;
                 int offset2 = d.readInt() + 16;
-                //			d.skip(4);
+                //          d.skip(4);
                 int offset3 = d.readInt() + 16;
                 d.skip(4);
                 if (i == 0) {
@@ -109,42 +119,45 @@ namespace Smash_Forge
                 offheader += 0x80;
                 d.seek(t);
 
-
-                //Console.WriteLine("Texture " + w + " " + h + " " + format + " " + tm + " " + swizzle + " " +  (offheader - 0x80));
-
                 byte[] data = header == 0x4E545755 ?GTX.swizzleBC(d.getSection(offset1 + padfix, DDSSize), w, h, format, tm, pitch, swizzle):d.getSection(offset1 + padfix, DDSSize);
+
+                NUD_Texture tex = new NUD_Texture();
+                textures.Add(tex);
+                tex.data = data;
+                tex.width = width;
+                tex.height = height;
+                tex.mipCount = mipCount;
+                tex.type = PixelInternalFormat.Rgba32ui;
 
                 switch (typet)
                 {
                     case 0x0:
-                        image = DDS.toBitmap(data, width, height, DDS.DDSFormat.DXT1);
+                        tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
                         break;
                     case 0x2:
-                        image = DDS.toBitmap(data, width, height, DDS.DDSFormat.DXT5);
+                        tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
                         break;
                     case 14:
-                        image = Pixel.fromBGRA(new FileData(data), width, height);
+                        tex.type = PixelInternalFormat.Rgba;
+                        tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                         break;
                     case 17:
-                        image = Pixel.fromRGBA(new FileData(data), width, height);
+                        tex.type = PixelInternalFormat.Rgba;
+                        tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
                         break;
                     default:
                         Console.WriteLine("\t" + headerSize + " Type 0x" + typet);
                         break;
                 }
 
-                
+                filen [i] = fileNum;
+            }
 
-				// read the bitmap image
-
-				filen [i] = fileNum;
-				textures.Add (image);
-			}
-
-			for (int i = 0; i < filen.Length; i++) {
-				draw.Add (filen[i], loadImage(textures[i]));
-			}
-		}
+            for (int i = 0; i < filen.Length; i++) {
+                if(!draw.ContainsKey(filen[i]))
+                    draw.Add (filen[i], loadImage(textures[i]));
+            }
+        }
 
         public void Destroy(){
             List<int> keyList = new List<int>(draw.Keys);
@@ -173,6 +186,44 @@ namespace Smash_Forge
 
             return texID;
         }
-	}
+
+        public static int getImageSize(NUD_Texture t)
+        {
+            switch (t.type)
+            {
+                case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
+                    return (t.width * t.height / 2);
+                case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
+                    return (t.width * t.height);
+                case PixelInternalFormat.Rgba:
+                    return t.data.Length;
+                default:
+                    return t.data.Length;
+            }
+        }
+
+        public static int loadImage(NUD_Texture t)
+        {
+            int texID = GL.GenTexture();
+
+            GL.BindTexture(TextureTarget.Texture2D, texID);
+
+            if (t.type == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext
+                || t.type == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext)
+            {
+                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, 
+                    t.width, t.height, 0, getImageSize(t), t.data);
+            }
+            else
+            {
+                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.width, t.height, 0,
+                    t.utype, PixelType.UnsignedByte, t.data);
+            }
+
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+            return texID;
+        }
+    }
 }
 

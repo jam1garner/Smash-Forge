@@ -64,8 +64,8 @@ namespace Smash_Forge
         }
 
         /*
-		 * Not sure if update is needed here
-		*/
+         * Not sure if update is needed here
+        */
         public void PreRender()
         {
             List<Vector3> vert = new List<Vector3>();
@@ -164,9 +164,9 @@ namespace Smash_Forge
 
                     int texHash = p.materials[0].displayTexId == -1 ? p.materials[0].textures[0].hash : p.materials[0].displayTexId;
 
+                    int tex = -1;
                     foreach (NUT nut in Runtime.TextureContainers)
                     {
-                        int tex = -1;
                         nut.draw.TryGetValue(texHash, out tex);
 
                         if (tex != 0)
@@ -176,6 +176,8 @@ namespace Smash_Forge
                             break;
                         }
                     }
+
+
                     Vector4 colorSamplerUV = new Vector4(1, 1, 0, 0);
                     foreach(Material mat in p.materials)
                     {
@@ -237,7 +239,8 @@ namespace Smash_Forge
 
                                     foreach(MatData md in mat.properties)
                                     {
-                                        ma.anims.Add(md.name, md.frames[frame].values);
+                                        if(frame < md.frames.Count)
+                                            ma.anims.Add(md.name, md.frames[frame].values);
                                     }
                                 }
                             }
@@ -273,9 +276,9 @@ namespace Smash_Forge
 
         //------------------------------------------------------------------------------------------------------------------------
         /*
-		 * Reads the contents of the nud file into this class
-		 * Not all info will be saved, so the file will be different on export
-		 */
+         * Reads the contents of the nud file into this class
+         * Not all info will be saved, so the file will be different on export
+         */
         //------------------------------------------------------------------------------------------------------------------------
         public override void Read(string filename)
         {
@@ -449,11 +452,11 @@ namespace Smash_Forge
                 if (propoff == p.texprop1)
                     propoff = p.texprop2;
                 else
-                if (propoff == p.texprop2)
-                    propoff = p.texprop3;
-                else
-                if (propoff == p.texprop3)
-                    propoff = p.texprop4;
+                    if (propoff == p.texprop2)
+                        propoff = p.texprop3;
+                    else
+                        if (propoff == p.texprop3)
+                            propoff = p.texprop4;
             }
 
             return mats;
@@ -489,14 +492,20 @@ namespace Smash_Forge
             for (int i = 0; i < p.vertamt; i++)
             {
                 v[i] = new Vertex();
-                if (uvType == 0x2)
+                if (uvType == 0x0)
                 {
-                    v[i].col = new Vector4(d.readByte(), d.readByte(), d.readByte(), d.readByte());
                     for (int j = 0; j < uvCount; j++)
                         v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
                 }
                 else
-                    throw new NotImplementedException("UV type not supported");
+                    if (uvType == 0x2)
+                    {
+                        v[i].col = new Vector4(d.readByte(), d.readByte(), d.readByte(), d.readByte());
+                        for (int j = 0; j < uvCount; j++)
+                            v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                    }
+                    else
+                        throw new NotImplementedException("UV type not supported " + uvType);
             }
         }
 
@@ -504,6 +513,8 @@ namespace Smash_Forge
         {
             int weight = p.vertSize >> 4;
             int nrm = p.vertSize & 0xF;
+
+            //Console.WriteLine(weight +  " " +  nrm);
 
             Vertex[] v = new Vertex[p.vertamt];
 
@@ -700,7 +711,7 @@ namespace Smash_Forge
 
                     obj.writeShort(mesh[i].polygons[k].faces.Count); // polyamt
                     obj.writeByte(mesh[i].polygons[k].strip); // polysize 0x04 is strips and 0x40 is easy
-                                         // :D
+                    // :D
                     obj.writeByte(mesh[i].polygons[k].polflag); // polyflag
 
                     obj.writeInt(0); // idk, nothing padding??
@@ -916,11 +927,11 @@ namespace Smash_Forge
 
         // HELPERS FOR READING
         /*private struct header{
-			char[] magic;
-			public int fileSize;
-			public short unknown;
-			public int polySetCount;
-		}*/
+            char[] magic;
+            public int fileSize;
+            public short unknown;
+            public int polySetCount;
+        }*/
         private struct _s_Object
         {
             public int id;
