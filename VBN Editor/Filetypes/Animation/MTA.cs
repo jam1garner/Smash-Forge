@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Smash_Forge
 {
@@ -229,7 +230,7 @@ namespace Smash_Forge
         }
     }
 
-    public class MTA
+    public class MTA : FileBase
     {
         public uint unknown;
         public uint numFrames;
@@ -238,10 +239,13 @@ namespace Smash_Forge
         public List<VisEntry> visEntries = new List<VisEntry>();
 
         public MTA() { }
-        
-        public void read(FileData f)
+
+        public override Endianness Endian { get; set; }
+
+        public override void Read(string filename)
         {
-            f.Endian = System.IO.Endianness.Big;
+            FileData f = new FileData(filename);
+            f.Endian = Endian;
             f.seek(4);
             unknown = (uint)f.readInt();
             numFrames = (uint)f.readInt();
@@ -272,6 +276,11 @@ namespace Smash_Forge
                 visEntries.Add(tempVisEntry);
                 f.seek(returnPos);
             }
+        }
+
+        public override byte[] Rebuild()
+        {
+            throw new NotImplementedException();
         }
     }
     

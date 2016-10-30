@@ -499,11 +499,12 @@ namespace Smash_Forge
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd;*.pac|" +
+                ofd.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd;*.mta;*.pac|" +
                              "Object Motion|*.omo|" +
                              "Maya Animation|*.anim|" +
                              "NW4R Animation|*.chr0|" +
                              "Source Animation (SMD)|*.smd|" +
+                             "Smash 4 Material Animation (MTA)|*.mta|"+
                              "All files(*.*)|*.*";
 
                 if (ofd.ShowDialog() == DialogResult.OK)
