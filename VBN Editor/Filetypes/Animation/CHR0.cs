@@ -2,7 +2,7 @@
 using OpenTK;
 using System.IO;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
 	public class CHR0
 	{

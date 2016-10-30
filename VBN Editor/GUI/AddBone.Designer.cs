@@ -1,4 +1,4 @@
-﻿namespace VBN_Editor
+﻿namespace Smash_Forge
 {
     partial class AddBone
     {

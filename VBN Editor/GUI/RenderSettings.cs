@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace VBN_Editor.GUI
+namespace Smash_Forge.GUI
 {
     public partial class RenderSettings : Form
     {

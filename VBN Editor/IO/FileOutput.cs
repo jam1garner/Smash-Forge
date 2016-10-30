@@ -2,7 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
 	public class FileOutput
 	{

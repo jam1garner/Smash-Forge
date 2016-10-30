@@ -11,7 +11,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using SALT.PARAMS;
 using System.Text.RegularExpressions;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
     public partial class PARAMEditor : DockContent
     {

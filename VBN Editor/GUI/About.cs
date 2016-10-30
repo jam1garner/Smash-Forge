@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
     public partial class About : Form
     {

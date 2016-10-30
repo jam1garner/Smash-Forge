@@ -1,4 +1,4 @@
-﻿namespace VBN_Editor.GUI
+﻿namespace Smash_Forge.GUI
 {
     partial class RenderSettings
     {

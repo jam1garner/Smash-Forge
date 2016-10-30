@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
     public abstract class FileBase
     {

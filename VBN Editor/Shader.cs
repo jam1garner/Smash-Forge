@@ -5,7 +5,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.Windows.Forms;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
 	public class Shader
 	{

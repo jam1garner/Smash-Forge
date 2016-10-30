@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
     public class MBN : FileBase
     {

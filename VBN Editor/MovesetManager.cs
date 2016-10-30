@@ -7,7 +7,7 @@ using SALT.Scripting.AnimCMD;
 using System.IO;
 using System.Security.Cryptography;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
     public class MovesetManager
     {

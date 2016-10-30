@@ -5,7 +5,7 @@ using System.Diagnostics;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
     public class Bone
     {
@@ -342,7 +342,7 @@ namespace VBN_Editor
     }
 }
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
     class csvHashes
     {

@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Collections.Generic;
 using OpenTK;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
     public class KeyFrame
     {

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
     public class PAC : FileBase
     {

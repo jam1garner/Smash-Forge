@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VBN_Editor.Properties
+namespace Smash_Forge.Properties
 {
 
 

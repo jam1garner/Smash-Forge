@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
     static class Program
     {

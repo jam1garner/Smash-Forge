@@ -16,7 +16,7 @@ using System.Diagnostics;
 using WeifenLuo.WinFormsUI.Docking;
 using System.IO;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
     public partial class VBNViewport : DockContent
     {

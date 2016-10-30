@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
     public partial class MainForm : Form
     {

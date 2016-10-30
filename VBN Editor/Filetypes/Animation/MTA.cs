@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
     //self.nameOffset = uint32(mta)
     //        self.matHash = uint32(mta)

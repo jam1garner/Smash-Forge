@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
     public partial class ACMDEditor : DockContent
     {

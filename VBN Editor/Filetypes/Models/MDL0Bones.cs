@@ -3,7 +3,7 @@ using System.IO;
 using System.Diagnostics;
 using OpenTK;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
     public class MDL0Bones
     {

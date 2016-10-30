@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using OpenTK;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
 	public class ANIM
 	{
