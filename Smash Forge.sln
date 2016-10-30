@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBN Editor", "VBN Editor\VBN Editor.csproj", "{055E5BC6-BB1B-4F76-8710-9991CA79C04D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smash Forge", "VBN Editor\Smash Forge.csproj", "{055E5BC6-BB1B-4F76-8710-9991CA79C04D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +15,9 @@ Global
 		{055E5BC6-BB1B-4F76-8710-9991CA79C04D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{055E5BC6-BB1B-4F76-8710-9991CA79C04D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{055E5BC6-BB1B-4F76-8710-9991CA79C04D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
@@ -53,8 +56,5 @@ Global
 		$3.inheritsSet = Mono
 		$3.inheritsScope = text/x-csharp
 		$3.scope = text/x-csharp
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

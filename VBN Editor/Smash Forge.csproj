@@ -60,7 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Filetypes\LVD.cs" />
-    <Compile Include="Filetypes\Models\MTA.cs" />
+    <Compile Include="Filetypes\Animation\MTA.cs" />
     <Compile Include="Filetypes\PAC.cs" />
     <Compile Include="Filetypes\Animation\PATH.cs" />
     <Compile Include="GUI\Editors\ACMDEditor.cs">
