@@ -78,7 +78,7 @@ namespace Smash_Forge
                 Directory.Delete("workspace/");
             ProcessStartInfo start = new ProcessStartInfo();
             start.Arguments = "-o workspace \"" + filename + "\"";
-            start.FileName = "FITD.exe";
+            start.FileName = "lib/FITD.exe";
             start.WindowStyle = ProcessWindowStyle.Hidden;
             start.CreateNoWindow = true;
             int exit;
@@ -112,7 +112,7 @@ namespace Smash_Forge
         {
             ProcessStartInfo start = new ProcessStartInfo();
             start.Arguments = "-o \"" + acmdDirectory+"\" workspace/fighter.mlist";
-            start.FileName = "FITC.exe";
+            start.FileName = "lib/FITC.exe";
             start.WindowStyle = ProcessWindowStyle.Hidden;
             start.CreateNoWindow = true;
             int exit;
