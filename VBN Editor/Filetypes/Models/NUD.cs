@@ -179,10 +179,25 @@ namespace VBN_Editor
                     Vector4 colorSamplerUV = new Vector4(1, 1, 0, 0);
                     foreach(Material mat in p.materials)
                     {
-                        //mat.anims
+                        float[] colorSamplerUVFloats;
+                        mat.entries.TryGetValue("NU_ColorSamplerUV", out colorSamplerUVFloats);
+                        if (colorSamplerUVFloats != null && colorSamplerUVFloats.Length >= 4)
+                        {
+                            colorSamplerUV = new Vector4(colorSamplerUVFloats[0], colorSamplerUVFloats[1], colorSamplerUVFloats[2], colorSamplerUVFloats[3]);
+                        }
                     }
 
-                    GL.Uniform4(shader.getAttribute("colorSamplerUV"), );
+                    foreach(Material mat in p.materials)
+                    {
+                        float[] colorSamplerUVFloats;
+                        mat.anims.TryGetValue("NU_ColorSamplerUV", out colorSamplerUVFloats);
+                        if (colorSamplerUVFloats != null && colorSamplerUVFloats.Length >= 4)
+                        {
+                            colorSamplerUV = new Vector4(colorSamplerUVFloats[0], colorSamplerUVFloats[1], colorSamplerUVFloats[2], colorSamplerUVFloats[3]);
+                        }
+                    }
+
+                    GL.Uniform4(shader.getAttribute("colorSamplerUV"), colorSamplerUV);
 
                     if (p.isVisible && m.isVisible)
                     {
