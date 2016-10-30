@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
     public class Pixel
     {
