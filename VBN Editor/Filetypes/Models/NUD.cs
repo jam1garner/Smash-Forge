@@ -162,10 +162,12 @@ namespace VBN_Editor
                     if (p.faces.Count <= 3)
                         continue;
 
+                    int texHash = p.materials[0].displayTexId == -1 ? p.materials[0].textures[0].hash : p.materials[0].displayTexId;
+
                     foreach (NUT nut in Runtime.TextureContainers)
                     {
                         int tex = -1;
-                        nut.draw.TryGetValue(p.materials[0].textures[0].hash, out tex);
+                        nut.draw.TryGetValue(texHash, out tex);
 
                         if (tex != 0)
                         {
@@ -174,7 +176,13 @@ namespace VBN_Editor
                             break;
                         }
                     }
-                    GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1, 1, 0, 0));
+                    Vector4 colorSamplerUV = new Vector4(1, 1, 0, 0);
+                    foreach(Material mat in p.materials)
+                    {
+                        //mat.anims
+                    }
+
+                    GL.Uniform4(shader.getAttribute("colorSamplerUV"), );
 
                     if (p.isVisible && m.isVisible)
                     {
@@ -189,6 +197,40 @@ namespace VBN_Editor
 
         public void applyMTA(MTA m, int frame)
         {
+            foreach (MatEntry mat in m.matEntries)
+            {
+                foreach (Mesh me in mesh)
+                {
+                    foreach(Polygon p in me.polygons)
+                    {
+                        foreach (Material ma in p.materials)
+                        {
+                            ma.anims.Clear();
+                            float[] matHashFloat;
+                            ma.entries.TryGetValue("NU_materialHash", out matHashFloat);
+                            if (matHashFloat != null) {
+                                byte[] bytes = new byte[4];
+                                Buffer.BlockCopy(matHashFloat, 0, bytes, 0, 4);
+                                int matHash = BitConverter.ToInt32(bytes, 0);
+
+                                if (matHash == mat.matHash || matHash == mat.matHash2)
+                                {
+                                    if (mat.hasPat)
+                                    {
+                                        ma.displayTexId = mat.pat0.getTexId(frame);
+                                    }
+
+                                    foreach(MatData md in mat.properties)
+                                    {
+                                        ma.anims.Add(md.name, md.frames[frame].values);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             foreach (VisEntry e in m.visEntries)
             {
                 int state = e.getState(frame);
@@ -947,6 +989,7 @@ namespace VBN_Editor
             public int ref1 = 0;
             public int drawPriority = 0;
             public int cullMode = 0;
+            public int displayTexId = -1;
 
             public int unknown1 = 0;
             public int unkownWater = 0;

@@ -44,11 +44,24 @@ namespace VBN_Editor
             public int texId;
         }
 
-        int defaultTexId;
-        int unknown;
-        List<keyframe> keyframes = new List<keyframe>();
+        public int defaultTexId;
+        public int unknown;
+        public List<keyframe> keyframes = new List<keyframe>();
 
         public PatData() { }
+
+        public int getTexId(int frame)
+        {
+            int lastTexId = defaultTexId;
+            for(int i = 0; i < keyframes.Count; i++)
+            {
+                if (frame < keyframes[i].frameNum)
+                    return lastTexId;
+                else
+                    lastTexId = keyframes[i].texId;
+            }
+            return lastTexId;
+        }
 
         public void read(FileData f)
         {

@@ -8,6 +8,7 @@ namespace VBN_Editor
         public string name = "";
         public NUD nud;
         public VBN vbn;
+        public MTA mta;
 
         public MBN mbn;
 
