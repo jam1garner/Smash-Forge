@@ -7,8 +7,8 @@
     <ProjectGuid>{055E5BC6-BB1B-4F76-8710-9991CA79C04D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VBN_Editor</RootNamespace>
-    <AssemblyName>VBN Editor</AssemblyName>
+    <RootNamespace>SForge</RootNamespace>
+    <AssemblyName>Smash Forge</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -177,6 +177,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="GUI\RenderSettings.resx">
       <DependentUpon>RenderSettings.cs</DependentUpon>
