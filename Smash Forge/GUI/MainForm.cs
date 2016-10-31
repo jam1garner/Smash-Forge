@@ -444,6 +444,8 @@ namespace Smash_Forge
                         ModelContainer con = new ModelContainer();
                         con.mbn = m;
                         Runtime.ModelContainers.Add(con);
+                        //BCH b = new BCH();
+                        //b.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\normal.bch");
                         //m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\test.mbn");
                         /*NUD n = m.toNUD();
                         n.PreRender();
