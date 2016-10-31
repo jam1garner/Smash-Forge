@@ -119,6 +119,7 @@ namespace Smash_Forge
                 temp.values = new float[valueCount];
                 for (int j = 0; j < valueCount; j++)
                     temp.values[j] = f.readFloat();
+                frames.Add(temp);
             }
         }
     }
