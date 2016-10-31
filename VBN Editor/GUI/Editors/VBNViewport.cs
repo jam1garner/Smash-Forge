@@ -454,6 +454,13 @@ namespace Smash_Forge
 
 
                     shader.enableAttrib();
+                    m.nud.clearMTA();//Clear animated materials
+                    
+                    if (m.mta != null)
+                        m.nud.applyMTA(m.mta, (int)nupdFrame.Value);//Apply base mta
+                    if (Runtime.TargetMTA != null)
+                        m.nud.applyMTA(Runtime.TargetMTA, (int)nupdFrame.Value);//Apply additional mta (can override base)
+                    
                     m.nud.Render(shader);
                     shader.disableAttrib();
                 }
@@ -1056,6 +1063,18 @@ namespace Smash_Forge
             }
             nupdMaxFrame.Value = a.size() > 1 ? a.size() - 1 : a.size();
             nupdFrame.Value = 0;
+        }
+
+        public void loadMTA(MTA m)
+        {
+            Console.WriteLine("MTA Loaded");
+            Frame = 0;
+            nupdFrame.Value = 0;
+            if (nupdMaxFrame.Value < m.numFrames)
+                nupdMaxFrame.Value = m.numFrames;
+            Console.WriteLine(m.numFrames);
+            Runtime.TargetMTA = m;
+
         }
     }
 }

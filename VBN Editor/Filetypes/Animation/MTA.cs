@@ -47,12 +47,14 @@ namespace Smash_Forge
 
         public int defaultTexId;
         public int unknown;
+        private int frameCount;
         public List<keyframe> keyframes = new List<keyframe>();
 
         public PatData() { }
 
         public int getTexId(int frame)
         {
+            frame = frame % frameCount;
             int lastTexId = defaultTexId;
             for(int i = 0; i < keyframes.Count; i++)
             {
@@ -70,7 +72,7 @@ namespace Smash_Forge
             defaultTexId = f.readInt();
             int keyframeCount = f.readInt();
             int keyframeOffset = f.readInt();
-            f.skip(4);//numFramesMinusOne (again)
+            frameCount = f.readInt() + 1;
             unknown = f.readInt();
             if(keyframeOffset != f.eof())
             {
@@ -238,12 +240,17 @@ namespace Smash_Forge
         public List<MatEntry> matEntries = new List<MatEntry>();
         public List<VisEntry> visEntries = new List<VisEntry>();
 
-        public MTA() { }
+        public MTA()
+        {
+            Endian = Endianness.Big;
+        }
 
         public override Endianness Endian { get; set; }
 
         public override void Read(string filename)
         {
+            Console.WriteLine("MTA - " + filename);
+
             FileData f = new FileData(filename);
             f.Endian = Endian;
             f.seek(4);

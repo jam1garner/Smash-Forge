@@ -325,6 +325,7 @@ namespace Smash_Forge
             string pnut = "";
             string pjtb = "";
             string pvbn = "";
+            string pmta = "";
 
             foreach (string s in files)
             {
@@ -336,6 +337,8 @@ namespace Smash_Forge
                     pvbn = s;
                 if (s.EndsWith(".jtb"))
                     pjtb = s;
+                if (s.EndsWith(".mta"))
+                    pmta = s;
             }
 
             ModelContainer model = new ModelContainer();
@@ -356,6 +359,14 @@ namespace Smash_Forge
 
             if (!pnud.Equals(""))
                 model.nud = new NUD(pnud);
+
+            if (!pmta.Equals(""))
+            {
+                model.mta = new MTA();
+                model.mta.Read(pmta);
+                viewports[0].loadMTA(model.mta);
+            }
+                
 
             Runtime.ModelContainers.Add(model);
             meshList.refresh();
