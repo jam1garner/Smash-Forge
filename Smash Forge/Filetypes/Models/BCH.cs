@@ -16,9 +16,9 @@ namespace Smash_Forge
 
         public override Endianness Endian{ get; set; }
 
-        public MBN mesh;
+        public MBN mbn;
+        public List<BCH_Model> models = new List<BCH_Model>();
         public Dictionary<string, BCH_Texture> textures = new Dictionary<string, BCH_Texture>();
-        public Dictionary<string, int> textureDisplay = new Dictionary<string, int>();
 
         public BCH()
         {
@@ -115,6 +115,36 @@ namespace Smash_Forge
             int scenePointerTableEntries = f.readInt();
             int sceneNameOffset = f.readInt() + mainHeaderOffset;
 
+            // Textures
+            // WIP Section
+            for (int index = 0; index < texturesPointerTableEntries; index++)
+            {
+                f.seek(texturesPointerTableOffset + (index * 4));
+                int dOffset = f.readInt();
+                f.seek(dOffset + mainHeaderOffset);
+
+                int textureCommandsOffset = f.readInt() + gpuCommandOffset;
+                int textureCommandsWordCount = f.readInt();
+
+                f.seek(f.pos() + 0x14);
+                String textureName = f.readString(f.readInt() + stringTableOffset, -1);
+
+                f.seek(textureCommandsOffset);
+
+                BCH_Texture tex = new BCH_Texture();
+                textures.Add(textureName, tex);
+
+                tex.height = f.readShort();
+                tex.width = f.readShort();
+                f.skip(12);
+                int doffset = f.readInt() + dataOffset;
+                f.skip(4);
+                tex.type = f.readInt();
+                tex.data = f.getSection(doffset, f.size() - doffset);
+                if(tex.type == 12)
+                    tex.display = NUT.loadImage(Pixel.decodeETC(tex.data, tex.width, tex.height));
+            }
+
             // Model data
             for (int modelIndex = 0; modelIndex < modelsPointerTableEntries; modelIndex++)
             {
@@ -124,6 +154,7 @@ namespace Smash_Forge
                 // Objects
                 f.seek(objectsHeaderOffset);
                 BCH_Model model = new BCH_Model();
+                models.Add(model);
 
                 model.flags = f.readByte();
                 model.skeletonScaleType = f.readByte();
@@ -150,6 +181,9 @@ namespace Smash_Forge
                 int objectsNodeNameOffset = f.readInt() + mainHeaderOffset;
                 f.readInt(); //0x0
                 int metaDataPointerOffset = f.readInt() + mainHeaderOffset;
+                
+                f.seek(objectsNodeVisibilityOffset);
+                int nodeVisibility = f.readInt();
 
                 string[] objectName = new string[objectsNodeNameEntries];
                 f.seek(objectsNodeNameOffset);
@@ -163,9 +197,48 @@ namespace Smash_Forge
                     int referenceBit = f.readInt();
                     short leftNode = (short)f.readShort();
                     short rightNode = (short)f.readShort();
-                    objectName[i] = f.readString(f.readInt(), -1);
-                    Debug.WriteLine(objectName[i]);
+                    objectName[i] = f.readString(f.readInt() + stringTableOffset, -1);
+                    //Debug.WriteLine(objectName[i]);
                 }
+
+                // Materials
+                // NOTE: MATERIALS AND OBJECT SECTIONS ARE REALLY MESSY ATM
+
+                String[] materialNames = new String[materialsTableEntries];
+                for (int index = 0; index < materialsTableEntries; index++)
+                {
+                    f.seek(materialsTableOffset + (index * 0x2c));
+
+                    int materialParametersOffset = f.readInt();
+                    f.readInt();
+                    f.readInt();
+                    f.readInt();
+                    int textureCommandsOffset = f.readInt();
+                    int textureCommandsWordCount = f.readInt(); 
+                    
+                    int materialMapperOffset = f.readInt();
+                    materialNames[index] = f.readString(f.readInt() + stringTableOffset, -1);
+                }
+
+                // Object Descriptions...
+                // Assumes MBN is already loaded for now
+                f.seek(verticesTableOffset);
+                for (int index = 0; index < verticesTableEntries; index++)
+                {
+                    int i = f.readShort();
+                    mbn.mesh[index].texId = textures[materialNames[i]].display;
+
+                    f.skip(2);
+                    int nameId = f.readShort();
+                    mbn.mesh[index].name = objectName[nameId];
+
+                    // node visibility??
+                    mbn.mesh[index].isVisible = ((nodeVisibility & (1 << nameId)) > 0);
+
+                    f.skip(46); // some other junk
+                    f.readInt(); //bbOffsets[i] =  + mainheaderOffset
+                }
+
 
                 //Skeleton
                 f.seek(skeletonOffset);
@@ -181,12 +254,12 @@ namespace Smash_Forge
                     bone.scale[0] = f.readFloat();
                     bone.scale[1] = f.readFloat();
                     bone.scale[2] = f.readFloat();
-                    bone.position[0] = f.readFloat();
-                    bone.position[1] = f.readFloat();
-                    bone.position[2] = f.readFloat();
                     bone.rotation[0] = f.readFloat();
                     bone.rotation[1] = f.readFloat();
                     bone.rotation[2] = f.readFloat();
+                    bone.position[0] = f.readFloat();
+                    bone.position[1] = f.readFloat();
+                    bone.position[2] = f.readFloat();
 
                     // bone matrix... not really needed to be stored per say
                     f.skip(4*4*3);
@@ -210,6 +283,8 @@ namespace Smash_Forge
         {
             public int width, height, type;
             public byte[] data;
+            // for display only
+            public int display = 0;
         }
 
         public class BCH_Model

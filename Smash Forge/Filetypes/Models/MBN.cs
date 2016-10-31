@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Diagnostics;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
@@ -83,20 +84,30 @@ namespace Smash_Forge
             List<Vector4> weight = new List<Vector4>();
             List<int> face = new List<int>();
 
+            int vi = 0;
             foreach (Vertex v in vertices)
             {
                 vert.Add(v.pos);
                 nrm.Add(v.nrm);
                 col.Add(v.col);
-                uv.Add(v.tx[0]);
+                uv.Add(new Vector2(v.tx[0].X, 1-v.tx[0].Y));
                 // TODO: Bones
-                bone.Add(new Vector4(-1, 0, 0, 0));
-                weight.Add(new Vector4(0, 0, 0, 0));
+                foreach (Mesh m in mesh)
+                    foreach (List<int> l in m.faces)
+                        if (l.Contains(vi))
+                        {
+                            List<int> nl = m.nodeList[m.faces.IndexOf(l)];
+                            bone.Add(new Vector4(nl[v.node[0]], nl[v.node[1]], 0, 0));
+                            weight.Add(new Vector4(v.weight[0], v.weight[1], 0, 0));
+                            goto loop;
+                        }
+                loop:
+                vi++;
             }
 
             foreach (Mesh m in mesh)
             {
-                foreach(List<int> l in m.faces)
+                foreach (List<int> l in m.faces)
                     face.AddRange(l);
             }
 
@@ -143,9 +154,13 @@ namespace Smash_Forge
             {
                 GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1, 1, 0, 0));
 
+                GL.BindTexture(TextureTarget.Texture2D, m.texId);
+                GL.Uniform1(shader.getAttribute("tex"), 0);
+
                 foreach (List<int> l in m.faces)
                 {
-                    GL.DrawElements(PrimitiveType.Triangles, l.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
+                    if (m.isVisible)
+                        GL.DrawElements(PrimitiveType.Triangles, l.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
 
                     indiceat += l.Count;
                 }
@@ -323,7 +338,7 @@ namespace Smash_Forge
             PreRender();
         }
 
-        public override  byte[] Rebuild()
+        public override byte[] Rebuild()
         {
             FileOutput f = new FileOutput();
             f.Endian = Endianness.Little;
@@ -484,7 +499,7 @@ namespace Smash_Forge
                 case 1:
                     return d.readByte() * scale;
                 case 2:
-                    return (byte)d.readByte() * scale;
+                    return (sbyte)d.readByte() * scale;
                 case 3:
                     return (short)d.readShort() * scale;
             }
@@ -562,8 +577,13 @@ namespace Smash_Forge
 
         public class Mesh
         {
+            public string name = "";
             public List<List<int>> faces = new List<List<int>>();
             public List<List<int>> nodeList = new List<List<int>>();
+
+            // display
+            public bool isVisible = true;
+            public int texId = 0;
         }
 
         /*

@@ -437,20 +437,21 @@ namespace Smash_Forge
                         openDAE(ofd.FileName, Runtime.ModelContainers[0]);
                     }
 
-                    if (ofd.FileName.EndsWith(".mbn"))
+                    /*if (ofd.FileName.EndsWith(".mbn"))
                     {
                         MBN m = new MBN();
                         m.Read(ofd.FileName);
                         ModelContainer con = new ModelContainer();
-                        con.mbn = m;
+                        BCH b = new BCH();
+                        b.mbn = m;
+                        b.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\normal.bch");
+                        con.bch = b;
                         Runtime.ModelContainers.Add(con);
-                        //BCH b = new BCH();
-                        //b.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\normal.bch");
                         //m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\test.mbn");
                         /*NUD n = m.toNUD();
                         n.PreRender();
                         n.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\mbn.nud");*/
-                    }
+                    }*/
 
                     if (ofd.FileName.EndsWith(".nud"))
                     {
@@ -624,17 +625,39 @@ namespace Smash_Forge
         private void hashMatchToolStripMenuItem_Click(object sender, EventArgs e)
         {
             csvHashes csv = new csvHashes("hashTable.csv");
-            foreach (Bone bone in Runtime.TargetVBN.bones)
+            foreach (ModelContainer m in Runtime.ModelContainers)
             {
-                for (int i = 0; i < csv.names.Count; i++)
+                if (m.vbn != null)
                 {
-                    if (csv.names[i] == new string(bone.boneName))
+                    foreach (Bone bone in m.vbn.bones)
                     {
-                        bone.boneId = csv.ids[i];
+                        for (int i = 0; i < csv.names.Count; i++)
+                        {
+                            if (csv.names[i] == new string(bone.boneName))
+                            {
+                                bone.boneId = csv.ids[i];
+                            }
+                        }
+                    }
+                }
+                if (m.bch != null)
+                {
+                    foreach (BCH.BCH_Model mod in m.bch.models)
+                    {
+                        foreach (Bone bone in mod.skeleton.bones)
+                        {
+                            for (int i = 0; i < csv.names.Count; i++)
+                            {
+                                if (csv.names[i] == new string(bone.boneName))
+                                {
+                                    bone.boneId = csv.ids[i];
+                                }
+                            }
+                        }
                     }
                 }
             }
-            leftPanel.treeRefresh();
+            //leftPanel.treeRefresh();
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
