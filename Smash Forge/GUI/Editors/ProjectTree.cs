@@ -25,11 +25,43 @@ namespace Smash_Forge
         private Dictionary<TreeNode, ModelContainer> modelLinks = new Dictionary<TreeNode, ModelContainer>();
         private Dictionary<TreeNode, NUT> textureLinks = new Dictionary<TreeNode, NUT>();
 
+        public void PopulateTreeView()
+        {
+            TreeNode rootNode;
+
+            DirectoryInfo info = new DirectoryInfo(@"../..");
+            if (info.Exists)
+            {
+                rootNode = new TreeNode(info.Name);
+                rootNode.Tag = info;
+                GetDirectories(info.GetDirectories(), rootNode);
+                treeView1.Nodes.Add(rootNode);
+            }
+        }
+
+        private void GetDirectories(DirectoryInfo[] subDirs, TreeNode nodeToAddTo)
+        {
+            TreeNode aNode;
+            DirectoryInfo[] subSubDirs;
+            foreach (DirectoryInfo subDir in subDirs)
+            {
+                aNode = new TreeNode(subDir.Name, 0, 0);
+                aNode.Tag = subDir;
+                aNode.ImageKey = "folder";
+                subSubDirs = subDir.GetDirectories();
+                if (subSubDirs.Length != 0)
+                {
+                    GetDirectories(subSubDirs, aNode);
+                }
+                nodeToAddTo.Nodes.Add(aNode);
+            }
+        }
+
         public void fillTree()
         {
-            if(!Directory.Exists("workspace/animcmd/"))
+            if (!Directory.Exists("workspace/animcmd/"))
                 Directory.CreateDirectory("workspace/animcmd/");
-            
+
             treeView1.Nodes.Clear();
             List<TreeNode> acmdFiles = new List<TreeNode>();
             foreach (string f in Directory.GetFiles("workspace/animcmd/"))
@@ -74,15 +106,15 @@ namespace Smash_Forge
         {
             string filename = Path.GetFullPath(file);
             acmdDirectory = Path.GetDirectoryName(filename);
-            if(Directory.Exists("/workspace/"))
+            if (Directory.Exists("/workspace/"))
                 Directory.Delete("workspace/");
             ProcessStartInfo start = new ProcessStartInfo();
-            start.Arguments = "-o workspace \"" + filename + "\"";
-            start.FileName = "lib/FITD.exe";
+            start.Arguments = $"\"{filename}\" -o \"{Application.StartupPath}/workspace\"";
+            start.FileName = $"\"{Application.StartupPath}/lib/FITD.exe\"";
             start.WindowStyle = ProcessWindowStyle.Hidden;
             start.CreateNoWindow = true;
             int exit;
-            using (Process proc = Process.Start(start))
+            using (var proc = Process.Start(start))
             {
                 proc.WaitForExit();
                 exit = proc.ExitCode;
@@ -90,13 +122,14 @@ namespace Smash_Forge
             fillTree();
         }
 
-        public void openACMD(string filename, string motionPath) {
+        public void openACMD(string filename, string motionPath)
+        {
             acmdDirectory = Path.GetDirectoryName(filename);
             if (Directory.Exists("/workspace/"))
                 Directory.Delete("workspace/");
             ProcessStartInfo start = new ProcessStartInfo();
-            start.Arguments = "-m \""+motionPath+"\"-o workspace \""+filename+"\"";
-            start.FileName = "FITD.exe";
+            start.Arguments = "-m \"" + motionPath + "\"-o workspace \"" + filename + "\"";
+            start.FileName = "lib/FITD.exe";
             start.WindowStyle = ProcessWindowStyle.Hidden;
             start.CreateNoWindow = true;
             int exit;
@@ -111,7 +144,7 @@ namespace Smash_Forge
         public void build()
         {
             ProcessStartInfo start = new ProcessStartInfo();
-            start.Arguments = "-o \"" + acmdDirectory+"\" workspace/fighter.mlist";
+            start.Arguments = "-o \"" + acmdDirectory + "\" workspace/fighter.mlist";
             start.FileName = "lib/FITC.exe";
             start.WindowStyle = ProcessWindowStyle.Hidden;
             start.CreateNoWindow = true;
@@ -125,7 +158,7 @@ namespace Smash_Forge
 
         private void openFile(object sender, TreeNodeMouseClickEventArgs e)
         {
-            foreach(ACMDEditor a in MainForm.Instance.ACMDEditors)
+            foreach (ACMDEditor a in MainForm.Instance.ACMDEditors)
             {
                 if (a.fname.Equals("workspace/animcmd/" + e.Node.Text))
                 {
@@ -134,7 +167,7 @@ namespace Smash_Forge
                 }
             }
 
-            if(e.Node.Level == 1)
+            if (e.Node.Level == 1)
             {
                 if (e.Node.Parent.Text.Equals("ACMD"))
                 {

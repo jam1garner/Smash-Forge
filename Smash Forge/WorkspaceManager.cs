@@ -18,7 +18,19 @@ namespace Smash_Forge
         public string WorkspaceRoot { get; set; }
     }
 
-    public class FitProj
+    public abstract class Project
+    {
+        // Project Properties
+        public XmlDocument ProjFile { get; set; }
+        public string ProjPath { get; set; }
+        public string ProjRoot { get { return Path.GetDirectoryName(ProjPath); } }
+        public string ProjName { get; set; }
+        public string ToolVer { get; set; }
+        public string GameVer { get; set; }
+        public string Platform { get; set; }
+        public ProjType Type { get; set; }
+    }
+    public class FitProj : Project
     {
         public FitProj()
         {
@@ -34,15 +46,6 @@ namespace Smash_Forge
         {
             ProjFile = ReadProject(filepath);
         }
-
-        // Project Properties
-        public XmlDocument ProjFile { get; set; }
-        public string ProjPath { get; set; }
-        public string ProjRoot { get { return Path.GetDirectoryName(ProjPath); } }
-        public string ProjName { get; set; }
-        public string ToolVer { get; set; }
-        public string GameVer { get; set; }
-        public string Platform { get; set; }
 
         public List<string> ACMD_FILES { get; set; }
         public List<string> MSC_FILES { get; set; }
