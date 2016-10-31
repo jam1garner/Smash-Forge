@@ -223,6 +223,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Images\document-icon.png" />
+    <None Include="Images\thum-icon-folder.png" />
     <Content Include="lib\FITC.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
