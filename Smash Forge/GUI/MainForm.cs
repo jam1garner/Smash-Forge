@@ -326,6 +326,7 @@ namespace Smash_Forge
             string pjtb = "";
             string pvbn = "";
             string pmta = "";
+            List<string> pacs = new List<string>();
 
             foreach (string s in files)
             {
@@ -339,6 +340,8 @@ namespace Smash_Forge
                     pjtb = s;
                 if (s.EndsWith(".mta"))
                     pmta = s;
+                if (s.EndsWith(".pac"))
+                    pacs.Add(s);
             }
 
             ModelContainer model = new ModelContainer();
@@ -358,7 +361,22 @@ namespace Smash_Forge
             }
 
             if (!pnud.Equals(""))
+            {
                 model.nud = new NUD(pnud);
+
+                foreach (string s in pacs)
+                {
+                    PAC p = new PAC();
+                    p.Read(s);
+                    byte[] data;
+                    p.Files.TryGetValue("default.mta", out data);
+                    if (data != null) { 
+                        MTA m = new MTA();
+                        m.read(new FileData(data));
+                        model.nud.applyMTA(m, 0);
+                    }
+                }
+            }
 
             if (!pmta.Equals(""))
             {
@@ -450,7 +468,7 @@ namespace Smash_Forge
                         //m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\test.mbn");
                         /*NUD n = m.toNUD();
                         n.PreRender();
-                        n.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\mbn.nud");*/
+                        n.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\mbn.nud");
                     }*/
 
                     if (ofd.FileName.EndsWith(".nud"))
