@@ -250,7 +250,7 @@ namespace Smash_Forge
 
         public override void Read(string filename)
         {
-            Console.WriteLine("MTA - " + filename);
+            //Console.WriteLine("MTA - " + filename);
 
             FileData f = new FileData(filename);
             f.Endian = Endian;

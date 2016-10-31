@@ -185,7 +185,7 @@ namespace Smash_Forge
                         mat.entries.TryGetValue("NU_colorSamplerUV", out colorSamplerUVFloats);
                         if (colorSamplerUVFloats != null && colorSamplerUVFloats.Length >= 4)
                         {
-                            Console.WriteLine("Anim of NU_ColorSamplerUV from NUD");
+                            //Console.WriteLine("Anim of NU_ColorSamplerUV from NUD");
                             colorSamplerUV = new Vector4(colorSamplerUVFloats[0], colorSamplerUVFloats[1], colorSamplerUVFloats[2], colorSamplerUVFloats[3]);
                         }
                     }
@@ -196,7 +196,7 @@ namespace Smash_Forge
                         mat.anims.TryGetValue("NU_colorSamplerUV", out colorSamplerUVFloats);
                         if (colorSamplerUVFloats != null && colorSamplerUVFloats.Length >= 4)
                         {
-                            Console.WriteLine("Anim of NU_ColorSamplerUV from MTA");
+                            //Console.WriteLine("Anim of NU_ColorSamplerUV from MTA");
                             colorSamplerUV = new Vector4(colorSamplerUVFloats[0], colorSamplerUVFloats[1], colorSamplerUVFloats[2], colorSamplerUVFloats[3]);
                         }
                     }
