@@ -182,9 +182,10 @@ namespace Smash_Forge
                     foreach(Material mat in p.materials)
                     {
                         float[] colorSamplerUVFloats;
-                        mat.entries.TryGetValue("NU_ColorSamplerUV", out colorSamplerUVFloats);
+                        mat.entries.TryGetValue("NU_colorSamplerUV", out colorSamplerUVFloats);
                         if (colorSamplerUVFloats != null && colorSamplerUVFloats.Length >= 4)
                         {
+                            //Console.WriteLine("Anim of NU_ColorSamplerUV from NUD");
                             colorSamplerUV = new Vector4(colorSamplerUVFloats[0], colorSamplerUVFloats[1], colorSamplerUVFloats[2], colorSamplerUVFloats[3]);
                         }
                     }
@@ -192,9 +193,10 @@ namespace Smash_Forge
                     foreach(Material mat in p.materials)
                     {
                         float[] colorSamplerUVFloats;
-                        mat.anims.TryGetValue("NU_ColorSamplerUV", out colorSamplerUVFloats);
+                        mat.anims.TryGetValue("NU_colorSamplerUV", out colorSamplerUVFloats);
                         if (colorSamplerUVFloats != null && colorSamplerUVFloats.Length >= 4)
                         {
+                            //Console.WriteLine("Anim of NU_ColorSamplerUV from MTA");
                             colorSamplerUV = new Vector4(colorSamplerUVFloats[0], colorSamplerUVFloats[1], colorSamplerUVFloats[2], colorSamplerUVFloats[3]);
                         }
                     }
@@ -211,6 +213,19 @@ namespace Smash_Forge
             }
         }
 
+        public void clearMTA()
+        {
+            foreach (Mesh me in mesh)
+            {
+                foreach (Polygon p in me.polygons)
+                {
+                    foreach (Material ma in p.materials)
+                    {
+                        ma.anims.Clear();
+                    }
+                }
+            }
+        }
 
         public void applyMTA(MTA m, int frame)
         {
@@ -222,25 +237,36 @@ namespace Smash_Forge
                     {
                         foreach (Material ma in p.materials)
                         {
-                            ma.anims.Clear();
                             float[] matHashFloat;
                             ma.entries.TryGetValue("NU_materialHash", out matHashFloat);
                             if (matHashFloat != null) {
+
                                 byte[] bytes = new byte[4];
                                 Buffer.BlockCopy(matHashFloat, 0, bytes, 0, 4);
                                 int matHash = BitConverter.ToInt32(bytes, 0);
 
                                 if (matHash == mat.matHash || matHash == mat.matHash2)
                                 {
+                                    Console.WriteLine("MTA mat hash match");
                                     if (mat.hasPat)
                                     {
                                         ma.displayTexId = mat.pat0.getTexId(frame);
+                                        Console.WriteLine("PAT0 TexID - " + ma.displayTexId);
                                     }
 
                                     foreach(MatData md in mat.properties)
                                     {
-                                        if(frame < md.frames.Count)
-                                            ma.anims.Add(md.name, md.frames[frame].values);
+                                        Console.WriteLine("Frame - "+frame+" "+md.name);
+                                        
+                                        if (md.frames.Count > 0)
+                                        {
+                                            if (ma.anims.ContainsKey(md.name))
+                                                ma.anims[md.name] = md.frames[frame % md.frames.Count].values;
+                                            else
+                                                ma.anims.Add(md.name, md.frames[frame % md.frames.Count].values);
+                                            Console.WriteLine(""+md.frames[frame % md.frames.Count].values[0]+"," + md.frames[frame % md.frames.Count].values[1] + "," + md.frames[frame % md.frames.Count].values[2] + "," + md.frames[frame % md.frames.Count].values[3]);
+                                        }
+                                            
                                     }
                                 }
                             }
