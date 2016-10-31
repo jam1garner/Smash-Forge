@@ -693,21 +693,18 @@ namespace Smash_Forge
             var newForm = new AddBone(this);
             newForm.ShowDialog();
         }
-
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.TargetVBN.Endian = Endianness.Big;
             Runtime.TargetVBN.unk_1 = 1;
             Runtime.TargetVBN.unk_2 = 2;
         }
-
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.TargetVBN.Endian = Endianness.Little;
             Runtime.TargetVBN.unk_1 = 2;
             Runtime.TargetVBN.unk_2 = 1;
         }
-
         private void openStageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (var ofd = new FolderSelectDialog())
@@ -755,12 +752,10 @@ namespace Smash_Forge
                 }
             }
         }
-
         private void clearWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Runtime.killWorkspace = true;
         }
-
         private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
@@ -769,13 +764,11 @@ namespace Smash_Forge
                 rndr.ShowDialog();
             }
         }
-
         private void meshListToolStripMenuItem_Click(object sender, EventArgs e)
         {
             meshList.refresh();
             AddDockedControl(meshList);
         }
-
         private void projectTreeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (project.DockState == DockState.Unknown)
