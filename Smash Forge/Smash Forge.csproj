@@ -142,6 +142,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Filetypes\Models\VBN.cs" />
+    <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Editors\ACMDEditor.resx">
       <DependentUpon>ACMDEditor.cs</DependentUpon>
     </EmbeddedResource>
