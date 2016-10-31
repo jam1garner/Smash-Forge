@@ -24,6 +24,6 @@ deploy:
   
 after_build:
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\VBN Editor.exe"
-  - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\*.dll"
+  - 7z a "Smash-Forge-Latest_Commit.zip" "VBN Editor\bin\Release\lib\*.dll"
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\VBN Editor\bin\Release\*.csv"
   - appveyor PushArtifact "Smash-Forge-Latest_Commit.zip"
