@@ -128,8 +128,8 @@ namespace Smash_Forge
             if (Directory.Exists("/workspace/"))
                 Directory.Delete("workspace/");
             ProcessStartInfo start = new ProcessStartInfo();
-            start.Arguments = "-m \"" + motionPath + "\"-o workspace \"" + filename + "\"";
-            start.FileName = "lib/FITD.exe";
+            start.Arguments = $"-m \"{motionPath}\"-o \"{Application.StartupPath}/workspace\" \" {filename}\"";
+            start.FileName = $"{Application.StartupPath}/lib/FITD.exe";
             start.WindowStyle = ProcessWindowStyle.Hidden;
             start.CreateNoWindow = true;
             int exit;
