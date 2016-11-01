@@ -25,56 +25,6 @@ namespace Smash_Forge
         private Dictionary<TreeNode, ModelContainer> modelLinks = new Dictionary<TreeNode, ModelContainer>();
         private Dictionary<TreeNode, NUT> textureLinks = new Dictionary<TreeNode, NUT>();
 
-        public void PopulateTreeView(string root)
-        {
-            treeView1.BeginUpdate();
-
-            TreeNode rootNode;
-            DirectoryInfo info = new DirectoryInfo(root);
-            if (info.Exists)
-            {
-                rootNode = new TreeNode(info.Name);
-                rootNode.Tag = info;
-                rootNode.ImageIndex = 0;
-                rootNode.SelectedImageIndex = 0;
-
-                GetDirectories(info.GetDirectories(), rootNode);
-                GetFiles(info, rootNode);
-                treeView1.Nodes.Add(rootNode);
-            }
-            treeView1.EndUpdate();
-        }
-
-        private void GetDirectories(DirectoryInfo[] subDirs, TreeNode nodeToAddTo)
-        {
-            TreeNode aNode;
-            DirectoryInfo[] subSubDirs;
-            foreach (DirectoryInfo subDir in subDirs)
-            {
-                aNode = new TreeNode(subDir.Name, 0, 0);
-                aNode.Tag = subDir;
-                aNode.ImageIndex = 0;
-                aNode.SelectedImageIndex = 0;
-                subSubDirs = subDir.GetDirectories();
-                if (subSubDirs.Length != 0)
-                {
-                    GetDirectories(subSubDirs, aNode);
-                }
-                GetFiles(subDir, aNode);
-                nodeToAddTo.Nodes.Add(aNode);
-            }
-        }
-        private void GetFiles(DirectoryInfo dir, TreeNode nodeToAddTo)
-        {
-            foreach (var fileinfo in dir.GetFiles())
-            {
-                var child = new TreeNode(fileinfo.Name, 0, 0);
-                child.Tag = fileinfo;
-                child.ImageIndex = 1;
-                child.SelectedImageIndex = 1;
-                nodeToAddTo.Nodes.Add(child);
-            }
-        }
         public void fillTree()
         {
             if (!Directory.Exists("workspace/animcmd/"))

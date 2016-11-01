@@ -9,16 +9,17 @@ namespace Smash_Forge
 {
     public partial class MainForm : Form
     {
-        public static MainForm Instance;
+        public static MainForm Instance { get { return _instance != null ? _instance : (_instance = new MainForm()); }}
+        private static  MainForm _instance;
 
         public MainForm()
         {
             InitializeComponent();
-            Instance = this;
         }
-
+        public WorkspaceManager WorkspaceManager { get; set; }
         private void MainForm_Load(object sender, EventArgs e)
         {
+            _instance = this;
             foreach (var vp in viewports)
                 AddDockedControl(vp);
 
@@ -40,6 +41,11 @@ namespace Smash_Forge
             Runtime.renderSpawns = true;
             Runtime.renderRespawns = true;
             Runtime.renderOtherLVDEntries = true;
+
+            if(WorkspaceManager != null && !string.IsNullOrEmpty(WorkspaceManager.TargetProject))
+            {
+                WorkspaceManager.OpenProject(WorkspaceManager.TargetProject);
+            }
         }
 
         private void MainForm_Close(object sender, EventArgs e)
@@ -83,26 +89,26 @@ namespace Smash_Forge
         {
             PARAMEditor currentParam = null;
             ACMDEditor currentACMD = null;
-            foreach(PARAMEditor p in paramEditors)
+            foreach (PARAMEditor p in paramEditors)
             {
-                if(p.ContainsFocus)
+                if (p.ContainsFocus)
                 {
                     currentParam = p;
                 }
             }
-            foreach(ACMDEditor a in ACMDEditors)
+            foreach (ACMDEditor a in ACMDEditors)
             {
                 if (a.ContainsFocus)
                 {
                     currentACMD = a;
                 }
             }
-            if(currentParam != null)
+            if (currentParam != null)
             {
                 currentParam.saveAs();
             }
             else
-            if(currentACMD != null)
+            if (currentACMD != null)
             {
                 currentACMD.save();
             }
@@ -175,7 +181,7 @@ namespace Smash_Forge
                                 var vertices = meshItem as vertices;
                                 var inputs = vertices.input;
                                 foreach (var input in inputs)
-                                    semantic.Add(input.semantic, input.source);                             
+                                    semantic.Add(input.semantic, input.source);
                             }
                             else if (meshItem is triangles)
                             {
@@ -271,8 +277,8 @@ namespace Smash_Forge
                             var inputs = skin.joints.input;
                             foreach (var input in inputs)
                             {
-                                if(input.semantic.Equals(""))
-                                semantic.Add(input.semantic, input.source);
+                                if (input.semantic.Equals(""))
+                                    semantic.Add(input.semantic, input.source);
                             }
                         }
                         // Dump Items[] for geom
@@ -314,7 +320,7 @@ namespace Smash_Forge
             }
 
             n.PreRender();
-            File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\murabito\\isa.nud",n.Rebuild());
+            File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\murabito\\isa.nud", n.Rebuild());
         }
 
         private void openNud(string filename)
@@ -366,7 +372,7 @@ namespace Smash_Forge
                 model.mta.Read(pmta);
                 viewports[0].loadMTA(model.mta);
             }
-                
+
 
             Runtime.ModelContainers.Add(model);
             meshList.refresh();
@@ -515,7 +521,7 @@ namespace Smash_Forge
                              "Maya Animation|*.anim|" +
                              "NW4R Animation|*.chr0|" +
                              "Source Animation (SMD)|*.smd|" +
-                             "Smash 4 Material Animation (MTA)|*.mta|"+
+                             "Smash 4 Material Animation (MTA)|*.mta|" +
                              "All files(*.*)|*.*";
 
                 if (ofd.ShowDialog() == DialogResult.OK)
@@ -775,6 +781,18 @@ namespace Smash_Forge
                 project = new ProjectTree();
             else
                 project.Focus();
+        }
+
+        private void testToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    WorkspaceManager m = new WorkspaceManager(project);
+                    m.OpenProject(ofd.FileName);
+                }
+            }
         }
     }
 }

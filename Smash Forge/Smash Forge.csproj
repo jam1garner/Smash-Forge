@@ -131,6 +131,7 @@
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\ModelContainer.cs" />
+    <Compile Include="GUI\Nodes\ProjectNode.cs" />
     <Compile Include="GUI\RenderSettings.cs">
       <SubType>Form</SubType>
     </Compile>

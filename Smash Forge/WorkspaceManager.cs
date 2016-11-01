@@ -11,11 +11,80 @@ using SALT.PARAMS;
 
 namespace Smash_Forge
 {
-    class WorkspaceManager
+    public class WorkspaceManager
     {
-        public WorkspaceManager() { Projects = new SortedList<string, FitProj>(); }
-        public SortedList<string, FitProj> Projects { get; set; }
+        public WorkspaceManager(ProjectTree tree)
+        {
+            Projects = new List<FitProj>();
+            Tree = tree;
+        }
+        private ProjectTree Tree { get; set; }
+        public List<FitProj> Projects { get; set; }
         public string WorkspaceRoot { get; set; }
+        public string TargetProject { get; set; }
+
+        public void OpenProject(string filepath)
+        {
+            if (filepath.EndsWith(".fitproj", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var proj = new FitProj();
+                proj.ReadProject(filepath);
+                PopulateTreeView(proj);
+                Projects.Add(proj);
+            }
+        }
+
+        public void PopulateTreeView(FitProj p)
+        {
+            Tree.treeView1.BeginUpdate();
+
+
+            FileInfo fileinfo = new FileInfo(p.ProjPath);
+            var rootNode = new ProjectNode(p);
+            rootNode.Tag = fileinfo;
+            rootNode.ImageIndex = 0;
+            rootNode.SelectedImageIndex = 0;
+            GetDirectories(new DirectoryInfo(p.ProjRoot).GetDirectories(), rootNode);
+            GetFiles(new DirectoryInfo(p.ProjRoot), rootNode);
+            Tree.treeView1.Nodes.Add(rootNode);
+            Tree.treeView1.EndUpdate();
+        }
+
+        private void GetDirectories(DirectoryInfo[] subDirs, ProjectFolderNode nodeToAddTo)
+        {
+            ProjectFolderNode aNode;
+            DirectoryInfo[] subSubDirs;
+            foreach (DirectoryInfo subDir in subDirs)
+            {
+                aNode = new ProjectFolderNode() { Text = subDir.Name };
+                aNode.Tag = subDir;
+                aNode.ImageIndex = 0;
+                aNode.SelectedImageIndex = 0;
+                subSubDirs = subDir.GetDirectories();
+                if (subSubDirs.Length != 0)
+                {
+                    GetDirectories(subSubDirs, aNode);
+                }
+                GetFiles(subDir, aNode);
+                nodeToAddTo.Nodes.Add(aNode);
+            }
+        }
+        private void GetFiles(DirectoryInfo dir, ProjectFolderNode nodeToAddTo)
+        {
+            foreach (var fileinfo in dir.GetFiles())
+            {
+                if (fileinfo.Name.EndsWith(".fitproj", StringComparison.InvariantCultureIgnoreCase))
+                    break;
+
+                var child = new ProjectFileNode() { Text = fileinfo.Name };
+                child.Tag = fileinfo;
+                child.ImageIndex = 1;
+                child.SelectedImageIndex = 1;
+                nodeToAddTo.Nodes.Add(child);
+            }
+        }
+
+
     }
 
     public abstract class Project
@@ -27,9 +96,10 @@ namespace Smash_Forge
         public string ProjName { get; set; }
         public string ToolVer { get; set; }
         public string GameVer { get; set; }
-        public string Platform { get; set; }
         public ProjType Type { get; set; }
+        public ProjPlatform Platform { get; set; }
     }
+
     public class FitProj : Project
     {
         public FitProj()
@@ -55,7 +125,7 @@ namespace Smash_Forge
         public List<string> PARAM_FILES { get; set; }
         public string MLIST { get; set; }
 
-        private XmlDocument ReadProject(string filepath)
+        public XmlDocument ReadProject(string filepath)
         {
             ProjPath = filepath;
             var proj = new XmlDocument();
@@ -64,7 +134,11 @@ namespace Smash_Forge
             var node = proj.SelectSingleNode("//Project");
             this.ToolVer = node.Attributes["ToolVer"].Value;
             this.GameVer = node.Attributes["GameVer"].Value;
-            this.Platform = node.Attributes["Platform"].Value;
+            this.ProjName = node.Attributes["Name"].Value;
+            if (node.Attributes["Platform"].Value == "WiiU")
+                this.Platform = ProjPlatform.WiiU;
+            else if (node.Attributes["Platform"].Value == "ThreeDS")
+                this.Platform = ProjPlatform.ThreeDS;
 
             node = proj.SelectSingleNode("//Project/ACMD");
             foreach (XmlNode child in node.ChildNodes)
@@ -77,7 +151,7 @@ namespace Smash_Forge
             node = proj.SelectSingleNode("//Project/PARAMS");
             foreach (XmlNode child in node.ChildNodes)
                 PARAM_FILES.Add(Path.Combine(Path.GetDirectoryName(filepath), $"/{node.Attributes["include"].Value}"));
-            
+
             node = proj.SelectSingleNode("//Project/ANIM");
             foreach (XmlNode child in node.ChildNodes)
                 ANIM_FILES.Add(child.Attributes["include"].Value);
@@ -100,7 +174,7 @@ namespace Smash_Forge
             writer.WriteAttributeString("Name", ProjName);
             writer.WriteAttributeString("ToolVer", ToolVer);
             writer.WriteAttributeString("GameVer", GameVer);
-            writer.WriteAttributeString("Platform", Platform);
+            writer.WriteAttributeString("Platform", Enum.GetName(typeof(ProjPlatform), Platform));
 
             writer.WriteStartElement("MLIST");
             if (!string.IsNullOrEmpty(MLIST))
@@ -123,9 +197,9 @@ namespace Smash_Forge
             writer.WriteStartElement("ACMD");
             foreach (var acmd in ACMD_FILES)
             {
-                    writer.WriteStartElement("Import");
-                    writer.WriteAttributeString("include", acmd);
-                    writer.WriteEndElement();
+                writer.WriteStartElement("Import");
+                writer.WriteAttributeString("include", acmd);
+                writer.WriteEndElement();
             }
             writer.WriteEndElement();
 
@@ -177,6 +251,11 @@ namespace Smash_Forge
     public enum ProjType
     {
         Fighter,
-        Weapon
+        Stage
+    }
+    public enum ProjPlatform
+    {
+        WiiU,
+        ThreeDS
     }
 }

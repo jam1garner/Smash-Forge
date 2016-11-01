@@ -63,6 +63,7 @@
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
+            this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -73,7 +74,8 @@
             this.edittToolStripMenuItem,
             this.animationToolStripMenuItem,
             this.toolStripMenuItem1,
-            this.viewToolStripMenuItem});
+            this.viewToolStripMenuItem,
+            this.testToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1009, 24);
@@ -339,6 +341,13 @@
             this.dockPanel1.Size = new System.Drawing.Size(1009, 659);
             this.dockPanel1.TabIndex = 16;
             // 
+            // testToolStripMenuItem
+            // 
+            this.testToolStripMenuItem.Name = "testToolStripMenuItem";
+            this.testToolStripMenuItem.Size = new System.Drawing.Size(38, 20);
+            this.testToolStripMenuItem.Text = "test";
+            this.testToolStripMenuItem.Click += new System.EventHandler(this.testToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -400,6 +409,7 @@
         private System.Windows.Forms.ToolStripMenuItem renderSettingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem meshListToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem projectTreeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
     }
 }
 

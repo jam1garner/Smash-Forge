@@ -37,8 +37,11 @@
             // treeView1
             // 
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView1.ImageIndex = 0;
+            this.treeView1.ImageList = this.imageList1;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
+            this.treeView1.SelectedImageIndex = 0;
             this.treeView1.Size = new System.Drawing.Size(284, 261);
             this.treeView1.TabIndex = 0;
             this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.openFile);
@@ -47,8 +50,8 @@
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList1.Images.SetKeyName(0, "folder.png");
-            this.imageList1.Images.SetKeyName(1, "document.png");
+            this.imageList1.Images.SetKeyName(0, "Folder.png");
+            this.imageList1.Images.SetKeyName(1, "Document.png");
             // 
             // ProjectTree
             // 
@@ -64,8 +67,7 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.ImageList imageList1;
+        public System.Windows.Forms.TreeView treeView1;
     }
 }
