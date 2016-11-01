@@ -12,6 +12,7 @@ namespace Smash_Forge
         {
             Animations = new Dictionary<string, SkelAnimation>();
             OpenedFiles = new SortedList<string, FileBase>();
+            MaterialAnimations = new Dictionary<string, MTA>();
         }
 
         public static List<ModelContainer> ModelContainers = new List<ModelContainer>();
@@ -42,8 +43,10 @@ namespace Smash_Forge
         public static bool renderOtherLVDEntries { get; set; }
 
         public static string TargetAnimString { get; set; }
+        public static string TargetMTAString { get; set; }
 
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
+        public static Dictionary<string, MTA> MaterialAnimations { get; set; }
         public static MovesetManager Moveset { get; set; }
 
         public static void StartupFromConfig(string config)

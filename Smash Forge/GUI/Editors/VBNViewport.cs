@@ -1093,14 +1093,12 @@ namespace Smash_Forge
 
         public void loadMTA(MTA m)
         {
-            //Console.WriteLine("MTA Loaded");
+            Console.WriteLine("MTA Loaded");
             Frame = 0;
             nupdFrame.Value = 0;
-            if (nupdMaxFrame.Value < m.numFrames)
-                nupdMaxFrame.Value = m.numFrames;
+            nupdMaxFrame.Value = m.numFrames;
             //Console.WriteLine(m.numFrames);
             Runtime.TargetMTA = m;
-
         }
     }
 }
