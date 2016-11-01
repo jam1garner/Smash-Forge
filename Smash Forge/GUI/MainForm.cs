@@ -380,11 +380,18 @@ namespace Smash_Forge
 
             if (!pmta.Equals(""))
             {
-                model.mta = new MTA();
-                model.mta.Read(pmta);
-                viewports[0].loadMTA(model.mta);
+                try
+                {
+                    model.mta = new MTA();
+                    model.mta.Read(pmta);
+                    viewports[0].loadMTA(model.mta);
+                }
+                catch (EndOfStreamException)
+                {
+                    model.mta = null;
+                }
+                    
             }
-                
 
             Runtime.ModelContainers.Add(model);
             meshList.refresh();

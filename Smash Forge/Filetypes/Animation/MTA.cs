@@ -258,7 +258,7 @@ namespace Smash_Forge
             //Console.WriteLine("MTA - " + filename);
             f.Endian = Endian;
             if (f.size() < 4)
-                return;
+                throw new EndOfStreamException("Blank/Broken MTA");
             f.seek(4);
             unknown = (uint)f.readInt();
             numFrames = (uint)f.readInt();
