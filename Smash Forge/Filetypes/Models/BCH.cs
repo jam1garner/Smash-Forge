@@ -169,6 +169,7 @@ namespace Smash_Forge
                 int materialsTableEntries = f.readInt();
                 int materialsNamesOffset = f.readInt() + mainHeaderOffset;
                 int verticesTableOffset = f.readInt() + mainHeaderOffset;
+                //Debug.WriteLine("Mesh Count: " + f.pos().ToString("X"));
                 int verticesTableEntries = f.readInt();
                 f.skip(0x28);
                 int skeletonOffset = f.readInt() + mainHeaderOffset;
@@ -223,20 +224,43 @@ namespace Smash_Forge
                 // Object Descriptions...
                 // Assumes MBN is already loaded for now
                 f.seek(verticesTableOffset);
-                for (int index = 0; index < verticesTableEntries; index++)
+                List<objDes> objDescriptors = new List<objDes>();
+                Debug.WriteLine(model.name);
+                if(mbn == null)
+                {
+                    mbn = new Smash_Forge.MBN();
+                    for (int index = 0; index < verticesTableEntries; index++)
+                        mbn.mesh.Add(new MBN.Mesh());
+                    mbn.PreRender();
+                }
+                for (int index = 0; index < mbn.mesh.Count; index++)
                 {
                     int i = f.readShort();
                     mbn.mesh[index].texId = textures[materialNames[i]].display;
-
-                    f.skip(2);
+                    f.skip(2); // flags
                     int nameId = f.readShort();
                     mbn.mesh[index].name = objectName[nameId];
 
-                    // node visibility??
+                    // node visibility TODO: finish...
                     mbn.mesh[index].isVisible = ((nodeVisibility & (1 << nameId)) > 0);
 
-                    f.skip(46); // some other junk
+                    mbn.mesh[index].renderPriority = f.readShort();
+
+                    objDes des = new objDes();
+                    objDescriptors.Add(des);
+                    des.vshAttBufferCommandOffset = f.readInt() + mainHeaderOffset;
+                    des.vshAttBufferCommandCount = f.readInt();
+                    des.faceOffset = f.readInt() + mainHeaderOffset;
+                    des.faceCount = f.readInt();
+                    des.vshAttBufferCommandOffsetEx = f.readInt() + mainHeaderOffset;
+                    des.vshAttBufferCommandCountEx = f.readInt();
+
+                    f.skip(12);// center vector
+                    f.skip(4); // flagsOffset
+                    f.skip(4); // 0?
                     f.readInt(); //bbOffsets[i] =  + mainheaderOffset
+
+                    //Debug.WriteLine(des.vshAttBufferCommandOffset.ToString("X"));
                 }
 
 
@@ -278,6 +302,22 @@ namespace Smash_Forge
         {
             throw new NotImplementedException();
         }
+
+
+        #region helpers for reading
+
+        public struct objDes
+        {
+            public int vshAttBufferCommandOffset;
+            public int vshAttBufferCommandCount;
+            public int faceOffset;
+            public int faceCount;
+            public int vshAttBufferCommandOffsetEx;
+            public int vshAttBufferCommandCountEx;
+        }
+
+        #endregion
+
 
         public class BCH_Texture
         {

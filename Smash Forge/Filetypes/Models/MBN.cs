@@ -19,7 +19,7 @@ namespace Smash_Forge
         ushort unkown = 0xFFFF;
         int flags = 0;
         int mode = 0;
-        public List<Mesh> mesh;
+        public List<Mesh> mesh = new List<Mesh>();
         public List<Vertex> vertices = new List<Vertex>();
         public List<string> nameTable = new List<string>();
 
@@ -342,6 +342,8 @@ namespace Smash_Forge
         {
             FileOutput f = new FileOutput();
             f.Endian = Endianness.Little;
+            FileOutput fv = new FileOutput();
+            fv.Endian = Endianness.Little;
 
             f.writeShort(format);
             f.writeShort(unkown);
@@ -351,11 +353,85 @@ namespace Smash_Forge
 
             f.writeInt(mesh.Count);
 
+            int vertSize = 0;
+
+            // Vertex Bank
+            for (int i = 0; i < 1; i++)
+            {
+                if (mode == 0 || i == 0)
+                {
+                    Descriptor des = descript[i];
+
+                    if (format != 4)
+                    {
+                        foreach(Vertex v in vertices)
+                        {
+                            for (int k = 0; k < des.type.Length; k++)
+                            {
+                                fv.align(2, 0xFF);
+                                switch(des.type[k]){
+                                    case 0: //Position
+                                        writeType(fv, v.pos.X, des.format[k], des.scale[k]);
+                                        writeType(fv, v.pos.Y, des.format[k], des.scale[k]);
+                                        writeType(fv, v.pos.Z, des.format[k], des.scale[k]);
+                                        break;
+                                    case 1: //Normal
+                                        writeType(fv, v.nrm.X, des.format[k], des.scale[k]);
+                                        writeType(fv, v.nrm.Y, des.format[k], des.scale[k]);
+                                        writeType(fv, v.nrm.Z, des.format[k], des.scale[k]);
+                                        break;
+                                    case 2: //Color
+                                        writeType(fv, v.col.X, des.format[k], des.scale[k]);
+                                        writeType(fv, v.col.Y, des.format[k], des.scale[k]);
+                                        writeType(fv, v.col.Z, des.format[k], des.scale[k]);
+                                        writeType(fv, v.col.W, des.format[k], des.scale[k]);
+                                        break;
+                                    case 3: //Tex0
+                                        writeType(fv, v.tx[0].X, des.format[k], des.scale[k]);
+                                        writeType(fv, v.tx[0].Y, des.format[k], des.scale[k]);
+                                        break;
+                                    case 4: //Tex1
+                                        writeType(fv, v.tx[1].X, des.format[k], des.scale[k]);
+                                        writeType(fv, v.tx[1].Y, des.format[k], des.scale[k]);
+                                        break;
+                                    case 5: //Bone Index
+                                        fv.writeByte(v.node[0]);
+                                        fv.writeByte(v.node[1]);
+                                        break;
+                                    case 6: //Bone Weight
+                                        writeType(fv, v.weight[0], des.format[k], des.scale[k]);
+                                        writeType(fv, v.weight[1], des.format[k], des.scale[k]);
+                                        break;
+                                        //default:
+                                        //    Console.WriteLine("WTF is this");
+                                }
+                            }
+                        }
+                        vertSize = fv.size();
+                        fv.align(32, 0xFF);
+                    }
+                }
+
+
+                for (int j = 0; j < mesh.Count; j++)
+                {
+                    foreach (List<int> l in mesh[j].faces)
+                    {
+                        foreach (int index in l)
+                            fv.writeShort(index);
+                        fv.align(32, 0xFF);
+                    }
+                }
+
+            }
+            
+
             for (int i = 0; i < mesh.Count; i++)
             {
                 if (i == 0 && mode == 1)
                 {
                     descript[0].WriteDescription(f);
+                    f.writeInt(vertSize);
                 }
 
                 f.writeInt(mesh[i].nodeList.Count);
@@ -413,73 +489,8 @@ namespace Smash_Forge
 
             if (format != 4) f.align(32, 0xFF);
 
-            // Vertex Bank
-            for (int i = 0; i < 1; i++)
-            {
-                if (mode == 0 || i == 0)
-                {
-                    Descriptor des = descript[i];
+            f.writeOutput(fv);
 
-                    if (format != 4)
-                    {
-                        foreach(Vertex v in vertices)
-                        {
-                            for (int k = 0; k < des.type.Length; k++)
-                            {
-                                f.align(2, 0xFF);
-                                switch(des.type[k]){
-                                    case 0: //Position
-                                        writeType(f, v.pos.X, des.format[k], des.scale[k]);
-                                        writeType(f, v.pos.Y, des.format[k], des.scale[k]);
-                                        writeType(f, v.pos.Z, des.format[k], des.scale[k]);
-                                        break;
-                                    case 1: //Normal
-                                        writeType(f, v.nrm.X, des.format[k], des.scale[k]);
-                                        writeType(f, v.nrm.Y, des.format[k], des.scale[k]);
-                                        writeType(f, v.nrm.Z, des.format[k], des.scale[k]);
-                                        break;
-                                    case 2: //Color
-                                        writeType(f, v.col.X, des.format[k], des.scale[k]);
-                                        writeType(f, v.col.Y, des.format[k], des.scale[k]);
-                                        writeType(f, v.col.Z, des.format[k], des.scale[k]);
-                                        writeType(f, v.col.W, des.format[k], des.scale[k]);
-                                        break;
-                                    case 3: //Tex0
-                                        writeType(f, v.tx[0].X, des.format[k], des.scale[k]);
-                                        writeType(f, v.tx[0].Y, des.format[k], des.scale[k]);
-                                        break;
-                                    case 4: //Tex1
-                                        writeType(f, v.tx[1].X, des.format[k], des.scale[k]);
-                                        writeType(f, v.tx[1].Y, des.format[k], des.scale[k]);
-                                        break;
-                                    case 5: //Bone Index
-                                        f.writeByte(v.node[0]);
-                                        f.writeByte(v.node[1]);
-                                        break;
-                                    case 6: //Bone Weight
-                                        writeType(f, v.weight[0], des.format[k], des.scale[k]);
-                                        writeType(f, v.weight[1], des.format[k], des.scale[k]);
-                                        break;
-                                        //default:
-                                        //    Console.WriteLine("WTF is this");
-                                }
-                            }
-                        }
-                        f.align(32, 0xFF);
-                    }
-                }
-
-                for (int j = 0; j < mesh.Count; j++)
-                {
-                    foreach (List<int> l in mesh[j].faces)
-                    {
-                        foreach (int index in l)
-                            f.writeShort(index);
-                        f.align(32, 0xFF);
-                    }
-                }
-
-            }
             return f.getBytes();
         }
 
@@ -580,6 +591,7 @@ namespace Smash_Forge
             public string name = "";
             public List<List<int>> faces = new List<List<int>>();
             public List<List<int>> nodeList = new List<List<int>>();
+            public int renderPriority = 0;
 
             // display
             public bool isVisible = true;
@@ -615,6 +627,7 @@ namespace Smash_Forge
 
             public void WriteDescription(FileOutput f)
             {
+                // TODO: Calculate Length
                 f.writeInt(type.Length);
 
                 for(int i = 0 ;i < type.Length ; i++){
@@ -622,8 +635,6 @@ namespace Smash_Forge
                     f.writeInt(format[i]);
                     f.writeFloat(scale[i]);
                 }
-
-                f.writeInt(length);
             }
         }
     }

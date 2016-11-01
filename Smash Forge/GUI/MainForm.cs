@@ -475,11 +475,23 @@ namespace Smash_Forge
                         b.mbn = m;
                         b.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\normal.bch");
                         con.bch = b;
+                        m.mesh.RemoveAt(m.mesh.Count - 1);
+                        m.mesh.RemoveAt(m.mesh.Count - 2);
+                        m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\rebuild.mbn");
                         Runtime.ModelContainers.Add(con);
                         //m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\test.mbn");
                         /*NUD n = m.toNUD();
                         n.PreRender();
                         n.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\mbn.nud");
+                    }*/
+
+                    /*if (ofd.FileName.EndsWith(".bch"))
+                    {
+                        ModelContainer con = new ModelContainer();
+                        BCH b = new BCH();
+                        b.Read(ofd.FileName);
+                        con.bch = b;
+                        Runtime.ModelContainers.Add(con);
                     }*/
 
                     if (ofd.FileName.EndsWith(".nud"))
