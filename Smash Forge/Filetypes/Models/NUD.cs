@@ -247,16 +247,16 @@ namespace Smash_Forge
 
                                 if (matHash == mat.matHash || matHash == mat.matHash2)
                                 {
-                                    Console.WriteLine("MTA mat hash match");
+                                    //Console.WriteLine("MTA mat hash match");
                                     if (mat.hasPat)
                                     {
                                         ma.displayTexId = mat.pat0.getTexId(frame);
-                                        Console.WriteLine("PAT0 TexID - " + ma.displayTexId);
+                                        //Console.WriteLine("PAT0 TexID - " + ma.displayTexId);
                                     }
 
                                     foreach(MatData md in mat.properties)
                                     {
-                                        Console.WriteLine("Frame - "+frame+" "+md.name);
+                                        //Console.WriteLine("Frame - "+frame+" "+md.name);
                                         
                                         if (md.frames.Count > 0)
                                         {
@@ -264,7 +264,7 @@ namespace Smash_Forge
                                                 ma.anims[md.name] = md.frames[frame % md.frames.Count].values;
                                             else
                                                 ma.anims.Add(md.name, md.frames[frame % md.frames.Count].values);
-                                            Console.WriteLine(""+md.frames[frame % md.frames.Count].values[0]+"," + md.frames[frame % md.frames.Count].values[1] + "," + md.frames[frame % md.frames.Count].values[2] + "," + md.frames[frame % md.frames.Count].values[3]);
+                                            //Console.WriteLine(""+md.frames[frame % md.frames.Count].values[0]+"," + md.frames[frame % md.frames.Count].values[1] + "," + md.frames[frame % md.frames.Count].values[2] + "," + md.frames[frame % md.frames.Count].values[3]);
                                         }
                                             
                                     }

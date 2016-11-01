@@ -390,7 +390,6 @@ namespace Smash_Forge
                 {
                     model.mta = null;
                 }
-                    
             }
 
             Runtime.ModelContainers.Add(model);
