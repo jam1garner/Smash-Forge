@@ -8,10 +8,14 @@ using System.Diagnostics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
 
-namespace SForge.Filetypes.Models
+namespace Smash_Forge
 {
     class BFRES
     {
+        public int readOffset(FileData f)
+        { 
+            return f.pos() + f.readInt();
+        }
         public BFRES()
         {
             GL.GenBuffers(1, out vbo_position);
@@ -42,7 +46,55 @@ namespace SForge.Filetypes.Models
         Vector4[] bonedata, coldata, weightdata;
 
         public List<Mesh> mesh = new List<Mesh>();
+        public  void Read(string filename)
+        {
+            FileData f = new FileData(filename);
+            f.Endian = Endianness.Big;
+            f.seek(0);
 
+            f.seek(4);
+            int highVersion = f.readByte();
+            int lowVersion = f.readByte();
+            int overallVerstion = f.readShort();
+            short BOM = (short)f.readShort();
+            f.skip(6);
+            int fileAlignment = f.readInt();
+            int nameOffset = readOffset(f);
+            int strTblLenth = f.readInt();
+            int strTblOffset = readOffset(f);
+
+            int FMDLOffset = readOffset(f);
+            int FTEXOffset = readOffset(f);
+            int FSKAOffset = readOffset(f);
+            int FSHU0Offset = readOffset(f);
+            int FSHU1Offset = readOffset(f);
+            int FSHU2Offset = readOffset(f);
+            int FTXPOffset = readOffset(f);
+            int FVIS0Offset = readOffset(f);
+            int FVIS1Offset = readOffset(f);
+            int FSHAOffset = readOffset(f);
+            int FSCNOffset = readOffset(f);
+            int EMBOffset = readOffset(f);
+
+            int FMDLCount = f.readShort();
+            int FTEXCount = f.readShort();
+            int FSKACount = f.readShort();
+            int FSHU0Count = f.readShort();
+            int FSHU1Count = f.readShort();
+            int FSHU2Count = f.readShort();
+            int FTXPCount = f.readShort();
+            int FVIS0Count = f.readShort();
+            int FVIS1Count = f.readShort();
+            int FSHACount = f.readShort();
+            int FSCNCount = f.readShort();
+            int EMBCount = f.readShort();
+
+
+
+
+
+
+        }
         public void PreRender()
         {
             List<Vector3> vert = new List<Vector3>();
@@ -79,7 +131,7 @@ namespace SForge.Filetypes.Models
                     }
 
                     // rearrange faces
-                    int[] ia = p.getDisplayFace().ToArray();
+                    int[] ia = p;
                     for (int j = 0; j < ia.Length; j++)
                     {
                         ia[j] += i;
