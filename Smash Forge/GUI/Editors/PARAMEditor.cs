@@ -88,7 +88,8 @@ namespace Smash_Forge
                 }
                 else
                 {
-                    treeView1.Nodes.Add("Group [" + i + "]");
+                    int[] temp = { i, 0 };
+                    treeView1.Nodes.Add(new TreeNode("Group [" + i + "]") { Tag = temp });
                 }
             }
             fillTable(0,0);
