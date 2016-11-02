@@ -172,6 +172,7 @@ namespace Smash_Forge
                         if (tex != 0)
                         {
                             GL.BindTexture(TextureTarget.Texture2D, tex);
+                            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.MirroredRepeat);
                             GL.Uniform1(shader.getAttribute("tex"), 0);
                             break;
                         }
