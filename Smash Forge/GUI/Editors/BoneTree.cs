@@ -57,7 +57,8 @@ namespace Smash_Forge
             tbl.Columns.Add("Value");
             dataGridView1.DataSource = tbl;
             tbl.Rows.Clear();
-
+            
+            tbl.Rows.Add("Bone Index", Runtime.TargetVBN.boneIndex(treeView1.SelectedNode.Text));
             tbl.Rows.Add("Bone Hash", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).boneId.ToString("X"));
             tbl.Rows.Add("Bone Type", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).boneType);
             tbl.Rows.Add("X Pos", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).position[0]);
@@ -81,21 +82,21 @@ namespace Smash_Forge
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             Bone editingBone = Runtime.TargetVBN.bones[Runtime.TargetVBN.boneIndex(currentNode)];
-            editingBone.boneId = (uint)int.Parse(tbl.Rows[0][1].ToString(), System.Globalization.NumberStyles.HexNumber);
-            editingBone.boneType = Convert.ToUInt32(tbl.Rows[1][1]);
+            editingBone.boneId = (uint)int.Parse(tbl.Rows[1][1].ToString(), System.Globalization.NumberStyles.HexNumber);
+            editingBone.boneType = Convert.ToUInt32(tbl.Rows[2][1]);
             Runtime.TargetVBN.bones[Runtime.TargetVBN.boneIndex(currentNode)] = editingBone;
 
-            Runtime.TargetVBN.bone(currentNode).position[0] = Convert.ToSingle(tbl.Rows[2][1]);
-            Runtime.TargetVBN.bone(currentNode).position[1] = Convert.ToSingle(tbl.Rows[3][1]);
-            Runtime.TargetVBN.bone(currentNode).position[2] = Convert.ToSingle(tbl.Rows[4][1]);
+            Runtime.TargetVBN.bone(currentNode).position[0] = Convert.ToSingle(tbl.Rows[3][1]);
+            Runtime.TargetVBN.bone(currentNode).position[1] = Convert.ToSingle(tbl.Rows[4][1]);
+            Runtime.TargetVBN.bone(currentNode).position[2] = Convert.ToSingle(tbl.Rows[5][1]);
 
-            Runtime.TargetVBN.bone(currentNode).rotation[0] = Convert.ToSingle(tbl.Rows[5][1]);
-            Runtime.TargetVBN.bone(currentNode).rotation[1] = Convert.ToSingle(tbl.Rows[6][1]);
-            Runtime.TargetVBN.bone(currentNode).rotation[2] = Convert.ToSingle(tbl.Rows[7][1]);
+            Runtime.TargetVBN.bone(currentNode).rotation[0] = Convert.ToSingle(tbl.Rows[6][1]);
+            Runtime.TargetVBN.bone(currentNode).rotation[1] = Convert.ToSingle(tbl.Rows[7][1]);
+            Runtime.TargetVBN.bone(currentNode).rotation[2] = Convert.ToSingle(tbl.Rows[8][1]);
 
-            Runtime.TargetVBN.bone(currentNode).scale[0] = Convert.ToSingle(tbl.Rows[8][1]);
-            Runtime.TargetVBN.bone(currentNode).scale[1] = Convert.ToSingle(tbl.Rows[9][1]);
-            Runtime.TargetVBN.bone(currentNode).scale[2] = Convert.ToSingle(tbl.Rows[10][1]);
+            Runtime.TargetVBN.bone(currentNode).scale[0] = Convert.ToSingle(tbl.Rows[9][1]);
+            Runtime.TargetVBN.bone(currentNode).scale[1] = Convert.ToSingle(tbl.Rows[10][1]);
+            Runtime.TargetVBN.bone(currentNode).scale[2] = Convert.ToSingle(tbl.Rows[11][1]);
 
             //vbn.update ();
             Runtime.TargetVBN.reset();
