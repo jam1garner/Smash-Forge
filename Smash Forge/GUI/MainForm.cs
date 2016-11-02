@@ -821,35 +821,50 @@ namespace Smash_Forge
                     string paramPath = stagePath + "\\param\\";
                     string animationPath = stagePath + "\\animation\\";
                     List<string> nuds = new List<string>();
-                    foreach (string d in Directory.GetDirectories(modelPath))
+
+                    if (Directory.Exists(modelPath))
                     {
-                        foreach (string f in Directory.GetFiles(d))
+                        foreach (string d in Directory.GetDirectories(modelPath))
                         {
-                            if (f.EndsWith(".nud"))
+                            foreach (string f in Directory.GetFiles(d))
                             {
-                                //Console.WriteLine(f);
-                                openNud(f);
+                                if (f.EndsWith(".nud"))
+                                {
+                                    //Console.WriteLine(f);
+                                    openNud(f);
+                                }
                             }
                         }
                     }
 
-                    foreach (string f in Directory.GetFiles(paramPath))
+                    if (Directory.Exists(paramPath))
                     {
-                        if (f.EndsWith(".lvd"))
+                        Runtime.TargetLVD = null;
+                        foreach (string f in Directory.GetFiles(paramPath))
                         {
-                            Runtime.TargetLVD = new LVD(f);
-                            break;
+                            if (f.EndsWith(".lvd") && Runtime.TargetLVD != null)
+                            {
+                                Runtime.TargetLVD = new LVD(f);
+                            }
                         }
                     }
 
-                    foreach (string d in Directory.GetDirectories(animationPath))
+                    if (Directory.Exists(animationPath))
                     {
-                        foreach (string f in Directory.GetFiles(d))
+                        foreach (string d in Directory.GetDirectories(animationPath))
                         {
-                            if (f.EndsWith(".omo"))
+                            foreach (string f in Directory.GetFiles(d))
                             {
-                                Runtime.Animations.Add(f, OMO.read(new FileData(f)));
-                                animNode.Nodes.Add(f);
+                                if (f.EndsWith(".omo"))
+                                {
+                                    Runtime.Animations.Add(f, OMO.read(new FileData(f)));
+                                    animNode.Nodes.Add(f);
+                                }
+                                else if (f.EndsWith("path.bin"))
+                                {
+                                    Runtime.TargetPath = new PathBin();
+                                    Runtime.TargetPath.Read(f);
+                                }
                             }
                         }
                     }
