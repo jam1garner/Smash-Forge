@@ -10,7 +10,7 @@ namespace Smash_Forge
         public VBN vbn;
         public MTA mta;
 
-        public MBN mbn;
+        public BCH bch;
 
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
         public static MovesetManager Moveset { get; set; }

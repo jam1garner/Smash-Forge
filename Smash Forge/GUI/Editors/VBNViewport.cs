@@ -190,8 +190,18 @@ namespace Smash_Forge
 
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
+                Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value);
                 if (m.vbn != null)
                     Runtime.TargetAnim.nextFrame(m.vbn);
+                Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value);
+                if (m.bch != null)
+                {
+                    foreach (BCH.BCH_Model mod in m.bch.models)
+                    {
+                        if(mod.skeleton != null)
+                            Runtime.TargetAnim.nextFrame(mod.skeleton);
+                    }
+                }
             }
 
             Frame = (int)this.nupdFrame.Value;
@@ -429,20 +439,28 @@ namespace Smash_Forge
             GL.UseProgram(shader.programID);
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
-                if (m.mbn != null)
+                if (m.bch != null)
                 {
-                    GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref v);
+                    if (m.bch.mbn != null)
+                    {
+                        GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref v);
 
-                    // Bone
+                        // Bone
+                        if (m.bch.models.Count > 0)
+                        {
+                            Matrix4[] f = m.bch.models[0].skeleton.getShaderMatrix();
+                            int shad = shader.getAttribute("bone");
+                            GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
+                        }
 
-                    shader.enableAttrib();
-                    m.mbn.Render(shader);
-                    shader.disableAttrib();
+                        shader.enableAttrib();
+                        m.bch.mbn.Render(shader);
+                        shader.disableAttrib();
+                    }
                 }
 
                 if (m.nud != null)
                 {
-                    
                     GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref v);
 
                     if (m.vbn != null)
@@ -451,7 +469,6 @@ namespace Smash_Forge
                         int shad = shader.getAttribute("bone");
                         GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
                     }
-
 
                     shader.enableAttrib();
                     m.nud.clearMTA();//Clear animated materials
@@ -480,31 +497,40 @@ namespace Smash_Forge
 
                 foreach (ModelContainer m in Runtime.ModelContainers)
                 {
-                    if (m.vbn != null && Runtime.renderBones)
+                    DrawVBN(m.vbn);
+                    if(m.bch != null)
                     {
-                        foreach (Bone bone in m.vbn.bones)
-                        {
-                            // first calcuate the point and draw a point
-                            GL.Color3(Color.GreenYellow);
-
-                            Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform);
-                            RenderTools.drawCube(pos_c, .085f);
-
-                            // now draw line between parent 
-                            GL.Color3(Color.Blue);
-                            GL.LineWidth(1f);
-
-                            GL.Begin(PrimitiveType.Lines);
-                            if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex != -1)
-                            {
-                                int i = bone.parentIndex;
-                                Vector3 pos_p = Vector3.Transform(Vector3.Zero, m.vbn.bones[i].transform);
-                                GL.Vertex3(pos_c);
-                                GL.Vertex3(pos_p);
-                            }
-                            GL.End();
-                        }
+                        DrawVBN(m.bch.models[0].skeleton);
                     }
+                }
+            }
+        }
+
+        public void DrawVBN(VBN vbn)
+        {
+            if (vbn != null && Runtime.renderBones)
+            {
+                foreach (Bone bone in vbn.bones)
+                {
+                    // first calcuate the point and draw a point
+                    GL.Color3(Color.GreenYellow);
+
+                    Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform);
+                    RenderTools.drawCube(pos_c, .085f);
+
+                    // now draw line between parent 
+                    GL.Color3(Color.Blue);
+                    GL.LineWidth(1f);
+
+                    GL.Begin(PrimitiveType.Lines);
+                    if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex != -1)
+                    {
+                        int i = bone.parentIndex;
+                        Vector3 pos_p = Vector3.Transform(Vector3.Zero, vbn.bones[i].transform);
+                        GL.Vertex3(pos_c);
+                        GL.Vertex3(pos_p);
+                    }
+                    GL.End();
                 }
             }
         }
@@ -1067,14 +1093,12 @@ namespace Smash_Forge
 
         public void loadMTA(MTA m)
         {
-            //Console.WriteLine("MTA Loaded");
+            Console.WriteLine("MTA Loaded");
             Frame = 0;
             nupdFrame.Value = 0;
-            if (nupdMaxFrame.Value < m.numFrames)
-                nupdMaxFrame.Value = m.numFrames;
+            nupdMaxFrame.Value = m.numFrames;
             //Console.WriteLine(m.numFrames);
             Runtime.TargetMTA = m;
-
         }
     }
 }

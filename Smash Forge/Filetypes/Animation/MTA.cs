@@ -250,10 +250,15 @@ namespace Smash_Forge
 
         public override void Read(string filename)
         {
-            //Console.WriteLine("MTA - " + filename);
+            read(new FileData(filename));
+        }
 
-            FileData f = new FileData(filename);
+        public void read(FileData f)
+        {
+            //Console.WriteLine("MTA - " + filename);
             f.Endian = Endian;
+            if (f.size() < 4)
+                throw new EndOfStreamException("Blank/Broken MTA");
             f.seek(4);
             unknown = (uint)f.readInt();
             numFrames = (uint)f.readInt();
@@ -265,9 +270,9 @@ namespace Smash_Forge
             int visOffset = f.readInt();
             int returnPos;
             f.seek(matOffset);
-            for (int i = 0;i < matCount; i++)
+            for (int i = 0; i < matCount; i++)
             {
-                returnPos = f.pos()+4;
+                returnPos = f.pos() + 4;
                 f.seek(f.readInt());
                 MatEntry tempMatEntry = new MatEntry();
                 tempMatEntry.read(f);

@@ -28,25 +28,24 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lstAnims = new System.Windows.Forms.ListBox();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.SuspendLayout();
             // 
-            // lstAnims
+            // treeView1
             // 
-            this.lstAnims.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lstAnims.FormattingEnabled = true;
-            this.lstAnims.Location = new System.Drawing.Point(0, 0);
-            this.lstAnims.Name = "lstAnims";
-            this.lstAnims.Size = new System.Drawing.Size(140, 125);
-            this.lstAnims.TabIndex = 1;
-            this.lstAnims.SelectedIndexChanged += new System.EventHandler(this.lstAnims_SelectedIndexChanged);
+            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView1.Location = new System.Drawing.Point(0, 0);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(140, 125);
+            this.treeView1.TabIndex = 0;
+            this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.selectItem);
             // 
             // AnimListPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(140, 125);
-            this.Controls.Add(this.lstAnims);
+            this.Controls.Add(this.treeView1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.HideOnClose = true;
             this.Name = "AnimListPanel";
@@ -58,6 +57,6 @@
 
         #endregion
 
-        public System.Windows.Forms.ListBox lstAnims;
+        public System.Windows.Forms.TreeView treeView1;
     }
 }

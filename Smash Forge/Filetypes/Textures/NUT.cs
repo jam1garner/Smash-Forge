@@ -134,6 +134,9 @@ namespace Smash_Forge
                     case 0x0:
                         tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
                         break;
+                    case 0x1:
+                        tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
+                        break;
                     case 0x2:
                         tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
                         break;
@@ -193,6 +196,8 @@ namespace Smash_Forge
             {
                 case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
                     return (t.width * t.height / 2);
+                case PixelInternalFormat.CompressedRgbaS3tcDxt3Ext:
+                    return (t.width * t.height);
                 case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
                     return (t.width * t.height);
                 case PixelInternalFormat.Rgba:
@@ -209,10 +214,12 @@ namespace Smash_Forge
             GL.BindTexture(TextureTarget.Texture2D, texID);
 
             if (t.type == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext
+                || t.type == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
                 || t.type == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext)
             {
                 GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, 
                     t.width, t.height, 0, getImageSize(t), t.data);
+                Debug.WriteLine(GL.GetError());
             }
             else
             {
