@@ -154,6 +154,12 @@ namespace Smash_Forge
         public List<Vector2D> verts = new List<Vector2D>();
         public List<Vector2D> normals = new List<Vector2D>();
         public List<CollisionMat> materials = new List<CollisionMat>();
+        public float[] unk1 = new float[3];
+        public byte unkFlag1;
+        public int unk2;
+        public byte[] unk3;
+        public char[] unk4;
+        public bool flag1, flag2, flag3, flag4;
 
         public Collision()
         {
@@ -167,8 +173,29 @@ namespace Smash_Forge
             f.skip(0x38);
             f.skip(1);//Seperation char
             subname = f.readString(f.pos(), 0x40);
-            f.skip(0xAA);//TODO: Read in collision header
-
+            f.skip(0x40);
+            f.skip(1);//Seperation char
+            unk1[0] = f.readFloat();
+            unk1[1] = f.readFloat();
+            unk1[2] = f.readFloat();
+            unkFlag1 = (byte)f.readByte();
+            f.skip(1);//Seperation char
+            unk2 = f.readInt();
+            f.skip(1);
+            unk3 = f.read(0xC);
+            f.skip(4);//FF FF FF FF
+            f.skip(1);//Seperation char
+            unk4 = f.readString(f.pos(), 0x40).ToCharArray();
+            Console.WriteLine(f.pos());
+            f.skip(0x40);
+            Console.WriteLine(f.pos());
+            flag1 = Convert.ToBoolean(f.readByte());
+            flag2 = Convert.ToBoolean(f.readByte());
+            flag3 = Convert.ToBoolean(f.readByte());
+            flag4 = Convert.ToBoolean(f.readByte());
+            f.skip(1);//Seperation char
+            //f.skip(0xAA);
+            Console.WriteLine(f.pos());
             int vertCount = f.readInt();
             for(int i = 0; i < vertCount; i++)
             {
