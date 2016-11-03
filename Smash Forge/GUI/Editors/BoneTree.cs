@@ -58,7 +58,7 @@ namespace Smash_Forge
             dataGridView1.DataSource = tbl;
             tbl.Rows.Clear();
             
-            tbl.Rows.Add("Bone Index", Runtime.TargetVBN.boneIndex(treeView1.SelectedNode.Text));
+            tbl.Rows.Add("Bone Index", Runtime.TargetVBN.getJTBIndex(treeView1.SelectedNode.Text));
             tbl.Rows.Add("Bone Hash", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).boneId.ToString("X"));
             tbl.Rows.Add("Bone Type", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).boneType);
             tbl.Rows.Add("X Pos", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).position[0]);

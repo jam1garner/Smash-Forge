@@ -354,6 +354,7 @@ namespace Smash_Forge
             if (!pvbn.Equals(""))
             {
                 model.vbn = new VBN(pvbn);
+                Runtime.TargetVBN = model.vbn;
                 if (!pjtb.Equals(""))
                     model.vbn.readJointTable(pjtb);
 
@@ -894,6 +895,18 @@ namespace Smash_Forge
                 project = new ProjectTree();
             else
                 project.Focus();
+        }
+
+        private void openCharacterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new FolderSelectDialog())
+            {
+                ofd.Title = "Character Folder";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    project.openACMD($"{ofd.SelectedPath}\\script\\animcmd\\body\\motion.mtable", $"{ofd.SelectedPath}\\motion");
+                }
+            }
         }
     }
 }
