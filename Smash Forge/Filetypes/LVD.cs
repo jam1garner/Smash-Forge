@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Smash_Forge
 {
-    public struct Vector2D
+    public class Vector2D
     {
         public float x;
         public float y;
     }
 
-    public struct Sphere
+    public class Sphere
     {
         public string name;
         public string subname;
@@ -23,7 +23,7 @@ namespace Smash_Forge
         public float radius;
     }
 
-    public struct Capsule
+    public class Capsule
     {
         public string name;
         public string subname;
@@ -37,7 +37,7 @@ namespace Smash_Forge
         public float unk;
     }
 
-    public struct Point
+    public class Point
     {
         public string name;
         public string subname;
@@ -45,7 +45,7 @@ namespace Smash_Forge
         public float y;
     }
 
-    public struct Bounds //Either Camera bounds or Blast zones
+    public class Bounds //Either Camera bounds or Blast zones
     {
         public string name;
         public string subname;
@@ -84,7 +84,7 @@ namespace Smash_Forge
         }
     }
 
-    public struct Section
+    public class Section
     {
         public List<Vector2D> points;
     }

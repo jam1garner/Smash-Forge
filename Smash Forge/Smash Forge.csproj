@@ -82,6 +82,12 @@
     <Compile Include="GUI\Editors\BoneTree.Designer.cs">
       <DependentUpon>BoneTree.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\LVDEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\LVDEditor.Designer.cs">
+      <DependentUpon>LVDEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\MeshList.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -152,6 +158,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\BoneTree.resx">
       <DependentUpon>BoneTree.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\LVDEditor.resx">
+      <DependentUpon>LVDEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\PARAMEditor.resx">
       <DependentUpon>PARAMEditor.cs</DependentUpon>

@@ -25,7 +25,9 @@ namespace Smash_Forge
             animationsWindowToolStripMenuItem.Checked =
             boneTreeToolStripMenuItem.Checked = true;
 
+            AddDockedControl(leftPanel);
             AddDockedControl(rightPanel);
+            AddDockedControl(lvdEditing);
             AddDockedControl(project);
 
             rightPanel.treeView1.Nodes.Add(animNode);
@@ -77,6 +79,7 @@ namespace Smash_Forge
         public TreeNode animNode = new TreeNode("Bone Animations");
         public TreeNode mtaNode = new TreeNode("Material Animations");
         public ProjectTree project = new ProjectTree() { ShowHint = DockState.DockLeft };
+        public LVDEditor lvdEditing = new LVDEditor() { ShowHint = DockState.DockRight };
         public List<PARAMEditor> paramEditors = new List<PARAMEditor>() { };
         public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() { };
         public MeshList meshList = new MeshList() { ShowHint = DockState.DockRight };
