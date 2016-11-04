@@ -55,12 +55,33 @@ namespace Smash_Forge
         public float right;
     }
 
-    public struct CollisionMat
+    public class CollisionMat
     {
-        public bool leftLedge;
-        public bool rightLedge;
-        public bool noWallJump;
-        public byte physicsType;
+        //public bool leftLedge;
+        //public bool rightLedge;
+        //public bool noWallJump;
+        //public byte physicsType;
+        public byte[] material = new byte[0xC];
+
+        public bool rightLedge()
+        {
+            return ((material[10] & 0x80) != 0);
+        }
+
+        public bool leftLedge()
+        {
+            return ((material[10] & 0x40) != 0);
+        }
+
+        public bool noWallJump()
+        {
+            return ((material[10] & 0x10) != 0);
+        }
+
+        public byte physics()
+        {
+            return material[4];
+        }
     }
 
     public struct Section
@@ -185,10 +206,10 @@ namespace Smash_Forge
             unk3 = f.read(0xC);
             f.skip(4);//FF FF FF FF
             f.skip(1);//Seperation char
-            unk4 = f.readString(f.pos(), 0x40).ToCharArray();
-            Console.WriteLine(f.pos());
-            f.skip(0x40);
-            Console.WriteLine(f.pos());
+            unk4 = new char[0x40];
+            for (int i = 0; i < 0x40; i++)
+                unk4[i] = (char)f.readByte();
+            
             flag1 = Convert.ToBoolean(f.readByte());
             flag2 = Convert.ToBoolean(f.readByte());
             flag3 = Convert.ToBoolean(f.readByte());
@@ -226,15 +247,59 @@ namespace Smash_Forge
             for(int i = 0; i < materialCount; i++)
             {
                 f.skip(1);//Seperation char
-                CollisionMat temp;
-                byte[] mat = f.read(0xC);//Temporary, will work on fleshing out material more later
-                temp.noWallJump = ((mat[10] & 0x10) != 0);
-                temp.leftLedge = ((mat[10] & 0x40) != 0);
-                temp.rightLedge = ((mat[10] & 0x80) != 0);
-                temp.physicsType = mat[4];
+                CollisionMat temp = new CollisionMat();
+                temp.material = f.read(0xC);//Temporary, will work on fleshing out material more later
+                
                 materials.Add(temp);
             }
 
+        }
+
+        public void save(FileOutput f)
+        {
+            f.writeHex("030401017735BB750000000201");
+            f.writeString(name.PadRight(0x38, (char)0));
+            f.writeByte(1);
+            f.writeString(subname.PadRight(0x40, (char)0));
+            f.writeByte(1);
+            foreach (float i in unk1)
+                f.writeFloat(i);
+            f.writeByte(unkFlag1);
+            f.writeByte(1);
+            f.writeInt(unk2);
+            f.writeByte(1);
+            f.writeBytes(unk3);
+            f.writeHex("FFFFFFFF01");
+            f.writeChars(unk4);
+            f.writeFlag(flag1);
+            f.writeFlag(flag2);
+            f.writeFlag(flag3);
+            f.writeFlag(flag4);
+            f.writeByte(1);
+            f.writeInt(verts.Count);
+            foreach(Vector2D v in verts)
+            {
+                f.writeByte(1);
+                f.writeFloat(v.x);
+                f.writeFloat(v.y);
+            }
+            f.writeByte(1);
+            f.writeInt(normals.Count);
+            foreach (Vector2D n in normals)
+            {
+                f.writeByte(1);
+                f.writeFloat(n.x);
+                f.writeFloat(n.y);
+            }
+            f.writeByte(1);
+            f.writeInt(0);
+            f.writeByte(1);
+            f.writeInt(materials.Count);
+            foreach (CollisionMat m in materials)
+            {
+                f.writeByte(1);
+                f.writeBytes(m.material);
+            }
         }
     }
 
@@ -496,9 +561,82 @@ namespace Smash_Forge
 
             //LVD doesn't end here and neither does my confusion, will update this part later
         }
+
         public override byte[] Rebuild()
         {
-            throw new NotImplementedException("Yell at jam to implement this");
+            FileOutput f = new FileOutput();
+            f.Endian = Endianness.Big;
+
+            f.writeHex("000000010A014C56443101");
+            f.writeInt(collisions.Count);
+            foreach (Collision c in collisions)
+            {
+                c.save(f);
+            }
+            f.writeByte(1);
+            f.writeInt(spawns.Count);
+            foreach (Point p in spawns)
+            {
+                f.writeHex("020401017735BB750000000201");
+                f.writeString(p.name.PadRight(0x38, (char)0));
+                f.writeByte(1);
+                f.writeString(p.subname.PadRight(0x40, (char)0));
+                f.writeByte(1);
+                f.writeHex("C2700000000000000000000000010000000001000000000000000000000000FFFFFFFF01004040C00000000000804BC00000000000000000000000000000F03F00000000000000000000000000000000000000000000000000000000000000000200000001");
+                f.writeFloat(p.x);
+                f.writeFloat(p.y);
+            }
+            f.writeByte(1);
+            f.writeInt(respawns.Count);
+            foreach (Point p in respawns)
+            {
+                f.writeHex("020401017735BB750000000201");
+                f.writeString(p.name.PadRight(0x38, (char)0));
+                f.writeByte(1);
+                f.writeString(p.subname.PadRight(0x40, (char)0));
+                f.writeByte(1);
+                f.writeHex("C2700000000000000000000000010000000001000000000000000000000000FFFFFFFF01004040C00000000000804BC00000000000000000000000000000F03F00000000000000000000000000000000000000000000000000000000000000000200000001");
+                f.writeFloat(p.x);
+                f.writeFloat(p.y);
+            }
+            f.writeByte(1);
+            f.writeInt(cameraBounds.Count);
+            foreach (Bounds b in cameraBounds)
+            {
+                f.writeHex("020401017735BB750000000201");
+                f.writeString(b.name.PadRight(0x38, (char)0));
+                f.writeByte(1);
+                f.writeString(b.subname.PadRight(0x40, (char)0));
+                f.writeByte(1);
+                f.writeHex("00000000000000000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001");
+                f.writeFloat(b.left);
+                f.writeFloat(b.right);
+                f.writeFloat(b.top);
+                f.writeFloat(b.bottom);
+            }
+            f.writeByte(1);
+            f.writeInt(blastzones.Count);
+            foreach (Bounds b in blastzones)
+            {
+                f.writeHex("020401017735BB750000000201");
+                f.writeString(b.name.PadRight(0x38, (char)0));
+                f.writeByte(1);
+                f.writeString(b.subname.PadRight(0x40, (char)0));
+                f.writeByte(1);
+                f.writeHex("00000000000000000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001");
+                f.writeFloat(b.left);
+                f.writeFloat(b.right);
+                f.writeFloat(b.top);
+                f.writeFloat(b.bottom);
+            }
+
+            for(int i = 0; i < 14; i++)
+            {
+                f.writeByte(1);
+                f.writeInt(0);
+            }
+
+            return f.getBytes();
         }
     }
 }

@@ -115,13 +115,16 @@ namespace Smash_Forge
             {
                 string filename = "";
                 SaveFileDialog save = new SaveFileDialog();
-                save.Filter = "Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
+                save.Filter = "Supported Filetypes (VBN,LVD)|*.vbn;*.lvd|Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
                 DialogResult result = save.ShowDialog();
 
                 if (result == DialogResult.OK)
                 {
                     filename = save.FileName;
-                    Runtime.TargetVBN.Save(filename);
+                    if(filename.EndsWith(".vbn"))
+                        Runtime.TargetVBN.Save(filename);
+                    if (filename.EndsWith(".lvd") && Runtime.TargetLVD != null)
+                        File.WriteAllBytes(filename, Runtime.TargetLVD.Rebuild());
                     //OMO.createOMO (anim, vbn, "C:\\Users\\ploaj_000\\Desktop\\WebGL\\test_outut.omo", -1, -1);
                 }
             }
