@@ -113,13 +113,13 @@ namespace Smash_Forge
             for(int i = 0; i < sectionCount; i++)
             {
                 f.skip(0x18);// unknown data
-                Section temp;
+                Section temp = new Section();
                 temp.points = new List<Vector2D>();
                 int vertCount = f.readInt();
                 for(int j = 0; j < vertCount; j++)
                 {
                     f.skip(1);//Seperation char
-                    Vector2D point;
+                    Vector2D point = new Vector2D();
                     point.x = f.readFloat();
                     point.y = f.readFloat();
                     temp.points.Add(point);
@@ -152,13 +152,13 @@ namespace Smash_Forge
             for (int i = 0; i < sectionCount; i++)
             {
                 f.skip(0x18);// unknown data
-                Section temp;
+                Section temp = new Section();
                 temp.points = new List<Vector2D>();
                 int vertCount = f.readInt();
                 for (int j = 0; j < vertCount; j++)
                 {
                     f.skip(1);//Seperation char
-                    Vector2D point;
+                    Vector2D point = new Vector2D();
                     point.x = f.readFloat();
                     point.y = f.readFloat();
                     temp.points.Add(point);
@@ -221,7 +221,7 @@ namespace Smash_Forge
             for(int i = 0; i < vertCount; i++)
             {
                 f.skip(1);//Seperation char
-                Vector2D temp;
+                Vector2D temp = new Vector2D();
                 temp.x = f.readFloat();
                 temp.y = f.readFloat();
                 verts.Add(temp);
@@ -232,7 +232,7 @@ namespace Smash_Forge
             for(int i = 0; i < normalCount; i++)
             {
                 f.skip(1);//Seperation char
-                Vector2D temp;
+                Vector2D temp = new Vector2D();
                 temp.x = f.readFloat();
                 temp.y = f.readFloat();
                 normals.Add(temp);
@@ -369,7 +369,7 @@ namespace Smash_Forge
             int spawnCount = f.readInt();
             for (int i = 0; i < spawnCount; i++)
             {
-                Point temp;
+                Point temp = new Point();
                 f.skip(0xD);
                 temp.name = f.readString(f.pos(), 0x38);
                 f.skip(0x38);
@@ -385,7 +385,7 @@ namespace Smash_Forge
             int respawnCount = f.readInt();
             for (int i = 0; i < respawnCount; i++)
             {
-                Point temp;
+                Point temp = new Point();
                 f.skip(0xD);
                 temp.name = f.readString(f.pos(), 0x38);
                 f.skip(0x38);
@@ -401,7 +401,7 @@ namespace Smash_Forge
             int cameraCount = f.readInt();
             for (int i = 0; i < cameraCount; i++)
             {
-                Bounds temp;
+                Bounds temp = new Bounds();
                 f.skip(0xD);
                 temp.name = f.readString(f.pos(), 0x38);
                 f.skip(0x38);
@@ -419,7 +419,7 @@ namespace Smash_Forge
             int blastzoneCount = f.readInt();
             for (int i = 0; i < blastzoneCount; i++)
             {
-                Bounds temp;
+                Bounds temp = new Bounds();
                 f.skip(0xD);
                 temp.name = f.readString(f.pos(), 0x38);
                 f.skip(0x38);
@@ -473,7 +473,7 @@ namespace Smash_Forge
                 f.skip(0xA6);
                 int shapeType = f.readInt();
                 if (shapeType == 2) {
-                    Sphere temp;
+                    Sphere temp = new Sphere();
                     temp.name = tempName;
                     temp.subname = tempSubname;
                     temp.x = f.readFloat();
@@ -485,7 +485,7 @@ namespace Smash_Forge
                 }
                 else if(shapeType == 3)
                 {
-                    Capsule temp;
+                    Capsule temp = new Capsule();
                     temp.name = tempName;
                     temp.subname = tempSubname;
                     temp.x = f.readFloat();
@@ -522,7 +522,7 @@ namespace Smash_Forge
             int generalPointCount = f.readInt();
             for(int i = 0; i < generalPointCount; i++)
             {
-                Point temp;
+                Point temp = new Point();
                 f.skip(0xD);
                 temp.name = f.readString(f.pos(), 0x38);
                 f.skip(0x38);
