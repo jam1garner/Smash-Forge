@@ -28,7 +28,14 @@ namespace Smash_Forge
                 {
                     foreach (NUD.Mesh mesh in m.nud.mesh)
                     {
-                        treeView1.Nodes.Add(new TreeNode(mesh.name) { Tag = mesh, Checked = mesh.isVisible });
+                        TreeNode tempMesh = new TreeNode(mesh.name) { Tag = mesh, Checked = mesh.isVisible };
+                        treeView1.Nodes.Add(tempMesh);
+                        int i = 0;
+                        foreach(NUD.Polygon poly in mesh.polygons)
+                        {
+                            tempMesh.Nodes.Add(new TreeNode($"Polygon {i}") { Tag = poly, Checked = poly.isVisible });
+                            i++;
+                        }
                     }
                 }
             }
@@ -36,7 +43,22 @@ namespace Smash_Forge
 
         private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
         {
-            ((NUD.Mesh)e.Node.Tag).isVisible = e.Node.Checked;
+            if (e.Node.Tag is NUD.Mesh)
+                ((NUD.Mesh)e.Node.Tag).isVisible = e.Node.Checked;
+            else if (e.Node.Tag is NUD.Polygon)
+                ((NUD.Polygon)e.Node.Tag).isVisible = e.Node.Checked;
+        }
+
+        private void polySelected(NUD.Polygon poly)
+        {
+            //DO STUFF HERE PLOAJ
+            Console.WriteLine("\nPoly selected ");
+        }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (e.Node.Tag is NUD.Polygon)
+                polySelected((NUD.Polygon)e.Node.Tag);
         }
     }
 }

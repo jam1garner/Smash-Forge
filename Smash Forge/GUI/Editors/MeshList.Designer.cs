@@ -40,6 +40,7 @@
             this.treeView1.Size = new System.Drawing.Size(284, 261);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
             // MeshList
             // 
