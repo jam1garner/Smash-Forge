@@ -254,9 +254,9 @@ namespace Smash_Forge
 
         #region Rendering
 
-        string vs = "#version 330\n \nin vec3 vPosition;\nin vec4 vColor;\nin vec3 vNormal;\nin vec2 vUV;\nin vec4 vBone;\nin vec4 vWeight;\n\nout vec2 f_texcoord;\nout float normal;\nout vec4 color;\n\nuniform mat4 modelview;\nuniform mat4 bones[150];\n \nvoid\nmain()\n{\n    ivec4 index = ivec4(vBone); \n\n    vec4 objPos = vec4(vPosition.xyz, 1.0);\n\n    if(vBone.x != -1){\n        objPos = bones[index.x] * vec4(vPosition, 1.0) * vWeight.x;\n        objPos += bones[index.y] * vec4(vPosition, 1.0) * vWeight.y;\n        objPos += bones[index.z] * vec4(vPosition, 1.0) * vWeight.z;\n        objPos += bones[index.w] * vec4(vPosition, 1.0) * vWeight.w;\n    } \n\n    gl_Position = modelview * vec4(objPos.xyz, 1.0);\n\n    vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;\n\n    f_texcoord = vUV;\n    normal = dot(vec4(vNormal, 1.0), vec4(0.15,0.15,0.15,1.0)) ;// vec4(distance, 1.0)\n    color = vec4( vColor.xyz, 1.0);\n}";
+        string vs = "#version 330\n \nin vec3 vPosition;\nin vec4 vColor;\nin vec3 vNormal;\nin vec2 vUV;\nin vec4 vBone;\nin vec4 vWeight;\n\nout vec2 f_texcoord;\nout float normal;\nout vec4 color;\n\nuniform mat4 modelview;\nuniform mat4 bones[150];\n \nvoid\nmain()\n{\n    ivec4 index = ivec4(vBone); \n\n    vec4 objPos = vec4(vPosition.xyz, 1.0);\n\n    if(vBone.x != -1){\n        objPos = bones[index.x] * vec4(vPosition, 1.0) * vWeight.x;\n        objPos += bones[index.y] * vec4(vPosition, 1.0) * vWeight.y;\n        objPos += bones[index.z] * vec4(vPosition, 1.0) * vWeight.z;\n        objPos += bones[index.w] * vec4(vPosition, 1.0) * vWeight.w;\n    } \n\n    gl_Position = modelview * vec4(objPos.xyz, 1.0);\n\n    vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;\n\n    f_texcoord = vUV;\n    normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;// vec4(distance, 1.0)\n    color = vColor;\n}";
 
-        string fs = "#version 330\n\nin vec2 f_texcoord;\nin vec4 color;\nin float normal;\n\nuniform sampler2D tex;\nuniform vec4 colorSamplerUV;\n\nvoid\nmain()\n{\n    vec2 texcoord = vec2((f_texcoord * colorSamplerUV.xy) + colorSamplerUV.zw) ;\n\n    vec4 ambiant = vec4(0.3,0.3,0.3,1.0) * texture(tex, texcoord).rgba;\n\n    vec4 alpha = texture2D(tex, texcoord).aaaa;\n    vec4 outputColor = ambiant + (vec4(texture(tex, texcoord).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * normal);\n    gl_FragColor = vec4((alpha*outputColor).xyz, alpha.x);\n}";
+        string fs = "#version 330\n\nin vec2 f_texcoord;\nin vec4 color;\nin float normal;\n\nuniform sampler2D tex;\nuniform vec4 colorSamplerUV;\n\nvoid\nmain()\n{\n    vec2 texcoord = vec2((f_texcoord * colorSamplerUV.xy) + colorSamplerUV.zw) ;\n\n    vec4 ambiant = vec4(0.3,0.3,0.3,1.0) * texture(tex, texcoord).rgba;\n\n    vec4 alpha = texture2D(tex, texcoord).aaaa;\n    vec4 outputColor = ambiant + (vec4(texture(tex, texcoord).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * normal);\n    gl_FragColor =   vec4(((color * alpha * outputColor)).xyz, alpha.x * color.x);\n}";
 
 
         private void SetupViewPort()
@@ -303,17 +303,34 @@ namespace Smash_Forge
         }
 
         int cf = 0;
+        Color back1 = Color.FromArgb((255<<24)|(26<<16)|(26<<8)|(26));
+        Color back2 = Color.FromArgb((255 << 24) | (77 << 16) | (77 << 8) | (77));
 
         public void Render()
         {
             if (!render)
                 return;
 
-            GL.ClearColor(Color.AliceBlue);
+            //GL.ClearColor(back1);
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
             // clear the gf buffer
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+
+            GL.Begin(PrimitiveType.Quads);
+            GL.Color3(back1);
+            GL.Vertex2(1.0, 1.0);
+            GL.Vertex2(-1.0, 1.0);
+            GL.Color3(back2);
+            GL.Vertex2(-1.0, -1.0);
+            GL.Vertex2(1.0, -1.0);
+            GL.End();
+
             GL.Enable(EnableCap.DepthTest);
             GL.ClearDepth(1.0);
 
@@ -330,7 +347,6 @@ namespace Smash_Forge
             // ready to start drawing model stuff
             GL.MatrixMode(MatrixMode.Modelview);
 
-
             GL.UseProgram(0);
             // drawing floor---------------------------
             if (Runtime.renderFloor)
@@ -343,6 +359,8 @@ namespace Smash_Forge
 
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            //GL.BlendFunc(BlendingFactorSrc.OneMinusDstAlpha, BlendingFactorDest.One);
+            //GL.BlendEquation(BlendEquationMode.Min);
 
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
@@ -1051,6 +1069,7 @@ namespace Smash_Forge
 
         public void HandleACMD(string animname)
         {
+            Console.WriteLine("Handling");
             var crc = Crc32.Compute(animname.ToLower());
 
             if (Runtime.Moveset == null)

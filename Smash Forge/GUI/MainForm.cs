@@ -330,6 +330,7 @@ namespace Smash_Forge
             string pnut = "";
             string pjtb = "";
             string pvbn = "";
+            string pnhb = "";
             string pmta = "";
             List<string> pacs = new List<string>();
 
@@ -341,6 +342,8 @@ namespace Smash_Forge
                     pnut = s;
                 if (s.EndsWith(".vbn"))
                     pvbn = s;
+                if (s.EndsWith(".nhb"))
+                    pnhb = s;
                 if (s.EndsWith(".jtb"))
                     pjtb = s;
                 if (s.EndsWith(".mta"))
@@ -354,10 +357,20 @@ namespace Smash_Forge
             if (!pvbn.Equals(""))
             {
                 model.vbn = new VBN(pvbn);
+
+                if (!pnhb.Equals(""))
+                {
+                    Console.WriteLine("Has Helper Bone");
+                    HelperBone h = new HelperBone();
+                    h.Read(new FileData(pnhb));
+                }
+
                 if (!pjtb.Equals(""))
                     model.vbn.readJointTable(pjtb);
 
             }
+
+            
 
             if (!pnut.Equals(""))
             {
@@ -368,6 +381,13 @@ namespace Smash_Forge
             if (!pnud.Equals(""))
             {
                 model.nud = new NUD(pnud);
+
+                /*model.nud.PreRender();
+                MBN mod = model.nud.toMBN();
+                mod.mesh.RemoveAt(mod.mesh.Count - 1);
+                mod.mesh.RemoveAt(mod.mesh.Count - 1);
+                mod.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\n64Ness.mbn");
+                Console.WriteLine(model.nud.toMBN().mesh.Count);*/
 
                 foreach (string s in pacs)
                 {
@@ -466,7 +486,7 @@ namespace Smash_Forge
                         openDAE(ofd.FileName, Runtime.ModelContainers[0]);
                     }
 
-                    /*if (ofd.FileName.EndsWith(".mbn"))
+                    if (ofd.FileName.EndsWith(".mbn"))
                     {
                         MBN m = new MBN();
                         m.Read(ofd.FileName);
@@ -475,15 +495,20 @@ namespace Smash_Forge
                         b.mbn = m;
                         b.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\normal.bch");
                         con.bch = b;
-                        m.mesh.RemoveAt(m.mesh.Count - 1);
-                        m.mesh.RemoveAt(m.mesh.Count - 2);
+                        Console.WriteLine(m.mesh.Count);
+                        /*m.mesh[m.mesh.Count - 1].faces.Clear();
+                        m.mesh[m.mesh.Count - 1].nodeList.Clear();
+                        m.mesh[0].faces.Clear();
+                        m.mesh[0].nodeList.Clear();*/
+                        //m.mesh.RemoveAt(0);
+                        //m.mesh.RemoveAt(1);
                         m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\rebuild.mbn");
                         Runtime.ModelContainers.Add(con);
                         //m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\test.mbn");
                         /*NUD n = m.toNUD();
                         n.PreRender();
-                        n.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\mbn.nud");
-                    }*/
+                        n.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\mbn.nud");*/
+                    }
 
                     /*if (ofd.FileName.EndsWith(".bch"))
                     {
