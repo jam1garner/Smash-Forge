@@ -376,6 +376,8 @@ namespace Smash_Forge
             {
                 model.nud = new NUD(pnud);
 
+                //AddDockedControl(new NUDMaterialEditor(model.nud.mesh[0].polygons[0].materials));
+
                 foreach (string s in pacs)
                 {
                     PAC p = new PAC();
