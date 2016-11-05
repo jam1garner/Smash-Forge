@@ -25,7 +25,9 @@ namespace Smash_Forge
             animationsWindowToolStripMenuItem.Checked =
             boneTreeToolStripMenuItem.Checked = true;
 
+            AddDockedControl(leftPanel);
             AddDockedControl(rightPanel);
+            AddDockedControl(lvdEditing);
             AddDockedControl(project);
 
             rightPanel.treeView1.Nodes.Add(animNode);
@@ -77,6 +79,7 @@ namespace Smash_Forge
         public TreeNode animNode = new TreeNode("Bone Animations");
         public TreeNode mtaNode = new TreeNode("Material Animations");
         public ProjectTree project = new ProjectTree() { ShowHint = DockState.DockLeft };
+        public LVDEditor lvdEditing = new LVDEditor() { ShowHint = DockState.DockRight };
         public List<PARAMEditor> paramEditors = new List<PARAMEditor>() { };
         public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() { };
         public MeshList meshList = new MeshList() { ShowHint = DockState.DockRight };
@@ -115,13 +118,16 @@ namespace Smash_Forge
             {
                 string filename = "";
                 SaveFileDialog save = new SaveFileDialog();
-                save.Filter = "Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
+                save.Filter = "Supported Filetypes (VBN,LVD)|*.vbn;*.lvd|Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
                 DialogResult result = save.ShowDialog();
 
                 if (result == DialogResult.OK)
                 {
                     filename = save.FileName;
-                    Runtime.TargetVBN.Save(filename);
+                    if(filename.EndsWith(".vbn"))
+                        Runtime.TargetVBN.Save(filename);
+                    if (filename.EndsWith(".lvd") && Runtime.TargetLVD != null)
+                        File.WriteAllBytes(filename, Runtime.TargetLVD.Rebuild());
                     //OMO.createOMO (anim, vbn, "C:\\Users\\ploaj_000\\Desktop\\WebGL\\test_outut.omo", -1, -1);
                 }
             }
@@ -330,7 +336,6 @@ namespace Smash_Forge
             string pnut = "";
             string pjtb = "";
             string pvbn = "";
-            string pnhb = "";
             string pmta = "";
             List<string> pacs = new List<string>();
 
@@ -342,8 +347,6 @@ namespace Smash_Forge
                     pnut = s;
                 if (s.EndsWith(".vbn"))
                     pvbn = s;
-                if (s.EndsWith(".nhb"))
-                    pnhb = s;
                 if (s.EndsWith(".jtb"))
                     pjtb = s;
                 if (s.EndsWith(".mta"))
@@ -357,20 +360,11 @@ namespace Smash_Forge
             if (!pvbn.Equals(""))
             {
                 model.vbn = new VBN(pvbn);
-
-                if (!pnhb.Equals(""))
-                {
-                    Console.WriteLine("Has Helper Bone");
-                    HelperBone h = new HelperBone();
-                    h.Read(new FileData(pnhb));
-                }
-
+                Runtime.TargetVBN = model.vbn;
                 if (!pjtb.Equals(""))
                     model.vbn.readJointTable(pjtb);
 
             }
-
-            
 
             if (!pnut.Equals(""))
             {
@@ -381,13 +375,6 @@ namespace Smash_Forge
             if (!pnud.Equals(""))
             {
                 model.nud = new NUD(pnud);
-
-                /*model.nud.PreRender();
-                MBN mod = model.nud.toMBN();
-                mod.mesh.RemoveAt(mod.mesh.Count - 1);
-                mod.mesh.RemoveAt(mod.mesh.Count - 1);
-                mod.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\n64Ness.mbn");
-                Console.WriteLine(model.nud.toMBN().mesh.Count);*/
 
                 foreach (string s in pacs)
                 {
@@ -486,7 +473,7 @@ namespace Smash_Forge
                         openDAE(ofd.FileName, Runtime.ModelContainers[0]);
                     }
 
-                    if (ofd.FileName.EndsWith(".mbn"))
+                    /*if (ofd.FileName.EndsWith(".mbn"))
                     {
                         MBN m = new MBN();
                         m.Read(ofd.FileName);
@@ -495,20 +482,15 @@ namespace Smash_Forge
                         b.mbn = m;
                         b.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\normal.bch");
                         con.bch = b;
-                        Console.WriteLine(m.mesh.Count);
-                        /*m.mesh[m.mesh.Count - 1].faces.Clear();
-                        m.mesh[m.mesh.Count - 1].nodeList.Clear();
-                        m.mesh[0].faces.Clear();
-                        m.mesh[0].nodeList.Clear();*/
-                        //m.mesh.RemoveAt(0);
-                        //m.mesh.RemoveAt(1);
+                        m.mesh.RemoveAt(m.mesh.Count - 1);
+                        m.mesh.RemoveAt(m.mesh.Count - 2);
                         m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\rebuild.mbn");
                         Runtime.ModelContainers.Add(con);
                         //m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\test.mbn");
                         /*NUD n = m.toNUD();
                         n.PreRender();
-                        n.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\mbn.nud");*/
-                    }
+                        n.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\mbn.nud");
+                    }*/
 
                     /*if (ofd.FileName.EndsWith(".bch"))
                     {
@@ -919,6 +901,18 @@ namespace Smash_Forge
                 project = new ProjectTree();
             else
                 project.Focus();
+        }
+
+        private void openCharacterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new FolderSelectDialog())
+            {
+                ofd.Title = "Character Folder";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    project.openACMD($"{ofd.SelectedPath}\\script\\animcmd\\body\\motion.mtable", $"{ofd.SelectedPath}\\motion");
+                }
+            }
         }
     }
 }

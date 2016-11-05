@@ -344,6 +344,28 @@ namespace Smash_Forge
             //throw new Exception("No bone of char[] name");
         }
 
+        public int jtbShiftAmount = 8;
+
+        public int getJTBIndex(string name)
+        {
+            int index = -1;
+            int vbnIndex = boneIndex(name);
+            if(jointTable != null)
+            {
+                for(int i = 0; i < jointTable.Count; i++)
+                {
+                    for(int j = 0; j < jointTable[i].Count; j++)
+                    {
+                        if(jointTable[i][j] == vbnIndex)
+                        {
+                            index = j + (i << 8);
+                        }
+                    }
+                }
+            }
+            return index;
+        }
+
         public void deleteBone(int index)
         {
             boneCountPerType[bones[index].boneType]--;
