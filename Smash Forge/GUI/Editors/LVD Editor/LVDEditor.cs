@@ -18,12 +18,15 @@ namespace Smash_Forge
             InitializeComponent();
         }
 
-        private LVD currentLvd;
-        private Collision currentCollision;
+        private LVDEntry currentEntry;
 
-        public void fill(LVD lvd)
+        public void open(LVDEntry entry)
         {
+            currentEntry = entry;
+            if(entry is Collision)
+            {
 
+            }
         }
     }
 }

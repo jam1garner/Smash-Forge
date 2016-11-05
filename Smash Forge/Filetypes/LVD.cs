@@ -7,26 +7,28 @@ using System.Threading.Tasks;
 
 namespace Smash_Forge
 {
+    public class LVDEntry
+    {
+        public string name;
+        public string subname;
+    }
+
     public class Vector2D
     {
         public float x;
         public float y;
     }
 
-    public class Sphere
+    public class Sphere : LVDEntry
     {
-        public string name;
-        public string subname;
         public float x;
         public float y;
         public float z;
         public float radius;
     }
 
-    public class Capsule
+    public class Capsule : LVDEntry
     {
-        public string name;
-        public string subname;
         public float x;
         public float y;
         public float z;
@@ -37,18 +39,14 @@ namespace Smash_Forge
         public float unk;
     }
 
-    public class Point
+    public class Point : LVDEntry
     {
-        public string name;
-        public string subname;
         public float x;
         public float y;
     }
 
-    public class Bounds //Either Camera bounds or Blast zones
+    public class Bounds : LVDEntry //Either Camera bounds or Blast zones
     {
-        public string name;
-        public string subname;
         public float top;
         public float bottom;
         public float left;
@@ -90,10 +88,8 @@ namespace Smash_Forge
     }
 
 
-    public class ItemSpawner
+    public class ItemSpawner : LVDEntry
     {
-        public string name;
-        public string subname;
         public List<Section> sections = new List<Section>();
 
         public ItemSpawner()
@@ -129,10 +125,8 @@ namespace Smash_Forge
         }
     }
 
-    public class EnemyGenerator
+    public class EnemyGenerator : LVDEntry
     {
-        public string name;
-        public string subname;
         public List<Section> sections = new List<Section>();
 
         public EnemyGenerator()
@@ -168,10 +162,8 @@ namespace Smash_Forge
         }
     }
 
-    public class Collision
+    public class Collision : LVDEntry
     {
-        public string name;
-        public string subname;
         public List<Vector2D> verts = new List<Vector2D>();
         public List<Vector2D> normals = new List<Vector2D>();
         public List<CollisionMat> materials = new List<CollisionMat>();
@@ -316,6 +308,7 @@ namespace Smash_Forge
             damageSpheres = new List<Sphere>();
             items = new List<ItemSpawner>();
             damageCapsules = new List<Capsule>();
+            enemySpawns = new List<EnemyGenerator>();
         }
         public LVD(string filename) : this()
         {
@@ -330,6 +323,7 @@ namespace Smash_Forge
         public List<Sphere> damageSpheres { get; set; }
         public List<ItemSpawner> items { get; set; }
         public List<Capsule> damageCapsules { get; set; }
+        public List<EnemyGenerator> enemySpawns { get; set; }
 
         public override Endianness Endian { get; set; }
 
