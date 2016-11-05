@@ -26,19 +26,19 @@ namespace Smash_Forge
 
         private void selectItem(object sender, TreeNodeMouseClickEventArgs e)
         {
-            Console.WriteLine("Selected Anim");
             if(e.Node.Level == 1)
             {
                 if (e.Node.Parent.Text == "Bone Animations")
                 {
                     Runtime.TargetAnim = Runtime.Animations[e.Node.Text];
-                    Runtime.TargetAnimString = e.Node.Name;
+                    Runtime.TargetAnimString = e.Node.Text;
+                    Console.WriteLine("Selected Anim " + e.Node.Text);
                 }
                 else if(e.Node.Parent.Text == "Material Animations")
                 {
                     MainForm.Instance.viewports[0].loadMTA(Runtime.MaterialAnimations[e.Node.Text]);
                     //Runtime.TargetMTA = ;
-                    Runtime.TargetMTAString = e.Node.Name;
+                    Runtime.TargetMTAString = e.Node.Text;
                 }
             }
         }

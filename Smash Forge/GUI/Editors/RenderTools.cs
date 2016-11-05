@@ -145,7 +145,7 @@ namespace Smash_Forge
             // Draw grid over it
             GL.Disable(EnableCap.DepthTest);
 
-            GL.Color3(Color.DimGray);
+            GL.Color3(Color.LightGray);
             GL.LineWidth(1f);
             GL.Begin(PrimitiveType.Lines);
             for (var i = -10; i <= 10; i++)

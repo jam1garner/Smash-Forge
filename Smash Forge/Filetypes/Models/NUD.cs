@@ -87,7 +87,7 @@ namespace Smash_Forge
                     foreach (Vertex v in p.vertices)
                     {
                         vert.Add(v.pos);
-                        col.Add(v.col);
+                        col.Add(v.col/0x7F);
                         nrm.Add(v.nrm);
 
                         uv.Add(v.tx[0]);
@@ -1175,6 +1175,65 @@ namespace Smash_Forge
                 polygons[0].AddVertex(v);
             }
         }
+
+        #region Converters
+
+        public MBN toMBN()
+        {
+            MBN m = new Smash_Forge.MBN();
+
+            m.setDefaultDescriptor();
+            List<MBN.Vertex> vertBank = new List<MBN.Vertex>();
+
+            foreach (Mesh mesh in mesh)
+            {
+                MBN.Mesh nmesh = new MBN.Mesh();
+
+                int pi = 0;
+                int fadd = vertBank.Count;
+                nmesh.nodeList = new List<List<int>>();
+                nmesh.faces = new List<List<int>>();
+                foreach (Polygon p in mesh.polygons)
+                {
+                    List<int> nodeList = new List<int>();
+                    // vertices
+                    foreach(Vertex v in p.vertices)
+                    {
+                        MBN.Vertex mv = new MBN.Vertex();
+                        mv.pos = v.pos;
+                        mv.nrm = v.nrm;
+                        mv.tx = v.tx;
+                        mv.col = v.col;
+                        int n1 = v.node[0];
+                        int n2 = v.node.Count > 1 ? v.node[1] : 0;
+                        if (!nodeList.Contains(n1)) nodeList.Add(n1);
+                        if (!nodeList.Contains(n2)) nodeList.Add(n2);
+                        mv.node.Add(nodeList.IndexOf(n1));
+                        mv.node.Add(nodeList.IndexOf(n2));
+                        mv.weight.Add(v.weight[0]);
+                        mv.weight.Add(v.weight.Count > 1 ? v.weight[1] : 0);
+                        vertBank.Add(mv);
+                    }
+                    // Node list 
+                    nmesh.nodeList.Add(nodeList);
+                    // polygons
+                    List<int> fac = new List<int>();
+                    nmesh.faces.Add(fac);
+                    foreach (int i in p.faces)
+                        fac.Add(i + fadd);
+                    pi++;
+                }
+
+                m.mesh.Add(nmesh);
+            }
+            m.vertices = vertBank;
+
+            Console.WriteLine(m.vertices.Count + " " + m.descript.Count);
+
+            return m;
+        }
+
+        #endregion
     }
 }
 

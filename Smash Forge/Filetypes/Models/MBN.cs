@@ -15,16 +15,16 @@ namespace Smash_Forge
             Stage = 4
         }
 
-        int format = 4;
+        int format = 6;
         ushort unkown = 0xFFFF;
         int flags = 0;
-        int mode = 0;
+        int mode = 1;
         public List<Mesh> mesh = new List<Mesh>();
         public List<Vertex> vertices = new List<Vertex>();
         public List<string> nameTable = new List<string>();
 
 
-        public List<Descriptor> descript; // Descriptors are used to describe the vertex data...
+        public List<Descriptor> descript = new List<Descriptor>(); // Descriptors are used to describe the vertex data...
 
 
         // Rendering
@@ -368,7 +368,7 @@ namespace Smash_Forge
                         {
                             for (int k = 0; k < des.type.Length; k++)
                             {
-                                fv.align(2, 0xFF);
+                                fv.align(2, 0x00);
                                 switch(des.type[k]){
                                     case 0: //Position
                                         writeType(fv, v.pos.X, des.format[k], des.scale[k]);
@@ -526,10 +526,10 @@ namespace Smash_Forge
                     d.writeByte((int)(value / scale));
                     break;
                 case 2:
-                    d.writeByte((int)(byte)(value / scale));
+                    d.writeByte((byte)(value / scale));
                     break;
                 case 3:
-                    d.writeShort((int)(value / scale));
+                    d.writeShort((short)(value / scale));
                     break;
             }
         }
@@ -596,6 +596,25 @@ namespace Smash_Forge
             // display
             public bool isVisible = true;
             public int texId = 0;
+        }
+
+        public void setDefaultDescriptor()
+        {
+            Descriptor d = new Descriptor();
+            d.type = new int[5];
+            d.format = new int[5];
+            d.scale = new float[5];
+            d.type[0] = 0;
+            d.type[1] = 1;
+            d.type[2] = 3;
+            d.type[3] = 5;
+            d.type[4] = 6;
+            for (int i = 0; i < 5; i++)
+            {
+                d.format[i] = 0;
+                d.scale[i] = 1f;
+            }
+            descript.Add(d);
         }
 
         /*
