@@ -208,7 +208,7 @@ namespace Smash_Forge
             flag4 = Convert.ToBoolean(f.readByte());
             f.skip(1);//Seperation char
             //f.skip(0xAA);
-            Console.WriteLine(f.pos());
+            //Console.WriteLine(f.pos());
             int vertCount = f.readInt();
             for(int i = 0; i < vertCount; i++)
             {

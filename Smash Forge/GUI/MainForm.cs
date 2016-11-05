@@ -821,6 +821,13 @@ namespace Smash_Forge
             Runtime.TargetVBN.unk_1 = 2;
             Runtime.TargetVBN.unk_2 = 1;
         }
+
+        public void openMats(NUD.Polygon poly, string name)
+        {
+            AddDockedControl(new NUDMaterialEditor(poly.materials) { ShowHint = DockState.Float, Text = name});
+            
+        }
+
         private void openStageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (var ofd = new FolderSelectDialog())

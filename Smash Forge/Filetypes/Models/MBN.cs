@@ -247,7 +247,7 @@ namespace Smash_Forge
             }
 
             if(mode == 0){
-                Console.WriteLine("Extra!");
+                //Console.WriteLine("Extra!");
             }
 
             // TODO: STRING TABLE

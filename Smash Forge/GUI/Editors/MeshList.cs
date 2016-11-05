@@ -49,16 +49,16 @@ namespace Smash_Forge
                 ((NUD.Polygon)e.Node.Tag).isVisible = e.Node.Checked;
         }
 
-        private void polySelected(NUD.Polygon poly)
+        private void polySelected(NUD.Polygon poly, string name)
         {
             //DO STUFF HERE PLOAJ
-            Console.WriteLine("\nPoly selected ");
+            MainForm.Instance.openMats(poly,name);
         }
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
             if (e.Node.Tag is NUD.Polygon)
-                polySelected((NUD.Polygon)e.Node.Tag);
+                polySelected((NUD.Polygon)e.Node.Tag, $"{e.Node.Parent.Text} {e.Node.Text}");
         }
     }
 }

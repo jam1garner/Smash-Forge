@@ -32,7 +32,7 @@ namespace Smash_Forge
                 {
                     Runtime.TargetAnim = Runtime.Animations[e.Node.Text];
                     Runtime.TargetAnimString = e.Node.Text;
-                    Console.WriteLine("Selected Anim " + e.Node.Text);
+                    //Console.WriteLine("Selected Anim " + e.Node.Text);
                 }
                 else if(e.Node.Parent.Text == "Material Animations")
                 {

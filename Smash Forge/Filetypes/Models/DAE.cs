@@ -9915,7 +9915,7 @@ namespace Smash_Forge
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                //Console.WriteLine(ex);
             }
             return ret;
         }

@@ -1090,7 +1090,7 @@ namespace Smash_Forge
 
         public void HandleACMD(string animname)
         {
-            Console.WriteLine("Handling");
+            //Console.WriteLine("Handling");
             var crc = Crc32.Compute(animname.ToLower());
 
             if (Runtime.Moveset == null)

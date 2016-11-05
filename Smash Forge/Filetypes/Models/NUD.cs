@@ -251,7 +251,7 @@ namespace Smash_Forge
                                     //Console.WriteLine("MTA mat hash match");
                                     if (mat.hasPat)
                                     {
-                                        ma.displayTexId = mat.pat0.getTexId(frame);
+                                        ma.displayTexId = mat.pat0.getTexId((int)((frame * 60 / m.frameRate) % m.numFrames));
                                         //Console.WriteLine("PAT0 TexID - " + ma.displayTexId);
                                     }
 
@@ -262,9 +262,9 @@ namespace Smash_Forge
                                         if (md.frames.Count > 0)
                                         {
                                             if (ma.anims.ContainsKey(md.name))
-                                                ma.anims[md.name] = md.frames[frame % md.frames.Count].values;
+                                                ma.anims[md.name] = md.frames[(int)((frame * 60 / m.frameRate) % m.numFrames)].values;
                                             else
-                                                ma.anims.Add(md.name, md.frames[frame % md.frames.Count].values);
+                                                ma.anims.Add(md.name, md.frames[(int)((frame * 60 / m.frameRate) % m.numFrames)].values);
                                             //Console.WriteLine(""+md.frames[frame % md.frames.Count].values[0]+"," + md.frames[frame % md.frames.Count].values[1] + "," + md.frames[frame % md.frames.Count].values[2] + "," + md.frames[frame % md.frames.Count].values[3]);
                                         }
                                             
@@ -283,7 +283,7 @@ namespace Smash_Forge
                 {
                     if (me.name.Equals(e.name))
                     {
-                        Console.WriteLine("Set " + me.name + " to " + state);
+                        //Console.WriteLine("Set " + me.name + " to " + state);
                         if (state == 0)
                         {
                             me.isVisible = false;
@@ -1228,7 +1228,7 @@ namespace Smash_Forge
             }
             m.vertices = vertBank;
 
-            Console.WriteLine(m.vertices.Count + " " + m.descript.Count);
+            //Console.WriteLine(m.vertices.Count + " " + m.descript.Count);
 
             return m;
         }
