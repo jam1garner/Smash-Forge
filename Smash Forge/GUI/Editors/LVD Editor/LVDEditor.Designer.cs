@@ -36,8 +36,8 @@
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.xtext = new System.Windows.Forms.TextBox();
+            this.ytext = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.flag1 = new System.Windows.Forms.CheckBox();
@@ -67,7 +67,7 @@
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(280, 653);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(280, 810);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // collisionGroup
@@ -86,9 +86,9 @@
             this.collisionGroup.Controls.Add(this.flag2);
             this.collisionGroup.Controls.Add(this.flag1);
             this.collisionGroup.Controls.Add(this.label4);
-            this.collisionGroup.Controls.Add(this.textBox2);
+            this.collisionGroup.Controls.Add(this.ytext);
             this.collisionGroup.Controls.Add(this.label3);
-            this.collisionGroup.Controls.Add(this.textBox1);
+            this.collisionGroup.Controls.Add(this.xtext);
             this.collisionGroup.Controls.Add(this.label2);
             this.collisionGroup.Controls.Add(this.button2);
             this.collisionGroup.Controls.Add(this.button1);
@@ -150,19 +150,19 @@
             this.label2.TabIndex = 4;
             this.label2.Text = "X";
             // 
-            // textBox1
+            // xtext
             // 
-            this.textBox1.Location = new System.Drawing.Point(34, 243);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(58, 20);
-            this.textBox1.TabIndex = 5;
+            this.xtext.Location = new System.Drawing.Point(34, 243);
+            this.xtext.Name = "xtext";
+            this.xtext.Size = new System.Drawing.Size(58, 20);
+            this.xtext.TabIndex = 5;
             // 
-            // textBox2
+            // ytext
             // 
-            this.textBox2.Location = new System.Drawing.Point(125, 243);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(58, 20);
-            this.textBox2.TabIndex = 7;
+            this.ytext.Location = new System.Drawing.Point(125, 243);
+            this.ytext.Name = "ytext";
+            this.ytext.Size = new System.Drawing.Size(58, 20);
+            this.ytext.TabIndex = 7;
             // 
             // label3
             // 
@@ -197,9 +197,9 @@
             this.flag2.AutoSize = true;
             this.flag2.Location = new System.Drawing.Point(64, 19);
             this.flag2.Name = "flag2";
-            this.flag2.Size = new System.Drawing.Size(49, 17);
+            this.flag2.Size = new System.Drawing.Size(83, 17);
             this.flag2.TabIndex = 11;
-            this.flag2.Text = "flag2";
+            this.flag2.Text = "Rig Collision";
             this.flag2.UseVisualStyleBackColor = true;
             // 
             // flag3
@@ -217,9 +217,9 @@
             this.flag4.AutoSize = true;
             this.flag4.Location = new System.Drawing.Point(64, 42);
             this.flag4.Name = "flag4";
-            this.flag4.Size = new System.Drawing.Size(49, 17);
+            this.flag4.Size = new System.Drawing.Size(92, 17);
             this.flag4.TabIndex = 13;
-            this.flag4.Text = "flag4";
+            this.flag4.Text = "Drop Through";
             this.flag4.UseVisualStyleBackColor = true;
             // 
             // leftLedge
@@ -255,6 +255,16 @@
             // passthroughAngle
             // 
             this.passthroughAngle.Location = new System.Drawing.Point(109, 434);
+            this.passthroughAngle.Maximum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            0});
+            this.passthroughAngle.Minimum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            -2147483648});
             this.passthroughAngle.Name = "passthroughAngle";
             this.passthroughAngle.Size = new System.Drawing.Size(59, 20);
             this.passthroughAngle.TabIndex = 17;
@@ -291,6 +301,7 @@
             this.vertices.Name = "vertices";
             this.vertices.Size = new System.Drawing.Size(259, 134);
             this.vertices.TabIndex = 21;
+            this.vertices.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.vertices_AfterSelect);
             // 
             // lines
             // 
@@ -298,12 +309,13 @@
             this.lines.Name = "lines";
             this.lines.Size = new System.Drawing.Size(259, 134);
             this.lines.TabIndex = 22;
+            this.lines.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.lines_AfterSelect);
             // 
             // LVDEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(280, 653);
+            this.ClientSize = new System.Drawing.Size(280, 810);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "LVDEditor";
@@ -327,9 +339,9 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox ytext;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox xtext;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.CheckBox flag4;
         private System.Windows.Forms.CheckBox flag3;
