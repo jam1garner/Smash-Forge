@@ -82,11 +82,17 @@
     <Compile Include="GUI\Editors\BoneTree.Designer.cs">
       <DependentUpon>BoneTree.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\LVDEditor.cs">
+    <Compile Include="GUI\Editors\LVD Editor\LVDEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\LVDEditor.Designer.cs">
+    <Compile Include="GUI\Editors\LVD Editor\LVDEditor.Designer.cs">
       <DependentUpon>LVDEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\LVD Editor\LVDList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\LVD Editor\LVDList.Designer.cs">
+      <DependentUpon>LVDList.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\MeshList.cs">
       <SubType>Form</SubType>
@@ -165,8 +171,11 @@
     <EmbeddedResource Include="GUI\Editors\BoneTree.resx">
       <DependentUpon>BoneTree.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\LVDEditor.resx">
+    <EmbeddedResource Include="GUI\Editors\LVD Editor\LVDEditor.resx">
       <DependentUpon>LVDEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\LVD Editor\LVDList.resx">
+      <DependentUpon>LVDList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\NUDMaterialEditor.resx">
       <DependentUpon>NUDMaterialEditor.cs</DependentUpon>

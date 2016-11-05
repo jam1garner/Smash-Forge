@@ -750,9 +750,29 @@ namespace Smash_Forge
                     {
                         RenderTools.drawCylinder(new Vector3(c.x, c.y, c.z), new Vector3(c.x + c.dx, c.y + c.dy, c.z + c.dz), c.r);
                     }
+
+                    GL.Color4(Color.FromArgb(128, Color.Red));
+                    foreach (Bounds b in Runtime.TargetLVD.blastzones)
+                    {
+                        GL.Begin(PrimitiveType.LineLoop);
+                        GL.Vertex3(b.left, b.top, 0);
+                        GL.Vertex3(b.right, b.top, 0);
+                        GL.Vertex3(b.right, b.bottom, 0);
+                        GL.Vertex3(b.left, b.bottom, 0);
+                        GL.End();
+                    }
+
+                    GL.Color4(Color.FromArgb(128, Color.Blue));
+                    foreach (Bounds b in Runtime.TargetLVD.cameraBounds)
+                    {
+                        GL.Begin(PrimitiveType.LineLoop);
+                        GL.Vertex3(b.left, b.top, 0);
+                        GL.Vertex3(b.right, b.top, 0);
+                        GL.Vertex3(b.right, b.bottom, 0);
+                        GL.Vertex3(b.left, b.bottom, 0);
+                        GL.End();
+                    }
                 }
-
-
             }
         }
 

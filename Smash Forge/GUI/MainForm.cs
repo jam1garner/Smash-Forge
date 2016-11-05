@@ -27,8 +27,9 @@ namespace Smash_Forge
 
             AddDockedControl(leftPanel);
             AddDockedControl(rightPanel);
-            AddDockedControl(lvdEditing);
+            AddDockedControl(lvdEditor);
             AddDockedControl(project);
+            AddDockedControl(lvdList);
 
             rightPanel.treeView1.Nodes.Add(animNode);
             rightPanel.treeView1.Nodes.Add(mtaNode);
@@ -79,7 +80,8 @@ namespace Smash_Forge
         public TreeNode animNode = new TreeNode("Bone Animations");
         public TreeNode mtaNode = new TreeNode("Material Animations");
         public ProjectTree project = new ProjectTree() { ShowHint = DockState.DockLeft };
-        public LVDEditor lvdEditing = new LVDEditor() { ShowHint = DockState.DockRight };
+        public LVDList lvdList = new LVDList() { ShowHint = DockState.DockLeft };
+        public LVDEditor lvdEditor = new LVDEditor() { ShowHint = DockState.DockRight };
         public List<PARAMEditor> paramEditors = new List<PARAMEditor>() { };
         public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() { };
         public MeshList meshList = new MeshList() { ShowHint = DockState.DockRight };
@@ -432,6 +434,7 @@ namespace Smash_Forge
                     if (ofd.FileName.EndsWith(".lvd"))
                     {
                         Runtime.TargetLVD = new LVD(ofd.FileName);
+                        lvdList.fillList();
                     }
 
                     if (ofd.FileName.EndsWith(".mtable"))
@@ -854,6 +857,7 @@ namespace Smash_Forge
                             if (f.EndsWith(".lvd") && Runtime.TargetLVD != null)
                             {
                                 Runtime.TargetLVD = new LVD(f);
+                                lvdList.fillList();
                             }
                         }
                     }
