@@ -819,7 +819,7 @@ namespace Smash_Forge
                     // Write the vertex....
 
                     writeVertex(vert, vertadd, mesh[i].polygons[k]);
-
+                    vertadd.align(16, 0x0);
                 }
             }
 

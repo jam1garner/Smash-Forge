@@ -927,5 +927,23 @@ namespace Smash_Forge
                 }
             }
         }
+
+        private void saveNUDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.ModelContainers.Count > 0)
+            {
+                string filename = "";
+                SaveFileDialog save = new SaveFileDialog();
+                save.Filter = "Namco Universal Data|*.nud|All files(*.*)|*.*";
+                DialogResult result = save.ShowDialog();
+
+                if (result == DialogResult.OK)
+                {
+                    filename = save.FileName;
+                    if (filename.EndsWith(".nud"))
+                        Runtime.ModelContainers[0].nud.Save(filename);
+                }
+            }
+        }
     }
 }
