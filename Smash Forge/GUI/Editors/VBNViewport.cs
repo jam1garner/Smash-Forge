@@ -365,7 +365,7 @@ namespace Smash_Forge
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
 
             GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.FrontAndBack);
+            GL.CullFace(CullFaceMode.Back);
             
             // draw models
             if (Runtime.renderModel)
@@ -374,7 +374,7 @@ namespace Smash_Forge
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
             GL.DepthFunc(DepthFunction.Less);
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-            GL.CullFace(CullFaceMode.FrontAndBack);
+            GL.CullFace(CullFaceMode.Front);
 
             GL.UseProgram(0);
             // draw path.bin

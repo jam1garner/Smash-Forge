@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -272,6 +273,7 @@ namespace Smash_Forge
                 material[current].unkownWater = 0; ;
         }
 
+        #region Textures
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             int index = 0;
@@ -288,6 +290,14 @@ namespace Smash_Forge
             comboBox11.SelectedItem = minfilter[tex.minFilter];
             comboBox12.SelectedItem = magfilter[tex.magFilter];
             comboBox13.SelectedItem = mip[tex.mipDetail];
+        }
+        
+        private void textBox10_TextChanged(object sender, EventArgs e)
+        {
+            int f = -1;
+            int.TryParse(textBox10.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f);
+            if (f != -1 && listView1.SelectedIndices.Count > 0)
+                material[current].textures[listView1.SelectedIndices[0]].hash = f;
         }
 
         private void textBox6_TextChanged(object sender, EventArgs e)
@@ -381,24 +391,46 @@ namespace Smash_Forge
                     break;
                 }
         }
+        #endregion
 
+        #region Properties
         private void listView2_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listView2.SelectedIndices.Count > 0)
                 textBox11.Text = material[current].entries.Keys.ElementAt(listView2.SelectedIndices[0]);
-
-            textBox12.Text = material[current].entries[textBox11.Text][0] + "";
-            textBox13.Text = material[current].entries[textBox11.Text][1] + "";
-            textBox14.Text = material[current].entries[textBox11.Text][2] + "";
-            textBox15.Text = material[current].entries[textBox11.Text][3] + "";
+            if (textBox11.Text.Equals("NU_materialHash"))
+            {
+                
+                textBox12.Text = BitConverter.ToInt32(BitConverter.GetBytes(material[current].entries[textBox11.Text][0]), 0).ToString("X");
+                textBox13.Text = material[current].entries[textBox11.Text][1] + "";
+                textBox14.Text = material[current].entries[textBox11.Text][2] + "";
+                textBox15.Text = material[current].entries[textBox11.Text][3] + "";
+            }
+            else
+            {
+                textBox12.Text = material[current].entries[textBox11.Text][0] + "";
+                textBox13.Text = material[current].entries[textBox11.Text][1] + "";
+                textBox14.Text = material[current].entries[textBox11.Text][2] + "";
+                textBox15.Text = material[current].entries[textBox11.Text][3] + "";
+            }
         }
 
         private void textBox12_TextChanged(object sender, EventArgs e)
         {
-            float f = -1;
-            float.TryParse(textBox12.Text, out f);
-            if (f != -1)
-                material[current].entries[listView2.SelectedItems[0].Text][0] = f;
+            if (textBox11.Text.Equals("NU_materialHash"))
+            {
+                int f = -1;
+                int.TryParse(textBox12.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f);
+                if (f != -1)
+                    material[current].entries[listView2.SelectedItems[0].Text][0] = BitConverter.ToSingle(BitConverter.GetBytes(f), 0);
+            }
+            else
+            {
+                float f = -1;
+                float.TryParse(textBox12.Text, out f);
+                if (f != -1)
+                    material[current].entries[listView2.SelectedItems[0].Text][0] = f;
+            }
         }
 
         private void textBox13_TextChanged(object sender, EventArgs e)
@@ -424,5 +456,6 @@ namespace Smash_Forge
             if (f != -1)
                 material[current].entries[listView2.SelectedItems[0].Text][3] = f;
         }
+        #endregion
     }
 }
