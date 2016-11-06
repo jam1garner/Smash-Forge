@@ -178,7 +178,8 @@ namespace Smash_Forge
                         {
                             GL.ActiveTexture(TextureUnit.Texture0);
                             GL.BindTexture(TextureTarget.Texture2D, tex);
-                            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.MirroredRepeat);
+                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[0].WrapMode1]);
+                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[0].WrapMode2]);
                             GL.Uniform1(shader.getAttribute("tex"), 0);
                             tex = -1;
                         }
@@ -189,6 +190,8 @@ namespace Smash_Forge
                         {
                             GL.ActiveTexture(TextureUnit.Texture1);
                             GL.BindTexture(TextureTarget.Texture2D, tex);
+                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[1].WrapMode1]);
+                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[1].WrapMode2]);
                             GL.Uniform1(shader.getAttribute("nrm"), 1);
                             break;
                         }
@@ -270,6 +273,12 @@ namespace Smash_Forge
                     { 0x03, BlendingFactorSrc.OneMinusSrcColor},
                     { 0x04, BlendingFactorSrc.SrcColor},
                     { 0x0a, BlendingFactorSrc.Zero}
+                };
+
+        Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>(){
+                    { 0x01, TextureWrapMode.Repeat},
+                    { 0x02, TextureWrapMode.MirroredRepeat},
+                    { 0x03, TextureWrapMode.Clamp}
                 };
 
         public void clearMTA()
