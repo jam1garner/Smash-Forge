@@ -327,7 +327,7 @@ namespace Smash_Forge
             }
 
             n.PreRender();
-            File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\murabito\\isa.nud",n.Rebuild());
+            //File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\murabito\\isa.nud",n.Rebuild());
         }
 
         private void openNud(string filename)
