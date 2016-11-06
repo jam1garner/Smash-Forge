@@ -256,8 +256,7 @@ namespace Smash_Forge
 
         string vs = "#version 330\n \nin vec3 vPosition;\nin vec4 vColor;\nin vec3 vNormal;\nin vec2 vUV;\nin vec4 vBone;\nin vec4 vWeight;\n\nout vec2 f_texcoord;\nout float normal;\nout vec4 color;\n\nuniform mat4 modelview;\nuniform mat4 bones[150];\n \nvoid\nmain()\n{\n    ivec4 index = ivec4(vBone); \n\n    vec4 objPos = vec4(vPosition.xyz, 1.0);\n\n    if(vBone.x != -1){\n        objPos = bones[index.x] * vec4(vPosition, 1.0) * vWeight.x;\n        objPos += bones[index.y] * vec4(vPosition, 1.0) * vWeight.y;\n        objPos += bones[index.z] * vec4(vPosition, 1.0) * vWeight.z;\n        objPos += bones[index.w] * vec4(vPosition, 1.0) * vWeight.w;\n    } \n\n    gl_Position = modelview * vec4(objPos.xyz, 1.0);\n\n    vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;\n\n    f_texcoord = vUV;\n    normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;// vec4(distance, 1.0)\n    color = vColor;\n}";
 
-        string fs = "#version 330\n\nin vec2 f_texcoord;\nin vec4 color;\nin float normal;\n\nuniform sampler2D tex;\nuniform vec4 colorSamplerUV;\n\nvoid\nmain()\n{\n    vec2 texcoord = vec2((f_texcoord * colorSamplerUV.xy) + colorSamplerUV.zw) ;\n\n    vec4 ambiant = vec4(0.3,0.3,0.3,1.0) * texture(tex, texcoord).rgba;\n\n    vec4 alpha = texture2D(tex, texcoord).aaaa;\n  if(alpha.a < 0.5) discard;    vec4 outputColor = ambiant + (vec4(texture(tex, texcoord).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * normal);\n    gl_FragColor =   vec4(((color * alpha * outputColor)).xyz, alpha.x * color.x);\n}";
-
+        string fs = "#version 330\n\nin vec2 f_texcoord;\nin vec4 color;\nin float normal;\n\nuniform sampler2D tex;\nuniform sampler2D nrm;\nuniform vec4 colorSamplerUV;\n\nvoid\nmain()\n{\n    vec2 texcoord = vec2((f_texcoord * colorSamplerUV.xy) + colorSamplerUV.zw) ;\n\n    vec3 norm = 2.0 * texture2D (nrm, texcoord).rgb - 1.0;\n    norm = normalize (norm);\n    float lamberFactor= max (dot (vec3(0.85, 0.85, 0.85), norm), 0.7) * 1.5;\n\n    vec4 ambiant = vec4(0.3,0.3,0.3,1.0) * texture(tex, texcoord).rgba;\n\n    vec4 alpha = texture2D(tex, texcoord).aaaa;\n    if(alpha.a < 0.5) discard;    \n	vec4 outputColor = ambiant + (vec4(texture(tex, texcoord).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * normal);\n    gl_FragColor =   vec4(((color * alpha * outputColor)).xyz, alpha.x);\n}\n";
 
         private void SetupViewPort()
         {
@@ -281,6 +280,7 @@ namespace Smash_Forge
                     shader.addAttribute("vWeight", false);
 
                     shader.addAttribute("tex", true);
+                    shader.addAttribute("nrm", true);
                     shader.addAttribute("modelview", true);
                     shader.addAttribute("bones", true);
                     shader.addAttribute("colorSamplerUV", true);
@@ -333,8 +333,7 @@ namespace Smash_Forge
 
             GL.Enable(EnableCap.DepthTest);
             GL.ClearDepth(1.0);
-
-
+            
             // set up the viewport projection and send it to GPU
             GL.MatrixMode(MatrixMode.Projection);
 
@@ -351,16 +350,13 @@ namespace Smash_Forge
             // drawing floor---------------------------
             if (Runtime.renderFloor)
                 RenderTools.drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
-
-
+            
             GL.Enable(EnableCap.LineSmooth); // This is Optional 
             GL.Enable(EnableCap.Normalize);  // These is critical to have
             GL.Enable(EnableCap.RescaleNormal);
 
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-            //GL.BlendFunc(BlendingFactorSrc.OneMinusDstAlpha, BlendingFactorDest.One);
-            //GL.BlendEquation(BlendEquationMode.Min);
 
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
@@ -370,11 +366,15 @@ namespace Smash_Forge
 
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.FrontAndBack);
-
-
+            
             // draw models
             if (Runtime.renderModel)
                 DrawModels();
+            
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            GL.DepthFunc(DepthFunction.Less);
+            GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
+            GL.CullFace(CullFaceMode.Front);
 
             GL.UseProgram(0);
             // draw path.bin

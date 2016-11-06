@@ -163,7 +163,10 @@ namespace Smash_Forge
                         continue;
 
                     int texHash = p.materials[0].displayTexId == -1 ? p.materials[0].textures[0].hash : p.materials[0].displayTexId;
-                    
+                    int nrmHash = -1;
+                    if(p.materials[0].textures.Count > 1)
+                        nrmHash = p.materials[0].textures[1].hash;
+
                     Material mat = p.materials[0];
 
                     int tex = -1;
@@ -173,9 +176,20 @@ namespace Smash_Forge
 
                         if (tex != 0)
                         {
+                            GL.ActiveTexture(TextureUnit.Texture0);
                             GL.BindTexture(TextureTarget.Texture2D, tex);
                             //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.MirroredRepeat);
                             GL.Uniform1(shader.getAttribute("tex"), 0);
+                            tex = -1;
+                        }
+
+                        nut.draw.TryGetValue(nrmHash, out tex);
+
+                        if (tex != 0)
+                        {
+                            GL.ActiveTexture(TextureUnit.Texture1);
+                            GL.BindTexture(TextureTarget.Texture2D, tex);
+                            GL.Uniform1(shader.getAttribute("nrm"), 1);
                             break;
                         }
                     }
@@ -204,11 +218,10 @@ namespace Smash_Forge
 
                     GL.Uniform4(shader.getAttribute("colorSamplerUV"), colorSamplerUV);
 
-                    GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
-                        dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
+                    //GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
+                    //    dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
 
                     GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-
                     switch (mat.alphaFunc){
                         case 0:
                             GL.AlphaFunc(AlphaFunction.Gequal, 128 / 255f);
@@ -223,6 +236,7 @@ namespace Smash_Forge
                             GL.AlphaFunc(AlphaFunction.Lequal, 255 / 255f);
                             break;
                     }
+
                     GL.CullFace(CullFaceMode.Front);
                     switch (mat.cullMode)
                     {
@@ -308,7 +322,7 @@ namespace Smash_Forge
                                             if (ma.anims.ContainsKey(md.name))
                                                 ma.anims[md.name] = md.frames[(int)((frame * 60 / m.frameRate) % m.numFrames)].values;
                                             else
-                                                ma.anims.Add(md.name, md.frames[(int)((frame * 60 / m.frameRate) % m.numFrames)].values);
+                                                ma.anims.Add(md.name, md.frames[(int)((frame * 60 / m.frameRate) % (m.numFrames))].values);
                                             //Console.WriteLine(""+md.frames[frame % md.frames.Count].values[0]+"," + md.frames[frame % md.frames.Count].values[1] + "," + md.frames[frame % md.frames.Count].values[2] + "," + md.frames[frame % md.frames.Count].values[3]);
                                         }
                                             
