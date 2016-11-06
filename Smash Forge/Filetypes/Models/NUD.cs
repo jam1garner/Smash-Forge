@@ -163,6 +163,8 @@ namespace Smash_Forge
                         continue;
 
                     int texHash = p.materials[0].displayTexId == -1 ? p.materials[0].textures[0].hash : p.materials[0].displayTexId;
+                    
+                    Material mat = p.materials[0];
 
                     int tex = -1;
                     foreach (NUT nut in Runtime.TextureContainers)
@@ -180,7 +182,6 @@ namespace Smash_Forge
 
 
                     Vector4 colorSamplerUV = new Vector4(1, 1, 0, 0);
-                    foreach(Material mat in p.materials)
                     {
                         float[] colorSamplerUVFloats;
                         mat.entries.TryGetValue("NU_colorSamplerUV", out colorSamplerUVFloats);
@@ -190,8 +191,7 @@ namespace Smash_Forge
                             colorSamplerUV = new Vector4(colorSamplerUVFloats[0], colorSamplerUVFloats[1], colorSamplerUVFloats[2], colorSamplerUVFloats[3]);
                         }
                     }
-
-                    foreach(Material mat in p.materials)
+                    
                     {
                         float[] colorSamplerUVFloats;
                         mat.anims.TryGetValue("NU_colorSamplerUV", out colorSamplerUVFloats);
@@ -204,6 +204,33 @@ namespace Smash_Forge
 
                     GL.Uniform4(shader.getAttribute("colorSamplerUV"), colorSamplerUV);
 
+                    GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
+                        dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
+
+                    GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
+
+                    switch (mat.alphaFunc){
+                        case 0:
+                            GL.AlphaFunc(AlphaFunction.Gequal, 128 / 255f);
+                            break;
+                    }
+                    switch (mat.ref1)
+                    {
+                        case 4:
+                            GL.AlphaFunc(AlphaFunction.Lequal, 128 / 255f);
+                            break;
+                        case 6:
+                            GL.AlphaFunc(AlphaFunction.Lequal, 255 / 255f);
+                            break;
+                    }
+                    GL.CullFace(CullFaceMode.Front);
+                    switch (mat.cullMode)
+                    {
+                        case 4:
+                            GL.CullFace(CullFaceMode.Back);
+                            break;
+                    }
+
                     if (p.isVisible && m.isVisible)
                     {
                         //(p.strip >> 4) == 4 ? PrimitiveType.Triangles : PrimitiveType.TriangleStrip
@@ -213,6 +240,23 @@ namespace Smash_Forge
                 }
             }
         }
+
+        Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
+                    { 0x01, BlendingFactorDest.SrcAlpha},
+                    { 0x02, BlendingFactorDest.One},
+                    { 0x03, BlendingFactorDest.OneMinusSrcColor},
+                    { 0x04, BlendingFactorDest.OneMinusDstAlpha},
+                    { 0x05, BlendingFactorDest.OneMinusSrcAlpha},
+                    { 0x07, BlendingFactorDest.DstAlpha}
+                };
+
+        Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
+                    { 0x01, BlendingFactorSrc.SrcAlpha},
+                    { 0x02, BlendingFactorSrc.One},
+                    { 0x03, BlendingFactorSrc.OneMinusSrcColor},
+                    { 0x04, BlendingFactorSrc.SrcColor},
+                    { 0x0a, BlendingFactorSrc.Zero}
+                };
 
         public void clearMTA()
         {
