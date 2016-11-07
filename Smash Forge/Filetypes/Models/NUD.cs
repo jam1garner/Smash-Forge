@@ -97,6 +97,8 @@ namespace Smash_Forge
                             v.node.Add(0);
                             v.weight.Add(0);
                         }
+                        //bone.Add(new Vector4(-1, 0, 0, 0));
+                        //weight.Add(new Vector4(-1, 0, 0, 0));
                         bone.Add(new Vector4(v.node[0], v.node[1], v.node[2], v.node[3]));
                         weight.Add(new Vector4(v.weight[0], v.weight[1], v.weight[2], v.weight[3]));
                     }
@@ -221,28 +223,31 @@ namespace Smash_Forge
 
                     GL.Uniform4(shader.getAttribute("colorSamplerUV"), colorSamplerUV);
 
-                    //GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
-                    //    dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
+                    GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
+                        dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
 
                     GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
                     switch (mat.alphaFunc){
                         case 0:
-                            //GL.AlphaFunc(AlphaFunction.Gequal, 128 / 255f);
+                            GL.AlphaFunc(AlphaFunction.Gequal, 128 / 255f);
                             break;
                     }
                     switch (mat.ref1)
                     {
                         case 4:
-                            //GL.AlphaFunc(AlphaFunction.Lequal, 128 / 255f);
+                            GL.AlphaFunc(AlphaFunction.Lequal, 128 / 255f);
                             break;
                         case 6:
-                            //GL.AlphaFunc(AlphaFunction.Lequal, 255 / 255f);
+                            GL.AlphaFunc(AlphaFunction.Lequal, 255 / 255f);
                             break;
                     }
 
                     GL.CullFace(CullFaceMode.Front);
                     switch (mat.cullMode)
                     {
+                        case 0:
+                            GL.Disable(EnableCap.CullFace);
+                            break;
                         case 4:
                             GL.CullFace(CullFaceMode.Back);
                             break;
@@ -253,6 +258,7 @@ namespace Smash_Forge
                         //(p.strip >> 4) == 4 ? PrimitiveType.Triangles : PrimitiveType.TriangleStrip
                         GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
                     }
+                    GL.Enable(EnableCap.CullFace);
                     indiceat += p.displayFaceSize;
                 }
             }
@@ -721,8 +727,7 @@ namespace Smash_Forge
             d.writeInt(0); // polyClump size
             d.writeInt(0); // vertexClumpsize
             d.writeInt(0); // vertexaddcump size
-
-            // some floats.. TODO: I dunno what these are for
+            
             d.writeFloat(param[0]);
             d.writeFloat(param[1]);
             d.writeFloat(param[2]);
@@ -761,7 +766,6 @@ namespace Smash_Forge
 
             for (int i = 0; i < mesh.Count; i++)
             {
-                // more floats TODO: I dunno what these are for
                 foreach (float f in mesh[i].bbox)
                     d.writeFloat(f);
 
@@ -819,7 +823,7 @@ namespace Smash_Forge
                     // Write the vertex....
 
                     writeVertex(vert, vertadd, mesh[i].polygons[k]);
-                    vertadd.align(16, 0x0);
+                    vertadd.align(4, 0x0);
                 }
             }
 
@@ -951,10 +955,10 @@ namespace Smash_Forge
                     d.writeByte(v.node[1]);
                     d.writeByte(v.node[2]);
                     d.writeByte(v.node[3]);
-                    d.writeByte((int)(v.weight[0] * 255f));
-                    d.writeByte((int)(v.weight[1] * 255f));
-                    d.writeByte((int)(v.weight[2] * 255f));
-                    d.writeByte((int)(v.weight[3] * 255f));
+                    d.writeByte((int)(Math.Round(v.weight[0] * 0xFF)));
+                    d.writeByte((int)(Math.Round(v.weight[1] * 0xFF)));
+                    d.writeByte((int)(Math.Round(v.weight[2] * 0xFF)));
+                    d.writeByte((int)(Math.Round(v.weight[3] * 0xFF)));
                 }
             }
         }
