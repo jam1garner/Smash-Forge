@@ -163,6 +163,7 @@ namespace Smash_Forge
                         n_mesh.name = geom.name;
 
                         Dictionary<string, double[]> sources = new Dictionary<string, double[]>();
+                        Dictionary<string, string> vertex = new Dictionary<string, string>();
                         Dictionary<string, string> semantic = new Dictionary<string, string>();
 
                         // Dump source[] for geom
@@ -177,7 +178,7 @@ namespace Smash_Forge
                             var inputs = mesh.vertices.input;
                             foreach (var input in inputs)
                             {
-                                semantic.Add(input.semantic, input.source);
+                                vertex.Add(input.semantic, input.source);
                             }
                         }
                         // Dump Items[] for geom
@@ -188,27 +189,30 @@ namespace Smash_Forge
                                 var vertices = meshItem as vertices;
                                 var inputs = vertices.input;
                                 foreach (var input in inputs)
-                                    semantic.Add(input.semantic, input.source);                             
+                                    vertex.Add(input.semantic, input.source);                             
                             }
                             else if (meshItem is triangles)
                             {
                                 var triangles = meshItem as triangles;
                                 var inputs = triangles.input;
 
+                                foreach (var input in inputs)
+                                    semantic.Add(input.semantic, input.source);
+
                                 NUD.Polygon poly = new NUD.Polygon();
                                 poly.setDefaultMaterial();
                                 n_mesh.polygons.Add(poly);
-                                string[] ps = triangles.p.Split(' ');
-                                int vCount = 0;
-                                for (int i = 0; i < ps.Length; i++)
+                                string[] ps = triangles.p.StartsWith(" ") ? triangles.p.Substring(1).Split(' ') : triangles.p.Split(' ');
+                                for (int i = 0; i < ps.Length;)
                                 {
+                                    //poly.faces.Add(int.Parse(ps[i]));
+                                    int p = int.Parse(ps[i]);
+                                    /*}
                                     poly.faces.Add(int.Parse(ps[i]));
-                                    if (int.Parse(ps[i]) > vCount)
-                                        vCount = int.Parse(ps[i]);
-                                }
-
-                                for (int i = 0; i < vCount + 1; i++)
-                                {
+                                        if (int.Parse(ps[i]) > vCount)
+                                            vCount = int.Parse(ps[i]);
+                                    for (int i = 0; i < vCount + 1; i++)
+                                    {*/
                                     NUD.Vertex v = new NUD.Vertex();
 
                                     // iterate semantics
@@ -221,28 +225,69 @@ namespace Smash_Forge
                                         sources.TryGetValue(src, out bank);
                                         switch (s)
                                         {
+                                            case "VERTEX":
+                                                {
+                                                    poly.faces.Add(p);
+                                                    //poly.AddVertex(v);
+                                                    while (poly.vertices.Count <= p)
+                                                        poly.AddVertex(new NUD.Vertex());
+                                                    poly.vertices[p] = v;
+                                                    foreach (string s2 in vertex.Keys)
+                                                    {
+                                                        string vsrc;
+                                                        vertex.TryGetValue(s2, out vsrc);
+                                                        vsrc = vsrc.Replace("#", "");
+                                                        //Console.WriteLine(vsrc);
+                                                        sources.TryGetValue(vsrc, out bank);
+                                                        switch (s2)
+                                                        {
+                                                            case "POSITION":
+                                                                v.pos.X = (float)bank[p * 3 + 0];
+                                                                v.pos.Y = (float)bank[p * 3 + 1];
+                                                                v.pos.Z = (float)bank[p * 3 + 2];
+                                                                break;
+                                                            case "NORMAL":
+                                                                v.nrm.X = (float)bank[p * 3 + 0];
+                                                                v.nrm.Y = (float)bank[p * 3 + 1];
+                                                                v.nrm.Z = (float)bank[p * 3 + 2];
+                                                                break;
+                                                            case "COLOR":
+                                                                v.col.X = (float)bank[p * 4 + 0] * 255;
+                                                                v.col.Y = (float)bank[p * 4 + 1] * 255;
+                                                                v.col.Z = (float)bank[p * 4 + 2] * 255;
+                                                                v.col.W = (float)bank[p * 4 + 3] * 127;
+                                                                break;
+                                                            case "TEXCOORD":
+                                                                v.tx.Add(new OpenTK.Vector2((float)bank[p * 2 + 0], (float)bank[p * 2 + 1]));
+                                                                break;
+                                                        }
+                                                    }
+                                                    break;
+                                                }
                                             case "POSITION":
-                                                v.pos.X = (float)bank[i * 3 + 0];
-                                                v.pos.Y = (float)bank[i * 3 + 1];
-                                                v.pos.Z = (float)bank[i * 3 + 2];
+                                                v.pos.X = (float)bank[p * 3 + 0];
+                                                v.pos.Y = (float)bank[p * 3 + 1];
+                                                v.pos.Z = (float)bank[p * 3 + 2];
                                                 break;
                                             case "NORMAL":
-                                                v.nrm.X = (float)bank[i * 3 + 0];
-                                                v.nrm.Y = (float)bank[i * 3 + 1];
-                                                v.nrm.Z = (float)bank[i * 3 + 2];
+                                                v.nrm.X = (float)bank[p * 3 + 0];
+                                                v.nrm.Y = (float)bank[p * 3 + 1];
+                                                v.nrm.Z = (float)bank[p * 3 + 2];
                                                 break;
                                             case "COLOR":
-                                                v.col.X = (float)bank[i * 4 + 0] * 255;
-                                                v.col.Y = (float)bank[i * 4 + 1] * 255;
-                                                v.col.Z = (float)bank[i * 4 + 2] * 255;
-                                                v.col.W = (float)bank[i * 4 + 3] * 127;
+                                                v.col.X = (float)bank[p * 4 + 0] * 255;
+                                                v.col.Y = (float)bank[p * 4 + 1] * 255;
+                                                v.col.Z = (float)bank[p * 4 + 2] * 255;
+                                                v.col.W = (float)bank[p * 4 + 3] * 127;
                                                 break;
                                             case "TEXCOORD":
-                                                v.tx.Add(new OpenTK.Vector2((float)bank[i * 2 + 0], (float)bank[i * 2 + 1]));
+                                                v.tx.Add(new OpenTK.Vector2((float)bank[p * 2 + 0], (float)bank[p * 2 + 1]));
                                                 break;
                                         }
+                                        i++;
+                                        if (i >= ps.Length) break;
+                                        p = int.Parse(ps[i]);
                                     }
-                                    poly.AddVertex(v);
                                 }
                             }
                         }
@@ -316,7 +361,9 @@ namespace Smash_Forge
                                             // find weight int weight list
                                             double[] weight;
                                             sources.TryGetValue(sem.source.Replace("#", ""), out weight);
-                                            vert.weight.Add((float)weight[int.Parse(vi[pos++])]);
+                                            float w = (int)Math.Round((float)weight[int.Parse(vi[pos++])] * 0xFF);
+                                            w /= 0xFF;
+                                            vert.weight.Add(w);
                                             break;
                                     }
                                 }
@@ -327,9 +374,56 @@ namespace Smash_Forge
                 }
             }
 
+            foreach (NUD.Mesh mesh in n.mesh)
+            {
+                foreach (NUD.Polygon poly in mesh.polygons)
+                {
+                    foreach (NUD.Vertex v in poly.vertices)
+                    {
+                        float c = 0;
+                        foreach (float f in v.weight)
+                            c += f;
+                        if(c!=1)
+                        Console.WriteLine(c);
+                    }
+                }
+            }
+
             n.PreRender();
             meshList.refresh();
+
+            /*NUD m1 = n;
+            NUD m2 = new NUD("C:\\s\\Smash\\extract\\data\\fighter\\captain\\model\\body\\c00\\test.nud");
+
+
+            int mi = 0, p2 = 0, vi2 = 0;
+            foreach (NUD.Mesh mesh in m1.mesh)
+            {
+                p2 = 0;
+                foreach (NUD.Polygon poly in mesh.polygons)
+                {
+                    Console.WriteLine(poly.vertices.Count + " " + m2.mesh[mi].polygons[p2].vertices.Count);
+                    vi2 = 0;
+                    foreach (NUD.Vertex v in poly.vertices)
+                    {
+                        //if (!v.weight.Equals(m2.mesh[mi].polygons[p2].vertices[vi2].weight))
+                        if (v.node[0] != m2.mesh[mi].polygons[p2].vertices[vi2].node[0])
+                            Console.WriteLine(v.node[0] + " " + m2.mesh[mi].polygons[p2].vertices[vi2].node[0]);
+                        //if (v.weight[0]!=m2.mesh[mi].polygons[p2].vertices[vi2].weight[0])
+                        //        Console.WriteLine(v.weight[0] + " " + m2.mesh[mi].polygons[p2].vertices[vi2].weight[0]);
+                        vi2++;
+                    }
+                    p2++;
+                }
+                mi++;
+            }*/
+
             //File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\murabito\\isa.nud",n.Rebuild());
+        }
+
+        public static void DAEReadSemantic(int p, Dictionary<string, string> semantic)
+        {
+            
         }
 
         private void openNud(string filename)
