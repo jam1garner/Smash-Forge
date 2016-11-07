@@ -24,7 +24,7 @@ namespace Smash_Forge
         private CollisionMat currentMat;
         private TreeNode currentTreeNode;
 
-        enum mat : byte
+        enum materialTypes : byte
         {
             Iron = 0x06,
             Snow = 0x0d,
@@ -94,7 +94,7 @@ namespace Smash_Forge
             leftLedge.Checked = currentMat.getFlag(2);
             rightLedge.Checked = currentMat.getFlag(3);
             noWallJump.Checked = currentMat.getFlag(1);
-            comboBox1.Text = Enum.GetName(typeof(mat), currentMat.getPhysics());
+            comboBox1.Text = Enum.GetName(typeof(materialTypes), currentMat.getPhysics());
             passthroughAngle.Value = (decimal)(Math.Atan2(currentNormal.y, currentNormal.x) * 180.0 / Math.PI);
         }
 

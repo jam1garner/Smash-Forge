@@ -68,7 +68,7 @@ namespace Smash_Forge
 
         public byte getPhysics()
         {
-            return material[4];
+            return material[3];
         }
 
         public void setFlag(int flag, bool value)
@@ -79,7 +79,7 @@ namespace Smash_Forge
 
         public void setPhysics(byte b)
         {
-            material[4] = b;
+            material[3] = b;
         }
     }
 

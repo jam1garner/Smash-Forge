@@ -569,10 +569,67 @@ namespace Smash_Forge
                         int dir = 1;
                         int cg = 0;
                         GL.LineWidth(3);
-                        GL.Color4(Color.FromArgb(100, Color.Red));
+                        
                         GL.Begin(PrimitiveType.Quads);
                         foreach (Vector2D vi in c.verts)
                         {
+                            if (cg < c.materials.Count)
+                            {
+                                //Console.Write(" " + c.materials[cg].getPhysics());
+                                switch (c.materials[cg].getPhysics())
+                                {
+                                    case 0x0d:
+                                    case 0x0e:
+                                    case 0x10:
+                                    case 0x0c:
+                                        GL.Color4(Color.FromArgb(100, 0xa0, 0xff, 0xfd));//Snow, Ice, Ice2, SnowIce
+                                        break;
+                                    case 0x04:
+                                        GL.Color4(Color.FromArgb(100, 0x94, 0x47, 0x0c));//wood
+                                        break;
+                                    case 0x0b:
+                                    case 0x15:
+                                        GL.Color4(Color.FromArgb(100, 0xd4, 0xfb, 0xfa));//bubbles
+                                        break;
+                                    case 0x0a:
+                                        GL.Color4(Color.FromArgb(100, 0x32, 0x8a, 0xe5));//water
+                                        break;
+                                    case 0x16:
+                                        GL.Color4(Color.FromArgb(100, 0xfd, 0xf9, 0xfb));//water
+                                        break;
+                                    case 0x03:
+                                        GL.Color4(Color.FromArgb(100, 0x33, 0x18, 0x03)); //soil
+                                        break;
+                                    case 0x02:
+                                        GL.Color4(Color.FromArgb(100, 0x18, 0x96, 0x4f)); //grass
+                                        break;
+                                    case 0x1C: 
+                                        GL.Color4(Color.FromArgb(100, 0xcd, 0xbe, 0x7e)); //sand
+                                        break;
+                                    case 0x06:
+                                        GL.Color4(Color.FromArgb(100, 0xb3, 0xb3, 0xb3));//Iron
+                                        break;
+                                    case 0x0f:
+                                    case 0x09:
+                                    case 0x05:
+                                    case 0x11:
+                                        GL.Color4(Color.FromArgb(100, 0, 0, 0));//Weird types
+                                        break;
+                                    case 0x08:
+                                        GL.Color4(Color.FromArgb(100, 0xd8, 0x97, 0x58));//Fence
+                                        break;
+                                    case 0x01:
+                                        GL.Color4(Color.FromArgb(100, 0x46, 0x46, 0x46));//Rock
+                                        break;
+                                    case 0x07:
+                                        GL.Color4(Color.FromArgb(100, 0xd7, 0xd0, 0x2d));//Carpet
+                                        break;
+                                    default:
+                                        GL.Color4(Color.FromArgb(100, 0x65, 0x1e, 0x03));//brick
+                                        break;
+                                }
+                            }
+                            
                             GL.Vertex3(vi.x, vi.y, 5 * dir);
                             GL.Vertex3(vi.x, vi.y, -5 * dir);
                             if (cg > 0)
