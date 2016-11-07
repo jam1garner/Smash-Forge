@@ -61,24 +61,25 @@ namespace Smash_Forge
         //public byte physicsType;
         public byte[] material = new byte[0xC];
 
-        public bool rightLedge()
+        public bool getFlag(int n)
         {
-            return ((material[10] & 0x80) != 0);
+            return ((material[10] & (0x10 << (n - 1))) != 0);
         }
 
-        public bool leftLedge()
-        {
-            return ((material[10] & 0x40) != 0);
-        }
-
-        public bool noWallJump()
-        {
-            return ((material[10] & 0x10) != 0);
-        }
-
-        public byte physics()
+        public byte getPhysics()
         {
             return material[4];
+        }
+
+        public void setFlag(int flag, bool value)
+        {
+            if (getFlag(flag) != value)
+                material[10] = (byte)(material[10] & (material[10] ^ (0x10 << (flag - 1))));
+        }
+
+        public void setPhysics(byte b)
+        {
+            material[4] = b;
         }
     }
 

@@ -29,30 +29,30 @@
         private void InitializeComponent()
         {
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.collisionGroup = new System.Windows.Forms.GroupBox();
             this.name = new System.Windows.Forms.TextBox();
             this.subname = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.xtext = new System.Windows.Forms.TextBox();
+            this.collisionGroup = new System.Windows.Forms.GroupBox();
+            this.lines = new System.Windows.Forms.TreeView();
+            this.vertices = new System.Windows.Forms.TreeView();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.passthroughAngle = new System.Windows.Forms.NumericUpDown();
+            this.noWallJump = new System.Windows.Forms.CheckBox();
+            this.rightLedge = new System.Windows.Forms.CheckBox();
+            this.leftLedge = new System.Windows.Forms.CheckBox();
+            this.flag4 = new System.Windows.Forms.CheckBox();
+            this.flag3 = new System.Windows.Forms.CheckBox();
+            this.flag2 = new System.Windows.Forms.CheckBox();
+            this.flag1 = new System.Windows.Forms.CheckBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.ytext = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.flag1 = new System.Windows.Forms.CheckBox();
-            this.flag2 = new System.Windows.Forms.CheckBox();
-            this.flag3 = new System.Windows.Forms.CheckBox();
-            this.flag4 = new System.Windows.Forms.CheckBox();
-            this.leftLedge = new System.Windows.Forms.CheckBox();
-            this.rightLedge = new System.Windows.Forms.CheckBox();
-            this.noWallJump = new System.Windows.Forms.CheckBox();
-            this.passthroughAngle = new System.Windows.Forms.NumericUpDown();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.vertices = new System.Windows.Forms.TreeView();
-            this.lines = new System.Windows.Forms.TreeView();
+            this.xtext = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.flowLayoutPanel1.SuspendLayout();
             this.collisionGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.passthroughAngle)).BeginInit();
@@ -69,6 +69,22 @@
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(280, 810);
             this.flowLayoutPanel1.TabIndex = 0;
+            // 
+            // name
+            // 
+            this.name.Location = new System.Drawing.Point(3, 3);
+            this.name.Name = "name";
+            this.name.Size = new System.Drawing.Size(277, 20);
+            this.name.TabIndex = 1;
+            this.name.TextChanged += new System.EventHandler(this.nameChange);
+            // 
+            // subname
+            // 
+            this.subname.Location = new System.Drawing.Point(3, 29);
+            this.subname.Name = "subname";
+            this.subname.Size = new System.Drawing.Size(277, 20);
+            this.subname.TabIndex = 2;
+            this.subname.TextChanged += new System.EventHandler(this.nameChange);
             // 
             // collisionGroup
             // 
@@ -100,157 +116,47 @@
             this.collisionGroup.TabStop = false;
             this.collisionGroup.Text = "Collision Editing";
             // 
-            // name
+            // lines
             // 
-            this.name.Location = new System.Drawing.Point(3, 3);
-            this.name.Name = "name";
-            this.name.Size = new System.Drawing.Size(277, 20);
-            this.name.TabIndex = 1;
+            this.lines.Location = new System.Drawing.Point(6, 292);
+            this.lines.Name = "lines";
+            this.lines.Size = new System.Drawing.Size(259, 134);
+            this.lines.TabIndex = 22;
+            this.lines.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.lines_AfterSelect);
             // 
-            // subname
+            // vertices
             // 
-            this.subname.Location = new System.Drawing.Point(3, 29);
-            this.subname.Name = "subname";
-            this.subname.Size = new System.Drawing.Size(277, 20);
-            this.subname.TabIndex = 2;
+            this.vertices.Location = new System.Drawing.Point(6, 97);
+            this.vertices.Name = "vertices";
+            this.vertices.Size = new System.Drawing.Size(259, 134);
+            this.vertices.TabIndex = 21;
+            this.vertices.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.vertices_AfterSelect);
             // 
-            // label1
+            // comboBox1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(106, 81);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(45, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Vertices";
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(10, 474);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(121, 21);
+            this.comboBox1.TabIndex = 20;
             // 
-            // button1
+            // label6
             // 
-            this.button1.Location = new System.Drawing.Point(157, 72);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(49, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "+";
-            this.button1.UseVisualStyleBackColor = true;
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(9, 458);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(83, 13);
+            this.label6.TabIndex = 19;
+            this.label6.Text = "Physics Material";
             // 
-            // button2
+            // label5
             // 
-            this.button2.Location = new System.Drawing.Point(212, 71);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(49, 23);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "-";
-            this.button2.UseVisualStyleBackColor = true;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(14, 246);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(14, 13);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "X";
-            // 
-            // xtext
-            // 
-            this.xtext.Location = new System.Drawing.Point(34, 243);
-            this.xtext.Name = "xtext";
-            this.xtext.Size = new System.Drawing.Size(58, 20);
-            this.xtext.TabIndex = 5;
-            // 
-            // ytext
-            // 
-            this.ytext.Location = new System.Drawing.Point(125, 243);
-            this.ytext.Name = "ytext";
-            this.ytext.Size = new System.Drawing.Size(58, 20);
-            this.ytext.TabIndex = 7;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(105, 246);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(14, 13);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "Y";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(109, 276);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(32, 13);
-            this.label4.TabIndex = 9;
-            this.label4.Text = "Lines";
-            // 
-            // flag1
-            // 
-            this.flag1.AutoSize = true;
-            this.flag1.Location = new System.Drawing.Point(9, 19);
-            this.flag1.Name = "flag1";
-            this.flag1.Size = new System.Drawing.Size(49, 17);
-            this.flag1.TabIndex = 10;
-            this.flag1.Text = "flag1";
-            this.flag1.UseVisualStyleBackColor = true;
-            // 
-            // flag2
-            // 
-            this.flag2.AutoSize = true;
-            this.flag2.Location = new System.Drawing.Point(64, 19);
-            this.flag2.Name = "flag2";
-            this.flag2.Size = new System.Drawing.Size(83, 17);
-            this.flag2.TabIndex = 11;
-            this.flag2.Text = "Rig Collision";
-            this.flag2.UseVisualStyleBackColor = true;
-            // 
-            // flag3
-            // 
-            this.flag3.AutoSize = true;
-            this.flag3.Location = new System.Drawing.Point(9, 42);
-            this.flag3.Name = "flag3";
-            this.flag3.Size = new System.Drawing.Size(49, 17);
-            this.flag3.TabIndex = 12;
-            this.flag3.Text = "flag3";
-            this.flag3.UseVisualStyleBackColor = true;
-            // 
-            // flag4
-            // 
-            this.flag4.AutoSize = true;
-            this.flag4.Location = new System.Drawing.Point(64, 42);
-            this.flag4.Name = "flag4";
-            this.flag4.Size = new System.Drawing.Size(92, 17);
-            this.flag4.TabIndex = 13;
-            this.flag4.Text = "Drop Through";
-            this.flag4.UseVisualStyleBackColor = true;
-            // 
-            // leftLedge
-            // 
-            this.leftLedge.AutoSize = true;
-            this.leftLedge.Location = new System.Drawing.Point(181, 435);
-            this.leftLedge.Name = "leftLedge";
-            this.leftLedge.Size = new System.Drawing.Size(77, 17);
-            this.leftLedge.TabIndex = 14;
-            this.leftLedge.Text = "Left Ledge";
-            this.leftLedge.UseVisualStyleBackColor = true;
-            // 
-            // rightLedge
-            // 
-            this.rightLedge.AutoSize = true;
-            this.rightLedge.Location = new System.Drawing.Point(181, 458);
-            this.rightLedge.Name = "rightLedge";
-            this.rightLedge.Size = new System.Drawing.Size(84, 17);
-            this.rightLedge.TabIndex = 15;
-            this.rightLedge.Text = "Right Ledge";
-            this.rightLedge.UseVisualStyleBackColor = true;
-            // 
-            // noWallJump
-            // 
-            this.noWallJump.AutoSize = true;
-            this.noWallJump.Location = new System.Drawing.Point(181, 481);
-            this.noWallJump.Name = "noWallJump";
-            this.noWallJump.Size = new System.Drawing.Size(92, 17);
-            this.noWallJump.TabIndex = 16;
-            this.noWallJump.Text = "No Wall Jump";
-            this.noWallJump.UseVisualStyleBackColor = true;
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(7, 436);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(96, 13);
+            this.label5.TabIndex = 18;
+            this.label5.Text = "Passthrough Angle";
             // 
             // passthroughAngle
             // 
@@ -269,47 +175,149 @@
             this.passthroughAngle.Size = new System.Drawing.Size(59, 20);
             this.passthroughAngle.TabIndex = 17;
             // 
-            // label5
+            // noWallJump
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(7, 436);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(96, 13);
-            this.label5.TabIndex = 18;
-            this.label5.Text = "Passthrough Angle";
+            this.noWallJump.AutoSize = true;
+            this.noWallJump.Location = new System.Drawing.Point(181, 481);
+            this.noWallJump.Name = "noWallJump";
+            this.noWallJump.Size = new System.Drawing.Size(92, 17);
+            this.noWallJump.TabIndex = 16;
+            this.noWallJump.Text = "No Wall Jump";
+            this.noWallJump.UseVisualStyleBackColor = true;
             // 
-            // label6
+            // rightLedge
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(9, 458);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(83, 13);
-            this.label6.TabIndex = 19;
-            this.label6.Text = "Physics Material";
+            this.rightLedge.AutoSize = true;
+            this.rightLedge.Location = new System.Drawing.Point(181, 458);
+            this.rightLedge.Name = "rightLedge";
+            this.rightLedge.Size = new System.Drawing.Size(84, 17);
+            this.rightLedge.TabIndex = 15;
+            this.rightLedge.Text = "Right Ledge";
+            this.rightLedge.UseVisualStyleBackColor = true;
             // 
-            // comboBox1
+            // leftLedge
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(10, 474);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 21);
-            this.comboBox1.TabIndex = 20;
+            this.leftLedge.AutoSize = true;
+            this.leftLedge.Location = new System.Drawing.Point(181, 435);
+            this.leftLedge.Name = "leftLedge";
+            this.leftLedge.Size = new System.Drawing.Size(77, 17);
+            this.leftLedge.TabIndex = 14;
+            this.leftLedge.Text = "Left Ledge";
+            this.leftLedge.UseVisualStyleBackColor = true;
             // 
-            // vertices
+            // flag4
             // 
-            this.vertices.Location = new System.Drawing.Point(6, 97);
-            this.vertices.Name = "vertices";
-            this.vertices.Size = new System.Drawing.Size(259, 134);
-            this.vertices.TabIndex = 21;
-            this.vertices.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.vertices_AfterSelect);
+            this.flag4.AutoSize = true;
+            this.flag4.Location = new System.Drawing.Point(64, 42);
+            this.flag4.Name = "flag4";
+            this.flag4.Size = new System.Drawing.Size(92, 17);
+            this.flag4.TabIndex = 13;
+            this.flag4.Text = "Drop Through";
+            this.flag4.UseVisualStyleBackColor = true;
+            this.flag4.CheckedChanged += new System.EventHandler(this.flagChange);
             // 
-            // lines
+            // flag3
             // 
-            this.lines.Location = new System.Drawing.Point(6, 292);
-            this.lines.Name = "lines";
-            this.lines.Size = new System.Drawing.Size(259, 134);
-            this.lines.TabIndex = 22;
-            this.lines.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.lines_AfterSelect);
+            this.flag3.AutoSize = true;
+            this.flag3.Location = new System.Drawing.Point(9, 42);
+            this.flag3.Name = "flag3";
+            this.flag3.Size = new System.Drawing.Size(49, 17);
+            this.flag3.TabIndex = 12;
+            this.flag3.Text = "flag3";
+            this.flag3.UseVisualStyleBackColor = true;
+            this.flag3.CheckedChanged += new System.EventHandler(this.flagChange);
+            // 
+            // flag2
+            // 
+            this.flag2.AutoSize = true;
+            this.flag2.Location = new System.Drawing.Point(64, 19);
+            this.flag2.Name = "flag2";
+            this.flag2.Size = new System.Drawing.Size(83, 17);
+            this.flag2.TabIndex = 11;
+            this.flag2.Text = "Rig Collision";
+            this.flag2.UseVisualStyleBackColor = true;
+            this.flag2.CheckedChanged += new System.EventHandler(this.flagChange);
+            // 
+            // flag1
+            // 
+            this.flag1.AutoSize = true;
+            this.flag1.Location = new System.Drawing.Point(9, 19);
+            this.flag1.Name = "flag1";
+            this.flag1.Size = new System.Drawing.Size(49, 17);
+            this.flag1.TabIndex = 10;
+            this.flag1.Text = "flag1";
+            this.flag1.UseVisualStyleBackColor = true;
+            this.flag1.CheckedChanged += new System.EventHandler(this.flagChange);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(109, 276);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(32, 13);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "Lines";
+            // 
+            // ytext
+            // 
+            this.ytext.Location = new System.Drawing.Point(125, 243);
+            this.ytext.Name = "ytext";
+            this.ytext.Size = new System.Drawing.Size(58, 20);
+            this.ytext.TabIndex = 7;
+            this.ytext.TextChanged += new System.EventHandler(this.changePosY);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(105, 246);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(14, 13);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Y";
+            // 
+            // xtext
+            // 
+            this.xtext.Location = new System.Drawing.Point(34, 243);
+            this.xtext.Name = "xtext";
+            this.xtext.Size = new System.Drawing.Size(58, 20);
+            this.xtext.TabIndex = 5;
+            this.xtext.TextChanged += new System.EventHandler(this.changePosX);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(14, 246);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(14, 13);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "X";
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(212, 71);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(49, 23);
+            this.button2.TabIndex = 3;
+            this.button2.Text = "-";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(157, 72);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(49, 23);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "+";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(106, 81);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(45, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Vertices";
             // 
             // LVDEditor
             // 
