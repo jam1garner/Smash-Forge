@@ -82,6 +82,7 @@ namespace Smash_Forge
             f.seek(FMDLOffset + 0x18);
             for(int i = 0;i< FMDLCount; i++)
             {
+
                 FMDL_Model model = new FMDL_Model();
                 f.skip(0xC);
                 int offset = readOffset(f);
@@ -396,6 +397,7 @@ namespace Smash_Forge
 
                     }
                 }
+                models.Add(model);
                 f.seek(NextFMDL);
             }
 
