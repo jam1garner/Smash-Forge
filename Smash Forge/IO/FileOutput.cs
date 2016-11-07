@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Smash_Forge
 {
@@ -30,6 +31,22 @@ namespace Smash_Forge
 			foreach(byte b in d.data)
 				data.Add(b);
 		}
+
+        private static char[] HexToCharArray(string hex)
+        {
+            return Enumerable.Range(0, hex.Length)
+                             .Where(x => x % 2 == 0)
+                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                             .Select(x => Convert.ToChar(x))
+                             .ToArray();
+        }
+
+        public void writeHex(string s)
+        {
+            char[] c = HexToCharArray(s);
+            for (int i = 0; i < c.Length; i++)
+                data.Add((byte)c[i]);
+        }
 
 		public void writeInt(int i){
             if(Endian == Endianness.Little){
@@ -124,8 +141,28 @@ namespace Smash_Forge
 			data.Add((byte)((i)&0xFF));
 		}
 
-		public void save(String fname){
+        public void writeChars(char[] c)
+        {
+            foreach (char ch in c)
+                writeByte(Convert.ToByte(ch));
+        }
 
+        public void writeBytes(byte[] bytes)
+        {
+            foreach(byte b in bytes)
+                writeByte(b);            
+        }
+
+        public void writeFlag(bool b)
+        {
+            if (b)
+                writeByte(1);
+            else
+                writeByte(0);
+        }
+
+		public void save(String fname)
+        {
 			File.WriteAllBytes (fname, data.ToArray());
 		}
 	}

@@ -87,7 +87,7 @@ namespace Smash_Forge
                     foreach (Vertex v in p.vertices)
                     {
                         vert.Add(v.pos);
-                        col.Add(v.col);
+                        col.Add(v.col/0x7F);
                         nrm.Add(v.nrm);
 
                         uv.Add(v.tx[0]);
@@ -163,6 +163,11 @@ namespace Smash_Forge
                         continue;
 
                     int texHash = p.materials[0].displayTexId == -1 ? p.materials[0].textures[0].hash : p.materials[0].displayTexId;
+                    int nrmHash = -1;
+                    if(p.materials[0].textures.Count > 1)
+                        nrmHash = p.materials[0].textures[1].hash;
+
+                    Material mat = p.materials[0];
 
                     int tex = -1;
                     foreach (NUT nut in Runtime.TextureContainers)
@@ -171,16 +176,29 @@ namespace Smash_Forge
 
                         if (tex != 0)
                         {
+                            GL.ActiveTexture(TextureUnit.Texture0);
                             GL.BindTexture(TextureTarget.Texture2D, tex);
-                            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.MirroredRepeat);
+                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[0].WrapMode1]);
+                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[0].WrapMode2]);
                             GL.Uniform1(shader.getAttribute("tex"), 0);
+                            tex = -1;
+                        }
+
+                        nut.draw.TryGetValue(nrmHash, out tex);
+
+                        if (tex != 0)
+                        {
+                            GL.ActiveTexture(TextureUnit.Texture1);
+                            GL.BindTexture(TextureTarget.Texture2D, tex);
+                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[1].WrapMode1]);
+                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[1].WrapMode2]);
+                            GL.Uniform1(shader.getAttribute("nrm"), 1);
                             break;
                         }
                     }
 
 
                     Vector4 colorSamplerUV = new Vector4(1, 1, 0, 0);
-                    foreach(Material mat in p.materials)
                     {
                         float[] colorSamplerUVFloats;
                         mat.entries.TryGetValue("NU_colorSamplerUV", out colorSamplerUVFloats);
@@ -190,8 +208,7 @@ namespace Smash_Forge
                             colorSamplerUV = new Vector4(colorSamplerUVFloats[0], colorSamplerUVFloats[1], colorSamplerUVFloats[2], colorSamplerUVFloats[3]);
                         }
                     }
-
-                    foreach(Material mat in p.materials)
+                    
                     {
                         float[] colorSamplerUVFloats;
                         mat.anims.TryGetValue("NU_colorSamplerUV", out colorSamplerUVFloats);
@@ -204,6 +221,33 @@ namespace Smash_Forge
 
                     GL.Uniform4(shader.getAttribute("colorSamplerUV"), colorSamplerUV);
 
+                    //GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
+                    //    dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
+
+                    GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
+                    switch (mat.alphaFunc){
+                        case 0:
+                            GL.AlphaFunc(AlphaFunction.Gequal, 128 / 255f);
+                            break;
+                    }
+                    switch (mat.ref1)
+                    {
+                        case 4:
+                            GL.AlphaFunc(AlphaFunction.Lequal, 128 / 255f);
+                            break;
+                        case 6:
+                            GL.AlphaFunc(AlphaFunction.Lequal, 255 / 255f);
+                            break;
+                    }
+
+                    GL.CullFace(CullFaceMode.Front);
+                    switch (mat.cullMode)
+                    {
+                        case 4:
+                            GL.CullFace(CullFaceMode.Back);
+                            break;
+                    }
+
                     if (p.isVisible && m.isVisible)
                     {
                         //(p.strip >> 4) == 4 ? PrimitiveType.Triangles : PrimitiveType.TriangleStrip
@@ -213,6 +257,29 @@ namespace Smash_Forge
                 }
             }
         }
+
+        Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
+                    { 0x01, BlendingFactorDest.SrcAlpha},
+                    { 0x02, BlendingFactorDest.One},
+                    { 0x03, BlendingFactorDest.OneMinusSrcColor},
+                    { 0x04, BlendingFactorDest.OneMinusDstAlpha},
+                    { 0x05, BlendingFactorDest.OneMinusSrcAlpha},
+                    { 0x07, BlendingFactorDest.DstAlpha}
+                };
+
+        Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
+                    { 0x01, BlendingFactorSrc.SrcAlpha},
+                    { 0x02, BlendingFactorSrc.One},
+                    { 0x03, BlendingFactorSrc.OneMinusSrcColor},
+                    { 0x04, BlendingFactorSrc.SrcColor},
+                    { 0x0a, BlendingFactorSrc.Zero}
+                };
+
+        Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>(){
+                    { 0x01, TextureWrapMode.Repeat},
+                    { 0x02, TextureWrapMode.MirroredRepeat},
+                    { 0x03, TextureWrapMode.Clamp}
+                };
 
         public void clearMTA()
         {
@@ -251,7 +318,7 @@ namespace Smash_Forge
                                     //Console.WriteLine("MTA mat hash match");
                                     if (mat.hasPat)
                                     {
-                                        ma.displayTexId = mat.pat0.getTexId(frame);
+                                        ma.displayTexId = mat.pat0.getTexId((int)((frame * 60 / m.frameRate) % m.numFrames));
                                         //Console.WriteLine("PAT0 TexID - " + ma.displayTexId);
                                     }
 
@@ -262,9 +329,9 @@ namespace Smash_Forge
                                         if (md.frames.Count > 0)
                                         {
                                             if (ma.anims.ContainsKey(md.name))
-                                                ma.anims[md.name] = md.frames[frame % md.frames.Count].values;
+                                                ma.anims[md.name] = md.frames[(int)((frame * 60 / m.frameRate) % m.numFrames)].values;
                                             else
-                                                ma.anims.Add(md.name, md.frames[frame % md.frames.Count].values);
+                                                ma.anims.Add(md.name, md.frames[(int)((frame * 60 / m.frameRate) % (m.numFrames))].values);
                                             //Console.WriteLine(""+md.frames[frame % md.frames.Count].values[0]+"," + md.frames[frame % md.frames.Count].values[1] + "," + md.frames[frame % md.frames.Count].values[2] + "," + md.frames[frame % md.frames.Count].values[3]);
                                         }
                                             
@@ -283,7 +350,7 @@ namespace Smash_Forge
                 {
                     if (me.name.Equals(e.name))
                     {
-                        Console.WriteLine("Set " + me.name + " to " + state);
+                        //Console.WriteLine("Set " + me.name + " to " + state);
                         if (state == 0)
                         {
                             me.isVisible = false;
@@ -443,8 +510,8 @@ namespace Smash_Forge
                     tex.minFilter = d.readByte();
                     tex.magFilter = d.readByte();
                     tex.mipDetail = d.readByte();
-                    tex.unknown = d.readShort();
-                    d.skip(5);
+                    tex.unknown = d.readByte();
+                    d.skip(6);
                     m.textures.Add(tex);
                 }
 
@@ -752,7 +819,7 @@ namespace Smash_Forge
                     // Write the vertex....
 
                     writeVertex(vert, vertadd, mesh[i].polygons[k]);
-
+                    vertadd.align(16, 0x0);
                 }
             }
 
@@ -926,9 +993,9 @@ namespace Smash_Forge
                     d.writeByte(tex.minFilter);
                     d.writeByte(tex.magFilter);
                     d.writeByte(tex.mipDetail);
-                    d.writeShort(tex.unknown);
+                    d.writeByte(tex.unknown);
                     d.writeInt(0); // padding
-                    d.writeByte(0); // padding
+                    d.writeShort(0);
                 }
 
                 for (int i = 0; i < mat.entries.Count; i++)
@@ -1037,7 +1104,7 @@ namespace Smash_Forge
             public uint flags;
             public int blendMode = 0;
             public int dstFactor = 0;
-            public int srcFactor = (int)SrcFactors.Zero;
+            public int srcFactor = 0;
             public int alphaFunc = 0;
             public int ref1 = 0;
             public int drawPriority = 0;
@@ -1079,25 +1146,37 @@ namespace Smash_Forge
             {
                 Material mat = new Material();
                 mat.flags = 0x9a011063;
+                mat.cullMode = 4;
                 mat.entries.Add("NU_colorSamplerUV", new float[]{1, 1, 0, 0});
-                mat.entries.Add("NU_diffuseColor", new float[]{1, 1, 1, 1});
+                mat.entries.Add("NU_materialHash", new float[] {FileData.toFloat(0x68617368), 0, 0, 0});
                 materials.Add(mat);
                 Mat_Texture dif = new Mat_Texture();
-                dif.WrapMode1 = 0;
+                dif.WrapMode1 = 1;
                 dif.WrapMode2 = 1;
                 dif.minFilter = 3;
                 dif.magFilter = 2;
-                dif.unknown = 6;
+                dif.mipDetail = 1;
+                dif.mipDetail = 6;
                 dif.hash = 0x10080000;
                 mat.textures.Add(dif);
                 Mat_Texture nrm = new Mat_Texture();
-                nrm.WrapMode1 = 0;
+                nrm.WrapMode1 = 1;
                 nrm.WrapMode2 = 1;
                 nrm.minFilter = 3;
                 nrm.magFilter = 2;
-                nrm.unknown = 6;
+                nrm.mipDetail = 1;
+                nrm.mipDetail = 6;
                 nrm.hash = 0x10080000;
                 mat.textures.Add(nrm);
+                Mat_Texture dum = new Mat_Texture();
+                dum.WrapMode1 = 1;
+                dum.WrapMode2 = 1;
+                dum.minFilter = 3;
+                dum.magFilter = 2;
+                dum.mipDetail = 1;
+                dum.mipDetail = 6;
+                dum.hash = 0x10080000;
+                mat.textures.Add(dum);
             }
 
             public List<int> getDisplayFace()
@@ -1175,6 +1254,65 @@ namespace Smash_Forge
                 polygons[0].AddVertex(v);
             }
         }
+
+        #region Converters
+
+        public MBN toMBN()
+        {
+            MBN m = new Smash_Forge.MBN();
+
+            m.setDefaultDescriptor();
+            List<MBN.Vertex> vertBank = new List<MBN.Vertex>();
+
+            foreach (Mesh mesh in mesh)
+            {
+                MBN.Mesh nmesh = new MBN.Mesh();
+
+                int pi = 0;
+                int fadd = vertBank.Count;
+                nmesh.nodeList = new List<List<int>>();
+                nmesh.faces = new List<List<int>>();
+                foreach (Polygon p in mesh.polygons)
+                {
+                    List<int> nodeList = new List<int>();
+                    // vertices
+                    foreach(Vertex v in p.vertices)
+                    {
+                        MBN.Vertex mv = new MBN.Vertex();
+                        mv.pos = v.pos;
+                        mv.nrm = v.nrm;
+                        mv.tx = v.tx;
+                        mv.col = v.col;
+                        int n1 = v.node[0];
+                        int n2 = v.node.Count > 1 ? v.node[1] : 0;
+                        if (!nodeList.Contains(n1)) nodeList.Add(n1);
+                        if (!nodeList.Contains(n2)) nodeList.Add(n2);
+                        mv.node.Add(nodeList.IndexOf(n1));
+                        mv.node.Add(nodeList.IndexOf(n2));
+                        mv.weight.Add(v.weight[0]);
+                        mv.weight.Add(v.weight.Count > 1 ? v.weight[1] : 0);
+                        vertBank.Add(mv);
+                    }
+                    // Node list 
+                    nmesh.nodeList.Add(nodeList);
+                    // polygons
+                    List<int> fac = new List<int>();
+                    nmesh.faces.Add(fac);
+                    foreach (int i in p.faces)
+                        fac.Add(i + fadd);
+                    pi++;
+                }
+
+                m.mesh.Add(nmesh);
+            }
+            m.vertices = vertBank;
+
+            //Console.WriteLine(m.vertices.Count + " " + m.descript.Count);
+
+            return m;
+        }
+
+        #endregion
     }
 }
 

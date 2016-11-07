@@ -7,26 +7,28 @@ using System.Threading.Tasks;
 
 namespace Smash_Forge
 {
-    public struct Vector2D
+    public class LVDEntry
+    {
+        public string name;
+        public string subname;
+    }
+
+    public class Vector2D
     {
         public float x;
         public float y;
     }
 
-    public struct Sphere
+    public class Sphere : LVDEntry
     {
-        public string name;
-        public string subname;
         public float x;
         public float y;
         public float z;
         public float radius;
     }
 
-    public struct Capsule
+    public class Capsule : LVDEntry
     {
-        public string name;
-        public string subname;
         public float x;
         public float y;
         public float z;
@@ -37,42 +39,58 @@ namespace Smash_Forge
         public float unk;
     }
 
-    public struct Point
+    public class Point : LVDEntry
     {
-        public string name;
-        public string subname;
         public float x;
         public float y;
     }
 
-    public struct Bounds //Either Camera bounds or Blast zones
+    public class Bounds : LVDEntry //Either Camera bounds or Blast zones
     {
-        public string name;
-        public string subname;
         public float top;
         public float bottom;
         public float left;
         public float right;
     }
 
-    public struct CollisionMat
+    public class CollisionMat
     {
-        public bool leftLedge;
-        public bool rightLedge;
-        public bool noWallJump;
-        public byte physicsType;
+        //public bool leftLedge;
+        //public bool rightLedge;
+        //public bool noWallJump;
+        //public byte physicsType;
+        public byte[] material = new byte[0xC];
+
+        public bool getFlag(int n)
+        {
+            return ((material[10] & (0x10 << (n - 1))) != 0);
+        }
+
+        public byte getPhysics()
+        {
+            return material[4];
+        }
+
+        public void setFlag(int flag, bool value)
+        {
+            if (getFlag(flag) != value)
+                material[10] = (byte)(material[10] & (material[10] ^ (0x10 << (flag - 1))));
+        }
+
+        public void setPhysics(byte b)
+        {
+            material[4] = b;
+        }
     }
 
-    public struct Section
+    public class Section
     {
         public List<Vector2D> points;
     }
 
 
-    public class ItemSpawner
+    public class ItemSpawner : LVDEntry
     {
-        public string name;
-        public string subname;
         public List<Section> sections = new List<Section>();
 
         public ItemSpawner()
@@ -92,13 +110,13 @@ namespace Smash_Forge
             for(int i = 0; i < sectionCount; i++)
             {
                 f.skip(0x18);// unknown data
-                Section temp;
+                Section temp = new Section();
                 temp.points = new List<Vector2D>();
                 int vertCount = f.readInt();
                 for(int j = 0; j < vertCount; j++)
                 {
                     f.skip(1);//Seperation char
-                    Vector2D point;
+                    Vector2D point = new Vector2D();
                     point.x = f.readFloat();
                     point.y = f.readFloat();
                     temp.points.Add(point);
@@ -108,10 +126,8 @@ namespace Smash_Forge
         }
     }
 
-    public class EnemyGenerator
+    public class EnemyGenerator : LVDEntry
     {
-        public string name;
-        public string subname;
         public List<Section> sections = new List<Section>();
 
         public EnemyGenerator()
@@ -131,13 +147,13 @@ namespace Smash_Forge
             for (int i = 0; i < sectionCount; i++)
             {
                 f.skip(0x18);// unknown data
-                Section temp;
+                Section temp = new Section();
                 temp.points = new List<Vector2D>();
                 int vertCount = f.readInt();
                 for (int j = 0; j < vertCount; j++)
                 {
                     f.skip(1);//Seperation char
-                    Vector2D point;
+                    Vector2D point = new Vector2D();
                     point.x = f.readFloat();
                     point.y = f.readFloat();
                     temp.points.Add(point);
@@ -147,13 +163,17 @@ namespace Smash_Forge
         }
     }
 
-    public class Collision
+    public class Collision : LVDEntry
     {
-        public string name;
-        public string subname;
         public List<Vector2D> verts = new List<Vector2D>();
         public List<Vector2D> normals = new List<Vector2D>();
         public List<CollisionMat> materials = new List<CollisionMat>();
+        public float[] unk1 = new float[3];
+        public byte unkFlag1;
+        public int unk2;
+        public byte[] unk3;
+        public char[] unk4;
+        public bool flag1, flag2, flag3, flag4;
 
         public Collision()
         {
@@ -167,13 +187,34 @@ namespace Smash_Forge
             f.skip(0x38);
             f.skip(1);//Seperation char
             subname = f.readString(f.pos(), 0x40);
-            f.skip(0xAA);//TODO: Read in collision header
-
+            f.skip(0x40);
+            f.skip(1);//Seperation char
+            unk1[0] = f.readFloat();
+            unk1[1] = f.readFloat();
+            unk1[2] = f.readFloat();
+            unkFlag1 = (byte)f.readByte();
+            f.skip(1);//Seperation char
+            unk2 = f.readInt();
+            f.skip(1);
+            unk3 = f.read(0xC);
+            f.skip(4);//FF FF FF FF
+            f.skip(1);//Seperation char
+            unk4 = new char[0x40];
+            for (int i = 0; i < 0x40; i++)
+                unk4[i] = (char)f.readByte();
+            
+            flag1 = Convert.ToBoolean(f.readByte());
+            flag2 = Convert.ToBoolean(f.readByte());
+            flag3 = Convert.ToBoolean(f.readByte());
+            flag4 = Convert.ToBoolean(f.readByte());
+            f.skip(1);//Seperation char
+            //f.skip(0xAA);
+            //Console.WriteLine(f.pos());
             int vertCount = f.readInt();
             for(int i = 0; i < vertCount; i++)
             {
                 f.skip(1);//Seperation char
-                Vector2D temp;
+                Vector2D temp = new Vector2D();
                 temp.x = f.readFloat();
                 temp.y = f.readFloat();
                 verts.Add(temp);
@@ -184,7 +225,7 @@ namespace Smash_Forge
             for(int i = 0; i < normalCount; i++)
             {
                 f.skip(1);//Seperation char
-                Vector2D temp;
+                Vector2D temp = new Vector2D();
                 temp.x = f.readFloat();
                 temp.y = f.readFloat();
                 normals.Add(temp);
@@ -199,15 +240,59 @@ namespace Smash_Forge
             for(int i = 0; i < materialCount; i++)
             {
                 f.skip(1);//Seperation char
-                CollisionMat temp;
-                byte[] mat = f.read(0xC);//Temporary, will work on fleshing out material more later
-                temp.noWallJump = ((mat[10] & 0x10) != 0);
-                temp.leftLedge = ((mat[10] & 0x40) != 0);
-                temp.rightLedge = ((mat[10] & 0x80) != 0);
-                temp.physicsType = mat[4];
+                CollisionMat temp = new CollisionMat();
+                temp.material = f.read(0xC);//Temporary, will work on fleshing out material more later
+                
                 materials.Add(temp);
             }
 
+        }
+
+        public void save(FileOutput f)
+        {
+            f.writeHex("030401017735BB750000000201");
+            f.writeString(name.PadRight(0x38, (char)0));
+            f.writeByte(1);
+            f.writeString(subname.PadRight(0x40, (char)0));
+            f.writeByte(1);
+            foreach (float i in unk1)
+                f.writeFloat(i);
+            f.writeByte(unkFlag1);
+            f.writeByte(1);
+            f.writeInt(unk2);
+            f.writeByte(1);
+            f.writeBytes(unk3);
+            f.writeHex("FFFFFFFF01");
+            f.writeChars(unk4);
+            f.writeFlag(flag1);
+            f.writeFlag(flag2);
+            f.writeFlag(flag3);
+            f.writeFlag(flag4);
+            f.writeByte(1);
+            f.writeInt(verts.Count);
+            foreach(Vector2D v in verts)
+            {
+                f.writeByte(1);
+                f.writeFloat(v.x);
+                f.writeFloat(v.y);
+            }
+            f.writeByte(1);
+            f.writeInt(normals.Count);
+            foreach (Vector2D n in normals)
+            {
+                f.writeByte(1);
+                f.writeFloat(n.x);
+                f.writeFloat(n.y);
+            }
+            f.writeByte(1);
+            f.writeInt(0);
+            f.writeByte(1);
+            f.writeInt(materials.Count);
+            foreach (CollisionMat m in materials)
+            {
+                f.writeByte(1);
+                f.writeBytes(m.material);
+            }
         }
     }
 
@@ -224,6 +309,7 @@ namespace Smash_Forge
             damageSpheres = new List<Sphere>();
             items = new List<ItemSpawner>();
             damageCapsules = new List<Capsule>();
+            enemySpawns = new List<EnemyGenerator>();
         }
         public LVD(string filename) : this()
         {
@@ -238,6 +324,7 @@ namespace Smash_Forge
         public List<Sphere> damageSpheres { get; set; }
         public List<ItemSpawner> items { get; set; }
         public List<Capsule> damageCapsules { get; set; }
+        public List<EnemyGenerator> enemySpawns { get; set; }
 
         public override Endianness Endian { get; set; }
 
@@ -277,7 +364,7 @@ namespace Smash_Forge
             int spawnCount = f.readInt();
             for (int i = 0; i < spawnCount; i++)
             {
-                Point temp;
+                Point temp = new Point();
                 f.skip(0xD);
                 temp.name = f.readString(f.pos(), 0x38);
                 f.skip(0x38);
@@ -293,7 +380,7 @@ namespace Smash_Forge
             int respawnCount = f.readInt();
             for (int i = 0; i < respawnCount; i++)
             {
-                Point temp;
+                Point temp = new Point();
                 f.skip(0xD);
                 temp.name = f.readString(f.pos(), 0x38);
                 f.skip(0x38);
@@ -309,7 +396,7 @@ namespace Smash_Forge
             int cameraCount = f.readInt();
             for (int i = 0; i < cameraCount; i++)
             {
-                Bounds temp;
+                Bounds temp = new Bounds();
                 f.skip(0xD);
                 temp.name = f.readString(f.pos(), 0x38);
                 f.skip(0x38);
@@ -327,7 +414,7 @@ namespace Smash_Forge
             int blastzoneCount = f.readInt();
             for (int i = 0; i < blastzoneCount; i++)
             {
-                Bounds temp;
+                Bounds temp = new Bounds();
                 f.skip(0xD);
                 temp.name = f.readString(f.pos(), 0x38);
                 f.skip(0x38);
@@ -381,7 +468,7 @@ namespace Smash_Forge
                 f.skip(0xA6);
                 int shapeType = f.readInt();
                 if (shapeType == 2) {
-                    Sphere temp;
+                    Sphere temp = new Sphere();
                     temp.name = tempName;
                     temp.subname = tempSubname;
                     temp.x = f.readFloat();
@@ -393,7 +480,7 @@ namespace Smash_Forge
                 }
                 else if(shapeType == 3)
                 {
-                    Capsule temp;
+                    Capsule temp = new Capsule();
                     temp.name = tempName;
                     temp.subname = tempSubname;
                     temp.x = f.readFloat();
@@ -430,7 +517,7 @@ namespace Smash_Forge
             int generalPointCount = f.readInt();
             for(int i = 0; i < generalPointCount; i++)
             {
-                Point temp;
+                Point temp = new Point();
                 f.skip(0xD);
                 temp.name = f.readString(f.pos(), 0x38);
                 f.skip(0x38);
@@ -469,9 +556,82 @@ namespace Smash_Forge
 
             //LVD doesn't end here and neither does my confusion, will update this part later
         }
+
         public override byte[] Rebuild()
         {
-            throw new NotImplementedException("Yell at jam to implement this");
+            FileOutput f = new FileOutput();
+            f.Endian = Endianness.Big;
+
+            f.writeHex("000000010A014C56443101");
+            f.writeInt(collisions.Count);
+            foreach (Collision c in collisions)
+            {
+                c.save(f);
+            }
+            f.writeByte(1);
+            f.writeInt(spawns.Count);
+            foreach (Point p in spawns)
+            {
+                f.writeHex("020401017735BB750000000201");
+                f.writeString(p.name.PadRight(0x38, (char)0));
+                f.writeByte(1);
+                f.writeString(p.subname.PadRight(0x40, (char)0));
+                f.writeByte(1);
+                f.writeHex("00000000000000000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001");
+                f.writeFloat(p.x);
+                f.writeFloat(p.y);
+            }
+            f.writeByte(1);
+            f.writeInt(respawns.Count);
+            foreach (Point p in respawns)
+            {
+                f.writeHex("020401017735BB750000000201");
+                f.writeString(p.name.PadRight(0x38, (char)0));
+                f.writeByte(1);
+                f.writeString(p.subname.PadRight(0x40, (char)0));
+                f.writeByte(1);
+                f.writeHex("00000000000000000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001");
+                f.writeFloat(p.x);
+                f.writeFloat(p.y);
+            }
+            f.writeByte(1);
+            f.writeInt(cameraBounds.Count);
+            foreach (Bounds b in cameraBounds)
+            {
+                f.writeHex("020401017735BB750000000201");
+                f.writeString(b.name.PadRight(0x38, (char)0));
+                f.writeByte(1);
+                f.writeString(b.subname.PadRight(0x40, (char)0));
+                f.writeByte(1);
+                f.writeHex("00000000000000000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001");
+                f.writeFloat(b.left);
+                f.writeFloat(b.right);
+                f.writeFloat(b.top);
+                f.writeFloat(b.bottom);
+            }
+            f.writeByte(1);
+            f.writeInt(blastzones.Count);
+            foreach (Bounds b in blastzones)
+            {
+                f.writeHex("020401017735BB750000000201");
+                f.writeString(b.name.PadRight(0x38, (char)0));
+                f.writeByte(1);
+                f.writeString(b.subname.PadRight(0x40, (char)0));
+                f.writeByte(1);
+                f.writeHex("00000000000000000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001");
+                f.writeFloat(b.left);
+                f.writeFloat(b.right);
+                f.writeFloat(b.top);
+                f.writeFloat(b.bottom);
+            }
+
+            for(int i = 0; i < 14; i++)
+            {
+                f.writeByte(1);
+                f.writeInt(0);
+            }
+
+            return f.getBytes();
         }
     }
 }

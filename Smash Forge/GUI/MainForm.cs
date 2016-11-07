@@ -25,8 +25,11 @@ namespace Smash_Forge
             animationsWindowToolStripMenuItem.Checked =
             boneTreeToolStripMenuItem.Checked = true;
 
+            AddDockedControl(leftPanel);
             AddDockedControl(rightPanel);
+            AddDockedControl(lvdEditor);
             AddDockedControl(project);
+            AddDockedControl(lvdList);
 
             rightPanel.treeView1.Nodes.Add(animNode);
             rightPanel.treeView1.Nodes.Add(mtaNode);
@@ -77,6 +80,8 @@ namespace Smash_Forge
         public TreeNode animNode = new TreeNode("Bone Animations");
         public TreeNode mtaNode = new TreeNode("Material Animations");
         public ProjectTree project = new ProjectTree() { ShowHint = DockState.DockLeft };
+        public LVDList lvdList = new LVDList() { ShowHint = DockState.DockLeft };
+        public LVDEditor lvdEditor = new LVDEditor() { ShowHint = DockState.DockRight };
         public List<PARAMEditor> paramEditors = new List<PARAMEditor>() { };
         public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() { };
         public MeshList meshList = new MeshList() { ShowHint = DockState.DockRight };
@@ -115,13 +120,16 @@ namespace Smash_Forge
             {
                 string filename = "";
                 SaveFileDialog save = new SaveFileDialog();
-                save.Filter = "Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
+                save.Filter = "Supported Filetypes (VBN,LVD)|*.vbn;*.lvd|Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
                 DialogResult result = save.ShowDialog();
 
                 if (result == DialogResult.OK)
                 {
                     filename = save.FileName;
-                    Runtime.TargetVBN.Save(filename);
+                    if(filename.EndsWith(".vbn"))
+                        Runtime.TargetVBN.Save(filename);
+                    if (filename.EndsWith(".lvd") && Runtime.TargetLVD != null)
+                        File.WriteAllBytes(filename, Runtime.TargetLVD.Rebuild());
                     //OMO.createOMO (anim, vbn, "C:\\Users\\ploaj_000\\Desktop\\WebGL\\test_outut.omo", -1, -1);
                 }
             }
@@ -224,10 +232,10 @@ namespace Smash_Forge
                                                 v.nrm.Z = (float)bank[i * 3 + 2];
                                                 break;
                                             case "COLOR":
-                                                v.col.X = (float)bank[i * 3 + 0] * 255;
-                                                v.col.Y = (float)bank[i * 3 + 1] * 255;
-                                                v.col.Z = (float)bank[i * 3 + 2] * 255;
-                                                v.col.W = (float)bank[i * 3 + 2] * 255;
+                                                v.col.X = (float)bank[i * 4 + 0] * 255;
+                                                v.col.Y = (float)bank[i * 4 + 1] * 255;
+                                                v.col.Z = (float)bank[i * 4 + 2] * 255;
+                                                v.col.W = (float)bank[i * 4 + 3] * 127;
                                                 break;
                                             case "TEXCOORD":
                                                 v.tx.Add(new OpenTK.Vector2((float)bank[i * 2 + 0], (float)bank[i * 2 + 1]));
@@ -319,7 +327,8 @@ namespace Smash_Forge
             }
 
             n.PreRender();
-            File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\murabito\\isa.nud",n.Rebuild());
+            meshList.refresh();
+            //File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\murabito\\isa.nud",n.Rebuild());
         }
 
         private void openNud(string filename)
@@ -354,6 +363,7 @@ namespace Smash_Forge
             if (!pvbn.Equals(""))
             {
                 model.vbn = new VBN(pvbn);
+                Runtime.TargetVBN = model.vbn;
                 if (!pjtb.Equals(""))
                     model.vbn.readJointTable(pjtb);
 
@@ -368,6 +378,8 @@ namespace Smash_Forge
             if (!pnud.Equals(""))
             {
                 model.nud = new NUD(pnud);
+
+                //AddDockedControl(new NUDMaterialEditor(model.nud.mesh[0].polygons[0].materials));
 
                 foreach (string s in pacs)
                 {
@@ -420,9 +432,13 @@ namespace Smash_Forge
                     if (ofd.FileName.EndsWith(".vbn"))
                         Runtime.TargetVBN = new VBN(ofd.FileName);
 
+                    if (ofd.FileName.EndsWith(".nut"))
+                        Runtime.TextureContainers.Add(new NUT(new FileData(ofd.FileName)));
+
                     if (ofd.FileName.EndsWith(".lvd"))
                     {
                         Runtime.TargetLVD = new LVD(ofd.FileName);
+                        lvdList.fillList();
                     }
 
                     if (ofd.FileName.EndsWith(".mtable"))
@@ -466,24 +482,24 @@ namespace Smash_Forge
                         openDAE(ofd.FileName, Runtime.ModelContainers[0]);
                     }
 
-                    /*if (ofd.FileName.EndsWith(".mbn"))
+                    if (ofd.FileName.EndsWith(".mbn"))
                     {
                         MBN m = new MBN();
                         m.Read(ofd.FileName);
                         ModelContainer con = new ModelContainer();
                         BCH b = new BCH();
+                        con.bch = b;
                         b.mbn = m;
                         b.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\normal.bch");
-                        con.bch = b;
-                        m.mesh.RemoveAt(m.mesh.Count - 1);
-                        m.mesh.RemoveAt(m.mesh.Count - 2);
-                        m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\rebuild.mbn");
+                        //m.mesh.RemoveAt(m.mesh.Count - 1);
+                        //m.mesh.RemoveAt(m.mesh.Count - 2);
+                        //m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\rebuild.mbn");
                         Runtime.ModelContainers.Add(con);
                         //m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\test.mbn");
                         /*NUD n = m.toNUD();
                         n.PreRender();
-                        n.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\mbn.nud");
-                    }*/
+                        n.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\mbn.nud");*/
+                    }
 
                     /*if (ofd.FileName.EndsWith(".bch"))
                     {
@@ -809,6 +825,13 @@ namespace Smash_Forge
             Runtime.TargetVBN.unk_1 = 2;
             Runtime.TargetVBN.unk_2 = 1;
         }
+
+        public void openMats(NUD.Polygon poly, string name)
+        {
+            AddDockedControl(new NUDMaterialEditor(poly.materials) { ShowHint = DockState.Float, Text = name});
+            
+        }
+
         private void openStageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (var ofd = new FolderSelectDialog())
@@ -845,6 +868,7 @@ namespace Smash_Forge
                             if (f.EndsWith(".lvd") && Runtime.TargetLVD != null)
                             {
                                 Runtime.TargetLVD = new LVD(f);
+                                lvdList.fillList();
                             }
                         }
                     }
@@ -894,6 +918,36 @@ namespace Smash_Forge
                 project = new ProjectTree();
             else
                 project.Focus();
+        }
+
+        private void openCharacterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new FolderSelectDialog())
+            {
+                ofd.Title = "Character Folder";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    project.openACMD($"{ofd.SelectedPath}\\script\\animcmd\\body\\motion.mtable", $"{ofd.SelectedPath}\\motion");
+                }
+            }
+        }
+
+        private void saveNUDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.ModelContainers.Count > 0)
+            {
+                string filename = "";
+                SaveFileDialog save = new SaveFileDialog();
+                save.Filter = "Namco Universal Data|*.nud|All files(*.*)|*.*";
+                DialogResult result = save.ShowDialog();
+
+                if (result == DialogResult.OK)
+                {
+                    filename = save.FileName;
+                    if (filename.EndsWith(".nud"))
+                        Runtime.ModelContainers[0].nud.Save(filename);
+                }
+            }
         }
     }
 }

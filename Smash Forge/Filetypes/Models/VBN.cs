@@ -23,6 +23,74 @@ namespace Smash_Forge
         public Matrix4 transform, invert;
     }
 
+    public class HelperBone
+    {
+        public void Read(FileData f)
+        {
+            f.Endian = Endianness.Little;
+            f.seek(4);
+            int count = f.readInt();
+            f.skip(12);
+            int dataCount = f.readInt();
+            int boneCount = f.readInt();
+            int hashCount = f.readInt();
+            int hashOffset = f.readInt() + 0x28;
+            f.skip(4);
+
+            Console.WriteLine("Count " + count);
+
+            for (int i = 0; i < dataCount; i++)
+            {
+                Console.WriteLine("Bone " + i + " start at " + f.pos().ToString("x"));
+                // 3 sections
+                int secLength = f.readInt();
+                int someCount = f.readInt(); // usually 2?
+
+                int size1 = f.readInt();
+                Console.Write(size1 + "\t");
+                for (int j = 0; j < (size1 / 4) - 1; j++)
+                    Console.Write(f.readShort() + " " + f.readShort() + "\t");
+                Console.WriteLine();
+
+                int size2 = f.readInt();
+                Console.Write(size2 + "\t");
+                for (int j = 0; j < (size2 / 4) - 1; j++)
+                    Console.Write(f.readShort() + " " + f.readShort() + "\t");
+                Console.WriteLine();
+
+                int size3 = f.readInt();
+                Console.Write(size3 + "\t");
+                for (int j = 0; j < (size3 / 4) - 1; j++)
+                    Console.Write(f.readShort() + " " + f.readShort() + "\t");
+                Console.WriteLine();
+
+                int size4 = f.readInt();
+                Console.Write(size4 + "\t");
+                for (int j = 0; j < (size4 / 4) - 1; j++)
+                    Console.Write(f.readShort() + " " + f.readShort() + "\t");
+                Console.WriteLine();
+
+                int size5 = f.readInt();
+                Console.Write(size5 + "\t");
+                for (int j = 0; j < (size5 / 4) - 1; j++)
+                    Console.Write(f.readShort() + " " + f.readShort() + "\t");
+                Console.WriteLine();
+
+                f.skip(8);
+            }
+
+            Console.WriteLine("0x" + f.pos().ToString("X"));
+            f.skip(8);
+            int hashSize = f.readInt();
+            int unk = f.readInt();
+
+            for (int i = 0; i < hashCount; i++)
+            {
+                Console.WriteLine(f.readInt().ToString("X"));
+            }
+        }
+    }
+
     public class VBN : FileBase
     {
         public VBN() { }
@@ -274,6 +342,28 @@ namespace Smash_Forge
 
             return -1;
             //throw new Exception("No bone of char[] name");
+        }
+
+        public int jtbShiftAmount = 8;
+
+        public int getJTBIndex(string name)
+        {
+            int index = -1;
+            int vbnIndex = boneIndex(name);
+            if(jointTable != null)
+            {
+                for(int i = 0; i < jointTable.Count; i++)
+                {
+                    for(int j = 0; j < jointTable[i].Count; j++)
+                    {
+                        if(jointTable[i][j] == vbnIndex)
+                        {
+                            index = j + (i << 8);
+                        }
+                    }
+                }
+            }
+            return index;
         }
 
         public void deleteBone(int index)

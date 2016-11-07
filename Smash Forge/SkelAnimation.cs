@@ -9,6 +9,7 @@ namespace Smash_Forge
     {
         public List<KeyNode> nodes = new List<KeyNode>();
         public int frame = 0;
+        public int frameRate = 60;
 
         public void addNode(KeyNode n)
         {

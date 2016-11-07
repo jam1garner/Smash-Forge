@@ -236,13 +236,15 @@ namespace Smash_Forge
                 for (int index = 0; index < mbn.mesh.Count; index++)
                 {
                     int i = f.readShort();
+                    if (index > mbn.mesh.Count) break;
+                    if (i > materialNames.Length) break;
                     mbn.mesh[index].texId = textures[materialNames[i]].display;
                     f.skip(2); // flags
                     int nameId = f.readShort();
                     mbn.mesh[index].name = objectName[nameId];
 
                     // node visibility TODO: finish...
-                    mbn.mesh[index].isVisible = ((nodeVisibility & (1 << nameId)) > 0);
+                    //mbn.mesh[index].isVisible = ((nodeVisibility & (1 << nameId)) > 0);
 
                     mbn.mesh[index].renderPriority = f.readShort();
 

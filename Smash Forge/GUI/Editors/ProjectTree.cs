@@ -143,11 +143,12 @@ namespace Smash_Forge
         public void openACMD(string filename, string motionPath)
         {
             acmdDirectory = Path.GetDirectoryName(filename);
-            if (Directory.Exists("/workspace/"))
-                Directory.Delete("workspace/");
+            if (Directory.Exists("\\workspace\\"))
+                Directory.Delete("workspace\\");
             ProcessStartInfo start = new ProcessStartInfo();
-            start.Arguments = $"-m \"{motionPath}\"-o \"{Application.StartupPath}/workspace\" \" {filename}\"";
-            start.FileName = $"{Application.StartupPath}/lib/FITD.exe";
+            start.Arguments = $"-m \"{motionPath}\" -o \"{Application.StartupPath}\\workspace\" \"{filename}\"";
+            start.FileName = $"{Application.StartupPath}\\lib\\FITD.exe";
+            Console.WriteLine(start.FileName + " " + start.Arguments);
             start.WindowStyle = ProcessWindowStyle.Hidden;
             start.CreateNoWindow = true;
             int exit;
@@ -157,7 +158,7 @@ namespace Smash_Forge
                 exit = proc.ExitCode;
             }
             fillTree();
-        }
+        }//"C:\Users\jam1garner\Source\Repos\Smash-Forge\Smash Forge\bin\Debug\lib\FITD.exe" -m "C:\Smash\Sm4shExplorer\extract\data\fighter\captain\motion\" -o "C:\Users\jam1garner\Source\Repos\Smash-Forge\Smash Forge\bin\Debug\workspace" "C:\Smash\Sm4shExplorer\extract\data\fighter\captain\script\animcmd\body\motion.mtable"
 
         public void build()
         {
