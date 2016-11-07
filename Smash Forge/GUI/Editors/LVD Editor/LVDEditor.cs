@@ -67,8 +67,10 @@ namespace Smash_Forge
                 flag2.Checked = col.flag2;
                 flag3.Checked = col.flag3;
                 flag4.Checked = col.flag4;
+                vertices.Nodes.Clear();
                 for (int i = 0; i < col.verts.Count; i++)
                     vertices.Nodes.Add(new TreeNode($"Vertex {i}") { Tag = col.verts[i] });
+                lines.Nodes.Clear();
                 for (int i = 0; i < col.normals.Count; i++)
                 {
                     object[] temp = { col.normals[i], col.materials[i] };
