@@ -12,6 +12,8 @@ namespace Smash_Forge
 
         public BCH bch;
 
+        public BFRES bfres;
+
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
         public static MovesetManager Moveset { get; set; }
 
@@ -25,7 +27,9 @@ namespace Smash_Forge
          * */
         public void Destroy()
         {
-            if(nud != null)
+            if (bfres != null)
+                bfres.Destroy();
+            if (nud != null)
                 nud.Destroy();
         }
     }

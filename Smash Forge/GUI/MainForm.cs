@@ -423,6 +423,7 @@ namespace Smash_Forge
                              "Smash 4 Level Data (.lvd)|*.lvd|" +
                              "NW4R Model (.mdl0)|*.mdl0|" +
                              "Source Model (.SMD)|*.smd|" +
+                             "Nintendo BFRES (.BFRES)|*.bfres|" +
                              "All files(*.*)|*.*";
 
                 // "Namco Universal Data Folder (.NUD)|*.nud|" +
@@ -481,8 +482,17 @@ namespace Smash_Forge
                     {
                         openDAE(ofd.FileName, Runtime.ModelContainers[0]);
                     }
+                    if (ofd.FileName.EndsWith(".bfres"))
+                    {
+                        BFRES m = new BFRES();
+                        m.Read(ofd.FileName);
+                        ModelContainer con = new ModelContainer();
+                        con.bfres = m;
+                        Runtime.ModelContainers.Add(con);
 
-                    if (ofd.FileName.EndsWith(".mbn"))
+
+                    }
+                        if (ofd.FileName.EndsWith(".mbn"))
                     {
                         MBN m = new MBN();
                         m.Read(ofd.FileName);

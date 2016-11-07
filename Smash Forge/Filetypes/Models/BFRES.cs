@@ -33,7 +33,116 @@ namespace Smash_Forge
         int[] facedata;
         Vector4[] bonedata, coldata, weightdata;
 
-        
+        public BFRES()
+        {
+            GL.GenBuffers(1, out vbo_position);
+            GL.GenBuffers(1, out vbo_color);
+            GL.GenBuffers(1, out vbo_nrm);
+            GL.GenBuffers(1, out vbo_uv);
+            GL.GenBuffers(1, out vbo_bone);
+            GL.GenBuffers(1, out vbo_weight);
+            GL.GenBuffers(1, out ibo_elements);
+        }
+        public void Destroy()
+        {
+            GL.DeleteBuffer(vbo_position);
+            GL.DeleteBuffer(vbo_color);
+            GL.DeleteBuffer(vbo_nrm);
+            GL.DeleteBuffer(vbo_uv);
+            GL.DeleteBuffer(vbo_weight);
+            GL.DeleteBuffer(vbo_bone);
+        }
+        public void PreRender()
+        {
+            List<Vector3> vert = new List<Vector3>();
+            List<Vector2> uv = new List<Vector2>();
+            List<Vector4> col = new List<Vector4>();
+            List<Vector3> nrm = new List<Vector3>();
+            List<Vector4> bone = new List<Vector4>();
+            List<Vector4> weight = new List<Vector4>();
+            List<int> face = new List<int>();
+
+            foreach (FMDL_Model m in models)
+            {
+                    if (m.faces.Count <= 3)
+                        continue;
+                    foreach (Vertex v in m.vertices)
+                    {
+                        vert.Add(v.pos);
+                        col.Add(v.col / 0x7F);
+                        nrm.Add(v.nrm);
+
+                        uv.Add(v.tx[0]);
+
+                        while (v.node.Count < 4)
+                        {
+                            v.node.Add(0);
+                            v.weight.Add(0);
+                        }
+                        bone.Add(new Vector4(v.node[0], v.node[1], v.node[2], v.node[3]));
+                        weight.Add(new Vector4(v.weight[0], v.weight[1], v.weight[2], v.weight[3]));
+                    }
+
+                    foreach (List<int> l in m.faces)
+                        face.AddRange(l);
+            }
+
+            vertdata = vert.ToArray();
+            coldata = col.ToArray();
+            nrmdata = nrm.ToArray();
+            uvdata = uv.ToArray();
+            facedata = face.ToArray();
+            bonedata = bone.ToArray();
+            weightdata = weight.ToArray();
+
+        }
+        public void Render(Shader shader)
+        {
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(vertdata.Length * Vector3.SizeInBytes), vertdata, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_color);
+            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(coldata.Length * Vector4.SizeInBytes), coldata, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_nrm);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(nrmdata.Length * Vector3.SizeInBytes), nrmdata, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_uv);
+            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, (IntPtr)(uvdata.Length * Vector2.SizeInBytes), uvdata, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_bone);
+            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(bonedata.Length * Vector4.SizeInBytes), bonedata, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_weight);
+            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(weightdata.Length * Vector4.SizeInBytes), weightdata, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(facedata.Length * sizeof(int)), facedata, BufferUsageHint.StaticDraw);
+
+            int indiceat = 0;
+            foreach (FMDL_Model m in models)
+            {
+                GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1, 1, 0, 0));
+
+                //GL.BindTexture(TextureTarget.Texture2D, m.texId);
+                //GL.Uniform1(shader.getAttribute("tex"), 0);
+
+                foreach (List<int> l in m.faces)
+                {
+                    if (m.isVisible)
+                        GL.DrawElements(PrimitiveType.Triangles, l.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
+
+                    indiceat += l.Count;
+                }
+            }
+        }
+
         public  void Read(string filename)
         {
             FileData f = new FileData(filename);
