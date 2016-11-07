@@ -309,7 +309,8 @@ namespace Smash_Forge
                                             int ind = int.Parse(vi[pos++]);
                                             //Console.WriteLine(boneNames[ind].Substring(5));
                                             //Console.WriteLine(boneNames[ind].Substring(5));
-                                            vert.node.Add(vbn.boneIndex(boneNames[ind].Substring(6)));
+                                            int index = vbn.boneIndex(boneNames[ind]);
+                                            vert.node.Add(index==-1?0:index);
                                             break;
                                         case "WEIGHT":
                                             // find weight int weight list

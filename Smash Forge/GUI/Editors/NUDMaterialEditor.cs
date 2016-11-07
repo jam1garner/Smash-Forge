@@ -87,6 +87,12 @@ namespace Smash_Forge
                     { 0x06, "4 mip levels, trilinear on, anisotropic on"}
                 };
 
+
+        List<string> Properties = new List<string>(){
+                    "",
+                    ""
+                };
+
         public NUDMaterialEditor()
         {
             InitializeComponent();

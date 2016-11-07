@@ -365,7 +365,7 @@ namespace Smash_Forge
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
 
             GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
+            GL.CullFace(CullFaceMode.Front);
             
             // draw models
             if (Runtime.renderModel)

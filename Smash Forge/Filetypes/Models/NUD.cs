@@ -227,16 +227,16 @@ namespace Smash_Forge
                     GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
                     switch (mat.alphaFunc){
                         case 0:
-                            GL.AlphaFunc(AlphaFunction.Gequal, 128 / 255f);
+                            //GL.AlphaFunc(AlphaFunction.Gequal, 128 / 255f);
                             break;
                     }
                     switch (mat.ref1)
                     {
                         case 4:
-                            GL.AlphaFunc(AlphaFunction.Lequal, 128 / 255f);
+                            //GL.AlphaFunc(AlphaFunction.Lequal, 128 / 255f);
                             break;
                         case 6:
-                            GL.AlphaFunc(AlphaFunction.Lequal, 255 / 255f);
+                            //GL.AlphaFunc(AlphaFunction.Lequal, 255 / 255f);
                             break;
                     }
 
