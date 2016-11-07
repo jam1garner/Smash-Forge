@@ -89,18 +89,31 @@ namespace Smash_Forge
             {
                 vert.Add(v.pos);
                 nrm.Add(v.nrm);
-                col.Add(v.col);
-                uv.Add(new Vector2(v.tx[0].X, 1-v.tx[0].Y));
+                col.Add(v.col / 0x7F);
+                if (v.tx.Count > 0)
+                    uv.Add(new Vector2(v.tx[0].X, 1 - v.tx[0].Y));
+                else
+                    uv.Add(new Vector2(0, 0));
                 // TODO: Bones
-                foreach (Mesh m in mesh)
-                    foreach (List<int> l in m.faces)
-                        if (l.Contains(vi))
-                        {
-                            List<int> nl = m.nodeList[m.faces.IndexOf(l)];
-                            bone.Add(new Vector4(nl[v.node[0]], nl[v.node[1]], 0, 0));
-                            weight.Add(new Vector4(v.weight[0], v.weight[1], 0, 0));
-                            goto loop;
-                        }
+                Console.WriteLine(v.node.Count);
+                if (v.node.Count > 1)
+                {
+                    foreach (Mesh m in mesh)
+                        foreach (List<int> l in m.faces)
+                            if (l.Contains(vi))
+                            {
+                                List<int> nl = m.nodeList[m.faces.IndexOf(l)];
+                                bone.Add(new Vector4(nl[v.node[0]], nl[v.node[1]], 0, 0));
+                                weight.Add(new Vector4(v.weight[0], v.weight[1], 0, 0));
+                                goto loop;
+                            }
+                }
+                else
+                {
+                    bone.Add(new Vector4(-1, 0, 0, 0));
+                    weight.Add(new Vector4(0, 0, 0, 0));
+                }
+
                 loop:
                 vi++;
             }

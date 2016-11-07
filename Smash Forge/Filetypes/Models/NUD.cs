@@ -510,8 +510,8 @@ namespace Smash_Forge
                     tex.minFilter = d.readByte();
                     tex.magFilter = d.readByte();
                     tex.mipDetail = d.readByte();
-                    tex.unknown = d.readShort();
-                    d.skip(5);
+                    tex.unknown = d.readByte();
+                    d.skip(6);
                     m.textures.Add(tex);
                 }
 
@@ -993,9 +993,9 @@ namespace Smash_Forge
                     d.writeByte(tex.minFilter);
                     d.writeByte(tex.magFilter);
                     d.writeByte(tex.mipDetail);
-                    d.writeShort(tex.unknown);
+                    d.writeByte(tex.unknown);
                     d.writeInt(0); // padding
-                    d.writeByte(0); // padding
+                    d.writeShort(0);
                 }
 
                 for (int i = 0; i < mat.entries.Count; i++)
@@ -1104,7 +1104,7 @@ namespace Smash_Forge
             public uint flags;
             public int blendMode = 0;
             public int dstFactor = 0;
-            public int srcFactor = (int)SrcFactors.Zero;
+            public int srcFactor = 0;
             public int alphaFunc = 0;
             public int ref1 = 0;
             public int drawPriority = 0;
@@ -1146,25 +1146,37 @@ namespace Smash_Forge
             {
                 Material mat = new Material();
                 mat.flags = 0x9a011063;
+                mat.cullMode = 4;
                 mat.entries.Add("NU_colorSamplerUV", new float[]{1, 1, 0, 0});
-                mat.entries.Add("NU_diffuseColor", new float[]{1, 1, 1, 1});
+                mat.entries.Add("NU_materialHash", new float[] {FileData.toFloat(0x68617368), 0, 0, 0});
                 materials.Add(mat);
                 Mat_Texture dif = new Mat_Texture();
-                dif.WrapMode1 = 0;
+                dif.WrapMode1 = 1;
                 dif.WrapMode2 = 1;
                 dif.minFilter = 3;
                 dif.magFilter = 2;
-                dif.unknown = 6;
+                dif.mipDetail = 1;
+                dif.mipDetail = 6;
                 dif.hash = 0x10080000;
                 mat.textures.Add(dif);
                 Mat_Texture nrm = new Mat_Texture();
-                nrm.WrapMode1 = 0;
+                nrm.WrapMode1 = 1;
                 nrm.WrapMode2 = 1;
                 nrm.minFilter = 3;
                 nrm.magFilter = 2;
-                nrm.unknown = 6;
+                nrm.mipDetail = 1;
+                nrm.mipDetail = 6;
                 nrm.hash = 0x10080000;
                 mat.textures.Add(nrm);
+                Mat_Texture dum = new Mat_Texture();
+                dum.WrapMode1 = 1;
+                dum.WrapMode2 = 1;
+                dum.minFilter = 3;
+                dum.magFilter = 2;
+                dum.mipDetail = 1;
+                dum.mipDetail = 6;
+                dum.hash = 0x10080000;
+                mat.textures.Add(dum);
             }
 
             public List<int> getDisplayFace()

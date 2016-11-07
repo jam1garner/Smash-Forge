@@ -232,10 +232,10 @@ namespace Smash_Forge
                                                 v.nrm.Z = (float)bank[i * 3 + 2];
                                                 break;
                                             case "COLOR":
-                                                v.col.X = (float)bank[i * 3 + 0] * 255;
-                                                v.col.Y = (float)bank[i * 3 + 1] * 255;
-                                                v.col.Z = (float)bank[i * 3 + 2] * 255;
-                                                v.col.W = (float)bank[i * 3 + 2] * 255;
+                                                v.col.X = (float)bank[i * 4 + 0] * 255;
+                                                v.col.Y = (float)bank[i * 4 + 1] * 255;
+                                                v.col.Z = (float)bank[i * 4 + 2] * 255;
+                                                v.col.W = (float)bank[i * 4 + 3] * 127;
                                                 break;
                                             case "TEXCOORD":
                                                 v.tx.Add(new OpenTK.Vector2((float)bank[i * 2 + 0], (float)bank[i * 2 + 1]));
@@ -327,6 +327,7 @@ namespace Smash_Forge
             }
 
             n.PreRender();
+            meshList.refresh();
             //File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\murabito\\isa.nud",n.Rebuild());
         }
 
@@ -431,6 +432,9 @@ namespace Smash_Forge
                     if (ofd.FileName.EndsWith(".vbn"))
                         Runtime.TargetVBN = new VBN(ofd.FileName);
 
+                    if (ofd.FileName.EndsWith(".nut"))
+                        Runtime.TextureContainers.Add(new NUT(new FileData(ofd.FileName)));
+
                     if (ofd.FileName.EndsWith(".lvd"))
                     {
                         Runtime.TargetLVD = new LVD(ofd.FileName);
@@ -478,24 +482,24 @@ namespace Smash_Forge
                         openDAE(ofd.FileName, Runtime.ModelContainers[0]);
                     }
 
-                    /*if (ofd.FileName.EndsWith(".mbn"))
+                    if (ofd.FileName.EndsWith(".mbn"))
                     {
                         MBN m = new MBN();
                         m.Read(ofd.FileName);
                         ModelContainer con = new ModelContainer();
                         BCH b = new BCH();
+                        con.bch = b;
                         b.mbn = m;
                         b.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\normal.bch");
-                        con.bch = b;
-                        m.mesh.RemoveAt(m.mesh.Count - 1);
-                        m.mesh.RemoveAt(m.mesh.Count - 2);
-                        m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\rebuild.mbn");
+                        //m.mesh.RemoveAt(m.mesh.Count - 1);
+                        //m.mesh.RemoveAt(m.mesh.Count - 2);
+                        //m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\rebuild.mbn");
                         Runtime.ModelContainers.Add(con);
                         //m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\test.mbn");
                         /*NUD n = m.toNUD();
                         n.PreRender();
-                        n.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\mbn.nud");
-                    }*/
+                        n.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\mbn.nud");*/
+                    }
 
                     /*if (ofd.FileName.EndsWith(".bch"))
                     {
