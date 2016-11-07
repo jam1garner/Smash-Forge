@@ -107,7 +107,7 @@ namespace Smash_Forge
         {
             if(e.Node.Level != 0)
             {
-                MainForm.Instance.lvdEditor.open((LVDEntry)e.Node.Tag);
+                MainForm.Instance.lvdEditor.open((LVDEntry)e.Node.Tag, e.Node);
             }
         }
     }

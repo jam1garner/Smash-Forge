@@ -22,6 +22,7 @@ namespace Smash_Forge
         private Vector2D currentVert;
         private Vector2D currentNormal;
         private CollisionMat currentMat;
+        private TreeNode currentTreeNode;
 
         enum mat : byte
         {
@@ -51,8 +52,9 @@ namespace Smash_Forge
             Carpet = 0x07
         }
 
-        public void open(LVDEntry entry)
+        public void open(LVDEntry entry, TreeNode entryTree)
         {
+            currentTreeNode = entryTree;
             currentEntry = entry;
             collisionGroup.Visible = false;
             name.Text = currentEntry.name;
@@ -72,7 +74,7 @@ namespace Smash_Forge
                     object[] temp = { col.normals[i], col.materials[i] };
                     lines.Nodes.Add(new TreeNode($"Line {i}") { Tag = temp });
                 }
-                    
+
             }
         }
 
@@ -87,11 +89,60 @@ namespace Smash_Forge
         {
             currentNormal = (Vector2D)((object[])e.Node.Tag)[0];
             currentMat = (CollisionMat)((object[])e.Node.Tag)[1];
-            leftLedge.Checked = currentMat.leftLedge();
-            rightLedge.Checked = currentMat.rightLedge();
-            noWallJump.Checked = currentMat.noWallJump();
-            comboBox1.Text = Enum.GetName(typeof(mat), currentMat.physics());
+            leftLedge.Checked = currentMat.getFlag(2);
+            rightLedge.Checked = currentMat.getFlag(3);
+            noWallJump.Checked = currentMat.getFlag(1);
+            comboBox1.Text = Enum.GetName(typeof(mat), currentMat.getPhysics());
             passthroughAngle.Value = (decimal)(Math.Atan2(currentNormal.y, currentNormal.x) * 180.0 / Math.PI);
+        }
+
+        private void flagChange(object sender, EventArgs e)
+        {
+            if(sender == flag1)
+                ((Collision)currentEntry).flag1 = flag1.Checked;
+            if (sender == flag2)
+                ((Collision)currentEntry).flag2 = flag2.Checked;
+            if (sender == flag3)
+                ((Collision)currentEntry).flag3 = flag3.Checked;
+            if (sender == flag4)
+                ((Collision)currentEntry).flag4 = flag4.Checked;
+        }
+
+        private void changePosX(object sender, EventArgs e)
+        {
+            try
+            {
+                currentVert.x = Convert.ToSingle(xtext.Text);
+            }
+            catch (FormatException)
+            {
+
+            }
+        }
+
+        private void changePosY(object sender, EventArgs e)
+        {
+            try
+            {
+                currentVert.y = Convert.ToSingle(ytext.Text);
+            }
+            catch (FormatException)
+            {
+
+            }
+
+        }
+
+        private void nameChange(object sender, EventArgs e)
+        {
+            if (sender == name)
+            {
+                currentEntry.name = name.Text;
+                currentTreeNode.Text = name.Text;
+            }
+                
+            if (sender == subname)
+                currentEntry.subname = subname.Text;
         }
     }
 }
