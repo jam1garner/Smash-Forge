@@ -16,6 +16,15 @@ namespace Smash_Forge
         { 
             return f.pos() + f.readInt();
         }
+        public string readString(FileData f)
+        {
+            int returnOff = f.pos() + 4;
+            int stringOff = readOffset(f);
+            f.seek(stringOff);
+            string str = f.readString();
+            f.seek(returnOff);
+            return str;
+        }
         public BFRES()
         {
             GL.GenBuffers(1, out vbo_position);
@@ -167,6 +176,12 @@ namespace Smash_Forge
             {
                 pos = new Vector3(x, y, z);
             }
+        }
+        public class fmdlh
+        {
+            string fmdl;
+            string name;
+
         }
         public class Polygon
         {
