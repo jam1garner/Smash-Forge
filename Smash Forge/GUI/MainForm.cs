@@ -417,7 +417,7 @@ namespace Smash_Forge
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable|" +
+                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bfres)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bfres|" +
                              "Smash 4 Boneset (.vbn)|*.vbn|" +
                              "Namco Model (.nud)|*.nud|" +
                              "Smash 4 Level Data (.lvd)|*.lvd|" +
@@ -486,6 +486,7 @@ namespace Smash_Forge
                     {
                         BFRES m = new BFRES();
                         m.Read(ofd.FileName);
+                        m.PreRender();
                         ModelContainer con = new ModelContainer();
                         con.bfres = m;
                         Runtime.ModelContainers.Add(con);
