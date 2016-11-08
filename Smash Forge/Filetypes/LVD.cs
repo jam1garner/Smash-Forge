@@ -63,7 +63,7 @@ namespace Smash_Forge
 
         public bool getFlag(int n)
         {
-            return ((material[10] & (0x10 << (n - 1))) != 0);
+            return ((material[10] & (1 << n)) != 0);
         }
 
         public byte getPhysics()
@@ -73,8 +73,14 @@ namespace Smash_Forge
 
         public void setFlag(int flag, bool value)
         {
-            if (getFlag(flag) != value)
-                material[10] = (byte)(material[10] & (material[10] ^ (0x10 << (flag - 1))));
+            //Console.WriteLine("B - " + getFlag(flag));
+            byte mask = (byte)(1 << flag);
+            bool isSet = (material[10] & mask) != 0;
+            if(value)
+                material[10] |= mask;
+            else
+                material[10] &= (byte)~mask;
+            //Console.WriteLine("A - " + getFlag(flag));
         }
 
         public void setPhysics(byte b)

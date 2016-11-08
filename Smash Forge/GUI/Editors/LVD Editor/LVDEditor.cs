@@ -160,11 +160,11 @@ namespace Smash_Forge
         private void lineFlagChange(object sender, EventArgs e)
         {
             if (sender == rightLedge)
-                currentMat.setFlag(3,rightLedge.Checked);
+                currentMat.setFlag(3, ((CheckBox)sender).Checked);
             if (sender == leftLedge)
-                currentMat.setFlag(2, leftLedge.Checked);
+                currentMat.setFlag(2, ((CheckBox)sender).Checked);
             if (sender == noWallJump)
-                currentMat.setFlag(1, noWallJump.Checked);
+                currentMat.setFlag(1, ((CheckBox)sender).Checked);
         }
     }
 }
