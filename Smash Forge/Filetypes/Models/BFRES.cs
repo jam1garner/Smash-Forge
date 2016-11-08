@@ -10,7 +10,7 @@ using OpenTK;
 
 namespace Smash_Forge
 {
-    class BFRES
+    public class BFRES
     {
         public List<FMDL_Model> models = new List<FMDL_Model>();
         public Dictionary<string, FTEX_Texture> textures = new Dictionary<string, FTEX_Texture>();
@@ -196,10 +196,9 @@ namespace Smash_Forge
                 f.skip(0xC);
                 int offset = readOffset(f);
                 int NextFMDL = f.pos();
-                f.seek(offset);
+                f.seek(offset+4);
                 FMDLheader fmdl_info = new FMDLheader
                 {
-                    FMDL = f.readString(f.pos(), 4),
                     name = f.readString(readOffset(f), -1),
                     eofString = readOffset(f),
                     fsklOff = readOffset(f),
@@ -218,6 +217,7 @@ namespace Smash_Forge
                 f.seek(fmdl_info.fvtxArrOff);
                 for(int vtx = 0;vtx < fmdl_info.fvtxCount; vtx++)
                 {
+                    f.skip(4);
                     FVTXArr.Add(new FVTXH
                     {
                         attCount = f.readByte(),
@@ -241,7 +241,7 @@ namespace Smash_Forge
                     f.skip(8);
                     string FMATNameOffset = f.readString(readOffset(f), -1);
                     int rtn = f.pos() + 4;
-                    f.seek(readOffset(f));
+                    f.seek(readOffset(f) + 4);
                     FMATH fmat_info = new FMATH
                     {
                         name = FMATNameOffset,
@@ -269,7 +269,7 @@ namespace Smash_Forge
                     FMATheaders.Add(fmat_info);
                 }
 
-                f.seek(fmdl_info.fsklOff);
+                f.seek(fmdl_info.fsklOff + 6);
                 FSKLH fskl_info = new FSKLH
                 {
                     fsklType = f.readShort(),
@@ -295,9 +295,8 @@ namespace Smash_Forge
                 for(int shp = 0;shp< fmdl_info.fshpCount; shp++)
                 {
                     f.skip(0xC);
-                    int FSHPOffset = readOffset(f);
-                    int rtn = f.pos();
-                    f.seek(FSHPOffset + 4);
+                    int rtn = f.pos() + 4;
+                    f.seek(readOffset(f) + 4);
                     FSHPH fshp_info = new FSHPH
                     {
                         polyNameOff = readOffset(f),
@@ -328,7 +327,7 @@ namespace Smash_Forge
                 {
                     Bone bone = new Smash_Forge.Bone();
                     bone.boneName = f.readString(readOffset(f), -1).ToCharArray();
-                    bone.boneId = (uint)f.readShort();
+                    bone.parentIndex = f.readShort();
                     int parIndx1 = f.readShort();
                     int parIndx2 = f.readShort();
                     int parIndx3 = f.readShort();
@@ -350,15 +349,6 @@ namespace Smash_Forge
                     bone.position[2] = f.readFloat();
                     f.skip(4);
 
-                    if (parIndx1 > -1)
-                        bone.children.Add(parIndx1);
-                    if (parIndx2 > -1)
-                        bone.children.Add(parIndx2);
-                    if (parIndx3 > -1)
-                        bone.children.Add(parIndx2);
-                    if (parIndx4 > -1)
-                        bone.children.Add(parIndx3);
-
 
                     model.skeleton.bones.Add(bone);
 
@@ -377,7 +367,7 @@ namespace Smash_Forge
                     f.seek(FVTXArr[FSHPArr[m].fvtxIndx].attArrOff);
                     for(int att = 0;att< FVTXArr[FSHPArr[m].fvtxIndx].attCount; att++)
                     {
-                        string AttType = f.readString(FSHPArr[m].polyNameOff, -1);
+                        string AttType = f.readString(readOffset(f), -1);
                         int buffIndx = f.readByte();
                         f.skip(1);
                         int buffOff = f.readShort();
@@ -399,116 +389,118 @@ namespace Smash_Forge
                         data.dataOffset = readOffset(f);
                         BuffArr.Add(data);
                     }
-                    Vertex vert = new Vertex();
-                    if (BuffArr.Count > 1) { 
-                        for(int attr = 0;attr < AttrArr.Count; attr++)
+                    for (int v = 0; v < FVTXArr[FSHPArr[m].fvtxIndx].vertCount; v++)
                     {
-                            
-                            f.seek(((BuffArr[AttrArr[attr].buffIndx].dataOffset) + (AttrArr[attr].buffOff)));
-                            for(int v = 0;v < FVTXArr[FSHPArr[m].fvtxIndx].vertCount; v++)
+                        Vertex vert = new Vertex();
+                        for (int attr = 0; attr < AttrArr.Count; attr++)
+                        {
+                            f.seek(((BuffArr[AttrArr[attr].buffIndx].dataOffset) + (AttrArr[attr].buffOff) + (BuffArr[AttrArr[attr].buffIndx].strideSize * v)));
+                            switch (AttrArr[attr].attName)
                             {
-                                vert = new Vertex();
-                                int VertStart = f.pos();
-                                //f.seek(AttrArr[attr].buffOff + f.pos()); -Need to see if buffOff is on larger than 1 BuffArr first
-                                
-                                switch (AttrArr[attr].attName)
-                                {
-                                    case "_p0":
-                                        if (AttrArr[attr].vertType == 2063)
-                                            vert.pos = new Vector3 {X=f.readHalfFloat(),Y=f.readHalfFloat(), Z=f.readHalfFloat()};
-                                        if (AttrArr[attr].vertType == 2065)
-                                            vert.pos = new Vector3 { X = f.readFloat(), Y = f.readFloat(), Z = f.readFloat() };
-                                        break;
-                                    case "_c0":
-                                        if (AttrArr[attr].vertType == 2063)
-                                            vert.col = new Vector4 { X = (int)f.readHalfFloat()*255, Y = (int)f.readHalfFloat() * 255, Z = (int)f.readHalfFloat() * 255 , W = (int)f.readHalfFloat() * 255 };
-                                        if (AttrArr[attr].vertType == 2067)
-                                            vert.col = new Vector4 { X = (int)f.readFloat() * 255, Y = (int)f.readFloat() * 255, Z = (int)f.readFloat() * 255, W = (int)f.readFloat() * 255 };
-                                        if (AttrArr[attr].vertType == 10)
-                                            vert.col = new Vector4 { X = f.readByte(), Y = f.readByte(), Z = f.readByte(), W = f.readByte()};
-                                        break;
-                                    case "_u0":
-                                    case "color":
-                                    case "_u1":
-                                    case "_u2":
-                                    case "_u3":
-                                        if (AttrArr[attr].vertType == 4 || AttrArr[attr].vertType == 516)
-                                            vert.tx.Add(new Vector2 {X = ((float)f.readByte()) / 255, Y = ((float)f.readByte())/255});
-                                        if (AttrArr[attr].vertType == 7)
-                                            vert.tx.Add(new Vector2 { X = ((float)f.readShort()) / 65535, Y = ((float)f.readShort()) / 65535 });
-                                        if (AttrArr[attr].vertType == 519)
-                                            vert.tx.Add(new Vector2 { X = ((float)f.readShort()) / 32767, Y = ((float)f.readShort()) / 32767 });
-                                        if (AttrArr[attr].vertType == 2056)
-                                            vert.tx.Add(new Vector2 { X = f.readHalfFloat(), Y = f.readHalfFloat() });
-                                        if (AttrArr[attr].vertType == 2061)
-                                            vert.tx.Add(new Vector2 { X = f.readFloat(), Y = f.readFloat() });
-                                        break;
-                                    case "_i0":
-                                        if (AttrArr[attr].vertType == 256)
-                                            vert.node.Add(Node_Array[f.readByte()]);
-                                        if (AttrArr[attr].vertType == 260)
-                                        {
-                                            vert.node.Add(Node_Array[f.readByte()]);
-                                            vert.node.Add(Node_Array[f.readByte()]);
-                                        }
-                                        if (AttrArr[attr].vertType == 266)
-                                        {
-                                            vert.node.Add(Node_Array[f.readByte()]);
-                                            vert.node.Add(Node_Array[f.readByte()]);
-                                            vert.node.Add(Node_Array[f.readByte()]);
-                                            vert.node.Add(Node_Array[f.readByte()]);
-                                        }
-                                        break;
-                                    case "_w0":
-                                        if (AttrArr[attr].vertType == 4)
-                                        {
-                                            vert.weight.Add(((float)f.readByte()) / 255);
-                                            vert.weight.Add(((float)f.readByte()) / 255);
-                                        }
-                                        if (AttrArr[attr].vertType == 10)
-                                        {
-                                            vert.weight.Add(((float)f.readByte()) / 255);
-                                            vert.weight.Add(((float)f.readByte()) / 255);
-                                            vert.weight.Add(((float)f.readByte()) / 255);
-                                            vert.weight.Add(((float)f.readByte()) / 255);
-                                        }
-                                        break;
-                                }
-
-                                f.seek(BuffArr[AttrArr[attr].buffIndx].strideSize + f.pos());
-                            }
-                            model.vertices.Add(vert);
-
-                            List<int> faces = new List<int>();
-
-                            f.seek(FSHPArr[m].lodMdlOff + 4);
-                            int faceType = f.readInt();
-                            f.skip(0xC);
-                            f.seek(readOffset(f) + 4);
-                            int FaceCount = f.readInt();
-                            f.skip(0xC);
-                            f.seek(readOffset(f));
-                            if (faceType == 4)
-                                FaceCount = FaceCount / 6;
-                            if (faceType == 9)
-                                FaceCount = FaceCount / 12;
-                            for (int face = 0; face < FaceCount; face++)
-                            {
-                                for(int sF = 0; sF < 3; sF++) { 
-                                if (faceType == 4)
-                                    faces.Add(f.readShort());
-                                if (faceType == 9)
-                                    faces.Add(f.readInt());
-                                }
-                                model.faces.Add(faces);
+                                case "_p0":
+                                    if (AttrArr[attr].vertType == 2063)
+                                        vert.pos = new Vector3 { X = f.readHalfFloat(), Y = f.readHalfFloat(), Z = f.readHalfFloat() };
+                                    if (AttrArr[attr].vertType == 2065)
+                                        vert.pos = new Vector3 { X = f.readFloat(), Y = f.readFloat(), Z = f.readFloat() };
+                                    break;
+                                case "_c0":
+                                    if (AttrArr[attr].vertType == 2063)
+                                        vert.col = new Vector4 { X = (int)f.readHalfFloat() * 255, Y = (int)f.readHalfFloat() * 255, Z = (int)f.readHalfFloat() * 255, W = (int)f.readHalfFloat() * 255 };
+                                    if (AttrArr[attr].vertType == 2067)
+                                        vert.col = new Vector4 { X = (int)f.readFloat() * 255, Y = (int)f.readFloat() * 255, Z = (int)f.readFloat() * 255, W = (int)f.readFloat() * 255 };
+                                    if (AttrArr[attr].vertType == 10)
+                                        vert.col = new Vector4 { X = f.readByte(), Y = f.readByte(), Z = f.readByte(), W = f.readByte() };
+                                    break;
+                                case "_n0":
+                                    if (AttrArr[attr].vertType == 10)
+                                    {
+                                        uint normVal = (uint)f.readInt();
+                                        //Thanks RayKoopa!
+                                        vert.nrm = new Vector3 { X = ((normVal & 0x3FC00000) >> 22) / 511,Y = ((normVal & 0x000FF000) >> 12) / 511,Z = ((normVal & 0x000003FC) >> 2) / 511 };
+                                    }
+                                    break;
+                                case "_u0":
+                                case "color":
+                                case "_u1":
+                                case "_u2":
+                                case "_u3":
+                                    if (AttrArr[attr].vertType == 4 || AttrArr[attr].vertType == 516)
+                                        vert.tx.Add(new Vector2 { X = ((float)f.readByte()) / 255, Y = ((float)f.readByte()) / 255 });
+                                    if (AttrArr[attr].vertType == 7)
+                                        vert.tx.Add(new Vector2 { X = ((float)f.readShort()) / 65535, Y = ((float)f.readShort()) / 65535 });
+                                    if (AttrArr[attr].vertType == 519)
+                                        vert.tx.Add(new Vector2 { X = ((float)f.readShort()) / 32767, Y = ((float)f.readShort()) / 32767 });
+                                    if (AttrArr[attr].vertType == 2056)
+                                        vert.tx.Add(new Vector2 { X = f.readHalfFloat(), Y = f.readHalfFloat() });
+                                    if (AttrArr[attr].vertType == 2061)
+                                        vert.tx.Add(new Vector2 { X = f.readFloat(), Y = f.readFloat() });
+                                    break;
+                                case "_i0":
+                                    if (AttrArr[attr].vertType == 256) { 
+                                        vert.node.Add(Node_Array[f.readByte()]);
+                                        vert.weight.Add((float)1.0);
+                                    }
+                                    if (AttrArr[attr].vertType == 260)
+                                    {
+                                        vert.node.Add(Node_Array[f.readByte()]);
+                                        vert.node.Add(Node_Array[f.readByte()]);
+                                    }
+                                    if (AttrArr[attr].vertType == 266)
+                                    {
+                                        vert.node.Add(Node_Array[f.readByte()]);
+                                        vert.node.Add(Node_Array[f.readByte()]);
+                                        vert.node.Add(Node_Array[f.readByte()]);
+                                        vert.node.Add(Node_Array[f.readByte()]);
+                                    }
+                                    break;
+                                case "_w0":
+                                    if (AttrArr[attr].vertType == 4)
+                                    {
+                                        vert.weight.Add(((float)f.readByte()) / 255);
+                                        vert.weight.Add(((float)f.readByte()) / 255);
+                                    }
+                                    if (AttrArr[attr].vertType == 10)
+                                    {
+                                        vert.weight.Add(((float)f.readByte()) / 255);
+                                        vert.weight.Add(((float)f.readByte()) / 255);
+                                        vert.weight.Add(((float)f.readByte()) / 255);
+                                        vert.weight.Add(((float)f.readByte()) / 255);
+                                    }
+                                    break;
                             }
                         }
-
+                        model.vertices.Add(vert);
                     }
+                    List<int> faces = new List<int>();
+
+                    f.seek(FSHPArr[m].lodMdlOff + 4);
+                    int faceType = f.readInt();
+                    f.skip(0xC);
+                    f.seek(readOffset(f) + 4);
+                    int FaceCount = f.readInt();
+                    f.skip(0xC);
+                    f.seek(readOffset(f));
+                    if (faceType == 4)
+                        FaceCount = FaceCount / 6;
+                    if (faceType == 9)
+                        FaceCount = FaceCount / 12;
+                    for (int face = 0; face < FaceCount; face++)
+                    {
+                        for (int sF = 0; sF < 3; sF++)
+                        {
+                            if (faceType == 4)
+                                faces.Add(f.readShort());
+                            if (faceType == 9)
+                                faces.Add(f.readInt());
+                        }
+                        model.faces.Add(faces);
+                    }
+
                 }
                 models.Add(model);
                 f.seek(NextFMDL);
             }
+            PreRender();
 
         }
 
