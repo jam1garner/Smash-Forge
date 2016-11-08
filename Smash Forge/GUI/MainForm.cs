@@ -486,6 +486,7 @@ namespace Smash_Forge
                     {
                         BFRES m = new BFRES();
                         m.Read(ofd.FileName);
+                        m.PreRender();
                         ModelContainer con = new ModelContainer();
                         con.bfres = m;
                         Runtime.ModelContainers.Add(con);
