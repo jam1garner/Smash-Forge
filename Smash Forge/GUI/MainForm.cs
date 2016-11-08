@@ -468,7 +468,7 @@ namespace Smash_Forge
 
             if (!pnut.Equals(""))
             {
-                NUT nut = new NUT(new FileData(pnut));
+                NUT nut = new NUT(pnut);
                 Runtime.TextureContainers.Add(nut);
             }
 
@@ -530,7 +530,7 @@ namespace Smash_Forge
                         Runtime.TargetVBN = new VBN(ofd.FileName);
 
                     if (ofd.FileName.EndsWith(".nut"))
-                        Runtime.TextureContainers.Add(new NUT(new FileData(ofd.FileName)));
+                        Runtime.TextureContainers.Add(new NUT(ofd.FileName));
 
                     if (ofd.FileName.EndsWith(".lvd"))
                     {
