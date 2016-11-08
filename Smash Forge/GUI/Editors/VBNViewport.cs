@@ -514,7 +514,7 @@ namespace Smash_Forge
             {
                 // Render the hitboxes
                 if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
-                    HandleACMD(Runtime.TargetAnimString.Substring(4));
+                    HandleACMD(Runtime.TargetAnimString.Substring(3));
 
                 if(Runtime.renderHitboxes)
                     RenderHitboxes();
@@ -1156,8 +1156,8 @@ namespace Smash_Forge
 
         public void HandleACMD(string animname)
         {
-            //Console.WriteLine("Handling");
-            var crc = Crc32.Compute(animname.ToLower());
+            //Console.WriteLine("Handling " + animname);
+            var crc = Crc32.Compute(animname.Replace(".omo", "").ToLower());
 
             if (Runtime.Moveset == null)
             {
@@ -1171,6 +1171,7 @@ namespace Smash_Forge
                 return;
             }
 
+            Console.WriteLine("Handling " + animname);
             script = (ACMDScript)Runtime.Moveset.Game.Scripts[crc];
         }
 

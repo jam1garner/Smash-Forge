@@ -722,8 +722,8 @@ namespace Smash_Forge
                                 var anim = OMO.read(new FileData(pair.Value));
                                 string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
                                 //AnimName = pair.Key;
-                                AnimName = AnimName.Remove(AnimName.Length - 4);
-                                AnimName = AnimName.Insert(3, "_");
+                                //AnimName = AnimName.Remove(AnimName.Length - 4);
+                                //AnimName = AnimName.Insert(3, "_");
                                 if (!string.IsNullOrEmpty(AnimName))
                                 {
                                     animNode.Nodes.Add(AnimName);
