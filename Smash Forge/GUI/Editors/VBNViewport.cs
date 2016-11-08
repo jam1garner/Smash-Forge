@@ -1171,7 +1171,7 @@ namespace Smash_Forge
                 return;
             }
 
-            Console.WriteLine("Handling " + animname);
+            //Console.WriteLine("Handling " + animname);
             script = (ACMDScript)Runtime.Moveset.Game.Scripts[crc];
         }
 
