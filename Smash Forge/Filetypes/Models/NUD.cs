@@ -603,8 +603,15 @@ namespace Smash_Forge
                         v[i].col = new Vector4(d.readByte(), d.readByte(), d.readByte(), d.readByte());
                         for (int j = 0; j < uvCount; j++)
                             v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
-                    }
-                    else
+                }
+                else
+                    if (uvType == 0x4)
+                {
+                    v[i].col = new Vector4(d.readHalfFloat() * 0xFF, d.readHalfFloat() * 0xFF, d.readHalfFloat() * 0xFF, d.readHalfFloat() * 0xFF);
+                    for (int j = 0; j < uvCount; j++)
+                        v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                }
+                else
                         throw new NotImplementedException("UV type not supported " + uvType);
             }
         }
@@ -635,22 +642,41 @@ namespace Smash_Forge
 
             for (int i = 0; i < p.vertamt; i++)
             {
-                v[i].pos.X = d.readFloat();
-                v[i].pos.Y = d.readFloat();
-                v[i].pos.Z = d.readFloat();
+                if (nrm != 8)
+                {
+                    v[i].pos.X = d.readFloat();
+                    v[i].pos.Y = d.readFloat();
+                    v[i].pos.Z = d.readFloat();
+                }
 
-                if (nrm > 0)
+                if (nrm == 1)
+                {
+                    v[i].nrm.X = d.readFloat();
+                    v[i].nrm.Y = d.readFloat();
+                    v[i].nrm.Z = d.readFloat();
+                    d.skip(4); // n1?
+                    d.skip(4); // r1?
+                } else if (nrm == 2)
+                {
+                    v[i].nrm.X = d.readFloat();
+                    v[i].nrm.Y = d.readFloat();
+                    v[i].nrm.Z = d.readFloat();
+                    d.skip(4); // n1?
+                    d.skip(12); // r1?
+                    d.skip(12); // r1?
+                    d.skip(12); // r1?
+                } else if (nrm == 6)
                 {
                     v[i].nrm.X = d.readHalfFloat();
                     v[i].nrm.Y = d.readHalfFloat();
                     v[i].nrm.Z = d.readHalfFloat();
                     d.skip(2); // n1?
-                }
-                else
-                    d.skip(4);
-
-                if (nrm == 7)
+                } else if (nrm == 7)
                 {
+                    v[i].nrm.X = d.readHalfFloat();
+                    v[i].nrm.Y = d.readHalfFloat();
+                    v[i].nrm.Z = d.readHalfFloat();
+                    d.skip(2); // n1?
                     v[i].bitan.X = d.readHalfFloat();
                     v[i].bitan.Y = d.readHalfFloat();
                     v[i].bitan.Z = d.readHalfFloat();
@@ -659,7 +685,8 @@ namespace Smash_Forge
                     v[i].tan.Y = d.readHalfFloat();
                     v[i].tan.Z = d.readHalfFloat();
                     v[i].tan.W = d.readHalfFloat();
-                }
+                } else
+                    d.skip(4);
 
                 if (weight == 0)
                 {
@@ -1174,6 +1201,14 @@ namespace Smash_Forge
                 mat.entries.Add("NU_colorSamplerUV", new float[]{1, 1, 0, 0});
                 mat.entries.Add("NU_materialHash", new float[] {FileData.toFloat(0x68617368), 0, 0, 0});
                 materials.Add(mat);
+                
+                mat.textures.Add(makeDefault());
+                mat.textures.Add(makeDefault());
+                mat.textures.Add(makeDefault());
+            }
+
+            public static Mat_Texture makeDefault()
+            {
                 Mat_Texture dif = new Mat_Texture();
                 dif.WrapMode1 = 1;
                 dif.WrapMode2 = 1;
@@ -1182,25 +1217,7 @@ namespace Smash_Forge
                 dif.mipDetail = 1;
                 dif.mipDetail = 6;
                 dif.hash = 0x10080000;
-                mat.textures.Add(dif);
-                Mat_Texture nrm = new Mat_Texture();
-                nrm.WrapMode1 = 1;
-                nrm.WrapMode2 = 1;
-                nrm.minFilter = 3;
-                nrm.magFilter = 2;
-                nrm.mipDetail = 1;
-                nrm.mipDetail = 6;
-                nrm.hash = 0x10080000;
-                mat.textures.Add(nrm);
-                Mat_Texture dum = new Mat_Texture();
-                dum.WrapMode1 = 1;
-                dum.WrapMode2 = 1;
-                dum.minFilter = 3;
-                dum.magFilter = 2;
-                dum.mipDetail = 1;
-                dum.mipDetail = 6;
-                dum.hash = 0x10080000;
-                mat.textures.Add(dum);
+                return dif;
             }
 
             public List<int> getDisplayFace()

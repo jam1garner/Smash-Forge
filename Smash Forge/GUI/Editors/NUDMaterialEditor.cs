@@ -87,6 +87,30 @@ namespace Smash_Forge
                     { 0x06, "4 mip levels, trilinear on, anisotropic on"}
                 };
 
+        Dictionary<string, string[]> propList = new Dictionary<string, string[]>()
+        {
+            { "NU_colorSamplerUV", new string[] { "X Scale", "Y Scale", "X Trans", "Y Trans"} },
+            { "NU_fresnelColor", new string[] { "Red", "Green", "Blue", "Alpha"} },
+            { "NU_blinkColor", new string[] { "Red", "Green", "Blue", "Alpha"} },
+            { "NU_specularColor", new string[] { "Red", "Green", "Blue", "Intensity"} },
+            { "NU_diffuseColor", new string[] { "Red", "Green", "Blue", "Alpha"} },
+            { "NU_colorGain", new string[] { "Red", "Green", "Blue", "Intensity" } },
+            { "NU_reflectionColor", new string[] { "Red", "Green", "Blue", "Intensity" } },
+            { "NU_aoMinGain", new string[] { "Red", "Green", "Blue", "Alpha"} },
+            { "NU_reflectionParams", new string[] { "Tex Sharpness", "Cubemap Brightness", "Cubemap Intensity", ""} },
+            { "NU_lightMapColorOffset", new string[] { "", "", "", "" } },
+            { "NU_specularParams", new string[] { "", "Intensity", "", ""} },
+            { "NU_fresnelParams", new string[] { "", "", "", ""} },
+            { "NU_alphaBlendParams", new string[] { "", "", "", "" } },
+            { "NU_fogParams", new string[] { "", "Distance", "", "Intensity" } },
+            { "NU_fogColor", new string[] { "Red", "Green", "Blue", "Alpha"} },
+            { "NU_effRotUV", new string[] { "", "", "", "" } },
+            { "NU_effScaleUV", new string[] { "X Scale", "Y Scale", "X Trans", "Y Trans" } },
+            { "NU_effTransUV", new string[] { "", "", "", "" } },
+            { "NU_effColorGain", new string[] { "", "", "", "" } },
+            { "NU_materialHash", new string[] { "Hash", "Nothing", "Nothing", "Nothing"} }
+        };
+
 
         List<string> Properties = new List<string>(){
                     "",
@@ -114,6 +138,10 @@ namespace Smash_Forge
             {
                 comboBox1.Items.Add("Material_" + i);
             }
+
+            comboBox7.Items.Clear();
+            foreach(string s in propList.Keys)
+                comboBox7.Items.Add(s);
 
             foreach (int i in dstFactor.Keys)
                 comboBox2.Items.Add(dstFactor[i]);
@@ -427,14 +455,14 @@ namespace Smash_Forge
             {
                 int f = -1;
                 int.TryParse(textBox12.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f);
-                if (f != -1)
+                if (f != -1 && listView2.SelectedItems.Count > 0)
                     material[current].entries[listView2.SelectedItems[0].Text][0] = BitConverter.ToSingle(BitConverter.GetBytes(f), 0);
             }
             else
             {
                 float f = -1;
                 float.TryParse(textBox12.Text, out f);
-                if (f != -1)
+                if (f != -1 && listView2.SelectedItems.Count > 0)
                     material[current].entries[listView2.SelectedItems[0].Text][0] = f;
             }
         }
@@ -443,7 +471,7 @@ namespace Smash_Forge
         {
             float f = -1;
             float.TryParse(textBox13.Text, out f);
-            if (f != -1)
+            if (f != -1 && listView2.SelectedItems.Count > 0)
                 material[current].entries[listView2.SelectedItems[0].Text][1] = f;
         }
 
@@ -451,7 +479,7 @@ namespace Smash_Forge
         {
             float f = -1;
             float.TryParse(textBox14.Text, out f);
-            if (f != -1)
+            if (f != -1 && listView2.SelectedItems.Count > 0)
                 material[current].entries[listView2.SelectedItems[0].Text][2] = f;
         }
 
@@ -459,9 +487,79 @@ namespace Smash_Forge
         {
             float f = -1;
             float.TryParse(textBox15.Text, out f);
-            if (f != -1)
+            if (f != -1 && listView2.SelectedItems.Count > 0)
                 material[current].entries[listView2.SelectedItems[0].Text][3] = f;
         }
         #endregion
+
+        // property change
+        private void textBox11_TextChanged(object sender, EventArgs e)
+        {
+            string[] labels = null;
+            propList.TryGetValue(textBox11.Text, out labels);
+            
+            if (labels != null)
+            {
+                label20.Text = labels[0].Equals("") ? "Param1" : labels[0];
+                label21.Text = labels[1].Equals("") ? "Param2" : labels[1];
+                label22.Text = labels[2].Equals("") ? "Param3" : labels[2];
+                label23.Text = labels[3].Equals("") ? "Param4" : labels[3];
+            } else
+            {
+                label20.Text = "Param1";
+                label21.Text = "Param2";
+                label22.Text = "Param3";
+                label23.Text = "Param4";
+            }
+        }
+
+        private void comboBox7_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            button4.Enabled = true;
+
+            if (material[current].entries.ContainsKey(comboBox7.Text))
+            {
+                button4.Enabled = false;
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (!comboBox7.Text.Equals(""))
+            {
+                material[current].entries.Add(comboBox7.Text, new float[] { 0, 0, 0, 0 });
+                FillForm();
+                button4.Enabled = false;
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if(listView2.SelectedItems.Count > 0)
+            {
+                material[current].entries.Remove(listView2.SelectedItems[0].Text);
+                FillForm();
+            }
+        }
+
+
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (material[current].textures.Count < 4)
+            {
+                material[current].textures.Add(NUD.Polygon.makeDefault());
+                FillForm();
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0 && material[current].textures.Count > 1)
+            {
+                material[current].textures.RemoveAt(listView1.Items.IndexOf(listView1.SelectedItems[0]));
+                FillForm();
+            }
+        }
     }
 }
