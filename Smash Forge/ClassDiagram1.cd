@@ -1,0 +1,1830 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Smash_Forge.ANIM" Collapsed="true">
+    <Position X="30.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAQAAAAAACAAAEAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Animation\ANIM.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.CHR0" Collapsed="true">
+    <Position X="41" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAQAAAAAAAAAAAACAAAAIAAACAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Animation\CHR0.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.CMR0" Collapsed="true">
+    <Position X="42.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
+      <FileName>Filetypes\Animation\CMR0.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.PatData" Collapsed="true">
+    <Position X="23.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQEQAAAAAAAAAAACEAAAAAABAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Animation\MTA.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.MatData" Collapsed="true">
+    <Position X="44.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAACAAAAgAAAAEAAAAAAAAAQQAAAA=</HashCode>
+      <FileName>Filetypes\Animation\MTA.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.MatEntry" Collapsed="true">
+    <Position X="46.25" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAABAAAAAAAAAIACAAAAIAAAIEAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Animation\MTA.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.VisEntry" Collapsed="true">
+    <Position X="27" Y="14.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>wAEAAAAAAAAAAAAAACEAAAAAAAAEAAAAAAAAAQAAAAA=</HashCode>
+      <FileName>Filetypes\Animation\MTA.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.MTA" Collapsed="true">
+    <Position X="8" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAEAAAAAAgAAAAACAACAAgAAAIIAAAACAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Animation\MTA.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.OMO" Collapsed="true">
+    <Position X="44.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAgAAAAABAAAA=</HashCode>
+      <FileName>Filetypes\Animation\OMO.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.PathBin" Collapsed="true">
+    <Position X="14.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAgAAAAAAAAACAAAAAAAAE=</HashCode>
+      <FileName>Filetypes\Animation\PATH.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.LVDEntry" Collapsed="true">
+    <Position X="7.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAEAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\LVD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.Vector2D" Collapsed="true">
+    <Position X="23.5" Y="14.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgAAAAAAA=</HashCode>
+      <FileName>Filetypes\LVD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.Sphere" Collapsed="true">
+    <Position X="7.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAABgAQAAAAA=</HashCode>
+      <FileName>Filetypes\LVD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.Capsule" Collapsed="true">
+    <Position X="10" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAAAAAAAIAAAAAAAAAAAQAABhAQAABAA=</HashCode>
+      <FileName>Filetypes\LVD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.Point" Collapsed="true">
+    <Position X="12.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgAAAAAAA=</HashCode>
+      <FileName>Filetypes\LVD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.Bounds" Collapsed="true">
+    <Position X="14.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAAAAAgAAAAIAAAAAAAAAAAAgAA=</HashCode>
+      <FileName>Filetypes\LVD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.CollisionMat" Collapsed="true">
+    <Position X="21.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAAACAAAAIAgAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>Filetypes\LVD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.Section" Collapsed="true">
+    <Position X="35.75" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\LVD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.ItemSpawner" Collapsed="true">
+    <Position X="1" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACAAAAAAAAAAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\LVD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.EnemyGenerator" Collapsed="true">
+    <Position X="3.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACAAAAAAAAAAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\LVD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.Collision" Collapsed="true">
+    <Position X="5.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>4AEAAAAAAACAABAAACAgEAAAAAAACAAEAAAAgEBAAAA=</HashCode>
+      <FileName>Filetypes\LVD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.LVD" Collapsed="true">
+    <Position X="1.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAgABAAAAwIAAEhAACAIAAAACAAAAAAgAA=</HashCode>
+      <FileName>Filetypes\LVD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.BCH" Collapsed="true">
+    <Position X="3.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAgCAAAAAAAAAAgAAAAAAAAACAAAAAIAAA=</HashCode>
+      <FileName>Filetypes\Models\BCH.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.BFRES" Collapsed="true">
+    <Position X="42.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIBGBAAACAAACQEEQgAABAAFAQABAAAAAKAIA=</HashCode>
+      <FileName>Filetypes\Models\BFRES.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.COLLADA" Collapsed="true">
+    <Position X="44.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgKCAEABECAAAAAQIAIMAAAAAACYAAAAIEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.asset" Collapsed="true">
+    <Position X="37.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABTAAAAgQCQgEBABAAAQAECADAAAAABAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.assetContributor" Collapsed="true">
+    <Position X="39.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAkgAAEAAAAAAAAgAAACQIAAAAAAEAAAAAAAAACAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_surface_init_from_common" Collapsed="true">
+    <Position X="42.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAACACAAAAASCAAAAAIAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.common_newparam_type" Collapsed="true">
+    <Position X="34" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAACCAQAAAAAACQEAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_sampler2D_common" Collapsed="true">
+    <Position X="23.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAUACAAEAAYCAAIAAAIAAkAAAACAQgAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.extra" Collapsed="true">
+    <Position X="32.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAAAAIAAAAAAAwAFACIAAAAAAAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.technique" Collapsed="true">
+    <Position X="41" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAQAAAAAAAAAAAAAAAAAAAAAAAAEIAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_surface_common" Collapsed="true">
+    <Position X="32.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BIAEAAAAAAAGIQAAAAAAGCKMAAABgAABBAAgFARQQQA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_surface_init_cube_common" Collapsed="true">
+    <Position X="35.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_surface_init_cube_commonAll" Collapsed="true">
+    <Position X="37.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_surface_init_cube_commonFace" Collapsed="true">
+    <Position X="39.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_surface_init_cube_commonPrimary" Collapsed="true">
+    <Position X="41" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABAAAEAAAAAAAAQAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_surface_init_volume_common" Collapsed="true">
+    <Position X="21.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_surface_init_volume_commonAll" Collapsed="true">
+    <Position X="23.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_surface_init_volume_commonPrimary" Collapsed="true">
+    <Position X="25.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_surface_init_planar_common" Collapsed="true">
+    <Position X="44.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_surface_init_planar_commonAll" Collapsed="true">
+    <Position X="46.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_surface_format_hint_common" Collapsed="true">
+    <Position X="34" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAIAAAEAAGIAAAAAAAABAAAAAAQAAAQEAAAAAI=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.common_color_or_texture_type" Collapsed="true">
+    <Position X="3.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.common_color_or_texture_typeColor" Collapsed="true">
+    <Position X="23.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACABAAAACAAQAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.common_color_or_texture_typeParam" Collapsed="true">
+    <Position X="25.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.common_color_or_texture_typeTexture" Collapsed="true">
+    <Position X="27" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEIAAAAQAAAAAAAAAAAgAAAAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.common_transparent_type" Collapsed="true">
+    <Position X="3.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.common_float_or_param_type" Collapsed="true">
+    <Position X="28.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.common_float_or_param_typeFloat" Collapsed="true">
+    <Position X="30.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAQAAAAAAAAAAAACAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.common_float_or_param_typeParam" Collapsed="true">
+    <Position X="32.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_include_common" Collapsed="true">
+    <Position X="44.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAQAAAAAAAAAAAAIAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_samplerDEPTH_common" Collapsed="true">
+    <Position X="28.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAQAAAAEAAIAAAIAAAAAAkAAAAAAQgAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_samplerRECT_common" Collapsed="true">
+    <Position X="30.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAUACAAEAAYCAAIAAAIAAkAAAACAQgAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_samplerCUBE_common" Collapsed="true">
+    <Position X="27" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAUACAAEAAYCAAIAAAIAAkAAAACAQgAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_sampler3D_common" Collapsed="true">
+    <Position X="25.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAUACAAEAAYCAAIAAAIAAkAAAACAQgAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_sampler1D_common" Collapsed="true">
+    <Position X="21.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAUACAAEAAYCAAIAAAIAAkAAAACAQgAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.InputGlobal" Collapsed="true">
+    <Position X="37.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAYAAAAAAAIAAAAAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_newparam_common" Collapsed="true">
+    <Position X="46.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CFJAEAIAA1ACwwwABG4yiKMABBEBgEIBACIIALgACIQ=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.fx_annotate_common" Collapsed="true">
+    <Position X="42.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AJAAEAAAAAACSgAABO4CgIEABAEFAAABACAIAKgACIA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.InputLocalOffset" Collapsed="true">
+    <Position X="41" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CECAAAYAQAgAAAIAAAQAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.TargetableFloat" Collapsed="true">
+    <Position X="37.5" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAQAAAAAAAAAAAACAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.InputLocal" Collapsed="true">
+    <Position X="39.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAYAAAAAAAIAAAAAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.instance_material" Collapsed="true">
+    <Position X="25.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAEIAWAAQAIIABAAABAAAEAAQAAAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.instance_materialBind" Collapsed="true">
+    <Position X="27" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAIAAAACABAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.instance_materialBind_vertex_input" Collapsed="true">
+    <Position X="28.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAgAAAAAAAACQACAgAAAAEAAAAAAAAAAIAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.assetUnit" Collapsed="true">
+    <Position X="41" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAAIAAAAAAAAAEAAAAAAAAAIAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.library_animation_clips" Collapsed="true">
+    <Position X="23.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAEAAAAAIAAAAAAAAAUACIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.animation_clip" Collapsed="true">
+    <Position X="34" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAASACAAAEAAAgAIAAAAAAAAAEACIAAAAAEAAQgkA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.InstanceWithExtra" Collapsed="true">
+    <Position X="42.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAGAAQAAIAAAAAAAAAMAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.library_animations" Collapsed="true">
+    <Position X="25.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAIAAAIBAAAAEACIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.animation" Collapsed="true">
+    <Position X="32.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAECAAAAIAAAAAAAAAEACIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.channel" Collapsed="true">
+    <Position X="39.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAAAAAIAIAAAAAABAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.sampler" Collapsed="true">
+    <Position X="34" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.source" Collapsed="true">
+    <Position X="25.25" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAEAwAMACIAABAgAAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.IDREF_array" Collapsed="true">
+    <Position X="34" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAABIAAAAAAAAAGECAAAAAgAAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.Name_array" Collapsed="true">
+    <Position X="37.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACABAAAAAAAAABIAAAAAAAAAEECAAAAAgAAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.bool_array" Collapsed="true">
+    <Position X="23.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACABAAAAAAAAABIAAAAAAAAAEECAAAAAgAAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.float_array" Collapsed="true">
+    <Position X="37.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACABIAAAAAAAABIAAAAAAAAAFECAAAQAgAAAACgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.int_array" Collapsed="true">
+    <Position X="44.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACACARAAAAABAAABIAAAAAAAAAEECAAAAAgAACAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.sourceTechnique_common" Collapsed="true">
+    <Position X="27" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAgAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.accessor" Collapsed="true">
+    <Position X="23.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAQAQAACACIABAAAAAAACAAAEAAAAAEAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.param" Collapsed="true">
+    <Position X="46.25" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAACAAQAAIAAACAAAAAHAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.library_cameras" Collapsed="true">
+    <Position X="27" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAEAAAAAIAAAAAAAQAEACIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.camera" Collapsed="true">
+    <Position X="27" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAEAAAAAIAAAAAAEAAEACMAAgAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.cameraOptics" Collapsed="true">
+    <Position X="30.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAwAIAAAAABAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.cameraOpticsTechnique_common" Collapsed="true">
+    <Position X="32.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.cameraOpticsTechnique_commonOrthographic" Collapsed="true">
+    <Position X="34" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAACAAAASCAAAAAABAAAIAAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.cameraOpticsTechnique_commonPerspective" Collapsed="true">
+    <Position X="35.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAACAAAASCAAAAAABAAAIAAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.cameraImager" Collapsed="true">
+    <Position X="28.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAwAAAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.library_controllers" Collapsed="true">
+    <Position X="28.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAEAAEAAIAAAAAAAAAEACIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.controller" Collapsed="true">
+    <Position X="35.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAIAAAAAEAAAEACIAAAAgEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.morph" Collapsed="true">
+    <Position X="32.25" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAAEACIAAAAAAAICAAAAEAAABABAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.morphTargets" Collapsed="true">
+    <Position X="34" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAEAAAAAAAAAAAAAAAAABAAAAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.skin" Collapsed="true">
+    <Position X="44.5" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAYAAAAEAEIACAAgAAICAAAAAAAABAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.skinJoints" Collapsed="true">
+    <Position X="46.25" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAEAAAAAAAAAAAAAAAAABAAAAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.skinVertex_weights" Collapsed="true">
+    <Position X="21.75" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAEAAAEAAAABAAAAAAAAAAAEBAAAFAAEAIAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.library_effects" Collapsed="true">
+    <Position X="30.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAAAQAEAAAAAIAAAAAAAAAEACIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.effect" Collapsed="true">
+    <Position X="44.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAACAAAAECAgAAIAAEAIAEAAEAGIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.image" Collapsed="true">
+    <Position X="35.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAQEAAQCwIABCAAEgAAEACIAEAAgMAAAggA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.effectFx_profile_abstractProfile_COMMON" Collapsed="true">
+    <Position X="46.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAECAAAAAAAAAAAAwAAACIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.effectFx_profile_abstractProfile_COMMONTechnique" Collapsed="true">
+    <Position X="21.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAGCAQAAAAAAAAEAAAAACIAAAAgEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.effectFx_profile_abstractProfile_COMMONTechniqueBlinn" Collapsed="true">
+    <Position X="23.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAABAAAQAAAAABAIAAAMQIMAIABAAAAAACAABABAAAI=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.effectFx_profile_abstractProfile_COMMONTechniqueConstant" Collapsed="true">
+    <Position X="25.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAQAAAAAAAIAAAMQIMAIABAAAAAACAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.effectFx_profile_abstractProfile_COMMONTechniqueLambert" Collapsed="true">
+    <Position X="27" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAQAAAAAAAIAAAMQIMAIABAAAAAACAABAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.effectFx_profile_abstractProfile_COMMONTechniquePhong" Collapsed="true">
+    <Position X="28.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAABAAAQAAAAABAIAAAMQIMAIABAAAAAACAABABAAAI=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.library_force_fields" Collapsed="true">
+    <Position X="32.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAAEAAAAAIAAAAAAAAAEAGIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.force_field" Collapsed="true">
+    <Position X="41" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAIAAAAAAAwAEACIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.library_geometries" Collapsed="true">
+    <Position X="34" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACIAAAAAAAEAAAAAIAAAAAAAAAEACIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.geometry" Collapsed="true">
+    <Position X="27" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAIAAAAAEAAAEACIAAAAgEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.convex_mesh" Collapsed="true">
+    <Position X="37.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAASAAAAECAIAACAAAAAAAAAQAAAAAAIAEAAEAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.vertices" Collapsed="true">
+    <Position X="25.25" Y="14.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAEAAAAAIAAAAAAAAAEADAAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.lines" Collapsed="true">
+    <Position X="34" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAEAAAABIAAAAAAAAgUEBAAAEAAEABAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.linestrips" Collapsed="true">
+    <Position X="35.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAEAAAABIAAAAAAAAgUEBAAAEAAEABAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.polygons" Collapsed="true">
+    <Position X="37.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACEAAAECAAABIAAAAAAAAAUEBAAAAAAEABAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.polygonsPH" Collapsed="true">
+    <Position X="39.25" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAACAgAAAAAQEAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.polylist" Collapsed="true">
+    <Position X="41" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAEAAAEAAAABIAAAAAAAAgUEBAAAEAAEABAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.triangles" Collapsed="true">
+    <Position X="42.75" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAEAAAABIAAAAAAAAgUEBAAAEAAEABAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.trifans" Collapsed="true">
+    <Position X="44.5" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAEAAAABIAAAAAAAAgUEBAAAEAAEABAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.tristrips" Collapsed="true">
+    <Position X="46.25" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAEAAAABIAAAAAAAAgUEBAAAEAAEABAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.mesh" Collapsed="true">
+    <Position X="27" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAASAAAAECAIAAAAAAAAAAAAQAAAAAAAAEAAEAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.spline" Collapsed="true">
+    <Position X="30.5" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAQAEAAIQAAAAAAAAAAAAAAAAAIAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.splineControl_vertices" Collapsed="true">
+    <Position X="32.25" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAEAAAAAAAAAAAAAAAAABAAAAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.library_images" Collapsed="true">
+    <Position X="35.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAAEAAAAAIAAAAAAEAAEACIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.library_lights" Collapsed="true">
+    <Position X="37.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAIAAAAAAAAIMACIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.light" Collapsed="true">
+    <Position X="23.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAIAAAAAAAwAMACIAABAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.lightTechnique_common" Collapsed="true">
+    <Position X="25.25" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.lightTechnique_commonAmbient" Collapsed="true">
+    <Position X="27" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAgAAAAAAAAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.TargetableFloat3" Collapsed="true">
+    <Position X="39.25" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACABAAAACAAQAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.lightTechnique_commonDirectional" Collapsed="true">
+    <Position X="28.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAgAAAAAAAAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.lightTechnique_commonPoint" Collapsed="true">
+    <Position X="30.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAIAAAAAAAAAAgAAAAACCAAQCACAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.lightTechnique_commonSpot" Collapsed="true">
+    <Position X="32.25" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAIAAAAAAAAAAhECAAACCCAQCACAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.library_materials" Collapsed="true">
+    <Position X="39.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAIAAAAAAAAAUACIAAAAAEABAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.material" Collapsed="true">
+    <Position X="21.75" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAQAAAAAAAEAAAAAIAAAAAAAAAEACIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.instance_effect" Collapsed="true">
+    <Position X="44.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAAGAgQAAIAAAAQAAAAMAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.instance_effectTechnique_hint" Collapsed="true">
+    <Position X="21.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAEAAAAAAAAAAAAAAAAEMAAAAAAAAgAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.instance_effectSetparam" Collapsed="true">
+    <Position X="46.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CFJAEAAAAlAGwgAABG4SiIEABBEBgEIBACIIALgACIA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.library_nodes" Collapsed="true">
+    <Position X="41" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAEAAAAAIAgAAAAAAAEACIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.node" Collapsed="true">
+    <Position X="39.25" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAoAQCQgQAGCAQIAIABAAAAIACFACIAAAAAFgAAAgg=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.lookat" Collapsed="true">
+    <Position X="37.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACABAAAACAAQAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.matrix" Collapsed="true">
+    <Position X="23.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACABAAAACAAQAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rotate" Collapsed="true">
+    <Position X="30.5" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACABAAAACAAQAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.skew" Collapsed="true">
+    <Position X="42.75" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACABAAAACAAQAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.instance_controller" Collapsed="true">
+    <Position X="42.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAGAAQAAIEAAAAAAAAMAAAAAAAAEABAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.bind_material" Collapsed="true">
+    <Position X="44.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAGACAAAAAAAAAAAwAIAAAAABAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.instance_geometry" Collapsed="true">
+    <Position X="23.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAGAAQAAIAAAAAAAAAMAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.library_physics_materials" Collapsed="true">
+    <Position X="42.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAIAAAAABAAAECCIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.physics_material" Collapsed="true">
+    <Position X="25.25" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAIAAAAAAAwAMACIAABAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.physics_materialTechnique_common" Collapsed="true">
+    <Position X="27" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAARAAIAAQAAAAAEAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.library_physics_models" Collapsed="true">
+    <Position X="44.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAQAIAAAAAAAgAEACIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.physics_model" Collapsed="true">
+    <Position X="28.75" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAgABAAEAAAAAIAAAAAAAAEEACKAAIAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rigid_body" Collapsed="true">
+    <Position X="27" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAGAAQAAIAAAAAAAwAMAAAAABAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rigid_bodyTechnique_common" Collapsed="true">
+    <Position X="28.75" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAECEAIAAQAAAAAAAEAAAAAAACAAAkAEAABAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rigid_bodyTechnique_commonDynamic" Collapsed="true">
+    <Position X="30.5" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAQAAAAAAAAAAAACAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rigid_bodyTechnique_commonShape" Collapsed="true">
+    <Position X="32.25" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAECgAIAECAAQKAAAAAAEAAAAAQAAAAAgEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rigid_bodyTechnique_commonShapeHollow" Collapsed="true">
+    <Position X="34" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAQAAAAAAAAAAAACAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.box" Collapsed="true">
+    <Position X="25.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAQAAAAEAAAAAg=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.capsule" Collapsed="true">
+    <Position X="37.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAACAAEAAQCAAAAAAAAAAAAAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.cylinder" Collapsed="true">
+    <Position X="41" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAACAAEAAQCAAAAAAAAAAAAAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.plane" Collapsed="true">
+    <Position X="35.75" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABEAAAAAAAQAAAAAAAAAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.sphere" Collapsed="true">
+    <Position X="28.75" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAACAAEAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.tapered_capsule" Collapsed="true">
+    <Position X="34" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EgACAAAAAAAEAAQCAAABAAAAAAAAAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.tapered_cylinder" Collapsed="true">
+    <Position X="35.75" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EgACAAAAAAAEAAQCAAABAAAAAAAAAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rigid_constraint" Collapsed="true">
+    <Position X="35.75" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEACAGAAQAAICAAAAAAwAMAAAAABAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rigid_constraintRef_attachment" Collapsed="true">
+    <Position X="39.25" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAACAAAAACAAAAAAAAAAAAAAAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rigid_constraintAttachment" Collapsed="true">
+    <Position X="37.5" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAACAAAAACAAAAAAAAAAAAAAAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rigid_constraintTechnique_common" Collapsed="true">
+    <Position X="41" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQBAgACAAAAAAAAACAAAAAAAFQAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rigid_constraintTechnique_commonEnabled" Collapsed="true">
+    <Position X="42.75" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAQAAAAAAAAAAAACAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rigid_constraintTechnique_commonInterpenetrate" Collapsed="true">
+    <Position X="44.5" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAQAAAAAAAAAAAACAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rigid_constraintTechnique_commonLimits" Collapsed="true">
+    <Position X="46.25" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAIAAAAAAAAAAAAAAAAAAAAAAABAAAACA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rigid_constraintTechnique_commonLimitsSwing_cone_and_twist" Collapsed="true">
+    <Position X="23.5" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAQAAAAAAAAAAAAAACAAAAAAIAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rigid_constraintTechnique_commonLimitsLinear" Collapsed="true">
+    <Position X="21.75" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAQAAAAAAAAAAAAAACAAAAAAIAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rigid_constraintTechnique_commonSpring" Collapsed="true">
+    <Position X="25.25" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIAAAgAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rigid_constraintTechnique_commonSpringAngular" Collapsed="true">
+    <Position X="27" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAQAIAAAAAAAAAEAAAAAQAAACAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.rigid_constraintTechnique_commonSpringLinear" Collapsed="true">
+    <Position X="28.75" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAQAIAAAAAAAAAEAAAAAQAAACAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.instance_physics_model" Collapsed="true">
+    <Position X="30.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAIAACAGAARAAIAgAAAAAABcAAAABAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.instance_rigid_body" Collapsed="true">
+    <Position X="32.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAGAAQAIIAAAAABAwAMAAAAABAAECAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.instance_rigid_bodyTechnique_common" Collapsed="true">
+    <Position X="34" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAIAAAAECEAIAAQAAAAAAEEAAAAABACAAQkAEAABAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.instance_rigid_bodyTechnique_commonDynamic" Collapsed="true">
+    <Position X="35.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAQAAAAAAAAAAAACAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.instance_rigid_bodyTechnique_commonShape" Collapsed="true">
+    <Position X="37.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAECgAIAECAAQKAAAAAAEAAAAAQAAAAAgEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.instance_rigid_bodyTechnique_commonShapeHollow" Collapsed="true">
+    <Position X="39.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAQAAAAAAAAAAAACAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.instance_rigid_constraint" Collapsed="true">
+    <Position X="41" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAGAAQAAIAAAAAAAAAEIAAAAAQAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.library_physics_scenes" Collapsed="true">
+    <Position X="46.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAEAIAAAIAAAAAAAAAEACIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.physics_scene" Collapsed="true">
+    <Position X="30.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAIAAAAAAAwFcACIAAJAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.physics_sceneTechnique_common" Collapsed="true">
+    <Position X="32.25" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAAAEAAAAAAAAAAAAgAAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.library_visual_scenes" Collapsed="true">
+    <Position X="21.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACEAAAAAJAAAAAAAAAEACIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.visual_scene" Collapsed="true">
+    <Position X="28.75" Y="14.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQEAAAAAAAAEAAAABIAgAAAAAAAEACIAAAAAEAAAAgA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.visual_sceneEvaluate_scene" Collapsed="true">
+    <Position X="30.5" Y="14.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAoAAAAAAAAAEAAAAAAAAAAAQAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.visual_sceneEvaluate_sceneRender" Collapsed="true">
+    <Position X="32.25" Y="14.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAQAAAAgAAAAAAAAAAAAAAAAAABIAAAAAAABAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.COLLADAScene" Collapsed="true">
+    <Position X="46.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAEAAAACAAAEAAgAAAAAAAEAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.ellipsoid" Collapsed="true">
+    <Position X="30.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.JTB" Collapsed="true">
+    <Position X="5.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAQAAgAAAAAAAAACAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\JTB.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.MBN" Collapsed="true">
+    <Position X="10.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAIAIBCBgAACAIASRGEQgAABRAVAQADAAAQACgIQ=</HashCode>
+      <FileName>Filetypes\Models\MBN.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.MDL0Bones" Collapsed="true">
+    <Position X="25.25" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\MDL0Bones.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.NUD" Collapsed="true">
+    <Position X="12.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAgAAIBDBiAICAAACQOkQoABBJAFBQRDAAAAACIIA=</HashCode>
+      <FileName>Filetypes\Models\NUD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.Bone" Collapsed="true">
+    <Position X="46.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAgBAAAQAAACAIIADAAAEAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>Filetypes\Models\VBN.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.HelperBone" Collapsed="true">
+    <Position X="30.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\VBN.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.VBN" Collapsed="true">
+    <Position X="17" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAEBCAgAAAABAAQQBIgEAgAAEAQgKACABgEAAA=</HashCode>
+      <FileName>Filetypes\Models\VBN.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.csvHashes" Collapsed="true">
+    <Position X="39.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoA=</HashCode>
+      <FileName>Filetypes\Models\VBN.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.PAC" Collapsed="true">
+    <Position X="19.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAgAAAAAAAAACAAAAAAAIA=</HashCode>
+      <FileName>Filetypes\PAC.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.SMD" Collapsed="true">
+    <Position X="23.5" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\SMD.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.DDS" Collapsed="true">
+    <Position X="42.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQQAAAAAAAAgAoAAAAAUAAAAACAAAAQAAAAEIA=</HashCode>
+      <FileName>Filetypes\Textures\DDS.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.GTX" Collapsed="true">
+    <Position X="28.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABEQAIAAACAAAAAABAAAAAAAAgAAAEAIIAAAAAAAYo=</HashCode>
+      <FileName>Filetypes\Textures\GTX.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.NUT" Collapsed="true">
+    <Position X="42.75" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAAAAAAIAAAIAAABBAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Textures\NUT.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.Pixel" Collapsed="true">
+    <Position X="34" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAEAAgAEQAACAAAAAAAAAABAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Textures\Pixel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.About" Collapsed="true">
+    <Position X="21.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAACAAABQAAACAAAASAAAEAAAAACAAAABAAAA=</HashCode>
+      <FileName>GUI\About.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.AddBone" Collapsed="true">
+    <Position X="28.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAACAAABAAAACAAABCAAAICAAAEGAAAAAAAAA=</HashCode>
+      <FileName>GUI\AddBone.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.ACMDEditor" Collapsed="true">
+    <Position X="27" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAACCAAAAACACAAAACQgAAAAAAAAAQAgAAAAA=</HashCode>
+      <FileName>GUI\Editors\ACMDEditor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.AnimListPanel" Collapsed="true">
+    <Position X="35.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAAEACAAAAAAAACAAQACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GUI\Editors\AnimList.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.BoneTreePanel" Collapsed="true">
+    <Position X="21.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAEAAAACAAABEAAACAAAgSAAgAIAgBWCAAAQABAIA=</HashCode>
+      <FileName>GUI\Editors\BoneTree.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.LVDEditor" Collapsed="true">
+    <Position X="39.25" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAoCAAIBARAKDlViASAKIcSAAEABAAAAAQAAA=</HashCode>
+      <FileName>GUI\Editors\LVD Editor\LVDEditor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.LVDList" Collapsed="true">
+    <Position X="41" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAAAASIAAIEQAASAgAACAAAQAgAAAABAAAEAAAA=</HashCode>
+      <FileName>GUI\Editors\LVD Editor\LVDList.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.MeshList" Collapsed="true">
+    <Position X="28.75" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAECAACAAgAEAAACAAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GUI\Editors\MeshList.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.NUDMaterialEditor" Collapsed="true">
+    <Position X="41" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>/wCAgAEVASEwgPWSEAKAAABK8kQ4AAAE0ABCAIFACrA=</HashCode>
+      <FileName>GUI\Editors\NUDMaterialEditor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.PARAMEditor" Collapsed="true">
+    <Position X="21.75" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAQAAAACCAABAAAACAAAACAAgAAEBAAEAAAwCQAAA=</HashCode>
+      <FileName>GUI\Editors\PARAMEditor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.ProjectTree" Collapsed="true">
+    <Position X="44.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAEAAKAAAAACIACAAAADQAAAQAAAAIAAAAgAAAA=</HashCode>
+      <FileName>GUI\Editors\ProjectTree.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.RenderTools" Collapsed="true">
+    <Position X="23.5" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQCAAAAAAAAAAEAAAAAAAEAAAAAAAAAAAAAQAACAAAA=</HashCode>
+      <FileName>GUI\Editors\RenderTools.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.VBNViewport" Collapsed="true">
+    <Position X="21.75" Y="14.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACKAABACASYBCBQMRMKACZCCYqFYAAGkALAwgUGQIME=</HashCode>
+      <FileName>GUI\Editors\VBNViewport.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.MainForm" Collapsed="true">
+    <Position X="42.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>kAAAzIAYBAMIwEAADwAAEIGAAAgCgAgAQIAEQAGAyQA=</HashCode>
+      <FileName>GUI\MainForm.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.ModelContainer" Collapsed="true">
+    <Position X="30.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABACCAAAAAAAEAAAAAAAAAQAABEQAAACAAAAAAAAAA=</HashCode>
+      <FileName>GUI\ModelContainer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.FileBase" Collapsed="true">
+    <Position X="10.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAgAAAAAAAAAAAgAAAAAAAAACAAAAAAAAA=</HashCode>
+      <FileName>IO\FileBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.FileData" Collapsed="true">
+    <Position X="34" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAoABAAAKAEQIAAAgQAAACAAUFQQAAQAAA=</HashCode>
+      <FileName>IO\FileData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.FileOutput" Collapsed="true">
+    <Position X="35.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAoACiAIAABIBAgEAAACQAAAIAQABQEAAIAAA=</HashCode>
+      <FileName>IO\FileOutput.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.MovesetManager" Collapsed="true">
+    <Position X="35.75" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAggAAAEAAAAAAAAAAgAAAAQBAAAAIAAAAA=</HashCode>
+      <FileName>MovesetManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.acmd_frame" Collapsed="true">
+    <Position X="25.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAgAAAAAAAAAAAAAAAgAAAAQBAAAAAAAAAg=</HashCode>
+      <FileName>MovesetManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.Hitbox" Collapsed="true">
+    <Position X="32.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAgBgAAEADAAAAEEAAAAAAAUgAAAAIYIE=</HashCode>
+      <FileName>MovesetManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.Program" Collapsed="true">
+    <Position X="42.75" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.Runtime" Collapsed="true">
+    <Position X="32.25" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BABAAEQEAJiAAABQgQIIIACQQAAAgBAKAAACgSJAAQI=</HashCode>
+      <FileName>Runtime.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.Shader" Collapsed="true">
+    <Position X="39.25" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACACJAAAAAAAAAAAAAAAgAggAEQAQAAAAAAAAQAA=</HashCode>
+      <FileName>Shader.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.KeyFrame" Collapsed="true">
+    <Position X="46.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAAAAAAAAAAAAAIAIBAAAAgAAQAAIAA=</HashCode>
+      <FileName>SkelAnimation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.KeyNode" Collapsed="true">
+    <Position X="21.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAQAAABAAAACAAAAAAAAwBAAIAAAAIQBgAAEAgA=</HashCode>
+      <FileName>SkelAnimation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.SkelAnimation" Collapsed="true">
+    <Position X="41" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAADAAAAEAAIAAAAgIAACACBAAAAAAAQAIAAA=</HashCode>
+      <FileName>SkelAnimation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.WorkspaceManager" Collapsed="true">
+    <Position X="35.75" Y="14.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAQA=</HashCode>
+      <FileName>WorkspaceManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.Project" Collapsed="true">
+    <Position X="0.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAgAAAAABIAAAAACAAAAAEAICQAAAAAAAAA=</HashCode>
+      <FileName>WorkspaceManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.FitProj" Collapsed="true">
+    <Position X="0.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAEAAQAAAAAABAgAAAAACgAAAARAAAAAAAAAAA=</HashCode>
+      <FileName>WorkspaceManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Windows.Forms.FolderSelectDialog" Collapsed="true">
+    <Position X="39.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACCAAEAAAASAAAECAAIAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GUI\FolderSelectDialog.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Windows.Forms.WindowWrapper" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="34" Y="14.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAIAAAA=</HashCode>
+      <FileName>GUI\FolderSelectDialog.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="System.Windows.Forms.Reflector" Collapsed="true">
+    <Position X="46.25" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAQAAAAwAAACBAAAAAAAAAAAAIAQEACAAAAAAABAA=</HashCode>
+      <FileName>GUI\FolderSelectDialog.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Smash_Forge.GUI.RenderSettings" Collapsed="true">
+    <Position X="21.75" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAEAAACAAAACAAAAAAAAAAAAAAGQAQA=</HashCode>
+      <FileName>GUI\RenderSettings.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SForge.Properties.Resources" Collapsed="true">
+    <Position X="25.25" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABEAAAAQAAAAAAAAAAAAAAAIA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SForge.Properties.Settings" Collapsed="true">
+    <Position X="37.5" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAIAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="Smash_Forge.pathFrame" Collapsed="true">
+    <Position X="21.75" Y="15.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAQAAAAAAAAAAQAAAAIBgAQAAAAA=</HashCode>
+      <FileName>Filetypes\Animation\PATH.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="Smash_Forge.fx_surface_face_enum" Collapsed="true">
+    <Position X="28.75" Y="17" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAwAIAAAAAAADgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.fx_sampler_wrap_common" Collapsed="true">
+    <Position X="27" Y="17" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAAAAAAQAAAAACAAAAAAQAAAAAAAAAAAE=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.fx_sampler_filter_common" Collapsed="true">
+    <Position X="25.25" Y="17" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAwAABEAAAAAAAAgAAAAAAAAACAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.fx_surface_format_hint_channels_enum" Collapsed="true">
+    <Position X="30.5" Y="17" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAoAAAAAAAAAAAAAAAAAgAAAAAAAAQQABAQAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.fx_surface_format_hint_range_enum" Collapsed="true">
+    <Position X="35.75" Y="17" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BQAAAAAAAAAFAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.fx_surface_format_hint_precision_enum" Collapsed="true">
+    <Position X="34" Y="17" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.fx_surface_format_hint_option_enum" Collapsed="true">
+    <Position X="32.25" Y="17" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAJAAQAAAAAAAIAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.fx_surface_type_enum" Collapsed="true">
+    <Position X="37.5" Y="17" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAEIAAAAAACAAgAAAACAAAAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.ItemChoiceType" Collapsed="true">
+    <Position X="39.25" Y="17" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABBAAAAAAAAAAAAAAAQAAAAAAAAAAAAAACAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.fx_opaque_enum" Collapsed="true">
+    <Position X="23.5" Y="17" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.fx_modifier_enum_common" Collapsed="true">
+    <Position X="21.75" Y="17" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAEAQAAAAAAAAAAgCAAAAFAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.UpAxisType" Collapsed="true">
+    <Position X="25.25" Y="17.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABAAAAAAAAAAAAAAAAgAAAAAAAIAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.ItemsChoiceType" Collapsed="true">
+    <Position X="41" Y="17" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAIAAAAEA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.ItemsChoiceType1" Collapsed="true">
+    <Position X="42.75" Y="17" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAIAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.MorphMethodType" Collapsed="true">
+    <Position X="46.25" Y="17" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAIAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.ItemsChoiceType2" Collapsed="true">
+    <Position X="44.5" Y="17" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAQACACAAAAAAAAAAAAAgAABAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.NodeType" Collapsed="true">
+    <Position X="21.75" Y="17.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.VersionType" Collapsed="true">
+    <Position X="27" Y="17.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Filetypes\Models\DAE.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Smash_Forge.ProjType" Collapsed="true">
+    <Position X="23.5" Y="17.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAA=</HashCode>
+      <FileName>WorkspaceManager.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

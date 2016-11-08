@@ -64,27 +64,31 @@ namespace Smash_Forge
 
             foreach (FMDL_Model m in models)
             {
-                    if (m.faces.Count <= 3)
-                        continue;
-                    foreach (Vertex v in m.vertices)
+                Console.WriteLine(m.vertices.Count);
+                Console.WriteLine(m.faces.Count);
+                if (m.faces.Count <= 3)
+                    continue;
+                foreach (Vertex v in m.vertices)
+                {
+                    vert.Add(v.pos);
+                    col.Add(v.col / 0x7F);
+                    nrm.Add(v.nrm);
+
+                    uv.Add(v.tx[0]);
+
+                    while (v.node.Count < 4)
                     {
-                        vert.Add(v.pos);
-                        col.Add(v.col / 0x7F);
-                        nrm.Add(v.nrm);
-
-                        uv.Add(v.tx[0]);
-
-                        while (v.node.Count < 4)
-                        {
-                            v.node.Add(0);
-                            v.weight.Add(0);
-                        }
-                        bone.Add(new Vector4(v.node[0], v.node[1], v.node[2], v.node[3]));
-                        weight.Add(new Vector4(v.weight[0], v.weight[1], v.weight[2], v.weight[3]));
+                        v.node.Add(0);
+                        v.weight.Add(0);
                     }
+                    bone.Add(new Vector4(-1, 0, 0, 0));
+                    weight.Add(new Vector4(-1, 0, 0, 0));
+                    //bone.Add(new Vector4(v.node[0], v.node[1], v.node[2], v.node[3]));
+                    //weight.Add(new Vector4(v.weight[0], v.weight[1], v.weight[2], v.weight[3]));
+                }
 
-                    foreach (List<int> l in m.faces)
-                        face.AddRange(l);
+                foreach (List<int> l in m.faces)
+                    face.AddRange(l);
             }
 
             vertdata = vert.ToArray();

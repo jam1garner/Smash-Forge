@@ -210,6 +210,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="ClassDiagram1.cd" />
     <None Include="GUI\RenderSettings.resx">
       <DependentUpon>RenderSettings.cs</DependentUpon>
     </None>
