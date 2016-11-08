@@ -169,7 +169,7 @@ namespace Smash_Forge
         public List<Vector2D> normals = new List<Vector2D>();
         public List<CollisionMat> materials = new List<CollisionMat>();
         public float[] unk1 = new float[3];
-        public byte unkFlag1;
+        public bool useStartPos;
         public int unk2;
         public byte[] unk3;
         public char[] unk4;
@@ -192,7 +192,7 @@ namespace Smash_Forge
             unk1[0] = f.readFloat();
             unk1[1] = f.readFloat();
             unk1[2] = f.readFloat();
-            unkFlag1 = (byte)f.readByte();
+            useStartPos = (f.readByte() != 0);
             f.skip(1);//Seperation char
             unk2 = f.readInt();
             f.skip(1);
@@ -257,7 +257,7 @@ namespace Smash_Forge
             f.writeByte(1);
             foreach (float i in unk1)
                 f.writeFloat(i);
-            f.writeByte(unkFlag1);
+            f.writeFlag(useStartPos);
             f.writeByte(1);
             f.writeInt(unk2);
             f.writeByte(1);

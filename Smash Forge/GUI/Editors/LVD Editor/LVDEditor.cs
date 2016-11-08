@@ -63,7 +63,10 @@ namespace Smash_Forge
             {
                 Collision col = (Collision)entry;
                 collisionGroup.Visible = true;
-                flag1.Checked = col.flag1;
+                xStart.Value = (decimal)col.unk1[0];
+                yStart.Value = (decimal)col.unk1[1];
+                zStart.Value = (decimal)col.unk1[2];
+                flag1.Checked = col.useStartPos;
                 flag2.Checked = col.flag2;
                 flag3.Checked = col.flag3;
                 flag4.Checked = col.flag4;
@@ -83,8 +86,8 @@ namespace Smash_Forge
         private void vertices_AfterSelect(object sender, TreeViewEventArgs e)
         {
             currentVert = (Vector2D)e.Node.Tag;
-            xtext.Text = $"{currentVert.x}";
-            ytext.Text = $"{currentVert.y}";
+            xVert.Value = (decimal)currentVert.x;
+            yVert.Value = (decimal)currentVert.y;
         }
 
         private void lines_AfterSelect(object sender, TreeViewEventArgs e)
@@ -101,7 +104,7 @@ namespace Smash_Forge
         private void flagChange(object sender, EventArgs e)
         {
             if(sender == flag1)
-                ((Collision)currentEntry).flag1 = flag1.Checked;
+                ((Collision)currentEntry).useStartPos = flag1.Checked;
             if (sender == flag2)
                 ((Collision)currentEntry).flag2 = flag2.Checked;
             if (sender == flag3)
@@ -112,27 +115,12 @@ namespace Smash_Forge
 
         private void changePosX(object sender, EventArgs e)
         {
-            try
-            {
-                currentVert.x = Convert.ToSingle(xtext.Text);
-            }
-            catch (FormatException)
-            {
-
-            }
+            currentVert.x = (float)xVert.Value;
         }
 
         private void changePosY(object sender, EventArgs e)
         {
-            try
-            {
-                currentVert.y = Convert.ToSingle(ytext.Text);
-            }
-            catch (FormatException)
-            {
-
-            }
-
+            currentVert.y = (float)yVert.Value;
         }
 
         private void nameChange(object sender, EventArgs e)
@@ -145,6 +133,38 @@ namespace Smash_Forge
                 
             if (sender == subname)
                 currentEntry.subname = subname.Text;
+        }
+
+        private void passthroughAngle_ValueChanged(object sender, EventArgs e)
+        {
+            double theta = (double)((NumericUpDown)sender).Value;
+            currentNormal.x = (float)Math.Cos(theta * Math.PI / 180.0f);
+            currentNormal.y = (float)Math.Sin(theta * Math.PI / 180.0f);
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+             currentMat.setPhysics((byte)Enum.Parse(typeof(materialTypes), comboBox1.Text));
+        }
+
+        private void changeStart(object sender, EventArgs e)
+        {
+            if (sender == xStart)
+                ((Collision)currentEntry).unk1[0] = (float)xStart.Value;
+            if (sender == yStart)
+                ((Collision)currentEntry).unk1[1] = (float)yStart.Value;
+            if (sender == zStart)
+                ((Collision)currentEntry).unk1[2] = (float)zStart.Value;
+        }
+
+        private void lineFlagChange(object sender, EventArgs e)
+        {
+            if (sender == rightLedge)
+                currentMat.setFlag(3,rightLedge.Checked);
+            if (sender == leftLedge)
+                currentMat.setFlag(2, leftLedge.Checked);
+            if (sender == noWallJump)
+                currentMat.setFlag(1, noWallJump.Checked);
         }
     }
 }

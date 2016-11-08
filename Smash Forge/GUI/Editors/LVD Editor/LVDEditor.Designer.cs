@@ -46,16 +46,28 @@
             this.flag2 = new System.Windows.Forms.CheckBox();
             this.flag1 = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.ytext = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.xtext = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.xVert = new System.Windows.Forms.NumericUpDown();
+            this.yVert = new System.Windows.Forms.NumericUpDown();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.xStart = new System.Windows.Forms.NumericUpDown();
+            this.yStart = new System.Windows.Forms.NumericUpDown();
+            this.zStart = new System.Windows.Forms.NumericUpDown();
             this.flowLayoutPanel1.SuspendLayout();
             this.collisionGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.passthroughAngle)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.xVert)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.yVert)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.xStart)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.yStart)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zStart)).BeginInit();
             this.SuspendLayout();
             // 
             // flowLayoutPanel1
@@ -88,6 +100,15 @@
             // 
             // collisionGroup
             // 
+            this.collisionGroup.Controls.Add(this.zStart);
+            this.collisionGroup.Controls.Add(this.yStart);
+            this.collisionGroup.Controls.Add(this.xStart);
+            this.collisionGroup.Controls.Add(this.label10);
+            this.collisionGroup.Controls.Add(this.label9);
+            this.collisionGroup.Controls.Add(this.label8);
+            this.collisionGroup.Controls.Add(this.label7);
+            this.collisionGroup.Controls.Add(this.yVert);
+            this.collisionGroup.Controls.Add(this.xVert);
             this.collisionGroup.Controls.Add(this.lines);
             this.collisionGroup.Controls.Add(this.vertices);
             this.collisionGroup.Controls.Add(this.comboBox1);
@@ -102,23 +123,21 @@
             this.collisionGroup.Controls.Add(this.flag2);
             this.collisionGroup.Controls.Add(this.flag1);
             this.collisionGroup.Controls.Add(this.label4);
-            this.collisionGroup.Controls.Add(this.ytext);
             this.collisionGroup.Controls.Add(this.label3);
-            this.collisionGroup.Controls.Add(this.xtext);
             this.collisionGroup.Controls.Add(this.label2);
             this.collisionGroup.Controls.Add(this.button2);
             this.collisionGroup.Controls.Add(this.button1);
             this.collisionGroup.Controls.Add(this.label1);
             this.collisionGroup.Location = new System.Drawing.Point(3, 55);
             this.collisionGroup.Name = "collisionGroup";
-            this.collisionGroup.Size = new System.Drawing.Size(277, 537);
+            this.collisionGroup.Size = new System.Drawing.Size(277, 557);
             this.collisionGroup.TabIndex = 0;
             this.collisionGroup.TabStop = false;
             this.collisionGroup.Text = "Collision Editing";
             // 
             // lines
             // 
-            this.lines.Location = new System.Drawing.Point(6, 292);
+            this.lines.Location = new System.Drawing.Point(6, 344);
             this.lines.Name = "lines";
             this.lines.Size = new System.Drawing.Size(259, 134);
             this.lines.TabIndex = 22;
@@ -126,7 +145,7 @@
             // 
             // vertices
             // 
-            this.vertices.Location = new System.Drawing.Point(6, 97);
+            this.vertices.Location = new System.Drawing.Point(6, 149);
             this.vertices.Name = "vertices";
             this.vertices.Size = new System.Drawing.Size(259, 134);
             this.vertices.TabIndex = 21;
@@ -135,15 +154,41 @@
             // comboBox1
             // 
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(10, 474);
+            this.comboBox1.Items.AddRange(new object[] {
+            "Iron",
+            "Snow",
+            "Ice",
+            "Wood",
+            "LargeBubbles",
+            "Hurt",
+            "Brick",
+            "Stone2",
+            "Metal2",
+            "Water",
+            "Bubbles",
+            "Clouds",
+            "Ice2",
+            "NebuIron",
+            "Danbouru",
+            "Rock",
+            "Gamewatch",
+            "Grass",
+            "SnowIce",
+            "Fence",
+            "Soil",
+            "Sand",
+            "MasterFortress",
+            "Carpet"});
+            this.comboBox1.Location = new System.Drawing.Point(10, 526);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(121, 21);
             this.comboBox1.TabIndex = 20;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(9, 458);
+            this.label6.Location = new System.Drawing.Point(9, 510);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(83, 13);
             this.label6.TabIndex = 19;
@@ -152,7 +197,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(7, 436);
+            this.label5.Location = new System.Drawing.Point(7, 488);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(96, 13);
             this.label5.TabIndex = 18;
@@ -160,55 +205,59 @@
             // 
             // passthroughAngle
             // 
-            this.passthroughAngle.Location = new System.Drawing.Point(109, 434);
+            this.passthroughAngle.Location = new System.Drawing.Point(109, 486);
             this.passthroughAngle.Maximum = new decimal(new int[] {
-            360,
+            1000000000,
             0,
             0,
             0});
             this.passthroughAngle.Minimum = new decimal(new int[] {
-            360,
+            1000000000,
             0,
             0,
             -2147483648});
             this.passthroughAngle.Name = "passthroughAngle";
             this.passthroughAngle.Size = new System.Drawing.Size(59, 20);
             this.passthroughAngle.TabIndex = 17;
+            this.passthroughAngle.ValueChanged += new System.EventHandler(this.passthroughAngle_ValueChanged);
             // 
             // noWallJump
             // 
             this.noWallJump.AutoSize = true;
-            this.noWallJump.Location = new System.Drawing.Point(181, 481);
+            this.noWallJump.Location = new System.Drawing.Point(181, 533);
             this.noWallJump.Name = "noWallJump";
             this.noWallJump.Size = new System.Drawing.Size(92, 17);
             this.noWallJump.TabIndex = 16;
             this.noWallJump.Text = "No Wall Jump";
             this.noWallJump.UseVisualStyleBackColor = true;
+            this.noWallJump.CheckedChanged += new System.EventHandler(this.lineFlagChange);
             // 
             // rightLedge
             // 
             this.rightLedge.AutoSize = true;
-            this.rightLedge.Location = new System.Drawing.Point(181, 458);
+            this.rightLedge.Location = new System.Drawing.Point(181, 510);
             this.rightLedge.Name = "rightLedge";
             this.rightLedge.Size = new System.Drawing.Size(84, 17);
             this.rightLedge.TabIndex = 15;
             this.rightLedge.Text = "Right Ledge";
             this.rightLedge.UseVisualStyleBackColor = true;
+            this.rightLedge.CheckedChanged += new System.EventHandler(this.lineFlagChange);
             // 
             // leftLedge
             // 
             this.leftLedge.AutoSize = true;
-            this.leftLedge.Location = new System.Drawing.Point(181, 435);
+            this.leftLedge.Location = new System.Drawing.Point(181, 487);
             this.leftLedge.Name = "leftLedge";
             this.leftLedge.Size = new System.Drawing.Size(77, 17);
             this.leftLedge.TabIndex = 14;
             this.leftLedge.Text = "Left Ledge";
             this.leftLedge.UseVisualStyleBackColor = true;
+            this.leftLedge.CheckedChanged += new System.EventHandler(this.lineFlagChange);
             // 
             // flag4
             // 
             this.flag4.AutoSize = true;
-            this.flag4.Location = new System.Drawing.Point(64, 42);
+            this.flag4.Location = new System.Drawing.Point(122, 94);
             this.flag4.Name = "flag4";
             this.flag4.Size = new System.Drawing.Size(92, 17);
             this.flag4.TabIndex = 13;
@@ -219,7 +268,7 @@
             // flag3
             // 
             this.flag3.AutoSize = true;
-            this.flag3.Location = new System.Drawing.Point(9, 42);
+            this.flag3.Location = new System.Drawing.Point(9, 94);
             this.flag3.Name = "flag3";
             this.flag3.Size = new System.Drawing.Size(49, 17);
             this.flag3.TabIndex = 12;
@@ -230,7 +279,7 @@
             // flag2
             // 
             this.flag2.AutoSize = true;
-            this.flag2.Location = new System.Drawing.Point(64, 19);
+            this.flag2.Location = new System.Drawing.Point(122, 71);
             this.flag2.Name = "flag2";
             this.flag2.Size = new System.Drawing.Size(83, 17);
             this.flag2.TabIndex = 11;
@@ -241,52 +290,36 @@
             // flag1
             // 
             this.flag1.AutoSize = true;
-            this.flag1.Location = new System.Drawing.Point(9, 19);
+            this.flag1.Location = new System.Drawing.Point(9, 71);
             this.flag1.Name = "flag1";
-            this.flag1.Size = new System.Drawing.Size(49, 17);
+            this.flag1.Size = new System.Drawing.Size(110, 17);
             this.flag1.TabIndex = 10;
-            this.flag1.Text = "flag1";
+            this.flag1.Text = "Use Start Position";
             this.flag1.UseVisualStyleBackColor = true;
             this.flag1.CheckedChanged += new System.EventHandler(this.flagChange);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(109, 276);
+            this.label4.Location = new System.Drawing.Point(109, 328);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(32, 13);
             this.label4.TabIndex = 9;
             this.label4.Text = "Lines";
             // 
-            // ytext
-            // 
-            this.ytext.Location = new System.Drawing.Point(125, 243);
-            this.ytext.Name = "ytext";
-            this.ytext.Size = new System.Drawing.Size(58, 20);
-            this.ytext.TabIndex = 7;
-            this.ytext.TextChanged += new System.EventHandler(this.changePosY);
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(105, 246);
+            this.label3.Location = new System.Drawing.Point(102, 298);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(14, 13);
             this.label3.TabIndex = 6;
             this.label3.Text = "Y";
             // 
-            // xtext
-            // 
-            this.xtext.Location = new System.Drawing.Point(34, 243);
-            this.xtext.Name = "xtext";
-            this.xtext.Size = new System.Drawing.Size(58, 20);
-            this.xtext.TabIndex = 5;
-            this.xtext.TextChanged += new System.EventHandler(this.changePosX);
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(14, 246);
+            this.label2.Location = new System.Drawing.Point(9, 298);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(14, 13);
             this.label2.TabIndex = 4;
@@ -294,7 +327,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(212, 71);
+            this.button2.Location = new System.Drawing.Point(212, 123);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(49, 23);
             this.button2.TabIndex = 3;
@@ -303,7 +336,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(157, 72);
+            this.button1.Location = new System.Drawing.Point(157, 124);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(49, 23);
             this.button1.TabIndex = 2;
@@ -313,11 +346,140 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(106, 81);
+            this.label1.Location = new System.Drawing.Point(106, 133);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(45, 13);
             this.label1.TabIndex = 1;
             this.label1.Text = "Vertices";
+            // 
+            // xVert
+            // 
+            this.xVert.DecimalPlaces = 3;
+            this.xVert.Location = new System.Drawing.Point(29, 296);
+            this.xVert.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.xVert.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.xVert.Name = "xVert";
+            this.xVert.Size = new System.Drawing.Size(67, 20);
+            this.xVert.TabIndex = 23;
+            // 
+            // yVert
+            // 
+            this.yVert.DecimalPlaces = 3;
+            this.yVert.Location = new System.Drawing.Point(122, 296);
+            this.yVert.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.yVert.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.yVert.Name = "yVert";
+            this.yVert.Size = new System.Drawing.Size(67, 20);
+            this.yVert.TabIndex = 24;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(9, 27);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(69, 13);
+            this.label7.TabIndex = 25;
+            this.label7.Text = "Start Position";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(11, 45);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(14, 13);
+            this.label8.TabIndex = 26;
+            this.label8.Text = "X";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(92, 45);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(14, 13);
+            this.label9.TabIndex = 27;
+            this.label9.Text = "Y";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(175, 47);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(14, 13);
+            this.label10.TabIndex = 28;
+            this.label10.Text = "Z";
+            // 
+            // xStart
+            // 
+            this.xStart.DecimalPlaces = 3;
+            this.xStart.Location = new System.Drawing.Point(31, 43);
+            this.xStart.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.xStart.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.xStart.Name = "xStart";
+            this.xStart.Size = new System.Drawing.Size(61, 20);
+            this.xStart.TabIndex = 29;
+            this.xStart.ValueChanged += new System.EventHandler(this.changeStart);
+            // 
+            // yStart
+            // 
+            this.yStart.DecimalPlaces = 3;
+            this.yStart.Location = new System.Drawing.Point(112, 43);
+            this.yStart.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.yStart.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.yStart.Name = "yStart";
+            this.yStart.Size = new System.Drawing.Size(61, 20);
+            this.yStart.TabIndex = 30;
+            this.yStart.ValueChanged += new System.EventHandler(this.changeStart);
+            // 
+            // zStart
+            // 
+            this.zStart.DecimalPlaces = 3;
+            this.zStart.Location = new System.Drawing.Point(195, 43);
+            this.zStart.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.zStart.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.zStart.Name = "zStart";
+            this.zStart.Size = new System.Drawing.Size(61, 20);
+            this.zStart.TabIndex = 31;
+            this.zStart.ValueChanged += new System.EventHandler(this.changeStart);
             // 
             // LVDEditor
             // 
@@ -333,6 +495,11 @@
             this.collisionGroup.ResumeLayout(false);
             this.collisionGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.passthroughAngle)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.xVert)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.yVert)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.xStart)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.yStart)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zStart)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -347,9 +514,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox ytext;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox xtext;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.CheckBox flag4;
         private System.Windows.Forms.CheckBox flag3;
@@ -364,5 +529,14 @@
         private System.Windows.Forms.NumericUpDown passthroughAngle;
         private System.Windows.Forms.TreeView lines;
         private System.Windows.Forms.TreeView vertices;
+        private System.Windows.Forms.NumericUpDown zStart;
+        private System.Windows.Forms.NumericUpDown yStart;
+        private System.Windows.Forms.NumericUpDown xStart;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.NumericUpDown yVert;
+        private System.Windows.Forms.NumericUpDown xVert;
     }
 }
