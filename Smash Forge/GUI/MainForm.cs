@@ -351,9 +351,7 @@ namespace Smash_Forge
                                     {
                                         case "JOINT":
                                             // find joint name in vbn
-                                            int ind = int.Parse(vi[pos++]);
-                                            //Console.WriteLine(boneNames[ind].Substring(5));
-                                            //Console.WriteLine(boneNames[ind].Substring(5));
+                                            int ind = int.Parse(vi[pos]);
                                             int index = vbn.boneIndex(boneNames[ind]);
                                             vert.node.Add(index==-1?0:index);
                                             break;
@@ -361,11 +359,13 @@ namespace Smash_Forge
                                             // find weight int weight list
                                             double[] weight;
                                             sources.TryGetValue(sem.source.Replace("#", ""), out weight);
-                                            float w = (int)Math.Round((float)weight[int.Parse(vi[pos++])] * 0xFF);
+                                            float w = (int)Math.Round(weight[int.Parse(vi[pos])] * 0xFF);
                                             w /= 0xFF;
-                                            vert.weight.Add(w);
+                                            //Console.WriteLine(w + " " + weight[int.Parse(vi[pos])]);
+                                            vert.weight.Add((float)weight[int.Parse(vi[pos])]);
                                             break;
                                     }
+                                    pos++;
                                 }
 
                         }
@@ -378,14 +378,16 @@ namespace Smash_Forge
             {
                 foreach (NUD.Polygon poly in mesh.polygons)
                 {
-                    foreach (NUD.Vertex v in poly.vertices)
+                    poly.vertSize = 0x16;
+                    /*foreach (NUD.Vertex v in poly.vertices)
                     {
                         float c = 0;
                         foreach (float f in v.weight)
                             c += f;
-                        if(c!=1)
+                        if (c != 1 && (c < 0.9 || c > 1.1))
                         Console.WriteLine(c);
                     }
+                    */
                 }
             }
 

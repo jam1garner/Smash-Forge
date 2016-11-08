@@ -450,10 +450,13 @@ namespace Smash_Forge
             // Bounding Box Render
             /*foreach (ModelContainer m in Runtime.ModelContainers)
             {
-                RenderTools.drawCubeWireframe(new Vector3(m.nud.param[0], m.nud.param[1], m.nud.param[2]), m.nud.param[3]);
-                foreach (NUD.Mesh mesh in m.nud.mesh)
+                if (m.nud != null)
                 {
-                    RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
+                    RenderTools.drawCubeWireframe(new Vector3(m.nud.param[0], m.nud.param[1], m.nud.param[2]), m.nud.param[3]);
+                    foreach (NUD.Mesh mesh in m.nud.mesh)
+                    {
+                        RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
+                    }
                 }
             }*/
             

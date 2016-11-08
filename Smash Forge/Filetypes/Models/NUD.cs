@@ -905,13 +905,21 @@ namespace Smash_Forge
                 d.writeFloat(v.pos.X);
                 d.writeFloat(v.pos.Y);
                 d.writeFloat(v.pos.Z);
-
-                if (nrm > 0)
+                
+                if (nrm > 1)
                 {
                     d.writeHalfFloat(v.nrm.X);
                     d.writeHalfFloat(v.nrm.Y);
                     d.writeHalfFloat(v.nrm.Z);
                     d.writeHalfFloat(1);
+                }
+                else if (nrm == 1)
+                {
+                    d.writeFloat(v.nrm.X);
+                    d.writeFloat(v.nrm.Y);
+                    d.writeFloat(v.nrm.Z);
+                    d.writeFloat(1);
+                    d.writeFloat(1);
                 }
                 else
                     d.writeInt(0);
@@ -947,6 +955,18 @@ namespace Smash_Forge
 
                     // UV layers
                     //d.skip(4 * ((m.UVSize >> 4) - 1));
+                }
+
+                if (weight == 1)
+                {
+                    d.writeInt(v.node[0]);
+                    d.writeInt(v.node[1]);
+                    d.writeInt(v.node[2]);
+                    d.writeInt(v.node[3]);
+                    d.writeFloat(v.weight[0]);
+                    d.writeFloat(v.weight[1]);
+                    d.writeFloat(v.weight[2]);
+                    d.writeFloat(v.weight[3]);
                 }
 
                 if (weight == 4)
