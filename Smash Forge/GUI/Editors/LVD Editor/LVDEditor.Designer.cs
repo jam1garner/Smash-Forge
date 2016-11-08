@@ -60,6 +60,11 @@
             this.xStart = new System.Windows.Forms.NumericUpDown();
             this.yStart = new System.Windows.Forms.NumericUpDown();
             this.zStart = new System.Windows.Forms.NumericUpDown();
+            this.pointGroup = new System.Windows.Forms.GroupBox();
+            this.xPoint = new System.Windows.Forms.NumericUpDown();
+            this.yPoint = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
             this.flowLayoutPanel1.SuspendLayout();
             this.collisionGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.passthroughAngle)).BeginInit();
@@ -68,6 +73,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.xStart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.yStart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.zStart)).BeginInit();
+            this.pointGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.xPoint)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.yPoint)).BeginInit();
             this.SuspendLayout();
             // 
             // flowLayoutPanel1
@@ -75,11 +83,12 @@
             this.flowLayoutPanel1.Controls.Add(this.name);
             this.flowLayoutPanel1.Controls.Add(this.subname);
             this.flowLayoutPanel1.Controls.Add(this.collisionGroup);
+            this.flowLayoutPanel1.Controls.Add(this.pointGroup);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(280, 810);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(280, 1045);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // name
@@ -369,6 +378,7 @@
             this.xVert.Name = "xVert";
             this.xVert.Size = new System.Drawing.Size(67, 20);
             this.xVert.TabIndex = 23;
+            this.xVert.ValueChanged += new System.EventHandler(this.changePos);
             // 
             // yVert
             // 
@@ -387,6 +397,7 @@
             this.yVert.Name = "yVert";
             this.yVert.Size = new System.Drawing.Size(67, 20);
             this.yVert.TabIndex = 24;
+            this.yVert.ValueChanged += new System.EventHandler(this.changePos);
             // 
             // label7
             // 
@@ -481,15 +492,85 @@
             this.zStart.TabIndex = 31;
             this.zStart.ValueChanged += new System.EventHandler(this.changeStart);
             // 
+            // pointGroup
+            // 
+            this.pointGroup.Controls.Add(this.label12);
+            this.pointGroup.Controls.Add(this.label11);
+            this.pointGroup.Controls.Add(this.yPoint);
+            this.pointGroup.Controls.Add(this.xPoint);
+            this.pointGroup.Location = new System.Drawing.Point(3, 618);
+            this.pointGroup.Name = "pointGroup";
+            this.pointGroup.Size = new System.Drawing.Size(205, 60);
+            this.pointGroup.TabIndex = 3;
+            this.pointGroup.TabStop = false;
+            this.pointGroup.Text = "Point";
+            // 
+            // xPoint
+            // 
+            this.xPoint.DecimalPlaces = 3;
+            this.xPoint.Location = new System.Drawing.Point(25, 24);
+            this.xPoint.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.xPoint.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.xPoint.Name = "xPoint";
+            this.xPoint.Size = new System.Drawing.Size(67, 20);
+            this.xPoint.TabIndex = 32;
+            this.xPoint.ValueChanged += new System.EventHandler(this.pointMoved);
+            // 
+            // yPoint
+            // 
+            this.yPoint.DecimalPlaces = 3;
+            this.yPoint.Location = new System.Drawing.Point(118, 24);
+            this.yPoint.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.yPoint.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.yPoint.Name = "yPoint";
+            this.yPoint.Size = new System.Drawing.Size(67, 20);
+            this.yPoint.TabIndex = 33;
+            this.yPoint.ValueChanged += new System.EventHandler(this.pointMoved);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(9, 26);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(14, 13);
+            this.label11.TabIndex = 32;
+            this.label11.Text = "X";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(98, 26);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(14, 13);
+            this.label12.TabIndex = 32;
+            this.label12.Text = "Y";
+            // 
             // LVDEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(280, 810);
+            this.ClientSize = new System.Drawing.Size(280, 1045);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "LVDEditor";
             this.Text = "LVDEditor";
+            this.Load += new System.EventHandler(this.LVDEditor_Load);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
             this.collisionGroup.ResumeLayout(false);
@@ -500,6 +581,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.xStart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.yStart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.zStart)).EndInit();
+            this.pointGroup.ResumeLayout(false);
+            this.pointGroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.xPoint)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.yPoint)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -538,5 +623,10 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.NumericUpDown yVert;
         private System.Windows.Forms.NumericUpDown xVert;
+        private System.Windows.Forms.GroupBox pointGroup;
+        private System.Windows.Forms.NumericUpDown yPoint;
+        private System.Windows.Forms.NumericUpDown xPoint;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label11;
     }
 }

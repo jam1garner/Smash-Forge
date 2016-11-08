@@ -23,6 +23,7 @@ namespace Smash_Forge
         private Vector2D currentNormal;
         private CollisionMat currentMat;
         private TreeNode currentTreeNode;
+        private Point currentPoint;
 
         enum materialTypes : byte
         {
@@ -57,6 +58,7 @@ namespace Smash_Forge
             currentTreeNode = entryTree;
             currentEntry = entry;
             collisionGroup.Visible = false;
+            pointGroup.Visible = false;
             name.Text = currentEntry.name;
             subname.Text = currentEntry.subname;
             if (entry is Collision)
@@ -79,7 +81,13 @@ namespace Smash_Forge
                     object[] temp = { col.normals[i], col.materials[i] };
                     lines.Nodes.Add(new TreeNode($"Line {i}") { Tag = temp });
                 }
-
+            }
+            else if(entry is Point)
+            {
+                pointGroup.Visible = true;
+                currentPoint = (Point)entry;
+                xPoint.Value = (decimal)((Point)entry).x;
+                yPoint.Value = (decimal)((Point)entry).y;
             }
         }
 
@@ -113,14 +121,12 @@ namespace Smash_Forge
                 ((Collision)currentEntry).flag4 = flag4.Checked;
         }
 
-        private void changePosX(object sender, EventArgs e)
+        private void changePos(object sender, EventArgs e)
         {
-            currentVert.x = (float)xVert.Value;
-        }
-
-        private void changePosY(object sender, EventArgs e)
-        {
-            currentVert.y = (float)yVert.Value;
+            if(sender == xVert)
+                currentVert.x = (float)xVert.Value;
+            if(sender == yVert)
+                currentVert.y = (float)yVert.Value;
         }
 
         private void nameChange(object sender, EventArgs e)
@@ -165,6 +171,21 @@ namespace Smash_Forge
                 currentMat.setFlag(2, ((CheckBox)sender).Checked);
             if (sender == noWallJump)
                 currentMat.setFlag(1, ((CheckBox)sender).Checked);
+        }
+
+        private void LVDEditor_Load(object sender, EventArgs e)
+        {
+            collisionGroup.Visible = false;
+            pointGroup.Visible = false;
+        }
+
+        private void pointMoved(object sender, EventArgs e)
+        {
+            if (sender == xPoint)
+                currentPoint.x = (float)xPoint.Value;
+            if (sender == yPoint)
+                currentPoint.y = (float)yPoint.Value;
+            Console.WriteLine("(" + currentPoint.x + "," + currentPoint.y + ")");
         }
     }
 }
