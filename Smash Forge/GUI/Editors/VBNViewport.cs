@@ -627,6 +627,9 @@ namespace Smash_Forge
                                     case 0x07:
                                         GL.Color4(Color.FromArgb(100, 0xd7, 0xd0, 0x2d));//Carpet
                                         break;
+                                    case 0x1f:
+                                        GL.Color4(Color.FromArgb(100, Color.Red));//Hurt
+                                        break;
                                     default:
                                         GL.Color4(Color.FromArgb(100, 0x65, 0x1e, 0x03));//brick
                                         break;
