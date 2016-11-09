@@ -14,7 +14,7 @@ namespace Smash_Forge
 {
     public partial class NUDMaterialEditor : DockContent
     {
-
+        public NUD.Polygon poly;
         public List<NUD.Material> material;
         int current = 0;
 
@@ -122,10 +122,11 @@ namespace Smash_Forge
             InitializeComponent();
         }
 
-        public NUDMaterialEditor(List<NUD.Material> mat)
+        public NUDMaterialEditor(NUD.Polygon p)
         {
             InitializeComponent();
-            this.material = mat;
+            this.poly = p;
+            this.material = p.materials;
             Init();
             FillForm();
             comboBox1.SelectedIndex = 0;
@@ -559,6 +560,83 @@ namespace Smash_Forge
             {
                 material[current].textures.RemoveAt(listView1.Items.IndexOf(listView1.SelectedItems[0]));
                 FillForm();
+            }
+        }
+
+        //Saving Mat
+        private void button1_Click(object sender, EventArgs e)
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Namco Material (NMT)|*.nmt|" +
+                             "All files(*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    sfd.FileName = sfd.FileName;
+
+                    if (sfd.FileName.EndsWith(".nmt"))
+                    {
+                        FileOutput m = new FileOutput();
+                        FileOutput s = new FileOutput();
+
+                        int[] c = NUD.writeMaterial(m, material, s);
+
+                        FileOutput fin = new FileOutput();
+                        
+                        fin.writeInt(0);
+
+                        fin.writeInt(20 + c[0]);
+                        for (int i = 1; i < 4; i++)
+                        {
+                            fin.writeInt(c[i] == c[i-1] ? 0 : 20 + c[i]);
+                        }
+
+                        for (int i = 0; i < 4 - c.Length; i++)
+                            fin.writeInt(0);
+                        
+                        fin.writeOutput(m);
+                        fin.align(32, 0xFF);
+                        fin.writeIntAt(fin.size(), 0);
+                        fin.writeOutput(s);
+                        fin.save(sfd.FileName);
+                    }
+                }
+            }
+        }
+
+        // Loading Mat
+        private void button2_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Namco Material (NMT)|*.nmt|" +
+                             "All files(*.*)|*.*";
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    if (ofd.FileName.EndsWith(".nmt"))
+                    {
+                        FileData f = new FileData(ofd.FileName);
+
+                        int soff = f.readInt();
+                        
+                        NUD._s_Poly pol = new NUD._s_Poly()
+                        {
+                            texprop1 = f.readInt(),
+                            texprop2 = f.readInt(),
+                            texprop3 = f.readInt(),
+                            texprop4 = f.readInt()
+                        };
+
+                        poly.materials = NUD.readMaterial(f, pol, soff);
+                        material = poly.materials;
+                        Console.WriteLine(material.Count);
+                        current = 0;
+                        Init();
+                        FillForm();
+                    }
+                }
             }
         }
     }
