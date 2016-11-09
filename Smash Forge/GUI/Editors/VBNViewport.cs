@@ -100,6 +100,19 @@ namespace Smash_Forge
                 Runtime.TargetNUD = null;
                 Runtime.killWorkspace = false;
                 Runtime.Animations = new Dictionary<string, SkelAnimation>();
+                MainForm.Instance.lvdList.fillList();
+                MainForm.Instance.animNode.Nodes.Clear();
+                MainForm.Instance.mtaNode.Nodes.Clear();
+                MainForm.Instance.meshList.refresh();
+                MainForm.Instance.paramEditors = new List<PARAMEditor>();
+                if (Directory.Exists("workspace/animcmd/"))
+                {
+                    foreach(string file in Directory.EnumerateFiles("workspace/animcmd/"))
+                        File.Delete(file);
+                    Directory.Delete("workspace/animcmd/");
+                }
+                    
+                MainForm.Instance.project.fillTree();
             }
 
             if (this.IsDisposed == true)

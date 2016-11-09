@@ -174,12 +174,12 @@ namespace Smash_Forge
         public List<Vector2D> verts = new List<Vector2D>();
         public List<Vector2D> normals = new List<Vector2D>();
         public List<CollisionMat> materials = new List<CollisionMat>();
-        public float[] unk1 = new float[3];
-        public bool useStartPos;
-        public int unk2;
-        public byte[] unk3;
-        public char[] unk4;
-        public bool flag1, flag2, flag3, flag4;
+        public float[] startPos = new float[3];
+        public bool useStartPos = false;
+        public int unk2 = 0;
+        public byte[] unk3 = new byte[0xC];
+        public char[] unk4 = new char[0x40];
+        public bool flag1 = false, flag2 = false, flag3 = false, flag4 = false;
 
         public Collision()
         {
@@ -195,9 +195,9 @@ namespace Smash_Forge
             subname = f.readString(f.pos(), 0x40);
             f.skip(0x40);
             f.skip(1);//Seperation char
-            unk1[0] = f.readFloat();
-            unk1[1] = f.readFloat();
-            unk1[2] = f.readFloat();
+            startPos[0] = f.readFloat();
+            startPos[1] = f.readFloat();
+            startPos[2] = f.readFloat();
             useStartPos = (f.readByte() != 0);
             f.skip(1);//Seperation char
             unk2 = f.readInt();
@@ -261,7 +261,7 @@ namespace Smash_Forge
             f.writeByte(1);
             f.writeString(subname.PadRight(0x40, (char)0));
             f.writeByte(1);
-            foreach (float i in unk1)
+            foreach (float i in startPos)
                 f.writeFloat(i);
             f.writeFlag(useStartPos);
             f.writeByte(1);

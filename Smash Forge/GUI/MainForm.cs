@@ -926,7 +926,6 @@ namespace Smash_Forge
         public void openMats(NUD.Polygon poly, string name)
         {
             AddDockedControl(new NUDMaterialEditor(poly.materials) { ShowHint = DockState.Float, Text = name});
-            
         }
 
         private void openStageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1045,6 +1044,48 @@ namespace Smash_Forge
                         Runtime.ModelContainers[0].nud.Save(filename);
                 }
             }
+        }
+        
+        private void collisionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.collisions.Add(new Collision() { name = "COL_00_NewCollision", subname = "00_NewCollision" });
+            lvdList.fillList();
+        }
+
+        private void spawnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.spawns.Add(new Point() { name = "START_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+            
+        }
+
+        private void respawnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.respawns.Add(new Point() { name = "RESPAWN_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+        }
+
+        private void cameraBoundsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.cameraBounds.Add(new Bounds() { name = "CAMERA_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+            
+        }
+
+        private void blastzonesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.blastzones.Add(new Bounds() { name = "DEATH_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
         }
     }
 }

@@ -41,6 +41,12 @@
             this.edittToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addBoneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hashMatchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.collisionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.spawnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.respawnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cameraBoundsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.blastzonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.animationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -143,7 +149,8 @@
             // 
             this.edittToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addBoneToolStripMenuItem,
-            this.hashMatchToolStripMenuItem});
+            this.hashMatchToolStripMenuItem,
+            this.addToolStripMenuItem});
             this.edittToolStripMenuItem.Name = "edittToolStripMenuItem";
             this.edittToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.edittToolStripMenuItem.Text = "Edit";
@@ -162,6 +169,53 @@
             this.hashMatchToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.hashMatchToolStripMenuItem.Text = "Hash Match";
             this.hashMatchToolStripMenuItem.Click += new System.EventHandler(this.hashMatchToolStripMenuItem_Click);
+            // 
+            // addToolStripMenuItem
+            // 
+            this.addToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.collisionToolStripMenuItem,
+            this.spawnToolStripMenuItem,
+            this.respawnToolStripMenuItem,
+            this.cameraBoundsToolStripMenuItem,
+            this.blastzonesToolStripMenuItem});
+            this.addToolStripMenuItem.Name = "addToolStripMenuItem";
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.addToolStripMenuItem.Text = "Add";
+            // 
+            // collisionToolStripMenuItem
+            // 
+            this.collisionToolStripMenuItem.Name = "collisionToolStripMenuItem";
+            this.collisionToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.collisionToolStripMenuItem.Text = "Collision";
+            this.collisionToolStripMenuItem.Click += new System.EventHandler(this.collisionToolStripMenuItem_Click);
+            // 
+            // spawnToolStripMenuItem
+            // 
+            this.spawnToolStripMenuItem.Name = "spawnToolStripMenuItem";
+            this.spawnToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.spawnToolStripMenuItem.Text = "Spawn";
+            this.spawnToolStripMenuItem.Click += new System.EventHandler(this.spawnToolStripMenuItem_Click);
+            // 
+            // respawnToolStripMenuItem
+            // 
+            this.respawnToolStripMenuItem.Name = "respawnToolStripMenuItem";
+            this.respawnToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.respawnToolStripMenuItem.Text = "Respawn";
+            this.respawnToolStripMenuItem.Click += new System.EventHandler(this.respawnToolStripMenuItem_Click);
+            // 
+            // cameraBoundsToolStripMenuItem
+            // 
+            this.cameraBoundsToolStripMenuItem.Name = "cameraBoundsToolStripMenuItem";
+            this.cameraBoundsToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.cameraBoundsToolStripMenuItem.Text = "Camera Bounds";
+            this.cameraBoundsToolStripMenuItem.Click += new System.EventHandler(this.cameraBoundsToolStripMenuItem_Click);
+            // 
+            // blastzonesToolStripMenuItem
+            // 
+            this.blastzonesToolStripMenuItem.Name = "blastzonesToolStripMenuItem";
+            this.blastzonesToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.blastzonesToolStripMenuItem.Text = "Blastzones";
+            this.blastzonesToolStripMenuItem.Click += new System.EventHandler(this.blastzonesToolStripMenuItem_Click);
             // 
             // animationToolStripMenuItem
             // 
@@ -420,6 +474,12 @@
         private System.Windows.Forms.ToolStripMenuItem projectTreeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openCharacterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveNUDToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem collisionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem spawnToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem respawnToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cameraBoundsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem blastzonesToolStripMenuItem;
     }
 }
 

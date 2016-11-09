@@ -67,9 +67,9 @@ namespace Smash_Forge
             {
                 Collision col = (Collision)entry;
                 collisionGroup.Visible = true;
-                xStart.Value = (decimal)col.unk1[0];
-                yStart.Value = (decimal)col.unk1[1];
-                zStart.Value = (decimal)col.unk1[2];
+                xStart.Value = (decimal)col.startPos[0];
+                yStart.Value = (decimal)col.startPos[1];
+                zStart.Value = (decimal)col.startPos[2];
                 flag1.Checked = col.useStartPos;
                 flag2.Checked = col.flag2;
                 flag3.Checked = col.flag3;
@@ -167,11 +167,11 @@ namespace Smash_Forge
         private void changeStart(object sender, EventArgs e)
         {
             if (sender == xStart)
-                ((Collision)currentEntry).unk1[0] = (float)xStart.Value;
+                ((Collision)currentEntry).startPos[0] = (float)xStart.Value;
             if (sender == yStart)
-                ((Collision)currentEntry).unk1[1] = (float)yStart.Value;
+                ((Collision)currentEntry).startPos[1] = (float)yStart.Value;
             if (sender == zStart)
-                ((Collision)currentEntry).unk1[2] = (float)zStart.Value;
+                ((Collision)currentEntry).startPos[2] = (float)zStart.Value;
         }
 
         private void lineFlagChange(object sender, EventArgs e)
