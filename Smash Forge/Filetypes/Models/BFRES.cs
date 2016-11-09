@@ -62,8 +62,9 @@ namespace Smash_Forge
             List<Vector4> weight = new List<Vector4>();
             List<int> face = new List<int>();
 
-            foreach (FMDL_Model m in models)
+            foreach (FMDL_Model fmdl in models)
             {
+                foreach(Mesh m in fmdl.poly) { 
                 Console.WriteLine(m.vertices.Count);
                 Console.WriteLine(m.faces.Count);
                 if (m.faces.Count <= 3)
@@ -74,9 +75,12 @@ namespace Smash_Forge
                     col.Add(v.col / 0x7F);
                     nrm.Add(v.nrm);
 
-                    uv.Add(v.tx[0]);
+                        if (v.tx.Count > 0)
+                            uv.Add(new Vector2(v.tx[0].X, 1 - v.tx[0].Y));
+                        else
+                            uv.Add(new Vector2(0, 0));
 
-                    while (v.node.Count < 4)
+                        while (v.node.Count < 4)
                     {
                         v.node.Add(0);
                         v.weight.Add(0);
@@ -89,6 +93,7 @@ namespace Smash_Forge
 
                 foreach (List<int> l in m.faces)
                     face.AddRange(l);
+                }
             }
 
             vertdata = vert.ToArray();
@@ -130,8 +135,9 @@ namespace Smash_Forge
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(facedata.Length * sizeof(int)), facedata, BufferUsageHint.StaticDraw);
 
             int indiceat = 0;
-            foreach (FMDL_Model m in models)
+            foreach (FMDL_Model fmdl in models)
             {
+                foreach(Mesh m in fmdl.poly) { 
                 GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1, 1, 0, 0));
 
                 //GL.BindTexture(TextureTarget.Texture2D, m.texId);
@@ -139,10 +145,11 @@ namespace Smash_Forge
 
                 foreach (List<int> l in m.faces)
                 {
-                    if (m.isVisible)
+                    if (fmdl.isVisible)
                         GL.DrawElements(PrimitiveType.Triangles, l.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
 
                     indiceat += l.Count;
+                }
                 }
             }
         }
@@ -191,8 +198,81 @@ namespace Smash_Forge
             int EMBCount = f.readShort();
 
 
-            //FMDLs -Models-
-            f.seek(FMDLOffset + 0x18);
+            //FTEX -Texures-
+            f.seek(FTEXOffset + 0x18);
+            for (int i = 0; i < FTEXCount; i++)
+            {
+
+                FTEX_Texture texture = new FTEX_Texture();
+                f.skip(0x8);
+                string TextureName = f.readString(readOffset(f), -1);
+                int offset = readOffset(f);
+                int NextFTEX = f.pos();
+
+                f.seek(offset+8);
+
+                texture.width = f.readInt();
+                texture.height = f.readInt();
+                f.skip(8);
+                int format = f.readInt();
+                f.skip(8);
+                int size = f.readInt();
+                f.skip(0xC);
+                int tm = f.readInt();
+                int swizzle = f.readInt();
+                f.skip(4);
+                int pitch = f.readInt();
+                f.skip(0x6C);
+                int gtxOffset = readOffset(f);
+                texture.data = GTX.swizzleBC(f.getSection(gtxOffset, size), texture.width, texture.height, format, tm, pitch, swizzle);
+
+                switch (format)
+                {
+                    case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_UNORM):
+                        texture.type = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                        break;
+                    case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_SRGB):
+                        texture.type = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt1Ext;
+                        break;
+                    case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC2_UNORM):
+                        texture.type = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
+                        break;
+                    case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC2_SRGB):
+                        texture.type = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext;
+                        break;
+                    case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC3_UNORM):
+                        texture.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                        break;
+                    case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC3_SRGB):
+                        texture.type = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext;
+                        break;
+                    case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM):
+                        texture.type = PixelInternalFormat.CompressedLuminance;
+                        break;
+                    case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM):
+                        texture.type = PixelInternalFormat.CompressedSluminance;
+                        break;
+                    case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC5_UNORM):
+                        texture.type = PixelInternalFormat.CompressedLuminanceAlpha;
+                        break;
+                    case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC5_SNORM):
+                        texture.type = PixelInternalFormat.CompressedSluminanceAlpha;
+                        break;
+                    case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM):
+                        texture.type = PixelInternalFormat.Rgba;
+                        texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                        break;
+                }
+
+
+
+
+
+                f.seek(NextFTEX);
+            }
+
+                //FMDLs -Models-
+                f.seek(FMDLOffset + 0x18);
             for(int i = 0;i< FMDLCount; i++)
             {
 
@@ -295,13 +375,13 @@ namespace Smash_Forge
                 }
 
                 List<FSHPH> FSHPArr = new List<FSHPH>();
-                f.seek(fmdl_info.fshpIndx + 0x18);
+                f.seek(fmdl_info.fshpIndx + 24);
                 for(int shp = 0;shp< fmdl_info.fshpCount; shp++)
                 {
-                    f.skip(0xC);
-                    int rtn = f.pos() + 4;
+                    f.skip(12);
+                    int rtn2 = f.pos() + 4;
                     f.seek(readOffset(f) + 4);
-                    FSHPH fshp_info = new FSHPH
+                    FSHPArr.Add(new FSHPH
                     {
                         polyNameOff = readOffset(f),
                         u1 = f.readInt(),
@@ -321,9 +401,8 @@ namespace Smash_Forge
                         visGrpNodeOff = readOffset(f),
                         visGrpRangeOff = readOffset(f),
                         visGrpIndxOff = readOffset(f)
-                    };
-                    f.seek(rtn);
-                    FSHPArr.Add(fshp_info);
+                    });
+                    f.seek(rtn2);
                 }
 
                 f.seek(fskl_info.boneArrOff);
@@ -331,7 +410,7 @@ namespace Smash_Forge
                 {
                     Bone bone = new Smash_Forge.Bone();
                     bone.boneName = f.readString(readOffset(f), -1).ToCharArray();
-                    bone.parentIndex = f.readShort();
+                    bone.boneId = (uint)f.readShort();
                     int parIndx1 = f.readShort();
                     int parIndx2 = f.readShort();
                     int parIndx3 = f.readShort();
@@ -356,16 +435,17 @@ namespace Smash_Forge
 
                     model.skeleton.bones.Add(bone);
 
-                    if (highVersion<4)
-                        f.skip(0x30);
+                    //if (highVersion<4)
+                        //f.skip(48);
                 }
                 model.skeleton.reset();
 
 
                 //MeshTime!!
                 for(int m = 0;m < FSHPArr.Count; m++)
-                { 
-                    model.name = f.readString(FSHPArr[m].polyNameOff, -1);
+                {
+                    Mesh poly = new Mesh();
+                    poly.name = f.readString(FSHPArr[m].polyNameOff, -1);
 
                     List<attdata> AttrArr = new List<attdata>();
                     f.seek(FVTXArr[FSHPArr[m].fvtxIndx].attArrOff);
@@ -441,20 +521,20 @@ namespace Smash_Forge
                                     break;
                                 case "_i0":
                                     if (AttrArr[attr].vertType == 256) { 
-                                        vert.node.Add(Node_Array[f.readByte()]);
+                                        vert.node.Add(f.readByte());
                                         vert.weight.Add((float)1.0);
                                     }
                                     if (AttrArr[attr].vertType == 260)
                                     {
-                                        vert.node.Add(Node_Array[f.readByte()]);
-                                        vert.node.Add(Node_Array[f.readByte()]);
+                                        vert.node.Add(f.readByte());
+                                        vert.node.Add(f.readByte());
                                     }
                                     if (AttrArr[attr].vertType == 266)
                                     {
-                                        vert.node.Add(Node_Array[f.readByte()]);
-                                        vert.node.Add(Node_Array[f.readByte()]);
-                                        vert.node.Add(Node_Array[f.readByte()]);
-                                        vert.node.Add(Node_Array[f.readByte()]);
+                                        vert.node.Add(f.readByte());
+                                        vert.node.Add(f.readByte());
+                                        vert.node.Add(f.readByte());
+                                        vert.node.Add(f.readByte());
                                     }
                                     break;
                                 case "_w0":
@@ -473,9 +553,8 @@ namespace Smash_Forge
                                     break;
                             }
                         }
-                        model.vertices.Add(vert);
+                        poly.vertices.Add(vert);
                     }
-                    List<int> faces = new List<int>();
 
                     f.seek(FSHPArr[m].lodMdlOff + 4);
                     int faceType = f.readInt();
@@ -490,16 +569,12 @@ namespace Smash_Forge
                         FaceCount = FaceCount / 12;
                     for (int face = 0; face < FaceCount; face++)
                     {
-                        for (int sF = 0; sF < 3; sF++)
-                        {
                             if (faceType == 4)
-                                faces.Add(f.readShort());
+                                poly.faces.Add(new List<int> { f.readShort(), f.readShort(), f.readShort() });
                             if (faceType == 9)
-                                faces.Add(f.readInt());
-                        }
-                        model.faces.Add(faces);
+                            poly.faces.Add(new List<int> { f.readInt(), f.readInt(), f.readInt() });
                     }
-
+                    model.poly.Add(poly);
                 }
                 models.Add(model);
                 f.seek(NextFMDL);
@@ -615,13 +690,6 @@ namespace Smash_Forge
             public int indxBuffOff;
             public int elmSkip;
         }
-        public class FTEX_Texture
-        {
-            public int width, height, type;
-            public byte[] data;
-            // for display only
-            public int display = 0;
-        }
         public class Vertex
         {
             public Vector3 pos = new Vector3(0, 0, 0), nrm = new Vector3(0, 0, 0);
@@ -630,16 +698,25 @@ namespace Smash_Forge
             public List<int> node = new List<int>();
             public List<float> weight = new List<float>();
         }
+        public class Mesh
+        {
+            public List<List<int>> faces = new List<List<int>>();
+            public List<Vertex> vertices = new List<Vertex>();
+            public string name;
+        }
         public class FMDL_Model
         {
 
             public VBN skeleton = new VBN();
-            public List<List<int>> faces = new List<List<int>>();
-            public List<Vertex> vertices = new List<Vertex>();
-            
-            public string name;
-
+            public List<Mesh> poly = new List<Mesh>();
             public bool isVisible = true;
+        }
+        public class FTEX_Texture
+        {
+            public byte[] data;
+            public int width, height;
+            public PixelInternalFormat type;
+            public OpenTK.Graphics.OpenGL.PixelFormat utype;
         }
 
 
