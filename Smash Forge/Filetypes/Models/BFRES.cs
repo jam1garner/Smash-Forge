@@ -203,9 +203,13 @@ namespace Smash_Forge
             for (int i = 0; i < FTEXCount; i++)
             {
 
-                FTEX_Texture texture = new FTEX_Texture();
+               
                 f.skip(0x8);
                 string TextureName = f.readString(readOffset(f), -1);
+
+                FTEX_Texture texture = new FTEX_Texture();
+                textures.Add(TextureName, texture);
+
                 int offset = readOffset(f);
                 int NextFTEX = f.pos();
 
@@ -263,10 +267,7 @@ namespace Smash_Forge
                         texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                         break;
                 }
-
-
-
-
+                texture.display = loadImage(texture);
 
                 f.seek(NextFTEX);
             }
@@ -277,6 +278,8 @@ namespace Smash_Forge
             {
 
                 FMDL_Model model = new FMDL_Model();
+                models.Add(model);
+
                 f.skip(0xC);
                 int offset = readOffset(f);
                 int NextFMDL = f.pos();
@@ -445,6 +448,8 @@ namespace Smash_Forge
                 for(int m = 0;m < FSHPArr.Count; m++)
                 {
                     Mesh poly = new Mesh();
+                    model.poly.Add(poly);
+
                     poly.name = f.readString(FSHPArr[m].polyNameOff, -1);
 
                     List<attdata> AttrArr = new List<attdata>();
@@ -574,9 +579,9 @@ namespace Smash_Forge
                             if (faceType == 9)
                             poly.faces.Add(new List<int> { f.readInt(), f.readInt(), f.readInt() });
                     }
-                    model.poly.Add(poly);
+                    
                 }
-                models.Add(model);
+                
                 f.seek(NextFMDL);
             }
             PreRender();
@@ -702,6 +707,7 @@ namespace Smash_Forge
         {
             public List<List<int>> faces = new List<List<int>>();
             public List<Vertex> vertices = new List<Vertex>();
+            public List<int> texHashs = new List<int>();
             public string name;
         }
         public class FMDL_Model
@@ -715,8 +721,54 @@ namespace Smash_Forge
         {
             public byte[] data;
             public int width, height;
+            public int display = 0;
             public PixelInternalFormat type;
             public OpenTK.Graphics.OpenGL.PixelFormat utype;
+        }
+        public static int getImageSize(FTEX_Texture t)
+        {
+            switch (t.type)
+            {
+                case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
+                case PixelInternalFormat.CompressedSrgbAlphaS3tcDxt1Ext:
+                case PixelInternalFormat.CompressedLuminance:
+                case PixelInternalFormat.CompressedSluminance:
+                    return (t.width * t.height / 2);
+                case PixelInternalFormat.CompressedRgbaS3tcDxt3Ext:
+                case PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext:
+                case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
+                case PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext:
+                case PixelInternalFormat.CompressedLuminanceAlpha:
+                case PixelInternalFormat.CompressedSluminanceAlpha:
+                    return (t.width * t.height);
+                case PixelInternalFormat.Rgba:
+                    return t.data.Length;
+                default:
+                    return t.data.Length;
+            }
+        }
+
+        public static int loadImage(FTEX_Texture t)
+        {
+            int texID = GL.GenTexture();
+
+            GL.BindTexture(TextureTarget.Texture2D, texID);
+
+            if (t.type != PixelInternalFormat.Rgba)
+            {
+                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type,
+                    t.width, t.height, 0, getImageSize(t), t.data);
+                Debug.WriteLine(GL.GetError());
+            }
+            else
+            {
+                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.width, t.height, 0,
+                    t.utype, PixelType.UnsignedByte, t.data);
+            }
+
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+            return texID;
         }
 
 
