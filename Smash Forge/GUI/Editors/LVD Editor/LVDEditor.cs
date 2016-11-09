@@ -24,6 +24,7 @@ namespace Smash_Forge
         private CollisionMat currentMat;
         private TreeNode currentTreeNode;
         private Point currentPoint;
+        private Bounds currentBounds;
 
         enum materialTypes : byte
         {
@@ -59,6 +60,7 @@ namespace Smash_Forge
             currentEntry = entry;
             collisionGroup.Visible = false;
             pointGroup.Visible = false;
+            boundGroup.Visible = false;
             name.Text = currentEntry.name;
             subname.Text = currentEntry.subname;
             if (entry is Collision)
@@ -88,6 +90,15 @@ namespace Smash_Forge
                 currentPoint = (Point)entry;
                 xPoint.Value = (decimal)((Point)entry).x;
                 yPoint.Value = (decimal)((Point)entry).y;
+            }
+            else if(entry is Bounds)
+            {
+                boundGroup.Visible = true;
+                currentBounds = (Bounds)entry;
+                topVal.Value = (decimal)currentBounds.top;
+                rightVal.Value = (decimal)currentBounds.right;
+                leftVal.Value = (decimal)currentBounds.left;
+                bottomVal.Value = (decimal)currentBounds.bottom;
             }
         }
 
@@ -177,6 +188,7 @@ namespace Smash_Forge
         {
             collisionGroup.Visible = false;
             pointGroup.Visible = false;
+            boundGroup.Visible = false;
         }
 
         private void pointMoved(object sender, EventArgs e)
@@ -185,7 +197,85 @@ namespace Smash_Forge
                 currentPoint.x = (float)xPoint.Value;
             if (sender == yPoint)
                 currentPoint.y = (float)yPoint.Value;
-            Console.WriteLine("(" + currentPoint.x + "," + currentPoint.y + ")");
+            //Console.WriteLine("(" + currentPoint.x + "," + currentPoint.y + ")");
+        }
+
+        private void boundsChanged(object sender, EventArgs e)
+        {
+            if (sender == topVal)
+                currentBounds.top = (float)topVal.Value;
+            if (sender == bottomVal)
+                currentBounds.bottom = (float)bottomVal.Value;
+            if (sender == leftVal)
+                currentBounds.left = (float)leftVal.Value;
+            if (sender == rightVal)
+                currentBounds.right = (float)rightVal.Value;
+        }
+
+        private void addVert(object sender, EventArgs e)
+        {
+            if(vertices.SelectedNode != null)
+            {
+                Vector2D newVert = new Vector2D();
+                newVert.x = currentVert.x;
+                newVert.y = currentVert.y;
+                ((Collision)currentEntry).verts.Insert(vertices.SelectedNode.Index, newVert);
+                vertices.Nodes.Insert(vertices.SelectedNode.Index, new TreeNode("New Vertex") { Tag = newVert });
+                object[] t = { new Vector2D() { x = 1, y = 0 }, new CollisionMat() };
+                ((Collision)currentEntry).materials.Insert(vertices.SelectedNode.Index, (CollisionMat)t[1]);
+                ((Collision)currentEntry).normals.Insert(vertices.SelectedNode.Index, (Vector2D)t[0]);
+                lines.Nodes.Insert(vertices.SelectedNode.Index, new TreeNode("New line") { Tag = t });
+            }
+            else
+            {
+                Vector2D newVert = new Vector2D();
+                newVert.x = 0;
+                newVert.y = 0;
+                ((Collision)currentEntry).verts.Add(newVert);
+                vertices.Nodes.Add(new TreeNode("New Vertex") { Tag = newVert });
+                CollisionMat newMat = new CollisionMat();
+                object[] t = { new Vector2D() { x = 1, y = 0 }, new CollisionMat() };
+                ((Collision)currentEntry).materials.Add((CollisionMat)t[1]);
+                ((Collision)currentEntry).normals.Add((Vector2D)t[0]);
+                lines.Nodes.Add(new TreeNode("New line") { Tag = t });
+            }
+            renumber();
+        }
+
+        private void removeVert(object sender, EventArgs e)
+        {
+            ((Collision)currentEntry).verts.RemoveAt(vertices.SelectedNode.Index);
+            vertices.Nodes.RemoveAt(vertices.SelectedNode.Index);
+
+            if (((Collision)currentEntry).verts.Count - 1 == vertices.SelectedNode.Index && ((Collision)currentEntry).normals.Count != 0)
+            {
+                ((Collision)currentEntry).normals.RemoveAt(vertices.SelectedNode.Index - 1);
+            }
+            else if (((Collision)currentEntry).verts.Count - 1 != vertices.SelectedNode.Index)
+            {
+                ((Collision)currentEntry).normals.RemoveAt(vertices.SelectedNode.Index);
+            }
+
+            if (((Collision)currentEntry).verts.Count - 1 == vertices.SelectedNode.Index && ((Collision)currentEntry).materials.Count != 0)
+            {
+                ((Collision)currentEntry).materials.RemoveAt(vertices.SelectedNode.Index - 1);
+                lines.Nodes.RemoveAt(vertices.SelectedNode.Index - 1);
+            }   
+            else if (((Collision)currentEntry).verts.Count - 1 != vertices.SelectedNode.Index)
+            {
+                ((Collision)currentEntry).materials.RemoveAt(vertices.SelectedNode.Index);
+                lines.Nodes.RemoveAt(vertices.SelectedNode.Index);
+            }
+
+            renumber();
+        }
+
+        private void renumber()
+        {
+            for(int i = 0; i < vertices.Nodes.Count; i++)
+                vertices.Nodes[i].Text = $"Vertex {i}";
+            for(int i = 0; i < lines.Nodes.Count; i++)
+                lines.Nodes[i].Text = $"Line {i}";
         }
     }
 }
