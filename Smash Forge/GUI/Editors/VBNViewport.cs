@@ -460,22 +460,6 @@ namespace Smash_Forge
             GL.UseProgram(shader.programID);
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
-                if(m.bfres != null)
-                {
-                    GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref v);
-
-                    // Bone
-                    if (m.bfres.models.Count > 0)
-                    {
-                        Matrix4[] f = m.bfres.models[0].skeleton.getShaderMatrix();
-                        int shad = shader.getAttribute("bone");
-                        GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
-                    }
-
-                    shader.enableAttrib();
-                    m.bfres.Render(shader);
-                    shader.disableAttrib();
-                }
                 if (m.bch != null)
                 {
                     if (m.bch.mbn != null)

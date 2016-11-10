@@ -10,7 +10,7 @@ using OpenTK;
 
 namespace Smash_Forge
 {
-    public class BFRES
+    class BFRES
     {
         public List<FMDL_Model> models = new List<FMDL_Model>();
         public Dictionary<string, FTEX_Texture> textures = new Dictionary<string, FTEX_Texture>();
@@ -61,12 +61,10 @@ namespace Smash_Forge
             List<Vector4> bone = new List<Vector4>();
             List<Vector4> weight = new List<Vector4>();
             List<int> face = new List<int>();
-            
+
             foreach (FMDL_Model m in models)
             {
-                Console.WriteLine(m.vertices.Count);
-                Console.WriteLine(m.faces.Count);
-                if (m.faces.Count <= 3)
+                    if (m.faces.Count <= 3)
                         continue;
                     foreach (Vertex v in m.vertices)
                     {
@@ -80,11 +78,9 @@ namespace Smash_Forge
                         {
                             v.node.Add(0);
                             v.weight.Add(0);
-                    }
-                    bone.Add(new Vector4(-1, 0, 0, 0));
-                    weight.Add(new Vector4(-1, 0, 0, 0));
-                    //bone.Add(new Vector4(v.node[0], v.node[1], v.node[2], v.node[3]));
-                    //weight.Add(new Vector4(v.weight[0], v.weight[1], v.weight[2], v.weight[3]));
+                        }
+                        bone.Add(new Vector4(v.node[0], v.node[1], v.node[2], v.node[3]));
+                        weight.Add(new Vector4(v.weight[0], v.weight[1], v.weight[2], v.weight[3]));
                     }
 
                     foreach (List<int> l in m.faces)
@@ -176,7 +172,7 @@ namespace Smash_Forge
             int FSHAOffset = readOffset(f);
             int FSCNOffset = readOffset(f);
             int EMBOffset = readOffset(f);
-            
+
             int FMDLCount = f.readShort();
             int FTEXCount = f.readShort();
             int FSKACount = f.readShort();
@@ -201,10 +197,9 @@ namespace Smash_Forge
                 int offset = readOffset(f);
                 int NextFMDL = f.pos();
                 f.seek(offset);
-                f.skip(4);
                 FMDLheader fmdl_info = new FMDLheader
                 {
-                    FMDL = f.readString(f.pos() - 4, 4),
+                    FMDL = f.readString(f.pos(), 4),
                     name = f.readString(readOffset(f), -1),
                     eofString = readOffset(f),
                     fsklOff = readOffset(f),
@@ -218,7 +213,6 @@ namespace Smash_Forge
                     paramCount = f.readShort(),
 
                 };
-                Console.WriteLine(fmdl_info.fsklOff.ToString("X"));
 
                 List<FVTXH> FVTXArr = new List<FVTXH>();
                 f.seek(fmdl_info.fvtxArrOff);
@@ -275,7 +269,7 @@ namespace Smash_Forge
                     FMATheaders.Add(fmat_info);
                 }
 
-                f.seek(fmdl_info.fsklOff + 6);
+                f.seek(fmdl_info.fsklOff);
                 FSKLH fskl_info = new FSKLH
                 {
                     fsklType = f.readShort(),
@@ -298,8 +292,7 @@ namespace Smash_Forge
 
                 List<FSHPH> FSHPArr = new List<FSHPH>();
                 f.seek(fmdl_info.fshpIndx + 0x18);
-                if(fmdl_info.fshpCount > 0x50)
-                for (int shp = 0;shp< fmdl_info.fshpCount; shp++)
+                for(int shp = 0;shp< fmdl_info.fshpCount; shp++)
                 {
                     f.skip(0xC);
                     int FSHPOffset = readOffset(f);
@@ -333,7 +326,6 @@ namespace Smash_Forge
                 f.seek(fskl_info.boneArrOff);
                 for(int bn = 0;bn< fskl_info.boneArrCount; bn++)
                 {
-                    Console.WriteLine(f.pos().ToString());
                     Bone bone = new Smash_Forge.Bone();
                     bone.boneName = f.readString(readOffset(f), -1).ToCharArray();
                     bone.boneId = (uint)f.readShort();
@@ -358,7 +350,6 @@ namespace Smash_Forge
                     bone.position[2] = f.readFloat();
                     f.skip(4);
 
-                    bone.children = new List<int>();
                     if (parIndx1 > -1)
                         bone.children.Add(parIndx1);
                     if (parIndx2 > -1)
