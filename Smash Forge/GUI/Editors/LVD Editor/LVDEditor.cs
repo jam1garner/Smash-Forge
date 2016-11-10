@@ -214,31 +214,38 @@ namespace Smash_Forge
 
         private void addVert(object sender, EventArgs e)
         {
-            if(vertices.SelectedNode != null)
+            if(vertices.SelectedNode == null || (vertices.SelectedNode != null && vertices.SelectedNode.Index == vertices.Nodes.Count - 1))
             {
-                Vector2D newVert = new Vector2D();
-                newVert.x = currentVert.x;
-                newVert.y = currentVert.y;
-                ((Collision)currentEntry).verts.Insert(vertices.SelectedNode.Index, newVert);
-                vertices.Nodes.Insert(vertices.SelectedNode.Index, new TreeNode("New Vertex") { Tag = newVert });
-                object[] t = { new Vector2D() { x = 1, y = 0 }, new CollisionMat() };
-                ((Collision)currentEntry).materials.Insert(vertices.SelectedNode.Index, (CollisionMat)t[1]);
-                ((Collision)currentEntry).normals.Insert(vertices.SelectedNode.Index, (Vector2D)t[0]);
-                lines.Nodes.Insert(vertices.SelectedNode.Index, new TreeNode("New line") { Tag = t });
+                Vector2D newVert;
+                if (vertices.SelectedNode != null)
+                    newVert = new Vector2D() { x = currentVert.x, y = currentVert.y };
+                else
+                    newVert = new Vector2D();
+                ((Collision)currentEntry).verts.Add(newVert);
+                vertices.Nodes.Add(new TreeNode("New Vertex") { Tag = newVert });
+                if (((Collision)currentEntry).verts.Count > ((Collision)currentEntry).normals.Count + 1)
+                {
+                    CollisionMat newMat = new CollisionMat();
+                    object[] t = { new Vector2D() { x = 1, y = 0 }, new CollisionMat() };
+                    ((Collision)currentEntry).materials.Add((CollisionMat)t[1]);
+                    ((Collision)currentEntry).normals.Add((Vector2D)t[0]);
+                    lines.Nodes.Add(new TreeNode("New line") { Tag = t });
+                }
             }
             else
             {
-                Vector2D newVert = new Vector2D();
-                newVert.x = 0;
-                newVert.y = 0;
-                ((Collision)currentEntry).verts.Add(newVert);
-                vertices.Nodes.Add(new TreeNode("New Vertex") { Tag = newVert });
-                CollisionMat newMat = new CollisionMat();
-                object[] t = { new Vector2D() { x = 1, y = 0 }, new CollisionMat() };
-                ((Collision)currentEntry).materials.Add((CollisionMat)t[1]);
-                ((Collision)currentEntry).normals.Add((Vector2D)t[0]);
-                lines.Nodes.Add(new TreeNode("New line") { Tag = t });
+                Vector2D newVert = new Vector2D() { x = currentVert.x, y = currentVert.y };
+                ((Collision)currentEntry).verts.Insert(vertices.SelectedNode.Index, newVert);
+                vertices.Nodes.Insert(vertices.SelectedNode.Index, new TreeNode("New Vertex") { Tag = newVert });
+                if (((Collision)currentEntry).verts.Count > ((Collision)currentEntry).normals.Count + 1)
+                {
+                    object[] t = { new Vector2D() { x = 1, y = 0 }, new CollisionMat() };
+                    ((Collision)currentEntry).materials.Insert(vertices.SelectedNode.Index, (CollisionMat)t[1]);
+                    ((Collision)currentEntry).normals.Insert(vertices.SelectedNode.Index, (Vector2D)t[0]);
+                    lines.Nodes.Insert(vertices.SelectedNode.Index, new TreeNode("New line") { Tag = t });
+                }
             }
+
             renumber();
         }
 

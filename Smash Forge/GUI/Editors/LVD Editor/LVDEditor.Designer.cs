@@ -32,6 +32,15 @@
             this.name = new System.Windows.Forms.TextBox();
             this.subname = new System.Windows.Forms.TextBox();
             this.collisionGroup = new System.Windows.Forms.GroupBox();
+            this.zStart = new System.Windows.Forms.NumericUpDown();
+            this.yStart = new System.Windows.Forms.NumericUpDown();
+            this.xStart = new System.Windows.Forms.NumericUpDown();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.yVert = new System.Windows.Forms.NumericUpDown();
+            this.xVert = new System.Windows.Forms.NumericUpDown();
             this.lines = new System.Windows.Forms.TreeView();
             this.vertices = new System.Windows.Forms.TreeView();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
@@ -51,45 +60,36 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.xVert = new System.Windows.Forms.NumericUpDown();
-            this.yVert = new System.Windows.Forms.NumericUpDown();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.xStart = new System.Windows.Forms.NumericUpDown();
-            this.yStart = new System.Windows.Forms.NumericUpDown();
-            this.zStart = new System.Windows.Forms.NumericUpDown();
             this.pointGroup = new System.Windows.Forms.GroupBox();
-            this.xPoint = new System.Windows.Forms.NumericUpDown();
-            this.yPoint = new System.Windows.Forms.NumericUpDown();
-            this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.yPoint = new System.Windows.Forms.NumericUpDown();
+            this.xPoint = new System.Windows.Forms.NumericUpDown();
             this.boundGroup = new System.Windows.Forms.GroupBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.topVal = new System.Windows.Forms.NumericUpDown();
-            this.rightVal = new System.Windows.Forms.NumericUpDown();
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.bottomVal = new System.Windows.Forms.NumericUpDown();
             this.leftVal = new System.Windows.Forms.NumericUpDown();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.topVal = new System.Windows.Forms.NumericUpDown();
+            this.rightVal = new System.Windows.Forms.NumericUpDown();
             this.flowLayoutPanel1.SuspendLayout();
             this.collisionGroup.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.passthroughAngle)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.xVert)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.yVert)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.xStart)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.yStart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.zStart)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.yStart)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.xStart)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.yVert)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.xVert)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.passthroughAngle)).BeginInit();
             this.pointGroup.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.xPoint)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.yPoint)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.xPoint)).BeginInit();
             this.boundGroup.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.topVal)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rightVal)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bottomVal)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.leftVal)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.topVal)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rightVal)).BeginInit();
             this.SuspendLayout();
             // 
             // flowLayoutPanel1
@@ -103,7 +103,7 @@
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(280, 1045);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(280, 783);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // name
@@ -158,6 +158,137 @@
             this.collisionGroup.TabIndex = 0;
             this.collisionGroup.TabStop = false;
             this.collisionGroup.Text = "Collision Editing";
+            // 
+            // zStart
+            // 
+            this.zStart.DecimalPlaces = 3;
+            this.zStart.Location = new System.Drawing.Point(195, 43);
+            this.zStart.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.zStart.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.zStart.Name = "zStart";
+            this.zStart.Size = new System.Drawing.Size(61, 20);
+            this.zStart.TabIndex = 31;
+            this.zStart.ValueChanged += new System.EventHandler(this.changeStart);
+            // 
+            // yStart
+            // 
+            this.yStart.DecimalPlaces = 3;
+            this.yStart.Location = new System.Drawing.Point(112, 43);
+            this.yStart.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.yStart.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.yStart.Name = "yStart";
+            this.yStart.Size = new System.Drawing.Size(61, 20);
+            this.yStart.TabIndex = 30;
+            this.yStart.ValueChanged += new System.EventHandler(this.changeStart);
+            // 
+            // xStart
+            // 
+            this.xStart.DecimalPlaces = 3;
+            this.xStart.Location = new System.Drawing.Point(31, 43);
+            this.xStart.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.xStart.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.xStart.Name = "xStart";
+            this.xStart.Size = new System.Drawing.Size(61, 20);
+            this.xStart.TabIndex = 29;
+            this.xStart.ValueChanged += new System.EventHandler(this.changeStart);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(175, 47);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(14, 13);
+            this.label10.TabIndex = 28;
+            this.label10.Text = "Z";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(92, 45);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(14, 13);
+            this.label9.TabIndex = 27;
+            this.label9.Text = "Y";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(11, 45);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(14, 13);
+            this.label8.TabIndex = 26;
+            this.label8.Text = "X";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(9, 27);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(69, 13);
+            this.label7.TabIndex = 25;
+            this.label7.Text = "Start Position";
+            // 
+            // yVert
+            // 
+            this.yVert.DecimalPlaces = 3;
+            this.yVert.Location = new System.Drawing.Point(122, 296);
+            this.yVert.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.yVert.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.yVert.Name = "yVert";
+            this.yVert.Size = new System.Drawing.Size(67, 20);
+            this.yVert.TabIndex = 24;
+            this.yVert.ValueChanged += new System.EventHandler(this.changePos);
+            // 
+            // xVert
+            // 
+            this.xVert.DecimalPlaces = 3;
+            this.xVert.Location = new System.Drawing.Point(29, 296);
+            this.xVert.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.xVert.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.xVert.Name = "xVert";
+            this.xVert.Size = new System.Drawing.Size(67, 20);
+            this.xVert.TabIndex = 23;
+            this.xVert.ValueChanged += new System.EventHandler(this.changePos);
             // 
             // lines
             // 
@@ -380,137 +511,6 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "Vertices";
             // 
-            // xVert
-            // 
-            this.xVert.DecimalPlaces = 3;
-            this.xVert.Location = new System.Drawing.Point(29, 296);
-            this.xVert.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.xVert.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.xVert.Name = "xVert";
-            this.xVert.Size = new System.Drawing.Size(67, 20);
-            this.xVert.TabIndex = 23;
-            this.xVert.ValueChanged += new System.EventHandler(this.changePos);
-            // 
-            // yVert
-            // 
-            this.yVert.DecimalPlaces = 3;
-            this.yVert.Location = new System.Drawing.Point(122, 296);
-            this.yVert.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.yVert.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.yVert.Name = "yVert";
-            this.yVert.Size = new System.Drawing.Size(67, 20);
-            this.yVert.TabIndex = 24;
-            this.yVert.ValueChanged += new System.EventHandler(this.changePos);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(9, 27);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(69, 13);
-            this.label7.TabIndex = 25;
-            this.label7.Text = "Start Position";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(11, 45);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(14, 13);
-            this.label8.TabIndex = 26;
-            this.label8.Text = "X";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(92, 45);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(14, 13);
-            this.label9.TabIndex = 27;
-            this.label9.Text = "Y";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(175, 47);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(14, 13);
-            this.label10.TabIndex = 28;
-            this.label10.Text = "Z";
-            // 
-            // xStart
-            // 
-            this.xStart.DecimalPlaces = 3;
-            this.xStart.Location = new System.Drawing.Point(31, 43);
-            this.xStart.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.xStart.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.xStart.Name = "xStart";
-            this.xStart.Size = new System.Drawing.Size(61, 20);
-            this.xStart.TabIndex = 29;
-            this.xStart.ValueChanged += new System.EventHandler(this.changeStart);
-            // 
-            // yStart
-            // 
-            this.yStart.DecimalPlaces = 3;
-            this.yStart.Location = new System.Drawing.Point(112, 43);
-            this.yStart.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.yStart.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.yStart.Name = "yStart";
-            this.yStart.Size = new System.Drawing.Size(61, 20);
-            this.yStart.TabIndex = 30;
-            this.yStart.ValueChanged += new System.EventHandler(this.changeStart);
-            // 
-            // zStart
-            // 
-            this.zStart.DecimalPlaces = 3;
-            this.zStart.Location = new System.Drawing.Point(195, 43);
-            this.zStart.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.zStart.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.zStart.Name = "zStart";
-            this.zStart.Size = new System.Drawing.Size(61, 20);
-            this.zStart.TabIndex = 31;
-            this.zStart.ValueChanged += new System.EventHandler(this.changeStart);
-            // 
             // pointGroup
             // 
             this.pointGroup.Controls.Add(this.label12);
@@ -524,24 +524,23 @@
             this.pointGroup.TabStop = false;
             this.pointGroup.Text = "Point";
             // 
-            // xPoint
+            // label12
             // 
-            this.xPoint.DecimalPlaces = 3;
-            this.xPoint.Location = new System.Drawing.Point(25, 24);
-            this.xPoint.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.xPoint.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.xPoint.Name = "xPoint";
-            this.xPoint.Size = new System.Drawing.Size(67, 20);
-            this.xPoint.TabIndex = 32;
-            this.xPoint.ValueChanged += new System.EventHandler(this.pointMoved);
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(98, 26);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(14, 13);
+            this.label12.TabIndex = 32;
+            this.label12.Text = "Y";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(9, 26);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(14, 13);
+            this.label11.TabIndex = 32;
+            this.label11.Text = "X";
             // 
             // yPoint
             // 
@@ -562,23 +561,24 @@
             this.yPoint.TabIndex = 33;
             this.yPoint.ValueChanged += new System.EventHandler(this.pointMoved);
             // 
-            // label11
+            // xPoint
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(9, 26);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(14, 13);
-            this.label11.TabIndex = 32;
-            this.label11.Text = "X";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(98, 26);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(14, 13);
-            this.label12.TabIndex = 32;
-            this.label12.Text = "Y";
+            this.xPoint.DecimalPlaces = 3;
+            this.xPoint.Location = new System.Drawing.Point(25, 24);
+            this.xPoint.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.xPoint.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.xPoint.Name = "xPoint";
+            this.xPoint.Size = new System.Drawing.Size(67, 20);
+            this.xPoint.TabIndex = 32;
+            this.xPoint.ValueChanged += new System.EventHandler(this.pointMoved);
             // 
             // boundGroup
             // 
@@ -596,62 +596,6 @@
             this.boundGroup.TabIndex = 34;
             this.boundGroup.TabStop = false;
             this.boundGroup.Text = "Bounds";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(107, 26);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(20, 13);
-            this.label13.TabIndex = 32;
-            this.label13.Text = "Y+";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(9, 26);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(20, 13);
-            this.label14.TabIndex = 32;
-            this.label14.Text = "X+";
-            // 
-            // topVal
-            // 
-            this.topVal.DecimalPlaces = 3;
-            this.topVal.Location = new System.Drawing.Point(136, 24);
-            this.topVal.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.topVal.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.topVal.Name = "topVal";
-            this.topVal.Size = new System.Drawing.Size(67, 20);
-            this.topVal.TabIndex = 33;
-            this.topVal.ValueChanged += new System.EventHandler(this.boundsChanged);
-            // 
-            // rightVal
-            // 
-            this.rightVal.DecimalPlaces = 3;
-            this.rightVal.Location = new System.Drawing.Point(34, 24);
-            this.rightVal.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.rightVal.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.rightVal.Name = "rightVal";
-            this.rightVal.Size = new System.Drawing.Size(67, 20);
-            this.rightVal.TabIndex = 32;
-            this.rightVal.ValueChanged += new System.EventHandler(this.boundsChanged);
             // 
             // label15
             // 
@@ -709,13 +653,70 @@
             this.leftVal.TabIndex = 36;
             this.leftVal.ValueChanged += new System.EventHandler(this.boundsChanged);
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(107, 26);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(20, 13);
+            this.label13.TabIndex = 32;
+            this.label13.Text = "Y+";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(9, 26);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(20, 13);
+            this.label14.TabIndex = 32;
+            this.label14.Text = "X+";
+            // 
+            // topVal
+            // 
+            this.topVal.DecimalPlaces = 3;
+            this.topVal.Location = new System.Drawing.Point(136, 24);
+            this.topVal.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.topVal.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.topVal.Name = "topVal";
+            this.topVal.Size = new System.Drawing.Size(67, 20);
+            this.topVal.TabIndex = 33;
+            this.topVal.ValueChanged += new System.EventHandler(this.boundsChanged);
+            // 
+            // rightVal
+            // 
+            this.rightVal.DecimalPlaces = 3;
+            this.rightVal.Location = new System.Drawing.Point(34, 24);
+            this.rightVal.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.rightVal.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.rightVal.Name = "rightVal";
+            this.rightVal.Size = new System.Drawing.Size(67, 20);
+            this.rightVal.TabIndex = 32;
+            this.rightVal.ValueChanged += new System.EventHandler(this.boundsChanged);
+            // 
             // LVDEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(280, 1045);
+            this.ClientSize = new System.Drawing.Size(280, 783);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MinimumSize = new System.Drawing.Size(296, 822);
             this.Name = "LVDEditor";
             this.Text = "LVDEditor";
             this.Load += new System.EventHandler(this.LVDEditor_Load);
@@ -723,22 +724,22 @@
             this.flowLayoutPanel1.PerformLayout();
             this.collisionGroup.ResumeLayout(false);
             this.collisionGroup.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.passthroughAngle)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.xVert)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.yVert)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.xStart)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.yStart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.zStart)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.yStart)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.xStart)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.yVert)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.xVert)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.passthroughAngle)).EndInit();
             this.pointGroup.ResumeLayout(false);
             this.pointGroup.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.xPoint)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.yPoint)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.xPoint)).EndInit();
             this.boundGroup.ResumeLayout(false);
             this.boundGroup.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.topVal)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rightVal)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bottomVal)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.leftVal)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.topVal)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rightVal)).EndInit();
             this.ResumeLayout(false);
 
         }

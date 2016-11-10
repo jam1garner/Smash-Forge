@@ -84,7 +84,7 @@
             this.viewToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1009, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1217, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -402,20 +402,20 @@
             this.dockPanel1.DockBackColor = System.Drawing.SystemColors.AppWorkspace;
             this.dockPanel1.DockBottomPortion = 150D;
             this.dockPanel1.DockLeftPortion = 200D;
-            this.dockPanel1.DockRightPortion = 200D;
+            this.dockPanel1.DockRightPortion = 290D;
             this.dockPanel1.DockTopPortion = 150D;
             this.dockPanel1.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.World, ((byte)(0)));
             this.dockPanel1.Location = new System.Drawing.Point(0, 24);
             this.dockPanel1.Name = "dockPanel1";
             this.dockPanel1.RightToLeftLayout = true;
-            this.dockPanel1.Size = new System.Drawing.Size(1009, 659);
+            this.dockPanel1.Size = new System.Drawing.Size(1217, 741);
             this.dockPanel1.TabIndex = 16;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1009, 683);
+            this.ClientSize = new System.Drawing.Size(1217, 765);
             this.Controls.Add(this.dockPanel1);
             this.Controls.Add(this.radioButton2);
             this.Controls.Add(this.radioButton1);

@@ -25,6 +25,7 @@ namespace Smash_Forge
             animationsWindowToolStripMenuItem.Checked =
             boneTreeToolStripMenuItem.Checked = true;
 
+            AddDockedControl(meshList);
             AddDockedControl(leftPanel);
             AddDockedControl(rightPanel);
             AddDockedControl(lvdEditor);
