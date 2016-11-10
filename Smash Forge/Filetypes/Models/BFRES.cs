@@ -62,6 +62,7 @@ namespace Smash_Forge
             List<Vector4> weight = new List<Vector4>();
             List<int> face = new List<int>();
 
+            int i = 0;
             foreach (FMDL_Model fmdl in models)
             {
                 foreach(Mesh m in fmdl.poly) { 
@@ -92,7 +93,17 @@ namespace Smash_Forge
                 }
 
                 foreach (List<int> l in m.faces)
-                    face.AddRange(l);
+                    {
+                        //face.AddRange(l);
+                        // rearrange faces
+                        int[] ia = l.ToArray();
+                        for (int j = 0; j < ia.Length; j++)
+                        {
+                            ia[j] += i;
+                        }
+                        face.AddRange(ia);
+                    }
+                    i += m.vertices.Count;
                 }
             }
 
