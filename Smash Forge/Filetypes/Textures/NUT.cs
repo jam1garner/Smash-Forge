@@ -204,14 +204,6 @@ namespace Smash_Forge
             {
                 ReadNTWU(d);
             }
-
-            using (var stream = new FileStream("C:/code/test.nut", FileMode.Create))
-            {
-                using (var writer = new BinaryWriter(stream))
-                {
-                    writer.Write(Rebuild());
-                }
-            }
         }
 
         public void ReadNTP3(FileData d)
