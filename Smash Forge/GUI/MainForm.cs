@@ -1089,19 +1089,5 @@ namespace Smash_Forge
             Runtime.TargetLVD.blastzones.Add(new Bounds() { name = "DEATH_00_NEW", subname = "00_NEW" });
             lvdList.fillList();
         }
-
-        private void testToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MaterialSelector m = new MaterialSelector();
-            m.ShowDialog();
-            if (m.exitStatus == MaterialSelector.Cancelled)
-                Console.WriteLine("They didn't pick a material");
-            else if (m.exitStatus == MaterialSelector.Opened)
-                Console.WriteLine("They opened a material");
-
-            string materialPath = m.path;
-
-            Console.WriteLine(materialPath);
-        }
     }
 }

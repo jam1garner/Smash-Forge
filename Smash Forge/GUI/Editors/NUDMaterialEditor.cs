@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
+using System.IO;
 
 namespace Smash_Forge
 {
@@ -571,6 +572,7 @@ namespace Smash_Forge
                 sfd.Filter = "Namco Material (NMT)|*.nmt|" +
                              "All files(*.*)|*.*";
 
+                sfd.InitialDirectory = Path.GetFullPath("materials/");
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     sfd.FileName = sfd.FileName;
@@ -608,7 +610,31 @@ namespace Smash_Forge
         // Loading Mat
         private void button2_Click(object sender, EventArgs e)
         {
-            using (var ofd = new OpenFileDialog())
+            MaterialSelector m = new MaterialSelector();
+            m.ShowDialog();
+            if (m.exitStatus == MaterialSelector.Opened)
+            {
+                FileData f = new FileData(m.path);
+
+                int soff = f.readInt();
+
+                NUD._s_Poly pol = new NUD._s_Poly()
+                {
+                    texprop1 = f.readInt(),
+                    texprop2 = f.readInt(),
+                    texprop3 = f.readInt(),
+                    texprop4 = f.readInt()
+                };
+
+                poly.materials = NUD.readMaterial(f, pol, soff);
+                material = poly.materials;
+                Console.WriteLine(material.Count);
+                current = 0;
+                Init();
+                FillForm();
+            }
+
+            /*using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter = "Namco Material (NMT)|*.nmt|" +
                              "All files(*.*)|*.*";
@@ -637,7 +663,7 @@ namespace Smash_Forge
                         FillForm();
                     }
                 }
-            }
+            }*/
         }
     }
 }
