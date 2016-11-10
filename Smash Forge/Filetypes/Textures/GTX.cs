@@ -385,15 +385,17 @@ namespace Smash_Forge
             case GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM:
                 return 0x20;
             case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_UNORM:
-                return 0x40;
-            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC2_UNORM:
-                return 0x80;
-            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC3_UNORM:
-                return 0x80;
             case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM:
-                return 0x40;
+            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_SRGB:
+            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM:
+                    return 0x40;
+            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC2_UNORM:
+            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC3_UNORM:
             case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC5_UNORM:
-                return 0x80;
+            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC2_SRGB:
+            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC3_SRGB:
+            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC5_SNORM:
+                    return 0x80;
         }
         return -1;
     }
@@ -416,8 +418,11 @@ namespace Smash_Forge
             height /= 4;
 
             if ((GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_UNORM ||
-                (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM) {
-                blockSize = 8;
+                (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_SRGB ||
+                (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM ||
+                    (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM)
+                {
+                    blockSize = 8;
             } else {
                 blockSize = 16;
             }
