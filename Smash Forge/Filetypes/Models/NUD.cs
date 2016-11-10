@@ -337,7 +337,8 @@ namespace Smash_Forge
                                             if (ma.anims.ContainsKey(md.name))
                                                 ma.anims[md.name] = md.frames[(int)((frame * 60 / m.frameRate) % m.numFrames)].values;
                                             else
-                                                ma.anims.Add(md.name, md.frames[(int)((frame * 60 / m.frameRate) % (m.numFrames))].values);
+                                                if(md.frames.Count > (int)((frame * 60 / m.frameRate) % (m.numFrames)))
+                                                    ma.anims.Add(md.name, md.frames[(int)((frame * 60 / m.frameRate) % (m.numFrames))].values);
                                             //Console.WriteLine(""+md.frames[frame % md.frames.Count].values[0]+"," + md.frames[frame % md.frames.Count].values[1] + "," + md.frames[frame % md.frames.Count].values[2] + "," + md.frames[frame % md.frames.Count].values[3]);
                                         }
                                             
@@ -476,7 +477,7 @@ namespace Smash_Forge
 
         //VERTEX TYPES----------------------------------------------------------------------------------------
 
-        private static List<Material> readMaterial(FileData d, _s_Poly p, int nameOffset)
+        public static List<Material> readMaterial(FileData d, _s_Poly p, int nameOffset)
         {
             int propoff = p.texprop1;
             List<Material> mats = new List<Material>();
@@ -818,14 +819,14 @@ namespace Smash_Forge
 
                     int maxUV = mesh[i].polygons[k].vertices[0].tx.Count; // TODO: multi uv stuff  mesh[i].polygons[k].maxUV() + 
 
-                    obj.writeByte((maxUV << 4) | 2); // type of UV 0x12 for vertex color
+                    obj.writeByte(mesh[i].polygons[k].UVSize); 
 
                     // MATERIAL SECTION 
 
                     FileOutput te = new FileOutput();
                     te.Endian = Endianness.Big;
 
-                    int[] texoff = writeMaterial(tex, mesh[i].polygons[k], str);
+                    int[] texoff = writeMaterial(tex, mesh[i].polygons[k].materials, str);
                     //tex.writeOutput(te);
 
                     //obj.writeInt(tex.size() + 0x30 + mesh.Count * 0x30 + polyCount * 0x30); // Tex properties... This is tex offset
@@ -1010,11 +1011,11 @@ namespace Smash_Forge
             }
         }
 
-        private static int[] writeMaterial(FileOutput d, Polygon p, FileOutput str)
+        public static int[] writeMaterial(FileOutput d, List<Material> materials, FileOutput str)
         {
             int[] offs = new int[4];
             int c = 0;
-            foreach (Material mat in p.materials)
+            foreach (Material mat in materials)
             {
                 offs[c++] = d.size();
                 d.writeInt((int)mat.flags);
@@ -1087,7 +1088,7 @@ namespace Smash_Forge
             public string name;
         }
 
-        private struct _s_Poly
+        public struct _s_Poly
         {
             public int polyStart;
             public int vertStart;

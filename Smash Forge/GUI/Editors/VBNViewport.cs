@@ -100,6 +100,19 @@ namespace Smash_Forge
                 Runtime.TargetNUD = null;
                 Runtime.killWorkspace = false;
                 Runtime.Animations = new Dictionary<string, SkelAnimation>();
+                MainForm.Instance.lvdList.fillList();
+                MainForm.Instance.animNode.Nodes.Clear();
+                MainForm.Instance.mtaNode.Nodes.Clear();
+                MainForm.Instance.meshList.refresh();
+                MainForm.Instance.paramEditors = new List<PARAMEditor>();
+                if (Directory.Exists("workspace/animcmd/"))
+                {
+                    foreach(string file in Directory.EnumerateFiles("workspace/animcmd/"))
+                        File.Delete(file);
+                    Directory.Delete("workspace/animcmd/");
+                }
+                    
+                MainForm.Instance.project.fillTree();
             }
 
             if (this.IsDisposed == true)
@@ -514,7 +527,7 @@ namespace Smash_Forge
             {
                 // Render the hitboxes
                 if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
-                    HandleACMD(Runtime.TargetAnimString.Substring(4));
+                    HandleACMD(Runtime.TargetAnimString.Substring(3));
 
                 if(Runtime.renderHitboxes)
                     RenderHitboxes();
@@ -1156,8 +1169,8 @@ namespace Smash_Forge
 
         public void HandleACMD(string animname)
         {
-            //Console.WriteLine("Handling");
-            var crc = Crc32.Compute(animname.ToLower());
+            //Console.WriteLine("Handling " + animname);
+            var crc = Crc32.Compute(animname.Replace(".omo", "").ToLower());
 
             if (Runtime.Moveset == null)
             {
@@ -1171,6 +1184,7 @@ namespace Smash_Forge
                 return;
             }
 
+            //Console.WriteLine("Handling " + animname);
             script = (ACMDScript)Runtime.Moveset.Game.Scripts[crc];
         }
 
