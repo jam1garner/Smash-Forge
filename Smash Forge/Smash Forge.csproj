@@ -149,6 +149,12 @@
     <Compile Include="GUI\Editors\VBNViewport.Designer.cs">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\MaterialSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\MaterialSelector.Designer.cs">
+      <DependentUpon>MaterialSelector.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\ModelContainer.cs" />
     <Compile Include="GUI\RenderSettings.cs">
       <SubType>Form</SubType>
@@ -198,6 +204,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\VBNViewport.resx">
       <DependentUpon>VBNViewport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\MaterialSelector.resx">
+      <DependentUpon>MaterialSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
