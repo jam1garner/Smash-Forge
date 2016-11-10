@@ -76,7 +76,7 @@ namespace Smash_Forge
                     nrm.Add(v.nrm);
 
                         if (v.tx.Count > 0)
-                            uv.Add(new Vector2(v.tx[0].X, 1 - v.tx[0].Y));
+                            uv.Add(v.tx[0]);
                         else
                             uv.Add(new Vector2(0, 0));
 
@@ -140,10 +140,13 @@ namespace Smash_Forge
                 foreach(Mesh m in fmdl.poly) { 
                 GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1, 1, 0, 0));
 
-                //GL.BindTexture(TextureTarget.Texture2D, m.texId);
-                //GL.Uniform1(shader.getAttribute("tex"), 0);
 
-                foreach (List<int> l in m.faces)
+                    GL.BindTexture(TextureTarget.Texture2D, m.texHashs[0]);
+                    GL.Uniform1(shader.getAttribute("tex"), 0);
+                    //GL.BindTexture(TextureTarget.Texture2D, m.texId);
+                    //GL.Uniform1(shader.getAttribute("tex"), 0);
+
+                    foreach (List<int> l in m.faces)
                 {
                     if (fmdl.isVisible)
                         GL.DrawElements(PrimitiveType.Triangles, l.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
@@ -208,7 +211,7 @@ namespace Smash_Forge
                 string TextureName = f.readString(readOffset(f), -1);
 
                 FTEX_Texture texture = new FTEX_Texture();
-                textures.Add(TextureName, texture);
+                
 
                 int offset = readOffset(f);
                 int NextFTEX = f.pos();
@@ -268,7 +271,7 @@ namespace Smash_Forge
                         break;
                 }
                 texture.display = loadImage(texture);
-
+                textures.Add(TextureName, texture);
                 f.seek(NextFTEX);
             }
 
@@ -278,7 +281,7 @@ namespace Smash_Forge
             {
 
                 FMDL_Model model = new FMDL_Model();
-                models.Add(model);
+                
 
                 f.skip(0xC);
                 int offset = readOffset(f);
@@ -448,7 +451,7 @@ namespace Smash_Forge
                 for(int m = 0;m < FSHPArr.Count; m++)
                 {
                     Mesh poly = new Mesh();
-                    model.poly.Add(poly);
+                    
 
                     poly.name = f.readString(FSHPArr[m].polyNameOff, -1);
 
@@ -564,7 +567,9 @@ namespace Smash_Forge
                     f.seek(FSHPArr[m].lodMdlOff + 4);
                     int faceType = f.readInt();
                     f.skip(0xC);
-                    f.seek(readOffset(f) + 4);
+                    int indxBuffOff = readOffset(f) + 4;
+                    int elmSkip = f.readInt();
+                    f.seek(indxBuffOff);
                     int FaceCount = f.readInt();
                     f.skip(0xC);
                     f.seek(readOffset(f));
@@ -574,14 +579,25 @@ namespace Smash_Forge
                         FaceCount = FaceCount / 12;
                     for (int face = 0; face < FaceCount; face++)
                     {
-                            if (faceType == 4)
-                                poly.faces.Add(new List<int> { f.readShort(), f.readShort(), f.readShort() });
-                            if (faceType == 9)
-                            poly.faces.Add(new List<int> { f.readInt(), f.readInt(), f.readInt() });
+                        if (faceType == 4)
+                            poly.faces.Add(new List<int> { elmSkip + f.readShort()  , elmSkip + f.readShort() , elmSkip + f.readShort()  });
+                        else if (faceType == 9)
+                            poly.faces.Add(new List<int> { elmSkip + f.readInt(), elmSkip + f.readInt(), elmSkip + f.readInt() });
+                        else
+                            Console.Write("UnkFaceFormat");
+
                     }
-                    
+
+                    f.seek(FMATheaders[FSHPArr[m].fmatIndx].texSelOff);
+                    for(int tex = 0; FMATheaders[FSHPArr[m].fmatIndx].texAttSelCount > tex; tex++)
+                    {
+                        string TextureName = f.readString(readOffset(f), -1);
+                        poly.texHashs.Add(textures[TextureName].display);
+                        f.skip(4);
+                    }
+                    model.poly.Add(poly);
                 }
-                
+                models.Add(model);
                 f.seek(NextFMDL);
             }
             PreRender();
