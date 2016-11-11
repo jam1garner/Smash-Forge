@@ -211,9 +211,8 @@ namespace Smash_Forge
             int FSCNCount = f.readShort();
             int EMBCount = f.readShort();
 
-
-            //FTEX -Texures-
-            f.seek(FTEXOffset + 0x18);
+                //FTEX -Texures-
+                f.seek(FTEXOffset + 0x18);
             for (int i = 0; i < FTEXCount; i++)
             {
 
@@ -428,14 +427,15 @@ namespace Smash_Forge
                     Bone bone = new Smash_Forge.Bone();
                     bone.boneName = f.readString(readOffset(f), -1).ToCharArray();
                     bone.boneId = (uint)f.readShort();
-                    int parIndx1 = f.readShort();
+                    int parIndx1 = (short)f.readShort();
                     int parIndx2 = f.readShort();
                     int parIndx3 = f.readShort();
                     int parIndx4 = f.readShort();
+                    bone.parentIndex = parIndx1;
 
                     f.skip(6);
                     bone.scale = new float[3];
-                    bone.rotation = new float[3];
+                    bone.rotation = new float[4];
                     bone.position = new float[3];
                     bone.scale[0] = f.readFloat();
                     bone.scale[1] = f.readFloat();
@@ -443,12 +443,11 @@ namespace Smash_Forge
                     bone.rotation[0] = f.readFloat();
                     bone.rotation[1] = f.readFloat();
                     bone.rotation[2] = f.readFloat();
-                    f.skip(4);
+                    bone.rotation[3] = f.readFloat();
                     bone.position[0] = f.readFloat();
                     bone.position[1] = f.readFloat();
                     bone.position[2] = f.readFloat();
                     f.skip(4);
-
 
                     model.skeleton.bones.Add(bone);
 
@@ -796,6 +795,12 @@ namespace Smash_Forge
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             return texID;
+        }
+
+
+        public void readFSKA()
+        {
+
         }
 
 

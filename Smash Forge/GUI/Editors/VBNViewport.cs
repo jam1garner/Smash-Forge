@@ -534,9 +534,17 @@ namespace Smash_Forge
                 foreach (ModelContainer m in Runtime.ModelContainers)
                 {
                     DrawVBN(m.vbn);
-                    if(m.bch != null)
+                    if (m.bch != null)
                     {
                         DrawVBN(m.bch.models[0].skeleton);
+                    }
+                    if (m.bfres != null)
+                    {
+                        if (m.bfres.models.Count > 0)
+                        {
+                            if (m.bfres.models[0].skeleton != null)
+                                DrawVBN(m.bfres.models[0].skeleton);
+                        }
                     }
                 }
             }
