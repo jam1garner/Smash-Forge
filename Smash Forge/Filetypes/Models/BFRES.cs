@@ -73,7 +73,7 @@ namespace Smash_Forge
                 foreach (Vertex v in m.vertices)
                 {
                     vert.Add(v.pos);
-                    col.Add(v.col / 0x7F);
+                    col.Add(v.col);
                     nrm.Add(v.nrm);
 
                         if (v.tx.Count > 0)
@@ -148,12 +148,14 @@ namespace Smash_Forge
             int indiceat = 0;
             foreach (FMDL_Model fmdl in models)
             {
-                foreach(Mesh m in fmdl.poly) { 
-                GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1, 1, 0, 0));
+                foreach (Mesh m in fmdl.poly)
+                {
+                    GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1, 1, 0, 0));
 
-
+                    if (m.texHashs.Count > 0 ) { 
                     GL.BindTexture(TextureTarget.Texture2D, m.texHashs[0]);
                     GL.Uniform1(shader.getAttribute("tex"), 0);
+                }
                     //GL.BindTexture(TextureTarget.Texture2D, m.texId);
                     //GL.Uniform1(shader.getAttribute("tex"), 0);
 
@@ -264,16 +266,16 @@ namespace Smash_Forge
                         texture.type = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext;
                         break;
                     case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM):
-                        texture.type = PixelInternalFormat.CompressedLuminance;
+                        texture.type = PixelInternalFormat.CompressedRedRgtc1;
                         break;
                     case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM):
-                        texture.type = PixelInternalFormat.CompressedSluminance;
+                        texture.type = PixelInternalFormat.CompressedSignedRedRgtc1;
                         break;
                     case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC5_UNORM):
-                        texture.type = PixelInternalFormat.CompressedLuminanceAlpha;
+                        texture.type = PixelInternalFormat.CompressedRgRgtc2;
                         break;
                     case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC5_SNORM):
-                        texture.type = PixelInternalFormat.CompressedSluminanceAlpha;
+                        texture.type = PixelInternalFormat.CompressedSignedRgRgtc2;
                         break;
                     case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM):
                         texture.type = PixelInternalFormat.Rgba;
@@ -451,8 +453,8 @@ namespace Smash_Forge
 
                     model.skeleton.bones.Add(bone);
 
-                    //if (highVersion<4)
-                        //f.skip(48);
+                    if (lowVersion<4)
+                        f.skip(48);
                 }
                 model.skeleton.reset();
 
@@ -507,11 +509,11 @@ namespace Smash_Forge
                                     break;
                                 case "_c0":
                                     if (AttrArr[attr].vertType == 2063)
-                                        vert.col = new Vector4 { X = (int)f.readHalfFloat() * 255, Y = (int)f.readHalfFloat() * 255, Z = (int)f.readHalfFloat() * 255, W = (int)f.readHalfFloat() * 255 };
+                                        vert.col = new Vector4 { X = f.readHalfFloat(), Y = f.readHalfFloat(), Z = f.readHalfFloat(), W = f.readHalfFloat() };
                                     if (AttrArr[attr].vertType == 2067)
-                                        vert.col = new Vector4 { X = (int)f.readFloat() * 255, Y = (int)f.readFloat() * 255, Z = (int)f.readFloat() * 255, W = (int)f.readFloat() * 255 };
+                                        vert.col = new Vector4 { X = f.readFloat(), Y = f.readFloat(), Z = f.readFloat(), W = f.readFloat() };
                                     if (AttrArr[attr].vertType == 10)
-                                        vert.col = new Vector4 { X = f.readByte(), Y = f.readByte(), Z = f.readByte(), W = f.readByte() };
+                                        vert.col = new Vector4 { X = f.readByte() , Y = f.readByte(), Z = f.readByte(), W = f.readByte() };
                                     break;
                                 case "_n0":
                                     if (AttrArr[attr].vertType == 10)
@@ -724,7 +726,7 @@ namespace Smash_Forge
         public class Vertex
         {
             public Vector3 pos = new Vector3(0, 0, 0), nrm = new Vector3(0, 0, 0);
-            public Vector4 col = new Vector4(127, 127, 127, 127);
+            public Vector4 col = new Vector4(2, 2, 2, 1);
             public List<Vector2> tx = new List<Vector2>();
             public List<int> node = new List<int>();
             public List<float> weight = new List<float>();
@@ -757,15 +759,15 @@ namespace Smash_Forge
             {
                 case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
                 case PixelInternalFormat.CompressedSrgbAlphaS3tcDxt1Ext:
-                case PixelInternalFormat.CompressedLuminance:
-                case PixelInternalFormat.CompressedSluminance:
+                case PixelInternalFormat.CompressedRedRgtc1:
+                case PixelInternalFormat.CompressedSignedRedRgtc1:
                     return (t.width * t.height / 2);
                 case PixelInternalFormat.CompressedRgbaS3tcDxt3Ext:
                 case PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext:
                 case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
                 case PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext:
-                case PixelInternalFormat.CompressedLuminanceAlpha:
-                case PixelInternalFormat.CompressedSluminanceAlpha:
+                case PixelInternalFormat.CompressedSignedRgRgtc2:
+                case PixelInternalFormat.CompressedRgRgtc2:
                     return (t.width * t.height);
                 case PixelInternalFormat.Rgba:
                     return t.data.Length;

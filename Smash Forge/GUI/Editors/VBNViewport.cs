@@ -56,7 +56,7 @@ namespace Smash_Forge
                 GL.Viewport(glControl1.ClientRectangle);
 
 
-                v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 500.0f);
+                v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 250000.0f);
             }
         }
 
@@ -291,7 +291,7 @@ namespace Smash_Forge
             int w = Width;
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
-            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 2500.0f);
+            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 250000.0f);
 
             GotFocus += (object sender, EventArgs e) =>
                 {
@@ -415,7 +415,7 @@ namespace Smash_Forge
             zoom += OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast;
             mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
 
-            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 2500.0f);
+            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 250000.0f);
         }
         public bool IsMouseOverViewport()
         {
@@ -432,7 +432,7 @@ namespace Smash_Forge
                 if (cf >= Runtime.TargetPath.Frames.Count)
                     cf = 0;
                 pathFrame f = Runtime.TargetPath.Frames[cf];
-                v = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
+                v = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 250000.0f);
                 cf++;
             }
             else if (Runtime.TargetCMR0 != null && checkBox1.Checked)
@@ -440,7 +440,7 @@ namespace Smash_Forge
                 if (cf >= Runtime.TargetCMR0.frames.Count)
                     cf = 0;
                 Matrix4 m = Runtime.TargetCMR0.frames[cf].Inverted();
-                v = Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
+                v = Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 250000.0f);
                 cf++;
             }
         }
