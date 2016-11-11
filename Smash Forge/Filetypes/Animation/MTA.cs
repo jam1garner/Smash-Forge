@@ -7,36 +7,6 @@ using System.IO;
 
 namespace Smash_Forge
 {
-    //self.nameOffset = uint32(mta)
-    //        self.matHash = uint32(mta)
-    //        self.materialPropCount = uint32(mta)
-    //        self.materialDPos = uint32(mta)
-    //        self.hasPat = ord(mta.read(1))
-    //        mta.seek(3,1)
-    //        self.patOffset = uint32(mta)
-    //        self.name2Offset = uint32(mta)
-    //        self.matHash2 = uint32(mta)
-    //        mta.seek(self.nameOffset)
-    //        self.name = nullEndString(mta)
-    //        if self.name2Offset != 0:
-    //            mta.seek(self.name2Offset)
-    //            self.name2 = nullEndString(mta)
-    //        self.patData = None
-    //        if self.hasPat:
-    //            mta.seek(self.patOffset)
-    //            self.patDataPos = uint32(mta)
-    //            if self.patDataPos != 0:
-    //                mta.seek(self.patDataPos)
-    //                self.patData = PatData(mta)
-    //        mta.seek(self.materialDPos)
-    //        self.mtaProps = []
-    //        if self.materialPropCount > 0:
-    //            self.matDataPos = []
-    //            for i in range(self.materialPropCount):
-    //                self.matDataPos.append(uint32(mta))
-    //            for off in self.matDataPos:
-    //                mta.seek(off)
-    //                self.mtaProps.append(MatData(mta))
     public class PatData
     {
         public struct keyframe
@@ -84,6 +54,14 @@ namespace Smash_Forge
                 }
             } 
         }
+
+        public byte[] Rebuild()
+        {
+            FileOutput f = new FileOutput();
+            f.Endian = Endianness.Big;
+
+            return f.getBytes();
+        }
     }
 
     public class MatData
@@ -122,6 +100,15 @@ namespace Smash_Forge
                 frames.Add(temp);
             }
         }
+
+        public byte[] Rebuild()
+        {
+            FileOutput f = new FileOutput();
+            f.Endian = Endianness.Big;
+
+            return f.getBytes();
+        }
+
     }
 
     public class MatEntry
@@ -174,7 +161,14 @@ namespace Smash_Forge
                 properties.Add(temp);
                 f.seek(returnPos);
             }
-            
+        }
+
+        public byte[] Rebuild()
+        {
+            FileOutput f = new FileOutput();
+            f.Endian = Endianness.Big;
+
+            return f.getBytes();
         }
     }
 
@@ -230,6 +224,40 @@ namespace Smash_Forge
                 state = f.state;
             }
             return state;
+        }
+
+        public byte[] Rebuild()
+        {
+            FileOutput f = new FileOutput();
+            f.Endian = Endianness.Big;
+
+            f.writeInt(f.pos() + 0x20);
+            f.writeInt(unk1);
+            int offset = f.pos() + 0x18;
+            offset += name.Length + 1;
+            while (offset % 16 != 0)
+                offset++;
+            offset += 0x10;
+            f.writeInt(offset);
+            f.writeBytes(new byte[0x14]);
+            f.writeString(name);
+            f.writeByte(0);
+            while (f.pos() % 16 != 0)
+                f.writeByte(0);
+            f.writeBytes(new byte[0x10]);
+            f.writeInt(frameCount);
+            f.writeShort(unk2);
+            f.writeShort(frames.Count);
+            f.writeInt(f.pos() + 0x18);
+            f.writeBytes(new byte[0x14]);
+            foreach(frame keyframe in frames)
+            {
+                f.writeShort(keyframe.frameNum);
+                f.writeByte(keyframe.state);
+                f.writeByte(keyframe.unknown);
+            }
+
+            return f.getBytes();
         }
     }
 
@@ -293,7 +321,73 @@ namespace Smash_Forge
 
         public override byte[] Rebuild()
         {
-            throw new NotImplementedException();
+            FileOutput f = new FileOutput();
+            f.Endian = Endianness.Big;
+
+            f.writeString("MTA4");
+            f.writeInt((int)unknown);
+            f.writeInt((int)numFrames);
+            f.writeInt(0);
+            f.writeInt((int)numFrames - 1);
+            f.writeInt((int)frameRate);
+            f.writeInt(matEntries.Count);
+            if (matEntries.Count > 0)
+                f.writeInt(0x38);
+            else
+                f.writeInt(0);
+            f.writeInt(visEntries.Count);
+            if (visEntries.Count > 0)
+                f.writeInt(0x38 + 4 * matEntries.Count);
+            else
+                f.writeInt(0);
+            for (int i = 0; i < 0x10; i++)
+                f.writeByte(0);
+
+            List<byte[]> matEntriesBuilt = new List<byte[]>();
+            List<byte[]> visEntriesBuilt = new List<byte[]>();
+            foreach (MatEntry m in matEntries)
+                matEntriesBuilt.Add(m.Rebuild());
+            foreach (VisEntry v in visEntries)
+                visEntriesBuilt.Add(v.Rebuild());
+
+            int position = 0x38 + matEntries.Count + visEntries.Count;
+            while (position % 0x10 != 0)
+                position++;
+
+            foreach (byte[] b in matEntriesBuilt)
+            {
+                f.writeInt(position);
+                position += b.Length;
+                while (position % 0x10 != 0)
+                    position++;
+            }
+
+            foreach (byte[] b in visEntriesBuilt)
+            {
+                f.writeInt(position);
+                position += b.Length;
+                while (position % 0x10 != 0)
+                    position++;
+            }
+
+            while (f.pos() % 0x10 != 0)
+                f.writeByte(0);
+
+            foreach(byte[] b in matEntriesBuilt)
+            {
+                f.writeBytes(b);
+                while (f.pos() % 0x10 != 0)
+                    f.writeByte(0);
+            }
+
+            foreach (byte[] b in visEntriesBuilt)
+            {
+                f.writeBytes(b);
+                while (f.pos() % 0x10 != 0)
+                    f.writeByte(0);
+            }
+
+            return f.getBytes();
         }
     }
     
