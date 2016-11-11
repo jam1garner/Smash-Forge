@@ -777,15 +777,16 @@ namespace Smash_Forge
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            if (Runtime.TargetVBN == null)
+            /*if (Runtime.TargetVBN == null)
             {
                 return;
-            }
+            }*/
 
             using (var sfd = new SaveFileDialog())
             {
-                sfd.Filter = "Supported Files (.omo, .anim, .pac)|*.omo;*.anim;*.pac|" +
+                sfd.Filter = "Supported Files (.omo, .anim, .pac, .mta)|*.omo;*.anim;*.pac;*.mta|" +
                              "Object Motion (.omo)|*.omo|" +
+                             "Material Animation (.mta)|*.mta|" +
                              "Maya Anim (.anim)|*.anim|" +
                              "OMO Pack (.pac)|*.pac|" +
                              "All Files (*.*)|*.*";
@@ -809,6 +810,13 @@ namespace Smash_Forge
                             pac.Files.Add(anim.Key, bytes);
                         }
                         pac.Save(sfd.FileName);
+                    }
+
+                    if (sfd.FileName.EndsWith(".mta"))
+                    {
+                        FileOutput f = new FileOutput();
+                        f.writeBytes(Runtime.TargetMTA.Rebuild());
+                        f.save(sfd.FileName);
                     }
                 }
             }

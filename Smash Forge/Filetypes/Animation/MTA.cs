@@ -55,10 +55,24 @@ namespace Smash_Forge
             } 
         }
 
-        public byte[] Rebuild()
+        public byte[] Rebuild(int pos)
         {
             FileOutput f = new FileOutput();
             f.Endian = Endianness.Big;
+
+            f.writeInt(pos + f.pos() + 0x8);
+            f.writeInt(0);
+            f.writeInt(defaultTexId);
+            f.writeInt(keyframes.Count);
+            f.writeInt(pos + f.pos() + 0x1C);
+            f.writeInt(frameCount - 1);
+            f.writeInt(unknown);
+            f.writeBytes(new byte[0x10]);
+            foreach(keyframe k in keyframes)
+            {
+                f.writeInt(k.texId);
+                f.writeInt(k.frameNum);
+            }
 
             return f.getBytes();
         }
@@ -68,13 +82,14 @@ namespace Smash_Forge
     {
         public struct frame
         {
-            public int size;
+            //public int size;
             public float[] values;
         }
 
         public string name;
         public List<frame> frames = new List<frame>();
         public int unknown, unknown2, unknown3;
+        public int valueCount;
 
         public MatData(){ }
 
@@ -82,7 +97,7 @@ namespace Smash_Forge
         {
             int nameOff = f.readInt();
             unknown = f.readInt();
-            int valueCount = f.readInt();
+            valueCount = f.readInt();
             int frameCount = f.readInt();
             unknown2 = f.readShort();
             unknown3 = f.readShort();
@@ -93,7 +108,7 @@ namespace Smash_Forge
             for(int i = 0; i < frameCount; i++)
             {
                 frame temp;
-                temp.size = valueCount;
+                //temp.size = valueCount;
                 temp.values = new float[valueCount];
                 for (int j = 0; j < valueCount; j++)
                     temp.values[j] = f.readFloat();
@@ -101,14 +116,35 @@ namespace Smash_Forge
             }
         }
 
-        public byte[] Rebuild()
+        public byte[] Rebuild(int pos)
         {
             FileOutput f = new FileOutput();
             f.Endian = Endianness.Big;
 
+            f.writeInt(pos + f.pos() + 0x20);
+            f.writeInt(unknown);
+            f.writeInt(valueCount);
+            f.writeInt(frames.Count);
+            f.writeShort(unknown2);
+            f.writeShort(unknown3);
+            int position = pos + f.pos() + 0xC + name.Length + 1;
+            while (position % 0x10 != 0)
+                position++;
+
+            f.writeInt(position);
+            f.writeBytes(new byte[8]);
+            f.writeString(name);
+            f.writeByte(0);
+            while ((pos + f.pos()) % 0x10 != 0)
+                f.writeByte(0);
+
+            foreach (frame fr in frames)
+                for (int i = 0; i < valueCount; i++)
+                    f.writeFloat(fr.values[i]);
+            f.writeBytes(new byte[0x10]);
+
             return f.getBytes();
         }
-
     }
 
     public class MatEntry
@@ -134,6 +170,10 @@ namespace Smash_Forge
             int patOffset = f.readInt();
             int secondNameOff = f.readInt();
             matHash2 = f.readInt();
+
+            f.seek(nameOffset);
+            name = f.readString();
+
             if(secondNameOff != 0)
             {
                 f.seek(secondNameOff);
@@ -163,10 +203,69 @@ namespace Smash_Forge
             }
         }
 
-        public byte[] Rebuild()
+        public byte[] Rebuild(int pos)
         {
             FileOutput f = new FileOutput();
             f.Endian = Endianness.Big;
+
+            f.writeInt(pos + f.pos() + 0x20);
+            f.writeInt(matHash);
+            f.writeInt(properties.Count);
+            int nameOffset = pos + f.pos() + 0x15 + name.Length;
+            while (nameOffset % 4 != 0)
+                nameOffset++;
+            f.writeInt(nameOffset);
+            f.writeFlag(hasPat);
+            f.writeBytes(new byte[3]);
+            //Write all the mat data into a buffer (g) then write pat offset
+            int pos2 = pos + f.pos() + 4;
+            FileOutput g = new FileOutput();
+            g.Endian = Endianness.Big;
+
+            if (matHash2 != 0)
+            {
+                g.writeInt(pos2 + g.pos() + 0x8);
+                g.writeInt(matHash);
+            }
+            else
+            {
+                g.writeBytes(new byte[8]);
+            }
+
+            g.writeString(name);
+            g.writeByte(0);
+            while ((pos2 + g.pos()) % 0x10 != 0)
+                g.writeByte(0);
+
+            int position = pos2 + g.pos() + properties.Count * 4;
+            while (position % 16 != 0)
+                position++;
+
+            List<byte[]> builtProperties = new List<byte[]>();
+            foreach (MatData prop in properties)
+            {
+                g.writeInt(position);
+                byte[] b = prop.Rebuild(position);
+                builtProperties.Add(b);
+                position += b.Length;
+                while (position % 16 != 0)
+                    position++;
+            }
+
+            while ((pos2 + g.pos()) % 16 != 0)
+                g.writeByte(0);
+
+            foreach (byte[] b in builtProperties)
+            {
+                g.writeBytes(b);
+                while ((pos2 + g.pos()) % 16 != 0)
+                    g.writeByte(0);
+            }
+
+            f.writeInt(pos2 + g.pos());
+            f.writeBytes(g.getBytes());
+            if(hasPat)
+                f.writeBytes(pat0.Rebuild(f.pos()));
 
             return f.getBytes();
         }
@@ -226,14 +325,14 @@ namespace Smash_Forge
             return state;
         }
 
-        public byte[] Rebuild()
+        public byte[] Rebuild(int pos)
         {
             FileOutput f = new FileOutput();
             f.Endian = Endianness.Big;
 
-            f.writeInt(f.pos() + 0x20);
+            f.writeInt(pos + f.pos() + 0x20);
             f.writeInt(unk1);
-            int offset = f.pos() + 0x18;
+            int offset = pos + f.pos() + 0x18;
             offset += name.Length + 1;
             while (offset % 16 != 0)
                 offset++;
@@ -242,13 +341,13 @@ namespace Smash_Forge
             f.writeBytes(new byte[0x14]);
             f.writeString(name);
             f.writeByte(0);
-            while (f.pos() % 16 != 0)
+            while ((pos + f.pos()) % 16 != 0)
                 f.writeByte(0);
             f.writeBytes(new byte[0x10]);
             f.writeInt(frameCount);
             f.writeShort(unk2);
             f.writeShort(frames.Count);
-            f.writeInt(f.pos() + 0x18);
+            f.writeInt(pos + f.pos() + 0x18);
             f.writeBytes(new byte[0x14]);
             foreach(frame keyframe in frames)
             {
@@ -283,7 +382,6 @@ namespace Smash_Forge
 
         public void read(FileData f)
         {
-            //Console.WriteLine("MTA - " + filename);
             f.Endian = Endian;
             if (f.size() < 4)
                 throw new EndOfStreamException("Blank/Broken MTA");
@@ -345,25 +443,25 @@ namespace Smash_Forge
 
             List<byte[]> matEntriesBuilt = new List<byte[]>();
             List<byte[]> visEntriesBuilt = new List<byte[]>();
-            foreach (MatEntry m in matEntries)
-                matEntriesBuilt.Add(m.Rebuild());
-            foreach (VisEntry v in visEntries)
-                visEntriesBuilt.Add(v.Rebuild());
 
             int position = 0x38 + matEntries.Count + visEntries.Count;
             while (position % 0x10 != 0)
                 position++;
 
-            foreach (byte[] b in matEntriesBuilt)
+            foreach (MatEntry m in matEntries)
             {
+                byte[] b = m.Rebuild(position);
+                matEntriesBuilt.Add(b);
                 f.writeInt(position);
                 position += b.Length;
                 while (position % 0x10 != 0)
                     position++;
             }
 
-            foreach (byte[] b in visEntriesBuilt)
+            foreach (VisEntry v in visEntries)
             {
+                byte[] b = v.Rebuild(position);
+                matEntriesBuilt.Add(b);
                 f.writeInt(position);
                 position += b.Length;
                 while (position % 0x10 != 0)
