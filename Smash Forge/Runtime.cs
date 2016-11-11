@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,7 +53,10 @@ namespace Smash_Forge
         }
 
         public static bool killWorkspace { get; set; }
-
+        public static string CanonicalizePath(string input)
+        {
+            return input.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+        }
         // Make sure subscribers unsubscribe or this
         // will prevent garbage collection!
         public static event EventHandler AnimationChanged;

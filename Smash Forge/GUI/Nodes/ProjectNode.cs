@@ -68,14 +68,14 @@ namespace Smash_Forge
     {
         public ProjectFolderNode()
         {
-            this.ImageKey = "Folder";
+            this.ImageIndex = this.SelectedImageIndex = 0;
         }
     }
     public class ProjectFileNode: ProjectExplorerNode
     {
         public ProjectFileNode()
         {
-            this.ImageKey = "File";
+            this.ImageIndex = this.SelectedImageIndex = 1;
         }
     }
 

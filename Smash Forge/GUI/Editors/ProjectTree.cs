@@ -124,22 +124,22 @@ namespace Smash_Forge
             }
         }
 
-        private void openFile(object sender, TreeNodeMouseClickEventArgs e)
+        private void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             foreach (ACMDEditor a in MainForm.Instance.ACMDEditors)
             {
-                if (a.fname.Equals("workspace/animcmd/" + e.Node.Text))
+                if (a.fname.Equals(((FileInfo)e.Node.Tag).FullName))
                 {
                     a.Focus();
                     return;
                 }
             }
 
-            if (e.Node.Level == 1)
+            if (e.Node.Level >= 1)
             {
-                if (e.Node.Parent.Text.Equals("ACMD"))
+                if (e.Node.Text.EndsWith(".acm"))
                 {
-                    ACMDEditor temp = new ACMDEditor("workspace/animcmd/" + e.Node.Text, this);
+                    ACMDEditor temp = new ACMDEditor(((FileInfo)e.Node.Tag).FullName, this);
                     MainForm.Instance.ACMDEditors.Add(temp);
                     MainForm.Instance.AddDockedControl(temp);
                 }

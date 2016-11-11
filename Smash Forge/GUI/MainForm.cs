@@ -790,7 +790,7 @@ namespace Smash_Forge
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     WorkspaceManager m = new WorkspaceManager(project);
-                    m.OpenProject(ofd.FileName);
+                    m.OpenWorkspace(ofd.FileName);
                 }
             }
         }
