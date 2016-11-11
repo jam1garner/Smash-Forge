@@ -71,6 +71,7 @@
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
+            this.glControl1 = new OpenTK.GLControl();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -411,11 +412,21 @@
             this.dockPanel1.Size = new System.Drawing.Size(1217, 741);
             this.dockPanel1.TabIndex = 16;
             // 
+            // glControl1
+            // 
+            this.glControl1.BackColor = System.Drawing.Color.Black;
+            this.glControl1.Location = new System.Drawing.Point(12, 27);
+            this.glControl1.Name = "glControl1";
+            this.glControl1.Size = new System.Drawing.Size(10, 10);
+            this.glControl1.TabIndex = 19;
+            this.glControl1.VSync = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1217, 765);
+            this.Controls.Add(this.glControl1);
             this.Controls.Add(this.dockPanel1);
             this.Controls.Add(this.radioButton2);
             this.Controls.Add(this.radioButton1);
@@ -480,6 +491,7 @@
         private System.Windows.Forms.ToolStripMenuItem respawnToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cameraBoundsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem blastzonesToolStripMenuItem;
+        private OpenTK.GLControl glControl1;
     }
 }
 

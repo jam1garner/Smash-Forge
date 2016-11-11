@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using System.IO;
+using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge
 {
@@ -664,6 +665,37 @@ namespace Smash_Forge
                     }
                 }
             }*/
+        }
+
+        private void glControl1_Click(object sender, EventArgs e)
+        {
+            glControl1.MakeCurrent();
+            GL.ClearColor(Color.Red);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+
+            GL.Enable(EnableCap.Texture2D);
+
+            /*GL.BindTexture(TextureTarget.Texture2D, 20);
+            GL.Begin(PrimitiveType.Quads);
+            GL.TexCoord2(0, 0);
+            GL.Vertex2(-1, -1);
+            GL.TexCoord2(1, 0);
+            GL.Vertex2(1, -1);
+            GL.TexCoord2(1, 1);
+            GL.Vertex2(1, 1);
+            GL.TexCoord2(0, 1);
+            GL.Vertex2(-1, 1);
+            GL.End();*/
+
+            glControl1.SwapBuffers();
+
+            //GL.BindTexture(TextureTarget.Texture2D, i);
+            //GL.Begin(PrimitiveType.Quads);
         }
     }
 }

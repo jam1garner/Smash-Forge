@@ -223,7 +223,7 @@ namespace Smash_Forge
 
                     GL.Uniform4(shader.getAttribute("colorSamplerUV"), colorSamplerUV);
 
-                    GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
+                    /*GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
                         dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
 
                     GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
@@ -240,8 +240,9 @@ namespace Smash_Forge
                         case 6:
                             GL.AlphaFunc(AlphaFunction.Lequal, 255 / 255f);
                             break;
-                    }
+                    }*/
 
+                    GL.Enable(EnableCap.CullFace);
                     GL.CullFace(CullFaceMode.Front);
                     switch (mat.cullMode)
                     {
