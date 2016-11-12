@@ -209,28 +209,28 @@
             // importToolStripMenuItem
             // 
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
             this.importToolStripMenuItem.Text = "Import";
             this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
             // 
             // exportAsDDSToolStripMenuItem
             // 
             this.exportAsDDSToolStripMenuItem.Name = "exportAsDDSToolStripMenuItem";
-            this.exportAsDDSToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportAsDDSToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
             this.exportAsDDSToolStripMenuItem.Text = "Export";
             this.exportAsDDSToolStripMenuItem.Click += new System.EventHandler(this.exportAsDDSToolStripMenuItem_Click);
             // 
             // exportAsDDSToolStripMenuItem1
             // 
             this.exportAsDDSToolStripMenuItem1.Name = "exportAsDDSToolStripMenuItem1";
-            this.exportAsDDSToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.exportAsDDSToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
             this.exportAsDDSToolStripMenuItem1.Text = "Remove";
             this.exportAsDDSToolStripMenuItem1.Click += new System.EventHandler(this.RemoveToolStripMenuItem1_Click_1);
             // 
             // replaceToolStripMenuItem
             // 
             this.replaceToolStripMenuItem.Name = "replaceToolStripMenuItem";
-            this.replaceToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.replaceToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
             this.replaceToolStripMenuItem.Text = "Replace";
             // 
             // NUTEditor
@@ -248,6 +248,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "NUTEditor";
             this.Text = "NUT Editor";
+            this.Resize += new System.EventHandler(this.NUTEditor_Resize);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);

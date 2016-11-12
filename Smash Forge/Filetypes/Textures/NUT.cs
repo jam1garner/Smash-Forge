@@ -354,7 +354,7 @@ namespace Smash_Forge
                     // Maybe this is the problem?
                     int mipSize = imageSize >> (mipLevel * 2);
 
-                    if (mipLevel == 0)
+                    //if (mipLevel == 0)
                     {
                         tex.mipmaps.Add(GTX.swizzleBC(
                             d.getSection(dataOffset, mipSize),
@@ -425,8 +425,26 @@ namespace Smash_Forge
                 || t.type == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
                 || t.type == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext)
             {
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, 
+                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type,
                     t.width, t.height, 0, t.Size, t.mipmaps[0]);
+
+                if (t.mipmaps.Count > 1)
+                {
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 1);
+                    GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+                    GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 1, t.type,
+                        t.width / 2, t.height / 2, 0, t.Size, t.mipmaps[1]);
+
+                    GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 2, t.type,
+                        t.width / 4, t.height / 4, 0, t.Size, t.mipmaps[2]);
+
+                    //GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 3, t.type,
+                    //    t.width / 8, t.height / 8, 0, t.Size, t.mipmaps[3]);
+                } else
+                {
+                    //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                }
 
                 Debug.WriteLine(GL.GetError());
             }
@@ -434,9 +452,10 @@ namespace Smash_Forge
             {
                 GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.width, t.height, 0,
                     t.utype, PixelType.UnsignedByte, t.mipmaps[0]);
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
             }
 
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             return texID;
         }

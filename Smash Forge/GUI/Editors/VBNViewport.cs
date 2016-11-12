@@ -283,8 +283,16 @@ namespace Smash_Forge
                 shader = new Shader();
 
                 {
-                    shader.vertexShader(vs);
-                    shader.fragmentShader(fs);
+                    if (GL.GetInteger(GetPName.MajorVersion) < 3)
+                    {
+                        shader.vertexShader(vs.Replace("#version 330", "#version 150"));
+                        shader.fragmentShader(fs.Replace("#version 330", "#version 150"));
+                    }
+                    else
+                    {
+                        shader.vertexShader(vs);
+                        shader.fragmentShader(fs);
+                    }
 
                     shader.addAttribute("vPosition", false);
                     shader.addAttribute("vColor", false);

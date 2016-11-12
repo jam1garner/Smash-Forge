@@ -169,6 +169,7 @@ namespace Smash_Forge
                 selected.textures.Remove(tex);
                 FillForm();
                 listBox1.SelectedItem = selected;
+                listBox2.SelectedIndex = 0;
             }
         }
 
@@ -217,6 +218,11 @@ namespace Smash_Forge
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void NUTEditor_Resize(object sender, EventArgs e)
+        {
+            RenderTexture();
         }
     }
 }
