@@ -47,6 +47,7 @@
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportAsDDSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportAsDDSToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.replaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -199,7 +200,8 @@
             this.textureToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.importToolStripMenuItem,
             this.exportAsDDSToolStripMenuItem,
-            this.exportAsDDSToolStripMenuItem1});
+            this.exportAsDDSToolStripMenuItem1,
+            this.replaceToolStripMenuItem});
             this.textureToolStripMenuItem.Name = "textureToolStripMenuItem";
             this.textureToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
             this.textureToolStripMenuItem.Text = "Texture";
@@ -225,6 +227,12 @@
             this.exportAsDDSToolStripMenuItem1.Text = "Remove";
             this.exportAsDDSToolStripMenuItem1.Click += new System.EventHandler(this.RemoveToolStripMenuItem1_Click_1);
             // 
+            // replaceToolStripMenuItem
+            // 
+            this.replaceToolStripMenuItem.Name = "replaceToolStripMenuItem";
+            this.replaceToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.replaceToolStripMenuItem.Text = "Replace";
+            // 
             // NUTEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -239,7 +247,7 @@
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "NUTEditor";
-            this.Text = "NUTEditor";
+            this.Text = "NUT Editor";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
@@ -270,5 +278,6 @@
         private System.Windows.Forms.ToolStripMenuItem exportAsDDSToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportAsDDSToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem saveNUTToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem replaceToolStripMenuItem;
     }
 }
