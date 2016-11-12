@@ -84,6 +84,7 @@ namespace Smash_Forge
         public LVDList lvdList = new LVDList() { ShowHint = DockState.DockLeft };
         public LVDEditor lvdEditor = new LVDEditor() { ShowHint = DockState.DockRight };
         public List<PARAMEditor> paramEditors = new List<PARAMEditor>() { };
+        public List<MTAEditor> mtaEditors = new List<MTAEditor>() { };
         public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() { };
         public MeshList meshList = new MeshList() { ShowHint = DockState.DockRight };
         public List<VBNViewport> viewports = new List<VBNViewport>() { new VBNViewport() }; // Default viewport
@@ -537,6 +538,17 @@ namespace Smash_Forge
                     {
                         Runtime.TargetLVD = new LVD(ofd.FileName);
                         lvdList.fillList();
+                    }
+
+                    if (ofd.FileName.EndsWith(".mta"))
+                    {
+                        Runtime.TargetMTA = new MTA();
+                        Runtime.TargetMTA.Read(ofd.FileName);
+                        viewports[0].loadMTA(Runtime.TargetMTA);
+                        MTAEditor temp = new MTAEditor(Runtime.TargetMTA) { ShowHint = DockState.Document };
+                        temp.Text = Path.GetFileName(ofd.FileName);
+                        AddDockedControl(temp);
+                        mtaEditors.Add(temp);
                     }
 
                     if (ofd.FileName.EndsWith(".mtable"))
