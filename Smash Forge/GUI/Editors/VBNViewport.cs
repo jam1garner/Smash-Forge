@@ -34,6 +34,7 @@ namespace Smash_Forge
         ~VBNViewport()
         {
             Runtime.AnimationChanged -= Runtime_AnimationChanged;
+            Application.Idle -= Application_Idle;
         }
 
         public bool _controlLoaded;
@@ -323,6 +324,8 @@ namespace Smash_Forge
         {
             if (!render)
                 return;
+
+            glControl1.MakeCurrent();
 
             //GL.ClearColor(back1);
             // Push all attributes so we don't have to clean up later

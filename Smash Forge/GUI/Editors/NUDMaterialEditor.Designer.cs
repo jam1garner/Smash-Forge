@@ -90,8 +90,7 @@
             this.button4 = new System.Windows.Forms.Button();
             this.comboBox7 = new System.Windows.Forms.ComboBox();
             this.label25 = new System.Windows.Forms.Label();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
+            this.glControl1 = new OpenTK.GLControl();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -124,6 +123,7 @@
             this.listView1.TabIndex = 3;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            this.listView1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listView1_KeyPress);
             // 
             // label3
             // 
@@ -525,6 +525,7 @@
             this.listView2.TabIndex = 12;
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.SelectedIndexChanged += new System.EventHandler(this.listView2_SelectedIndexChanged);
+            this.listView2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listView2_KeyPress);
             // 
             // tableLayoutPanel3
             // 
@@ -542,7 +543,7 @@
             this.tableLayoutPanel3.Controls.Add(this.textBox14, 1, 3);
             this.tableLayoutPanel3.Controls.Add(this.textBox15, 1, 4);
             this.tableLayoutPanel3.Controls.Add(this.textBox11, 2, 0);
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(12, 724);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(9, 700);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 5;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -660,7 +661,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(12, 12);
+            this.button2.Location = new System.Drawing.Point(18, 12);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 16;
@@ -671,7 +672,7 @@
             // comboBox5
             // 
             this.comboBox5.FormattingEnabled = true;
-            this.comboBox5.Location = new System.Drawing.Point(96, 41);
+            this.comboBox5.Location = new System.Drawing.Point(148, 44);
             this.comboBox5.Name = "comboBox5";
             this.comboBox5.Size = new System.Drawing.Size(121, 21);
             this.comboBox5.TabIndex = 17;
@@ -679,7 +680,7 @@
             // label24
             // 
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(12, 44);
+            this.label24.Location = new System.Drawing.Point(63, 47);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(79, 13);
             this.label24.TabIndex = 18;
@@ -708,7 +709,7 @@
             // comboBox7
             // 
             this.comboBox7.FormattingEnabled = true;
-            this.comboBox7.Location = new System.Drawing.Point(83, 697);
+            this.comboBox7.Location = new System.Drawing.Point(148, 673);
             this.comboBox7.Name = "comboBox7";
             this.comboBox7.Size = new System.Drawing.Size(121, 21);
             this.comboBox7.TabIndex = 21;
@@ -717,39 +718,29 @@
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(12, 700);
+            this.label25.Location = new System.Drawing.Point(119, 676);
             this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(65, 13);
+            this.label25.Size = new System.Drawing.Size(23, 13);
             this.label25.TabIndex = 22;
-            this.label25.Text = "Property List";
+            this.label25.Text = "List";
             // 
-            // button5
+            // glControl1
             // 
-            this.button5.Location = new System.Drawing.Point(194, 671);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(75, 23);
-            this.button5.TabIndex = 23;
-            this.button5.Text = "Remove";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
-            // button6
-            // 
-            this.button6.Location = new System.Drawing.Point(9, 451);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(75, 50);
-            this.button6.TabIndex = 24;
-            this.button6.Text = "Remove Texture";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
+            this.glControl1.BackColor = System.Drawing.Color.Black;
+            this.glControl1.Location = new System.Drawing.Point(9, 453);
+            this.glControl1.Name = "glControl1";
+            this.glControl1.Size = new System.Drawing.Size(78, 75);
+            this.glControl1.TabIndex = 23;
+            this.glControl1.VSync = false;
+            this.glControl1.Click += new System.EventHandler(this.glControl1_Click);
             // 
             // NUDMaterialEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(284, 873);
-            this.Controls.Add(this.button6);
+            this.ClientSize = new System.Drawing.Size(284, 858);
+            this.Controls.Add(this.glControl1);
             this.Controls.Add(this.label25);
             this.Controls.Add(this.comboBox7);
             this.Controls.Add(this.button4);
@@ -760,7 +751,6 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label18);
             this.Controls.Add(this.tableLayoutPanel3);
-            this.Controls.Add(this.button5);
             this.Controls.Add(this.listView2);
             this.Controls.Add(this.tableLayoutPanel2);
             this.Controls.Add(this.label9);
@@ -772,6 +762,8 @@
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "NUDMaterialEditor";
             this.Text = "NUDMaterialEditor";
+            this.Load += new System.EventHandler(this.NUDMaterialEditor_Load);
+            this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.NUDMaterialEditor_Scroll);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
@@ -846,7 +838,6 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.ComboBox comboBox7;
         private System.Windows.Forms.Label label25;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button6;
+        private OpenTK.GLControl glControl1;
     }
 }

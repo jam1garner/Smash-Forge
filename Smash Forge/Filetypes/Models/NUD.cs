@@ -223,7 +223,7 @@ namespace Smash_Forge
 
                     GL.Uniform4(shader.getAttribute("colorSamplerUV"), colorSamplerUV);
 
-                    GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
+                    /*GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
                         dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
 
                     GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
@@ -240,8 +240,9 @@ namespace Smash_Forge
                         case 6:
                             GL.AlphaFunc(AlphaFunction.Lequal, 255 / 255f);
                             break;
-                    }
+                    }*/
 
+                    GL.Enable(EnableCap.CullFace);
                     GL.CullFace(CullFaceMode.Front);
                     switch (mat.cullMode)
                     {
@@ -707,7 +708,17 @@ namespace Smash_Forge
                     //d.skip(4 * ((p.UVSize >> 4) - 1));
                 }
 
-                if (weight == 4)
+                if (weight == 1)
+                {
+                    v[i].node.Add(d.readInt());
+                    v[i].node.Add(d.readInt());
+                    v[i].node.Add(d.readInt());
+                    v[i].node.Add(d.readInt());
+                    v[i].weight.Add(d.readFloat());
+                    v[i].weight.Add(d.readFloat());
+                    v[i].weight.Add(d.readFloat());
+                    v[i].weight.Add(d.readFloat());
+                } else if (weight == 4)
                 {
                     v[i].node.Add(d.readByte());
                     v[i].node.Add(d.readByte());
