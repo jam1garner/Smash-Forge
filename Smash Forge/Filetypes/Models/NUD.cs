@@ -708,7 +708,17 @@ namespace Smash_Forge
                     //d.skip(4 * ((p.UVSize >> 4) - 1));
                 }
 
-                if (weight == 4)
+                if (weight == 1)
+                {
+                    v[i].node.Add(d.readInt());
+                    v[i].node.Add(d.readInt());
+                    v[i].node.Add(d.readInt());
+                    v[i].node.Add(d.readInt());
+                    v[i].weight.Add(d.readFloat());
+                    v[i].weight.Add(d.readFloat());
+                    v[i].weight.Add(d.readFloat());
+                    v[i].weight.Add(d.readFloat());
+                } else if (weight == 4)
                 {
                     v[i].node.Add(d.readByte());
                     v[i].node.Add(d.readByte());

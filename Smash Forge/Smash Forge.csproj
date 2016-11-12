@@ -106,6 +106,12 @@
     <Compile Include="GUI\Editors\NUDMaterialEditor.Designer.cs">
       <DependentUpon>NUDMaterialEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\NUTEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\NUTEditor.Designer.cs">
+      <DependentUpon>NUTEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\PARAMEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -185,6 +191,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\NUDMaterialEditor.resx">
       <DependentUpon>NUDMaterialEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\NUTEditor.resx">
+      <DependentUpon>NUTEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\PARAMEditor.resx">
       <DependentUpon>PARAMEditor.cs</DependentUpon>
