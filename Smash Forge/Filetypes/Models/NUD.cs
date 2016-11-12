@@ -1082,6 +1082,29 @@ namespace Smash_Forge
         }
 
 
+        public void MergePoly()
+        {
+            Dictionary<string, Mesh> nmesh = new Dictionary<string, Mesh>();
+            foreach(Mesh m in mesh)
+            {
+                if (nmesh.ContainsKey(m.name))
+                {
+                    // merge poly
+                    nmesh[m.name].polygons.AddRange(m.polygons);
+                } else
+                {
+                    nmesh.Add(m.name, m);
+                }
+            }
+            // consolidate
+            mesh.Clear();
+            foreach (string n in nmesh.Keys)
+            {
+                mesh.Add(nmesh[n]);
+            }
+            PreRender();
+        }
+
         // HELPERS FOR READING
         /*private struct header{
             char[] magic;

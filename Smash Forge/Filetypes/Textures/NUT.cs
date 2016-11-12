@@ -19,6 +19,11 @@ namespace Smash_Forge
             public int height;
             public PixelInternalFormat type;
             public OpenTK.Graphics.OpenGL.PixelFormat utype;
+            
+            public override string ToString()
+            {
+                return id.ToString("x").ToUpper();
+            }
 
             public int Size
             {
@@ -379,6 +384,11 @@ namespace Smash_Forge
             {
                 GL.DeleteTexture(kv.Value);
             }
+        }
+
+        public override string ToString()
+        {
+            return "NUT";
         }
 
         //texture----------------------------------------------------------

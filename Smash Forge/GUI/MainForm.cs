@@ -15,6 +15,9 @@ namespace Smash_Forge
         {
             InitializeComponent();
             Instance = this;
+
+            //NUTEditor e = new NUTEditor();
+            //e.Show();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -391,7 +394,7 @@ namespace Smash_Forge
                     */
                 }
             }
-
+            n.MergePoly();
             n.PreRender();
             meshList.refresh();
 
@@ -505,6 +508,11 @@ namespace Smash_Forge
                 {
                     model.mta = null;
                 }
+            }
+            
+            if(model.nud != null)
+            {
+                model.nud.MergePoly();
             }
 
             Runtime.ModelContainers.Add(model);
