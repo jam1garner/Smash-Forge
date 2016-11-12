@@ -442,6 +442,17 @@ namespace Smash_Forge
                         lvdList.fillList();
                     }
 
+                    if (ofd.FileName.EndsWith(".sarc"))
+                    {
+                        SARC sarc = new SARC(ofd.FileName);
+                        Console.WriteLine(sarc.files.Count);
+                        foreach (string filename in sarc.files.Keys)
+                        {
+                            Console.WriteLine(filename);
+                            File.WriteAllBytes(Path.Combine(Path.GetFullPath("extracted\\"), filename), sarc.files[filename]);
+                        }
+                    }
+
                     if (ofd.FileName.EndsWith(".mtable"))
                     {
                         project.openACMD(ofd.FileName);
