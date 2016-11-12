@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using System.IO;
 using OpenTK.Graphics.OpenGL;
+using System.Timers;
 
 namespace Smash_Forge
 {
@@ -113,12 +114,6 @@ namespace Smash_Forge
             { "NU_materialHash", new string[] { "Hash", "Nothing", "Nothing", "Nothing"} }
         };
 
-
-        List<string> Properties = new List<string>(){
-                    "",
-                    ""
-                };
-
         public NUDMaterialEditor()
         {
             InitializeComponent();
@@ -132,6 +127,23 @@ namespace Smash_Forge
             Init();
             FillForm();
             comboBox1.SelectedIndex = 0;
+        }
+
+        private void NUDMaterialEditor_Load(object sender, EventArgs e)
+        {
+            /*// Create a timer with a two second interval.
+            System.Timers.Timer aTimer = new System.Timers.Timer((1f / 60) * 1000);
+            // Hook up the Elapsed event for the timer. 
+            aTimer.Elapsed += OnTimedEvent;
+            aTimer.AutoReset = true;
+            aTimer.Enabled = true;*/
+        }
+
+
+        private void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            if(glControl1 != null)
+                RenderTexture();
         }
 
         public void Init()
@@ -327,6 +339,7 @@ namespace Smash_Forge
             comboBox11.SelectedItem = minfilter[tex.minFilter];
             comboBox12.SelectedItem = magfilter[tex.magFilter];
             comboBox13.SelectedItem = mip[tex.mipDetail];
+            RenderTexture();
         }
         
         private void textBox10_TextChanged(object sender, EventArgs e)
@@ -545,8 +558,6 @@ namespace Smash_Forge
             }
         }
 
-
-
         private void button3_Click(object sender, EventArgs e)
         {
             if (material[current].textures.Count < 4)
@@ -667,7 +678,7 @@ namespace Smash_Forge
             }*/
         }
 
-        private void glControl1_Click(object sender, EventArgs e)
+        private void RenderTexture()
         {
             glControl1.MakeCurrent();
             GL.ClearColor(Color.Red);
@@ -680,7 +691,20 @@ namespace Smash_Forge
 
             GL.Enable(EnableCap.Texture2D);
 
-            /*GL.BindTexture(TextureTarget.Texture2D, 20);
+            int rt = 0;
+            if (material[current].entries.ContainsKey("NU_materialHash") && listView1.SelectedIndices.Count > 0)
+            {
+                int hash = material[current].textures[listView1.SelectedIndices[0]].hash;
+
+                foreach (NUT n in Runtime.TextureContainers)
+                    if (n.draw.ContainsKey(hash))
+                    {
+                        rt = n.draw[hash];
+                        break;
+                    }
+            }
+
+            GL.BindTexture(TextureTarget.Texture2D, rt);
             GL.Begin(PrimitiveType.Quads);
             GL.TexCoord2(0, 0);
             GL.Vertex2(-1, -1);
@@ -690,12 +714,64 @@ namespace Smash_Forge
             GL.Vertex2(1, 1);
             GL.TexCoord2(0, 1);
             GL.Vertex2(-1, 1);
-            GL.End();*/
+            GL.End();
 
             glControl1.SwapBuffers();
+        }
+
+        private void glControl1_Click(object sender, EventArgs e)
+        {
 
             //GL.BindTexture(TextureTarget.Texture2D, i);
             //GL.Begin(PrimitiveType.Quads);
+        }
+
+        private void button4_Click_1(object sender, EventArgs e)
+        {
+            if (!comboBox7.Text.Equals(""))
+            {
+                if(!material[current].entries.ContainsKey(comboBox7.Text))
+                    material[current].entries.Add(comboBox7.Text, new float[] { 0,0,0,0 });
+                FillForm();
+            }
+        }
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+            if(material[current].textures.Count < 4)
+            {
+                material[current].textures.Add(NUD.Polygon.makeDefault());
+                FillForm();
+            }
+        }
+
+        private void listView1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if(e.KeyChar == 'd' && listView1.SelectedIndices.Count > 0)
+            {
+                if(material[current].textures.Count > 1)
+                {
+                    material[current].textures.RemoveAt(listView1.SelectedIndices[0]);
+                    FillForm();
+                }
+            }
+        }
+
+        private void listView2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 'd' && listView2.SelectedIndices.Count > 0)
+            {
+                if (material[current].textures.Count > 1)
+                {
+                    material[current].entries.Remove(listView2.SelectedItems[0].Text);
+                    FillForm();
+                }
+            }
+        }
+
+        private void NUDMaterialEditor_Scroll(object sender, ScrollEventArgs e)
+        {
+            RenderTexture();
         }
     }
 }

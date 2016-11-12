@@ -123,6 +123,7 @@
             this.listView1.TabIndex = 3;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            this.listView1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listView1_KeyPress);
             // 
             // label3
             // 
@@ -524,6 +525,7 @@
             this.listView2.TabIndex = 12;
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.SelectedIndexChanged += new System.EventHandler(this.listView2_SelectedIndexChanged);
+            this.listView2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listView2_KeyPress);
             // 
             // tableLayoutPanel3
             // 
@@ -636,6 +638,7 @@
             this.textBox11.Name = "textBox11";
             this.textBox11.Size = new System.Drawing.Size(147, 20);
             this.textBox11.TabIndex = 16;
+            this.textBox11.TextChanged += new System.EventHandler(this.textBox11_TextChanged);
             // 
             // label18
             // 
@@ -648,12 +651,13 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(105, 12);
+            this.button1.Location = new System.Drawing.Point(194, 12);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 15;
             this.button1.Text = "Save Preset";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
             // 
@@ -663,11 +667,12 @@
             this.button2.TabIndex = 16;
             this.button2.Text = "Load Preset";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // comboBox5
             // 
             this.comboBox5.FormattingEnabled = true;
-            this.comboBox5.Location = new System.Drawing.Point(96, 41);
+            this.comboBox5.Location = new System.Drawing.Point(148, 44);
             this.comboBox5.Name = "comboBox5";
             this.comboBox5.Size = new System.Drawing.Size(121, 21);
             this.comboBox5.TabIndex = 17;
@@ -675,7 +680,7 @@
             // label24
             // 
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(12, 44);
+            this.label24.Location = new System.Drawing.Point(63, 47);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(79, 13);
             this.label24.TabIndex = 18;
@@ -689,6 +694,7 @@
             this.button3.TabIndex = 19;
             this.button3.Text = "Add Texture";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button4
             // 
@@ -698,6 +704,7 @@
             this.button4.TabIndex = 20;
             this.button4.Text = "Add New";
             this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // comboBox7
             // 
@@ -706,6 +713,7 @@
             this.comboBox7.Name = "comboBox7";
             this.comboBox7.Size = new System.Drawing.Size(121, 21);
             this.comboBox7.TabIndex = 21;
+            this.comboBox7.SelectedIndexChanged += new System.EventHandler(this.comboBox7_SelectedIndexChanged);
             // 
             // label25
             // 
@@ -754,6 +762,8 @@
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "NUDMaterialEditor";
             this.Text = "NUDMaterialEditor";
+            this.Load += new System.EventHandler(this.NUDMaterialEditor_Load);
+            this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.NUDMaterialEditor_Scroll);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
