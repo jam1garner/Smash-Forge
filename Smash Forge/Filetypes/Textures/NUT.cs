@@ -107,6 +107,10 @@ namespace Smash_Forge
 
         public override Endianness Endian { get; set; }
 
+        public NUT()
+        {
+        }
+
         public NUT (string filename)
         {
             Read(filename);

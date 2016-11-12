@@ -26,7 +26,8 @@ namespace Smash_Forge
         private void FillForm()
         {
             listBox1.Items.Clear();
-            foreach(NUT n in Runtime.TextureContainers)
+            listBox2.Items.Clear();
+            foreach (NUT n in Runtime.TextureContainers)
             {
                 listBox1.Items.Add(n);
             }
@@ -58,24 +59,6 @@ namespace Smash_Forge
             foreach (NUT.NUD_Texture tex in n.textures)
             {
                 listBox2.Items.Add(tex);
-            }
-        }
-
-        private void openNUTToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (var ofd = new OpenFileDialog())
-            {
-                ofd.Filter = "Namco Universal Texture (.nut)|*.nut|" +
-                             "All files(*.*)|*.*";
-
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    if (ofd.FileName.EndsWith(".nut"))
-                    {
-                        Runtime.TextureContainers.Add(new NUT(ofd.FileName));
-                        FillForm();
-                    }
-                }
             }
         }
 
@@ -132,6 +115,108 @@ namespace Smash_Forge
             GL.End();
 
             glControl1.SwapBuffers();
+        }
+
+        private void openNUTToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Namco Universal Texture (.nut)|*.nut|" +
+                             "All files(*.*)|*.*";
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    if (ofd.FileName.EndsWith(".nut"))
+                    {
+                        Runtime.TextureContainers.Add(new NUT(ofd.FileName));
+                        FillForm();
+                    }
+                }
+            }
+        }
+
+        private void saveNUTToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Namco Universal Texture (.nut)|*.nut|" +
+                             "All Files (*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    if (sfd.FileName.EndsWith(".nut") && selected != null)
+                    {
+                        selected.Save(sfd.FileName);
+                    }
+                }
+            }
+        }
+
+        private void newNUTToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NUT n = new NUT();
+            Runtime.TextureContainers.Add(n);
+            FillForm();
+        }
+
+        private void RemoveToolStripMenuItem1_Click_1(object sender, EventArgs e)
+        {
+            if (listBox2.SelectedIndex >= 0 && selected != null)
+            {
+                NUT.NUD_Texture tex = ((NUT.NUD_Texture)listBox2.SelectedItem);
+                GL.DeleteTexture(selected.draw[tex.id]);
+                selected.draw.Remove(tex.id);
+                selected.textures.Remove(tex);
+                FillForm();
+                listBox1.SelectedItem = selected;
+            }
+        }
+
+        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Direct Draw Surface (.dds)|*.dds|" +
+                             "All files(*.*)|*.*";
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    if (ofd.FileName.EndsWith(".dds") && selected != null)
+                    {
+                        DDS dds = new DDS(new FileData(ofd.FileName));
+                        NUT.NUD_Texture tex = dds.toNUT_Texture();
+                        tex.id = 0x40FFFF00 | (selected.textures.Count);
+                        selected.textures.Add(tex);
+                        selected.draw.Add(tex.id, NUT.loadImage(tex));
+                        FillForm();
+                        listBox1.SelectedItem = selected;
+                    }
+                }
+            }
+        }
+
+        private void exportAsDDSToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Direct Draw Surface (.dds)|*.dds|" +
+                             "All Files (*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    if (sfd.FileName.EndsWith(".dds") && selected != null)
+                    {
+                        DDS dds = new DDS();
+                        dds.fromNUT_Texture((NUT.NUD_Texture)(listBox2.SelectedItem));
+                        dds.Save(sfd.FileName);
+                    }
+                }
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

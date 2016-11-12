@@ -15,9 +15,6 @@ namespace Smash_Forge
         {
             InitializeComponent();
             Instance = this;
-
-            //NUTEditor e = new NUTEditor();
-            //e.Show();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -1116,6 +1113,12 @@ namespace Smash_Forge
                 Runtime.TargetLVD = new LVD();
             Runtime.TargetLVD.blastzones.Add(new Bounds() { name = "DEATH_00_NEW", subname = "00_NEW" });
             lvdList.fillList();
+        }
+
+        private void openNUTEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NUTEditor ev = new NUTEditor();
+            ev.Show();
         }
     }
 }
