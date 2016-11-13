@@ -45,8 +45,7 @@ namespace Smash_Forge
 			else
 				return ((b[p++] & 0xFF) << 24) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF);
 		}
-
-		public int readThree()
+        public int readThree()
 		{
 			if (Endian == Endianness.Little)
 			{
@@ -225,6 +224,11 @@ namespace Smash_Forge
         public void align(int i){
             while (p % i != 0)
                 p++;
+        }
+
+        public int readOffset()
+        {
+            return p + readInt();
         }
 	}
 }

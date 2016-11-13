@@ -12,6 +12,7 @@ namespace Smash_Forge
 {
     public class BFRES
     {
+        public List<string> stringContainer = new List<string>();
         public List<FMDL_Model> models = new List<FMDL_Model>();
         public Dictionary<string, FTEX> textures = new Dictionary<string, FTEX>();
         public int readOffset(FileData f)
@@ -457,7 +458,7 @@ namespace Smash_Forge
                                         vert.col = new Vector4 { X = f.readByte() , Y = f.readByte(), Z = f.readByte(), W = f.readByte() };
                                     break;
                                 case "_n0":
-                                    if (AttrArr[attr].vertType == 10)
+                                    if (AttrArr[attr].vertType == 0x20b)
                                     {
                                         uint normVal = (uint)f.readInt();
                                         //Thanks RayKoopa!
