@@ -161,6 +161,11 @@ namespace Smash_Forge
                 writeByte(0);
         }
 
+        public int pos()
+        {
+            return data.Count;
+        }
+
 		public void save(String fname)
         {
 			File.WriteAllBytes (fname, data.ToArray());

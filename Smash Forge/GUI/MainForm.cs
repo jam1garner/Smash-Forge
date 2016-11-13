@@ -451,6 +451,7 @@ namespace Smash_Forge
                             Console.WriteLine(filename);
                             File.WriteAllBytes(Path.Combine(Path.GetFullPath("extracted\\"), filename), sarc.files[filename]);
                         }
+                        File.WriteAllBytes(Path.GetFullPath("extracted\\test.sarc"), sarc.Rebuild());
                     }
 
                     if (ofd.FileName.EndsWith(".szs"))
