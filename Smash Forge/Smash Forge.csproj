@@ -66,7 +66,7 @@
     <Compile Include="Filetypes\Packing\PAC.cs" />
     <Compile Include="Filetypes\Animation\PATH.cs" />
     <Compile Include="Filetypes\Packing\SARC.cs" />
-    <Compile Include="Filetypes\Packing\YAZ0.cs" />
+    <Compile Include="Filetypes\Textures\FTEX.cs" />
     <Compile Include="GUI\Editors\ACMDEditor.cs">
       <SubType>Form</SubType>
     </Compile>
