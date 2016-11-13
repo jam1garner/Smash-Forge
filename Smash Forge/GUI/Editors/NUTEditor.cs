@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
@@ -104,13 +105,13 @@ namespace Smash_Forge
 
             GL.BindTexture(TextureTarget.Texture2D, rt);
             GL.Begin(PrimitiveType.Quads);
-            GL.TexCoord2(0, 0);
-            GL.Vertex2(-1, -1);
-            GL.TexCoord2(1, 0);
-            GL.Vertex2(1, -1);
             GL.TexCoord2(1, 1);
-            GL.Vertex2(1, 1);
+            GL.Vertex2(-1, -1);
             GL.TexCoord2(0, 1);
+            GL.Vertex2(1, -1);
+            GL.TexCoord2(0, 0);
+            GL.Vertex2(1, 1);
+            GL.TexCoord2(1, 0);
             GL.Vertex2(-1, 1);
             GL.End();
 
@@ -217,7 +218,28 @@ namespace Smash_Forge
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
+            /*if(listBox2.SelectedItem != null && !textBox1.Text.Equals(""))
+            {
+                int oldid = ((NUT.NUD_Texture)listBox2.SelectedItem).id;
+                int newid = -1;
+                int.TryParse(textBox1.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out newid);
+                if (newid == -1)
+                    textBox1.Text = ((NUT.NUD_Texture)listBox2.SelectedItem).id.ToString("x");
+                if(oldid!=newid)
+                {
+                    if (!selected.draw.ContainsKey(newid))
+                    {
+                        ((NUT.NUD_Texture)listBox2.SelectedItem).id = newid;
 
+                        selected.draw.Add(newid, selected.draw[oldid]);
+                        selected.draw.Remove(oldid);
+                    }
+                    else
+                    {
+                        textBox1.Text = (newid + 1).ToString("x") + "";
+                    }
+                }
+            }*/
         }
 
         private void NUTEditor_Resize(object sender, EventArgs e)
