@@ -171,27 +171,127 @@ namespace Smash_Forge
             }
         }
         public class FMATH
-        {
-            public string name;
-            public int matOff;
-            public int u1;
-            public int sectIndx;
-            public int rendParamCount;
-            public int texSelCount;
-            public int texAttSelCount;
-            public int matParamCount;
-            public int matParamSize;
-            public int u2;
-            public int rendParamIndx;
-            public int unkMatOff;
-            public int shadeOff;
-            public int texSelOff;
-            public int texAttSelOff;
-            public int texAttIndxOff;
-            public int matParamArrOff;
-            public int matParamIndxOff;
-            public int matParamOff;
-            public int shadParamIndxOff;
+            {
+            public Header HDR = new Header();
+            public class Header {
+                public int magic = 0x464D4154;
+                public string name;
+                public int matOff;
+                public int u1;
+                public int sectIndx;
+                public int rendParamCount;
+                public int texSelCount;
+                public int texAttSelCount;
+                public int matParamCount;
+                public int matParamSize;
+                public int u2;
+                public int rendParamIndx;
+                public int unkMatOff;
+                public int shadeOff;
+                public int texSelOff;
+                public int texAttSelOff;
+                public int texAttIndxOff;
+                public int matParamArrOff;
+                public int matParamIndxOff;
+                public int matParamOff;
+                public int shadParamIndxOff;
+                public int u3;
+                public void Read(FileData f)
+                {
+                    magic = f.readInt();
+                    name = f.readString(f.readOffset(), -1);
+                    matOff = f.readOffset();
+                    u1 = f.readInt();
+                    sectIndx = f.readShort();
+                    rendParamCount = f.readShort();
+                    texSelCount = f.readByte();
+                    texAttSelCount = f.readByte();
+                    matParamCount = f.readShort();
+                    matParamSize = f.readInt();
+                    u2 = f.readInt();
+                    rendParamIndx = f.readOffset();
+                    unkMatOff = f.readOffset();
+                    shadeOff = f.readOffset();
+                    texSelOff = f.readOffset();
+                    texAttSelOff = f.readOffset();
+                    matParamArrOff = f.readOffset();
+                    matParamIndxOff = f.readOffset();
+                    matParamOff = f.readOffset();
+                    shadParamIndxOff = f.readOffset();
+                    u3 = f.readInt();
+                }
+             }
+            public class RenderParam
+            {
+                public int u1;
+                public int type;
+                public int u2;
+                public string name,renderName;
+                public Vector2 values;
+                public void Read(FileData f)
+                {
+                    u1 = f.readShort();
+                    type = f.readByte();
+                    u2 = f.readByte();
+                    name = f.readString(f.readOffset(), -1);
+                    if (type != 2)
+                        values = new Vector2(f.readFloat(), f.readFloat());
+                    else
+                        renderName = f.readString(f.readOffset(), -1);
+                }
+            }
+            public class Textures
+            {
+                public string texture;
+                public int FTEXOffset;
+                public void Read(FileData f)
+                {
+                    texture = f.readString(f.readOffset(), -1);
+                    FTEXOffset = f.readOffset();
+                }
+            }
+            public class TextureAttributes
+            {
+                public int u1;
+                public int u2;
+                public int u3;
+                public int u4;
+                public int u5;
+                public int u6;
+                public int u7;
+                public int u8;
+                public int u9;
+                public string name;
+                public int index;
+                public void Read(FileData f)
+                {
+                    u1 = f.readByte();
+                    u2 = f.readByte();
+                    u3 = f.readByte();
+                    u4 = f.readByte();
+                    u5 = f.readByte();
+                    u6 = f.readByte();
+                    u7 = f.readShort();
+                    u8 = f.readInt();
+                    u9 = f.readInt();
+                    name = f.readString(f.readOffset(), -1);
+                    index = f.readByte();
+                    f.skip(3);
+                }
+            }
+            public class MateralParam
+            {
+                public int type;
+                public int size;
+                public int offset;
+                public int blank;
+                public int u1;
+                public int paramIndex;
+                public int paramIndexAgain;
+                public string name;
+                public Vector4d values;
+
+            }
         }
         public class FSKL
         {
