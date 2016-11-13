@@ -453,6 +453,11 @@ namespace Smash_Forge
                         }
                     }
 
+                    if (ofd.FileName.EndsWith(".szs"))
+                    {
+                        File.WriteAllBytes(Path.GetFullPath("extracted\\test.szs"),YAZ0.Decompress(File.ReadAllBytes(ofd.FileName)));
+                    }
+
                     if (ofd.FileName.EndsWith(".mtable"))
                     {
                         project.openACMD(ofd.FileName);
