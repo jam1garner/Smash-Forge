@@ -64,6 +64,7 @@
     <Compile Include="Filetypes\Models\BCH.cs" />
     <Compile Include="Filetypes\Models\BFRES.cs" />
     <Compile Include="Filetypes\Models\FMDL.cs" />
+    <Compile Include="Filetypes\Models\KCL.cs" />
     <Compile Include="Filetypes\Packing\PAC.cs" />
     <Compile Include="Filetypes\Animation\PATH.cs" />
     <Compile Include="Filetypes\Packing\SARC.cs" />
