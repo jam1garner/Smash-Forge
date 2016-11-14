@@ -289,8 +289,82 @@ namespace Smash_Forge
                 public int paramIndex;
                 public int paramIndexAgain;
                 public string name;
-                public Vector4d values;
+                public Vector4 values0,values1;
+                public void Read(FileData f)
+                {
+                    int start = f.pos();
+                    type = f.readByte();
+                    size = f.readByte();
+                    offset = f.readShort() + start;
+                    blank = f.readInt();
+                    u1 = f.readInt();
+                    paramIndex = f.readShort();
+                    paramIndexAgain = f.readShort();
+                    name = f.readString(f.readOffset(), -1);
+                    f.seek(offset);
+                    switch (type)
+                    {
+                        case 0x4:
+                            values0 = new Vector4(f.readInt(), 0, 0, 0);
+                            break;
+                        case 0xc:
+                            values0 = new Vector4(f.readFloat(), 0, 0, 0);
+                            break;
+                        case 0xd:
+                            values0 = new Vector4(f.readFloat(), f.readFloat(), 0, 0);
+                            break;
+                        case 0xe:
+                            values0 = new Vector4(f.readFloat(), f.readFloat(), f.readFloat(), 0);
+                            break;
+                        case 0xf:
+                            values0 = new Vector4(f.readFloat(), f.readFloat(), f.readFloat(), f.readFloat());
+                            break;
+                        case 0x1e:
+                            values0 = new Vector4(f.readFloat(), f.readFloat(), f.readFloat(), 0);
+                            values1 = new Vector4(f.readFloat(), f.readFloat(), f.readFloat(), 0);
+                            break;
+                    }
+                }
 
+            }
+            public class Unknown
+            {
+                public byte[] data;
+                public void Read(FileData f)
+                {
+                    f.getSection(f.pos(), 0x30);
+                }
+            }
+            public class Shader
+            {
+                public string name0, name1;
+                public int u1, vertSCount, pixelSCount, ParamCount, vertOffset, pixelOffset, ParamOffset;
+                public class Param
+                {
+                    public string name;
+                    public int u1, u2, u3, value;
+                    public void Read(FileData f)
+                    {
+                        name = f.readString(f.readOffset(), -1);
+                        u1 = f.readShort();
+                        u2 = f.readByte();
+                        u3 = f.readByte();
+                        value = f.readInt();
+                    }
+                }
+                public void Read(FileData f)
+                {
+                    name0 = f.readString(f.readOffset(), -1);
+                    name1 = f.readString(f.readOffset(), -1);
+                    u1 = f.readInt();
+                    vertSCount = f.readByte();
+                    pixelOffset = f.readByte();
+                    ParamCount = f.readShort();
+                    vertOffset = f.readOffset();
+                    pixelOffset = f.readOffset();
+                    ParamOffset = f.readOffset();
+
+                }
             }
         }
         public class FSKL
