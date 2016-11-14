@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge
 {
@@ -14,26 +16,26 @@ namespace Smash_Forge
 			DXT1
 		}
 
-		public struct Header
+		public class Header
 		{
 			public char[] magic;
-			public int size;
-			public int flags;
+			public int size = 0x7C;
+			public int flags = 0x000A1007;
 			public int height;
 			public int width;
-			public int pitchOrLinear;
-			public int depth;
+			public int pitchOrLinear = 0x00020000;
+			public int depth = 1;
 			public int mipmapCount;
 			public int[] reserved;
-			public int dwSize;
-			public int dwFlags;
+			public int dwSize = 0x20;
+			public int dwFlags = 0x04;
 			public int dwFourCC;
-			public int dwBitmask;
-			public int dwCaps;
-			public int dwCaps2;
-			public int dwCaps3;
-			public int dwCaps4;
-			public int reserve;
+			public int dwBitmask = 0;
+			public int dwCaps = 0;
+			public int dwCaps2 = 0;
+			public int dwCaps3 = 0;
+			public int dwCaps4 = 0;
+			public int reserve = 0;
 		}
 
 		Header header;
@@ -44,7 +46,8 @@ namespace Smash_Forge
 			d.Endian = System.IO.Endianness.Little;
 			d.seek (0);
 
-			header.magic = new char[4];
+            header = new Header();
+            header.magic = new char[4];
 			header.magic [0] = (char)d.readByte ();
 			header.magic [1] = (char)d.readByte ();
 			header.magic [2] = (char)d.readByte ();
@@ -74,7 +77,127 @@ namespace Smash_Forge
 			data = new byte[d.size() - d.pos()];
 			for (int i = 0; i < data.Length; i++)
 				data [i] = (byte)d.readByte ();
-		}
+        }
+
+        public DDS()
+        {
+            header = new Header();
+        }
+
+        public void Save(string fname)
+        {
+            FileOutput f = new FileOutput();
+            f.Endian = System.IO.Endianness.Little;
+            f.writeString("DDS ");
+            f.writeInt(header.size);
+            f.writeInt(header.flags);
+            f.writeInt(header.height);
+            f.writeInt(header.width);
+            f.writeInt(header.pitchOrLinear);
+            f.writeInt(header.depth);
+            f.writeInt(header.mipmapCount);
+            for (int i = 0; i < 11; i++)
+                f.writeInt(0);
+            f.writeInt(header.dwSize);
+            f.writeInt(header.dwFlags);
+            f.writeInt(header.dwFourCC);
+            f.writeInt(header.dwBitmask);
+            f.writeInt(header.dwCaps);
+            f.writeInt(header.dwCaps2);
+            f.writeInt(header.dwCaps3);
+            f.writeInt(header.dwCaps4);
+            f.writeInt(header.reserve);
+
+            for (int i = 0; i < 4; i++)
+                f.writeInt(0);
+
+            f.writeBytes(data);
+
+            f.save(fname);
+        }
+
+        public void fromNUT_Texture(NUT.NUD_Texture tex)
+        {
+            header = new Header();
+            header.width = tex.width;
+            header.height = tex.height;
+            header.mipmapCount = tex.mipmaps.Count;
+            switch (tex.type)
+            {
+                case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
+                    header.dwFourCC = 0x31545844;
+                    break;
+                case PixelInternalFormat.CompressedRgbaS3tcDxt3Ext:
+                    header.dwFourCC = 0x33545844;
+                    break;
+                case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
+                    header.dwFourCC = 0x35545844;
+                    break;
+                case PixelInternalFormat.Rgba:
+                    if (tex.utype == OpenTK.Graphics.OpenGL.PixelFormat.Rgba)
+                        header.dwFourCC = 0x0;
+                    else
+                        header.dwFourCC = 0x0;
+                    break;
+                /*case PixelInternalFormat.CompressedRedRgtc1:
+                    break;
+                case PixelInternalFormat.CompressedRgRgtc2:
+                    break;*/
+                default:
+                    throw new NotImplementedException($"Unknown pixel format 0x{tex.type:X}");
+            }
+            List<byte> d = new List<byte>();
+            foreach(byte[] b in tex.mipmaps)
+            {
+                d.AddRange(b);
+            }
+            data = d.ToArray();
+        }
+
+        public NUT.NUD_Texture toNUT_Texture()
+        {
+            NUT.NUD_Texture tex = new NUT.NUD_Texture();
+            tex.id = 0x48415348;
+            tex.height = header.height;
+            tex.width = header.width;
+            float size = 1;
+            int mips = 4;
+            if (mips > header.mipmapCount)
+            {
+                mips = header.mipmapCount;
+                throw new Exception("No mipmaps");
+            }
+
+            switch (header.dwFourCC)
+            {
+                case 0x0:
+                    tex.type = PixelInternalFormat.Rgba;
+                    tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    break;
+                case 0x31545844:
+                    size = 1/2f;
+                    tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                    break;
+                case 0x35545844:
+                    size = 1f;
+                    tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    break;
+            }
+
+            // now for mipmap data...
+            FileData d = new FileData(data);
+            int off = 0, w = header.width, h = header.height;
+            for(int i = 0; i < 4; i++)
+            {
+                int s = (int)((w*h) * size);
+                w /= 2;
+                h /= 2;
+                tex.mipmaps.Add(d.getSection(off, s));
+                off += s;
+            }
+
+            return tex;
+        }
 
 		public Bitmap toBitmap(){
 
@@ -88,7 +211,7 @@ namespace Smash_Forge
 			else
 				Console.WriteLine ("Unknown DDS format " + header.dwFourCC);
 
-			Bitmap bmp = new Bitmap(header.width, header.height, PixelFormat.Format32bppArgb);  
+			Bitmap bmp = new Bitmap(header.width, header.height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);  
 
 			BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
 
@@ -109,7 +232,7 @@ namespace Smash_Forge
 			if(format == DDSFormat.DXT5)
 				decodeDXT5 (pixels, d, width, height);
 
-			Bitmap bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);  
+			Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);  
 
 			BitmapData bmpData = bmp.LockBits(
 				new Rectangle(0, 0, bmp.Width, bmp.Height),   

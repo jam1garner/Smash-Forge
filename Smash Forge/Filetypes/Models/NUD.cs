@@ -52,7 +52,7 @@ namespace Smash_Forge
 
         public override Endianness Endian { get; set; }
 
-
+        #region Rendering
         public void Destroy()
         {
             GL.DeleteBuffer(vbo_position);
@@ -287,7 +287,9 @@ namespace Smash_Forge
                     { 0x02, TextureWrapMode.MirroredRepeat},
                     { 0x03, TextureWrapMode.Clamp}
                 };
+        #endregion
 
+        #region MTA
         public void clearMTA()
         {
             foreach (Mesh me in mesh)
@@ -373,15 +375,43 @@ namespace Smash_Forge
             }
 
         }
+        #endregion
 
-
-
+        #region Reading
         //------------------------------------------------------------------------------------------------------------------------
         /*
          * Reads the contents of the nud file into this class
          * Not all info will be saved, so the file will be different on export
          */
         //------------------------------------------------------------------------------------------------------------------------
+        // HELPERS FOR READING
+        private struct _s_Object
+        {
+            public int id;
+            //public int polynamestart;
+            public int singlebind;
+            public int polyamt;
+            public int positionb;
+            public string name;
+        }
+
+        public struct _s_Poly
+        {
+            public int polyStart;
+            public int vertStart;
+            public int verAddStart;
+            public int vertamt;
+            public int vertSize;
+            public int UVSize;
+            public int polyamt;
+            public int polsize;
+            public int polflag;
+            public int texprop1;
+            public int texprop2;
+            public int texprop3;
+            public int texprop4;
+        }
+
         public override void Read(string filename)
         {
             FileData d = new FileData(filename);
@@ -739,8 +769,9 @@ namespace Smash_Forge
             foreach (Vertex vi in v)
                 m.vertices.Add(vi);
         }
+        #endregion
 
-        //Creating---------------------------------------------------------
+        #region Building
         public override byte[] Rebuild()
         {
             FileOutput d = new FileOutput(); // data
@@ -1081,41 +1112,34 @@ namespace Smash_Forge
             return offs;
         }
 
-
-        // HELPERS FOR READING
-        /*private struct header{
-            char[] magic;
-            public int fileSize;
-            public short unknown;
-            public int polySetCount;
-        }*/
-        private struct _s_Object
+        #endregion
+        
+        #region Functions
+        public void MergePoly()
         {
-            public int id;
-            //public int polynamestart;
-            public int singlebind;
-            public int polyamt;
-            public int positionb;
-            public string name;
+            Dictionary<string, Mesh> nmesh = new Dictionary<string, Mesh>();
+            foreach(Mesh m in mesh)
+            {
+                if (nmesh.ContainsKey(m.name))
+                {
+                    // merge poly
+                    nmesh[m.name].polygons.AddRange(m.polygons);
+                } else
+                {
+                    nmesh.Add(m.name, m);
+                }
+            }
+            // consolidate
+            mesh.Clear();
+            foreach (string n in nmesh.Keys)
+            {
+                mesh.Add(nmesh[n]);
+            }
+            PreRender();
         }
+        #endregion
 
-        public struct _s_Poly
-        {
-            public int polyStart;
-            public int vertStart;
-            public int verAddStart;
-            public int vertamt;
-            public int vertSize;
-            public int UVSize;
-            public int polyamt;
-            public int polsize;
-            public int polflag;
-            public int texprop1;
-            public int texprop2;
-            public int texprop3;
-            public int texprop4;
-        }
-
+        #region ClassStructure
         public class Vertex
         {
             public Vector3 pos = new Vector3(0, 0, 0), nrm = new Vector3(0, 0, 0);
@@ -1307,6 +1331,8 @@ namespace Smash_Forge
                 polygons[0].AddVertex(v);
             }
         }
+
+        #endregion
 
         #region Converters
 
