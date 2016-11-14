@@ -516,12 +516,14 @@ namespace Smash_Forge
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable|" +
+                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae|" +
                              "Smash 4 Boneset (.vbn)|*.vbn|" +
                              "Namco Model (.nud)|*.nud|" +
                              "Smash 4 Level Data (.lvd)|*.lvd|" +
                              "NW4R Model (.mdl0)|*.mdl0|" +
                              "Source Model (.SMD)|*.smd|" +
+                             "Smash 4 Parameters (.bin)|*.bin|"+
+                             "Collada Model Format (.dae)|*.dae|"+
                              "All files(*.*)|*.*";
 
                 // "Namco Universal Data Folder (.NUD)|*.nud|" +
