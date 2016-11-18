@@ -455,7 +455,7 @@ namespace Smash_Forge
                                     if (AttrArr[attr].vertType == 2067)
                                         vert.col = new Vector4 { X = f.readFloat(), Y = f.readFloat(), Z = f.readFloat(), W = f.readFloat() };
                                     if (AttrArr[attr].vertType == 10)
-                                        vert.col = new Vector4 { X = f.readByte() , Y = f.readByte(), Z = f.readByte(), W = f.readByte() };
+                                        vert.col = new Vector4 { X = f.readByte()/127 , Y = f.readByte() / 127, Z = f.readByte() / 127, W = f.readByte() / 127 };
                                     break;
                                 case "_n0":
                                     if (AttrArr[attr].vertType == 0x20b)
