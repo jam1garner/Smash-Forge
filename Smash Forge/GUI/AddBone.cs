@@ -32,7 +32,10 @@ namespace Smash_Forge
 
 			if(!textBox3.Text.Equals(""))
 				temp.boneType = Convert.ToUInt32(textBox3.Text);
-			
+
+            if (Runtime.TargetVBN == null)
+                Runtime.TargetVBN = new VBN();
+
             if (Runtime.TargetVBN.bones.Count > 0)
                 temp.parentIndex = 0;
             else

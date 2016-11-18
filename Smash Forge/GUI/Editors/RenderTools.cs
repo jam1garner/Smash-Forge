@@ -229,26 +229,35 @@ namespace Smash_Forge
             GL.Vertex3(center.X - size, center.Y + size, center.Z + size);
             GL.Vertex3(center.X + size, center.Y + size, center.Z + size);
 
+            GL.Begin(PrimitiveType.LineLoop);
             GL.Vertex3(center.X + size, center.Y - size, center.Z + size);
             GL.Vertex3(center.X - size, center.Y - size, center.Z + size);
             GL.Vertex3(center.X - size, center.Y - size, center.Z - size);
             GL.Vertex3(center.X + size, center.Y - size, center.Z - size);
+            GL.End();
 
+            GL.Begin(PrimitiveType.LineLoop);
             GL.Vertex3(center.X + size, center.Y + size, center.Z + size);
             GL.Vertex3(center.X - size, center.Y + size, center.Z + size);
             GL.Vertex3(center.X - size, center.Y - size, center.Z + size);
             GL.Vertex3(center.X + size, center.Y - size, center.Z + size);
+            GL.End();
 
+            GL.Begin(PrimitiveType.LineLoop);
             GL.Vertex3(center.X + size, center.Y - size, center.Z - size);
             GL.Vertex3(center.X - size, center.Y - size, center.Z - size);
             GL.Vertex3(center.X - size, center.Y + size, center.Z - size);
             GL.Vertex3(center.X + size, center.Y + size, center.Z - size);
+            GL.End();
 
+            GL.Begin(PrimitiveType.LineLoop);
             GL.Vertex3(center.X - size, center.Y + size, center.Z + size);
             GL.Vertex3(center.X - size, center.Y + size, center.Z - size);
             GL.Vertex3(center.X - size, center.Y - size, center.Z - size);
             GL.Vertex3(center.X - size, center.Y - size, center.Z + size);
+            GL.End();
 
+            GL.Begin(PrimitiveType.LineLoop);
             GL.Vertex3(center.X + size, center.Y + size, center.Z - size);
             GL.Vertex3(center.X + size, center.Y + size, center.Z + size);
             GL.Vertex3(center.X + size, center.Y - size, center.Z + size);

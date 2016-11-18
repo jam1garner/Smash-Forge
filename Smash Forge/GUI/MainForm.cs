@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using System.Security.Cryptography;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Smash_Forge
@@ -25,6 +26,7 @@ namespace Smash_Forge
             animationsWindowToolStripMenuItem.Checked =
             boneTreeToolStripMenuItem.Checked = true;
 
+            AddDockedControl(meshList);
             AddDockedControl(leftPanel);
             AddDockedControl(rightPanel);
             AddDockedControl(lvdEditor);
@@ -83,6 +85,7 @@ namespace Smash_Forge
         public LVDList lvdList = new LVDList() { ShowHint = DockState.DockLeft };
         public LVDEditor lvdEditor = new LVDEditor() { ShowHint = DockState.DockRight };
         public List<PARAMEditor> paramEditors = new List<PARAMEditor>() { };
+        public List<MTAEditor> mtaEditors = new List<MTAEditor>() { };
         public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() { };
         public MeshList meshList = new MeshList() { ShowHint = DockState.DockRight };
         public List<VBNViewport> viewports = new List<VBNViewport>() { new VBNViewport() }; // Default viewport
@@ -163,6 +166,7 @@ namespace Smash_Forge
                         n_mesh.name = geom.name;
 
                         Dictionary<string, double[]> sources = new Dictionary<string, double[]>();
+                        Dictionary<string, string> vertex = new Dictionary<string, string>();
                         Dictionary<string, string> semantic = new Dictionary<string, string>();
 
                         // Dump source[] for geom
@@ -177,7 +181,7 @@ namespace Smash_Forge
                             var inputs = mesh.vertices.input;
                             foreach (var input in inputs)
                             {
-                                semantic.Add(input.semantic, input.source);
+                                vertex.Add(input.semantic, input.source);
                             }
                         }
                         // Dump Items[] for geom
@@ -188,27 +192,30 @@ namespace Smash_Forge
                                 var vertices = meshItem as vertices;
                                 var inputs = vertices.input;
                                 foreach (var input in inputs)
-                                    semantic.Add(input.semantic, input.source);                             
+                                    vertex.Add(input.semantic, input.source);                             
                             }
                             else if (meshItem is triangles)
                             {
                                 var triangles = meshItem as triangles;
                                 var inputs = triangles.input;
 
+                                foreach (var input in inputs)
+                                    semantic.Add(input.semantic, input.source);
+
                                 NUD.Polygon poly = new NUD.Polygon();
                                 poly.setDefaultMaterial();
                                 n_mesh.polygons.Add(poly);
-                                string[] ps = triangles.p.Split(' ');
-                                int vCount = 0;
-                                for (int i = 0; i < ps.Length; i++)
+                                string[] ps = triangles.p.StartsWith(" ") ? triangles.p.Substring(1).Split(' ') : triangles.p.Split(' ');
+                                for (int i = 0; i < ps.Length;)
                                 {
+                                    //poly.faces.Add(int.Parse(ps[i]));
+                                    int p = int.Parse(ps[i]);
+                                    /*}
                                     poly.faces.Add(int.Parse(ps[i]));
-                                    if (int.Parse(ps[i]) > vCount)
-                                        vCount = int.Parse(ps[i]);
-                                }
-
-                                for (int i = 0; i < vCount + 1; i++)
-                                {
+                                        if (int.Parse(ps[i]) > vCount)
+                                            vCount = int.Parse(ps[i]);
+                                    for (int i = 0; i < vCount + 1; i++)
+                                    {*/
                                     NUD.Vertex v = new NUD.Vertex();
 
                                     // iterate semantics
@@ -221,28 +228,69 @@ namespace Smash_Forge
                                         sources.TryGetValue(src, out bank);
                                         switch (s)
                                         {
+                                            case "VERTEX":
+                                                {
+                                                    poly.faces.Add(p);
+                                                    //poly.AddVertex(v);
+                                                    while (poly.vertices.Count <= p)
+                                                        poly.AddVertex(new NUD.Vertex());
+                                                    poly.vertices[p] = v;
+                                                    foreach (string s2 in vertex.Keys)
+                                                    {
+                                                        string vsrc;
+                                                        vertex.TryGetValue(s2, out vsrc);
+                                                        vsrc = vsrc.Replace("#", "");
+                                                        //Console.WriteLine(vsrc);
+                                                        sources.TryGetValue(vsrc, out bank);
+                                                        switch (s2)
+                                                        {
+                                                            case "POSITION":
+                                                                v.pos.X = (float)bank[p * 3 + 0];
+                                                                v.pos.Y = (float)bank[p * 3 + 1];
+                                                                v.pos.Z = (float)bank[p * 3 + 2];
+                                                                break;
+                                                            case "NORMAL":
+                                                                v.nrm.X = (float)bank[p * 3 + 0];
+                                                                v.nrm.Y = (float)bank[p * 3 + 1];
+                                                                v.nrm.Z = (float)bank[p * 3 + 2];
+                                                                break;
+                                                            case "COLOR":
+                                                                v.col.X = (float)bank[p * 4 + 0] * 255;
+                                                                v.col.Y = (float)bank[p * 4 + 1] * 255;
+                                                                v.col.Z = (float)bank[p * 4 + 2] * 255;
+                                                                v.col.W = (float)bank[p * 4 + 3] * 127;
+                                                                break;
+                                                            case "TEXCOORD":
+                                                                v.tx.Add(new OpenTK.Vector2((float)bank[p * 2 + 0], (float)bank[p * 2 + 1]));
+                                                                break;
+                                                        }
+                                                    }
+                                                    break;
+                                                }
                                             case "POSITION":
-                                                v.pos.X = (float)bank[i * 3 + 0];
-                                                v.pos.Y = (float)bank[i * 3 + 1];
-                                                v.pos.Z = (float)bank[i * 3 + 2];
+                                                v.pos.X = (float)bank[p * 3 + 0];
+                                                v.pos.Y = (float)bank[p * 3 + 1];
+                                                v.pos.Z = (float)bank[p * 3 + 2];
                                                 break;
                                             case "NORMAL":
-                                                v.nrm.X = (float)bank[i * 3 + 0];
-                                                v.nrm.Y = (float)bank[i * 3 + 1];
-                                                v.nrm.Z = (float)bank[i * 3 + 2];
+                                                v.nrm.X = (float)bank[p * 3 + 0];
+                                                v.nrm.Y = (float)bank[p * 3 + 1];
+                                                v.nrm.Z = (float)bank[p * 3 + 2];
                                                 break;
                                             case "COLOR":
-                                                v.col.X = (float)bank[i * 4 + 0] * 255;
-                                                v.col.Y = (float)bank[i * 4 + 1] * 255;
-                                                v.col.Z = (float)bank[i * 4 + 2] * 255;
-                                                v.col.W = (float)bank[i * 4 + 3] * 127;
+                                                v.col.X = (float)bank[p * 4 + 0] * 255;
+                                                v.col.Y = (float)bank[p * 4 + 1] * 255;
+                                                v.col.Z = (float)bank[p * 4 + 2] * 255;
+                                                v.col.W = (float)bank[p * 4 + 3] * 127;
                                                 break;
                                             case "TEXCOORD":
-                                                v.tx.Add(new OpenTK.Vector2((float)bank[i * 2 + 0], (float)bank[i * 2 + 1]));
+                                                v.tx.Add(new OpenTK.Vector2((float)bank[p * 2 + 0], (float)bank[p * 2 + 1]));
                                                 break;
                                         }
+                                        i++;
+                                        if (i >= ps.Length) break;
+                                        p = int.Parse(ps[i]);
                                     }
-                                    poly.AddVertex(v);
                                 }
                             }
                         }
@@ -306,18 +354,21 @@ namespace Smash_Forge
                                     {
                                         case "JOINT":
                                             // find joint name in vbn
-                                            int ind = int.Parse(vi[pos++]);
-                                            //Console.WriteLine(boneNames[ind].Substring(5));
-                                            //Console.WriteLine(boneNames[ind].Substring(5));
-                                            vert.node.Add(vbn.boneIndex(boneNames[ind].Substring(6)));
+                                            int ind = int.Parse(vi[pos]);
+                                            int index = vbn.boneIndex(boneNames[ind]);
+                                            vert.node.Add(index==-1?0:index);
                                             break;
                                         case "WEIGHT":
                                             // find weight int weight list
                                             double[] weight;
                                             sources.TryGetValue(sem.source.Replace("#", ""), out weight);
-                                            vert.weight.Add((float)weight[int.Parse(vi[pos++])]);
+                                            float w = (int)Math.Round(weight[int.Parse(vi[pos])] * 0xFF);
+                                            w /= 0xFF;
+                                            //Console.WriteLine(w + " " + weight[int.Parse(vi[pos])]);
+                                            vert.weight.Add((float)weight[int.Parse(vi[pos])]);
                                             break;
                                     }
+                                    pos++;
                                 }
 
                         }
@@ -326,9 +377,58 @@ namespace Smash_Forge
                 }
             }
 
+            foreach (NUD.Mesh mesh in n.mesh)
+            {
+                foreach (NUD.Polygon poly in mesh.polygons)
+                {
+                    poly.vertSize = 0x16;
+                    /*foreach (NUD.Vertex v in poly.vertices)
+                    {
+                        float c = 0;
+                        foreach (float f in v.weight)
+                            c += f;
+                        if (c != 1 && (c < 0.9 || c > 1.1))
+                        Console.WriteLine(c);
+                    }
+                    */
+                }
+            }
+            n.MergePoly();
             n.PreRender();
             meshList.refresh();
+
+            /*NUD m1 = n;
+            NUD m2 = new NUD("C:\\s\\Smash\\extract\\data\\fighter\\captain\\model\\body\\c00\\test.nud");
+
+
+            int mi = 0, p2 = 0, vi2 = 0;
+            foreach (NUD.Mesh mesh in m1.mesh)
+            {
+                p2 = 0;
+                foreach (NUD.Polygon poly in mesh.polygons)
+                {
+                    Console.WriteLine(poly.vertices.Count + " " + m2.mesh[mi].polygons[p2].vertices.Count);
+                    vi2 = 0;
+                    foreach (NUD.Vertex v in poly.vertices)
+                    {
+                        //if (!v.weight.Equals(m2.mesh[mi].polygons[p2].vertices[vi2].weight))
+                        if (v.node[0] != m2.mesh[mi].polygons[p2].vertices[vi2].node[0])
+                            Console.WriteLine(v.node[0] + " " + m2.mesh[mi].polygons[p2].vertices[vi2].node[0]);
+                        //if (v.weight[0]!=m2.mesh[mi].polygons[p2].vertices[vi2].weight[0])
+                        //        Console.WriteLine(v.weight[0] + " " + m2.mesh[mi].polygons[p2].vertices[vi2].weight[0]);
+                        vi2++;
+                    }
+                    p2++;
+                }
+                mi++;
+            }*/
+
             //File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\murabito\\isa.nud",n.Rebuild());
+        }
+
+        public static void DAEReadSemantic(int p, Dictionary<string, string> semantic)
+        {
+            
         }
 
         private void openNud(string filename)
@@ -371,7 +471,7 @@ namespace Smash_Forge
 
             if (!pnut.Equals(""))
             {
-                NUT nut = new NUT(new FileData(pnut));
+                NUT nut = new NUT(pnut);
                 Runtime.TextureContainers.Add(nut);
             }
 
@@ -408,6 +508,11 @@ namespace Smash_Forge
                     model.mta = null;
                 }
             }
+            
+            if(model.nud != null)
+            {
+                model.nud.MergePoly();
+            }
 
             Runtime.ModelContainers.Add(model);
             meshList.refresh();
@@ -417,13 +522,22 @@ namespace Smash_Forge
         {
             using (var ofd = new OpenFileDialog())
             {
+<<<<<<< HEAD
                 ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bfres)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bfres|" +
+=======
+                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae|" +
+>>>>>>> refs/remotes/origin/master
                              "Smash 4 Boneset (.vbn)|*.vbn|" +
                              "Namco Model (.nud)|*.nud|" +
                              "Smash 4 Level Data (.lvd)|*.lvd|" +
                              "NW4R Model (.mdl0)|*.mdl0|" +
                              "Source Model (.SMD)|*.smd|" +
+<<<<<<< HEAD
                              "Nintendo BFRES (.BFRES)|*.bfres|" +
+=======
+                             "Smash 4 Parameters (.bin)|*.bin|"+
+                             "Collada Model Format (.dae)|*.dae|"+
+>>>>>>> refs/remotes/origin/master
                              "All files(*.*)|*.*";
 
                 // "Namco Universal Data Folder (.NUD)|*.nud|" +
@@ -434,7 +548,7 @@ namespace Smash_Forge
                         Runtime.TargetVBN = new VBN(ofd.FileName);
 
                     if (ofd.FileName.EndsWith(".nut"))
-                        Runtime.TextureContainers.Add(new NUT(new FileData(ofd.FileName)));
+                        Runtime.TextureContainers.Add(new NUT(ofd.FileName));
 
                     if (ofd.FileName.EndsWith(".lvd"))
                     {
@@ -442,6 +556,7 @@ namespace Smash_Forge
                         lvdList.fillList();
                     }
 
+<<<<<<< HEAD
                     if (ofd.FileName.EndsWith(".sarc"))
                     {
                         SARC sarc = new SARC(ofd.FileName);
@@ -457,6 +572,17 @@ namespace Smash_Forge
                     if (ofd.FileName.EndsWith(".szs"))
                     {
                         File.WriteAllBytes(Path.GetFullPath("extracted\\test.szs"),YAZ0.Decompress(File.ReadAllBytes(ofd.FileName)));
+=======
+                    if (ofd.FileName.EndsWith(".mta"))
+                    {
+                        Runtime.TargetMTA = new MTA();
+                        Runtime.TargetMTA.Read(ofd.FileName);
+                        viewports[0].loadMTA(Runtime.TargetMTA);
+                        MTAEditor temp = new MTAEditor(Runtime.TargetMTA) { ShowHint = DockState.Document };
+                        temp.Text = Path.GetFileName(ofd.FileName);
+                        AddDockedControl(temp);
+                        mtaEditors.Add(temp);
+>>>>>>> refs/remotes/origin/master
                     }
 
                     if (ofd.FileName.EndsWith(".mtable"))
@@ -568,6 +694,12 @@ namespace Smash_Forge
                         m.vbn = Runtime.TargetVBN;
                         Runtime.ModelContainers.Add(m);
 
+                        if (ofd.FileName.EndsWith(".smd"))
+                        {
+                            m.nud = SMD.toNUD(ofd.FileName);
+                            meshList.refresh();
+                        }
+
                         leftPanel.treeRefresh();
                         if (Runtime.TargetVBN.Endian == Endianness.Little)
                         {
@@ -653,8 +785,8 @@ namespace Smash_Forge
                                 var anim = OMO.read(new FileData(pair.Value));
                                 string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
                                 //AnimName = pair.Key;
-                                AnimName = AnimName.Remove(AnimName.Length - 4);
-                                AnimName = AnimName.Insert(3, "_");
+                                //AnimName = AnimName.Remove(AnimName.Length - 4);
+                                //AnimName = AnimName.Insert(3, "_");
                                 if (!string.IsNullOrEmpty(AnimName))
                                 {
                                     animNode.Nodes.Add(AnimName);
@@ -707,15 +839,16 @@ namespace Smash_Forge
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            if (Runtime.TargetVBN == null)
+            /*if (Runtime.TargetVBN == null)
             {
                 return;
-            }
+            }*/
 
             using (var sfd = new SaveFileDialog())
             {
-                sfd.Filter = "Supported Files (.omo, .anim, .pac)|*.omo;*.anim;*.pac|" +
+                sfd.Filter = "Supported Files (.omo, .anim, .pac, .mta)|*.omo;*.anim;*.pac;*.mta|" +
                              "Object Motion (.omo)|*.omo|" +
+                             "Material Animation (.mta)|*.mta|" +
                              "Maya Anim (.anim)|*.anim|" +
                              "OMO Pack (.pac)|*.pac|" +
                              "All Files (*.*)|*.*";
@@ -740,6 +873,13 @@ namespace Smash_Forge
                         }
                         pac.Save(sfd.FileName);
                     }
+
+                    if (sfd.FileName.EndsWith(".mta"))
+                    {
+                        FileOutput f = new FileOutput();
+                        f.writeBytes(Runtime.TargetMTA.Rebuild());
+                        f.save(sfd.FileName);
+                    }
                 }
             }
         }
@@ -759,6 +899,8 @@ namespace Smash_Forge
                                 bone.boneId = csv.ids[i];
                             }
                         }
+                        if (bone.boneId == 0)
+                            bone.boneId = Crc32.Compute(new string(bone.boneName));
                     }
                 }
                 if (m.bch != null)
@@ -840,6 +982,7 @@ namespace Smash_Forge
         {
             var newForm = new AddBone(this);
             newForm.ShowDialog();
+            Console.WriteLine("Done");
         }
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
@@ -856,8 +999,7 @@ namespace Smash_Forge
 
         public void openMats(NUD.Polygon poly, string name)
         {
-            AddDockedControl(new NUDMaterialEditor(poly.materials) { ShowHint = DockState.Float, Text = name});
-            
+            AddDockedControl(new NUDMaterialEditor(poly) { ShowHint = DockState.Float, Text = name});
         }
 
         private void openStageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -976,6 +1118,54 @@ namespace Smash_Forge
                         Runtime.ModelContainers[0].nud.Save(filename);
                 }
             }
+        }
+        
+        private void collisionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.collisions.Add(new Collision() { name = "COL_00_NewCollision", subname = "00_NewCollision" });
+            lvdList.fillList();
+        }
+
+        private void spawnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.spawns.Add(new Point() { name = "START_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+            
+        }
+
+        private void respawnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.respawns.Add(new Point() { name = "RESPAWN_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+        }
+
+        private void cameraBoundsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.cameraBounds.Add(new Bounds() { name = "CAMERA_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+            
+        }
+
+        private void blastzonesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.blastzones.Add(new Bounds() { name = "DEATH_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+        }
+
+        private void openNUTEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NUTEditor ev = new NUTEditor();
+            ev.Show();
         }
     }
 }

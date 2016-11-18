@@ -52,7 +52,7 @@ namespace Smash_Forge
 
         public override Endianness Endian { get; set; }
 
-
+        #region Rendering
         public void Destroy()
         {
             GL.DeleteBuffer(vbo_position);
@@ -97,6 +97,8 @@ namespace Smash_Forge
                             v.node.Add(0);
                             v.weight.Add(0);
                         }
+                        //bone.Add(new Vector4(-1, 0, 0, 0));
+                        //weight.Add(new Vector4(-1, 0, 0, 0));
                         bone.Add(new Vector4(v.node[0], v.node[1], v.node[2], v.node[3]));
                         weight.Add(new Vector4(v.weight[0], v.weight[1], v.weight[2], v.weight[3]));
                     }
@@ -221,8 +223,8 @@ namespace Smash_Forge
 
                     GL.Uniform4(shader.getAttribute("colorSamplerUV"), colorSamplerUV);
 
-                    //GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
-                    //    dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
+                    /*GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
+                        dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
 
                     GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
                     switch (mat.alphaFunc){
@@ -238,11 +240,15 @@ namespace Smash_Forge
                         case 6:
                             GL.AlphaFunc(AlphaFunction.Lequal, 255 / 255f);
                             break;
-                    }
+                    }*/
 
+                    GL.Enable(EnableCap.CullFace);
                     GL.CullFace(CullFaceMode.Front);
                     switch (mat.cullMode)
                     {
+                        case 0:
+                            GL.Disable(EnableCap.CullFace);
+                            break;
                         case 4:
                             GL.CullFace(CullFaceMode.Back);
                             break;
@@ -253,6 +259,7 @@ namespace Smash_Forge
                         //(p.strip >> 4) == 4 ? PrimitiveType.Triangles : PrimitiveType.TriangleStrip
                         GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
                     }
+                    GL.Enable(EnableCap.CullFace);
                     indiceat += p.displayFaceSize;
                 }
             }
@@ -280,7 +287,9 @@ namespace Smash_Forge
                     { 0x02, TextureWrapMode.MirroredRepeat},
                     { 0x03, TextureWrapMode.Clamp}
                 };
+        #endregion
 
+        #region MTA
         public void clearMTA()
         {
             foreach (Mesh me in mesh)
@@ -331,7 +340,8 @@ namespace Smash_Forge
                                             if (ma.anims.ContainsKey(md.name))
                                                 ma.anims[md.name] = md.frames[(int)((frame * 60 / m.frameRate) % m.numFrames)].values;
                                             else
-                                                ma.anims.Add(md.name, md.frames[(int)((frame * 60 / m.frameRate) % (m.numFrames))].values);
+                                                if(md.frames.Count > (int)((frame * 60 / m.frameRate) % (m.numFrames)))
+                                                    ma.anims.Add(md.name, md.frames[(int)((frame * 60 / m.frameRate) % (m.numFrames))].values);
                                             //Console.WriteLine(""+md.frames[frame % md.frames.Count].values[0]+"," + md.frames[frame % md.frames.Count].values[1] + "," + md.frames[frame % md.frames.Count].values[2] + "," + md.frames[frame % md.frames.Count].values[3]);
                                         }
                                             
@@ -365,15 +375,43 @@ namespace Smash_Forge
             }
 
         }
+        #endregion
 
-
-
+        #region Reading
         //------------------------------------------------------------------------------------------------------------------------
         /*
          * Reads the contents of the nud file into this class
          * Not all info will be saved, so the file will be different on export
          */
         //------------------------------------------------------------------------------------------------------------------------
+        // HELPERS FOR READING
+        private struct _s_Object
+        {
+            public int id;
+            //public int polynamestart;
+            public int singlebind;
+            public int polyamt;
+            public int positionb;
+            public string name;
+        }
+
+        public struct _s_Poly
+        {
+            public int polyStart;
+            public int vertStart;
+            public int verAddStart;
+            public int vertamt;
+            public int vertSize;
+            public int UVSize;
+            public int polyamt;
+            public int polsize;
+            public int polflag;
+            public int texprop1;
+            public int texprop2;
+            public int texprop3;
+            public int texprop4;
+        }
+
         public override void Read(string filename)
         {
             FileData d = new FileData(filename);
@@ -470,7 +508,7 @@ namespace Smash_Forge
 
         //VERTEX TYPES----------------------------------------------------------------------------------------
 
-        private static List<Material> readMaterial(FileData d, _s_Poly p, int nameOffset)
+        public static List<Material> readMaterial(FileData d, _s_Poly p, int nameOffset)
         {
             int propoff = p.texprop1;
             List<Material> mats = new List<Material>();
@@ -597,8 +635,15 @@ namespace Smash_Forge
                         v[i].col = new Vector4(d.readByte(), d.readByte(), d.readByte(), d.readByte());
                         for (int j = 0; j < uvCount; j++)
                             v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
-                    }
-                    else
+                }
+                else
+                    if (uvType == 0x4)
+                {
+                    v[i].col = new Vector4(d.readHalfFloat() * 0xFF, d.readHalfFloat() * 0xFF, d.readHalfFloat() * 0xFF, d.readHalfFloat() * 0xFF);
+                    for (int j = 0; j < uvCount; j++)
+                        v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                }
+                else
                         throw new NotImplementedException("UV type not supported " + uvType);
             }
         }
@@ -629,22 +674,41 @@ namespace Smash_Forge
 
             for (int i = 0; i < p.vertamt; i++)
             {
-                v[i].pos.X = d.readFloat();
-                v[i].pos.Y = d.readFloat();
-                v[i].pos.Z = d.readFloat();
+                if (nrm != 8)
+                {
+                    v[i].pos.X = d.readFloat();
+                    v[i].pos.Y = d.readFloat();
+                    v[i].pos.Z = d.readFloat();
+                }
 
-                if (nrm > 0)
+                if (nrm == 1)
+                {
+                    v[i].nrm.X = d.readFloat();
+                    v[i].nrm.Y = d.readFloat();
+                    v[i].nrm.Z = d.readFloat();
+                    d.skip(4); // n1?
+                    d.skip(4); // r1?
+                } else if (nrm == 2)
+                {
+                    v[i].nrm.X = d.readFloat();
+                    v[i].nrm.Y = d.readFloat();
+                    v[i].nrm.Z = d.readFloat();
+                    d.skip(4); // n1?
+                    d.skip(12); // r1?
+                    d.skip(12); // r1?
+                    d.skip(12); // r1?
+                } else if (nrm == 6)
                 {
                     v[i].nrm.X = d.readHalfFloat();
                     v[i].nrm.Y = d.readHalfFloat();
                     v[i].nrm.Z = d.readHalfFloat();
                     d.skip(2); // n1?
-                }
-                else
-                    d.skip(4);
-
-                if (nrm == 7)
+                } else if (nrm == 7)
                 {
+                    v[i].nrm.X = d.readHalfFloat();
+                    v[i].nrm.Y = d.readHalfFloat();
+                    v[i].nrm.Z = d.readHalfFloat();
+                    d.skip(2); // n1?
                     v[i].bitan.X = d.readHalfFloat();
                     v[i].bitan.Y = d.readHalfFloat();
                     v[i].bitan.Z = d.readHalfFloat();
@@ -653,7 +717,8 @@ namespace Smash_Forge
                     v[i].tan.Y = d.readHalfFloat();
                     v[i].tan.Z = d.readHalfFloat();
                     v[i].tan.W = d.readHalfFloat();
-                }
+                } else
+                    d.skip(4);
 
                 if (weight == 0)
                 {
@@ -673,7 +738,17 @@ namespace Smash_Forge
                     //d.skip(4 * ((p.UVSize >> 4) - 1));
                 }
 
-                if (weight == 4)
+                if (weight == 1)
+                {
+                    v[i].node.Add(d.readInt());
+                    v[i].node.Add(d.readInt());
+                    v[i].node.Add(d.readInt());
+                    v[i].node.Add(d.readInt());
+                    v[i].weight.Add(d.readFloat());
+                    v[i].weight.Add(d.readFloat());
+                    v[i].weight.Add(d.readFloat());
+                    v[i].weight.Add(d.readFloat());
+                } else if (weight == 4)
                 {
                     v[i].node.Add(d.readByte());
                     v[i].node.Add(d.readByte());
@@ -694,8 +769,9 @@ namespace Smash_Forge
             foreach (Vertex vi in v)
                 m.vertices.Add(vi);
         }
+        #endregion
 
-        //Creating---------------------------------------------------------
+        #region Building
         public override byte[] Rebuild()
         {
             FileOutput d = new FileOutput(); // data
@@ -721,8 +797,7 @@ namespace Smash_Forge
             d.writeInt(0); // polyClump size
             d.writeInt(0); // vertexClumpsize
             d.writeInt(0); // vertexaddcump size
-
-            // some floats.. TODO: I dunno what these are for
+            
             d.writeFloat(param[0]);
             d.writeFloat(param[1]);
             d.writeFloat(param[2]);
@@ -761,7 +836,6 @@ namespace Smash_Forge
 
             for (int i = 0; i < mesh.Count; i++)
             {
-                // more floats TODO: I dunno what these are for
                 foreach (float f in mesh[i].bbox)
                     d.writeFloat(f);
 
@@ -787,14 +861,14 @@ namespace Smash_Forge
 
                     int maxUV = mesh[i].polygons[k].vertices[0].tx.Count; // TODO: multi uv stuff  mesh[i].polygons[k].maxUV() + 
 
-                    obj.writeByte((maxUV << 4) | 2); // type of UV 0x12 for vertex color
+                    obj.writeByte(mesh[i].polygons[k].UVSize); 
 
                     // MATERIAL SECTION 
 
                     FileOutput te = new FileOutput();
                     te.Endian = Endianness.Big;
 
-                    int[] texoff = writeMaterial(tex, mesh[i].polygons[k], str);
+                    int[] texoff = writeMaterial(tex, mesh[i].polygons[k].materials, str);
                     //tex.writeOutput(te);
 
                     //obj.writeInt(tex.size() + 0x30 + mesh.Count * 0x30 + polyCount * 0x30); // Tex properties... This is tex offset
@@ -819,7 +893,7 @@ namespace Smash_Forge
                     // Write the vertex....
 
                     writeVertex(vert, vertadd, mesh[i].polygons[k]);
-                    vertadd.align(16, 0x0);
+                    vertadd.align(4, 0x0);
                 }
             }
 
@@ -901,13 +975,21 @@ namespace Smash_Forge
                 d.writeFloat(v.pos.X);
                 d.writeFloat(v.pos.Y);
                 d.writeFloat(v.pos.Z);
-
-                if (nrm > 0)
+                
+                if (nrm > 1)
                 {
                     d.writeHalfFloat(v.nrm.X);
                     d.writeHalfFloat(v.nrm.Y);
                     d.writeHalfFloat(v.nrm.Z);
                     d.writeHalfFloat(1);
+                }
+                else if (nrm == 1)
+                {
+                    d.writeFloat(v.nrm.X);
+                    d.writeFloat(v.nrm.Y);
+                    d.writeFloat(v.nrm.Z);
+                    d.writeFloat(1);
+                    d.writeFloat(1);
                 }
                 else
                     d.writeInt(0);
@@ -945,25 +1027,37 @@ namespace Smash_Forge
                     //d.skip(4 * ((m.UVSize >> 4) - 1));
                 }
 
+                if (weight == 1)
+                {
+                    d.writeInt(v.node[0]);
+                    d.writeInt(v.node[1]);
+                    d.writeInt(v.node[2]);
+                    d.writeInt(v.node[3]);
+                    d.writeFloat(v.weight[0]);
+                    d.writeFloat(v.weight[1]);
+                    d.writeFloat(v.weight[2]);
+                    d.writeFloat(v.weight[3]);
+                }
+
                 if (weight == 4)
                 {
                     d.writeByte(v.node[0]);
                     d.writeByte(v.node[1]);
                     d.writeByte(v.node[2]);
                     d.writeByte(v.node[3]);
-                    d.writeByte((int)(v.weight[0] * 255f));
-                    d.writeByte((int)(v.weight[1] * 255f));
-                    d.writeByte((int)(v.weight[2] * 255f));
-                    d.writeByte((int)(v.weight[3] * 255f));
+                    d.writeByte((int)(Math.Round(v.weight[0] * 0xFF)));
+                    d.writeByte((int)(Math.Round(v.weight[1] * 0xFF)));
+                    d.writeByte((int)(Math.Round(v.weight[2] * 0xFF)));
+                    d.writeByte((int)(Math.Round(v.weight[3] * 0xFF)));
                 }
             }
         }
 
-        private static int[] writeMaterial(FileOutput d, Polygon p, FileOutput str)
+        public static int[] writeMaterial(FileOutput d, List<Material> materials, FileOutput str)
         {
             int[] offs = new int[4];
             int c = 0;
-            foreach (Material mat in p.materials)
+            foreach (Material mat in materials)
             {
                 offs[c++] = d.size();
                 d.writeInt((int)mat.flags);
@@ -1018,41 +1112,34 @@ namespace Smash_Forge
             return offs;
         }
 
-
-        // HELPERS FOR READING
-        /*private struct header{
-            char[] magic;
-            public int fileSize;
-            public short unknown;
-            public int polySetCount;
-        }*/
-        private struct _s_Object
+        #endregion
+        
+        #region Functions
+        public void MergePoly()
         {
-            public int id;
-            //public int polynamestart;
-            public int singlebind;
-            public int polyamt;
-            public int positionb;
-            public string name;
+            Dictionary<string, Mesh> nmesh = new Dictionary<string, Mesh>();
+            foreach(Mesh m in mesh)
+            {
+                if (nmesh.ContainsKey(m.name))
+                {
+                    // merge poly
+                    nmesh[m.name].polygons.AddRange(m.polygons);
+                } else
+                {
+                    nmesh.Add(m.name, m);
+                }
+            }
+            // consolidate
+            mesh.Clear();
+            foreach (string n in nmesh.Keys)
+            {
+                mesh.Add(nmesh[n]);
+            }
+            PreRender();
         }
+        #endregion
 
-        private struct _s_Poly
-        {
-            public int polyStart;
-            public int vertStart;
-            public int verAddStart;
-            public int vertamt;
-            public int vertSize;
-            public int UVSize;
-            public int polyamt;
-            public int polsize;
-            public int polflag;
-            public int texprop1;
-            public int texprop2;
-            public int texprop3;
-            public int texprop4;
-        }
-
+        #region ClassStructure
         public class Vertex
         {
             public Vector3 pos = new Vector3(0, 0, 0), nrm = new Vector3(0, 0, 0);
@@ -1150,6 +1237,14 @@ namespace Smash_Forge
                 mat.entries.Add("NU_colorSamplerUV", new float[]{1, 1, 0, 0});
                 mat.entries.Add("NU_materialHash", new float[] {FileData.toFloat(0x68617368), 0, 0, 0});
                 materials.Add(mat);
+                
+                mat.textures.Add(makeDefault());
+                mat.textures.Add(makeDefault());
+                mat.textures.Add(makeDefault());
+            }
+
+            public static Mat_Texture makeDefault()
+            {
                 Mat_Texture dif = new Mat_Texture();
                 dif.WrapMode1 = 1;
                 dif.WrapMode2 = 1;
@@ -1158,25 +1253,7 @@ namespace Smash_Forge
                 dif.mipDetail = 1;
                 dif.mipDetail = 6;
                 dif.hash = 0x10080000;
-                mat.textures.Add(dif);
-                Mat_Texture nrm = new Mat_Texture();
-                nrm.WrapMode1 = 1;
-                nrm.WrapMode2 = 1;
-                nrm.minFilter = 3;
-                nrm.magFilter = 2;
-                nrm.mipDetail = 1;
-                nrm.mipDetail = 6;
-                nrm.hash = 0x10080000;
-                mat.textures.Add(nrm);
-                Mat_Texture dum = new Mat_Texture();
-                dum.WrapMode1 = 1;
-                dum.WrapMode2 = 1;
-                dum.minFilter = 3;
-                dum.magFilter = 2;
-                dum.mipDetail = 1;
-                dum.mipDetail = 6;
-                dum.hash = 0x10080000;
-                mat.textures.Add(dum);
+                return dif;
             }
 
             public List<int> getDisplayFace()
@@ -1254,6 +1331,8 @@ namespace Smash_Forge
                 polygons[0].AddVertex(v);
             }
         }
+
+        #endregion
 
         #region Converters
 

@@ -34,6 +34,7 @@ namespace Smash_Forge
         ~VBNViewport()
         {
             Runtime.AnimationChanged -= Runtime_AnimationChanged;
+            Application.Idle -= Application_Idle;
         }
 
         public bool _controlLoaded;
@@ -100,6 +101,19 @@ namespace Smash_Forge
                 Runtime.TargetNUD = null;
                 Runtime.killWorkspace = false;
                 Runtime.Animations = new Dictionary<string, SkelAnimation>();
+                MainForm.Instance.lvdList.fillList();
+                MainForm.Instance.animNode.Nodes.Clear();
+                MainForm.Instance.mtaNode.Nodes.Clear();
+                MainForm.Instance.meshList.refresh();
+                MainForm.Instance.paramEditors = new List<PARAMEditor>();
+                if (Directory.Exists("workspace/animcmd/"))
+                {
+                    foreach(string file in Directory.EnumerateFiles("workspace/animcmd/"))
+                        File.Delete(file);
+                    Directory.Delete("workspace/animcmd/");
+                }
+                    
+                MainForm.Instance.project.fillTree();
             }
 
             if (this.IsDisposed == true)
@@ -254,9 +268,72 @@ namespace Smash_Forge
 
         #region Rendering
 
-        string vs = "#version 330\n \nin vec3 vPosition;\nin vec4 vColor;\nin vec3 vNormal;\nin vec2 vUV;\nin vec4 vBone;\nin vec4 vWeight;\n\nout vec2 f_texcoord;\nout float normal;\nout vec4 color;\n\nuniform mat4 modelview;\nuniform mat4 bones[150];\n \nvoid\nmain()\n{\n    ivec4 index = ivec4(vBone); \n\n    vec4 objPos = vec4(vPosition.xyz, 1.0);\n\n    if(vBone.x != -1){\n        objPos = bones[index.x] * vec4(vPosition, 1.0) * vWeight.x;\n        objPos += bones[index.y] * vec4(vPosition, 1.0) * vWeight.y;\n        objPos += bones[index.z] * vec4(vPosition, 1.0) * vWeight.z;\n        objPos += bones[index.w] * vec4(vPosition, 1.0) * vWeight.w;\n    } \n\n    gl_Position = modelview * vec4(objPos.xyz, 1.0);\n\n    vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;\n\n    f_texcoord = vUV;\n    normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;// vec4(distance, 1.0)\n    color = vColor;\n}";
+        string vs = @"#version 330
+ 
+in vec3 vPosition;
+in vec4 vColor;
+in vec3 vNormal;
+in vec2 vUV;
+in vec4 vBone;
+in vec4 vWeight;
 
-        string fs = "#version 330\n\nin vec2 f_texcoord;\nin vec4 color;\nin float normal;\n\nuniform sampler2D tex;\nuniform sampler2D nrm;\nuniform vec4 colorSamplerUV;\n\nvoid\nmain()\n{\n    vec2 texcoord = vec2((f_texcoord * colorSamplerUV.xy) + colorSamplerUV.zw) ;\n\n    vec3 norm = 2.0 * texture2D (nrm, texcoord).rgb - 1.0;\n    norm = normalize (norm);\n    float lamberFactor= max (dot (vec3(0.85, 0.85, 0.85), norm), 0.7) * 1.5;\n\n    vec4 ambiant = vec4(0.3,0.3,0.3,1.0) * texture(tex, texcoord).rgba;\n\n    vec4 alpha = texture2D(tex, texcoord).aaaa;\n    if(alpha.a < 0.5) discard;    \n	vec4 outputColor = ambiant + (vec4(texture(tex, texcoord).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * normal);\n    gl_FragColor =   vec4(((color * alpha * outputColor)).xyz, alpha.x);\n}\n";
+out vec2 f_texcoord;
+out float normal;
+out vec4 color;
+
+uniform mat4 modelview;
+uniform mat4 bones[150];
+ 
+void
+main()
+{
+    ivec4 index = ivec4(vBone); 
+
+    vec4 objPos = vec4(vPosition.xyz, 1.0);
+
+    if(vBone.x != -1){
+        objPos = bones[index.x] * vec4(vPosition, 1.0) * vWeight.x;
+        objPos += bones[index.y] * vec4(vPosition, 1.0) * vWeight.y;
+        objPos += bones[index.z] * vec4(vPosition, 1.0) * vWeight.z;
+        objPos += bones[index.w] * vec4(vPosition, 1.0) * vWeight.w;
+    } 
+
+    gl_Position = modelview * vec4(objPos.xyz, 1.0);
+
+    vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;
+
+    f_texcoord = vUV;
+    normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;// vec4(distance, 1.0)
+    color = vColor;
+}";
+
+        string fs = @"#version 330
+
+in vec2 f_texcoord;
+in vec4 color;
+in float normal;
+
+uniform sampler2D tex;
+uniform sampler2D nrm;
+uniform vec4 colorSamplerUV;
+
+void
+main()
+{
+    vec2 texcoord = vec2((f_texcoord * colorSamplerUV.xy) + colorSamplerUV.zw) ;
+
+    vec3 norm = 2.0 * texture2D (nrm, texcoord).rgb - 1.0;
+    norm = normalize (norm);
+    float lamberFactor= max (dot (vec3(0.85, 0.85, 0.85), norm), 0.75) * 1.5;
+
+    vec4 ambiant = vec4(0.3,0.3,0.3,1.0) * texture(tex, texcoord).rgba;
+
+    vec4 alpha = texture2D(tex, texcoord).aaaa;
+    //if(alpha.a < 0.5) discard;    
+	vec4 outputColor = ambiant + (vec4(texture(tex, texcoord).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * normal);
+    gl_FragColor =   vec4(((color * alpha * outputColor)).xyz, alpha.x * color.x);
+}
+";
 
         private void SetupViewPort()
         {
@@ -269,8 +346,16 @@ namespace Smash_Forge
                 shader = new Shader();
 
                 {
-                    shader.vertexShader(vs);
-                    shader.fragmentShader(fs);
+                    if (GL.GetInteger(GetPName.MajorVersion) < 3)
+                    {
+                        shader.vertexShader(vs.Replace("#version 330", "#version 150"));
+                        shader.fragmentShader(fs.Replace("#version 330", "#version 150"));
+                    }
+                    else
+                    {
+                        shader.vertexShader(vs);
+                        shader.fragmentShader(fs);
+                    }
 
                     shader.addAttribute("vPosition", false);
                     shader.addAttribute("vColor", false);
@@ -310,6 +395,8 @@ namespace Smash_Forge
         {
             if (!render)
                 return;
+
+            glControl1.MakeCurrent();
 
             //GL.ClearColor(back1);
             // Push all attributes so we don't have to clean up later
@@ -365,7 +452,7 @@ namespace Smash_Forge
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
 
             GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
+            GL.CullFace(CullFaceMode.Front);
             
             // draw models
             if (Runtime.renderModel)
@@ -374,7 +461,7 @@ namespace Smash_Forge
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
             GL.DepthFunc(DepthFunction.Less);
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-            GL.CullFace(CullFaceMode.Front);
+            GL.Disable(EnableCap.CullFace);
 
             GL.UseProgram(0);
             // draw path.bin
@@ -450,10 +537,13 @@ namespace Smash_Forge
             // Bounding Box Render
             /*foreach (ModelContainer m in Runtime.ModelContainers)
             {
-                RenderTools.drawCubeWireframe(new Vector3(m.nud.param[0], m.nud.param[1], m.nud.param[2]), m.nud.param[3]);
-                foreach (NUD.Mesh mesh in m.nud.mesh)
+                if (m.nud != null)
                 {
-                    RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
+                    RenderTools.drawCubeWireframe(new Vector3(m.nud.param[0], m.nud.param[1], m.nud.param[2]), m.nud.param[3]);
+                    foreach (NUD.Mesh mesh in m.nud.mesh)
+                    {
+                        RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
+                    }
                 }
             }*/
             
@@ -526,7 +616,7 @@ namespace Smash_Forge
             {
                 // Render the hitboxes
                 if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
-                    HandleACMD(Runtime.TargetAnimString.Substring(4));
+                    HandleACMD(Runtime.TargetAnimString.Substring(3));
 
                 if(Runtime.renderHitboxes)
                     RenderHitboxes();
@@ -592,10 +682,70 @@ namespace Smash_Forge
                         int dir = 1;
                         int cg = 0;
                         GL.LineWidth(3);
-                        GL.Color4(Color.FromArgb(100, Color.Red));
+                        
                         GL.Begin(PrimitiveType.Quads);
                         foreach (Vector2D vi in c.verts)
                         {
+                            if (cg < c.materials.Count)
+                            {
+                                //Console.Write(" " + c.materials[cg].getPhysics());
+                                switch (c.materials[cg].getPhysics())
+                                {
+                                    case 0x0d:
+                                    case 0x0e:
+                                    case 0x10:
+                                    case 0x0c:
+                                        GL.Color4(Color.FromArgb(100, 0xa0, 0xff, 0xfd));//Snow, Ice, Ice2, SnowIce
+                                        break;
+                                    case 0x04:
+                                        GL.Color4(Color.FromArgb(100, 0x94, 0x47, 0x0c));//wood
+                                        break;
+                                    case 0x0b:
+                                    case 0x15:
+                                        GL.Color4(Color.FromArgb(100, 0xd4, 0xfb, 0xfa));//bubbles
+                                        break;
+                                    case 0x0a:
+                                        GL.Color4(Color.FromArgb(100, 0x32, 0x8a, 0xe5));//water
+                                        break;
+                                    case 0x16:
+                                        GL.Color4(Color.FromArgb(100, 0xfd, 0xf9, 0xfb));//water
+                                        break;
+                                    case 0x03:
+                                        GL.Color4(Color.FromArgb(100, 0x33, 0x18, 0x03)); //soil
+                                        break;
+                                    case 0x02:
+                                        GL.Color4(Color.FromArgb(100, 0x18, 0x96, 0x4f)); //grass
+                                        break;
+                                    case 0x1C: 
+                                        GL.Color4(Color.FromArgb(100, 0xcd, 0xbe, 0x7e)); //sand
+                                        break;
+                                    case 0x06:
+                                        GL.Color4(Color.FromArgb(100, 0xb3, 0xb3, 0xb3));//Iron
+                                        break;
+                                    case 0x0f:
+                                    case 0x09:
+                                    case 0x05:
+                                    case 0x11:
+                                        GL.Color4(Color.FromArgb(100, 0, 0, 0));//Weird types
+                                        break;
+                                    case 0x08:
+                                        GL.Color4(Color.FromArgb(100, 0xd8, 0x97, 0x58));//Fence
+                                        break;
+                                    case 0x01:
+                                        GL.Color4(Color.FromArgb(100, 0x46, 0x46, 0x46));//Rock
+                                        break;
+                                    case 0x07:
+                                        GL.Color4(Color.FromArgb(100, 0xd7, 0xd0, 0x2d));//Carpet
+                                        break;
+                                    case 0x1f:
+                                        GL.Color4(Color.FromArgb(100, Color.Red));//Hurt
+                                        break;
+                                    default:
+                                        GL.Color4(Color.FromArgb(100, 0x65, 0x1e, 0x03));//brick
+                                        break;
+                                }
+                            }
+                            
                             GL.Vertex3(vi.x, vi.y, 5 * dir);
                             GL.Vertex3(vi.x, vi.y, -5 * dir);
                             if (cg > 0)
@@ -1116,8 +1266,8 @@ namespace Smash_Forge
 
         public void HandleACMD(string animname)
         {
-            //Console.WriteLine("Handling");
-            var crc = Crc32.Compute(animname.ToLower());
+            //Console.WriteLine("Handling " + animname);
+            var crc = Crc32.Compute(animname.Replace(".omo", "").ToLower());
 
             if (Runtime.Moveset == null)
             {
@@ -1131,6 +1281,7 @@ namespace Smash_Forge
                 return;
             }
 
+            //Console.WriteLine("Handling " + animname);
             script = (ACMDScript)Runtime.Moveset.Game.Scripts[crc];
         }
 

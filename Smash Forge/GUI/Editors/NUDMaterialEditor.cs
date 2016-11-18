@@ -9,12 +9,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
+using System.IO;
+using OpenTK.Graphics.OpenGL;
+using System.Timers;
 
 namespace Smash_Forge
 {
     public partial class NUDMaterialEditor : DockContent
     {
-
+        public NUD.Polygon poly;
         public List<NUD.Material> material;
         int current = 0;
 
@@ -87,18 +90,60 @@ namespace Smash_Forge
                     { 0x06, "4 mip levels, trilinear on, anisotropic on"}
                 };
 
+        Dictionary<string, string[]> propList = new Dictionary<string, string[]>()
+        {
+            { "NU_colorSamplerUV", new string[] { "X Scale", "Y Scale", "X Trans", "Y Trans"} },
+            { "NU_fresnelColor", new string[] { "Red", "Green", "Blue", "Alpha"} },
+            { "NU_blinkColor", new string[] { "Red", "Green", "Blue", "Alpha"} },
+            { "NU_specularColor", new string[] { "Red", "Green", "Blue", "Intensity"} },
+            { "NU_diffuseColor", new string[] { "Red", "Green", "Blue", "Alpha"} },
+            { "NU_colorGain", new string[] { "Red", "Green", "Blue", "Intensity" } },
+            { "NU_reflectionColor", new string[] { "Red", "Green", "Blue", "Intensity" } },
+            { "NU_aoMinGain", new string[] { "Red", "Green", "Blue", "Alpha"} },
+            { "NU_reflectionParams", new string[] { "Tex Sharpness", "Cubemap Brightness", "Cubemap Intensity", ""} },
+            { "NU_lightMapColorOffset", new string[] { "", "", "", "" } },
+            { "NU_specularParams", new string[] { "", "Intensity", "", ""} },
+            { "NU_fresnelParams", new string[] { "", "", "", ""} },
+            { "NU_alphaBlendParams", new string[] { "", "", "", "" } },
+            { "NU_fogParams", new string[] { "", "Distance", "", "Intensity" } },
+            { "NU_fogColor", new string[] { "Red", "Green", "Blue", "Alpha"} },
+            { "NU_effRotUV", new string[] { "", "", "", "" } },
+            { "NU_effScaleUV", new string[] { "X Scale", "Y Scale", "X Trans", "Y Trans" } },
+            { "NU_effTransUV", new string[] { "", "", "", "" } },
+            { "NU_effColorGain", new string[] { "", "", "", "" } },
+            { "NU_materialHash", new string[] { "Hash", "Nothing", "Nothing", "Nothing"} }
+        };
+
         public NUDMaterialEditor()
         {
             InitializeComponent();
         }
 
-        public NUDMaterialEditor(List<NUD.Material> mat)
+        public NUDMaterialEditor(NUD.Polygon p)
         {
             InitializeComponent();
-            this.material = mat;
+            this.poly = p;
+            this.material = p.materials;
             Init();
             FillForm();
             comboBox1.SelectedIndex = 0;
+        }
+
+        private void NUDMaterialEditor_Load(object sender, EventArgs e)
+        {
+            /*// Create a timer with a two second interval.
+            System.Timers.Timer aTimer = new System.Timers.Timer((1f / 60) * 1000);
+            // Hook up the Elapsed event for the timer. 
+            aTimer.Elapsed += OnTimedEvent;
+            aTimer.AutoReset = true;
+            aTimer.Enabled = true;*/
+        }
+
+
+        private void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            if(glControl1 != null)
+                RenderTexture();
         }
 
         public void Init()
@@ -108,6 +153,10 @@ namespace Smash_Forge
             {
                 comboBox1.Items.Add("Material_" + i);
             }
+
+            comboBox7.Items.Clear();
+            foreach(string s in propList.Keys)
+                comboBox7.Items.Add(s);
 
             foreach (int i in dstFactor.Keys)
                 comboBox2.Items.Add(dstFactor[i]);
@@ -290,6 +339,7 @@ namespace Smash_Forge
             comboBox11.SelectedItem = minfilter[tex.minFilter];
             comboBox12.SelectedItem = magfilter[tex.magFilter];
             comboBox13.SelectedItem = mip[tex.mipDetail];
+            RenderTexture();
         }
         
         private void textBox10_TextChanged(object sender, EventArgs e)
@@ -421,14 +471,14 @@ namespace Smash_Forge
             {
                 int f = -1;
                 int.TryParse(textBox12.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f);
-                if (f != -1)
+                if (f != -1 && listView2.SelectedItems.Count > 0)
                     material[current].entries[listView2.SelectedItems[0].Text][0] = BitConverter.ToSingle(BitConverter.GetBytes(f), 0);
             }
             else
             {
                 float f = -1;
                 float.TryParse(textBox12.Text, out f);
-                if (f != -1)
+                if (f != -1 && listView2.SelectedItems.Count > 0)
                     material[current].entries[listView2.SelectedItems[0].Text][0] = f;
             }
         }
@@ -437,7 +487,7 @@ namespace Smash_Forge
         {
             float f = -1;
             float.TryParse(textBox13.Text, out f);
-            if (f != -1)
+            if (f != -1 && listView2.SelectedItems.Count > 0)
                 material[current].entries[listView2.SelectedItems[0].Text][1] = f;
         }
 
@@ -445,7 +495,7 @@ namespace Smash_Forge
         {
             float f = -1;
             float.TryParse(textBox14.Text, out f);
-            if (f != -1)
+            if (f != -1 && listView2.SelectedItems.Count > 0)
                 material[current].entries[listView2.SelectedItems[0].Text][2] = f;
         }
 
@@ -453,9 +503,275 @@ namespace Smash_Forge
         {
             float f = -1;
             float.TryParse(textBox15.Text, out f);
-            if (f != -1)
+            if (f != -1 && listView2.SelectedItems.Count > 0)
                 material[current].entries[listView2.SelectedItems[0].Text][3] = f;
         }
         #endregion
+
+        // property change
+        private void textBox11_TextChanged(object sender, EventArgs e)
+        {
+            string[] labels = null;
+            propList.TryGetValue(textBox11.Text, out labels);
+            
+            if (labels != null)
+            {
+                label20.Text = labels[0].Equals("") ? "Param1" : labels[0];
+                label21.Text = labels[1].Equals("") ? "Param2" : labels[1];
+                label22.Text = labels[2].Equals("") ? "Param3" : labels[2];
+                label23.Text = labels[3].Equals("") ? "Param4" : labels[3];
+            } else
+            {
+                label20.Text = "Param1";
+                label21.Text = "Param2";
+                label22.Text = "Param3";
+                label23.Text = "Param4";
+            }
+        }
+
+        private void comboBox7_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            button4.Enabled = true;
+
+            if (material[current].entries.ContainsKey(comboBox7.Text))
+            {
+                button4.Enabled = false;
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (!comboBox7.Text.Equals(""))
+            {
+                material[current].entries.Add(comboBox7.Text, new float[] { 0, 0, 0, 0 });
+                FillForm();
+                button4.Enabled = false;
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if(listView2.SelectedItems.Count > 0)
+            {
+                material[current].entries.Remove(listView2.SelectedItems[0].Text);
+                FillForm();
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (material[current].textures.Count < 4)
+            {
+                material[current].textures.Add(NUD.Polygon.makeDefault());
+                FillForm();
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0 && material[current].textures.Count > 1)
+            {
+                material[current].textures.RemoveAt(listView1.Items.IndexOf(listView1.SelectedItems[0]));
+                FillForm();
+            }
+        }
+
+        //Saving Mat
+        private void button1_Click(object sender, EventArgs e)
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Namco Material (NMT)|*.nmt|" +
+                             "All files(*.*)|*.*";
+
+                sfd.InitialDirectory = Path.GetFullPath("materials/");
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    sfd.FileName = sfd.FileName;
+
+                    if (sfd.FileName.EndsWith(".nmt"))
+                    {
+                        FileOutput m = new FileOutput();
+                        FileOutput s = new FileOutput();
+
+                        int[] c = NUD.writeMaterial(m, material, s);
+
+                        FileOutput fin = new FileOutput();
+                        
+                        fin.writeInt(0);
+
+                        fin.writeInt(20 + c[0]);
+                        for (int i = 1; i < 4; i++)
+                        {
+                            fin.writeInt(c[i] == c[i-1] ? 0 : 20 + c[i]);
+                        }
+
+                        for (int i = 0; i < 4 - c.Length; i++)
+                            fin.writeInt(0);
+                        
+                        fin.writeOutput(m);
+                        fin.align(32, 0xFF);
+                        fin.writeIntAt(fin.size(), 0);
+                        fin.writeOutput(s);
+                        fin.save(sfd.FileName);
+                    }
+                }
+            }
+        }
+
+        // Loading Mat
+        private void button2_Click(object sender, EventArgs e)
+        {
+            MaterialSelector m = new MaterialSelector();
+            m.ShowDialog();
+            if (m.exitStatus == MaterialSelector.Opened)
+            {
+                FileData f = new FileData(m.path);
+
+                int soff = f.readInt();
+
+                NUD._s_Poly pol = new NUD._s_Poly()
+                {
+                    texprop1 = f.readInt(),
+                    texprop2 = f.readInt(),
+                    texprop3 = f.readInt(),
+                    texprop4 = f.readInt()
+                };
+
+                poly.materials = NUD.readMaterial(f, pol, soff);
+                material = poly.materials;
+                Console.WriteLine(material.Count);
+                current = 0;
+                Init();
+                FillForm();
+            }
+
+            /*using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Namco Material (NMT)|*.nmt|" +
+                             "All files(*.*)|*.*";
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    if (ofd.FileName.EndsWith(".nmt"))
+                    {
+                        FileData f = new FileData(ofd.FileName);
+
+                        int soff = f.readInt();
+                        
+                        NUD._s_Poly pol = new NUD._s_Poly()
+                        {
+                            texprop1 = f.readInt(),
+                            texprop2 = f.readInt(),
+                            texprop3 = f.readInt(),
+                            texprop4 = f.readInt()
+                        };
+
+                        poly.materials = NUD.readMaterial(f, pol, soff);
+                        material = poly.materials;
+                        Console.WriteLine(material.Count);
+                        current = 0;
+                        Init();
+                        FillForm();
+                    }
+                }
+            }*/
+        }
+
+        private void RenderTexture()
+        {
+            glControl1.MakeCurrent();
+            GL.ClearColor(Color.Red);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+
+            GL.Enable(EnableCap.Texture2D);
+
+            int rt = 0;
+            if (material[current].entries.ContainsKey("NU_materialHash") && listView1.SelectedIndices.Count > 0)
+            {
+                int hash = material[current].textures[listView1.SelectedIndices[0]].hash;
+
+                foreach (NUT n in Runtime.TextureContainers)
+                    if (n.draw.ContainsKey(hash))
+                    {
+                        rt = n.draw[hash];
+                        break;
+                    }
+            }
+
+            GL.BindTexture(TextureTarget.Texture2D, rt);
+            GL.Begin(PrimitiveType.Quads);
+            GL.TexCoord2(0, 0);
+            GL.Vertex2(-1, -1);
+            GL.TexCoord2(1, 0);
+            GL.Vertex2(1, -1);
+            GL.TexCoord2(1, 1);
+            GL.Vertex2(1, 1);
+            GL.TexCoord2(0, 1);
+            GL.Vertex2(-1, 1);
+            GL.End();
+
+            glControl1.SwapBuffers();
+        }
+
+        private void glControl1_Click(object sender, EventArgs e)
+        {
+
+            //GL.BindTexture(TextureTarget.Texture2D, i);
+            //GL.Begin(PrimitiveType.Quads);
+        }
+
+        private void button4_Click_1(object sender, EventArgs e)
+        {
+            if (!comboBox7.Text.Equals(""))
+            {
+                if(!material[current].entries.ContainsKey(comboBox7.Text))
+                    material[current].entries.Add(comboBox7.Text, new float[] { 0,0,0,0 });
+                FillForm();
+            }
+        }
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+            if(material[current].textures.Count < 4)
+            {
+                material[current].textures.Add(NUD.Polygon.makeDefault());
+                FillForm();
+            }
+        }
+
+        private void listView1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if(e.KeyChar == 'd' && listView1.SelectedIndices.Count > 0)
+            {
+                if(material[current].textures.Count > 1)
+                {
+                    material[current].textures.RemoveAt(listView1.SelectedIndices[0]);
+                    FillForm();
+                }
+            }
+        }
+
+        private void listView2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 'd' && listView2.SelectedIndices.Count > 0)
+            {
+                if (material[current].textures.Count > 1)
+                {
+                    material[current].entries.Remove(listView2.SelectedItems[0].Text);
+                    FillForm();
+                }
+            }
+        }
+
+        private void NUDMaterialEditor_Scroll(object sender, ScrollEventArgs e)
+        {
+            RenderTexture();
+        }
     }
 }

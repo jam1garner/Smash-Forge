@@ -71,7 +71,7 @@ namespace Smash_Forge
                     camNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
                 }
 
-                foreach (Bounds c in Runtime.TargetLVD.cameraBounds)
+                foreach (Bounds c in Runtime.TargetLVD.blastzones)
                 {
                     deathNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
                 }

@@ -106,11 +106,23 @@
     <Compile Include="GUI\Editors\MeshList.Designer.cs">
       <DependentUpon>MeshList.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\MTAEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\MTAEditor.Designer.cs">
+      <DependentUpon>MTAEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\NUDMaterialEditor.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\Editors\NUDMaterialEditor.Designer.cs">
       <DependentUpon>NUDMaterialEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\NUTEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\NUTEditor.Designer.cs">
+      <DependentUpon>NUTEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\PARAMEditor.cs">
       <SubType>Form</SubType>
@@ -155,6 +167,12 @@
     <Compile Include="GUI\Editors\VBNViewport.Designer.cs">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\MaterialSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\MaterialSelector.Designer.cs">
+      <DependentUpon>MaterialSelector.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\ModelContainer.cs" />
     <Compile Include="GUI\RenderSettings.cs">
       <SubType>Form</SubType>
@@ -183,8 +201,14 @@
     <EmbeddedResource Include="GUI\Editors\LVD Editor\LVDList.resx">
       <DependentUpon>LVDList.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\MTAEditor.resx">
+      <DependentUpon>MTAEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\NUDMaterialEditor.resx">
       <DependentUpon>NUDMaterialEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\NUTEditor.resx">
+      <DependentUpon>NUTEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\PARAMEditor.resx">
       <DependentUpon>PARAMEditor.cs</DependentUpon>
@@ -204,6 +228,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\VBNViewport.resx">
       <DependentUpon>VBNViewport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\MaterialSelector.resx">
+      <DependentUpon>MaterialSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

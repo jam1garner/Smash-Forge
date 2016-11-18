@@ -437,7 +437,7 @@ namespace Smash_Forge
 
                 for (int k = 0; k < blockSize; k++)
                 {
-                    if (pos_ + k > surface.data.Length || pos + k > original.Length)
+                    if (pos_ + k >= surface.data.Length || pos + k >= original.Length)
                         break;
                     surface.data[pos_ + k] = original[pos + k];
                 }

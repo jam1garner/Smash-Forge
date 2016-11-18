@@ -244,3 +244,5 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 /VBN Editor/COLLADA
+/Smash Forge/Filetypes/LM.cs
+/Smash Forge/Filetypes/Texlist.cs
