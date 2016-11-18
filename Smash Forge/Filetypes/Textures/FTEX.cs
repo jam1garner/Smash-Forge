@@ -10,6 +10,32 @@ namespace Smash_Forge
 {
     public class FTEX
     {
+        public class Header
+        {
+            //0xC0 In Lenth
+            public int Name = 0x46544558;
+            public int dim;
+            public int width;
+            public int height;
+            public int depth;
+            public int mipCount;
+            public int format;
+            public int AA;
+            public int usage;
+            public int textureSize;
+            public int u1;
+            public int mipmapSize;
+            public int u2;
+            public int tilemode;
+            public int swizzle;
+            public int alignment;
+            public int pitch;
+            public byte[] gtxFluff = new byte[0x6C];
+            public int textureOffset;
+            public int mipmapOffset;
+            public int pad0;
+            public int pad1;
+        }
         public FTEX_Texture texture = new FTEX_Texture();
         public int readOffset(FileData f)
         {
