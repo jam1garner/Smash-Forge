@@ -268,9 +268,72 @@ namespace Smash_Forge
 
         #region Rendering
 
-        string vs = "#version 330\n \nin vec3 vPosition;\nin vec4 vColor;\nin vec3 vNormal;\nin vec2 vUV;\nin vec4 vBone;\nin vec4 vWeight;\n\nout vec2 f_texcoord;\nout float normal;\nout vec4 color;\n\nuniform mat4 modelview;\nuniform mat4 bones[150];\n \nvoid\nmain()\n{\n    ivec4 index = ivec4(vBone); \n\n    vec4 objPos = vec4(vPosition.xyz, 1.0);\n\n    if(vBone.x != -1){\n        objPos = bones[index.x] * vec4(vPosition, 1.0) * vWeight.x;\n        objPos += bones[index.y] * vec4(vPosition, 1.0) * vWeight.y;\n        objPos += bones[index.z] * vec4(vPosition, 1.0) * vWeight.z;\n        objPos += bones[index.w] * vec4(vPosition, 1.0) * vWeight.w;\n    } \n\n    gl_Position = modelview * vec4(objPos.xyz, 1.0);\n\n    vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;\n\n    f_texcoord = vUV;\n    normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;// vec4(distance, 1.0)\n    color = vColor;\n}";
+        string vs = @"#version 330
+ 
+in vec3 vPosition;
+in vec4 vColor;
+in vec3 vNormal;
+in vec2 vUV;
+in vec4 vBone;
+in vec4 vWeight;
 
-        string fs = "#version 330\n\nin vec2 f_texcoord;\nin vec4 color;\nin float normal;\n\nuniform sampler2D tex;\nuniform sampler2D nrm;\nuniform vec4 colorSamplerUV;\n\nvoid\nmain()\n{\n    vec2 texcoord = vec2((f_texcoord * colorSamplerUV.xy) + colorSamplerUV.zw) ;\n\n    vec3 norm = 2.0 * texture2D (nrm, texcoord).rgb - 1.0;\n    norm = normalize (norm);\n    float lamberFactor= max (dot (vec3(0.85, 0.85, 0.85), norm), 0.7) * 1.5;\n\n    vec4 ambiant = vec4(0.3,0.3,0.3,1.0) * texture(tex, texcoord).rgba;\n\n    vec4 alpha = texture2D(tex, texcoord).aaaa;\n    if(alpha.a < 0.5) discard;    \n	vec4 outputColor = ambiant + (vec4(texture(tex, texcoord).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * normal);\n    gl_FragColor =   vec4(((color * alpha * outputColor)).xyz, alpha.x);\n}\n";
+out vec2 f_texcoord;
+out float normal;
+out vec4 color;
+
+uniform mat4 modelview;
+uniform mat4 bones[150];
+ 
+void
+main()
+{
+    ivec4 index = ivec4(vBone); 
+
+    vec4 objPos = vec4(vPosition.xyz, 1.0);
+
+    if(vBone.x != -1){
+        objPos = bones[index.x] * vec4(vPosition, 1.0) * vWeight.x;
+        objPos += bones[index.y] * vec4(vPosition, 1.0) * vWeight.y;
+        objPos += bones[index.z] * vec4(vPosition, 1.0) * vWeight.z;
+        objPos += bones[index.w] * vec4(vPosition, 1.0) * vWeight.w;
+    } 
+
+    gl_Position = modelview * vec4(objPos.xyz, 1.0);
+
+    vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;
+
+    f_texcoord = vUV;
+    normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;// vec4(distance, 1.0)
+    color = vColor;
+}";
+
+        string fs = @"#version 330
+
+in vec2 f_texcoord;
+in vec4 color;
+in float normal;
+
+uniform sampler2D tex;
+uniform sampler2D nrm;
+uniform vec4 colorSamplerUV;
+
+void
+main()
+{
+    vec2 texcoord = vec2((f_texcoord * colorSamplerUV.xy) + colorSamplerUV.zw) ;
+
+    vec3 norm = 2.0 * texture2D (nrm, texcoord).rgb - 1.0;
+    norm = normalize (norm);
+    float lamberFactor= max (dot (vec3(0.85, 0.85, 0.85), norm), 0.75) * 1.5;
+
+    vec4 ambiant = vec4(0.3,0.3,0.3,1.0) * texture(tex, texcoord).rgba;
+
+    vec4 alpha = texture2D(tex, texcoord).aaaa;
+    //if(alpha.a < 0.5) discard;    
+	vec4 outputColor = ambiant + (vec4(texture(tex, texcoord).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * normal);
+    gl_FragColor =   vec4(((color * alpha * outputColor)).xyz, alpha.x * color.x);
+}
+";
 
         private void SetupViewPort()
         {

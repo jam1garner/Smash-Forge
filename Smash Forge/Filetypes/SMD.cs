@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using OpenTK;
 
@@ -58,7 +59,9 @@ namespace Smash_Forge
 					n.id = v.boneIndex (new string(vbn.bones[int.Parse(args[0])].boneName));
 					if (n.id == -1) {
 						continue;
-					}
+                    }
+                    else
+                        n.hash = v.bones[n.id].boneId;
 
 					// only if it finds the node
 					k.addNode (n);
@@ -98,6 +101,93 @@ namespace Smash_Forge
 			a.bakeFramesLinear ();
 		}
 
-	}
+        public static NUD toNUD(string fname)
+        {
+            StreamReader reader = File.OpenText(fname);
+            string line;
+
+            string current = "";
+
+            NUD nud = new NUD();
+
+            while ((line = reader.ReadLine()) != null)
+            {
+                line = Regex.Replace(line, @"\s+", " ");
+                string[] args = line.Replace(";", "").TrimStart().Split(' ');
+
+                if (args[0].Equals("triangles") || args[0].Equals("end"))
+                {
+                    current = args[0];
+                    continue;
+                }
+
+                if (current.Equals("triangles"))
+                {
+                    string meshName = args[0];
+                    if (args[0].Equals(""))
+                        continue;
+                    for (int j = 0; j < 3; j++)
+                    {
+                        line = reader.ReadLine();
+                        line = Regex.Replace(line, @"\s+", " ");
+                        args = line.Replace(";", "").TrimStart().Split(' ');
+                        // read triangle strip
+                        int parent = int.Parse(args[0]);
+                        NUD.Vertex vert = new NUD.Vertex();
+                        vert.pos = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
+                        vert.nrm = new Vector3(float.Parse(args[4]), float.Parse(args[5]), float.Parse(args[6]));
+                        vert.tx.Add(new Vector2(float.Parse(args[7]), float.Parse(args[8])));
+                        int wCount = int.Parse(args[9]);
+                        int w = 10;
+                        for (int i = 0; i < wCount; i++)
+                        {
+                            vert.node.Add(int.Parse(args[w++]));
+                            vert.weight.Add(float.Parse(args[w++]));
+                        }
+
+                        NUD.Mesh mes = null;
+                        foreach (NUD.Mesh m in nud.mesh)
+                        {
+                            if (m.name.Equals(meshName))
+                            {
+                                mes = m;
+                            }
+                        }
+                        if (mes == null)
+                        {
+                            mes = new NUD.Mesh();
+                            mes.name = meshName;
+                            nud.mesh.Add(mes);
+                        }
+                        if (mes.polygons.Count == 0)
+                        {
+                            NUD.Polygon poly = new NUD.Polygon();
+                            poly.setDefaultMaterial();
+                            mes.polygons.Add(poly);
+                        }
+                        bool found = false;
+                        foreach (NUD.Vertex nv in mes.polygons[0].vertices)
+                        {
+                            if (nv.pos.Equals(vert.pos))
+                            {
+                                mes.polygons[0].faces.Add(mes.polygons[0].vertices.IndexOf(nv));
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found)
+                        {
+                            mes.polygons[0].faces.Add(mes.polygons[0].vertices.Count);
+                            mes.polygons[0].vertices.Add(vert);
+                        }
+                    }
+                }
+            }
+
+            nud.PreRender();
+            return nud;
+        }
+
+    }
 }
 

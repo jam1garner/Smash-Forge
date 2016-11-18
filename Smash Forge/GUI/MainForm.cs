@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using System.Security.Cryptography;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Smash_Forge
@@ -655,6 +656,12 @@ namespace Smash_Forge
                         m.vbn = Runtime.TargetVBN;
                         Runtime.ModelContainers.Add(m);
 
+                        if (ofd.FileName.EndsWith(".smd"))
+                        {
+                            m.nud = SMD.toNUD(ofd.FileName);
+                            meshList.refresh();
+                        }
+
                         leftPanel.treeRefresh();
                         if (Runtime.TargetVBN.Endian == Endianness.Little)
                         {
@@ -854,6 +861,8 @@ namespace Smash_Forge
                                 bone.boneId = csv.ids[i];
                             }
                         }
+                        if (bone.boneId == 0)
+                            bone.boneId = Crc32.Compute(new string(bone.boneName));
                     }
                 }
                 if (m.bch != null)
