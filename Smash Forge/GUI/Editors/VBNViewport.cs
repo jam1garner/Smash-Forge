@@ -331,7 +331,7 @@ main()
     vec4 alpha = texture2D(tex, texcoord).aaaa;
     //if(alpha.a < 0.5) discard;    
 	vec4 outputColor = ambiant + (vec4(texture(tex, texcoord).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * normal);
-    gl_FragColor =   vec4(((color * alpha * outputColor)).xyz, alpha.x * color.x);
+    gl_FragColor =   vec4(((color * alpha * outputColor)).xyz, alpha.x * color.w);
 }
 ";
 
