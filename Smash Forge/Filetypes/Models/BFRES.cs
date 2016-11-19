@@ -74,7 +74,7 @@ namespace Smash_Forge
                 foreach (Vertex v in m.vertices)
                 {
                     vert.Add(v.pos);
-                    col.Add(v.col);
+                    col.Add(new Vector4(v.col.X * v.col.W, v.col.Y * v.col.W, v.col.Z * v.col.W, 1f));
                     nrm.Add(v.nrm);
 
                         if (v.tx.Count > 0)
@@ -167,8 +167,11 @@ namespace Smash_Forge
 
                     indiceat += l.Count;
                 }
+                    GL.Enable(EnableCap.CullFace);
+                    GL.CullFace(CullFaceMode.Back);
                 }
             }
+            
         }
 
         public  void Read(string filename)
@@ -451,11 +454,11 @@ namespace Smash_Forge
                                     break;
                                 case "_c0":
                                     if (AttrArr[attr].vertType == 2063)
-                                        vert.col = new Vector4 { X = f.readHalfFloat(), Y = f.readHalfFloat(), Z = f.readHalfFloat(), W = f.readHalfFloat() };
+                                        vert.col = new Vector4(f.readHalfFloat(), f.readHalfFloat(), f.readHalfFloat(),f.readHalfFloat());
                                     if (AttrArr[attr].vertType == 2067)
                                         vert.col = new Vector4 { X = f.readFloat(), Y = f.readFloat(), Z = f.readFloat(), W = f.readFloat() };
                                     if (AttrArr[attr].vertType == 10)
-                                        vert.col = new Vector4 { X = f.readByte()/127 , Y = f.readByte() / 127, Z = f.readByte() / 127, W = f.readByte() / 127 };
+                                        vert.col = new Vector4 (f.readByte()/128, f.readByte()/ 128, f.readByte()/ 128,f.readByte()/128 );
                                     break;
                                 case "_n0":
                                     if (AttrArr[attr].vertType == 0x20b)
@@ -668,7 +671,7 @@ namespace Smash_Forge
         public class Vertex
         {
             public Vector3 pos = new Vector3(0, 0, 0), nrm = new Vector3(0, 0, 0);
-            public Vector4 col = new Vector4(2, 2, 2, 1);
+            public Vector4 col = new Vector4(2, 2, 2, 2);
             public List<Vector2> tx = new List<Vector2>();
             public List<int> node = new List<int>();
             public List<float> weight = new List<float>();
