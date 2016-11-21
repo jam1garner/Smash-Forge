@@ -341,7 +341,7 @@ main()
     vec4 alpha = texture2D(tex0, f_texcoord0).aaaa;
     //if(alpha.a < 0.5) discard;    
 	vec4 outputColor = ambiant + (vec4(texture(tex0, f_texcoord0).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * normal);
-    gl_FragColor =   mix(vec4(((color * alpha * outputColor) * specular).xyz, alpha.x * color.w), texture(tex1, f_texcoord1).rgba , 0.5);
+    gl_FragColor =  vec4(((color * alpha * outputColor) * specular).xyz, alpha.x * color.w);
 }
 ";
 
