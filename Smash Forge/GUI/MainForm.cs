@@ -557,12 +557,12 @@ namespace Smash_Forge
                             Console.WriteLine(filename);
                             File.WriteAllBytes(Path.Combine(Path.GetFullPath("extracted\\"), filename), sarc.files[filename]);
                         }
-                        File.WriteAllBytes(Path.GetFullPath("extracted\\test.sarc"), sarc.Rebuild());
+                        File.WriteAllBytes(Path.GetFullPath(ofd.FileName), sarc.Rebuild());
                     }
 
                     if (ofd.FileName.EndsWith(".szs"))
                     {
-                        File.WriteAllBytes(Path.GetFullPath("extracted\\test.szs"), YAZ0.Decompress(File.ReadAllBytes(ofd.FileName)));
+                        File.WriteAllBytes(Path.GetFullPath(ofd.FileName), YAZ0.Decompress(File.ReadAllBytes(ofd.FileName)));
                     }
                         if (ofd.FileName.EndsWith(".mta"))
                         {

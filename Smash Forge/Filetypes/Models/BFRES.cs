@@ -24,12 +24,13 @@ namespace Smash_Forge
         int vbo_position;
         int vbo_color;
         int vbo_nrm;
-        int vbo_uv;
+        int vbo_uv0;
+        int vbo_uv1;
         int vbo_weight;
         int vbo_bone;
         int ibo_elements;
 
-        Vector2[] uvdata;
+        Vector2[] uvdata0, uvdata1;
         Vector3[] vertdata, nrmdata;
         int[] facedata;
         Vector4[] bonedata, coldata, weightdata;
@@ -39,7 +40,8 @@ namespace Smash_Forge
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out vbo_color);
             GL.GenBuffers(1, out vbo_nrm);
-            GL.GenBuffers(1, out vbo_uv);
+            GL.GenBuffers(1, out vbo_uv0);
+            GL.GenBuffers(1, out vbo_uv1);
             GL.GenBuffers(1, out vbo_bone);
             GL.GenBuffers(1, out vbo_weight);
             GL.GenBuffers(1, out ibo_elements);
@@ -49,14 +51,16 @@ namespace Smash_Forge
             GL.DeleteBuffer(vbo_position);
             GL.DeleteBuffer(vbo_color);
             GL.DeleteBuffer(vbo_nrm);
-            GL.DeleteBuffer(vbo_uv);
+            GL.DeleteBuffer(vbo_uv0);
+            GL.DeleteBuffer(vbo_uv1);
             GL.DeleteBuffer(vbo_weight);
             GL.DeleteBuffer(vbo_bone);
         }
         public void PreRender()
         {
             List<Vector3> vert = new List<Vector3>();
-            List<Vector2> uv = new List<Vector2>();
+            List<Vector2> u0 = new List<Vector2>();
+            List<Vector2> u1 = new List<Vector2>();
             List<Vector4> col = new List<Vector4>();
             List<Vector3> nrm = new List<Vector3>();
             List<Vector4> bone = new List<Vector4>();
@@ -77,10 +81,14 @@ namespace Smash_Forge
                     col.Add(new Vector4(v.col.X * v.col.W, v.col.Y * v.col.W, v.col.Z * v.col.W, 1f));
                     nrm.Add(v.nrm);
 
-                        if (v.tx.Count > 0)
-                            uv.Add(v.tx[0]);
-                        else
-                            uv.Add(new Vector2(0, 0));
+                        if (v.tx.Count > 0) { 
+                            u0.Add(v.tx[0]);
+                            u1.Add(v.tx[1]);
+                        }
+                        else { 
+                            u0.Add(new Vector2(0, 0));
+                            u1.Add(new Vector2(0, 0));
+                        }
 
                         while (v.node.Count < 4)
                     {
@@ -111,7 +119,8 @@ namespace Smash_Forge
             vertdata = vert.ToArray();
             coldata = col.ToArray();
             nrmdata = nrm.ToArray();
-            uvdata = uv.ToArray();
+            uvdata0 = u0.ToArray();
+            uvdata1 = u1.ToArray();
             facedata = face.ToArray();
             bonedata = bone.ToArray();
             weightdata = weight.ToArray();
@@ -131,9 +140,13 @@ namespace Smash_Forge
             GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(nrmdata.Length * Vector3.SizeInBytes), nrmdata, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, 0, 0);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_uv);
-            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, (IntPtr)(uvdata.Length * Vector2.SizeInBytes), uvdata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, 0, 0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_uv0);
+            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, (IntPtr)(uvdata0.Length * Vector2.SizeInBytes), uvdata0, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("vUV0"), 2, VertexAttribPointerType.Float, false, 0, 0);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_uv0);
+            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, (IntPtr)(uvdata0.Length * Vector2.SizeInBytes), uvdata0, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("vUV1"), 2, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_bone);
             GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(bonedata.Length * Vector4.SizeInBytes), bonedata, BufferUsageHint.StaticDraw);
@@ -153,13 +166,26 @@ namespace Smash_Forge
                 {
                     GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1, 1, 0, 0));
 
-                    if (m.texHashs.Count > 0 ) { 
-                    GL.BindTexture(TextureTarget.Texture2D, m.texHashs[0]);
-                    GL.Uniform1(shader.getAttribute("tex"), 0);
-                }
+                    if (m.texHashs.Count > 0 ) {
+                        GL.ActiveTexture(TextureUnit.Texture0);
+                        GL.BindTexture(TextureTarget.Texture2D, m.texHashs[0]);
+                        GL.Uniform1(shader.getAttribute("tex0"), 0);
+                        if (m.texHashs.Count == 4)
+                        {
+                            GL.ActiveTexture(TextureUnit.Texture1);
+                            GL.BindTexture(TextureTarget.Texture2D, m.texHashs[3]);
+                            GL.Uniform1(shader.getAttribute("tex1"), 1);
+                            GL.ActiveTexture(TextureUnit.Texture2);
+                            GL.BindTexture(TextureTarget.Texture2D, m.texHashs[2]);
+                            GL.Uniform1(shader.getAttribute("spl"), 2);
+                            GL.ActiveTexture(TextureUnit.Texture3);
+                            GL.BindTexture(TextureTarget.Texture2D, m.texHashs[1]);
+                            GL.Uniform1(shader.getAttribute("nrm"), 3);
+                        }
+                    }
                     //GL.BindTexture(TextureTarget.Texture2D, m.texId);
                     //GL.Uniform1(shader.getAttribute("tex"), 0);
-
+                    GL.Disable(EnableCap.CullFace);
                     foreach (List<int> l in m.faces)
                 {
                     if (fmdl.isVisible)
@@ -167,8 +193,6 @@ namespace Smash_Forge
 
                     indiceat += l.Count;
                 }
-                    GL.Enable(EnableCap.CullFace);
-                    GL.CullFace(CullFaceMode.Back);
                 }
             }
             

@@ -199,7 +199,6 @@ namespace Smash_Forge
                         }
                     }
 
-
                     Vector4 colorSamplerUV = new Vector4(1, 1, 0, 0);
                     {
                         float[] colorSamplerUVFloats;

@@ -268,16 +268,19 @@ namespace Smash_Forge
 
         #region Rendering
 
-        string vs = @"#version 330
+        string vs = @"#version 450
  
 in vec3 vPosition;
 in vec4 vColor;
 in vec3 vNormal;
-in vec2 vUV;
+in vec2 vUV0;
+in vec2 vUV1;
+
 in vec4 vBone;
 in vec4 vWeight;
 
-out vec2 f_texcoord;
+out vec2 f_texcoord0;
+out vec2 f_texcoord1;
 out float normal;
 out vec4 color;
 
@@ -302,36 +305,43 @@ main()
 
     vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;
 
-    f_texcoord = vUV;
+    f_texcoord0 = vUV0;
+    f_texcoord1 = vUV1;
+
     normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;// vec4(distance, 1.0)
     color = vColor;
 }";
 
-        string fs = @"#version 330
+        string fs = @"#version 450
 
-in vec2 f_texcoord;
+in vec2 f_texcoord0;
+in vec2 f_texcoord1;
 in vec4 color;
 in float normal;
 
-uniform sampler2D tex;
+uniform sampler2D tex0;
+uniform sampler2D tex1;
+uniform sampler2D spl;
 uniform sampler2D nrm;
 uniform vec4 colorSamplerUV;
 
 void
 main()
 {
-    vec2 texcoord = vec2((f_texcoord * colorSamplerUV.xy) + colorSamplerUV.zw) ;
 
-    vec3 norm = 2.0 * texture2D (nrm, texcoord).rgb - 1.0;
-    norm = normalize (norm);
-    float lamberFactor= max (dot (vec3(0.85, 0.85, 0.85), norm), 0.75) * 1.5;
+    vec3 norm = 2.0 * texture2D (nrm, f_texcoord0).rgb - 1.0;
+    //norm = normalize (norm);
+    float lamberFactor= dot (vec3(0.85, 0.85, 0.85), norm) * 1.5;
 
-    vec4 ambiant = vec4(0.3,0.3,0.3,1.0) * texture(tex, texcoord).rgba;
+    vec4 ambiant = vec4(0.3,0.3,0.3,1.0) * texture(tex0, f_texcoord0).rgba;
 
-    vec4 alpha = texture2D(tex, texcoord).aaaa;
+    float specular = -0.4 *(texture(spl, f_texcoord0).r - 1);
+    //specular = normalize(specular);
+
+    vec4 alpha = texture2D(tex0, f_texcoord0).aaaa;
     //if(alpha.a < 0.5) discard;    
-	vec4 outputColor = ambiant + (vec4(texture(tex, texcoord).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * normal);
-    gl_FragColor =   vec4(((color * alpha * outputColor)).xyz, alpha.x * color.w);
+	vec4 outputColor = ambiant + (vec4(texture(tex0, f_texcoord0).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * normal);
+    gl_FragColor =   mix(vec4(((color * alpha * outputColor) * specular).xyz, alpha.x * color.w), texture(tex1, f_texcoord1).rgba , 0.5);
 }
 ";
 
@@ -360,12 +370,15 @@ main()
                     shader.addAttribute("vPosition", false);
                     shader.addAttribute("vColor", false);
                     shader.addAttribute("vNormal", false);
-                    shader.addAttribute("vUV", false);
+                    shader.addAttribute("vUV0", false);
+                    shader.addAttribute("vUV1", false);
                     shader.addAttribute("vBone", false);
                     shader.addAttribute("vWeight", false);
 
-                    shader.addAttribute("tex", true);
+                    shader.addAttribute("tex0", true);
+                    shader.addAttribute("tex1", true);
                     shader.addAttribute("nrm", true);
+                    shader.addAttribute("spl", true);
                     shader.addAttribute("modelview", true);
                     shader.addAttribute("bones", true);
                     shader.addAttribute("colorSamplerUV", true);
