@@ -443,7 +443,7 @@ namespace Smash_Forge
                     //    t.width / 8, t.height / 8, 0, t.Size, t.mipmaps[3]);
                 } else
                 {
-                    //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                    GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
                 }
 
                 Debug.WriteLine(GL.GetError());

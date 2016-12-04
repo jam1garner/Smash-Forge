@@ -78,10 +78,12 @@ namespace Smash_Forge
 
             int i = 0;
 
-            foreach (Mesh m in mesh)
+            for (int mes = mesh.Count - 1; mes >= 0; mes--)
             {
+                Mesh m = mesh[mes];
                 foreach (Polygon p in m.polygons)
                 {
+                    
                     if (p.faces.Count <= 3)
                         continue;
                     foreach (Vertex v in p.vertices)
@@ -157,10 +159,14 @@ namespace Smash_Forge
             //GL.Enable(EnableCap.PrimitiveRestartFixedIndex);
 
             int indiceat = 0;
-            foreach (Mesh m in mesh)
+
+            for (int mes = mesh.Count - 1; mes >= 0; mes--)
             {
+                Mesh m = mesh[mes];
+
                 foreach (Polygon p in m.polygons)
                 {
+
                     if (p.faces.Count <= 3)
                         continue;
 
@@ -223,6 +229,18 @@ namespace Smash_Forge
 
                     GL.Uniform4(shader.getAttribute("colorSamplerUV"), colorSamplerUV);
 
+                    float[] ao;
+                    mat.entries.TryGetValue("NU_aoMinGain", out ao);
+                    if (ao == null) ao = new float[] { 0, 0, 0, 0 }; 
+                    Vector4 aoo = new Vector4(ao[0], ao[1], ao[2], ao[3]);
+                    GL.Uniform4(shader.getAttribute("minGain"), aoo);
+
+                    /*float[] co;
+                    mat.entries.TryGetValue("NU_colorOffset", out co);
+                    if (co == null) co = new float[] { 0, 0, 0, 0 };
+                    Vector4 coo = new Vector4(co[0], co[1], co[2], co[3]);
+                    GL.Uniform4(shader.getAttribute("colorOffset"), coo);*/
+
                     /*GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
                         dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
 
@@ -232,7 +250,7 @@ namespace Smash_Forge
                             GL.AlphaFunc(AlphaFunction.Gequal, 128 / 255f);
                             break;
                     }
-                    switch (mat.ref1)
+                    /*switch (mat.ref1)
                     {
                         case 4:
                             GL.AlphaFunc(AlphaFunction.Lequal, 128 / 255f);

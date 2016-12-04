@@ -59,9 +59,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Filetypes\Melee\DAT.cs" />
+    <Compile Include="Filetypes\Melee\DAT_Animation.cs" />
     <Compile Include="Filetypes\LVD.cs" />
     <Compile Include="Filetypes\Animation\MTA.cs" />
+    <Compile Include="Filetypes\Melee\LibWii\Shared.cs" />
+    <Compile Include="Filetypes\Melee\LibWii\TLP.cs" />
     <Compile Include="Filetypes\Models\BCH.cs" />
+    <Compile Include="Filetypes\Models\Collada.cs" />
     <Compile Include="Filetypes\PAC.cs" />
     <Compile Include="Filetypes\Animation\PATH.cs" />
     <Compile Include="GUI\Editors\ACMDEditor.cs">

@@ -31,6 +31,7 @@ namespace Smash_Forge
         {
             if (Directory.Exists("materials\\"))
             {
+                Console.WriteLine(Path.GetFullPath("materials\\"));
                 foreach (string folder in Directory.EnumerateDirectories(Path.GetFullPath("materials\\")))
                 {
                     DirectoryInfo dir = new DirectoryInfo(folder);
@@ -46,6 +47,7 @@ namespace Smash_Forge
                     treeView1.Nodes.Add(folderNode);
                 }
             }
+            treeView1.Refresh();
         }
 
         private void openButton(object sender, EventArgs e)

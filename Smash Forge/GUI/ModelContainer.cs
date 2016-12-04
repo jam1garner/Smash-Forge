@@ -12,6 +12,8 @@ namespace Smash_Forge
 
         public BCH bch;
 
+        public DAT dat_melee;
+
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
         public static MovesetManager Moveset { get; set; }
 

@@ -280,6 +280,7 @@ in vec4 vWeight;
 out vec2 f_texcoord;
 out float normal;
 out vec4 color;
+out float fresNelR;
 
 uniform mat4 modelview;
 uniform mat4 bones[150];
@@ -305,6 +306,10 @@ main()
     f_texcoord = vUV;
     normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;// vec4(distance, 1.0)
     color = vColor;
+
+    vec4 normWorld = normalize(vec4(vNormal, 1.0));
+	vec4 I = normalize(vec4(vPosition, 1.0));
+    fresNelR = 0.2 + 0.2 * pow(1.0 + dot(I, normWorld), 1);
 }";
 
         string fs = @"#version 330
@@ -312,10 +317,18 @@ main()
 in vec2 f_texcoord;
 in vec4 color;
 in float normal;
+in float fresNelR;
 
 uniform sampler2D tex;
 uniform sampler2D nrm;
 uniform vec4 colorSamplerUV;
+uniform vec4 coloroffset;
+uniform vec4 minGain;
+
+vec4 lerp(float v, vec4 from, vec4 to)
+{
+    return from + (to - from) * v;
+}
 
 void
 main()
@@ -328,10 +341,11 @@ main()
 
     vec4 ambiant = vec4(0.3,0.3,0.3,1.0) * texture(tex, texcoord).rgba;
 
-    vec4 alpha = texture2D(tex, texcoord).aaaa;
-    //if(alpha.a < 0.5) discard;    
-	vec4 outputColor = ambiant + (vec4(texture(tex, texcoord).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * normal);
-    gl_FragColor =   vec4(((color * alpha * outputColor)).xyz, alpha.x * color.x);
+    vec4 alpha = (1-minGain) + texture2D(nrm, texcoord).aaaa; //
+    //if(alpha.a < 0.5) discard;
+	vec4 outputColor = ambiant + ((vec4(texture(tex, texcoord).rgb, 1)) * vec4(0.85,0.85,0.85,1.0) * normal);
+    vec4 fincol = vec4(((color * alpha * outputColor)).xyz, texture2D(tex, texcoord).a * color.w);
+    gl_FragColor = fincol;//vec4(lerp(fresNelR, fincol, vec4(1.75,1.75,1.75,1)).xyz, fincol.w);
 }
 ";
 
@@ -369,6 +383,8 @@ main()
                     shader.addAttribute("modelview", true);
                     shader.addAttribute("bones", true);
                     shader.addAttribute("colorSamplerUV", true);
+                    shader.addAttribute("colorOffset", true);
+                    shader.addAttribute("minGain", true);
                 }
             }
 
@@ -569,6 +585,11 @@ main()
                         shader.disableAttrib();
                     }
                 }
+                
+                if (m.dat_melee != null)
+                {
+                    m.dat_melee.Render(v);
+                }
 
                 if (m.nud != null)
                 {
@@ -613,6 +634,12 @@ main()
                     {
                         DrawVBN(m.bch.models[0].skeleton);
                     }
+
+                    if (m.dat_melee != null)
+                    {
+                        DrawVBN(m.dat_melee.bones);
+                        m.dat_melee.Render(v);
+                    }
                 }
             }
         }
@@ -628,6 +655,42 @@ main()
 
                     Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform);
                     RenderTools.drawCube(pos_c, .085f);
+
+                    // if swing bones then draw swing radius
+                    /*if(vbn.swingBones.bones.Count > 0)
+                    {
+                        SB.SBEntry sb = null;
+                        vbn.swingBones.bones.TryGetValue(bone.boneId, out sb);
+                        if (sb != null)
+                        {
+                            // draw
+                            if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex != -1)
+                            {
+                                int i = bone.parentIndex;
+                                float degtorad = (float)(Math.PI / 180);
+                                Vector3 pos_sb = Vector3.Transform(Vector3.Zero,
+                                    Matrix4.CreateTranslation(new Vector3(3, 3, 3))
+                                    * Matrix4.CreateScale(bone.sca)
+                                    * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(sb.rx1 * degtorad, sb.ry1 * degtorad, sb.rz1 * degtorad))
+                                    * Matrix4.CreateTranslation(bone.pos)
+                                    * vbn.bones[i].transform);
+
+                                Vector3 pos_sb2 = Vector3.Transform(Vector3.Zero,
+                                    Matrix4.CreateTranslation(new Vector3(3, 3, 3))
+                                    * Matrix4.CreateScale(bone.sca)
+                                    * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(sb.rx2 * degtorad, sb.ry2 * degtorad, sb.rz2 * degtorad))
+                                    * Matrix4.CreateTranslation(bone.pos)
+                                    * vbn.bones[i].transform);
+
+                                GL.Color3(Color.ForestGreen);
+                                GL.Begin(PrimitiveType.LineLoop);
+                                GL.Vertex3(pos_c);
+                                GL.Vertex3(pos_sb);
+                                GL.Vertex3(pos_sb2);
+                                GL.End();
+                            }
+                        }
+                    }*/
 
                     // now draw line between parent 
                     GL.Color3(Color.LightBlue);

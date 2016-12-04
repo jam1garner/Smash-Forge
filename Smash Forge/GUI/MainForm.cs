@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using WeifenLuo.WinFormsUI.Docking;
+using OpenTK;
 
 namespace Smash_Forge
 {
@@ -343,6 +344,7 @@ namespace Smash_Forge
                         string[] vi = skin.vertex_weights.v.Split(' ');
                         int pos = 0;
 
+                        List<string> bname = new List<string>();
                         for (int i = 0; i < (int)skin.vertex_weights.count; i++)
                         {
                             NUD.Vertex vert = v[i];
@@ -357,6 +359,9 @@ namespace Smash_Forge
                                             int ind = int.Parse(vi[pos]);
                                             int index = vbn.boneIndex(boneNames[ind]);
                                             vert.node.Add(index==-1?0:index);
+                                            if (index == -1)
+                                                if (!bname.Contains(boneNames[ind]))
+                                                    bname.Add(boneNames[ind]);
                                             break;
                                         case "WEIGHT":
                                             // find weight int weight list
@@ -366,6 +371,8 @@ namespace Smash_Forge
                                             w /= 0xFF;
                                             //Console.WriteLine(w + " " + weight[int.Parse(vi[pos])]);
                                             vert.weight.Add((float)weight[int.Parse(vi[pos])]);
+                                            if (vert.weight.Count > 4)
+                                                Console.WriteLine("Weight Error");
                                             break;
                                     }
                                     pos++;
@@ -373,6 +380,10 @@ namespace Smash_Forge
 
                         }
                         cid++;
+                        foreach (string nam in bname)
+                        {
+                            Console.WriteLine("No match " + nam);
+                        }
                     }
                 }
             }
@@ -428,7 +439,7 @@ namespace Smash_Forge
 
         public static void DAEReadSemantic(int p, Dictionary<string, string> semantic)
         {
-            
+
         }
 
         private void openNud(string filename)
@@ -440,6 +451,7 @@ namespace Smash_Forge
             string pjtb = "";
             string pvbn = "";
             string pmta = "";
+            string psb = "";
             List<string> pacs = new List<string>();
 
             foreach (string s in files)
@@ -454,6 +466,8 @@ namespace Smash_Forge
                     pjtb = s;
                 if (s.EndsWith(".mta"))
                     pmta = s;
+                if (s.EndsWith(".sb"))
+                    psb = s;
                 if (s.EndsWith(".pac"))
                     pacs.Add(s);
             }
@@ -466,7 +480,8 @@ namespace Smash_Forge
                 Runtime.TargetVBN = model.vbn;
                 if (!pjtb.Equals(""))
                     model.vbn.readJointTable(pjtb);
-
+                if (!psb.Equals(""))
+                    model.vbn.swingBones.Read(psb);
             }
 
             if (!pnut.Equals(""))
@@ -522,7 +537,7 @@ namespace Smash_Forge
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae|" +
+                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.dat|" +
                              "Smash 4 Boneset (.vbn)|*.vbn|" +
                              "Namco Model (.nud)|*.nud|" +
                              "Smash 4 Level Data (.lvd)|*.lvd|" +
@@ -538,6 +553,23 @@ namespace Smash_Forge
                 {
                     if (ofd.FileName.EndsWith(".vbn"))
                         Runtime.TargetVBN = new VBN(ofd.FileName);
+
+                    if (ofd.FileName.EndsWith(".dat"))
+                    {
+                        DAT dat = new DAT();
+                        dat.Read(new FileData(ofd.FileName));
+                        ModelContainer c = new ModelContainer();
+                        c.dat_melee = dat;
+                        dat.PreRender();
+                        //DAT_Animation anim = new DAT_Animation();
+                        //anim.Read(new FileData("C:\\Users\\ploaj_000\\Desktop\\Melee\\PlPkAJ.dat"));
+                        //anim.Apply(dat.bones);
+                        Runtime.ModelContainers.Add(c);
+                        //Collada dae = new Collada();
+                        //dae.Save("C:\\Users\\ploaj_000\\Desktop\\Melee\\Test.dae", dat);
+                    }
+
+
 
                     if (ofd.FileName.EndsWith(".nut"))
                         Runtime.TextureContainers.Add(new NUT(ofd.FileName));
