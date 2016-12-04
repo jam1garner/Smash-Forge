@@ -627,7 +627,7 @@ namespace Smash_Forge
                     //Viewport.Runtime.TargetVBN = Runtime.TargetVBN;
 
 
-                    if (ofd.FileName.EndsWith(".dae"))
+                    if (ofd.FileName.ToLower().EndsWith(".dae"))
                     {
                         openDAE(ofd.FileName, Runtime.ModelContainers[0]);
                     }
