@@ -56,12 +56,12 @@ main()
     ivec4 index = ivec4(vBone); 
     vec4 objPos = vec4(vPosition.xyz, 1.0);
 
-    if(vBone.x != -1){
+    /*if(vBone.x != -1){
         objPos = bones[index.x] * vec4(vPosition, 1.0) * vWeight.x;
         objPos += bones[index.y] * vec4(vPosition, 1.0) * vWeight.y;
         objPos += bones[index.z] * vec4(vPosition, 1.0) * vWeight.z;
         objPos += bones[index.w] * vec4(vPosition, 1.0) * vWeight.w;
-    } 
+    } */
 
     gl_Position = modelview * vec4(objPos.xyz, 1.0);
 
@@ -115,8 +115,6 @@ main()
             GL.GenBuffers(1, out vbo_bone);
             GL.GenBuffers(1, out vbo_weight);
             GL.GenBuffers(1, out ibo_elements);
-
-            testtex = NUT.loadImage(new Bitmap("C:\\Users\\ploaj_000\\Desktop\\proguard5.2.1\\CharacterThingy\\Bayo64\\btexnull.png"));
         }
 
         ~DAT()
@@ -140,22 +138,40 @@ main()
 
             int strOffset = d.pos() + header.rootCount * 8;
             int[] sectionOffset = new int[header.rootCount];
+            string[] sectionNames = new string[header.rootCount];
             for (int i = 0; i < header.rootCount; i++)
             {
                 // data then string
                 int data = d.readInt() + 0x20;
                 string s = d.readString(d.readInt() + strOffset, -1);
                 sectionOffset[i] = data;
+                sectionNames[i] = s;
                 Console.WriteLine(s + " " + data.ToString("x"));
             }
 
-            // then a file system is read... it works like a tree?
-            d.seek(sectionOffset[0]);
-            // now, the name determines what happens here
-            // for now, it just assumes the _joint
-            JOBJ j = new JOBJ();
-            j.Read(d, this);
-            jobjs.Add(j);
+            for(int i = 0; i < header.rootCount; i++)
+            {
+                // then a file system is read... it works like a tree?
+                d.seek(sectionOffset[i]);
+                // now, the name determines what happens here
+                // for now, it just assumes the _joint
+                if (sectionNames[i].EndsWith("_joint"))
+                {
+                    JOBJ j = new JOBJ();
+                    j.Read(d, this);
+                    jobjs.Add(j);
+                    break;
+                }
+                /*else
+                if (sectionNames[i].EndsWith("map_head"))
+                {
+                    d.seek(d.readInt() + headerSize);
+                    d.seek(d.readInt() + headerSize);
+                    JOBJ j = new JOBJ();
+                    j.Read(d, this);
+                    jobjs.Add(j);
+                }*/
+            }
 
         }
 
