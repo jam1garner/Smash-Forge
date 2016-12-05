@@ -452,6 +452,7 @@ namespace Smash_Forge
             string pvbn = "";
             string pmta = "";
             string psb = "";
+            string pmoi = "";
             List<string> pacs = new List<string>();
 
             foreach (string s in files)
@@ -468,6 +469,8 @@ namespace Smash_Forge
                     pmta = s;
                 if (s.EndsWith(".sb"))
                     psb = s;
+                if (s.EndsWith(".moi"))
+                    pmoi = s;
                 if (s.EndsWith(".pac"))
                     pacs.Add(s);
             }
@@ -522,6 +525,11 @@ namespace Smash_Forge
                 {
                     model.mta = null;
                 }
+            }
+
+            if (!pmoi.Equals(""))
+            {
+                model.moi = new MOI(pmoi);
             }
             
             if(model.nud != null)

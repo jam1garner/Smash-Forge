@@ -9,6 +9,7 @@ namespace Smash_Forge
         public NUD nud;
         public VBN vbn;
         public MTA mta;
+        public MOI moi;
 
         public BCH bch;
 
