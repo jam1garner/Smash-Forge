@@ -777,16 +777,15 @@ main()
                 // JAM FIIIIIIXXXXX IIIIIIIT
                 /*if (m.dat_melee.collisions != null)
                 {
-                    foreach (List<Vector2D> poly in m.dat_melee.collisions.polys) {
-                        GL.Begin(PrimitiveType.QuadStrip);
-                        int dir = 1;
-
-                        foreach(Vector2D vi in poly)
-                        {
-                            GL.Vertex3(vi.x, vi.y, 5 * dir);
-                            GL.Vertex3(vi.x, vi.y, -5 * dir);
-                            dir *= -1;
-                        }
+                    Vector2D vi;
+                    foreach (int[] link in m.dat_melee.collisions.links) {
+                        GL.Begin(PrimitiveType.Quads);
+                        vi = m.dat_melee.collisions.vertices[link[0]];
+                        GL.Vertex3(vi.x, vi.y, 5);
+                        GL.Vertex3(vi.x, vi.y, -5);
+                        vi = m.dat_melee.collisions.vertices[link[1]];
+                        GL.Vertex3(vi.x, vi.y, -5);
+                        GL.Vertex3(vi.x, vi.y, 5);
                         GL.End();
                     }
                 }*/
