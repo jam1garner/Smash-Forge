@@ -289,7 +289,7 @@ namespace Smash_Forge
                         Runtime.ModelContainers.Add(c);
                         //Collada dae = new Collada();
                         //dae.Save("C:\\Users\\ploaj_000\\Desktop\\Melee\\Test.dae", dat);
-                        DAT_TreeView p = new DAT_TreeView() { ShowHint = DockState.Document };
+                        DAT_TreeView p = new DAT_TreeView() { ShowHint = DockState.DockLeft };
                         p.setDAT(dat);
                         AddDockedControl(p);
                         //Runtime.TargetVBN = dat.bones;

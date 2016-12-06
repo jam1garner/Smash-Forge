@@ -54,7 +54,7 @@ namespace Smash_Forge
                 foreach (NUD.Mesh mesh in nud.mesh)
                 {
                     if(mesh.name.Length > 4)
-                        mesh.name = mesh.name.Substring(4, mesh.name.Length - 4);
+                        mesh.name = mesh.name.Substring(5, mesh.name.Length - 5);
                 }
             }
 
