@@ -715,13 +715,14 @@ main()
         {
             foreach(ModelContainer m in Runtime.ModelContainers)
             {
-                // JAM FIIIIIIXXXXX IIIIIIIT
-                /*if (m.dat_melee.collisions != null)
+                // JAM FIIIIIIXXXXXED IIIIIIIT
+                if (m.dat_melee.collisions != null)
                 {
-                    Vector2D vi;
+                    
+                    GL.Color4(Color.FromArgb(128, Color.White));
                     foreach (int[] link in m.dat_melee.collisions.links) {
                         GL.Begin(PrimitiveType.Quads);
-                        vi = m.dat_melee.collisions.vertices[link[0]];
+                        Vector2D vi = m.dat_melee.collisions.vertices[link[0]];
                         GL.Vertex3(vi.x, vi.y, 5);
                         GL.Vertex3(vi.x, vi.y, -5);
                         vi = m.dat_melee.collisions.vertices[link[1]];
@@ -729,7 +730,16 @@ main()
                         GL.Vertex3(vi.x, vi.y, 5);
                         GL.End();
                     }
-                }*/
+                    GL.Color3(Color.Tomato);
+                    GL.LineWidth(4);
+                    foreach (Vector2D vi in m.dat_melee.collisions.vertices)
+                    {
+                        GL.Begin(PrimitiveType.Lines);
+                        GL.Vertex3(vi.x, vi.y, 5);
+                        GL.Vertex3(vi.x, vi.y, -5);
+                        GL.End();
+                    }
+                }
             }
 
             if (Runtime.TargetLVD != null)
