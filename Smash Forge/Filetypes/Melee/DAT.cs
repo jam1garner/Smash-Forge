@@ -370,7 +370,8 @@ main()
                 {
                     foreach (POBJ.DisplayObject d in poly.display)
                     {
-                        GL.DrawElements(primitiesTypes[d.type], d.faces.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
+                        if(da.Checked)
+                            GL.DrawElements(primitiesTypes[d.type], d.faces.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
                         indiceat += d.faces.Count;
                     }
                 }

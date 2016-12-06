@@ -341,7 +341,7 @@ main()
 
     vec4 ambiant = vec4(0.3,0.3,0.3,1.0) * texture(tex, texcoord).rgba;
 
-    vec4 alpha = (1-minGain) + texture2D(nrm, texcoord).aaaa; //
+    vec4 alpha = (1-minGain) * texture2D(nrm, texcoord).aaaa + texture2D(nrm, texcoord).aaaa; //
     //if(alpha.a < 0.5) discard;
 	vec4 outputColor = ambiant + ((vec4(texture(tex, texcoord).rgb, 1)) * vec4(0.85,0.85,0.85,1.0) * normal);
     vec4 fincol = vec4(((color * alpha * outputColor)).xyz, texture2D(tex, texcoord).a * color.w);
