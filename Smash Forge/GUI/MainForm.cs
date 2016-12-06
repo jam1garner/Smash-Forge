@@ -560,7 +560,19 @@ namespace Smash_Forge
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     if (ofd.FileName.EndsWith(".vbn"))
+                    {
                         Runtime.TargetVBN = new VBN(ofd.FileName);
+
+                        if (Directory.Exists("Skapon\\"))
+                        {
+                            NUD nud = Skapon.Create(Runtime.TargetVBN);
+                            ModelContainer con = new ModelContainer();
+                            con.vbn = Runtime.TargetVBN;
+                            con.nud = nud;
+                            nud.PreRender();
+                            Runtime.ModelContainers.Add(con);
+                        }
+                    }
 
                     if (ofd.FileName.EndsWith(".dat"))
                     {

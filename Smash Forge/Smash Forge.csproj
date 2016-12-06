@@ -68,6 +68,7 @@
     <Compile Include="Filetypes\Models\BCH.cs" />
     <Compile Include="Filetypes\Models\Collada.cs" />
     <Compile Include="Filetypes\Models\MOI.cs" />
+    <Compile Include="Filetypes\Models\Skapon.cs" />
     <Compile Include="Filetypes\PAC.cs" />
     <Compile Include="Filetypes\Animation\PATH.cs" />
     <Compile Include="GUI\Editors\ACMDEditor.cs">
