@@ -354,10 +354,20 @@ namespace Smash_Forge
 
                     if (ofd.FileName.ToLower().EndsWith(".dae"))
                     {
-                        if (Runtime.ModelContainers.Count < 1)
-                            Runtime.ModelContainers.Add(new ModelContainer());
-                        Collada.DAEtoNUD(ofd.FileName, Runtime.ModelContainers[0]);
-                        meshList.refresh();
+                        DAEImportSettings m = new DAEImportSettings();
+                        m.ShowDialog();
+                        if (m.exitStatus == DAEImportSettings.Opened)
+                        {
+                            if (Runtime.ModelContainers.Count < 1)
+                                Runtime.ModelContainers.Add(new ModelContainer());
+
+                            Collada.DAEtoNUD(ofd.FileName, Runtime.ModelContainers[0]);
+
+                            // apply settings
+                            m.Apply(Runtime.ModelContainers[0].nud);
+
+                            meshList.refresh();
+                        }
                     }
 
                     if (ofd.FileName.EndsWith(".mbn"))

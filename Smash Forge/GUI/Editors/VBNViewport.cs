@@ -393,10 +393,7 @@ main()
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
             v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 2500.0f);
-
-            GotFocus += (object sender, EventArgs e) =>
-                {
-                };
+            
         }
 
         int cf = 0;
@@ -438,6 +435,7 @@ main()
 
             if (IsMouseOverViewport() && glControl1.Focused)
                 UpdateMousePosition();
+            mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
 
             SetCameraAnimation();
 
@@ -520,7 +518,6 @@ main()
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
             zoom += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale;
-            mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
 
             v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 2500.0f);
         }

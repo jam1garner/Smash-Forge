@@ -183,6 +183,12 @@
     <Compile Include="GUI\MaterialSelector.Designer.cs">
       <DependentUpon>MaterialSelector.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Menus\DAEImportSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\DAEImportSettings.Designer.cs">
+      <DependentUpon>DAEImportSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\ModelContainer.cs" />
     <Compile Include="GUI\RenderSettings.cs">
       <SubType>Form</SubType>
@@ -244,6 +250,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\MaterialSelector.resx">
       <DependentUpon>MaterialSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\DAEImportSettings.resx">
+      <DependentUpon>DAEImportSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
