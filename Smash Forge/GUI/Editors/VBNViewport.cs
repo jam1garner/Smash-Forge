@@ -770,6 +770,18 @@ main()
             }
         }
 
+        private static Color getLinkColor(DAT.COLL_DATA.Link link)
+        {
+            if ((link.flags & 1) != 0)
+                return Color.FromArgb(128,Color.Yellow);
+            if ((link.collisionAngle & 4) + (link.collisionAngle & 8) != 0)
+                return Color.FromArgb(128, Color.Lime);
+            if ((link.collisionAngle & 2) != 0)
+                return Color.FromArgb(128, Color.Red);
+
+            return Color.FromArgb(128, Color.DarkCyan);
+        }
+
         public void DrawLVD()
         {
             foreach(ModelContainer m in Runtime.ModelContainers)
@@ -777,22 +789,31 @@ main()
                 // JAM FIIIIIIXXXXXED IIIIIIIT
                 if (m.dat_melee.collisions != null)
                 {
-                    
-                    GL.Color4(Color.FromArgb(128, Color.White));
-                    foreach (int[] link in m.dat_melee.collisions.links) {
+                    List<int> ledges = new List<int>();
+                    foreach (DAT.COLL_DATA.Link link in m.dat_melee.collisions.links) {
                         GL.Begin(PrimitiveType.Quads);
-                        Vector2D vi = m.dat_melee.collisions.vertices[link[0]];
+                        GL.Color4(getLinkColor(link));
+                        Vector2D vi = m.dat_melee.collisions.vertices[link.vertexIndices[0]];
                         GL.Vertex3(vi.x, vi.y, 5);
                         GL.Vertex3(vi.x, vi.y, -5);
-                        vi = m.dat_melee.collisions.vertices[link[1]];
+                        vi = m.dat_melee.collisions.vertices[link.vertexIndices[1]];
                         GL.Vertex3(vi.x, vi.y, -5);
                         GL.Vertex3(vi.x, vi.y, 5);
                         GL.End();
+                        if((link.flags & 2) != 0)
+                        {
+                            ledges.Add(link.vertexIndices[0]);
+                            ledges.Add(link.vertexIndices[1]);
+                        } 
                     }
-                    GL.Color3(Color.Tomato);
                     GL.LineWidth(4);
-                    foreach (Vector2D vi in m.dat_melee.collisions.vertices)
+                    for (int i = 0; i < m.dat_melee.collisions.vertices.Count; i++)
                     {
+                        Vector2D vi = m.dat_melee.collisions.vertices[i];
+                        if (ledges.Contains(i))
+                            GL.Color3(Color.Purple);
+                        else
+                            GL.Color3(Color.Tomato);
                         GL.Begin(PrimitiveType.Lines);
                         GL.Vertex3(vi.x, vi.y, 5);
                         GL.Vertex3(vi.x, vi.y, -5);

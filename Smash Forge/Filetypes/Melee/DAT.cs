@@ -426,9 +426,18 @@ main()
 
         public class COLL_DATA
         {
+            public class Link
+            {
+                public int[] vertexIndices;
+                public int[] connectors;
+                public int collisionAngle;
+                public byte flags;
+                public byte material;
+            }
+
             public List<Vector2D> vertices = new List<Vector2D>();
             public List<List<Vector2D>> polys = new List<List<Vector2D>>();
-            public List<int[]> links = new List<int[]>();
+            public List<Link> links = new List<Link>();
 
             public void Read(FileData f)
             {
@@ -460,8 +469,15 @@ main()
                 f.seek(linkOff);
                 for(int i = 0; i < linkCount; i++)
                 {
-                    int[] link = { f.readShort(), f.readShort() };
-                    f.skip(0xC);
+                    Link link = new Link();
+                    int[] temp = { f.readShort(), f.readShort() };
+                    int[] temp2 = { f.readShort(), f.readShort() };
+                    link.vertexIndices = temp;
+                    link.connectors = temp2;
+                    f.skip(4);
+                    link.collisionAngle = f.readShort();
+                    link.flags = (byte)f.readByte();
+                    link.material = (byte)f.readByte();
                     links.Add(link);
                 }
                 foreach (List<Vector2D> poly in polys)
