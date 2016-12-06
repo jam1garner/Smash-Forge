@@ -714,7 +714,8 @@ main()
         {
             foreach(ModelContainer m in Runtime.ModelContainers)
             {
-                if (m.dat_melee.collisions != null)
+                // JAM FIIIIIIXXXXX IIIIIIIT
+                /*if (m.dat_melee.collisions != null)
                 {
                     foreach (List<Vector2D> poly in m.dat_melee.collisions.polys) {
                         GL.Begin(PrimitiveType.QuadStrip);
@@ -728,7 +729,7 @@ main()
                         }
                         GL.End();
                     }
-                }
+                }*/
             }
 
             if (Runtime.TargetLVD != null)
