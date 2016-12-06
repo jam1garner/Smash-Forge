@@ -19,6 +19,7 @@ namespace Smash_Forge
         public VBN bones = new VBN();
         public List<JOBJ> jobjs = new List<JOBJ>();
         public List<DOBJ> dobjs = new List<DOBJ>();
+        public COLL_DATA collisions = null;
 
         // gl buffer objects
         int vbo_position;
@@ -146,7 +147,7 @@ main()
                 string s = d.readString(d.readInt() + strOffset, -1);
                 sectionOffset[i] = data;
                 sectionNames[i] = s;
-                Console.WriteLine(s + " " + data.ToString("x"));
+                //Console.WriteLine(s + " " + data.ToString("x"));
             }
 
             for(int i = 0; i < header.rootCount; i++)
@@ -171,6 +172,16 @@ main()
                     j.Read(d, this);
                     jobjs.Add(j);
                 }*/
+            }
+
+            for(int i = 0; i < header.rootCount; i++)
+            {
+                if (sectionNames[i].EndsWith("coll_data"))
+                {
+                    d.seek(sectionOffset[i]);
+                    collisions = new COLL_DATA();
+                    collisions.Read(d);
+                }
             }
 
         }
@@ -366,6 +377,46 @@ main()
                 unk1 = d.readInt();
                 unk2 = d.readInt();
                 unk3 = d.readInt();
+            }
+        }
+
+        public class COLL_DATA
+        {
+            public List<Vector2D> vertices = new List<Vector2D>();
+            public List<List<Vector2D>> polys = new List<List<Vector2D>>();
+
+            public void Read(FileData f)
+            {
+                int vertOff = f.readInt() + 0x20;
+                int vertCount = f.readInt();
+                f.skip(0x1C);
+                int polyOff = f.readInt() + 0x20;
+                int polyCount = f.readInt();
+                int returnOffset = f.pos();
+                f.seek(vertOff);
+                for(int i = 0; i < vertCount; i++)
+                {
+                    Vector2D point = new Vector2D();
+                    point.x = f.readFloat();
+                    point.y = f.readFloat();
+                    vertices.Add(point);
+                }
+                f.seek(polyOff);
+                for(int i = 0; i < polyCount; i++)
+                {
+                    f.skip(0x24);
+                    int start = f.readShort();
+                    int length = f.readShort();
+                    polys.Add(vertices.GetRange(start, length));
+                }
+                int inc = 0;
+                foreach (List<Vector2D>poly in polys)
+                {
+                    inc++;
+                    Console.WriteLine("\nPoly" + inc);
+                    foreach(Vector2D point in poly)
+                        Console.WriteLine("(" + point.x + ", " + point.y + ")");
+                }
             }
         }
 

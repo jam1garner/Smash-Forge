@@ -712,6 +712,25 @@ main()
 
         public void DrawLVD()
         {
+            foreach(ModelContainer m in Runtime.ModelContainers)
+            {
+                if (m.dat_melee.collisions != null)
+                {
+                    foreach (List<Vector2D> poly in m.dat_melee.collisions.polys) {
+                        GL.Begin(PrimitiveType.QuadStrip);
+                        int dir = 1;
+
+                        foreach(Vector2D vi in poly)
+                        {
+                            GL.Vertex3(vi.x, vi.y, 5 * dir);
+                            GL.Vertex3(vi.x, vi.y, -5 * dir);
+                            dir *= -1;
+                        }
+                        GL.End();
+                    }
+                }
+            }
+
             if (Runtime.TargetLVD != null)
             {
                 if (Runtime.renderCollisions)
