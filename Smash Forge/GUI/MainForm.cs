@@ -139,304 +139,6 @@ namespace Smash_Forge
             }
         }
 
-        private void openDAE(string fname, ModelContainer con)
-        {
-            COLLADA model = COLLADA.Load(fname);
-
-            NUD n = new NUD();
-            if (con.vbn == null)
-                return;
-            VBN vbn = con.vbn;
-            con.nud = n;
-
-            // Iterate on libraries
-            foreach (var item in model.Items)
-            {
-                var geometries = item as library_geometries;
-                if (geometries != null)
-                {
-                    // Iterate on geomerty in library_geometries 
-                    foreach (var geom in geometries.geometry)
-                    {
-                        var mesh = geom.Item as mesh;
-                        if (mesh == null)
-                            continue;
-
-                        NUD.Mesh n_mesh = new NUD.Mesh();
-                        n.mesh.Add(n_mesh);
-                        n_mesh.name = geom.name;
-
-                        Dictionary<string, double[]> sources = new Dictionary<string, double[]>();
-                        Dictionary<string, string> vertex = new Dictionary<string, string>();
-                        Dictionary<string, string> semantic = new Dictionary<string, string>();
-
-                        // Dump source[] for geom
-                        foreach (var source in mesh.source)
-                        {
-                            var float_array = source.Item as float_array;
-                            if (float_array == null)
-                                continue;
-                            sources.Add(source.id, float_array.Values);
-                        }
-                        {
-                            var inputs = mesh.vertices.input;
-                            foreach (var input in inputs)
-                            {
-                                vertex.Add(input.semantic, input.source);
-                            }
-                        }
-                        // Dump Items[] for geom
-                        foreach (var meshItem in mesh.Items)
-                        {
-                            if (meshItem is vertices)
-                            {
-                                var vertices = meshItem as vertices;
-                                var inputs = vertices.input;
-                                foreach (var input in inputs)
-                                    vertex.Add(input.semantic, input.source);                             
-                            }
-                            else if (meshItem is triangles)
-                            {
-                                var triangles = meshItem as triangles;
-                                var inputs = triangles.input;
-
-                                foreach (var input in inputs)
-                                    semantic.Add(input.semantic, input.source);
-
-                                NUD.Polygon poly = new NUD.Polygon();
-                                poly.setDefaultMaterial();
-                                n_mesh.polygons.Add(poly);
-                                string[] ps = triangles.p.StartsWith(" ") ? triangles.p.Substring(1).Split(' ') : triangles.p.Split(' ');
-                                for (int i = 0; i < ps.Length;)
-                                {
-                                    //poly.faces.Add(int.Parse(ps[i]));
-                                    int p = int.Parse(ps[i]);
-                                    /*}
-                                    poly.faces.Add(int.Parse(ps[i]));
-                                        if (int.Parse(ps[i]) > vCount)
-                                            vCount = int.Parse(ps[i]);
-                                    for (int i = 0; i < vCount + 1; i++)
-                                    {*/
-                                    NUD.Vertex v = new NUD.Vertex();
-
-                                    // iterate semantics
-                                    foreach (string s in semantic.Keys)
-                                    {
-                                        string src;
-                                        double[] bank;
-                                        semantic.TryGetValue(s, out src);
-                                        src = src.Replace("#", "");
-                                        sources.TryGetValue(src, out bank);
-                                        switch (s)
-                                        {
-                                            case "VERTEX":
-                                                {
-                                                    poly.faces.Add(p);
-                                                    //poly.AddVertex(v);
-                                                    while (poly.vertices.Count <= p)
-                                                        poly.AddVertex(new NUD.Vertex());
-                                                    poly.vertices[p] = v;
-                                                    foreach (string s2 in vertex.Keys)
-                                                    {
-                                                        string vsrc;
-                                                        vertex.TryGetValue(s2, out vsrc);
-                                                        vsrc = vsrc.Replace("#", "");
-                                                        //Console.WriteLine(vsrc);
-                                                        sources.TryGetValue(vsrc, out bank);
-                                                        switch (s2)
-                                                        {
-                                                            case "POSITION":
-                                                                v.pos.X = (float)bank[p * 3 + 0];
-                                                                v.pos.Y = (float)bank[p * 3 + 1];
-                                                                v.pos.Z = (float)bank[p * 3 + 2];
-                                                                break;
-                                                            case "NORMAL":
-                                                                v.nrm.X = (float)bank[p * 3 + 0];
-                                                                v.nrm.Y = (float)bank[p * 3 + 1];
-                                                                v.nrm.Z = (float)bank[p * 3 + 2];
-                                                                break;
-                                                            case "COLOR":
-                                                                v.col.X = (float)bank[p * 4 + 0] * 255;
-                                                                v.col.Y = (float)bank[p * 4 + 1] * 255;
-                                                                v.col.Z = (float)bank[p * 4 + 2] * 255;
-                                                                v.col.W = (float)bank[p * 4 + 3] * 127;
-                                                                break;
-                                                            case "TEXCOORD":
-                                                                v.tx.Add(new OpenTK.Vector2((float)bank[p * 2 + 0], (float)bank[p * 2 + 1]));
-                                                                break;
-                                                        }
-                                                    }
-                                                    break;
-                                                }
-                                            case "POSITION":
-                                                v.pos.X = (float)bank[p * 3 + 0];
-                                                v.pos.Y = (float)bank[p * 3 + 1];
-                                                v.pos.Z = (float)bank[p * 3 + 2];
-                                                break;
-                                            case "NORMAL":
-                                                v.nrm.X = (float)bank[p * 3 + 0];
-                                                v.nrm.Y = (float)bank[p * 3 + 1];
-                                                v.nrm.Z = (float)bank[p * 3 + 2];
-                                                break;
-                                            case "COLOR":
-                                                v.col.X = (float)bank[p * 4 + 0] * 255;
-                                                v.col.Y = (float)bank[p * 4 + 1] * 255;
-                                                v.col.Z = (float)bank[p * 4 + 2] * 255;
-                                                v.col.W = (float)bank[p * 4 + 3] * 127;
-                                                break;
-                                            case "TEXCOORD":
-                                                v.tx.Add(new OpenTK.Vector2((float)bank[p * 2 + 0], (float)bank[p * 2 + 1]));
-                                                break;
-                                        }
-                                        i++;
-                                        if (i >= ps.Length) break;
-                                        p = int.Parse(ps[i]);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                var controllers = item as library_controllers;
-                if (controllers != null)
-                {
-                    int cid = 0;
-                    // Iterate on controllers in library_controllers 
-                    foreach (var cont in controllers.controller)
-                    {
-                        var control = cont as controller;
-                        //if (control == null)
-                        //    continue;
-
-                        var skin = control.Item as skin;
-
-                        string[] boneNames = null;
-                        Dictionary<string, double[]> sources = new Dictionary<string, double[]>();
-                        Dictionary<string, string> semantic = new Dictionary<string, string>();
-
-                        // Dump source[] for geom
-                        foreach (var source in skin.source)
-                        {
-                            var float_array = source.Item as float_array;
-                            if (float_array != null)
-                            {
-                                sources.Add(source.id, float_array.Values);
-                            }
-                            var name_array = source.Item as Name_array;
-                            if (name_array != null)
-                            {
-                                boneNames = name_array._Text_.Split(' ');
-                            }
-                        }
-                        {
-                            var inputs = skin.joints.input;
-                            foreach (var input in inputs)
-                            {
-                                if(input.semantic.Equals(""))
-                                semantic.Add(input.semantic, input.source);
-                            }
-                        }
-                        // Dump Items[] for geom
-                        NUD.Mesh m = n.mesh[cid];
-                        List<NUD.Vertex> v = m.polygons[0].vertices;
-                        string[] vcount = skin.vertex_weights.vcount.Split(' ');
-                        string[] vi = skin.vertex_weights.v.Split(' ');
-                        int pos = 0;
-
-                        List<string> bname = new List<string>();
-                        for (int i = 0; i < (int)skin.vertex_weights.count; i++)
-                        {
-                            NUD.Vertex vert = v[i];
-
-                            for (int j = 0; j < int.Parse(vcount[i]); j++)
-                                foreach (var sem in skin.vertex_weights.input)
-                                {
-                                    switch (sem.semantic)
-                                    {
-                                        case "JOINT":
-                                            // find joint name in vbn
-                                            int ind = int.Parse(vi[pos]);
-                                            int index = vbn.boneIndex(boneNames[ind]);
-                                            vert.node.Add(index==-1?0:index);
-                                            if (index == -1)
-                                                if (!bname.Contains(boneNames[ind]))
-                                                    bname.Add(boneNames[ind]);
-                                            break;
-                                        case "WEIGHT":
-                                            // find weight int weight list
-                                            double[] weight;
-                                            sources.TryGetValue(sem.source.Replace("#", ""), out weight);
-                                            float w = (int)Math.Round(weight[int.Parse(vi[pos])] * 0xFF);
-                                            w /= 0xFF;
-                                            //Console.WriteLine(w + " " + weight[int.Parse(vi[pos])]);
-                                            vert.weight.Add((float)weight[int.Parse(vi[pos])]);
-                                            if (vert.weight.Count > 4)
-                                                Console.WriteLine("Weight Error");
-                                            break;
-                                    }
-                                    pos++;
-                                }
-
-                        }
-                        cid++;
-                        foreach (string nam in bname)
-                        {
-                            Console.WriteLine("No match " + nam);
-                        }
-                    }
-                }
-            }
-
-            foreach (NUD.Mesh mesh in n.mesh)
-            {
-                foreach (NUD.Polygon poly in mesh.polygons)
-                {
-                    poly.vertSize = 0x16;
-                    /*foreach (NUD.Vertex v in poly.vertices)
-                    {
-                        float c = 0;
-                        foreach (float f in v.weight)
-                            c += f;
-                        if (c != 1 && (c < 0.9 || c > 1.1))
-                        Console.WriteLine(c);
-                    }
-                    */
-                }
-            }
-            n.MergePoly();
-            n.PreRender();
-            meshList.refresh();
-
-            /*NUD m1 = n;
-            NUD m2 = new NUD("C:\\s\\Smash\\extract\\data\\fighter\\captain\\model\\body\\c00\\test.nud");
-
-
-            int mi = 0, p2 = 0, vi2 = 0;
-            foreach (NUD.Mesh mesh in m1.mesh)
-            {
-                p2 = 0;
-                foreach (NUD.Polygon poly in mesh.polygons)
-                {
-                    Console.WriteLine(poly.vertices.Count + " " + m2.mesh[mi].polygons[p2].vertices.Count);
-                    vi2 = 0;
-                    foreach (NUD.Vertex v in poly.vertices)
-                    {
-                        //if (!v.weight.Equals(m2.mesh[mi].polygons[p2].vertices[vi2].weight))
-                        if (v.node[0] != m2.mesh[mi].polygons[p2].vertices[vi2].node[0])
-                            Console.WriteLine(v.node[0] + " " + m2.mesh[mi].polygons[p2].vertices[vi2].node[0]);
-                        //if (v.weight[0]!=m2.mesh[mi].polygons[p2].vertices[vi2].weight[0])
-                        //        Console.WriteLine(v.weight[0] + " " + m2.mesh[mi].polygons[p2].vertices[vi2].weight[0]);
-                        vi2++;
-                    }
-                    p2++;
-                }
-                mi++;
-            }*/
-
-            //File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\murabito\\isa.nud",n.Rebuild());
-        }
-
         public static void DAEReadSemantic(int p, Dictionary<string, string> semantic)
         {
 
@@ -587,7 +289,7 @@ namespace Smash_Forge
                         Runtime.ModelContainers.Add(c);
                         //Collada dae = new Collada();
                         //dae.Save("C:\\Users\\ploaj_000\\Desktop\\Melee\\Test.dae", dat);
-                        DAT_TreeView p = new DAT_TreeView() { ShowHint = DockState.Document };
+                        DAT_TreeView p = new DAT_TreeView() { ShowHint = DockState.DockLeft };
                         p.setDAT(dat);
                         AddDockedControl(p);
                         //Runtime.TargetVBN = dat.bones;
@@ -650,10 +352,22 @@ namespace Smash_Forge
                     }
                     //Viewport.Runtime.TargetVBN = Runtime.TargetVBN;
 
-
                     if (ofd.FileName.ToLower().EndsWith(".dae"))
                     {
-                        openDAE(ofd.FileName, Runtime.ModelContainers[0]);
+                        DAEImportSettings m = new DAEImportSettings();
+                        m.ShowDialog();
+                        if (m.exitStatus == DAEImportSettings.Opened)
+                        {
+                            if (Runtime.ModelContainers.Count < 1)
+                                Runtime.ModelContainers.Add(new ModelContainer());
+
+                            Collada.DAEtoNUD(ofd.FileName, Runtime.ModelContainers[0]);
+
+                            // apply settings
+                            m.Apply(Runtime.ModelContainers[0].nud);
+
+                            meshList.refresh();
+                        }
                     }
 
                     if (ofd.FileName.EndsWith(".mbn"))
@@ -721,14 +435,6 @@ namespace Smash_Forge
                         }
 
                         leftPanel.treeRefresh();
-                        if (Runtime.TargetVBN.Endian == Endianness.Little)
-                        {
-                            radioButton2.Checked = true;
-                        }
-                        else
-                        {
-                            radioButton1.Checked = true;
-                        }
                     }
                     else
                     {

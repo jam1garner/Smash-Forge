@@ -57,6 +57,8 @@
             this.exportToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.texturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openNUTEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.propertiesWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.animationsWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -68,12 +70,8 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.glControl1 = new OpenTK.GLControl();
-            this.texturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openNUTEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -172,6 +170,7 @@
             this.hashMatchToolStripMenuItem.Name = "hashMatchToolStripMenuItem";
             this.hashMatchToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.hashMatchToolStripMenuItem.Text = "Hash Match";
+            this.hashMatchToolStripMenuItem.ToolTipText = "Gives the bones a hash based on their name. Used for animation";
             this.hashMatchToolStripMenuItem.Click += new System.EventHandler(this.hashMatchToolStripMenuItem_Click);
             // 
             // addToolStripMenuItem
@@ -293,6 +292,21 @@
             this.toolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
             this.toolStripMenuItem2.Text = "Clear";
             // 
+            // texturesToolStripMenuItem
+            // 
+            this.texturesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openNUTEditorToolStripMenuItem});
+            this.texturesToolStripMenuItem.Name = "texturesToolStripMenuItem";
+            this.texturesToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
+            this.texturesToolStripMenuItem.Text = "Textures";
+            // 
+            // openNUTEditorToolStripMenuItem
+            // 
+            this.openNUTEditorToolStripMenuItem.Name = "openNUTEditorToolStripMenuItem";
+            this.openNUTEditorToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.openNUTEditorToolStripMenuItem.Text = "Open NUT Editor";
+            this.openNUTEditorToolStripMenuItem.Click += new System.EventHandler(this.openNUTEditorToolStripMenuItem_Click);
+            // 
             // viewToolStripMenuItem
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -376,30 +390,6 @@
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
             // 
-            // radioButton1
-            // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(947, 4);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(53, 17);
-            this.radioButton1.TabIndex = 9;
-            this.radioButton1.Text = "Stage";
-            this.radioButton1.UseVisualStyleBackColor = true;
-            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
-            // 
-            // radioButton2
-            // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Checked = true;
-            this.radioButton2.Location = new System.Drawing.Point(870, 4);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(71, 17);
-            this.radioButton2.TabIndex = 10;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "Character";
-            this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
-            // 
             // dockPanel1
             // 
             this.dockPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -424,21 +414,6 @@
             this.glControl1.TabIndex = 19;
             this.glControl1.VSync = false;
             // 
-            // texturesToolStripMenuItem
-            // 
-            this.texturesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openNUTEditorToolStripMenuItem});
-            this.texturesToolStripMenuItem.Name = "texturesToolStripMenuItem";
-            this.texturesToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
-            this.texturesToolStripMenuItem.Text = "Textures";
-            // 
-            // openNUTEditorToolStripMenuItem
-            // 
-            this.openNUTEditorToolStripMenuItem.Name = "openNUTEditorToolStripMenuItem";
-            this.openNUTEditorToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.openNUTEditorToolStripMenuItem.Text = "Open NUT Editor";
-            this.openNUTEditorToolStripMenuItem.Click += new System.EventHandler(this.openNUTEditorToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -446,8 +421,6 @@
             this.ClientSize = new System.Drawing.Size(1217, 765);
             this.Controls.Add(this.glControl1);
             this.Controls.Add(this.dockPanel1);
-            this.Controls.Add(this.radioButton2);
-            this.Controls.Add(this.radioButton1);
             this.Controls.Add(this.menuStrip1);
             this.ForeColor = System.Drawing.Color.Black;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -477,8 +450,6 @@
 		private System.Windows.Forms.ToolStripMenuItem animationToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
-        private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.ToolStripMenuItem hashMatchToolStripMenuItem;
         private VBNViewport Viewport;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;

@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>forge.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -180,6 +183,12 @@
     <Compile Include="GUI\MaterialSelector.Designer.cs">
       <DependentUpon>MaterialSelector.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Menus\DAEImportSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\DAEImportSettings.Designer.cs">
+      <DependentUpon>DAEImportSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\ModelContainer.cs" />
     <Compile Include="GUI\RenderSettings.cs">
       <SubType>Form</SubType>
@@ -242,6 +251,9 @@
     <EmbeddedResource Include="GUI\MaterialSelector.resx">
       <DependentUpon>MaterialSelector.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\DAEImportSettings.resx">
+      <DependentUpon>DAEImportSettings.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -294,6 +306,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="forge.ico" />
     <Content Include="lib\FITC.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

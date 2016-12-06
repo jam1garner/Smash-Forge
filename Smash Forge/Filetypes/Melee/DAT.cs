@@ -332,7 +332,7 @@ main()
            {
                Matrix4[] f = bones.getShaderMatrix();
                int shad = shader.getAttribute("bones");
-               //GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
+               GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
            }
 
            shader.enableAttrib();
