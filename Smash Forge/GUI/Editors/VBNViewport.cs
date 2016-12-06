@@ -67,7 +67,7 @@ namespace Smash_Forge
         float lookup = 0;
         float height = 0;
         float width = 0;
-        float zoom = 0;
+        float zoom = 0, nzoom = 0;
         float mouseXLast = 0;
         float mouseYLast = 0;
         float mouseSLast = 0;
@@ -396,10 +396,6 @@ main()
 
             GotFocus += (object sender, EventArgs e) =>
                 {
-                    mouseXLast = OpenTK.Input.Mouse.GetState().X;
-                    mouseYLast = OpenTK.Input.Mouse.GetState().Y;
-                    zoom = OpenTK.Input.Mouse.GetState().WheelPrecise;
-                    mouseSLast = zoom;
                 };
         }
 
@@ -499,12 +495,12 @@ main()
 
         public void UpdateMousePosition()
         {
+            float zoomscale = 1;
+
             if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
             {
                 height += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
                 width += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                //height = clampControl(height);
-                //width = clampControl(width);
             }
             if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
             {
@@ -512,10 +508,18 @@ main()
                 lookup += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
             }
 
+            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft))
+                zoomscale = 3;
+
+            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Down))
+                zoom -= 1 * zoomscale;
+            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Up))
+                zoom += 1 * zoomscale;
+
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
-            zoom += OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast;
+            zoom += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale;
             mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
 
             v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 2500.0f);
@@ -1366,6 +1370,20 @@ main()
             }
             nupdMaxFrame.Value = a.size() > 1 ? a.size() - 1 : a.size();
             nupdFrame.Value = 0;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            rot = 0;
+            lookup = 0;
+            height = 0;
+            width = 0;
+            zoom = 0;
+            nzoom = 0;
+            mouseXLast = 0;
+            mouseYLast = 0;
+            mouseSLast = 0;
+            UpdateMousePosition();
         }
 
         public void loadMTA(MTA m)
