@@ -639,8 +639,67 @@ main()
                     if (m.dat_melee != null)
                     {
                         DrawVBN(m.dat_melee.bones);
-                        m.dat_melee.Render(v);
                     }
+                }
+            }
+        }
+
+        public void DrawVBNDiamond(VBN vbn)
+        {
+            if (vbn != null && Runtime.renderBones)
+            {
+                foreach (Bone bone in vbn.bones)
+                {
+                    // first calcuate the point and draw a point
+                    GL.Color3(Color.DarkGray);
+                    GL.PointSize(1f);
+
+                    Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform);
+
+                    GL.Begin(PrimitiveType.LineLoop);
+                    GL.Vertex3(new Vector3(pos_c.X - 0.1f, pos_c.Y, pos_c.Z - 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X + 0.1f, pos_c.Y, pos_c.Z - 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X + 0.1f, pos_c.Y, pos_c.Z + 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X - 0.1f, pos_c.Y, pos_c.Z + 0.1f));
+                    GL.End();
+
+                    Vector3 pos_p = pos_c;
+                    if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex != -1)
+                    {
+                        int i = bone.parentIndex;
+                        pos_p = Vector3.Transform(Vector3.Zero, vbn.bones[i].transform);
+                    }
+
+                    GL.Color3(Color.Gray);
+                    GL.Begin(PrimitiveType.Lines);
+                    GL.Vertex3(new Vector3(pos_c.X - 0.1f, pos_c.Y, pos_c.Z - 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
+                    GL.Vertex3(new Vector3(pos_c.X + 0.1f, pos_c.Y, pos_c.Z - 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
+                    GL.Vertex3(new Vector3(pos_c.X + 0.1f, pos_c.Y, pos_c.Z + 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
+                    GL.Vertex3(new Vector3(pos_c.X - 0.1f, pos_c.Y, pos_c.Z + 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
+                    GL.Vertex3(new Vector3(pos_c.X - 0.1f, pos_c.Y, pos_c.Z - 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
+                    GL.Vertex3(new Vector3(pos_c.X + 0.1f, pos_c.Y, pos_c.Z - 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
+                    GL.Vertex3(new Vector3(pos_c.X + 0.1f, pos_c.Y, pos_c.Z + 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
+                    GL.Vertex3(new Vector3(pos_c.X - 0.1f, pos_c.Y, pos_c.Z + 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
+
+
+                    GL.Vertex3(new Vector3(pos_c.X - 0.1f, pos_c.Y, pos_c.Z - 0.1f));
+                    GL.Vertex3(pos_p);
+                    GL.Vertex3(new Vector3(pos_c.X + 0.1f, pos_c.Y, pos_c.Z - 0.1f));
+                    GL.Vertex3(pos_p);
+                    GL.Vertex3(new Vector3(pos_c.X + 0.1f, pos_c.Y, pos_c.Z + 0.1f));
+                    GL.Vertex3(pos_p);
+                    GL.Vertex3(new Vector3(pos_c.X - 0.1f, pos_c.Y, pos_c.Z + 0.1f));
+                    GL.Vertex3(pos_p);
+
+                    GL.End();
                 }
             }
         }

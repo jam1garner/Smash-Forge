@@ -22,14 +22,36 @@ namespace Smash_Forge
 
         public int exitStatus = 0; //0 - not done, 1 - one is selected, 2 - cancelled
 
+        public Dictionary<string, int> BoneTypes = new Dictionary<string, int>()
+        {
+            { "No Bones", 0x00},
+            { "Bone Weight Exact(larger filesize)", 0x10},
+            { "Bone Weight Approx(smaller filesize)", 0x40}
+        };
+
+        public Dictionary<string, int> VertTypes = new Dictionary<string, int>()
+        {
+            { "No Normals", 0x0},
+            { "Normals as Float", 0x1},
+            { "Normals as Half Float", 0x6}
+        };
+
         public DAEImportSettings()
         {
             InitializeComponent();
+            populate();
         }
         
         public void populate()
         {
+            foreach (string key in VertTypes.Keys)
+                comboBox1.Items.Add(key);
 
+            foreach (string key in BoneTypes.Keys)
+                comboBox2.Items.Add(key);
+
+            comboBox1.SelectedIndex = 2;
+            comboBox2.SelectedIndex = 1;
         }
 
         public void Apply(NUD nud)
@@ -40,6 +62,7 @@ namespace Smash_Forge
                 {
                     foreach(NUD.Polygon poly in mesh.polygons)
                     {
+                        poly.vertSize = (BoneTypes[comboBox2.SelectedText]) | (VertTypes[comboBox1.SelectedText]);
                         foreach(NUD.Vertex v in poly.vertices)
                         {
                             for(int i = 0; i < v.tx.Count; i++)
@@ -79,7 +102,6 @@ namespace Smash_Forge
 
         private void button1_Click(object sender, EventArgs e)
         {
-
             exitStatus = Opened;
             Close();
         }
