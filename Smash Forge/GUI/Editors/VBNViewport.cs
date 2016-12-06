@@ -339,7 +339,7 @@ main()
     norm = normalize (norm);
     float lamberFactor= max (dot (vec3(0.85, 0.85, 0.85), norm), 0.75) * 1.5;
 
-    vec4 ambiant = vec4(0.3,0.3,0.3,1.0) * texture(tex, texcoord).rgba;
+    vec4 ambiant = vec4(0.1,0.1,0.1,1.0) * texture(tex, texcoord).rgba;
 
     vec4 alpha = (1-minGain) + texture2D(nrm, texcoord).aaaa; //
     //if(alpha.a < 0.5) discard;

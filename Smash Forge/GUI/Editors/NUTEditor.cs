@@ -269,6 +269,8 @@ namespace Smash_Forge
                         tex.type = ntex.type;
                         tex.mipmaps = ntex.mipmaps;
                         tex.utype = ntex.utype;
+
+                        GL.DeleteTexture(selected.draw[tex.id]);
                         selected.draw.Remove(tex.id);
                         selected.draw.Add(tex.id, NUT.loadImage(tex));
 
