@@ -787,7 +787,7 @@ main()
             foreach(ModelContainer m in Runtime.ModelContainers)
             {
                 // JAM FIIIIIIXXXXXED IIIIIIIT
-                if (m.dat_melee.collisions != null)
+                if (m.dat_melee != null && m.dat_melee.collisions != null)
                 {
                     List<int> ledges = new List<int>();
                     foreach (DAT.COLL_DATA.Link link in m.dat_melee.collisions.links) {
