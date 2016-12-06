@@ -283,7 +283,7 @@ out vec4 color;
 out float fresNelR;
 
 uniform mat4 modelview;
-uniform mat4 bones[150];
+uniform mat4 bones[250];
  
 void
 main()

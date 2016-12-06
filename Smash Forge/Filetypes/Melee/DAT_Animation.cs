@@ -135,7 +135,7 @@ namespace Smash_Forge
                     d.skip(1);
                     int dataoff = d.readInt() + 0x20;
 
-                    //S/ystem.out.println(AnimData.type[trackType] + "\tLength: " + length + "\tOffset: " + Integer.toHexString(dataoff));
+                    Console.WriteLine(AnimData.type[trackType] + "\tLength: " + length + "\tOffset: " + dataoff.ToString("x") + " " + valueFormat);
                     // System.out.println(valueFormat + " " + tanFormat);
                     readKeyFrame(d, length, dataoff, valueFormat, tanFormat, keyFrameCount[i], i, trackType);
                 }
@@ -171,38 +171,38 @@ namespace Smash_Forge
                     { // step
                         value = readVal(d, valueFormat);
                         time = readExtendedByte(d);
-                        Console.WriteLine(value + "\t" + time);
+                        Console.WriteLine("\t" + value + "\t" + time);
                     }
                     if (interpolation == 2)
                     { // linear
                         value = readVal(d, valueFormat);
                         time = readExtendedByte(d);
-                        Console.WriteLine(value + "\t" + time);
+                        Console.WriteLine("\t" + value + "\t" + time);
                     }
                     if (interpolation == 3)
                     { // hermite
                         value = readVal(d, valueFormat);
                         time = readExtendedByte(d);
-                        Console.WriteLine(value + "\t" + time);
+                        Console.WriteLine("\t" + value + "\t" + time);
                     }
                     if (interpolation == 4)
                     { // hermite
                         value = readVal(d, valueFormat);
                         tan = readVal(d, tanFormat);
                         time = readExtendedByte(d);
-                        Console.WriteLine(value + "\t" + tan + "\t" + time);
+                        Console.WriteLine("\t" + value + "\t" + tan + "\t" + time);
                     }
                     if (interpolation == 5)
                     { // hermite
                         tan = readVal(d, tanFormat);
                         //time = readExtendedByte(d);
-                        Console.WriteLine("Tan" + tan + "\t" + time);
+                        Console.WriteLine("\t" + "Tan" + tan + "\t" + time);
                     }
                     if (interpolation == 6)
                     { // constant
                         value = readVal(d, valueFormat);
                         time = readExtendedByte(d);
-                        Console.WriteLine(value + "\t" + time);
+                        Console.WriteLine("\t" + value + "\t" + time);
                     }
 
                     types.Add(interpolation);

@@ -570,11 +570,15 @@ namespace Smash_Forge
                         c.dat_melee = dat;
                         dat.PreRender();
                         //DAT_Animation anim = new DAT_Animation();
-                        //anim.Read(new FileData("C:\\Users\\ploaj_000\\Desktop\\Melee\\PlPkAJ.dat"));
+                        //anim.Read(new FileData("C:\\Users\\ploaj_000\\Desktop\\Melee\\zJiggyWait"));
                         //anim.Apply(dat.bones);
                         Runtime.ModelContainers.Add(c);
                         //Collada dae = new Collada();
                         //dae.Save("C:\\Users\\ploaj_000\\Desktop\\Melee\\Test.dae", dat);
+                        DAT_TreeView p = new DAT_TreeView() { ShowHint = DockState.Document };
+                        p.setDAT(dat);
+                        AddDockedControl(p);
+                        //Runtime.TargetVBN = dat.bones;
                     }
 
 

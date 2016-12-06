@@ -246,5 +246,37 @@ namespace Smash_Forge
         {
             RenderTexture();
         }
+
+        private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Direct Draw Surface (.dds)|*.dds|" +
+                             "All files(*.*)|*.*";
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    if (ofd.FileName.EndsWith(".dds") && selected != null)
+                    {
+
+                        NUT.NUD_Texture tex = (NUT.NUD_Texture)(listBox2.SelectedItem);
+
+                        DDS dds = new DDS(new FileData(ofd.FileName));
+                        NUT.NUD_Texture ntex = dds.toNUT_Texture();
+
+                        tex.height = ntex.height;
+                        tex.width = ntex.width;
+                        tex.type = ntex.type;
+                        tex.mipmaps = ntex.mipmaps;
+                        tex.utype = ntex.utype;
+                        selected.draw.Remove(tex.id);
+                        selected.draw.Add(tex.id, NUT.loadImage(tex));
+
+                        FillForm();
+                        listBox1.SelectedItem = selected;
+                    }
+                }
+            }
+        }
     }
 }

@@ -28,7 +28,7 @@ namespace Smash_Forge
             library_geometries mesh = new library_geometries();
             Items.Add(mesh);
             List<geometry> Mesh = new List<geometry>();
-            foreach (DAT.DOBJ d in mod.dobjs)
+            /*foreach (DAT.DOBJ d in mod.dobjs)
             {
                 geometry geom = new geometry();
                 Mesh.Add(geom);
