@@ -68,6 +68,7 @@
     <Compile Include="Filetypes\Models\BCH.cs" />
     <Compile Include="Filetypes\Models\Collada.cs" />
     <Compile Include="Filetypes\Models\MOI.cs" />
+    <Compile Include="Filetypes\Models\Skapon.cs" />
     <Compile Include="Filetypes\PAC.cs" />
     <Compile Include="Filetypes\Animation\PATH.cs" />
     <Compile Include="GUI\Editors\ACMDEditor.cs">
@@ -87,6 +88,12 @@
     </Compile>
     <Compile Include="GUI\Editors\BoneTree.Designer.cs">
       <DependentUpon>BoneTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\DAT_TreeView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\DAT_TreeView.Designer.cs">
+      <DependentUpon>DAT_TreeView.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\LVD Editor\LVDEditor.cs">
       <SubType>Form</SubType>
@@ -194,6 +201,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\BoneTree.resx">
       <DependentUpon>BoneTree.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\DAT_TreeView.resx">
+      <DependentUpon>DAT_TreeView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\LVD Editor\LVDEditor.resx">
       <DependentUpon>LVDEditor.cs</DependentUpon>

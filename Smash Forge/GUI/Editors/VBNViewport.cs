@@ -283,7 +283,7 @@ out vec4 color;
 out float fresNelR;
 
 uniform mat4 modelview;
-uniform mat4 bones[150];
+uniform mat4 bones[250];
  
 void
 main()
@@ -343,7 +343,7 @@ main()
 
     vec4 alpha = (1-minGain) + texture2D(nrm, texcoord).aaaa; //
     //if(alpha.a < 0.5) discard;
-	vec4 outputColor = ambiant + ((vec4(texture(tex, texcoord).rgb, 1)) * vec4(0.85,0.85,0.85,1.0) * normal);
+	vec4 outputColor = ambiant + ((vec4(texture(tex, texcoord).rgb, 1)) * vec4(0.80,0.80,0.80,1.0) * normal);
     vec4 fincol = vec4(((color * alpha * outputColor)).xyz, texture2D(tex, texcoord).a * color.w);
     gl_FragColor = fincol;//vec4(lerp(fresNelR, fincol, vec4(1.75,1.75,1.75,1)).xyz, fincol.w);
 }

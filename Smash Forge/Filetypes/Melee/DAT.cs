@@ -7,6 +7,7 @@ using System.Net;
 using System.Drawing;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System.Windows.Forms;
 using static Smash_Forge.DAT.POBJ;
 
 namespace Smash_Forge
@@ -16,10 +17,10 @@ namespace Smash_Forge
         public static int headerSize = 0x20;
         Header header = new Header();
 
+        public List<TreeNode> tree = new List<TreeNode>();
+        public List<TreeNode> displayList = new List<TreeNode>();
+
         public VBN bones = new VBN();
-        public List<JOBJ> jobjs = new List<JOBJ>();
-        public List<DOBJ> dobjs = new List<DOBJ>();
-        public COLL_DATA collisions = null;
 
         // gl buffer objects
         int vbo_position;
@@ -147,40 +148,42 @@ main()
                 string s = d.readString(d.readInt() + strOffset, -1);
                 sectionOffset[i] = data;
                 sectionNames[i] = s;
-                //Console.WriteLine(s + " " + data.ToString("x"));
+                Console.WriteLine(s + " " + data.ToString("x"));
+
+                TreeNode node = new TreeNode();
+                node.Text = s;
+                node.Tag = data;
+                tree.Add(node);
             }
 
-            for(int i = 0; i < header.rootCount; i++)
+            foreach(TreeNode node in tree)
             {
                 // then a file system is read... it works like a tree?
-                d.seek(sectionOffset[i]);
+                d.seek((int)node.Tag);
                 // now, the name determines what happens here
                 // for now, it just assumes the _joint
-                if (sectionNames[i].EndsWith("_joint"))
+                if (node.Text.EndsWith("_joint"))
                 {
                     JOBJ j = new JOBJ();
-                    j.Read(d, this);
-                    jobjs.Add(j);
+                    j.Read(d, this, node);
                     break;
                 }
-                /*else
-                if (sectionNames[i].EndsWith("map_head"))
+                else
+                if (node.Text.EndsWith("map_head"))
                 {
-                    d.seek(d.readInt() + headerSize);
-                    d.seek(d.readInt() + headerSize);
-                    JOBJ j = new JOBJ();
-                    j.Read(d, this);
-                    jobjs.Add(j);
-                }*/
-            }
+                    int off = d.readInt() + headerSize;
+                    int count = d.readInt();
 
-            for(int i = 0; i < header.rootCount; i++)
-            {
-                if (sectionNames[i].EndsWith("coll_data"))
-                {
-                    d.seek(sectionOffset[i]);
-                    collisions = new COLL_DATA();
-                    collisions.Read(d);
+                    d.seek(off);
+                    for(int k = 0; k < 1; k++)
+                    {
+                        int temp = d.pos()+4;
+                        d.seek(d.readInt() + headerSize);
+                        JOBJ j = new JOBJ();
+                        j.Read(d, this, node);
+                        //jobjs.Add(j);
+                        d.seek(temp);
+                    }
                 }
             }
 
@@ -236,9 +239,59 @@ main()
                 bone.Add(new Vector4(v.bones[0], v.bones[1], v.bones[2], v.bones[3]));
                 weight.Add(new Vector4(v.weights[0], v.weights[1], v.weights[2], v.weights[3]));
             }
-            
-            foreach (DOBJ data in dobjs)
+
+            Queue<TreeNode> queue = new Queue<TreeNode>();
+            foreach (TreeNode node in tree)
+                queue.Enqueue(node);
+
+            displayList.Clear();
+            List<JOBJ> boneTrack = new List<JOBJ>();
+            while (queue.Any())
             {
+                TreeNode node = queue.Dequeue();
+
+                foreach (TreeNode n in node.Nodes)
+                    queue.Enqueue(n);
+                if(node.Tag is DOBJ)
+                    displayList.Add(node);
+
+                if (!(node.Tag is JOBJ))
+                    continue;
+
+                JOBJ j = (JOBJ)node.Tag;
+                boneTrack.Add(j);
+
+                Bone b = new Bone();
+                b.boneName = new char[] { 'b' };
+                if (node.Parent.Tag is JOBJ)
+                    b.parentIndex = boneTrack.IndexOf((JOBJ)node.Parent.Tag);
+                else
+                    b.parentIndex = -1;
+                //Console.WriteLine("Where is this? " + b.parentIndex);
+
+                b.children = new List<int>();
+                b.scale = new float[3];
+                b.rotation = new float[3];
+                b.position = new float[3];
+                b.position[0] = j.pos.X;
+                b.position[1] = j.pos.Y;
+                b.position[2] = j.pos.Z;
+                b.scale[0] = j.sca.X;
+                b.scale[1] = j.sca.Y;
+                b.scale[2] = j.sca.Z;
+                b.rotation[0] = j.rot.X;
+                b.rotation[1] = j.rot.Y;
+                b.rotation[2] = j.rot.Z;
+                if (b.parentIndex != -1)
+                    bones.bones[b.parentIndex].children.Add(boneTrack.IndexOf(j));
+                bones.bones.Add(b);
+            }
+            bones.reset();
+            bones.update();
+
+            foreach (var da in displayList)
+            {
+                DOBJ data = (DOBJ)da.Tag;
                 foreach (POBJ poly in data.polygons)
                 {
                     foreach (POBJ.DisplayObject d in poly.display)
@@ -256,28 +309,6 @@ main()
             weightdata = weight.ToArray();
 
             facedata = face.ToArray();
-
-            foreach (JOBJ j in jobjs)
-            {
-                Bone b = new Bone();
-                b.boneName = new char[] { 'b'};
-                b.parentIndex = j.parent;
-
-                b.scale = new float[3];
-                b.rotation = new float[3];
-                b.position = new float[3];
-                b.position[0] = j.pos.X;
-                b.position[1] = j.pos.Y;
-                b.position[2] = j.pos.Z;
-                b.scale[0] = j.sca.X;
-                b.scale[1] = j.sca.Y;
-                b.scale[2] = j.sca.Z;
-                b.rotation[0] = j.rot.X;
-                b.rotation[1] = j.rot.Y;
-                b.rotation[2] = j.rot.Z;
-                bones.bones.Add(b);
-            }
-            bones.reset();
         }
 
         public void Render(Matrix4 modelview)
@@ -290,7 +321,7 @@ main()
            {
                Matrix4[] f = bones.getShaderMatrix();
                int shad = shader.getAttribute("bones");
-               GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
+               //GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
            }
 
            shader.enableAttrib();
@@ -324,8 +355,9 @@ main()
 
            int indiceat = 0;
 
-            foreach (DOBJ data in dobjs)
+            foreach (var da in displayList)
             {
+                DOBJ data = da.Tag as DOBJ;
                 GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindTexture(TextureTarget.Texture2D, data.material.texture.texid);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)GX_TEXTUREWRAP[data.material.texture.wrap_s]);
@@ -338,7 +370,8 @@ main()
                 {
                     foreach (POBJ.DisplayObject d in poly.display)
                     {
-                        GL.DrawElements(primitiesTypes[d.type], d.faces.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
+                        if(da.Checked)
+                            GL.DrawElements(primitiesTypes[d.type], d.faces.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
                         indiceat += d.faces.Count;
                     }
                 }
@@ -380,48 +413,10 @@ main()
             }
         }
 
-        public class COLL_DATA
-        {
-            public List<Vector2D> vertices = new List<Vector2D>();
-            public List<List<Vector2D>> polys = new List<List<Vector2D>>();
-
-            public void Read(FileData f)
-            {
-                int vertOff = f.readInt() + 0x20;
-                int vertCount = f.readInt();
-                f.skip(0x1C);
-                int polyOff = f.readInt() + 0x20;
-                int polyCount = f.readInt();
-                int returnOffset = f.pos();
-                f.seek(vertOff);
-                for(int i = 0; i < vertCount; i++)
-                {
-                    Vector2D point = new Vector2D();
-                    point.x = f.readFloat();
-                    point.y = f.readFloat();
-                    vertices.Add(point);
-                }
-                f.seek(polyOff);
-                for(int i = 0; i < polyCount; i++)
-                {
-                    f.skip(0x24);
-                    int start = f.readShort();
-                    int length = f.readShort();
-                    polys.Add(vertices.GetRange(start, length));
-                }
-                int inc = 0;
-                foreach (List<Vector2D>poly in polys)
-                {
-                    inc++;
-                    Console.WriteLine("\nPoly" + inc);
-                    foreach(Vector2D point in poly)
-                        Console.WriteLine("(" + point.x + ", " + point.y + ")");
-                }
-            }
-        }
-
         public class JOBJ
         {
+            TreeNode node = new TreeNode();
+
             public int unk1 = 0; // padding?
             public int flags = 0x1004008E;
             public int childOffset = 0;
@@ -431,20 +426,15 @@ main()
             public Vector3 rot = new Vector3(), sca = new Vector3(), pos = new Vector3();
             public Matrix4 inverseTransform;
             public int unk2; //?? padding again??
-
-            public int parent = -1;
+            
             public Matrix4 transform = new Matrix4();
 
             public JOBJ()
             {
 
             }
-            public JOBJ(int parent)
-            {
-                this.parent = parent;
-            }
 
-            public void Read(FileData d, DAT dat)
+            public void Read(FileData d, DAT dat, TreeNode parentNode)
             {
                 dat.jobjOffsetLinker.Add(d.pos(), this);
                 unk1 = d.readInt();
@@ -479,22 +469,25 @@ main()
 
                 transform = Matrix4.CreateScale(sca)
                                     * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(rot.Z, rot.Y, rot.X))
-                                    * Matrix4.CreateTranslation(pos) * (parent != -1 ? dat.jobjs[parent].transform : Matrix4.CreateScale(1, 1, 1));
+                                    * Matrix4.CreateTranslation(pos) * (parentNode.Tag is JOBJ ? ((JOBJ)parentNode.Tag).transform : Matrix4.CreateScale(1, 1, 1));
                 inverseTransform = transform.Inverted(); // screw the given transform
 
-                dat.jobjs.Add(this);
+                //dat.jobjs.Add(this);
+                node.Text = "Bone_" + parentNode.Nodes.Count;
+                node.Tag = this;
+                parentNode.Nodes.Add(node);
 
                 if (nextOffset != headerSize)
                 {
                     d.seek(nextOffset);
-                    JOBJ j = new JOBJ(parent);
-                    j.Read(d, dat);
+                    JOBJ j = new JOBJ();
+                    j.Read(d, dat, parentNode);
                 }
                 if (childOffset != headerSize)
                 {
                     d.seek(childOffset);
-                    JOBJ j = new JOBJ(dat.jobjs.IndexOf(this));
-                    j.Read(d, dat);
+                    JOBJ j = new JOBJ();
+                    j.Read(d, dat, node);
                 }
 
                 if (dobjOffset != headerSize)
@@ -502,7 +495,7 @@ main()
                     Console.WriteLine("DOBJ" + dobjOffset.ToString("X"));
                     d.seek(dobjOffset);
                     DOBJ dobj = new DOBJ();
-                    dobj.Read(d, dat);
+                    dobj.Read(d, dat, node);
                 }
             }
         }
@@ -510,6 +503,7 @@ main()
         // DATA (Contains mesh and material)
         public class DOBJ
         {
+            TreeNode node = new TreeNode();
             public int unk1 = 0; // padding?
             public int nextOffset = 0;
             public int mobjOffset = 0;
@@ -518,9 +512,10 @@ main()
             public List<POBJ> polygons = new List<POBJ>();
             public MOBJ material = new MOBJ();
 
-            public void Read(FileData d, DAT dat)
+            public void Read(FileData d, DAT dat, TreeNode parent)
             {
-                dat.dobjs.Add(this);
+                //if (dat.dobjs.Count > 0) return;
+                //dat.dobjs.Add(this);
                 unk1 = d.readInt();
                 nextOffset = d.readInt() + headerSize;
                 mobjOffset = d.readInt() + headerSize;
@@ -528,16 +523,21 @@ main()
                 
                 d.seek(pobjOffset);
                 POBJ p = new POBJ();
-                p.Read(d, dat, this);
+                p.Read(d, dat, this, node);
 
                 d.seek(mobjOffset);
                 material.Read(d, dat);
+
+                node.Text = "Mesh";
+                node.Tag = this;
+                node.Checked = true;
+                parent.Nodes.Add(node);
 
                 if (nextOffset != headerSize)
                 {
                     d.seek(nextOffset);
                     DOBJ de = new Smash_Forge.DAT.DOBJ();
-                    de.Read(d, dat);
+                    de.Read(d, dat, parent);
                 }
             }
 
@@ -670,7 +670,7 @@ main()
                 vtxStride = (short)d.readShort();
                 dataOffset = d.readInt() + headerSize;
 
-                Console.WriteLine((GXAttr)vtxAttr + " comp type " + compType + " Data Offset: " + dataOffset.ToString("x") + " Scale: " + scale);
+                Console.WriteLine((GXAttr)vtxAttr + " " + vtxAttrType + " comp type " + compType + " Data Offset: " + dataOffset.ToString("x") + " Scale: " + scale);
 
                 return this;
             }
@@ -723,6 +723,8 @@ main()
         // POLYGON
         public class POBJ
         {
+            TreeNode node = new TreeNode();
+
             public int unk1 = 0; // padding?
             public int nextOffset = 0;
             public int vertexAttrArray = 0;
@@ -744,9 +746,13 @@ main()
             public List<DisplayObject> display = new List<DisplayObject>();
 
 
-            public void Read(FileData d, DAT dat, DOBJ parent)
+            public void Read(FileData d, DAT dat, DOBJ dobj, TreeNode parent)
             {
-                parent.polygons.Add(this);
+                dobj.polygons.Add(this);
+
+                node.Text = "Polygon";
+                node.Tag = this;
+                parent.Nodes.Add(node);
 
                 unk1 = d.readInt();
                 nextOffset = d.readInt() + headerSize;
@@ -801,7 +807,20 @@ main()
                                 switch (att.vtxAttrType)
                                 {
                                     case GXAttrType.GX_DIRECT:
-                                        value = d.readByte();
+                                        if(att.vtxAttr != (int)GXAttr.GX_VA_CLR0)
+                                            value = d.readByte();
+                                        else
+                                        {
+                                            switch (att.compType)
+                                            {
+                                                case 0: d.skip(2); break;
+                                                case 1: d.skip(3); break;
+                                                case 2: d.skip(3); break;
+                                                case 3: d.skip(2); break;
+                                                case 4: d.skip(2); break;
+                                                case 5: d.skip(4); break;
+                                            }
+                                        }
                                         break;
                                     case GXAttrType.GX_INDEX8:
                                         value = d.readByte();
@@ -846,7 +865,7 @@ main()
                                                 while (off1 > headerSize)
                                                 {
                                                     newp += Vector3.Transform(v.pos, dat.jobjOffsetLinker[off1].transform) * wei1;
-                                                    v.bones.Add(dat.jobjs.IndexOf(dat.jobjOffsetLinker[off1]));
+                                                    //v.bones.Add(dat.jobjs.IndexOf(dat.jobjOffsetLinker[off1]));
                                                     v.weights.Add(wei1);
                                                     off1 = d.readInt() + headerSize;
                                                     wei1 = d.readFloat();
@@ -926,7 +945,7 @@ main()
                 {
                     d.seek(nextOffset);
                     POBJ pol = new POBJ();
-                    pol.Read(d, dat, parent);
+                    pol.Read(d, dat, dobj, parent);
                 }
             }
 
