@@ -130,8 +130,13 @@ namespace Smash_Forge
                 if (result == DialogResult.OK)
                 {
                     filename = save.FileName;
-                    if(filename.EndsWith(".vbn"))
+                    if (filename.EndsWith(".vbn"))
+                    {
+                        Runtime.TargetVBN.Endian = Endianness.Big;
+                        if (!checkBox1.Checked)
+                            Runtime.TargetVBN.Endian = Endianness.Little;
                         Runtime.TargetVBN.Save(filename);
+                    }
                     if (filename.EndsWith(".lvd") && Runtime.TargetLVD != null)
                         File.WriteAllBytes(filename, Runtime.TargetLVD.Rebuild());
                     //OMO.createOMO (anim, vbn, "C:\\Users\\ploaj_000\\Desktop\\WebGL\\test_outut.omo", -1, -1);
