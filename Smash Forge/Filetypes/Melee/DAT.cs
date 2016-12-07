@@ -86,7 +86,7 @@ void
 main()
 {
     vec4 alpha = texture(tex, f_texcoord*uvscale).aaaa;
-    gl_FragColor = vec4 ((texture(tex, f_texcoord*uvscale)).xyz, alpha.a); //color * alpha * 
+    gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale)).xyz, alpha.a);
 }
 ";
 
@@ -164,13 +164,13 @@ main()
                 d.seek((int)node.Tag);
                 // now, the name determines what happens here
                 // for now, it just assumes the _joint
-                /*if (node.Text.EndsWith("_joint"))
+                if (node.Text.EndsWith("_joint") && !node.Text.Contains("matanim"))
                 {
                     JOBJ j = new JOBJ();
                     j.Read(d, this, node);
-                    break;
+                    //break;
                 }
-                else*/
+                else
                 if (node.Text.EndsWith("map_head"))
                 {
                     Map_Head head = new Map_Head();
@@ -1202,35 +1202,35 @@ main()
 
                         break;
                     case 1: // GX_RGB888
-                        clr.X = d.readByte() / 0xFF;
-                        clr.Y = d.readByte() / 0xFF;
-                        clr.Z = d.readByte() / 0xFF;
+                        clr.X = d.readByte() / (float)0xFF;
+                        clr.Y = d.readByte() / (float)0xFF;
+                        clr.Z = d.readByte() / (float)0xFF;
                         break;
                     case 2: // GX_RGBX888
-                        clr.X = d.readByte() / 0xFF;
-                        clr.Y = d.readByte() / 0xFF;
-                        clr.Z = d.readByte() / 0xFF;
+                        clr.X = d.readByte() / (float)0xFF;
+                        clr.Y = d.readByte() / (float)0xFF;
+                        clr.Z = d.readByte() / (float)0xFF;
                         d.skip(8);
                         break;
                     case 3: // GX_RGBA4
                         b = d.readShort();
-                        clr.X = ((((b >> 12) & 0xF) << 4) | ((b >> 12) & 0xF)) / 0xFF;
-                        clr.Y = ((((b >> 8) & 0xF) << 4) | ((b >> 8) & 0xF)) / 0xFF;
-                        clr.Z = ((((b >> 4) & 0xF) << 4) | ((b >> 4) & 0xF)) / 0xFF;
-                        clr.W = ((((b) & 0xF) << 4) | ((b) & 0xF)) / 0xFF;
+                        clr.X = ((((b >> 12) & 0xF) << 4) | ((b >> 12) & 0xF)) / (float)0xFF;
+                        clr.Y = ((((b >> 8) & 0xF) << 4) | ((b >> 8) & 0xF)) / (float)0xFF;
+                        clr.Z = ((((b >> 4) & 0xF) << 4) | ((b >> 4) & 0xF)) / (float)0xFF;
+                        clr.W = ((((b) & 0xF) << 4) | ((b) & 0xF)) / (float)0xFF;
                         break;
                     case 4: // GX_RGBA6
                         b = d.readThree();
-                        clr.X = ((((b >> 18) & 0x3F) << 2) | (((b >> 18) & 0x3F)) >> 4) / 0xFF;
-                        clr.Y = ((((b >> 12) & 0x3F) << 2) | (((b >> 12) & 0x3F)) >> 4) / 0xFF;
-                        clr.Z = ((((b >> 6) & 0x3F) << 2) | (((b >> 6) & 0x3F)) >> 4) / 0xFF;
-                        clr.W = ((((b) & 0x3F) << 2) | (((b) & 0x3F)) >> 4) / 0xFF;
+                        clr.X = ((((b >> 18) & 0x3F) << 2) | (((b >> 18) & 0x3F) >> 4)) / (float)0xFF;
+                        clr.Y = ((((b >> 12) & 0x3F) << 2) | (((b >> 12) & 0x3F) >> 4)) / (float)0xFF;
+                        clr.Z = ((((b >> 6) & 0x3F) << 2) | (((b >> 6) & 0x3F) >> 4)) / (float)0xFF;
+                        clr.W = ((((b) & 0x3F) << 2) | (((b) & 0x3F) >> 4)) / (float)0xFF;
                         break;
                     case 5: // GX_RGBX888
-                        clr.X = d.readByte() / 0xFF;
-                        clr.Y = d.readByte() / 0xFF;
-                        clr.Z = d.readByte() / 0xFF;
-                        clr.W = d.readByte() / 0xFF;
+                        clr.X = d.readByte() / (float)0xFF;
+                        clr.Y = d.readByte() / (float)0xFF;
+                        clr.Z = d.readByte() / (float)0xFF;
+                        clr.W = d.readByte() / (float)0xFF;
                         break;
                 }
 
