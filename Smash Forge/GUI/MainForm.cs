@@ -292,12 +292,14 @@ namespace Smash_Forge
                         //anim.Read(new FileData("C:\\Users\\ploaj_000\\Desktop\\Melee\\zJiggyWait"));
                         //anim.Apply(dat.bones);
                         Runtime.ModelContainers.Add(c);
+                        //Runtime.ModelContainers.Add(dat.wrapToNUD());
                         //Collada dae = new Collada();
                         //dae.Save("C:\\Users\\ploaj_000\\Desktop\\Melee\\Test.dae", dat);
                         DAT_TreeView p = new DAT_TreeView() { ShowHint = DockState.DockLeft };
                         p.setDAT(dat);
                         AddDockedControl(p);
                         //Runtime.TargetVBN = dat.bones;
+                        meshList.refresh();
                     }
 
 
@@ -846,7 +848,14 @@ namespace Smash_Forge
                 {
                     filename = save.FileName;
                     if (filename.EndsWith(".nud"))
-                        Runtime.ModelContainers[0].nud.Save(filename);
+                        if(Runtime.ModelContainers[0].dat_melee != null)
+                        {
+                            ModelContainer m = Runtime.ModelContainers[0].dat_melee.wrapToNUD();
+                            m.nud.Save(filename);
+                            m.vbn.Save(filename.Replace(".nud", ".vbn"));
+                        }
+                        else
+                            Runtime.ModelContainers[0].nud.Save(filename);
                 }
             }
         }

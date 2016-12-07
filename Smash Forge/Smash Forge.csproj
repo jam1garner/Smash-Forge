@@ -68,6 +68,7 @@
     <Compile Include="Filetypes\Animation\MTA.cs" />
     <Compile Include="Filetypes\Melee\LibWii\Shared.cs" />
     <Compile Include="Filetypes\Melee\LibWii\TLP.cs" />
+    <Compile Include="Filetypes\Melee\TriangleTools.cs" />
     <Compile Include="Filetypes\Models\BCH.cs" />
     <Compile Include="Filetypes\Models\Collada.cs" />
     <Compile Include="Filetypes\Models\MOI.cs" />

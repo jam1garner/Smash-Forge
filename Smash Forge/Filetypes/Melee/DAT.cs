@@ -246,7 +246,7 @@ main()
                     v.bones.Add(0);
                     v.weights.Add(0);
                 }
-
+                
                 bone.Add(new Vector4(v.bones[0], v.bones[1], v.bones[2], v.bones[3]));
                 weight.Add(new Vector4(v.weights[0], v.weights[1], v.weights[2], v.weights[3]));
             }
@@ -307,6 +307,21 @@ main()
                 {
                     foreach (POBJ.DisplayObject d in poly.display)
                     {
+                        // I wanna triangulate
+                        /*if(d.type != 0x90)
+                        {
+                            Console.WriteLine("Triangulate " + primitiesTypes[d.type]);
+                        }
+                        if(d.type == 0x98)
+                        {
+                            d.faces = TriangleTools.fromTriangleStrip(d.faces);
+                            d.type = 0x90;
+                        }
+                        if (d.type == 0x80)
+                        {
+                            d.faces = TriangleTools.fromQuad(d.faces);
+                            d.type = 0x90;
+                        }*/
                         face.AddRange(d.faces);
                     }
                 }
@@ -390,6 +405,64 @@ main()
 
             shader.disableAttrib();
             
+        }
+
+        public ModelContainer wrapToNUD()
+        {
+            ModelContainer con = new ModelContainer();
+            con.vbn = bones;
+
+            NUD nud = new NUD();
+            con.nud = nud;
+
+            foreach (var da in displayList)
+            {
+                DOBJ data = (DOBJ)da.Tag;
+                NUD.Mesh mesh = new NUD.Mesh();
+                mesh.name = "Mesh_" + displayList.IndexOf(da);
+                nud.mesh.Add(mesh);
+                
+                foreach (POBJ poly in data.polygons)
+                {
+                    foreach (POBJ.DisplayObject d in poly.display)
+                    {
+                        NUD.Polygon polygon = new NUD.Polygon();
+                        polygon.setDefaultMaterial();
+                        List<int> faces = d.faces;
+                        if (d.type == 0x98)
+                            faces = TriangleTools.fromTriangleStrip(d.faces);
+                        else
+                        if (d.type == 0x80)
+                            faces = TriangleTools.fromQuad(d.faces);
+
+                        List<Vertex> usedVertices = new List<Vertex>();
+                        foreach (int index in faces)
+                        {
+                            if (!usedVertices.Contains(vertBank[index]))
+                                usedVertices.Add(vertBank[index]);
+                            polygon.faces.Add(usedVertices.IndexOf(vertBank[index]));
+                        }
+
+                        foreach(Vertex vert in usedVertices)
+                        {
+                            // convert to nud vert
+                            NUD.Vertex nv = new NUD.Vertex();
+                            nv.pos = vert.pos;
+                            nv.tx.Add(vert.tx0);
+                            nv.nrm = vert.nrm;
+                            nv.node.AddRange(vert.bones);
+                            nv.weight.AddRange(vert.weights);
+                            polygon.AddVertex(nv);
+                        }
+
+                        mesh.polygons.Add(polygon);
+                    }
+                }
+            }
+
+            nud.PreRender();
+
+            return con;
         }
 
         /*
@@ -942,7 +1015,28 @@ main()
                                                 while (off1 > headerSize)
                                                 {
                                                     newp += Vector3.Transform(v.pos, dat.jobjOffsetLinker[off1].transform) * wei1;
-                                                    //v.bones.Add(dat.jobjs.IndexOf(dat.jobjOffsetLinker[off1]));
+
+                                                    //Hacky and the hackjobs----------------------------------------
+                                                    Queue<TreeNode> queue = new Queue<TreeNode>();
+                                                    foreach (TreeNode node in dat.tree)
+                                                        queue.Enqueue(node);
+                                                    
+                                                    List<JOBJ> boneTrack = new List<JOBJ>();
+                                                    while (queue.Any())
+                                                    {
+                                                        TreeNode node = queue.Dequeue();
+
+                                                        foreach (TreeNode n in node.Nodes)
+                                                            queue.Enqueue(n);
+
+                                                        if (!(node.Tag is JOBJ))
+                                                            continue;
+
+                                                        boneTrack.Add((JOBJ)node.Tag);
+                                                    }
+                                                    //----------------------------------------------------------
+                                                    
+                                                    v.bones.Add(boneTrack.IndexOf(dat.jobjOffsetLinker[off1]));
                                                     v.weights.Add(wei1);
                                                     off1 = d.readInt() + headerSize;
                                                     wei1 = d.readFloat();
