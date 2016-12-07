@@ -372,6 +372,7 @@ namespace Smash_Forge
 
                             // apply settings
                             m.Apply(Runtime.ModelContainers[0].nud);
+                            Runtime.ModelContainers[0].nud.MergePoly();
 
                             meshList.refresh();
                         }

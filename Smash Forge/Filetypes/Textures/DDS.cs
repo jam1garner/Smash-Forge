@@ -121,7 +121,7 @@ namespace Smash_Forge
             header = new Header();
             header.width = tex.width;
             header.height = tex.height;
-            header.mipmapCount = tex.mipmaps.Count;
+            header.mipmapCount = tex.mipmaps.Count <= 2 ? 1 : tex.mipmaps.Count - 2;
             switch (tex.type)
             {
                 case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
@@ -140,9 +140,10 @@ namespace Smash_Forge
                         header.dwFourCC = 0x0;
                     break;
                 /*case PixelInternalFormat.CompressedRedRgtc1:
-                    break;
-                case PixelInternalFormat.CompressedRgRgtc2:
                     break;*/
+                case PixelInternalFormat.CompressedRgRgtc2:
+                    header.dwFourCC = 0x53354342;
+                    break;
                 default:
                     throw new NotImplementedException($"Unknown pixel format 0x{tex.type:X}");
             }
