@@ -59,12 +59,12 @@ main()
     ivec4 index = ivec4(vBone); 
     vec4 objPos = vec4(vPosition.xyz, 1.0);
 
-    /*if(vBone.x != -1){
+    if(vBone.x != -1){
         objPos = bones[index.x] * vec4(vPosition, 1.0) * vWeight.x;
         objPos += bones[index.y] * vec4(vPosition, 1.0) * vWeight.y;
         objPos += bones[index.z] * vec4(vPosition, 1.0) * vWeight.z;
         objPos += bones[index.w] * vec4(vPosition, 1.0) * vWeight.w;
-    } */
+    }
 
     gl_Position = modelview * vec4(objPos.xyz, 1.0);
 
@@ -445,6 +445,7 @@ main()
                     nv.pos = vert.pos;
                     nv.tx.Add(vert.tx0);
                     nv.nrm = vert.nrm;
+                    nv.col = vert.clr;
                     nv.node.AddRange(vert.bones);
                     nv.weight.AddRange(vert.weights);
                     polygon.AddVertex(nv);
@@ -1178,6 +1179,11 @@ main()
                                         v.tx0 = Vector2.Divide(v.tx0, (float)Math.Pow(2, att.scale));
                                         d.seek(temp);
                                         break;
+                                }
+                                if (v.bones.Count < 1)
+                                {
+                                    v.bones.Add(-1);
+                                    v.weights.Add(0);
                                 }
                             }
                         }
