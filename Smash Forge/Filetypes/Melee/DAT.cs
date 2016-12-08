@@ -86,7 +86,7 @@ void
 main()
 {
     vec4 alpha = texture(tex, f_texcoord*uvscale).aaaa;
-    gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale)).xyz, alpha.a);
+    gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale)).xyz, alpha.a * color.w);
 }
 ";
 
@@ -410,14 +410,13 @@ main()
                 DOBJ data = (DOBJ)da.Tag;
                 NUD.Mesh mesh = new NUD.Mesh();
                 mesh.name = "Mesh_" + displayList.IndexOf(da);
-                nud.mesh.Add(mesh);
-
+                NUD.Polygon polygon = new NUD.Polygon();
+                polygon.setDefaultMaterial();
+                List<Vertex> usedVertices = new List<Vertex>();
                 foreach (POBJ poly in data.polygons)
                 {
                     foreach (POBJ.DisplayObject d in poly.display)
                     {
-                        NUD.Polygon polygon = new NUD.Polygon();
-                        polygon.setDefaultMaterial();
                         List<int> faces = d.faces;
                         if (d.type == 0x98)
                             faces = TriangleTools.fromTriangleStrip(d.faces);
@@ -425,29 +424,33 @@ main()
                         if (d.type == 0x80)
                             faces = TriangleTools.fromQuad(d.faces);
 
-                        List<Vertex> usedVertices = new List<Vertex>();
                         foreach (int index in faces)
                         {
                             if (!usedVertices.Contains(vertBank[index]))
                                 usedVertices.Add(vertBank[index]);
                             polygon.faces.Add(usedVertices.IndexOf(vertBank[index]));
                         }
-
-                        foreach (Vertex vert in usedVertices)
-                        {
-                            // convert to nud vert
-                            NUD.Vertex nv = new NUD.Vertex();
-                            nv.pos = vert.pos;
-                            nv.tx.Add(vert.tx0);
-                            nv.nrm = vert.nrm;
-                            nv.node.AddRange(vert.bones);
-                            nv.weight.AddRange(vert.weights);
-                            polygon.AddVertex(nv);
-                        }
-
-                        mesh.polygons.Add(polygon);
                     }
                 }
+
+                if (usedVertices.Count == 0)
+                    continue;
+
+                nud.mesh.Add(mesh);
+
+                foreach (Vertex vert in usedVertices)
+                {
+                    // convert to nud vert
+                    NUD.Vertex nv = new NUD.Vertex();
+                    nv.pos = vert.pos;
+                    nv.tx.Add(vert.tx0);
+                    nv.nrm = vert.nrm;
+                    nv.node.AddRange(vert.bones);
+                    nv.weight.AddRange(vert.weights);
+                    polygon.AddVertex(nv);
+                }
+
+                mesh.polygons.Add(polygon);
             }
 
             nud.PreRender();

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
+using OpenTK.Input;
 using System.Security.Cryptography;
 using SALT.Scripting.AnimCMD;
 using OpenTK.Graphics;
@@ -64,6 +65,7 @@ namespace Smash_Forge
         #region Members
         Matrix4 v;
         float rot = 0;
+        float x = 0;
         float lookup = 0;
         float height = 0;
         float width = 0;
@@ -73,6 +75,7 @@ namespace Smash_Forge
         float mouseSLast = 0;
         bool render = false;
         bool isPlaying = false;
+        bool fpsView = false;
         Shader shader;
         #endregion
 
@@ -108,11 +111,11 @@ namespace Smash_Forge
                 MainForm.Instance.paramEditors = new List<PARAMEditor>();
                 if (Directory.Exists("workspace/animcmd/"))
                 {
-                    foreach(string file in Directory.EnumerateFiles("workspace/animcmd/"))
+                    foreach (string file in Directory.EnumerateFiles("workspace/animcmd/"))
                         File.Delete(file);
                     Directory.Delete("workspace/animcmd/");
                 }
-                    
+
                 MainForm.Instance.project.fillTree();
             }
 
@@ -212,7 +215,7 @@ namespace Smash_Forge
                 {
                     foreach (BCH.BCH_Model mod in m.bch.models)
                     {
-                        if(mod.skeleton != null)
+                        if (mod.skeleton != null)
                             Runtime.TargetAnim.nextFrame(mod.skeleton);
                     }
                 }
@@ -228,9 +231,10 @@ namespace Smash_Forge
             AnimationSpeed = (int)nupdFrameRate.Value;
         }
 
-        private void glControl1_MouseMove(object sender, MouseEventArgs e)
+        private void glControl1_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            UpdateMousePosition();
+            if (!fpsView)
+                UpdateMousePosition();
         }
 
         public event EventHandler FrameChanged;
@@ -393,11 +397,11 @@ main()
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
             v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 2500.0f);
-            
+
         }
 
         int cf = 0;
-        Color back1 = Color.FromArgb((255<<24)|(26<<16)|(26<<8)|(26));
+        Color back1 = Color.FromArgb((255 << 24) | (26 << 16) | (26 << 8) | (26));
         Color back2 = Color.FromArgb((255 << 24) | (77 << 16) | (77 << 8) | (77));
 
         public void Render()
@@ -412,7 +416,7 @@ main()
             GL.PushAttrib(AttribMask.AllAttribBits);
             // clear the gf buffer
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            
+
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.MatrixMode(MatrixMode.Projection);
@@ -429,12 +433,17 @@ main()
 
             GL.Enable(EnableCap.DepthTest);
             GL.ClearDepth(1.0);
-            
+
             // set up the viewport projection and send it to GPU
             GL.MatrixMode(MatrixMode.Projection);
 
             if (IsMouseOverViewport() && glControl1.Focused)
-                UpdateMousePosition();
+            {
+                if (fpsView)
+                    FPSCamera();
+                else
+                    UpdateMousePosition();
+            }
             mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
 
             SetCameraAnimation();
@@ -447,7 +456,7 @@ main()
             // drawing floor---------------------------
             if (Runtime.renderFloor)
                 RenderTools.drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
-            
+
             GL.Enable(EnableCap.LineSmooth); // This is Optional 
             GL.Enable(EnableCap.Normalize);  // These is critical to have
             GL.Enable(EnableCap.RescaleNormal);
@@ -463,11 +472,11 @@ main()
 
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
-            
+
             // draw models
             if (Runtime.renderModel)
                 DrawModels();
-            
+
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
             GL.DepthFunc(DepthFunction.Less);
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
@@ -563,7 +572,7 @@ main()
                     }
                 }
             }*/
-            
+
             GL.UseProgram(shader.programID);
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
@@ -586,7 +595,7 @@ main()
                         shader.disableAttrib();
                     }
                 }
-                
+
                 if (m.dat_melee != null)
                 {
                     m.dat_melee.Render(v);
@@ -605,12 +614,12 @@ main()
 
                     shader.enableAttrib();
                     m.nud.clearMTA();//Clear animated materials
-                    
+
                     if (m.mta != null)
                         m.nud.applyMTA(m.mta, (int)nupdFrame.Value);//Apply base mta
                     if (Runtime.TargetMTA != null)
                         m.nud.applyMTA(Runtime.TargetMTA, (int)nupdFrame.Value);//Apply additional mta (can override base)
-                    
+
                     m.nud.Render(shader);
                     shader.disableAttrib();
                 }
@@ -625,13 +634,13 @@ main()
                 if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
                     HandleACMD(Runtime.TargetAnimString.Substring(3));
 
-                if(Runtime.renderHitboxes)
+                if (Runtime.renderHitboxes)
                     RenderHitboxes();
 
                 foreach (ModelContainer m in Runtime.ModelContainers)
                 {
                     DrawVBN(m.vbn);
-                    if(m.bch != null)
+                    if (m.bch != null)
                     {
                         DrawVBN(m.bch.models[0].skeleton);
                     }
@@ -773,7 +782,7 @@ main()
         private static Color getLinkColor(DAT.COLL_DATA.Link link)
         {
             if ((link.flags & 1) != 0)
-                return Color.FromArgb(128,Color.Yellow);
+                return Color.FromArgb(128, Color.Yellow);
             if ((link.collisionAngle & 4) + (link.collisionAngle & 8) != 0)
                 return Color.FromArgb(128, Color.Lime);
             if ((link.collisionAngle & 2) != 0)
@@ -784,13 +793,14 @@ main()
 
         public void DrawLVD()
         {
-            foreach(ModelContainer m in Runtime.ModelContainers)
+            foreach (ModelContainer m in Runtime.ModelContainers)
             {
                 // JAM FIIIIIIXXXXXED IIIIIIIT
                 if (m.dat_melee != null && m.dat_melee.collisions != null)
                 {
                     List<int> ledges = new List<int>();
-                    foreach (DAT.COLL_DATA.Link link in m.dat_melee.collisions.links) {
+                    foreach (DAT.COLL_DATA.Link link in m.dat_melee.collisions.links)
+                    {
                         GL.Begin(PrimitiveType.Quads);
                         GL.Color4(getLinkColor(link));
                         Vector2D vi = m.dat_melee.collisions.vertices[link.vertexIndices[0]];
@@ -800,11 +810,11 @@ main()
                         GL.Vertex3(vi.x, vi.y, -5);
                         GL.Vertex3(vi.x, vi.y, 5);
                         GL.End();
-                        if((link.flags & 2) != 0)
+                        if ((link.flags & 2) != 0)
                         {
                             ledges.Add(link.vertexIndices[0]);
                             ledges.Add(link.vertexIndices[1]);
-                        } 
+                        }
                     }
                     GL.LineWidth(4);
                     for (int i = 0; i < m.dat_melee.collisions.vertices.Count; i++)
@@ -832,7 +842,7 @@ main()
                         int dir = 1;
                         int cg = 0;
                         GL.LineWidth(3);
-                        
+
                         GL.Begin(PrimitiveType.Quads);
                         foreach (Vector2D vi in c.verts)
                         {
@@ -866,7 +876,7 @@ main()
                                     case 0x02:
                                         GL.Color4(Color.FromArgb(100, 0x18, 0x96, 0x4f)); //grass
                                         break;
-                                    case 0x1C: 
+                                    case 0x1C:
                                         GL.Color4(Color.FromArgb(100, 0xcd, 0xbe, 0x7e)); //sand
                                         break;
                                     case 0x06:
@@ -895,7 +905,7 @@ main()
                                         break;
                                 }
                             }
-                            
+
                             GL.Vertex3(vi.x, vi.y, 5 * dir);
                             GL.Vertex3(vi.x, vi.y, -5 * dir);
                             if (cg > 0)
@@ -1480,6 +1490,48 @@ main()
             nupdMaxFrame.Value = m.numFrames;
             //Console.WriteLine(m.numFrames);
             Runtime.TargetMTA = m;
+        }
+
+        private void VBNViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 'f')
+            {
+                fpsView = !fpsView;
+
+                // I need to convert the camera stuff...
+                if (fpsView)
+                {
+                    //Console.WriteLine(trans);
+                    /*Quaternion rot = v.ExtractRotation();
+                    Vector3 tr = Vector3.Transform(Vector3.Zero, v.Inverted());
+                    width = tr.X / 5f;
+                    height = (tr.Y+5f) / -5f;
+                    zoom = -(tr.Z + 15f);*/
+                }
+                else
+                {
+                }
+            }
+        }
+
+        public void FPSCamera()
+        {
+            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.A))
+                x += 0.2f;
+            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.D))
+                x -= 0.2f;
+            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.W))
+                zoom += 0.2f;
+            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.S))
+                zoom -= 0.2f;
+
+            rot += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+            lookup += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+
+            mouseXLast = OpenTK.Input.Mouse.GetState().X;
+            mouseYLast = OpenTK.Input.Mouse.GetState().Y;
+
+            v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 2500.0f);
         }
     }
 }
