@@ -1072,6 +1072,36 @@ main()
                         GL.Color4(Color.FromArgb(200, Color.Fuchsia));
                         RenderTools.drawCubeWireframe(new Vector3(g.x, g.y, 0), 3);
                     }
+                    
+                    foreach (LVDGeneralShape shape in Runtime.TargetLVD.generalShapes)
+                    {
+                        if(shape is GeneralPoint)
+                        {
+                            GeneralPoint g = (GeneralPoint)shape;
+                            GL.Color4(Color.FromArgb(200, Color.Fuchsia));
+                            RenderTools.drawCubeWireframe(new Vector3(g.x, g.y, 0), 3);
+                        }
+                        if(shape is GeneralRect)
+                        {
+                            GeneralRect b = (GeneralRect)shape;
+                            GL.Color4(Color.FromArgb(200, Color.Fuchsia));
+                            GL.Begin(PrimitiveType.LineLoop);
+                            GL.Vertex3(b.x1, b.y1, 0);
+                            GL.Vertex3(b.x2, b.y1, 0);
+                            GL.Vertex3(b.x2, b.y2, 0);
+                            GL.Vertex3(b.x1, b.y2, 0);
+                            GL.End();
+                        }
+                        if(shape is GeneralPath)
+                        {
+                            List<Vector2D> p = ((GeneralPath)shape).points;
+                            GL.Color4(Color.FromArgb(200, Color.Fuchsia));
+                            GL.Begin(PrimitiveType.LineStrip);
+                            foreach(Vector2D point in p)
+                                GL.Vertex3(point.x, point.y, 0);
+                            GL.End();
+                        }
+                    }
                 }
 
                 if (Runtime.renderOtherLVDEntries)

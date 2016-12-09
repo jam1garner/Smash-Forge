@@ -22,6 +22,7 @@ namespace Smash_Forge
             treeView1.Nodes.Add(camNode);
             treeView1.Nodes.Add(deathNode);
             treeView1.Nodes.Add(itemNode);
+            treeView1.Nodes.Add(shapeNode);
             treeView1.Nodes.Add(pointNode);
             treeView1.Nodes.Add(hurtNode);
             treeView1.Nodes.Add(enemyNode);
@@ -33,6 +34,7 @@ namespace Smash_Forge
         public TreeNode camNode = new TreeNode("Camera Bounds");
         public TreeNode deathNode = new TreeNode("Death Bounds");
         public TreeNode itemNode = new TreeNode("Item Spawners");
+        public TreeNode shapeNode = new TreeNode("General Shapes");
         public TreeNode pointNode = new TreeNode("General Points");
         public TreeNode hurtNode = new TreeNode("Hurtboxes");
         public TreeNode enemyNode = new TreeNode("Enemy Spawners");
@@ -48,6 +50,7 @@ namespace Smash_Forge
             pointNode.Nodes.Clear();
             hurtNode.Nodes.Clear();
             enemyNode.Nodes.Clear();
+            shapeNode.Nodes.Clear();
 
             if(Runtime.TargetLVD != null)
             {
@@ -84,6 +87,11 @@ namespace Smash_Forge
                 foreach (Point c in Runtime.TargetLVD.generalPoints)
                 {
                     pointNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
+                }
+
+                foreach (LVDGeneralShape s in Runtime.TargetLVD.generalShapes)
+                {
+                    shapeNode.Nodes.Add(new TreeNode(s.name) { Tag = s });
                 }
 
                 foreach (Sphere c in Runtime.TargetLVD.damageSpheres)

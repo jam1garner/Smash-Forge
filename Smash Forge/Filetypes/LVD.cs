@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Smash_Forge
 {
     public class LVDEntry
@@ -302,6 +303,77 @@ namespace Smash_Forge
         }
     }
 
+    public enum shape
+    {
+        point = 1,
+        rectangle = 3,
+        path = 4
+    }
+
+    public abstract class LVDGeneralShape : LVDEntry
+    {
+        public int type;
+
+        public abstract void Read(FileData f);
+    }
+
+    public class GeneralPoint : LVDGeneralShape
+    {
+        public float x, y;
+
+        public GeneralPoint()
+        {
+            type = 1;
+        }
+
+        public override void Read(FileData f)
+        {
+            x = f.readFloat();
+            y = f.readFloat();
+            f.skip(0xE);
+        }
+    }
+
+    public class GeneralRect : LVDGeneralShape
+    {
+        public float x1, y1, x2, y2;
+
+        public GeneralRect()
+        {
+            type = 3;
+        }
+
+        public override void Read(FileData f)
+        {
+            x1 = f.readFloat();
+            y1 = f.readFloat();
+            x2 = f.readFloat();
+            y2 = f.readFloat();
+            f.skip(0xE);
+        }
+    }
+
+    public class GeneralPath : LVDGeneralShape
+    {
+        public List<Vector2D> points = new List<Vector2D>();
+
+        public GeneralPath()
+        {
+            type = 4;
+        }
+
+        public override void Read(FileData f)
+        {
+            f.skip(0x12);
+            int pointCount = f.readInt();
+            for(int i = 0; i < pointCount; i++)
+            {
+                f.skip(1);//seperator char
+                points.Add(new Vector2D() { x = f.readFloat(), y = f.readFloat() });
+            }
+        }
+    }
+
     public class LVD : FileBase
     { 
         public LVD()
@@ -316,6 +388,7 @@ namespace Smash_Forge
             items = new List<ItemSpawner>();
             damageCapsules = new List<Capsule>();
             enemySpawns = new List<EnemyGenerator>();
+            generalShapes = new List<LVDGeneralShape>();
         }
         public LVD(string filename) : this()
         {
@@ -326,6 +399,7 @@ namespace Smash_Forge
         public List<Point> respawns { get; set; }
         public List<Bounds> cameraBounds { get; set; }
         public List<Bounds> blastzones { get; set; }
+        public List<LVDGeneralShape> generalShapes { get; set; }
         public List<Point> generalPoints { get; set; }
         public List<Sphere> damageSpheres { get; set; }
         public List<ItemSpawner> items { get; set; }
@@ -516,8 +590,31 @@ namespace Smash_Forge
             }
             f.skip(1);//Seperation char
 
-            if (f.readInt() != 0)//8
-                return; //no clue how to be consistent in reading these so...
+            int generalShapeCount = f.readInt();
+            for (int i = 0; i < generalShapeCount; i++)
+            {
+                f.skip(0xD);
+
+                string tempName = f.readString(f.pos(), 0x38);
+                f.skip(0x38);
+                f.skip(1);//Seperation char
+                string tempSubname = f.readString(f.pos(), 0x40);
+                f.skip(0xAB);
+                int shapeType = f.readInt();
+                LVDGeneralShape p;
+                if (shapeType == 1)
+                    p = new GeneralPoint();
+                else if (shapeType == 3)
+                    p = new GeneralRect();
+                else if (shapeType == 4)
+                    p = new GeneralPath();
+                else
+                    throw new Exception("Unknown shape type");
+                p.name = tempName;
+                p.subname = tempSubname;
+                p.Read(f);
+                generalShapes.Add(p);
+            }
             f.skip(1);
 
             int generalPointCount = f.readInt();
