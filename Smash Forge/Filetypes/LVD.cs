@@ -303,10 +303,15 @@ namespace Smash_Forge
         }
     }
 
-    public abstract class LVDGeneralShape
+    public enum shape
     {
-        public string name;
-        public string subname;
+        point = 1,
+        rectangle = 3,
+        path = 4
+    }
+
+    public abstract class LVDGeneralShape : LVDEntry
+    {
         public int type;
 
         public abstract void Read(FileData f);
