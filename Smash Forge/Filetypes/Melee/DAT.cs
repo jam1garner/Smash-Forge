@@ -445,7 +445,7 @@ main()
                     nv.pos = vert.pos;
                     nv.tx.Add(vert.tx0);
                     nv.nrm = vert.nrm;
-                    nv.col = vert.clr;
+                    nv.col = vert.clr/2;
                     nv.node.AddRange(vert.bones);
                     nv.weight.AddRange(vert.weights);
                     polygon.AddVertex(nv);
@@ -591,15 +591,31 @@ main()
                         node.Tag = this;
                         node.Text = "NodeObject";
 
+                        Console.WriteLine(d.pos().ToString("x"));
                         int jPointer = d.readInt() + headerSize;
-                        d.skip(7 * 4); // unkown pointers
-                        d.skip(5 * 4); // extra unknown (looks like more pointers, usually 0)
+                        Console.WriteLine((d.readInt() + headerSize).ToString("x") + " " + 
+                            (d.readInt() + headerSize).ToString("x") + " " +
+                            (d.readInt() + headerSize).ToString("x") + " " +
+                            (d.readInt() + headerSize).ToString("x") + " " +
+                            (d.readInt() + headerSize).ToString("x") + " " +
+                            (d.readInt() + headerSize).ToString("x") + " " +
+                            (d.readInt() + headerSize).ToString("x") + " " +
+
+                            (d.readInt() + headerSize).ToString("x") + " " +
+                            (d.readInt() + headerSize).ToString("x") + " " +
+                            (d.readInt() + headerSize).ToString("x") + " " +
+                            (d.readInt() + headerSize).ToString("x") + " " +
+                            (d.readInt() + headerSize).ToString("x") + " ");
+                        //d.skip(7 * 4); // unkown pointers
+                        //d.skip(5 * 4); // extra unknown (looks like more pointers, usually 0)
 
                         int temp = d.pos();
                         d.seek(jPointer);
-
-                        JOBJ j = new JOBJ();
-                        j.Read(d, dat, node);
+                        if (!dat.jobjOffsetLinker.ContainsKey(jPointer))
+                        {
+                            JOBJ j = new JOBJ();
+                            j.Read(d, dat, node);
+                        }
 
                         d.seek(temp);
                     }
@@ -1088,6 +1104,9 @@ main()
 
                                                 while (off1 > headerSize)
                                                 {
+                                                    if (!dat.jobjOffsetLinker.ContainsKey(off1))
+                                                        continue;
+
                                                     newp += Vector3.Transform(v.pos, dat.jobjOffsetLinker[off1].transform) * wei1;
 
                                                     //Hacky and the hackjobs----------------------------------------
@@ -1208,7 +1227,9 @@ main()
                 {
                     case 0: // GX_RGB565
                         b = d.readShort();
-
+                        clr.X = (((b >> 11) & 0x1F) << 3) | (((b >> 11) & 0x1F) >> 2);
+                        clr.Y = (((b >> 5) & 0x3F) << 2) | (((b >> 5) & 0x3F) >> 4);
+                        clr.Z = (((b) & 0x1F) << 3) | (((b) & 0x1F) >> 2);
                         break;
                     case 1: // GX_RGB888
                         clr.X = d.readByte() / (float)0xFF;

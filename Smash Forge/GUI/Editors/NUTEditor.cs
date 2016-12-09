@@ -218,7 +218,7 @@ namespace Smash_Forge
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            /*if(listBox2.SelectedItem != null && !textBox1.Text.Equals(""))
+            if(listBox2.SelectedItem != null && !textBox1.Text.Equals(""))
             {
                 int oldid = ((NUT.NUD_Texture)listBox2.SelectedItem).id;
                 int newid = -1;
@@ -239,7 +239,9 @@ namespace Smash_Forge
                         textBox1.Text = (newid + 1).ToString("x") + "";
                     }
                 }
-            }*/
+
+                //listBox2.Refresh();
+            }
         }
 
         private void NUTEditor_Resize(object sender, EventArgs e)
