@@ -62,7 +62,7 @@ namespace Smash_Forge
                 {
                     foreach(NUD.Polygon poly in mesh.polygons)
                     {
-                        poly.vertSize = (BoneTypes[comboBox2.SelectedText]) | (VertTypes[comboBox1.SelectedText]);
+                        //poly.vertSize = (BoneTypes[comboBox2.SelectedText]) | (VertTypes[comboBox1.SelectedText]);
                         foreach(NUD.Vertex v in poly.vertices)
                         {
                             for(int i = 0; i < v.tx.Count; i++)

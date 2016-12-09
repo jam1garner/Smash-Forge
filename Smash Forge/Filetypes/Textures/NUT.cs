@@ -410,6 +410,7 @@ namespace Smash_Forge
 
             image.UnlockBits(data);
 
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 1);
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             return texID;

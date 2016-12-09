@@ -59,12 +59,12 @@ main()
     ivec4 index = ivec4(vBone); 
     vec4 objPos = vec4(vPosition.xyz, 1.0);
 
-    /*if(vBone.x != -1){
+    if(vBone.x != -1){
         objPos = bones[index.x] * vec4(vPosition, 1.0) * vWeight.x;
         objPos += bones[index.y] * vec4(vPosition, 1.0) * vWeight.y;
         objPos += bones[index.z] * vec4(vPosition, 1.0) * vWeight.z;
         objPos += bones[index.w] * vec4(vPosition, 1.0) * vWeight.w;
-    } */
+    }
 
     gl_Position = modelview * vec4(objPos.xyz, 1.0);
 
@@ -85,7 +85,8 @@ uniform vec2 uvscale;
 void
 main()
 {
-    gl_FragColor = vec4 ((texture(tex, f_texcoord*uvscale) * color).xyz, 1);
+    vec4 alpha = texture(tex, f_texcoord*uvscale).aaaa;
+    gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale)).xyz, alpha.a * color.w);
 }
 ";
 
@@ -157,38 +158,27 @@ main()
                 tree.Add(node);
             }
 
-            foreach(TreeNode node in tree)
+            foreach (TreeNode node in tree)
             {
                 // then a file system is read... it works like a tree?
                 d.seek((int)node.Tag);
                 // now, the name determines what happens here
                 // for now, it just assumes the _joint
-                if (node.Text.EndsWith("_joint"))
+                if (node.Text.EndsWith("_joint") && !node.Text.Contains("matanim"))
                 {
                     JOBJ j = new JOBJ();
                     j.Read(d, this, node);
-                    break;
+                    //break;
                 }
                 else
                 if (node.Text.EndsWith("map_head"))
                 {
-                    int off = d.readInt() + headerSize;
-                    int count = d.readInt();
-
-                    d.seek(off);
-                    for(int k = 0; k < 1; k++)
-                    {
-                        int temp = d.pos()+4;
-                        d.seek(d.readInt() + headerSize);
-                        JOBJ j = new JOBJ();
-                        j.Read(d, this, node);
-                        //jobjs.Add(j);
-                        d.seek(temp);
-                    }
+                    Map_Head head = new Map_Head();
+                    head.Read(d, this, node);
                 }
             }
 
-            foreach(TreeNode node in tree)
+            foreach (TreeNode node in tree)
             {
                 if (node.Text.EndsWith("coll_data"))
                 {
@@ -238,7 +228,7 @@ main()
             {
                 vert.Add(v.pos);
                 uv.Add(v.tx0);
-                col.Add(new Vector4(1, 1, 1, 1));
+                col.Add(v.clr);
                 nrm.Add(v.nrm);
 
                 while (v.bones.Count < 4)
@@ -246,7 +236,7 @@ main()
                     v.bones.Add(0);
                     v.weights.Add(0);
                 }
-                
+
                 bone.Add(new Vector4(v.bones[0], v.bones[1], v.bones[2], v.bones[3]));
                 weight.Add(new Vector4(v.weights[0], v.weights[1], v.weights[2], v.weights[3]));
             }
@@ -263,7 +253,7 @@ main()
 
                 foreach (TreeNode n in node.Nodes)
                     queue.Enqueue(n);
-                if(node.Tag is DOBJ)
+                if (node.Tag is DOBJ)
                     displayList.Add(node);
 
                 if (!(node.Tag is JOBJ))
@@ -341,45 +331,45 @@ main()
         {
             GL.UseProgram(shader.programID);
 
-           GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref modelview);
+            GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref modelview);
 
-           if (bones != null)
-           {
-               Matrix4[] f = bones.getShaderMatrix();
-               int shad = shader.getAttribute("bones");
-               GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
-           }
+            if (bones != null)
+            {
+                Matrix4[] f = bones.getShaderMatrix();
+                int shad = shader.getAttribute("bones");
+                GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
+            }
 
-           shader.enableAttrib();
+            shader.enableAttrib();
 
-           GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-           GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(vertdata.Length * Vector3.SizeInBytes), vertdata, BufferUsageHint.StaticDraw);
-           GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, 0, 0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(vertdata.Length * Vector3.SizeInBytes), vertdata, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, 0, 0);
 
-           GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_color);
-           GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(coldata.Length * Vector4.SizeInBytes), coldata, BufferUsageHint.StaticDraw);
-           GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, 0, 0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_color);
+            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(coldata.Length * Vector4.SizeInBytes), coldata, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, 0, 0);
 
-           GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_nrm);
-           GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(nrmdata.Length * Vector3.SizeInBytes), nrmdata, BufferUsageHint.StaticDraw);
-           GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, 0, 0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_nrm);
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(nrmdata.Length * Vector3.SizeInBytes), nrmdata, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, 0, 0);
 
-           GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_uv);
-           GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, (IntPtr)(uvdata.Length * Vector2.SizeInBytes), uvdata, BufferUsageHint.StaticDraw);
-           GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, 0, 0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_uv);
+            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, (IntPtr)(uvdata.Length * Vector2.SizeInBytes), uvdata, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, 0, 0);
 
-           GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_bone);
-           GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(bonedata.Length * Vector4.SizeInBytes), bonedata, BufferUsageHint.StaticDraw);
-           GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, 0, 0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_bone);
+            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(bonedata.Length * Vector4.SizeInBytes), bonedata, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, 0, 0);
 
-           GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_weight);
-           GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(weightdata.Length * Vector4.SizeInBytes), weightdata, BufferUsageHint.StaticDraw);
-           GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, 0, 0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_weight);
+            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(weightdata.Length * Vector4.SizeInBytes), weightdata, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, 0, 0);
 
-           GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
-           GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(facedata.Length * sizeof(int)), facedata, BufferUsageHint.StaticDraw);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(facedata.Length * sizeof(int)), facedata, BufferUsageHint.StaticDraw);
 
-           int indiceat = 0;
+            int indiceat = 0;
 
             foreach (var da in displayList)
             {
@@ -396,7 +386,7 @@ main()
                 {
                     foreach (POBJ.DisplayObject d in poly.display)
                     {
-                        if(da.Checked)
+                        if (da.Checked)
                             GL.DrawElements(primitiesTypes[d.type], d.faces.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
                         indiceat += d.faces.Count;
                     }
@@ -404,7 +394,7 @@ main()
             }
 
             shader.disableAttrib();
-            
+
         }
 
         public ModelContainer wrapToNUD()
@@ -420,14 +410,13 @@ main()
                 DOBJ data = (DOBJ)da.Tag;
                 NUD.Mesh mesh = new NUD.Mesh();
                 mesh.name = "Mesh_" + displayList.IndexOf(da);
-                nud.mesh.Add(mesh);
-                
+                NUD.Polygon polygon = new NUD.Polygon();
+                polygon.setDefaultMaterial();
+                List<Vertex> usedVertices = new List<Vertex>();
                 foreach (POBJ poly in data.polygons)
                 {
                     foreach (POBJ.DisplayObject d in poly.display)
                     {
-                        NUD.Polygon polygon = new NUD.Polygon();
-                        polygon.setDefaultMaterial();
                         List<int> faces = d.faces;
                         if (d.type == 0x98)
                             faces = TriangleTools.fromTriangleStrip(d.faces);
@@ -435,29 +424,34 @@ main()
                         if (d.type == 0x80)
                             faces = TriangleTools.fromQuad(d.faces);
 
-                        List<Vertex> usedVertices = new List<Vertex>();
                         foreach (int index in faces)
                         {
                             if (!usedVertices.Contains(vertBank[index]))
                                 usedVertices.Add(vertBank[index]);
                             polygon.faces.Add(usedVertices.IndexOf(vertBank[index]));
                         }
-
-                        foreach(Vertex vert in usedVertices)
-                        {
-                            // convert to nud vert
-                            NUD.Vertex nv = new NUD.Vertex();
-                            nv.pos = vert.pos;
-                            nv.tx.Add(vert.tx0);
-                            nv.nrm = vert.nrm;
-                            nv.node.AddRange(vert.bones);
-                            nv.weight.AddRange(vert.weights);
-                            polygon.AddVertex(nv);
-                        }
-
-                        mesh.polygons.Add(polygon);
                     }
                 }
+
+                if (usedVertices.Count == 0)
+                    continue;
+
+                nud.mesh.Add(mesh);
+
+                foreach (Vertex vert in usedVertices)
+                {
+                    // convert to nud vert
+                    NUD.Vertex nv = new NUD.Vertex();
+                    nv.pos = vert.pos;
+                    nv.tx.Add(vert.tx0);
+                    nv.nrm = vert.nrm;
+                    nv.col = vert.clr;
+                    nv.node.AddRange(vert.bones);
+                    nv.weight.AddRange(vert.weights);
+                    polygon.AddVertex(nv);
+                }
+
+                mesh.polygons.Add(polygon);
             }
 
             nud.PreRender();
@@ -540,7 +534,7 @@ main()
                 }
                 int inc = 0;
                 f.seek(linkOff);
-                for(int i = 0; i < linkCount; i++)
+                for (int i = 0; i < linkCount; i++)
                 {
                     Link link = new Link();
                     int[] temp = { f.readShort(), f.readShort() };
@@ -556,10 +550,85 @@ main()
                 foreach (List<Vector2D> poly in polys)
                 {
                     inc++;
-                    Console.WriteLine("\nPoly" + inc);
-                    foreach (Vector2D point in poly)
-                        Console.WriteLine("(" + point.x + ", " + point.y + ")");
+                    //Console.WriteLine("\nPoly" + inc);
+                    //foreach (Vector2D point in poly)
+                    //    Console.WriteLine("(" + point.x + ", " + point.y + ")");
                 }
+            }
+        }
+
+        public class Map_Head
+        {
+            public List<Head_Node> nodes;
+
+            public class Head_Node
+            {
+                TreeNode node = new TreeNode();
+
+                public int id, type;
+
+                public void Read(FileData d, DAT dat, TreeNode parentNode)
+                {
+                    parentNode.Nodes.Add(node);
+
+                    node.Text = "Object_0x" + type.ToString("x");
+
+                    for (int i = 0; i < id; i++)
+                    {
+                        Head_Node_Object hno = new Head_Node_Object();
+                        hno.Read(d, dat, node);
+                    }
+
+                }
+
+                public class Head_Node_Object
+                {
+                    TreeNode node = new TreeNode();
+
+                    public void Read(FileData d, DAT dat, TreeNode parentNode)
+                    {
+                        parentNode.Nodes.Add(node);
+                        node.Tag = this;
+                        node.Text = "NodeObject";
+
+                        int jPointer = d.readInt() + headerSize;
+                        d.skip(7 * 4); // unkown pointers
+                        d.skip(5 * 4); // extra unknown (looks like more pointers, usually 0)
+
+                        int temp = d.pos();
+                        d.seek(jPointer);
+
+                        JOBJ j = new JOBJ();
+                        j.Read(d, dat, node);
+
+                        d.seek(temp);
+                    }
+                }
+            }
+
+            public void Read(FileData d, DAT dat, TreeNode parentNode)
+            {
+                Console.WriteLine(d.pos());
+                int off = d.readInt() + headerSize;
+                int id = d.readInt();
+
+                for (int i = 0; i < 2; i++)
+                {
+                    if (off != headerSize && id != 0)
+                    {
+                        int temp = d.pos();
+                        d.seek(off);
+
+                        Head_Node node = new Head_Node();
+                        node.id = id;
+                        node.Read(d, dat, parentNode);
+
+                        d.seek(temp);
+                    }
+                    off = d.readInt() + headerSize;
+                    id = d.readInt();
+                }
+
             }
         }
 
@@ -576,7 +645,7 @@ main()
             public Vector3 rot = new Vector3(), sca = new Vector3(), pos = new Vector3();
             public Matrix4 inverseTransform;
             public int unk2; //?? padding again??
-            
+
             public Matrix4 transform = new Matrix4();
 
             public JOBJ()
@@ -586,6 +655,8 @@ main()
 
             public void Read(FileData d, DAT dat, TreeNode parentNode)
             {
+                if (dat.jobjOffsetLinker.ContainsKey(d.pos()))
+                    return;
                 dat.jobjOffsetLinker.Add(d.pos(), this);
                 unk1 = d.readInt();
                 flags = d.readInt();
@@ -670,8 +741,9 @@ main()
                 nextOffset = d.readInt() + headerSize;
                 mobjOffset = d.readInt() + headerSize;
                 pobjOffset = d.readInt() + headerSize;
-                
+
                 d.seek(pobjOffset);
+                Console.WriteLine("POBJ" + pobjOffset.ToString("x"));
                 POBJ p = new POBJ();
                 p.Read(d, dat, this, node);
 
@@ -709,8 +781,8 @@ main()
                     unk4 = d.readInt();
 
                     d.seek(tobjOffset);
-                    if(d.pos() > headerSize)
-                    texture.Read(d, dat);
+                    if (d.pos() > headerSize)
+                        texture.Read(d, dat);
                 }
             }
 
@@ -763,9 +835,9 @@ main()
                     unkown = d.readShort();
 
                     texid = NUT.loadImage(
-                        TPL.ConvertFromTextureMelee(d.getSection(imageDataOffset, TPL.textureByteSize((TPL_TextureFormat)format, width, height)), 
+                        TPL.ConvertFromTextureMelee(d.getSection(imageDataOffset, TPL.textureByteSize((TPL_TextureFormat)format, width, height)),
                         width, height, format,
-                        paletteOffset == headerSize ? null : d.getSection(paletteDataOffset, 4*count), count, paletteFormat)
+                        paletteOffset == headerSize ? null : d.getSection(paletteDataOffset, 4 * count), count, paletteFormat)
                         );
                 }
             }
@@ -831,6 +903,7 @@ main()
             public Vector3 pos = new Vector3();
             public Vector3 nrm = new Vector3();
             public Vector2 tx0 = new Vector2();
+            public Vector4 clr = new Vector4(1, 1, 1, 1);
             public List<int> bones = new List<int>();
             public List<float> weights = new List<float>();
         }
@@ -957,19 +1030,20 @@ main()
                                 switch (att.vtxAttrType)
                                 {
                                     case GXAttrType.GX_DIRECT:
-                                        if(att.vtxAttr != (int)GXAttr.GX_VA_CLR0)
+                                        if (att.vtxAttr != (int)GXAttr.GX_VA_CLR0)
                                             value = d.readByte();
                                         else
                                         {
-                                            switch (att.compType)
+                                            v.clr = readGXClr(d, att.compType);
+                                            /*switch (att.compType)
                                             {
                                                 case 0: d.skip(2); break;
                                                 case 1: d.skip(3); break;
                                                 case 2: d.skip(3); break;
                                                 case 3: d.skip(2); break;
-                                                case 4: d.skip(2); break;
+                                                case 4: d.skip(3); break;
                                                 case 5: d.skip(4); break;
-                                            }
+                                            }*/
                                         }
                                         break;
                                     case GXAttrType.GX_INDEX8:
@@ -1020,7 +1094,7 @@ main()
                                                     Queue<TreeNode> queue = new Queue<TreeNode>();
                                                     foreach (TreeNode node in dat.tree)
                                                         queue.Enqueue(node);
-                                                    
+
                                                     List<JOBJ> boneTrack = new List<JOBJ>();
                                                     while (queue.Any())
                                                     {
@@ -1035,7 +1109,7 @@ main()
                                                         boneTrack.Add((JOBJ)node.Tag);
                                                     }
                                                     //----------------------------------------------------------
-                                                    
+
                                                     v.bones.Add(boneTrack.IndexOf(dat.jobjOffsetLinker[off1]));
                                                     v.weights.Add(wei1);
                                                     off1 = d.readInt() + headerSize;
@@ -1106,6 +1180,11 @@ main()
                                         d.seek(temp);
                                         break;
                                 }
+                                if (v.bones.Count < 1)
+                                {
+                                    v.bones.Add(-1);
+                                    v.weights.Add(0);
+                                }
                             }
                         }
 
@@ -1120,6 +1199,53 @@ main()
                 }
             }
 
+            public static Vector4 readGXClr(FileData d, int type)
+            {
+                Vector4 clr = new Vector4(1, 1, 1, 1);
+                int b;
+
+                switch (type)
+                {
+                    case 0: // GX_RGB565
+                        b = d.readShort();
+
+                        break;
+                    case 1: // GX_RGB888
+                        clr.X = d.readByte() / (float)0xFF;
+                        clr.Y = d.readByte() / (float)0xFF;
+                        clr.Z = d.readByte() / (float)0xFF;
+                        break;
+                    case 2: // GX_RGBX888
+                        clr.X = d.readByte() / (float)0xFF;
+                        clr.Y = d.readByte() / (float)0xFF;
+                        clr.Z = d.readByte() / (float)0xFF;
+                        d.skip(8);
+                        break;
+                    case 3: // GX_RGBA4
+                        b = d.readShort();
+                        clr.X = ((((b >> 12) & 0xF) << 4) | ((b >> 12) & 0xF)) / (float)0xFF;
+                        clr.Y = ((((b >> 8) & 0xF) << 4) | ((b >> 8) & 0xF)) / (float)0xFF;
+                        clr.Z = ((((b >> 4) & 0xF) << 4) | ((b >> 4) & 0xF)) / (float)0xFF;
+                        clr.W = ((((b) & 0xF) << 4) | ((b) & 0xF)) / (float)0xFF;
+                        break;
+                    case 4: // GX_RGBA6
+                        b = d.readThree();
+                        clr.X = ((((b >> 18) & 0x3F) << 2) | (((b >> 18) & 0x3F) >> 4)) / (float)0xFF;
+                        clr.Y = ((((b >> 12) & 0x3F) << 2) | (((b >> 12) & 0x3F) >> 4)) / (float)0xFF;
+                        clr.Z = ((((b >> 6) & 0x3F) << 2) | (((b >> 6) & 0x3F) >> 4)) / (float)0xFF;
+                        clr.W = ((((b) & 0x3F) << 2) | (((b) & 0x3F) >> 4)) / (float)0xFF;
+                        break;
+                    case 5: // GX_RGBX888
+                        clr.X = d.readByte() / (float)0xFF;
+                        clr.Y = d.readByte() / (float)0xFF;
+                        clr.Z = d.readByte() / (float)0xFF;
+                        clr.W = d.readByte() / (float)0xFF;
+                        break;
+                }
+
+                return clr;
+            }
+
             public static float[] read3(FileData d, int type, int size)
             {
                 float[] a = new float[size];
@@ -1127,7 +1253,7 @@ main()
                 switch (type)
                 {
                     case 0:
-                        for(int i = 0; i < size; i++)
+                        for (int i = 0; i < size; i++)
                             a[i] = d.readByte();
                         break;
                     case 1:
