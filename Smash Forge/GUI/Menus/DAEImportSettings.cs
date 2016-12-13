@@ -25,15 +25,15 @@ namespace Smash_Forge
         public Dictionary<string, int> BoneTypes = new Dictionary<string, int>()
         {
             { "No Bones", 0x00},
-            { "Bone Weight Exact(larger filesize)", 0x10},
-            { "Bone Weight Approx(smaller filesize)", 0x40}
+            { "Bone Weight (Float)", 0x10},
+            { "Bone Weight (Byte)", 0x40}
         };
 
         public Dictionary<string, int> VertTypes = new Dictionary<string, int>()
         {
             { "No Normals", 0x0},
-            { "Normals as Float", 0x1},
-            { "Normals as Half Float", 0x6}
+            { "Normals (Float)", 0x1},
+            { "Normals (Half Float)", 0x6}
         };
 
         public DAEImportSettings()
@@ -56,19 +56,26 @@ namespace Smash_Forge
 
         public void Apply(NUD nud)
         {
-            if (checkBox1.Checked)
+            Matrix4 rot = Matrix4.CreateRotationX(0.5f * (float)Math.PI);
+            foreach (NUD.Mesh mesh in nud.mesh)
             {
-                foreach(NUD.Mesh mesh in nud.mesh)
+                foreach (NUD.Polygon poly in mesh.polygons)
                 {
-                    foreach(NUD.Polygon poly in mesh.polygons)
-                    {
-                        //poly.vertSize = (BoneTypes[comboBox2.SelectedText]) | (VertTypes[comboBox1.SelectedText]);
-                        foreach(NUD.Vertex v in poly.vertices)
+                    poly.vertSize = (BoneTypes[(string)comboBox2.SelectedItem]) | (VertTypes[(string)comboBox1.SelectedItem]);
+
+                    if (checkBox1.Checked || checkBox4.Checked)
+                        foreach (NUD.Vertex v in poly.vertices)
                         {
-                            for(int i = 0; i < v.tx.Count; i++)
-                                v.tx[i] = new Vector2(v.tx[i].X, 1 - v.tx[i].Y);
+                            if (checkBox1.Checked)
+                                for (int i = 0; i < v.tx.Count; i++)
+                                    v.tx[i] = new Vector2(v.tx[i].X, 1 - v.tx[i].Y);
+
+                            if (checkBox4.Checked)
+                            {
+                                v.pos = Vector3.Transform(v.pos, rot);
+                                v.nrm = Vector3.Transform(v.nrm, rot);
+                            }
                         }
-                    }
                 }
             }
 
@@ -76,7 +83,7 @@ namespace Smash_Forge
             {
                 foreach (NUD.Mesh mesh in nud.mesh)
                 {
-                    if(mesh.name.Length > 4)
+                    if(mesh.name.Length > 5)
                         mesh.name = mesh.name.Substring(5, mesh.name.Length - 5);
                 }
             }

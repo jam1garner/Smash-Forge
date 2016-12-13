@@ -156,18 +156,18 @@ namespace Smash_Forge
                 GL.Vertex3(Vector3.Transform(new Vector3(i * 2, 0f, 10f * 2), s));
             }
 
-            GL.Vertex3(Vector3.Transform(new Vector3(0, 10, 0), s));
+            GL.Vertex3(Vector3.Transform(new Vector3(0, 5, 0), s));
             GL.Vertex3(Vector3.Transform(new Vector3(0, 0, 0), s));
 
             GL.Color3(Color.Red);
             GL.Vertex3(Vector3.Transform(new Vector3(0f, 0f, 0), s));
             GL.Color3(Color.Red);
-            GL.Vertex3(Vector3.Transform(new Vector3(10f * 2, 0f, 0), s));
+            GL.Vertex3(Vector3.Transform(new Vector3(5f * 2, 0f, 0), s));
 
             GL.Color3(Color.Green);
             GL.Vertex3(Vector3.Transform(new Vector3(0, 0f, 0f), s));
             GL.Color3(Color.Green);
-            GL.Vertex3(Vector3.Transform(new Vector3(0, 0f, 10f * 2), s));
+            GL.Vertex3(Vector3.Transform(new Vector3(0, 0f, 5f * 2), s));
 
             GL.End();
 

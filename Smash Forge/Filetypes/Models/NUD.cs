@@ -94,6 +94,11 @@ namespace Smash_Forge
 
                         uv.Add(v.tx[0]);
 
+                        if(v.node.Count == 0)
+                        {
+                            v.node.Add(-1);
+                            v.weight.Add(1);
+                        }
                         while (v.node.Count < 4)
                         {
                             v.node.Add(0);
@@ -805,7 +810,7 @@ namespace Smash_Forge
 
             foreach (ModelContainer con in Runtime.ModelContainers)
             {
-                if (con.nud == this)
+                if (con.nud == this && con.vbn!=null)
                     boneCount = con.vbn.bones.Count;
             }
 

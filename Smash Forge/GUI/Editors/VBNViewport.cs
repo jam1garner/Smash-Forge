@@ -272,7 +272,7 @@ namespace Smash_Forge
 
         #region Rendering
 
-        string vs = @"#version 330
+        string vs = @"#version 150
  
 in vec3 vPosition;
 in vec4 vColor;
@@ -287,7 +287,7 @@ out vec4 color;
 out float fresNelR;
 
 uniform mat4 modelview;
-uniform mat4 bones[250];
+uniform mat4 bones[200];
  
 void
 main()
@@ -316,7 +316,7 @@ main()
     fresNelR = 0.2 + 0.2 * pow(1.0 + dot(I, normWorld), 1);
 }";
 
-        string fs = @"#version 330
+        string fs = @"#version 150
 
 in vec2 f_texcoord;
 in vec4 color;
@@ -366,8 +366,8 @@ main()
                 {
                     if (GL.GetInteger(GetPName.MajorVersion) < 3)
                     {
-                        shader.vertexShader(vs.Replace("#version 330", "#version 150"));
-                        shader.fragmentShader(fs.Replace("#version 330", "#version 150"));
+                        shader.vertexShader(vs.Replace("#version 330", "#version 120"));
+                        shader.fragmentShader(fs.Replace("#version 330", "#version 120"));
                     }
                     else
                     {
