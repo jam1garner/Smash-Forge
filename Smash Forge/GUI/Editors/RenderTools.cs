@@ -133,41 +133,43 @@ namespace Smash_Forge
 
         public static void drawFloor(Matrix4 s)
         {
-            // Draw floor plane
-            /*GL.Color3(Color.LightGray);
-            GL.Begin(PrimitiveType.Quads);
-            GL.Vertex3(-20f, 0f, -20f);
-            GL.Vertex3(20f, 0f, -20f);
-            GL.Vertex3(20f, 0f, 20f);
-            GL.Vertex3(-20f, 0f, 20f);
-            GL.End();*/
-
-            // Draw grid over it
-            GL.Disable(EnableCap.DepthTest);
-
-            GL.Color3(Color.LightGray);
+            GL.Color3(Color.Gray);
             GL.LineWidth(1f);
             GL.Begin(PrimitiveType.Lines);
             for (var i = -10; i <= 10; i++)
             {
-                GL.Vertex3(Vector3.Transform(new Vector3(-10f * 2, 0f, i * 2), s));
-                GL.Vertex3(Vector3.Transform(new Vector3(10f * 2, 0f, i * 2), s));
-                GL.Vertex3(Vector3.Transform(new Vector3(i * 2, 0f, -10f * 2), s));
-                GL.Vertex3(Vector3.Transform(new Vector3(i * 2, 0f, 10f * 2), s));
+                if(i != 0)
+                {
+                    GL.Vertex3(Vector3.Transform(new Vector3(-10f * 2, 0f, i * 2), s));
+                    GL.Vertex3(Vector3.Transform(new Vector3(10f * 2, 0f, i * 2), s));
+                    GL.Vertex3(Vector3.Transform(new Vector3(i * 2, 0f, -10f * 2), s));
+                    GL.Vertex3(Vector3.Transform(new Vector3(i * 2, 0f, 10f * 2), s));
+                }
             }
 
+            GL.Color3(Color.White);
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex3(Vector3.Transform(new Vector3(-20f, 0f, 0), s));
+            GL.Vertex3(Vector3.Transform(new Vector3(20f, 0f, 0), s));
+            GL.Vertex3(Vector3.Transform(new Vector3(0, 0f, -20f), s));
+            GL.Vertex3(Vector3.Transform(new Vector3(0, 0f, 20f), s));
+            GL.End();
+
+            GL.Disable(EnableCap.DepthTest);
+            GL.Color3(Color.LightGray);
+            GL.Begin(PrimitiveType.Lines);
             GL.Vertex3(Vector3.Transform(new Vector3(0, 5, 0), s));
             GL.Vertex3(Vector3.Transform(new Vector3(0, 0, 0), s));
 
-            GL.Color3(Color.Red);
+            GL.Color3(Color.OrangeRed);
             GL.Vertex3(Vector3.Transform(new Vector3(0f, 0f, 0), s));
-            GL.Color3(Color.Red);
-            GL.Vertex3(Vector3.Transform(new Vector3(5f * 2, 0f, 0), s));
+            GL.Color3(Color.OrangeRed);
+            GL.Vertex3(Vector3.Transform(new Vector3(5f, 0f, 0), s));
 
-            GL.Color3(Color.Green);
+            GL.Color3(Color.Olive);
             GL.Vertex3(Vector3.Transform(new Vector3(0, 0f, 0f), s));
-            GL.Color3(Color.Green);
-            GL.Vertex3(Vector3.Transform(new Vector3(0, 0f, 5f * 2), s));
+            GL.Color3(Color.Olive);
+            GL.Vertex3(Vector3.Transform(new Vector3(0, 0f, 5f), s));
 
             GL.End();
 

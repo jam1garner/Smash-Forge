@@ -21,6 +21,8 @@ namespace Smash_Forge
 {
     public partial class VBNViewport : DockContent
     {
+        int defaulttex = 0;
+
         public VBNViewport()
         {
             InitializeComponent();
@@ -48,7 +50,9 @@ namespace Smash_Forge
             }
             render = true;
             _controlLoaded = true;
+            defaulttex = NUT.loadImage(SForge.Properties.Resources.DefaultTexture);
         }
+
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
@@ -272,7 +276,7 @@ namespace Smash_Forge
 
         #region Rendering
 
-        string vs = @"#version 150
+        string vs = @"#version 330
  
 in vec3 vPosition;
 in vec4 vColor;
@@ -316,7 +320,7 @@ main()
     fresNelR = 0.2 + 0.2 * pow(1.0 + dot(I, normWorld), 1);
 }";
 
-        string fs = @"#version 150
+        string fs = @"#version 330
 
 in vec2 f_texcoord;
 in vec4 color;
