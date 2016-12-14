@@ -330,7 +330,8 @@ in float fresNelR;
 uniform sampler2D tex;
 uniform sampler2D nrm;
 uniform vec4 colorSamplerUV;
-uniform vec4 coloroffset;
+uniform vec4 colorOffset;
+uniform vec4 colorGain;
 uniform vec4 minGain;
 
 vec4 lerp(float v, vec4 from, vec4 to)
@@ -347,11 +348,14 @@ main()
     norm = normalize (norm);
     float lamberFactor= max (dot (vec3(0.85, 0.85, 0.85), norm), 0.75) * 1.5;
 
-    vec4 ambiant = vec4(0.1,0.1,0.1,1.0) * texture(tex, texcoord).rgba;
+    //vec4 ambiant = vec4(0.1,0.1,0.1,1.0) * texture(tex, texcoord).rgba;
 
-    vec4 alpha = (1-minGain) + texture2D(nrm, texcoord).aaaa; //
+    vec4 alpha = (1-minGain) + texture2D(nrm, texcoord).aaaa;
     //if(alpha.a < 0.5) discard;
-	vec4 outputColor = ambiant + ((vec4(texture(tex, texcoord).rgb, 1)) * vec4(0.80,0.80,0.80,1.0) * normal);
+
+	vec4 outputColor = colorOffset + (vec4(texture(tex, texcoord).rgba) * normal) * colorGain;
+    outputColor = outputColor;
+
     vec4 fincol = vec4(((color * alpha * outputColor)).xyz, texture2D(tex, texcoord).a * color.w);
     gl_FragColor = fincol;//vec4(lerp(fresNelR, fincol, vec4(1.75,1.75,1.75,1)).xyz, fincol.w);
 }
@@ -392,6 +396,7 @@ main()
                     shader.addAttribute("bones", true);
                     shader.addAttribute("colorSamplerUV", true);
                     shader.addAttribute("colorOffset", true);
+                    shader.addAttribute("colorGain", true);
                     shader.addAttribute("minGain", true);
                 }
             }

@@ -240,11 +240,17 @@ namespace Smash_Forge
                     Vector4 aoo = new Vector4(ao[0], ao[1], ao[2], ao[3]);
                     GL.Uniform4(shader.getAttribute("minGain"), aoo);
 
-                    /*float[] co;
+                    float[] co;
                     mat.entries.TryGetValue("NU_colorOffset", out co);
                     if (co == null) co = new float[] { 0, 0, 0, 0 };
                     Vector4 coo = new Vector4(co[0], co[1], co[2], co[3]);
-                    GL.Uniform4(shader.getAttribute("colorOffset"), coo);*/
+                    GL.Uniform4(shader.getAttribute("colorOffset"), coo);
+
+                    float[] cg;
+                    mat.entries.TryGetValue("NU_colorGain", out cg);
+                    if (cg == null) cg = new float[] { 1, 1, 1, 1 };
+                    Vector4 cgo = new Vector4(cg[0], cg[1], cg[2], cg[3]);
+                    GL.Uniform4(shader.getAttribute("colorGain"), cgo);
 
                     /*GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
                         dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);

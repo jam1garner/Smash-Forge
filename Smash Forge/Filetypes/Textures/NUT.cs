@@ -434,11 +434,11 @@ namespace Smash_Forge
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 1);
                     GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-                    GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 1, t.type,
-                        t.width / 2, t.height / 2, 0, t.Size, t.mipmaps[1]);
+                   // GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 1, t.type,
+                    //    t.width / 2, t.height / 2, 0, t.Size, t.mipmaps[1]);
 
-                    GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 2, t.type,
-                        t.width / 4, t.height / 4, 0, t.Size, t.mipmaps[2]);
+                    //GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 2, t.type,
+                     //   t.width / 4, t.height / 4, 0, t.Size, t.mipmaps[2]);
 
                     //GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 3, t.type,
                     //    t.width / 8, t.height / 8, 0, t.Size, t.mipmaps[3]);

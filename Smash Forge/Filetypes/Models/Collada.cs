@@ -180,16 +180,20 @@ namespace Smash_Forge
                             {
                                 ReadSemantic(vinput, v, p.p[i], sources);
                             }
-                            v.pos = Vector3.Transform(v.pos, bindMatrix["#" + geom.id]);
                         }else
                             ReadSemantic(input, v, p.p[i], sources);
                         i++;
                     }
+
+                    v.pos = Vector3.Transform(v.pos, bindMatrix["#" + geom.id]);
+                    v.nrm = Vector3.Transform(v.nrm, bindMatrix["#" + geom.id]);
                 }
 
                 while(npoly.materials.Count < npoly.vertices[0].tx.Count)
                 {
-                    npoly.materials.Add(npoly.materials[0]);
+                    NUD.Polygon nd = new NUD.Polygon();
+                    nd.setDefaultMaterial();
+                    npoly.materials.Add(nd.materials[0]);
                 }
             }
 
@@ -695,6 +699,25 @@ namespace Smash_Forge
             INV_BIND_MATRIX,
             TEXTANGENT,
             TEXBINORMAL
+        }
+
+        #endregion
+
+        #region Assets
+
+        public void ParseAssets(XmlNode root)
+        {
+            foreach (XmlNode node in root.ChildNodes)
+            {
+                if (node.Name.Equals("unit"))
+                {
+
+                }
+                if (node.Name.Equals("up_axis"))
+                {
+
+                }
+            }
         }
 
         #endregion
