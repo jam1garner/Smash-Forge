@@ -463,8 +463,9 @@ namespace Smash_Forge
 
         private void addMaterialAnimation(string name,MTA m)
         {
-            Runtime.MaterialAnimations.Add(name, m);
-            MainForm.Instance.viewports[0].loadMTA(m);
+            if (!Runtime.MaterialAnimations.ContainsValue(m) || Runtime.MaterialAnimations.ContainsKey(name))
+                Runtime.MaterialAnimations.Add(name, m);
+            viewports[0].loadMTA(m);
         }
 
         private void importToolStripMenuItem_Click(object sender, EventArgs e)
