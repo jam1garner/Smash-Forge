@@ -17,7 +17,7 @@ namespace Smash_Forge
 
         public int defaultTexId;
         public int unknown;
-        private int frameCount;
+        public int frameCount;
         public List<keyframe> keyframes = new List<keyframe>();
 
         public PatData() { }
@@ -280,11 +280,11 @@ namespace Smash_Forge
             public byte unknown;
         }
 
-        int unk1;
-        short unk2;
-        int frameCount;
+        public int unk1;
+        public short unk2;
+        public int frameCount;
         public string name;
-        List<frame> frames = new List<frame>();
+        public List<frame> frames = new List<frame>();
 
         public VisEntry() { }
 
@@ -487,6 +487,80 @@ namespace Smash_Forge
 
             return f.getBytes();
         }
+
+        public string Decompile()
+        {
+            string f = "";
+
+            f += "Header\n";
+            f += $"Header_Unknown,{unknown}\n";
+            f += $"Frame Count,{numFrames}\n";
+            f += $"Frame rate,{frameRate}\n";
+            foreach(MatEntry matEntry in matEntries)
+            {
+                f += "--------------------------------------\n";
+                f += "Material\n";
+                f += matEntry.name + '\n';
+                f += $"Material Hash,{matEntry.matHash.ToString("X")}\n";
+                f += $"Has PAT0,{matEntry.hasPat}\n";
+                if (matEntry.matHash2 != 0)
+                    f += $"Second Material Hash,{matEntry.matHash2.ToString("X")}";
+                f += "###\n";
+
+                foreach(MatData matProp in matEntry.properties)
+                {
+                    f += matProp.name + '\n';
+                    f += $"MatProp_Unk1,{matProp.unknown}\n";
+                    f += $"MatProp_Unk2,{matProp.unknown2}\n";
+                    f += $"MatProp_Unk3,{matProp.unknown3}\n";
+                    f += "Compile Type (Baked or Keyed),Baked\n";
+                    foreach(MatData.frame frame in matProp.frames)
+                    {
+                        int i = 0;
+                        foreach(float value in frame.values)
+                        {
+                            f += value;
+                            if (i == frame.values.Length - 1)
+                                f += '\n';
+                            else
+                                f += ',';
+                            i++;
+                        }
+                    }
+                    f += "###\n";
+                    
+                }
+                if (matEntry.pat0 != null)
+                {
+                    f += "PAT0\n";
+                    f += $"Default TexId,{matEntry.pat0.defaultTexId.ToString("X")}\n";
+                    f += $"Keyframe Count,{matEntry.pat0.keyframes.Count}\n";
+                    f += $"PAT0_Unkown,{matEntry.pat0.unknown}";
+                    foreach (PatData.keyframe keyframe in matEntry.pat0.keyframes)
+                        f += $"frameNum,{keyframe.frameNum},texId,{keyframe.texId.ToString("X")}\n";
+                }
+            }
+
+            foreach(VisEntry visEntry in visEntries)
+            {
+                f += "--------------------------------------\n";
+                f += "VIS0\n";
+                f += visEntry.name + '\n';
+                f += $"Frame Count,{visEntry.frameCount}\n";
+                f += $"Keyframe Count,{visEntry.frameCount}\n";
+                f += $"Is Constant,{visEntry.unk1}\n";
+                f += $"Constant Value,{visEntry.unk2}\n";
+                foreach (VisEntry.frame frame in visEntry.frames)
+                    f += $"Frame,{frame.frameNum},State,{frame.state},unknown,{frame.unknown}\n";
+            }
+            f += "\n";
+
+            return f;
+        }
+
+        public void Compile(List<string> f)
+        {
+
+        }
     }
-    
 }
