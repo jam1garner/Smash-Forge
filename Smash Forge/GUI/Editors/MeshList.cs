@@ -105,8 +105,51 @@ namespace Smash_Forge
                 parent.Nodes.Remove(node);
                 parent.Nodes.Insert(pos, node);
                 treeView1.SelectedNode = node;
+                n.PreRender();
             }
             changingValue = false;//Set the value back so the user can change values
+        }
+
+        private void treeView1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '=')
+            {
+                if (treeView1.SelectedNode.Tag is NUD.Mesh)
+                {
+                    TreeNode node = treeView1.SelectedNode;
+                    TreeNode parent = node.Parent;
+                    NUD.Mesh m = (NUD.Mesh)node.Tag;
+                    NUD n = (NUD)parent.Tag;
+                    int pos = n.mesh.IndexOf(m) + 1;
+                    if (pos >= n.mesh.Count)
+                        pos = n.mesh.Count - 1;
+                    n.mesh.Remove(m);
+                    n.mesh.Insert(pos, m);
+                    parent.Nodes.Remove(node);
+                    parent.Nodes.Insert(pos, node);
+                    treeView1.SelectedNode = node;
+                    n.PreRender();
+                }
+            }
+            if (e.KeyChar == '-')
+            {
+                if (treeView1.SelectedNode.Tag is NUD.Mesh)
+                {
+                    TreeNode node = treeView1.SelectedNode;
+                    TreeNode parent = node.Parent;
+                    NUD.Mesh m = (NUD.Mesh)node.Tag;
+                    NUD n = (NUD)parent.Tag;
+                    int pos = n.mesh.IndexOf(m) - 1;
+                    if (pos < 0)
+                        pos = 0;
+                    n.mesh.Remove(m);
+                    n.mesh.Insert(pos, m);
+                    parent.Nodes.Remove(node);
+                    parent.Nodes.Insert(pos, node);
+                    treeView1.SelectedNode = node;
+                    n.PreRender();
+                }
+            }
         }
     }
 }

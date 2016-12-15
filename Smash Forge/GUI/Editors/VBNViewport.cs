@@ -21,6 +21,8 @@ namespace Smash_Forge
 {
     public partial class VBNViewport : DockContent
     {
+        int defaulttex = 0;
+
         public VBNViewport()
         {
             InitializeComponent();
@@ -48,7 +50,9 @@ namespace Smash_Forge
             }
             render = true;
             _controlLoaded = true;
+            defaulttex = NUT.loadImage(SForge.Properties.Resources.DefaultTexture);
         }
+
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
@@ -287,7 +291,7 @@ out vec4 color;
 out float fresNelR;
 
 uniform mat4 modelview;
-uniform mat4 bones[250];
+uniform mat4 bones[200];
  
 void
 main()
@@ -326,7 +330,8 @@ in float fresNelR;
 uniform sampler2D tex;
 uniform sampler2D nrm;
 uniform vec4 colorSamplerUV;
-uniform vec4 coloroffset;
+uniform vec4 colorOffset;
+uniform vec4 colorGain;
 uniform vec4 minGain;
 
 vec4 lerp(float v, vec4 from, vec4 to)
@@ -343,11 +348,14 @@ main()
     norm = normalize (norm);
     float lamberFactor= max (dot (vec3(0.85, 0.85, 0.85), norm), 0.75) * 1.5;
 
-    vec4 ambiant = vec4(0.1,0.1,0.1,1.0) * texture(tex, texcoord).rgba;
+    //vec4 ambiant = vec4(0.1,0.1,0.1,1.0) * texture(tex, texcoord).rgba;
 
-    vec4 alpha = (1-minGain) + texture2D(nrm, texcoord).aaaa; //
+    vec4 alpha = (1-minGain) + texture2D(nrm, texcoord).aaaa;
     //if(alpha.a < 0.5) discard;
-	vec4 outputColor = ambiant + ((vec4(texture(tex, texcoord).rgb, 1)) * vec4(0.80,0.80,0.80,1.0) * normal);
+
+	vec4 outputColor = colorOffset + (vec4(texture(tex, texcoord).rgba) * normal) * colorGain;
+    outputColor = outputColor;
+
     vec4 fincol = vec4(((color * alpha * outputColor)).xyz, texture2D(tex, texcoord).a * color.w);
     gl_FragColor = fincol;//vec4(lerp(fresNelR, fincol, vec4(1.75,1.75,1.75,1)).xyz, fincol.w);
 }
@@ -366,8 +374,8 @@ main()
                 {
                     if (GL.GetInteger(GetPName.MajorVersion) < 3)
                     {
-                        shader.vertexShader(vs.Replace("#version 330", "#version 150"));
-                        shader.fragmentShader(fs.Replace("#version 330", "#version 150"));
+                        shader.vertexShader(vs.Replace("#version 330", "#version 120"));
+                        shader.fragmentShader(fs.Replace("#version 330", "#version 120"));
                     }
                     else
                     {
@@ -388,6 +396,7 @@ main()
                     shader.addAttribute("bones", true);
                     shader.addAttribute("colorSamplerUV", true);
                     shader.addAttribute("colorOffset", true);
+                    shader.addAttribute("colorGain", true);
                     shader.addAttribute("minGain", true);
                 }
             }

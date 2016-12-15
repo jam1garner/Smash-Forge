@@ -228,7 +228,7 @@ namespace Smash_Forge
                     bones[i].scale[1] = file.readFloat();
                     bones[i].scale[2] = file.readFloat();
                     Bone temp = bones[i];
-                    Debug.Write(temp.parentIndex);
+                    //Debug.Write(temp.parentIndex);
                     if (temp.parentIndex != 0x0FFFFFFF && temp.parentIndex > -1)
                         bones[temp.parentIndex].children.Add(i);
                     bones[i] = temp;

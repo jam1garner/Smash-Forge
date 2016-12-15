@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using WeifenLuo.WinFormsUI.Docking;
 using OpenTK;
+using System.Data;
 
 namespace Smash_Forge
 {
@@ -33,10 +34,8 @@ namespace Smash_Forge
             AddDockedControl(lvdEditor);
             AddDockedControl(project);
             AddDockedControl(lvdList);
-
             rightPanel.treeView1.Nodes.Add(animNode);
             rightPanel.treeView1.Nodes.Add(mtaNode);
-
             Runtime.renderBones = true;
             Runtime.renderLVD = true;
             Runtime.renderFloor = true;
@@ -49,6 +48,7 @@ namespace Smash_Forge
             Runtime.renderSpawns = true;
             Runtime.renderRespawns = true;
             Runtime.renderOtherLVDEntries = true;
+            
         }
 
         private void MainForm_Close(object sender, EventArgs e)

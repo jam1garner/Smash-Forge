@@ -86,7 +86,7 @@ void
 main()
 {
     vec4 alpha = texture(tex, f_texcoord*uvscale).aaaa;
-    gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale)).xyz, alpha.a * color.w);
+    gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale)).xyz, color.w);
 }
 ";
 
@@ -231,6 +231,11 @@ main()
                 col.Add(v.clr);
                 nrm.Add(v.nrm);
 
+                if(v.bones.Count == 0)
+                {
+                    v.bones.Add (-1);
+                    v.weights.Add(0);
+                }
                 while (v.bones.Count < 4)
                 {
                     v.bones.Add(0);
@@ -337,7 +342,8 @@ main()
             {
                 Matrix4[] f = bones.getShaderMatrix();
                 int shad = shader.getAttribute("bones");
-                GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
+                if(f.Length > 0)
+                    GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
             }
 
             shader.enableAttrib();
@@ -397,6 +403,18 @@ main()
 
         }
 
+        public static byte[] ConvertBitmapToByteArray(Bitmap bitmap)
+        {
+            byte[] result = null;
+            if (bitmap != null)
+            {
+                System.IO.MemoryStream stream = new System.IO.MemoryStream();
+                bitmap.Save(stream, bitmap.RawFormat);
+                result = stream.ToArray();
+            }
+            return result;
+        }
+
         public ModelContainer wrapToNUD()
         {
             ModelContainer con = new ModelContainer();
@@ -405,6 +423,11 @@ main()
             NUD nud = new NUD();
             con.nud = nud;
 
+            // create a nut?
+            NUT nut = new NUT();
+            Runtime.TextureContainers.Add(nut);
+            int texid = 0;
+
             foreach (var da in displayList)
             {
                 DOBJ data = (DOBJ)da.Tag;
@@ -412,6 +435,21 @@ main()
                 mesh.name = "Mesh_" + displayList.IndexOf(da);
                 NUD.Polygon polygon = new NUD.Polygon();
                 polygon.setDefaultMaterial();
+
+
+                polygon.materials[0].textures[0].hash = 0x40545400 + texid;
+                NUT.NUD_Texture tex = new NUT.NUD_Texture();
+                tex.width = data.material.texture.width;
+                tex.height = data.material.texture.height;
+                tex.id = 0x40545400 + texid;
+                tex.mipmaps.Add(ConvertBitmapToByteArray(data.material.texture.image));
+                tex.type = PixelInternalFormat.Rgba;
+                tex.utype = PixelFormat.Rgba;
+                nut.textures.Add(tex);
+                nut.draw.Add(0x40545400 + texid, NUT.loadImage(tex));
+                texid++;
+
+
                 List<Vertex> usedVertices = new List<Vertex>();
                 foreach (POBJ poly in data.polygons)
                 {
@@ -445,7 +483,7 @@ main()
                     nv.pos = vert.pos;
                     nv.tx.Add(vert.tx0);
                     nv.nrm = vert.nrm;
-                    nv.col = vert.clr/2;
+                    nv.col = (vert.clr*0xFF)/2;
                     nv.node.AddRange(vert.bones);
                     nv.weight.AddRange(vert.weights);
                     polygon.AddVertex(nv);
@@ -455,6 +493,7 @@ main()
             }
 
             nud.PreRender();
+
 
             return con;
         }
@@ -1134,7 +1173,7 @@ main()
                                                     off1 = d.readInt() + headerSize;
                                                     wei1 = d.readFloat();
                                                 }
-
+                                                
                                                 if (v.weights.Count == 1)
                                                     v.pos = newp;
                                             }
@@ -1199,11 +1238,11 @@ main()
                                         d.seek(temp);
                                         break;
                                 }
-                                if (v.bones.Count < 1)
+                                /*if (v.bones.Count < 1)
                                 {
                                     v.bones.Add(-1);
                                     v.weights.Add(0);
-                                }
+                                }*/
                             }
                         }
 
