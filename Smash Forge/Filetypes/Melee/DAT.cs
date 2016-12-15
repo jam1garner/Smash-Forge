@@ -86,7 +86,7 @@ void
 main()
 {
     vec4 alpha = texture(tex, f_texcoord*uvscale).aaaa;
-    gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale)).xyz, color.w);
+    gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale)).xyz, alpha.a * color.w);
 }
 ";
 
@@ -246,18 +246,22 @@ main()
                 weight.Add(new Vector4(v.weights[0], v.weights[1], v.weights[2], v.weights[3]));
             }
 
-            Queue<TreeNode> queue = new Queue<TreeNode>();
-            foreach (TreeNode node in tree)
-                queue.Enqueue(node);
+            Stack<TreeNode> queue = new Stack<TreeNode>();
+            //foreach (TreeNode node in tree)
+            for(int i = tree.Count - 1; i >= 0; i--)
+                queue.Push(tree[i]);
 
             displayList.Clear();
             List<JOBJ> boneTrack = new List<JOBJ>();
             while (queue.Any())
             {
-                TreeNode node = queue.Dequeue();
+                TreeNode node = queue.Pop();
 
-                foreach (TreeNode n in node.Nodes)
-                    queue.Enqueue(n);
+                //foreach (TreeNode n in node.Nodes)
+                //    queue.Enqueue(n);
+
+                for (int i = node.Nodes.Count - 1; i >= 0; i--)
+                    queue.Push(node.Nodes[i]);
                 if (node.Tag is DOBJ)
                     displayList.Add(node);
 
@@ -268,7 +272,7 @@ main()
                 boneTrack.Add(j);
 
                 Bone b = new Bone();
-                b.boneName = new char[] { 'b' };
+                b.boneName = boneTrack.IndexOf(j).ToString().ToCharArray();
                 if (node.Parent.Tag is JOBJ)
                     b.parentIndex = boneTrack.IndexOf((JOBJ)node.Parent.Tag);
                 else
@@ -805,7 +809,7 @@ main()
                 d.seek(mobjOffset);
                 material.Read(d, dat);
 
-                node.Text = "Mesh";
+                node.Text = "Mesh_" + unk1;
                 node.Tag = this;
                 node.Checked = true;
                 parent.Nodes.Add(node);
@@ -958,6 +962,7 @@ main()
             public Vector3 pos = new Vector3();
             public Vector3 nrm = new Vector3();
             public Vector2 tx0 = new Vector2();
+            public Vector2 tx1 = new Vector2();
             public Vector4 clr = new Vector4(1, 1, 1, 1);
             public List<int> bones = new List<int>();
             public List<float> weights = new List<float>();
@@ -1028,7 +1033,6 @@ main()
             {
                 dobj.polygons.Add(this);
 
-                node.Text = "Polygon";
                 node.Tag = this;
                 parent.Nodes.Add(node);
 
@@ -1039,6 +1043,7 @@ main()
                 displayListSize = (short)d.readShort();
                 displayListOffset = d.readInt() + headerSize;
                 weightListOffset = d.readInt() + headerSize;
+                node.Text = "Polygon_" + flags.ToString("x");
 
                 // vertex attributes
                 d.seek(vertexAttrArray);
@@ -1090,15 +1095,6 @@ main()
                                         else
                                         {
                                             v.clr = readGXClr(d, att.compType);
-                                            /*switch (att.compType)
-                                            {
-                                                case 0: d.skip(2); break;
-                                                case 1: d.skip(3); break;
-                                                case 2: d.skip(3); break;
-                                                case 3: d.skip(2); break;
-                                                case 4: d.skip(3); break;
-                                                case 5: d.skip(4); break;
-                                            }*/
                                         }
                                         break;
                                     case GXAttrType.GX_INDEX8:
@@ -1140,7 +1136,7 @@ main()
                                                 int off1 = d.readInt() + headerSize;
                                                 float wei1 = d.readFloat();
                                                 Vector3 newp = Vector3.Zero;
-
+                                                v.bones.Clear();
                                                 while (off1 > headerSize)
                                                 {
                                                     if (!dat.jobjOffsetLinker.ContainsKey(off1))
@@ -1149,17 +1145,17 @@ main()
                                                     newp += Vector3.Transform(v.pos, dat.jobjOffsetLinker[off1].transform) * wei1;
 
                                                     //Hacky and the hackjobs----------------------------------------
-                                                    Queue<TreeNode> queue = new Queue<TreeNode>();
-                                                    foreach (TreeNode node in dat.tree)
-                                                        queue.Enqueue(node);
+                                                    Stack<TreeNode> queue = new Stack<TreeNode>();
+                                                    for (int k = dat.tree.Count - 1; k >= 0; k--)
+                                                        queue.Push(dat.tree[k]);
 
                                                     List<JOBJ> boneTrack = new List<JOBJ>();
                                                     while (queue.Any())
                                                     {
-                                                        TreeNode node = queue.Dequeue();
+                                                        TreeNode node = queue.Pop();
 
-                                                        foreach (TreeNode n in node.Nodes)
-                                                            queue.Enqueue(n);
+                                                        for (int k = node.Nodes.Count - 1; k >= 0; k--)
+                                                            queue.Push(node.Nodes[k]);
 
                                                         if (!(node.Tag is JOBJ))
                                                             continue;
@@ -1174,7 +1170,7 @@ main()
                                                     wei1 = d.readFloat();
                                                 }
                                                 
-                                                if (v.weights.Count == 1)
+                                                if (v.bones.Count == 1)
                                                     v.pos = newp;
                                             }
 
@@ -1232,17 +1228,12 @@ main()
                                         temp = d.pos();
                                         d.seek(att.dataOffset + att.vtxStride * value);
                                         f = read3(d, att.compType, att.vtxStride / GX_COMPSIZE[att.compType]);
-                                        v.tx0.X = f[0];
-                                        v.tx0.Y = f[1];
-                                        v.tx0 = Vector2.Divide(v.tx0, (float)Math.Pow(2, att.scale));
+                                        v.tx1.X = f[0];
+                                        v.tx1.Y = f[1];
+                                        v.tx1 = Vector2.Divide(v.tx0, (float)Math.Pow(2, att.scale));
                                         d.seek(temp);
                                         break;
                                 }
-                                /*if (v.bones.Count < 1)
-                                {
-                                    v.bones.Add(-1);
-                                    v.weights.Add(0);
-                                }*/
                             }
                         }
 

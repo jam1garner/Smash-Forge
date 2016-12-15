@@ -175,121 +175,128 @@ namespace Smash_Forge
                     if (p.faces.Count <= 3)
                         continue;
 
-                    int texHash = p.materials[0].displayTexId == -1 ? p.materials[0].textures[0].hash : p.materials[0].displayTexId;
-                    int nrmHash = -1;
-                    if(p.materials[0].textures.Count > 1)
-                        nrmHash = p.materials[0].textures[1].hash;
-
-                    Material mat = p.materials[0];
-
-                    int tex = -1;
-                    foreach (NUT nut in Runtime.TextureContainers)
+                    //foreach (Material mat in p.materials)
                     {
-                        nut.draw.TryGetValue(texHash, out tex);
+                        Material mat = p.materials[0];
+                        int texHash = mat.displayTexId == -1 ? mat.textures[0].hash : mat.displayTexId;
+                        int nrmHash = -1;
+                        if (mat.textures.Count > 1)
+                            nrmHash = mat.textures[1].hash;
 
-                        if (tex != 0)
+                        int tex = -1;
+                        foreach (NUT nut in Runtime.TextureContainers)
                         {
-                            GL.ActiveTexture(TextureUnit.Texture0);
-                            GL.BindTexture(TextureTarget.Texture2D, tex);
-                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[0].WrapMode1]);
-                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[0].WrapMode2]);
-                            GL.Uniform1(shader.getAttribute("tex"), 0);
-                            tex = -1;
+                            nut.draw.TryGetValue(texHash, out tex);
+
+                            if (tex != 0)
+                            {
+                                GL.ActiveTexture(TextureUnit.Texture0);
+                                GL.BindTexture(TextureTarget.Texture2D, tex);
+                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[0].WrapMode1]);
+                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[0].WrapMode2]);
+                                GL.Uniform1(shader.getAttribute("tex"), 0);
+                                tex = -1;
+                            }
+
+                            nut.draw.TryGetValue(nrmHash, out tex);
+
+                            if (tex != -1 && mat.textures.Count > 1)
+                            {
+                                GL.ActiveTexture(TextureUnit.Texture1);
+                                GL.BindTexture(TextureTarget.Texture2D, tex);
+                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[1].WrapMode1]);
+                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[1].WrapMode2]);
+                                GL.Uniform1(shader.getAttribute("nrm"), 1);
+                                break;
+                            } else
+                            {
+                                GL.ActiveTexture(TextureUnit.Texture1);
+                                GL.BindTexture(TextureTarget.Texture2D, 0);
+                                GL.Uniform1(shader.getAttribute("nrm"), 1);
+                            }
                         }
 
-                        nut.draw.TryGetValue(nrmHash, out tex);
 
-                        if (tex != 0)
+                        Vector4 colorSamplerUV = new Vector4(1, 1, 0, 0);
                         {
-                            GL.ActiveTexture(TextureUnit.Texture1);
-                            GL.BindTexture(TextureTarget.Texture2D, tex);
-                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[1].WrapMode1]);
-                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[1].WrapMode2]);
-                            GL.Uniform1(shader.getAttribute("nrm"), 1);
-                            break;
+                            float[] colorSamplerUVFloats;
+                            mat.entries.TryGetValue("NU_colorSamplerUV", out colorSamplerUVFloats);
+                            if (colorSamplerUVFloats != null && colorSamplerUVFloats.Length >= 4)
+                            {
+                                //Console.WriteLine("Anim of NU_ColorSamplerUV from NUD");
+                                colorSamplerUV = new Vector4(colorSamplerUVFloats[0], colorSamplerUVFloats[1], colorSamplerUVFloats[2], colorSamplerUVFloats[3]);
+                            }
                         }
-                    }
 
-
-                    Vector4 colorSamplerUV = new Vector4(1, 1, 0, 0);
-                    {
-                        float[] colorSamplerUVFloats;
-                        mat.entries.TryGetValue("NU_colorSamplerUV", out colorSamplerUVFloats);
-                        if (colorSamplerUVFloats != null && colorSamplerUVFloats.Length >= 4)
                         {
-                            //Console.WriteLine("Anim of NU_ColorSamplerUV from NUD");
-                            colorSamplerUV = new Vector4(colorSamplerUVFloats[0], colorSamplerUVFloats[1], colorSamplerUVFloats[2], colorSamplerUVFloats[3]);
+                            float[] colorSamplerUVFloats;
+                            mat.anims.TryGetValue("NU_colorSamplerUV", out colorSamplerUVFloats);
+                            if (colorSamplerUVFloats != null && colorSamplerUVFloats.Length >= 4)
+                            {
+                                //Console.WriteLine("Anim of NU_ColorSamplerUV from MTA");
+                                colorSamplerUV = new Vector4(colorSamplerUVFloats[0], colorSamplerUVFloats[1], colorSamplerUVFloats[2], colorSamplerUVFloats[3]);
+                            }
                         }
-                    }
-                    
-                    {
-                        float[] colorSamplerUVFloats;
-                        mat.anims.TryGetValue("NU_colorSamplerUV", out colorSamplerUVFloats);
-                        if (colorSamplerUVFloats != null && colorSamplerUVFloats.Length >= 4)
+
+                        GL.Uniform4(shader.getAttribute("colorSamplerUV"), colorSamplerUV);
+
+                        float[] ao;
+                        mat.entries.TryGetValue("NU_aoMinGain", out ao);
+                        if (ao == null) ao = new float[] { 0, 0, 0, 0 };
+                        Vector4 aoo = new Vector4(ao[0], ao[1], ao[2], ao[3]);
+                        GL.Uniform4(shader.getAttribute("minGain"), aoo);
+
+                        float[] co;
+                        mat.entries.TryGetValue("NU_colorOffset", out co);
+                        if (co == null) co = new float[] { 0, 0, 0, 0 };
+                        Vector4 coo = new Vector4(co[0], co[1], co[2], co[3]);
+                        GL.Uniform4(shader.getAttribute("colorOffset"), coo);
+
+                        float[] cg;
+                        mat.entries.TryGetValue("NU_colorGain", out cg);
+                        if (cg == null) cg = new float[] { 1, 1, 1, 1 };
+                        Vector4 cgo = new Vector4(cg[0], cg[1], cg[2], cg[3]);
+                        GL.Uniform4(shader.getAttribute("colorGain"), cgo);
+
+                        /*GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
+                            dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
+
+                        GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
+                        switch (mat.alphaFunc){
+                            case 0:
+                                GL.AlphaFunc(AlphaFunction.Gequal, 128 / 255f);
+                                break;
+                        }
+                        /*switch (mat.ref1)
                         {
-                            //Console.WriteLine("Anim of NU_ColorSamplerUV from MTA");
-                            colorSamplerUV = new Vector4(colorSamplerUVFloats[0], colorSamplerUVFloats[1], colorSamplerUVFloats[2], colorSamplerUVFloats[3]);
+                            case 4:
+                                GL.AlphaFunc(AlphaFunction.Lequal, 128 / 255f);
+                                break;
+                            case 6:
+                                GL.AlphaFunc(AlphaFunction.Lequal, 255 / 255f);
+                                break;
+                        }*/
+
+                        GL.Enable(EnableCap.CullFace);
+                        GL.CullFace(CullFaceMode.Front);
+                        switch (mat.cullMode)
+                        {
+                            case 0:
+                                GL.Disable(EnableCap.CullFace);
+                                break;
+                            case 4:
+                                GL.CullFace(CullFaceMode.Back);
+                                break;
                         }
+
+                        if (p.isVisible && m.isVisible)
+                        {
+                            //(p.strip >> 4) == 4 ? PrimitiveType.Triangles : PrimitiveType.TriangleStrip
+                            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
+                        }
+                        GL.Enable(EnableCap.CullFace);
+                        indiceat += p.displayFaceSize;
                     }
-
-                    GL.Uniform4(shader.getAttribute("colorSamplerUV"), colorSamplerUV);
-
-                    float[] ao;
-                    mat.entries.TryGetValue("NU_aoMinGain", out ao);
-                    if (ao == null) ao = new float[] { 0, 0, 0, 0 }; 
-                    Vector4 aoo = new Vector4(ao[0], ao[1], ao[2], ao[3]);
-                    GL.Uniform4(shader.getAttribute("minGain"), aoo);
-
-                    float[] co;
-                    mat.entries.TryGetValue("NU_colorOffset", out co);
-                    if (co == null) co = new float[] { 0, 0, 0, 0 };
-                    Vector4 coo = new Vector4(co[0], co[1], co[2], co[3]);
-                    GL.Uniform4(shader.getAttribute("colorOffset"), coo);
-
-                    float[] cg;
-                    mat.entries.TryGetValue("NU_colorGain", out cg);
-                    if (cg == null) cg = new float[] { 1, 1, 1, 1 };
-                    Vector4 cgo = new Vector4(cg[0], cg[1], cg[2], cg[3]);
-                    GL.Uniform4(shader.getAttribute("colorGain"), cgo);
-
-                    /*GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
-                        dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
-
-                    GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-                    switch (mat.alphaFunc){
-                        case 0:
-                            GL.AlphaFunc(AlphaFunction.Gequal, 128 / 255f);
-                            break;
-                    }
-                    /*switch (mat.ref1)
-                    {
-                        case 4:
-                            GL.AlphaFunc(AlphaFunction.Lequal, 128 / 255f);
-                            break;
-                        case 6:
-                            GL.AlphaFunc(AlphaFunction.Lequal, 255 / 255f);
-                            break;
-                    }*/
-
-                    GL.Enable(EnableCap.CullFace);
-                    GL.CullFace(CullFaceMode.Front);
-                    switch (mat.cullMode)
-                    {
-                        case 0:
-                            GL.Disable(EnableCap.CullFace);
-                            break;
-                        case 4:
-                            GL.CullFace(CullFaceMode.Back);
-                            break;
-                    }
-
-                    if (p.isVisible && m.isVisible)
-                    {
-                        //(p.strip >> 4) == 4 ? PrimitiveType.Triangles : PrimitiveType.TriangleStrip
-                        GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
-                    }
-                    GL.Enable(EnableCap.CullFace);
-                    indiceat += p.displayFaceSize;
                 }
             }
         }

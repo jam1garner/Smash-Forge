@@ -214,11 +214,17 @@ namespace Smash_Forge
                 Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value);
                 if (m.vbn != null)
                     Runtime.TargetAnim.nextFrame(m.vbn);
-                Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value);
+
+                if (m.dat_melee != null)
+                {
+                    Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value);
+                    Runtime.TargetAnim.nextFrame(m.dat_melee.bones);
+                }
                 if (m.bch != null)
                 {
                     foreach (BCH.BCH_Model mod in m.bch.models)
                     {
+                        Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value);
                         if (mod.skeleton != null)
                             Runtime.TargetAnim.nextFrame(mod.skeleton);
                     }
@@ -1493,6 +1499,12 @@ main()
             {
                 if (m.vbn != null)
                     Runtime.TargetAnim.nextFrame(m.vbn);
+
+                if (m.dat_melee != null)
+                {
+                    Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value);
+                    Runtime.TargetAnim.nextFrame(m.dat_melee.bones);
+                }
             }
         }
         public void loadAnimation(SkelAnimation a)
