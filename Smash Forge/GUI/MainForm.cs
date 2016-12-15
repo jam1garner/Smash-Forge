@@ -286,12 +286,22 @@ namespace Smash_Forge
                         DAT dat = new DAT();
                         dat.Read(new FileData(ofd.FileName));
                         ModelContainer c = new ModelContainer();
+                        Runtime.ModelContainers.Add(c);
                         c.dat_melee = dat;
                         dat.PreRender();
+                        
+                        HashMatch();
+
                         //DAT_Animation anim = new DAT_Animation();
                         //anim.Read(new FileData("C:\\Users\\ploaj_000\\Desktop\\Melee\\zJiggyWait"));
                         //anim.Apply(dat.bones);
-                        Runtime.ModelContainers.Add(c);
+                        //AnimTrack t = new AnimTrack(anim);
+                        //t.Show();
+
+                        //SkelAnimation an = t.BakeToSkel(dat.bones);
+                        //Runtime.Animations.Add(anim.Name, an);
+                        //animNode.Nodes.Add(anim.Name);
+
                         //Runtime.ModelContainers.Add(dat.wrapToNUD());
                         //Collada dae = new Collada();
                         //dae.Save("C:\\Users\\ploaj_000\\Desktop\\Melee\\Test.dae", dat);
@@ -621,12 +631,33 @@ namespace Smash_Forge
         }
         private void hashMatchToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            HashMatch();
+            //leftPanel.treeRefresh();
+        }
+        public static void HashMatch()
+        {
             csvHashes csv = new csvHashes("hashTable.csv");
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
                 if (m.vbn != null)
                 {
                     foreach (Bone bone in m.vbn.bones)
+                    {
+                        for (int i = 0; i < csv.names.Count; i++)
+                        {
+                            if (csv.names[i] == new string(bone.boneName))
+                            {
+                                bone.boneId = csv.ids[i];
+                            }
+                        }
+                        if (bone.boneId == 0)
+                            bone.boneId = Crc32.Compute(new string(bone.boneName));
+                    }
+                }
+
+                if (m.dat_melee != null)
+                {
+                    foreach(Bone bone in m.dat_melee.bones.bones)
                     {
                         for (int i = 0; i < csv.names.Count; i++)
                         {
@@ -656,7 +687,6 @@ namespace Smash_Forge
                     }
                 }
             }
-            //leftPanel.treeRefresh();
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
