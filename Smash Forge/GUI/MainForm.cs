@@ -319,7 +319,7 @@ namespace Smash_Forge
                         Runtime.TargetMTA = new MTA();
                         Runtime.TargetMTA.Read(ofd.FileName);
                         viewports[0].loadMTA(Runtime.TargetMTA);
-                        MTAEditor temp = new MTAEditor(Runtime.TargetMTA) { ShowHint = DockState.Document };
+                        MTAEditor temp = new MTAEditor(Runtime.TargetMTA) { ShowHint = DockState.DockLeft };
                         temp.Text = Path.GetFileName(ofd.FileName);
                         AddDockedControl(temp);
                         mtaEditors.Add(temp);
