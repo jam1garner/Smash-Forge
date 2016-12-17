@@ -23,17 +23,29 @@ namespace Smash_Forge
 
         public virtual void DeleteFileOrFolder()
         {
-            var result = MessageBox.Show($"Are you sure you want to delete {this.Text}?", "Confirmation", MessageBoxButtons.YesNo);
+            var result = MessageBox.Show($"Are you sure you want to delete {this.Text}? This cannot be undone!", "Confirmation", MessageBoxButtons.YesNo);
             if (result == DialogResult.Yes)
             {
                 if (this.Tag is DirectoryInfo)
                 {
-                    Directory.Delete(((DirectoryInfo)this.Tag).FullName);
+                    string name = ((DirectoryInfo)this.Tag).FullName;
+                    Directory.Delete(name, true);
+                    ProjectNode.Project.RemoveFile(name);
+                }
+                else if (this is ProjectNode)
+                {
+                    string name = ((FileInfo)this.Tag).FullName;
+                    File.Delete(name);
+                    var n = this as ProjectNode;
+                    MainForm.Instance.WorkspaceManager.RemoveProject(n.ProjectName);
                 }
                 else if (this.Tag is FileInfo)
                 {
-                    File.Delete(((FileInfo)this.Tag).FullName);
+                    string name = ((FileInfo)this.Tag).FullName;
+                    File.Delete(name);
+                    ProjectNode.Project.RemoveFile(name);
                 }
+
                 this.Remove();
             }
         }
@@ -51,7 +63,8 @@ namespace Smash_Forge
             get
             {
                 TreeNode node = null;
-                while ((node = this.Parent) != null)
+                node = this.Parent;
+                while (node != null)
                 {
                     if (node is ProjectNode)
                         break;
@@ -71,7 +84,7 @@ namespace Smash_Forge
             this.ImageIndex = this.SelectedImageIndex = 0;
         }
     }
-    public class ProjectFileNode: ProjectExplorerNode
+    public class ProjectFileNode : ProjectExplorerNode
     {
         public ProjectFileNode()
         {
@@ -82,13 +95,27 @@ namespace Smash_Forge
     // Inherit from folder as the proj file is treated as one
     public class ProjectNode : ProjectFolderNode
     {
+        //public static ContextMenuStrip _menu;
+        static ProjectNode()
+        {
+            _menu = new ContextMenuStrip();
+            _menu.Items.Add("Delete Project", null, DeleteAction);
+        }
         public ProjectNode(Project p)
         {
             this.Project = p;
             this.Text = p.ProjName;
-            this.ImageKey = "Project";
+            this.ContextMenuStrip = _menu;
+            this.ImageIndex = this.SelectedImageIndex = 3;
         }
-
+        public static void DeleteAction(object sender, EventArgs e)
+        {
+            GetInstance<ProjectNode>().DeleteFileOrFolder();
+        }
+        protected static T GetInstance<T>() where T : TreeNode
+        {
+            return MainForm.Instance.project.treeView1.SelectedNode as T;
+        }
         public Project Project { get; private set; }
         public string ProjectName
         {

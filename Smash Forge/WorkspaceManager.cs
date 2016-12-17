@@ -15,11 +15,13 @@ namespace Smash_Forge
     {
         public WorkspaceManager(ProjectTree tree)
         {
-            Projects = new List<Project>();
+            Projects = new SortedList<string, Project>();
             Tree = tree;
         }
 
-        public List<Project> Projects { get; set; }
+        public XmlDocument WorkspaceFile { get; set; }
+
+        public SortedList<string, Project> Projects { get; set; }
 
         private ProjectTree Tree { get; set; }
         public string WorkspaceRoot { get; set; }
@@ -28,26 +30,47 @@ namespace Smash_Forge
 
         public void OpenWorkspace(string filepath)
         {
-            var wk = new XmlDocument();
-            wk.Load(filepath);
+            WorkspaceFile = new XmlDocument();
+            WorkspaceFile.Load(filepath);
 
             WorkspaceRoot = Path.GetDirectoryName(filepath);
 
-            var rootNode = wk.SelectSingleNode("//Workspace");
+            var rootNode = WorkspaceFile.SelectSingleNode("//Workspace");
+
             WorkspaceName = rootNode.Attributes["Name"].Value;
-            var nodes = wk.SelectNodes("//Workspace//Project");
+            var nodes = WorkspaceFile.SelectNodes("//Workspace//Project");
             foreach (XmlNode node in nodes)
             {
                 var proj = ReadProjectFile(Path.Combine(WorkspaceRoot, node.Attributes["Path"].Value));
                 proj.ProjName = node.Attributes["Name"].Value;
-                Projects.Add(proj);
+                Projects.Add(proj.ProjName, proj);
             }
             PopulateTreeView();
         }
 
+        public void RemoveProject(Project p)
+        {
+            Projects.Remove(p.ProjName);
+            var nodes = WorkspaceFile.SelectNodes("//Workspace//Project");
+            foreach (XmlNode node in nodes)
+            {
+                if (node.Attributes["Name"].Value == p.ProjName)
+                {
+                    WorkspaceFile.SelectSingleNode("//Workspace").RemoveChild(node);
+                }
+            }
+            // TODO: Save the workspace file
+            // after anything is added/removed
+        }
+        public void RemoveProject(string name)
+        {
+            RemoveProject(Projects[name]);
+        }
+
         public void OpenProject(string filename)
         {
-            Projects.Add(ReadProjectFile(filename));
+            var p = ReadProjectFile(filename);
+            Projects.Add(p.ProjName, p);
             PopulateTreeView();
         }
         private Project ReadProjectFile(string filepath)
@@ -70,18 +93,27 @@ namespace Smash_Forge
         {
             Tree.treeView1.BeginUpdate();
             TreeNode workspaceNode = null;
+
+            // If we're actually opening a full workspace and
+            // not just a single project, add all projects
+            // as children to the workspace
             if (!string.IsNullOrEmpty(WorkspaceName))
             {
                 workspaceNode = new TreeNode(WorkspaceName);
                 workspaceNode.ImageIndex = workspaceNode.SelectedImageIndex = 2;
             }
-            foreach (FitProj p in Projects)
+
+            foreach (var pair in Projects)
             {
+                FitProj p = (FitProj)pair.Value;
+
                 FileInfo fileinfo = new FileInfo(p.ProjFilepath);
                 var projNode = new ProjectNode(p);
                 projNode.Tag = fileinfo;
+
                 GetDirectories(new DirectoryInfo(p.ProjDirectory).GetDirectories(), projNode, p);
                 GetFiles(new DirectoryInfo(p.ProjDirectory), projNode, p);
+
                 if (workspaceNode != null)
                     workspaceNode.Nodes.Add(projNode);
                 else
@@ -120,11 +152,13 @@ namespace Smash_Forge
                 var child = new ProjectFileNode() { Text = fileinfo.Name };
                 child.Tag = fileinfo;
                 foreach (var f in p.IncludedFiles)
-                    if (fileinfo.FullName.Contains(f.Path))
+                {
+                    if (fileinfo.FullName.Contains(f.RelativePath))
                     {
                         nodeToAddTo.Nodes.Add(child);
                         break;
                     }
+                }
             }
         }
     }
@@ -141,6 +175,30 @@ namespace Smash_Forge
         public ProjType Type { get; set; }
         public ProjPlatform Platform { get; set; }
         public List<ProjectItem> IncludedFiles { get; set; }
+
+        public ProjectItem GetFile(string path)
+        {
+            return this[path];
+        }
+        public bool RemoveFile(ProjectItem item)
+        {
+            return IncludedFiles.Remove(item);
+        }
+        public bool RemoveFile(string path)
+        {
+            if (this[path] != null)
+                return RemoveFile(this[path]);
+            else
+                return false;
+        }
+
+        public ProjectItem this[string key]
+        {
+            get
+            {
+                return IncludedFiles.FirstOrDefault(x => x.RelativePath == key);
+            }
+        }
 
         public virtual void ReadProject(string filepath) { }
     }
@@ -181,15 +239,15 @@ namespace Smash_Forge
                 foreach (XmlNode child in n.ChildNodes)
                 {
                     var item = new ProjectItem();
-                    item.Path = Runtime.CanonicalizePath(child.Attributes["include"].Value);
+                    item.RelativePath = Runtime.CanonicalizePath(child.Attributes["include"].Value);
                     if (child.HasChildNodes)
                     {
                         foreach (XmlNode child2 in child.ChildNodes)
                         {
                             if (child2.LocalName == "DependsUpon")
                             {
-                                var path = Runtime.CanonicalizePath(Path.Combine(Path.GetDirectoryName(item.Path), child2.InnerText));
-                                item.Depends.Add(IncludedFiles.Find(x => x.Path == path));
+                                var path = Runtime.CanonicalizePath(Path.Combine(Path.GetDirectoryName(item.RelativePath), child2.InnerText));
+                                item.Depends.Add(IncludedFiles.Find(x => x.RelativePath == path));
                             }
                         }
                     }
@@ -287,13 +345,15 @@ namespace Smash_Forge
         {
             Depends = new List<ProjectItem>();
         }
-        public string Path { get; set; }
+        public string RelativePath { get; set; }
+        public string RealPath { get; set; }
         public List<ProjectItem> Depends { get; set; }
         public override string ToString()
         {
-            return Path;
+            return RelativePath;
         }
     }
+
     public enum ProjType
     {
         Fighter,

@@ -41,6 +41,7 @@
             this.imageList1.Images.SetKeyName(0, "Folder.png");
             this.imageList1.Images.SetKeyName(1, "Document.png");
             this.imageList1.Images.SetKeyName(2, "Worspace.png");
+            this.imageList1.Images.SetKeyName(3, "fitproj.png");
             // 
             // treeView1
             // 
