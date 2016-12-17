@@ -73,38 +73,38 @@ namespace Smash_Forge
                 }
                 if (hasRot)
                 {
-                    if ((rFlag & 0xF) != 0x50 && (rFlag & 0xF0) != 0x70 && (rFlag & 0xF0) != 0x60 && (rFlag&0xF0) != 0xA0)
+                    if ((rFlag & 0xF) != 0x50 && (rFlag & 0xF0) != 0x70 && (rFlag & 0xF0) != 0x60 && (rFlag & 0xF0) != 0xA0)
                     {
                         //Console.WriteLine(rFlag);
                     }
 
-                    if((rFlag&0xF0) == 0xA0)
+                    if ((rFlag & 0xF0) == 0xA0)
                         node.r_type = 3;
-                    
-                    if ((rFlag&0xF0) == 0x50)
+
+                    if ((rFlag & 0xF0) == 0x50)
                     { // interpolated
                         node.r_type = KeyNode.INTERPOLATED;
                         node.rv = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                         node.rv2 = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                     }
-                    if ((rFlag&0xF0) == 0x70 || (rFlag&0xF0) == 0x60)
+                    if ((rFlag & 0xF0) == 0x70 || (rFlag & 0xF0) == 0x60)
                     { // constant
                         node.r_type = KeyNode.CONSTANT;
                         node.rv = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
-                        if((rFlag&0xF0) == 0x60)
+                        if ((rFlag & 0xF0) == 0x60)
                             d.skip(4);
                     }
                 }
 
                 if (hasScale)
                 {
-                    if ((sFlag&0xF0) == 0x80)
+                    if ((sFlag & 0xF0) == 0x80)
                     { // interpolated
                         node.s_type = KeyNode.INTERPOLATED;
                         node.s = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                         node.s2 = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                     }
-                    if ((rFlag&0x0F) == 0x02 || (rFlag&0x0F) == 0x03)
+                    if ((rFlag & 0x0F) == 0x02 || (rFlag & 0x0F) == 0x03)
                     { // constant
                         node.s_type = KeyNode.CONSTANT;
                         node.s = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
@@ -160,7 +160,7 @@ namespace Smash_Forge
                         float i3 = ((float)d.readShort() / (0xffff));
 
                         node.r = new Quaternion(new Vector3(i1, i2, i3), i4);
-                        node.r = VBN.FromEulerAngles(i4*i1, i4*i2, i4*i3);
+                        node.r = VBN.FromEulerAngles(i4 * i1, i4 * i2, i4 * i3);
                         node.r_type = KeyNode.INTERPOLATED;
                         //node.r.Normalize();
                     }
@@ -387,17 +387,17 @@ namespace Smash_Forge
                 if (hasScale[i])
                     flag |= 0x04000000;
 
-				if (conTrans[i] && hasTrans[i])
+                if (conTrans[i] && hasTrans[i])
                     flag |= 0x00200000;
                 else
                     flag |= 0x00080000;
 
-				if (conRot[i] && hasRot[i])
+                if (conRot[i] && hasRot[i])
                     flag |= 0x00007000;
                 else
                     flag |= 0x00005000;
-				
-				if (conScale[i] && hasScale[i])
+
+                if (conScale[i] && hasScale[i])
                     flag |= 0x00000200;
                 else
                     flag |= 0x00000080;

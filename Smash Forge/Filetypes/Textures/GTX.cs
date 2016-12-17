@@ -415,7 +415,8 @@ namespace Smash_Forge
             width  /= 4;
             height /= 4;
 
-            if ((GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_UNORM || (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM) {
+            if ((GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_UNORM ||
+                (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM) {
                 blockSize = 8;
             } else {
                 blockSize = 16;
@@ -431,7 +432,7 @@ namespace Smash_Forge
 
                 for (int k = 0; k < blockSize; k++)
                 {
-                    if (pos_ + k > surface.data.Length || pos + k > original.Length)
+                    if (pos_ + k >= surface.data.Length || pos + k >= original.Length)
                         break;
                     surface.data[pos_ + k] = original[pos + k];
                 }

@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,6 +32,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>forge.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -59,8 +63,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Filetypes\Melee\DAT.cs" />
+    <Compile Include="Filetypes\Melee\DAT_Animation.cs" />
     <Compile Include="Filetypes\LVD.cs" />
     <Compile Include="Filetypes\Animation\MTA.cs" />
+    <Compile Include="Filetypes\Melee\LibWii\Shared.cs" />
+    <Compile Include="Filetypes\Melee\LibWii\TLP.cs" />
+    <Compile Include="Filetypes\Melee\TriangleTools.cs" />
+    <Compile Include="Filetypes\Models\BCH.cs" />
+    <Compile Include="Filetypes\Models\Collada.cs" />
+    <Compile Include="Filetypes\Models\MOI.cs" />
+    <Compile Include="Filetypes\Models\Skapon.cs" />
     <Compile Include="Filetypes\PAC.cs" />
     <Compile Include="Filetypes\Animation\PATH.cs" />
     <Compile Include="GUI\Editors\ACMDEditor.cs">
@@ -75,17 +88,59 @@
     <Compile Include="GUI\Editors\AnimList.Designer.cs">
       <DependentUpon>AnimList.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\AnimTrack.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\AnimTrack.Designer.cs">
+      <DependentUpon>AnimTrack.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\BoneTree.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\Editors\BoneTree.Designer.cs">
       <DependentUpon>BoneTree.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\DAT_TreeView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\DAT_TreeView.Designer.cs">
+      <DependentUpon>DAT_TreeView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\LVD Editor\LVDEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\LVD Editor\LVDEditor.Designer.cs">
+      <DependentUpon>LVDEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\LVD Editor\LVDList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\LVD Editor\LVDList.Designer.cs">
+      <DependentUpon>LVDList.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\MeshList.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\Editors\MeshList.Designer.cs">
       <DependentUpon>MeshList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\MTAEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\MTAEditor.Designer.cs">
+      <DependentUpon>MTAEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\NUDMaterialEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\NUDMaterialEditor.Designer.cs">
+      <DependentUpon>NUDMaterialEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\NUTEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\NUTEditor.Designer.cs">
+      <DependentUpon>NUTEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\PARAMEditor.cs">
       <SubType>Form</SubType>
@@ -130,6 +185,18 @@
     <Compile Include="GUI\Editors\VBNViewport.Designer.cs">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\MaterialSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\MaterialSelector.Designer.cs">
+      <DependentUpon>MaterialSelector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Menus\DAEImportSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\DAEImportSettings.Designer.cs">
+      <DependentUpon>DAEImportSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\ModelContainer.cs" />
     <Compile Include="GUI\Nodes\ProjectNode.cs" />
     <Compile Include="GUI\RenderSettings.cs">
@@ -138,10 +205,6 @@
     <Compile Include="GUI\RenderSettings.Designer.cs">
       <DependentUpon>RenderSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\SettingsDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="IO\FileAssociation.cs" />
     <Compile Include="IO\FileBase.cs" />
     <Compile Include="MovesetManager.cs" />
     <Compile Include="Program.cs" />
@@ -154,8 +217,29 @@
     <EmbeddedResource Include="GUI\Editors\AnimList.resx">
       <DependentUpon>AnimList.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\AnimTrack.resx">
+      <DependentUpon>AnimTrack.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\BoneTree.resx">
       <DependentUpon>BoneTree.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\DAT_TreeView.resx">
+      <DependentUpon>DAT_TreeView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\LVD Editor\LVDEditor.resx">
+      <DependentUpon>LVDEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\LVD Editor\LVDList.resx">
+      <DependentUpon>LVDList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\MTAEditor.resx">
+      <DependentUpon>MTAEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\NUDMaterialEditor.resx">
+      <DependentUpon>NUDMaterialEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\NUTEditor.resx">
+      <DependentUpon>NUTEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\PARAMEditor.resx">
       <DependentUpon>PARAMEditor.cs</DependentUpon>
@@ -176,8 +260,11 @@
     <EmbeddedResource Include="GUI\Editors\VBNViewport.resx">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\SettingsDialog.resx">
-      <DependentUpon>SettingsDialog.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\MaterialSelector.resx">
+      <DependentUpon>MaterialSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\DAEImportSettings.resx">
+      <DependentUpon>DAEImportSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -231,6 +318,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="forge.ico" />
     <Content Include="lib\FITC.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -249,6 +337,7 @@
     <Content Include="lib\WeifenLuo.WinFormsUI.Docking.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\DefaultTexture.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

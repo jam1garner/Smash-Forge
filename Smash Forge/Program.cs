@@ -14,19 +14,12 @@ namespace Smash_Forge
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main(string[] args)
+        static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-
-            if (args.Length > 0)
-            {
-                MainForm.Instance.WorkspaceManager = new WorkspaceManager(MainForm.Instance.project);
-                MainForm.Instance.WorkspaceManager.TargetProject = args[0];
-            }
-            Application.Run(MainForm.Instance);
-
+            Application.Run(new MainForm());
         }
     }
 }

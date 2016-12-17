@@ -9,6 +9,7 @@ namespace Smash_Forge
     {
         public List<KeyNode> nodes = new List<KeyNode>();
         public int frame = 0;
+        public int frameRate = 60;
 
         public void addNode(KeyNode n)
         {
@@ -158,9 +159,9 @@ namespace Smash_Forge
                         n.id = id;
                         break;
                     }
-				}
+                }
 
-				if (id == -1)
+                if (id == -1)
 					continue;
 
                 Bone b = vbn.bones[id];
@@ -304,6 +305,7 @@ namespace Smash_Forge
                     n.id = id;
 
                     KeyNode k1 = f1.getNodeid(id), k2 = f2.getNodeid(id);
+                    n.hash = k1.hash;
 
                     n.t_type = k1.t_type;
                     n.r_type = k1.r_type;

@@ -7,36 +7,6 @@ using System.IO;
 
 namespace Smash_Forge
 {
-    //self.nameOffset = uint32(mta)
-    //        self.matHash = uint32(mta)
-    //        self.materialPropCount = uint32(mta)
-    //        self.materialDPos = uint32(mta)
-    //        self.hasPat = ord(mta.read(1))
-    //        mta.seek(3,1)
-    //        self.patOffset = uint32(mta)
-    //        self.name2Offset = uint32(mta)
-    //        self.matHash2 = uint32(mta)
-    //        mta.seek(self.nameOffset)
-    //        self.name = nullEndString(mta)
-    //        if self.name2Offset != 0:
-    //            mta.seek(self.name2Offset)
-    //            self.name2 = nullEndString(mta)
-    //        self.patData = None
-    //        if self.hasPat:
-    //            mta.seek(self.patOffset)
-    //            self.patDataPos = uint32(mta)
-    //            if self.patDataPos != 0:
-    //                mta.seek(self.patDataPos)
-    //                self.patData = PatData(mta)
-    //        mta.seek(self.materialDPos)
-    //        self.mtaProps = []
-    //        if self.materialPropCount > 0:
-    //            self.matDataPos = []
-    //            for i in range(self.materialPropCount):
-    //                self.matDataPos.append(uint32(mta))
-    //            for off in self.matDataPos:
-    //                mta.seek(off)
-    //                self.mtaProps.append(MatData(mta))
     public class PatData
     {
         public struct keyframe
@@ -47,7 +17,7 @@ namespace Smash_Forge
 
         public int defaultTexId;
         public int unknown;
-        private int frameCount;
+        public int frameCount;
         public List<keyframe> keyframes = new List<keyframe>();
 
         public PatData() { }
@@ -84,19 +54,42 @@ namespace Smash_Forge
                 }
             } 
         }
+
+        public byte[] Rebuild(int pos)
+        {
+            FileOutput f = new FileOutput();
+            f.Endian = Endianness.Big;
+
+            f.writeInt(pos + f.pos() + 0x8);
+            f.writeInt(0);
+            f.writeInt(defaultTexId);
+            f.writeInt(keyframes.Count);
+            f.writeInt(pos + f.pos() + 0x1C);
+            f.writeInt(frameCount - 1);
+            f.writeInt(unknown);
+            f.writeBytes(new byte[0x10]);
+            foreach(keyframe k in keyframes)
+            {
+                f.writeInt(k.texId);
+                f.writeInt(k.frameNum);
+            }
+
+            return f.getBytes();
+        }
     }
 
     public class MatData
     {
-        public struct frame
+        public class frame
         {
-            public int size;
+            //public int size;
             public float[] values;
         }
 
         public string name;
         public List<frame> frames = new List<frame>();
         public int unknown, unknown2, unknown3;
+        public int valueCount;
 
         public MatData(){ }
 
@@ -104,7 +97,7 @@ namespace Smash_Forge
         {
             int nameOff = f.readInt();
             unknown = f.readInt();
-            int valueCount = f.readInt();
+            valueCount = f.readInt();
             int frameCount = f.readInt();
             unknown2 = f.readShort();
             unknown3 = f.readShort();
@@ -114,13 +107,43 @@ namespace Smash_Forge
             f.seek(dataOff);
             for(int i = 0; i < frameCount; i++)
             {
-                frame temp;
-                temp.size = valueCount;
+                frame temp = new frame();
+                //temp.size = valueCount;
                 temp.values = new float[valueCount];
                 for (int j = 0; j < valueCount; j++)
                     temp.values[j] = f.readFloat();
                 frames.Add(temp);
             }
+        }
+
+        public byte[] Rebuild(int pos)
+        {
+            FileOutput f = new FileOutput();
+            f.Endian = Endianness.Big;
+
+            f.writeInt(pos + f.pos() + 0x20);
+            f.writeInt(unknown);
+            f.writeInt(valueCount);
+            f.writeInt(frames.Count);
+            f.writeShort(unknown2);
+            f.writeShort(unknown3);
+            int position = pos + f.pos() + 0xC + name.Length + 1;
+            while (position % 0x10 != 0)
+                position++;
+
+            f.writeInt(position);
+            f.writeBytes(new byte[8]);
+            f.writeString(name);
+            f.writeByte(0);
+            while ((pos + f.pos()) % 0x10 != 0)
+                f.writeByte(0);
+
+            foreach (frame fr in frames)
+                for (int i = 0; i < valueCount; i++)
+                    f.writeFloat(fr.values[i]);
+            f.writeBytes(new byte[0x10]);
+
+            return f.getBytes();
         }
     }
 
@@ -147,6 +170,10 @@ namespace Smash_Forge
             int patOffset = f.readInt();
             int secondNameOff = f.readInt();
             matHash2 = f.readInt();
+
+            f.seek(nameOffset);
+            name = f.readString();
+
             if(secondNameOff != 0)
             {
                 f.seek(secondNameOff);
@@ -174,7 +201,73 @@ namespace Smash_Forge
                 properties.Add(temp);
                 f.seek(returnPos);
             }
-            
+        }
+
+        public byte[] Rebuild(int pos)
+        {
+            FileOutput f = new FileOutput();
+            f.Endian = Endianness.Big;
+
+            f.writeInt(pos + f.pos() + 0x20);
+            f.writeInt(matHash);
+            f.writeInt(properties.Count);
+            int nameOffset = pos + f.pos() + 0x15 + name.Length;
+            while (nameOffset % 4 != 0)
+                nameOffset++;
+            f.writeInt(nameOffset);
+            f.writeFlag(hasPat);
+            f.writeBytes(new byte[3]);
+            //Write all the mat data into a buffer (g) then write pat offset
+            int pos2 = pos + f.pos() + 4;
+            FileOutput g = new FileOutput();
+            g.Endian = Endianness.Big;
+
+            if (matHash2 != 0)
+            {
+                g.writeInt(pos2 + g.pos() + 0x8);
+                g.writeInt(matHash);
+            }
+            else
+            {
+                g.writeBytes(new byte[8]);
+            }
+
+            g.writeString(name);
+            g.writeByte(0);
+            while ((pos2 + g.pos()) % 0x10 != 0)
+                g.writeByte(0);
+
+            int position = pos2 + g.pos() + properties.Count * 4;
+            while (position % 16 != 0)
+                position++;
+
+            List<byte[]> builtProperties = new List<byte[]>();
+            foreach (MatData prop in properties)
+            {
+                g.writeInt(position);
+                byte[] b = prop.Rebuild(position);
+                builtProperties.Add(b);
+                position += b.Length;
+                while (position % 16 != 0)
+                    position++;
+            }
+
+            while ((pos2 + g.pos()) % 16 != 0)
+                g.writeByte(0);
+
+            foreach (byte[] b in builtProperties)
+            {
+                g.writeBytes(b);
+                while ((pos2 + g.pos()) % 16 != 0)
+                    g.writeByte(0);
+            }
+
+            f.writeInt(pos2 + g.pos());
+            f.writeBytes(g.getBytes());
+            if(hasPat)
+                f.writeBytes(pat0.Rebuild(f.pos()));
+
+            return f.getBytes();
         }
     }
 
@@ -187,24 +280,24 @@ namespace Smash_Forge
             public byte unknown;
         }
 
-        int unk1;
-        short unk2;
-        int frameCount;
+        public bool unk1;
+        public bool unk2;
+        public int frameCount;
         public string name;
-        List<frame> frames = new List<frame>();
+        public List<frame> frames = new List<frame>();
 
         public VisEntry() { }
 
         public void read(FileData f)
         {
             int nameOff = f.readInt();
-            unk1 = f.readInt();
+            unk1 = (f.readInt() != 0);
             int dataOff = f.readInt();
             f.seek(nameOff);
             name = f.readString();
             f.seek(dataOff);
             frameCount = f.readInt();
-            unk2 = (short)f.readShort();
+            unk2 = (f.readShort() != 0);
             short keyframeCount = (short)f.readShort();
             int keyframeOffset = f.readInt();
             f.seek(keyframeOffset);
@@ -231,6 +324,40 @@ namespace Smash_Forge
             }
             return state;
         }
+
+        public byte[] Rebuild(int pos)
+        {
+            FileOutput f = new FileOutput();
+            f.Endian = Endianness.Big;
+
+            f.writeInt(pos + f.pos() + 0x20);
+            f.writeInt(Convert.ToInt32(unk1));
+            int offset = pos + f.pos() + 0x18;
+            offset += name.Length + 1;
+            while (offset % 16 != 0)
+                offset++;
+            offset += 0x10;
+            f.writeInt(offset);
+            f.writeBytes(new byte[0x14]);
+            f.writeString(name);
+            f.writeByte(0);
+            while ((pos + f.pos()) % 16 != 0)
+                f.writeByte(0);
+            f.writeBytes(new byte[0x10]);
+            f.writeInt(frameCount);
+            f.writeShort(Convert.ToInt32(unk2));
+            f.writeShort(frames.Count);
+            f.writeInt(pos + f.pos() + 0x18);
+            f.writeBytes(new byte[0x14]);
+            foreach(frame keyframe in frames)
+            {
+                f.writeShort(keyframe.frameNum);
+                f.writeByte(keyframe.state);
+                f.writeByte(keyframe.unknown);
+            }
+
+            return f.getBytes();
+        }
     }
 
     public class MTA : FileBase
@@ -250,10 +377,14 @@ namespace Smash_Forge
 
         public override void Read(string filename)
         {
-            //Console.WriteLine("MTA - " + filename);
+            read(new FileData(filename));
+        }
 
-            FileData f = new FileData(filename);
+        public void read(FileData f)
+        {
             f.Endian = Endian;
+            if (f.size() < 4)
+                throw new EndOfStreamException("Blank/Broken MTA");
             f.seek(4);
             unknown = (uint)f.readInt();
             numFrames = (uint)f.readInt();
@@ -265,9 +396,9 @@ namespace Smash_Forge
             int visOffset = f.readInt();
             int returnPos;
             f.seek(matOffset);
-            for (int i = 0;i < matCount; i++)
+            for (int i = 0; i < matCount; i++)
             {
-                returnPos = f.pos()+4;
+                returnPos = f.pos() + 4;
                 f.seek(f.readInt());
                 MatEntry tempMatEntry = new MatEntry();
                 tempMatEntry.read(f);
@@ -288,8 +419,271 @@ namespace Smash_Forge
 
         public override byte[] Rebuild()
         {
-            throw new NotImplementedException();
+            FileOutput f = new FileOutput();
+            f.Endian = Endianness.Big;
+
+            f.writeString("MTA4");
+            f.writeInt((int)unknown);
+            f.writeInt((int)numFrames);
+            f.writeInt(0);
+            f.writeInt((int)numFrames - 1);
+            f.writeInt((int)frameRate);
+            f.writeInt(matEntries.Count);
+            if (matEntries.Count > 0)
+                f.writeInt(0x38);
+            else
+                f.writeInt(0);
+            f.writeInt(visEntries.Count);
+            if (visEntries.Count > 0)
+                f.writeInt(0x38 + 4 * matEntries.Count);
+            else
+                f.writeInt(0);
+            for (int i = 0; i < 0x10; i++)
+                f.writeByte(0);
+
+            List<byte[]> matEntriesBuilt = new List<byte[]>();
+            List<byte[]> visEntriesBuilt = new List<byte[]>();
+
+            int position = 0x38 + matEntries.Count + visEntries.Count;
+            while (position % 0x10 != 0)
+                position++;
+
+            foreach (MatEntry m in matEntries)
+            {
+                byte[] b = m.Rebuild(position);
+                matEntriesBuilt.Add(b);
+                f.writeInt(position);
+                position += b.Length;
+                while (position % 0x10 != 0)
+                    position++;
+            }
+
+            foreach (VisEntry v in visEntries)
+            {
+                byte[] b = v.Rebuild(position);
+                matEntriesBuilt.Add(b);
+                f.writeInt(position);
+                position += b.Length;
+                while (position % 0x10 != 0)
+                    position++;
+            }
+
+            while (f.pos() % 0x10 != 0)
+                f.writeByte(0);
+
+            foreach(byte[] b in matEntriesBuilt)
+            {
+                f.writeBytes(b);
+                while (f.pos() % 0x10 != 0)
+                    f.writeByte(0);
+            }
+
+            foreach (byte[] b in visEntriesBuilt)
+            {
+                f.writeBytes(b);
+                while (f.pos() % 0x10 != 0)
+                    f.writeByte(0);
+            }
+
+            return f.getBytes();
+        }
+
+        public string Decompile()
+        {
+            string f = "";
+
+            f += "Header\n";
+            f += $"Header_Unknown,{unknown}\n";
+            f += $"Frame Count,{numFrames}\n";
+            f += $"Frame rate,{frameRate}\n";
+            foreach(MatEntry matEntry in matEntries)
+            {
+                f += "--------------------------------------\n";
+                f += "Material\n";
+                f += matEntry.name + '\n';
+                f += $"Material Hash,{matEntry.matHash.ToString("X")}\n";
+                f += $"Has PAT0,{matEntry.hasPat}\n";
+                if (matEntry.matHash2 != 0)
+                    f += $"Second Material Hash,{matEntry.matHash2.ToString("X")}";
+                f += "###\n";
+
+                foreach(MatData matProp in matEntry.properties)
+                {
+                    f += "Material Property\n";
+                    f += matProp.name + '\n';
+                    f += $"MatProp_Unk1,{matProp.unknown}\n";
+                    f += $"MatProp_Unk2,{matProp.unknown2}\n";
+                    f += $"MatProp_Unk3,{matProp.unknown3}\n";
+                    f += "Compile Type (Baked or Keyed),Baked\n";
+                    foreach(MatData.frame frame in matProp.frames)
+                    {
+                        int i = 0;
+                        foreach(float value in frame.values)
+                        {
+                            f += value;
+                            if (i == frame.values.Length - 1)
+                                f += '\n';
+                            else
+                                f += ',';
+                            i++;
+                        }
+                    }
+                    f += "###\n";
+                    
+                }
+                if (matEntry.pat0 != null)
+                {
+                    f += "PAT0\n";
+                    f += $"Default TexId,{matEntry.pat0.defaultTexId.ToString("X")}\n";
+                    f += $"Keyframe Count,{matEntry.pat0.keyframes.Count}\n";
+                    f += $"PAT0_Unkown,{matEntry.pat0.unknown}";
+                    foreach (PatData.keyframe keyframe in matEntry.pat0.keyframes)
+                        f += $"frameNum,{keyframe.frameNum},texId,{keyframe.texId.ToString("X")}\n";
+                }
+            }
+
+            foreach(VisEntry visEntry in visEntries)
+            {
+                f += "--------------------------------------\n";
+                f += "VIS0\n";
+                f += visEntry.name + '\n';
+                f += $"Frame Count,{visEntry.frameCount}\n";
+                f += $"Keyframe Count,{visEntry.frames.Count}\n";
+                f += $"Is Constant,{visEntry.unk1}\n";
+                f += $"Constant Value,{visEntry.unk2}\n";
+                foreach (VisEntry.frame frame in visEntry.frames)
+                    f += $"Frame,{frame.frameNum},State,{frame.state},unknown,{frame.unknown}\n";
+            }
+            f += "\n";
+
+            return f;
+        }
+
+        public void Compile(List<string> f)
+        {
+            unknown = Convert.ToUInt32(f[1].Split(',')[1]);
+            numFrames = Convert.ToUInt32(f[2].Split(',')[1]);
+            frameRate = Convert.ToUInt32(f[3].Split(',')[1]);
+            int l = 3;
+            while(l < f.Count)
+            {
+                l++;
+                if (f[l].StartsWith("---"))
+                {
+                    l++;
+                    if (f[l].StartsWith("Material"))
+                    {
+                        l++;
+                        MatEntry m = new MatEntry();
+                        m.name = f[l];
+                        l++;
+                        m.matHash = Convert.ToInt32(f[l].Split(',')[1], 16);
+                        l++;
+                        m.hasPat = Convert.ToBoolean(f[l].Split(',')[1]);
+                        l++;
+                        if (!f[l].StartsWith("###"))
+                        {
+                            m.matHash2 = Convert.ToInt32(f[l].Split(',')[1], 16);
+                            l++;
+                        }
+                        while((f[l].StartsWith("###") || string.IsNullOrWhiteSpace(f[l])) && l < f.Count - 1)
+                        {
+                            if(f[l + 1].StartsWith("Material Property"))
+                            {
+                                l += 2;
+                                MatData md = new MatData();
+                                md.name = f[l++];
+                                md.unknown = Convert.ToInt32(f[l++].Split(',')[1]);
+                                md.unknown2 = Convert.ToInt32(f[l++].Split(',')[1]);
+                                md.unknown3 = Convert.ToInt32(f[l++].Split(',')[1]);
+                                bool keyed = (f[l++].Split(',')[1].Equals("Keyed") || f[l].Split(',')[1].Equals("keyed"));
+                                int lastFrame = 0;
+                                MatData.frame lastKeyframe = null;
+                                List<MatData.frame> frames = new List<MatData.frame>();
+                                while (l < f.Count && !f[l].StartsWith("---") && !f[l].StartsWith("###"))
+                                {
+                                    if (keyed)
+                                    {
+                                        int currentFrame = frames.Count, fnum = Convert.ToInt32(f[l].Split(',')[0]);
+                                        MatData.frame tempFrame = new MatData.frame();
+                                        tempFrame.values = new float[f[l].Split(',').Length - 1];
+                                        int i = 0;
+                                        foreach (string value in (new List<string>(f[l].Split(',')).GetRange(1, f[l].Split(',').Length - 1)))
+                                            tempFrame.values[i++] = Convert.ToSingle(value);
+                                        if (lastKeyframe == null)
+                                        {
+                                            while (currentFrame <= fnum)
+                                            {
+                                                frames.Add(tempFrame);
+                                                currentFrame = frames.Count;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            while (currentFrame <= fnum)
+                                            {
+                                                List<float> thisFrame = new List<float>();
+                                                for (int k = 0; k < lastKeyframe.values.Length; k++)
+                                                {
+                                                    float slope = (tempFrame.values[k] - lastKeyframe.values[k]) / (float)(fnum - lastFrame);
+                                                    thisFrame.Add(lastKeyframe.values[k] + (slope * (currentFrame - lastFrame)));
+                                                }
+                                                frames.Add(new MatData.frame() { values = thisFrame.ToArray() });
+                                                currentFrame = frames.Count;
+                                            }
+                                        }
+                                        lastFrame = fnum;
+                                        lastKeyframe = tempFrame;
+                                    }
+                                    else
+                                    {
+                                        float[] values = new float[f[l].Split(',').Length];
+                                        int i = 0;
+                                        foreach (string value in f[l].Split(','))
+                                            values[i++] = Convert.ToSingle(value);
+
+                                        frames.Add(new MatData.frame() { values = values });
+                                    }
+                                    l++;
+                                }
+                                md.frames = frames;
+                                if (md.frames.Count > 0)
+                                    md.valueCount = md.frames[0].values.Length;
+                                m.properties.Add(md);
+                            }
+                            else if(f[l+1].StartsWith("PAT0"))
+                            {
+                                l += 2;
+                                PatData p = new PatData();
+                                p.defaultTexId = Convert.ToInt32(f[l++].Split(',')[1]);
+                                int keyFrameCount = Convert.ToInt32(f[l++].Split(',')[1]);
+                                p.unknown = Convert.ToInt32(f[l++].Split(',')[1]);
+                                for (int i = 0; i < keyFrameCount; i++)
+                                    p.keyframes.Add(new PatData.keyframe() { frameNum = Convert.ToInt32(f[l].Split(',')[1]), texId = Convert.ToInt32(f[l++].Split(',')[3], 16) });
+                                m.pat0 = p;
+                            }
+
+                        }
+                        while (l < f.Count && !f[l].StartsWith("---"))
+                            l++;
+
+                        matEntries.Add(m);
+                    }
+                    else if (f[l].StartsWith("VIS0"))
+                    {
+                        l++;
+                        VisEntry v = new VisEntry();
+                        v.name = f[l++];
+                        v.frameCount = Convert.ToInt32(f[l++].Split(',')[1]);
+                        int keyframeCount = Convert.ToInt32(f[l++].Split(',')[1]);
+                        v.unk1 = Convert.ToBoolean(f[l++].Split(',')[1]);
+                        v.unk2 = Convert.ToBoolean(f[l++].Split(',')[1]);
+                        for (int i = 0; i < keyframeCount; i++)
+                            v.frames.Add(new VisEntry.frame() { frameNum = Convert.ToInt16(f[l].Split(',')[1]), state = Convert.ToByte(f[l].Split(',')[3]), unknown = Convert.ToByte(f[l++].Split(',')[1]) });
+                        visEntries.Add(v);
+                    }
+                }
+            }
         }
     }
-    
 }

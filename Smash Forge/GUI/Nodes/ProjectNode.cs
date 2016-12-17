@@ -37,7 +37,7 @@ namespace Smash_Forge
                     string name = ((FileInfo)this.Tag).FullName;
                     File.Delete(name);
                     var n = this as ProjectNode;
-                    MainForm.Instance.WorkspaceManager.RemoveProject(n.ProjectName);
+                    MainForm.Instance.Workspace.RemoveProject(n.ProjectName);
                 }
                 else if (this.Tag is FileInfo)
                 {

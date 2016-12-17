@@ -3,32 +3,40 @@ using System.IO;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using System.Security.Cryptography;
 using WeifenLuo.WinFormsUI.Docking;
+using OpenTK;
+using System.Data;
 
 namespace Smash_Forge
 {
     public partial class MainForm : Form
     {
-        public static MainForm Instance { get { return _instance != null ? _instance : (_instance = new MainForm()); }}
-        private static  MainForm _instance;
+        public WorkspaceManager Workspace { get; set; }
+        public static MainForm Instance;
 
         public MainForm()
         {
             InitializeComponent();
+            Instance = this;
         }
-        public WorkspaceManager WorkspaceManager { get; set; }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
-            _instance = this;
             foreach (var vp in viewports)
                 AddDockedControl(vp);
 
             animationsWindowToolStripMenuItem.Checked =
             boneTreeToolStripMenuItem.Checked = true;
 
+            AddDockedControl(meshList);
+            AddDockedControl(leftPanel);
             AddDockedControl(rightPanel);
+            AddDockedControl(lvdEditor);
             AddDockedControl(project);
-
+            AddDockedControl(lvdList);
+            rightPanel.treeView1.Nodes.Add(animNode);
+            rightPanel.treeView1.Nodes.Add(mtaNode);
             Runtime.renderBones = true;
             Runtime.renderLVD = true;
             Runtime.renderFloor = true;
@@ -41,11 +49,7 @@ namespace Smash_Forge
             Runtime.renderSpawns = true;
             Runtime.renderRespawns = true;
             Runtime.renderOtherLVDEntries = true;
-
-            if(WorkspaceManager != null && !string.IsNullOrEmpty(WorkspaceManager.TargetProject))
-            {
-                WorkspaceManager.OpenProject(WorkspaceManager.TargetProject);
-            }
+            
         }
 
         private void MainForm_Close(object sender, EventArgs e)
@@ -77,11 +81,16 @@ namespace Smash_Forge
         #region Members
         public AnimListPanel rightPanel = new AnimListPanel() { ShowHint = DockState.DockRight };
         public BoneTreePanel leftPanel = new BoneTreePanel() { ShowHint = DockState.DockLeft };
+        public TreeNode animNode = new TreeNode("Bone Animations");
+        public TreeNode mtaNode = new TreeNode("Material Animations");
         public ProjectTree project = new ProjectTree() { ShowHint = DockState.DockLeft };
+        public LVDList lvdList = new LVDList() { ShowHint = DockState.DockLeft };
+        public LVDEditor lvdEditor = new LVDEditor() { ShowHint = DockState.DockRight };
         public List<PARAMEditor> paramEditors = new List<PARAMEditor>() { };
+        public List<MTAEditor> mtaEditors = new List<MTAEditor>() { };
         public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() { };
         public MeshList meshList = new MeshList() { ShowHint = DockState.DockRight };
-        private List<VBNViewport> viewports = new List<VBNViewport>() { new VBNViewport() }; // Default viewport
+        public List<VBNViewport> viewports = new List<VBNViewport>() { new VBNViewport() }; // Default viewport
         #endregion
 
         #region ToolStripMenu
@@ -89,26 +98,26 @@ namespace Smash_Forge
         {
             PARAMEditor currentParam = null;
             ACMDEditor currentACMD = null;
-            foreach (PARAMEditor p in paramEditors)
+            foreach(PARAMEditor p in paramEditors)
             {
-                if (p.ContainsFocus)
+                if(p.ContainsFocus)
                 {
                     currentParam = p;
                 }
             }
-            foreach (ACMDEditor a in ACMDEditors)
+            foreach(ACMDEditor a in ACMDEditors)
             {
                 if (a.ContainsFocus)
                 {
                     currentACMD = a;
                 }
             }
-            if (currentParam != null)
+            if(currentParam != null)
             {
                 currentParam.saveAs();
             }
             else
-            if (currentACMD != null)
+            if(currentACMD != null)
             {
                 currentACMD.save();
             }
@@ -116,211 +125,29 @@ namespace Smash_Forge
             {
                 string filename = "";
                 SaveFileDialog save = new SaveFileDialog();
-                save.Filter = "Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
+                save.Filter = "Supported Filetypes (VBN,LVD)|*.vbn;*.lvd|Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
                 DialogResult result = save.ShowDialog();
 
                 if (result == DialogResult.OK)
                 {
                     filename = save.FileName;
-                    Runtime.TargetVBN.Save(filename);
+                    if (filename.EndsWith(".vbn"))
+                    {
+                        Runtime.TargetVBN.Endian = Endianness.Big;
+                        if (!checkBox1.Checked)
+                            Runtime.TargetVBN.Endian = Endianness.Little;
+                        Runtime.TargetVBN.Save(filename);
+                    }
+                    if (filename.EndsWith(".lvd") && Runtime.TargetLVD != null)
+                        File.WriteAllBytes(filename, Runtime.TargetLVD.Rebuild());
                     //OMO.createOMO (anim, vbn, "C:\\Users\\ploaj_000\\Desktop\\WebGL\\test_outut.omo", -1, -1);
                 }
             }
         }
 
-        private void openDAE(string fname, ModelContainer con)
+        public static void DAEReadSemantic(int p, Dictionary<string, string> semantic)
         {
-            COLLADA model = COLLADA.Load(fname);
 
-            NUD n = new NUD();
-            if (con.vbn == null)
-                return;
-            VBN vbn = con.vbn;
-            con.nud = n;
-
-            // Iterate on libraries
-            foreach (var item in model.Items)
-            {
-                var geometries = item as library_geometries;
-                if (geometries != null)
-                {
-                    // Iterate on geomerty in library_geometries 
-                    foreach (var geom in geometries.geometry)
-                    {
-                        var mesh = geom.Item as mesh;
-                        if (mesh == null)
-                            continue;
-
-                        NUD.Mesh n_mesh = new NUD.Mesh();
-                        n.mesh.Add(n_mesh);
-                        n_mesh.name = geom.name;
-
-                        Dictionary<string, double[]> sources = new Dictionary<string, double[]>();
-                        Dictionary<string, string> semantic = new Dictionary<string, string>();
-
-                        // Dump source[] for geom
-                        foreach (var source in mesh.source)
-                        {
-                            var float_array = source.Item as float_array;
-                            if (float_array == null)
-                                continue;
-                            sources.Add(source.id, float_array.Values);
-                        }
-                        {
-                            var inputs = mesh.vertices.input;
-                            foreach (var input in inputs)
-                            {
-                                semantic.Add(input.semantic, input.source);
-                            }
-                        }
-                        // Dump Items[] for geom
-                        foreach (var meshItem in mesh.Items)
-                        {
-                            if (meshItem is vertices)
-                            {
-                                var vertices = meshItem as vertices;
-                                var inputs = vertices.input;
-                                foreach (var input in inputs)
-                                    semantic.Add(input.semantic, input.source);
-                            }
-                            else if (meshItem is triangles)
-                            {
-                                var triangles = meshItem as triangles;
-                                var inputs = triangles.input;
-
-                                NUD.Polygon poly = new NUD.Polygon();
-                                poly.setDefaultMaterial();
-                                n_mesh.polygons.Add(poly);
-                                string[] ps = triangles.p.Split(' ');
-                                int vCount = 0;
-                                for (int i = 0; i < ps.Length; i++)
-                                {
-                                    poly.faces.Add(int.Parse(ps[i]));
-                                    if (int.Parse(ps[i]) > vCount)
-                                        vCount = int.Parse(ps[i]);
-                                }
-
-                                for (int i = 0; i < vCount + 1; i++)
-                                {
-                                    NUD.Vertex v = new NUD.Vertex();
-
-                                    // iterate semantics
-                                    foreach (string s in semantic.Keys)
-                                    {
-                                        string src;
-                                        double[] bank;
-                                        semantic.TryGetValue(s, out src);
-                                        src = src.Replace("#", "");
-                                        sources.TryGetValue(src, out bank);
-                                        switch (s)
-                                        {
-                                            case "POSITION":
-                                                v.pos.X = (float)bank[i * 3 + 0];
-                                                v.pos.Y = (float)bank[i * 3 + 1];
-                                                v.pos.Z = (float)bank[i * 3 + 2];
-                                                break;
-                                            case "NORMAL":
-                                                v.nrm.X = (float)bank[i * 3 + 0];
-                                                v.nrm.Y = (float)bank[i * 3 + 1];
-                                                v.nrm.Z = (float)bank[i * 3 + 2];
-                                                break;
-                                            case "COLOR":
-                                                v.col.X = (float)bank[i * 3 + 0] * 255;
-                                                v.col.Y = (float)bank[i * 3 + 1] * 255;
-                                                v.col.Z = (float)bank[i * 3 + 2] * 255;
-                                                v.col.W = (float)bank[i * 3 + 2] * 255;
-                                                break;
-                                            case "TEXCOORD":
-                                                v.tx.Add(new OpenTK.Vector2((float)bank[i * 2 + 0], (float)bank[i * 2 + 1]));
-                                                break;
-                                        }
-                                    }
-                                    poly.AddVertex(v);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                var controllers = item as library_controllers;
-                if (controllers != null)
-                {
-                    int cid = 0;
-                    // Iterate on controllers in library_controllers 
-                    foreach (var cont in controllers.controller)
-                    {
-                        var control = cont as controller;
-                        //if (control == null)
-                        //    continue;
-
-                        var skin = control.Item as skin;
-
-                        string[] boneNames = null;
-                        Dictionary<string, double[]> sources = new Dictionary<string, double[]>();
-                        Dictionary<string, string> semantic = new Dictionary<string, string>();
-
-                        // Dump source[] for geom
-                        foreach (var source in skin.source)
-                        {
-                            var float_array = source.Item as float_array;
-                            if (float_array != null)
-                            {
-                                sources.Add(source.id, float_array.Values);
-                            }
-                            var name_array = source.Item as Name_array;
-                            if (name_array != null)
-                            {
-                                boneNames = name_array._Text_.Split(' ');
-                            }
-                        }
-                        {
-                            var inputs = skin.joints.input;
-                            foreach (var input in inputs)
-                            {
-                                if (input.semantic.Equals(""))
-                                    semantic.Add(input.semantic, input.source);
-                            }
-                        }
-                        // Dump Items[] for geom
-                        NUD.Mesh m = n.mesh[cid];
-                        List<NUD.Vertex> v = m.polygons[0].vertices;
-                        string[] vcount = skin.vertex_weights.vcount.Split(' ');
-                        string[] vi = skin.vertex_weights.v.Split(' ');
-                        int pos = 0;
-
-                        for (int i = 0; i < (int)skin.vertex_weights.count; i++)
-                        {
-                            NUD.Vertex vert = v[i];
-
-                            for (int j = 0; j < int.Parse(vcount[i]); j++)
-                                foreach (var sem in skin.vertex_weights.input)
-                                {
-                                    switch (sem.semantic)
-                                    {
-                                        case "JOINT":
-                                            // find joint name in vbn
-                                            int ind = int.Parse(vi[pos++]);
-                                            //Console.WriteLine(boneNames[ind].Substring(5));
-                                            //Console.WriteLine(boneNames[ind].Substring(5));
-                                            vert.node.Add(vbn.boneIndex(boneNames[ind].Substring(6)));
-                                            break;
-                                        case "WEIGHT":
-                                            // find weight int weight list
-                                            double[] weight;
-                                            sources.TryGetValue(sem.source.Replace("#", ""), out weight);
-                                            vert.weight.Add((float)weight[int.Parse(vi[pos++])]);
-                                            break;
-                                    }
-                                }
-
-                        }
-                        cid++;
-                    }
-                }
-            }
-
-            n.PreRender();
-            File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\murabito\\isa.nud", n.Rebuild());
         }
 
         private void openNud(string filename)
@@ -332,6 +159,9 @@ namespace Smash_Forge
             string pjtb = "";
             string pvbn = "";
             string pmta = "";
+            string psb = "";
+            string pmoi = "";
+            List<string> pacs = new List<string>();
 
             foreach (string s in files)
             {
@@ -345,6 +175,12 @@ namespace Smash_Forge
                     pjtb = s;
                 if (s.EndsWith(".mta"))
                     pmta = s;
+                if (s.EndsWith(".sb"))
+                    psb = s;
+                if (s.EndsWith(".moi"))
+                    pmoi = s;
+                if (s.EndsWith(".pac"))
+                    pacs.Add(s);
             }
 
             ModelContainer model = new ModelContainer();
@@ -352,27 +188,62 @@ namespace Smash_Forge
             if (!pvbn.Equals(""))
             {
                 model.vbn = new VBN(pvbn);
+                Runtime.TargetVBN = model.vbn;
                 if (!pjtb.Equals(""))
                     model.vbn.readJointTable(pjtb);
-
+                if (!psb.Equals(""))
+                    model.vbn.swingBones.Read(psb);
             }
 
             if (!pnut.Equals(""))
             {
-                NUT nut = new NUT(new FileData(pnut));
+                NUT nut = new NUT(pnut);
                 Runtime.TextureContainers.Add(nut);
             }
 
             if (!pnud.Equals(""))
+            {
                 model.nud = new NUD(pnud);
+
+                //AddDockedControl(new NUDMaterialEditor(model.nud.mesh[0].polygons[0].materials));
+
+                foreach (string s in pacs)
+                {
+                    PAC p = new PAC();
+                    p.Read(s);
+                    byte[] data;
+                    p.Files.TryGetValue("default.mta", out data);
+                    if (data != null) { 
+                        MTA m = new MTA();
+                        m.read(new FileData(data));
+                        model.nud.applyMTA(m, 0);
+                    }
+                }
+            }
 
             if (!pmta.Equals(""))
             {
-                model.mta = new MTA();
-                model.mta.Read(pmta);
-                viewports[0].loadMTA(model.mta);
+                try
+                {
+                    model.mta = new MTA();
+                    model.mta.Read(pmta);
+                    viewports[0].loadMTA(model.mta);
+                }
+                catch (EndOfStreamException)
+                {
+                    model.mta = null;
+                }
             }
 
+            if (!pmoi.Equals(""))
+            {
+                model.moi = new MOI(pmoi);
+            }
+            
+            if(model.nud != null)
+            {
+                model.nud.MergePoly();
+            }
 
             Runtime.ModelContainers.Add(model);
             meshList.refresh();
@@ -382,12 +253,14 @@ namespace Smash_Forge
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable|" +
+                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.dat;*.mta|" +
                              "Smash 4 Boneset (.vbn)|*.vbn|" +
                              "Namco Model (.nud)|*.nud|" +
                              "Smash 4 Level Data (.lvd)|*.lvd|" +
                              "NW4R Model (.mdl0)|*.mdl0|" +
                              "Source Model (.SMD)|*.smd|" +
+                             "Smash 4 Parameters (.bin)|*.bin|"+
+                             "Collada Model Format (.dae)|*.dae|"+
                              "All files(*.*)|*.*";
 
                 // "Namco Universal Data Folder (.NUD)|*.nud|" +
@@ -395,11 +268,72 @@ namespace Smash_Forge
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     if (ofd.FileName.EndsWith(".vbn"))
+                    {
                         Runtime.TargetVBN = new VBN(ofd.FileName);
+
+                        if (Directory.Exists("Skapon\\"))
+                        {
+                            NUD nud = Skapon.Create(Runtime.TargetVBN);
+                            ModelContainer con = new ModelContainer();
+                            con.vbn = Runtime.TargetVBN;
+                            con.nud = nud;
+                            nud.PreRender();
+                            Runtime.ModelContainers.Add(con);
+                        }
+                    }
+
+                    if (ofd.FileName.EndsWith(".dat"))
+                    {
+                        DAT dat = new DAT();
+                        dat.Read(new FileData(ofd.FileName));
+                        ModelContainer c = new ModelContainer();
+                        Runtime.ModelContainers.Add(c);
+                        c.dat_melee = dat;
+                        dat.PreRender();
+                        
+                        HashMatch();
+
+                        //DAT_Animation anim = new DAT_Animation();
+                        //anim.Read(new FileData("C:\\Users\\ploaj_000\\Desktop\\Melee\\zJiggyWait"));
+                        //anim.Apply(dat.bones);
+                        //AnimTrack t = new AnimTrack(anim);
+                        //t.Show();
+
+                        //SkelAnimation an = t.BakeToSkel(dat.bones);
+                        //Runtime.Animations.Add(anim.Name, an);
+                        //animNode.Nodes.Add(anim.Name);
+
+                        //Runtime.ModelContainers.Add(dat.wrapToNUD());
+                        //Collada dae = new Collada();
+                        //dae.Save("C:\\Users\\ploaj_000\\Desktop\\Melee\\Test.dae", dat);
+                        DAT_TreeView p = new DAT_TreeView() { ShowHint = DockState.DockLeft };
+                        p.setDAT(dat);
+                        AddDockedControl(p);
+                        //Runtime.TargetVBN = dat.bones;
+                        meshList.refresh();
+                    }
+
+
+
+                    if (ofd.FileName.EndsWith(".nut"))
+                        Runtime.TextureContainers.Add(new NUT(ofd.FileName));
 
                     if (ofd.FileName.EndsWith(".lvd"))
                     {
                         Runtime.TargetLVD = new LVD(ofd.FileName);
+                        LVD test = Runtime.TargetLVD;
+                        lvdList.fillList();
+                    }
+
+                    if (ofd.FileName.EndsWith(".mta"))
+                    {
+                        Runtime.TargetMTA = new MTA();
+                        Runtime.TargetMTA.Read(ofd.FileName);
+                        viewports[0].loadMTA(Runtime.TargetMTA);
+                        MTAEditor temp = new MTAEditor(Runtime.TargetMTA) { ShowHint = DockState.DockLeft };
+                        temp.Text = Path.GetFileName(ofd.FileName);
+                        AddDockedControl(temp);
+                        mtaEditors.Add(temp);
                     }
 
                     if (ofd.FileName.EndsWith(".mtable"))
@@ -437,10 +371,23 @@ namespace Smash_Forge
                     }
                     //Viewport.Runtime.TargetVBN = Runtime.TargetVBN;
 
-
-                    if (ofd.FileName.EndsWith(".dae"))
+                    if (ofd.FileName.ToLower().EndsWith(".dae"))
                     {
-                        openDAE(ofd.FileName, Runtime.ModelContainers[0]);
+                        DAEImportSettings m = new DAEImportSettings();
+                        m.ShowDialog();
+                        if (m.exitStatus == DAEImportSettings.Opened)
+                        {
+                            if (Runtime.ModelContainers.Count < 1)
+                                Runtime.ModelContainers.Add(new ModelContainer());
+
+                            Collada.DAEtoNUD(ofd.FileName, Runtime.ModelContainers[0]);
+
+                            // apply settings
+                            m.Apply(Runtime.ModelContainers[0].nud);
+                            Runtime.ModelContainers[0].nud.MergePoly();
+
+                            meshList.refresh();
+                        }
                     }
 
                     if (ofd.FileName.EndsWith(".mbn"))
@@ -448,13 +395,28 @@ namespace Smash_Forge
                         MBN m = new MBN();
                         m.Read(ofd.FileName);
                         ModelContainer con = new ModelContainer();
-                        con.mbn = m;
+                        BCH b = new BCH();
+                        con.bch = b;
+                        b.mbn = m;
+                        b.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\normal.bch");
+                        //m.mesh.RemoveAt(m.mesh.Count - 1);
+                        //m.mesh.RemoveAt(m.mesh.Count - 2);
+                        //m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\rebuild.mbn");
                         Runtime.ModelContainers.Add(con);
                         //m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\test.mbn");
                         /*NUD n = m.toNUD();
                         n.PreRender();
                         n.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\mbn.nud");*/
                     }
+
+                    /*if (ofd.FileName.EndsWith(".bch"))
+                    {
+                        ModelContainer con = new ModelContainer();
+                        BCH b = new BCH();
+                        b.Read(ofd.FileName);
+                        con.bch = b;
+                        Runtime.ModelContainers.Add(con);
+                    }*/
 
                     if (ofd.FileName.EndsWith(".nud"))
                     {
@@ -486,15 +448,13 @@ namespace Smash_Forge
                         m.vbn = Runtime.TargetVBN;
                         Runtime.ModelContainers.Add(m);
 
+                        if (ofd.FileName.EndsWith(".smd"))
+                        {
+                            m.nud = SMD.toNUD(ofd.FileName);
+                            meshList.refresh();
+                        }
+
                         leftPanel.treeRefresh();
-                        if (Runtime.TargetVBN.Endian == Endianness.Little)
-                        {
-                            radioButton2.Checked = true;
-                        }
-                        else
-                        {
-                            radioButton1.Checked = true;
-                        }
                     }
                     else
                     {
@@ -512,6 +472,13 @@ namespace Smash_Forge
             }
         }
 
+        private void addMaterialAnimation(string name,MTA m)
+        {
+            if (!Runtime.MaterialAnimations.ContainsValue(m) || Runtime.MaterialAnimations.ContainsKey(name))
+                Runtime.MaterialAnimations.Add(name, m);
+            viewports[0].loadMTA(m);
+        }
+
         private void importToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (var ofd = new OpenFileDialog())
@@ -521,15 +488,29 @@ namespace Smash_Forge
                              "Maya Animation|*.anim|" +
                              "NW4R Animation|*.chr0|" +
                              "Source Animation (SMD)|*.smd|" +
-                             "Smash 4 Material Animation (MTA)|*.mta|" +
+                             "Smash 4 Material Animation (MTA)|*.mta|"+
                              "All files(*.*)|*.*";
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    rightPanel.lstAnims.BeginUpdate();
-                    Runtime.Animations.Clear();
-
-                    if (ofd.FileName.EndsWith(".smd"))
+                    //Runtime.Animations.Clear();
+                    if (ofd.FileName.EndsWith(".mta"))
+                    {
+                        MTA mta = new MTA();
+                        try
+                        {
+                            mta.Read(ofd.FileName);
+                            Runtime.MaterialAnimations.Add(ofd.FileName, mta);
+                            mtaNode.Nodes.Add(ofd.FileName);
+                            MainForm.Instance.viewports[0].loadMTA(mta);
+                            Runtime.TargetMTAString = ofd.FileName;
+                        }
+                        catch (EndOfStreamException)
+                        {
+                            mta = null;
+                        }
+                    }
+                    else if (ofd.FileName.EndsWith(".smd"))
                     {
                         var anim = new SkelAnimation();
                         if (Runtime.TargetVBN == null)
@@ -537,7 +518,7 @@ namespace Smash_Forge
                         SMD.read(ofd.FileName, anim, Runtime.TargetVBN);
                         leftPanel.treeRefresh();
                         Runtime.Animations.Add(ofd.FileName, anim);
-                        rightPanel.lstAnims.Items.Add(ofd.FileName);
+                        animNode.Nodes.Add(ofd.FileName);
                     }
                     else if (ofd.FileName.EndsWith(".pac"))
                     {
@@ -546,20 +527,37 @@ namespace Smash_Forge
 
                         foreach (var pair in p.Files)
                         {
-                            var anim = OMO.read(new FileData(pair.Value));
-                            string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
-                            //AnimName = pair.Key;
-                            AnimName = AnimName.Remove(AnimName.Length - 4);
-                            AnimName = AnimName.Insert(3, "_");
-                            if (!string.IsNullOrEmpty(AnimName))
+                            if (pair.Key.EndsWith(".omo"))
                             {
-                                rightPanel.lstAnims.Items.Add(AnimName);
-                                Runtime.Animations.Add(AnimName, anim);
+                                var anim = OMO.read(new FileData(pair.Value));
+                                string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
+                                //AnimName = pair.Key;
+                                //AnimName = AnimName.Remove(AnimName.Length - 4);
+                                //AnimName = AnimName.Insert(3, "_");
+                                if (!string.IsNullOrEmpty(AnimName))
+                                {
+                                    animNode.Nodes.Add(AnimName);
+                                    Runtime.Animations.Add(AnimName, anim);
+                                }
+                                else
+                                {
+                                    animNode.Nodes.Add(pair.Key);
+                                    Runtime.Animations.Add(pair.Key, anim);
+                                }
                             }
-                            else
+                            else if (pair.Key.EndsWith(".mta"))
                             {
-                                rightPanel.lstAnims.Items.Add(pair.Key);
-                                Runtime.Animations.Add(pair.Key, anim);
+                                MTA mta = new MTA();
+                                try
+                                {
+                                    mta.read(new FileData(pair.Value));
+                                    Runtime.MaterialAnimations.Add(pair.Key, mta);
+                                    mtaNode.Nodes.Add(pair.Key);
+                                }
+                                catch (EndOfStreamException)
+                                {
+                                    mta = null;
+                                }
                             }
                         }
                     }
@@ -568,20 +566,19 @@ namespace Smash_Forge
                     if (ofd.FileName.EndsWith(".omo"))
                     {
                         Runtime.Animations.Add(ofd.FileName, OMO.read(new FileData(ofd.FileName)));
-                        rightPanel.lstAnims.Items.Add(ofd.FileName);
+                        animNode.Nodes.Add(ofd.FileName);
                     }
                     if (ofd.FileName.EndsWith(".chr0"))
                     {
                         Runtime.Animations.Add(ofd.FileName, CHR0.read(new FileData(ofd.FileName), Runtime.TargetVBN));
-                        rightPanel.lstAnims.Items.Add(ofd.FileName);
+                        animNode.Nodes.Add(ofd.FileName);
                     }
                     if (ofd.FileName.EndsWith(".anim"))
                     {
                         Runtime.Animations.Add(ofd.FileName, ANIM.read(ofd.FileName, Runtime.TargetVBN));
-                        rightPanel.lstAnims.Items.Add(ofd.FileName);
+                        animNode.Nodes.Add(ofd.FileName);
                     }
                     //}
-                    rightPanel.lstAnims.EndUpdate();
                 }
             }
         }
@@ -589,15 +586,16 @@ namespace Smash_Forge
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            if (Runtime.TargetVBN == null)
+            /*if (Runtime.TargetVBN == null)
             {
                 return;
-            }
+            }*/
 
             using (var sfd = new SaveFileDialog())
             {
-                sfd.Filter = "Supported Files (.omo, .anim, .pac)|*.omo;*.anim;*.pac|" +
+                sfd.Filter = "Supported Files (.omo, .anim, .pac, .mta)|*.omo;*.anim;*.pac;*.mta|" +
                              "Object Motion (.omo)|*.omo|" +
+                             "Material Animation (.mta)|*.mta|" +
                              "Maya Anim (.anim)|*.anim|" +
                              "OMO Pack (.pac)|*.pac|" +
                              "All Files (*.*)|*.*";
@@ -622,23 +620,74 @@ namespace Smash_Forge
                         }
                         pac.Save(sfd.FileName);
                     }
+
+                    if (sfd.FileName.EndsWith(".mta"))
+                    {
+                        FileOutput f = new FileOutput();
+                        f.writeBytes(Runtime.TargetMTA.Rebuild());
+                        f.save(sfd.FileName);
+                    }
                 }
             }
         }
         private void hashMatchToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            HashMatch();
+            //leftPanel.treeRefresh();
+        }
+        public static void HashMatch()
+        {
             csvHashes csv = new csvHashes("hashTable.csv");
-            foreach (Bone bone in Runtime.TargetVBN.bones)
+            foreach (ModelContainer m in Runtime.ModelContainers)
             {
-                for (int i = 0; i < csv.names.Count; i++)
+                if (m.vbn != null)
                 {
-                    if (csv.names[i] == new string(bone.boneName))
+                    foreach (Bone bone in m.vbn.bones)
                     {
-                        bone.boneId = csv.ids[i];
+                        for (int i = 0; i < csv.names.Count; i++)
+                        {
+                            if (csv.names[i] == new string(bone.boneName))
+                            {
+                                bone.boneId = csv.ids[i];
+                            }
+                        }
+                        if (bone.boneId == 0)
+                            bone.boneId = Crc32.Compute(new string(bone.boneName));
+                    }
+                }
+
+                if (m.dat_melee != null)
+                {
+                    foreach(Bone bone in m.dat_melee.bones.bones)
+                    {
+                        for (int i = 0; i < csv.names.Count; i++)
+                        {
+                            if (csv.names[i] == new string(bone.boneName))
+                            {
+                                bone.boneId = csv.ids[i];
+                            }
+                        }
+                        if (bone.boneId == 0)
+                            bone.boneId = Crc32.Compute(new string(bone.boneName));
+                    }
+                }
+                if (m.bch != null)
+                {
+                    foreach (BCH.BCH_Model mod in m.bch.models)
+                    {
+                        foreach (Bone bone in mod.skeleton.bones)
+                        {
+                            for (int i = 0; i < csv.names.Count; i++)
+                            {
+                                if (csv.names[i] == new string(bone.boneName))
+                                {
+                                    bone.boneId = csv.ids[i];
+                                }
+                            }
+                        }
                     }
                 }
             }
-            leftPanel.treeRefresh();
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -651,8 +700,10 @@ namespace Smash_Forge
 
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            rightPanel.lstAnims.Items.Clear();
+            animNode.Nodes.Clear();
+            mtaNode.Nodes.Clear();
             Runtime.Animations.Clear();
+            Runtime.MaterialAnimations.Clear();
             Runtime.TargetVBN.reset();
         }
 
@@ -698,6 +749,7 @@ namespace Smash_Forge
         {
             var newForm = new AddBone(this);
             newForm.ShowDialog();
+            Console.WriteLine("Done");
         }
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
@@ -711,6 +763,12 @@ namespace Smash_Forge
             Runtime.TargetVBN.unk_1 = 2;
             Runtime.TargetVBN.unk_2 = 1;
         }
+
+        public void openMats(NUD.Polygon poly, string name)
+        {
+            AddDockedControl(new NUDMaterialEditor(poly) { ShowHint = DockState.Float, Text = name});
+        }
+
         private void openStageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (var ofd = new FolderSelectDialog())
@@ -723,35 +781,51 @@ namespace Smash_Forge
                     string paramPath = stagePath + "\\param\\";
                     string animationPath = stagePath + "\\animation\\";
                     List<string> nuds = new List<string>();
-                    foreach (string d in Directory.GetDirectories(modelPath))
+
+                    if (Directory.Exists(modelPath))
                     {
-                        foreach (string f in Directory.GetFiles(d))
+                        foreach (string d in Directory.GetDirectories(modelPath))
                         {
-                            if (f.EndsWith(".nud"))
+                            foreach (string f in Directory.GetFiles(d))
                             {
-                                //Console.WriteLine(f);
-                                openNud(f);
+                                if (f.EndsWith(".nud"))
+                                {
+                                    //Console.WriteLine(f);
+                                    openNud(f);
+                                }
                             }
                         }
                     }
 
-                    foreach (string f in Directory.GetFiles(paramPath))
+                    if (Directory.Exists(paramPath))
                     {
-                        if (f.EndsWith(".lvd"))
+                        Runtime.TargetLVD = null;
+                        foreach (string f in Directory.GetFiles(paramPath))
                         {
-                            Runtime.TargetLVD = new LVD(f);
-                            break;
+                            if (f.EndsWith(".lvd") && Runtime.TargetLVD != null)
+                            {
+                                Runtime.TargetLVD = new LVD(f);
+                                lvdList.fillList();
+                            }
                         }
                     }
 
-                    foreach (string d in Directory.GetDirectories(animationPath))
+                    if (Directory.Exists(animationPath))
                     {
-                        foreach (string f in Directory.GetFiles(d))
+                        foreach (string d in Directory.GetDirectories(animationPath))
                         {
-                            if (f.EndsWith(".omo"))
+                            foreach (string f in Directory.GetFiles(d))
                             {
-                                Runtime.Animations.Add(f, OMO.read(new FileData(f)));
-                                rightPanel.lstAnims.Items.Add(f);
+                                if (f.EndsWith(".omo"))
+                                {
+                                    Runtime.Animations.Add(f, OMO.read(new FileData(f)));
+                                    animNode.Nodes.Add(f);
+                                }
+                                else if (f.EndsWith("path.bin"))
+                                {
+                                    Runtime.TargetPath = new PathBin();
+                                    Runtime.TargetPath.Read(f);
+                                }
                             }
                         }
                     }
@@ -783,14 +857,99 @@ namespace Smash_Forge
                 project.Focus();
         }
 
-        private void testToolStripMenuItem_Click(object sender, EventArgs e)
+        private void openCharacterToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var ofd = new OpenFileDialog())
+            using (var ofd = new FolderSelectDialog())
             {
+                ofd.Title = "Character Folder";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    WorkspaceManager = new WorkspaceManager(project);
-                    WorkspaceManager.OpenWorkspace(ofd.FileName);
+                    project.openACMD($"{ofd.SelectedPath}\\script\\animcmd\\body\\motion.mtable", $"{ofd.SelectedPath}\\motion");
+                }
+            }
+        }
+
+        private void saveNUDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.ModelContainers.Count > 0)
+            {
+                string filename = "";
+                SaveFileDialog save = new SaveFileDialog();
+                save.Filter = "Namco Universal Data|*.nud|All files(*.*)|*.*";
+                DialogResult result = save.ShowDialog();
+
+                if (result == DialogResult.OK)
+                {
+                    filename = save.FileName;
+                    if (filename.EndsWith(".nud"))
+                        if(Runtime.ModelContainers[0].dat_melee != null)
+                        {
+                            ModelContainer m = Runtime.ModelContainers[0].dat_melee.wrapToNUD();
+                            m.nud.Save(filename);
+                            m.vbn.Save(filename.Replace(".nud", ".vbn"));
+                        }
+                        else
+                            Runtime.ModelContainers[0].nud.Save(filename);
+                }
+            }
+        }
+        
+        private void collisionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.collisions.Add(new Collision() { name = "COL_00_NewCollision", subname = "00_NewCollision" });
+            lvdList.fillList();
+        }
+
+        private void spawnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.spawns.Add(new Point() { name = "START_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+            
+        }
+
+        private void respawnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.respawns.Add(new Point() { name = "RESPAWN_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+        }
+
+        private void cameraBoundsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.cameraBounds.Add(new Bounds() { name = "CAMERA_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+            
+        }
+
+        private void blastzonesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.blastzones.Add(new Bounds() { name = "DEATH_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+        }
+
+        private void openNUTEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NUTEditor ev = new NUTEditor();
+            ev.Show();
+        }
+
+        private void openWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using(var ofd = new OpenFileDialog())
+            {
+                if(ofd.ShowDialog() == DialogResult.OK)
+                {
+                    Workspace = new WorkspaceManager(project);
+                    Workspace.OpenWorkspace(ofd.FileName);
                 }
             }
         }

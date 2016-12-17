@@ -13,6 +13,7 @@ namespace Smash_Forge
         {
             Animations = new Dictionary<string, SkelAnimation>();
             OpenedFiles = new SortedList<string, FileBase>();
+            MaterialAnimations = new Dictionary<string, MTA>();
         }
 
         public static List<ModelContainer> ModelContainers = new List<ModelContainer>();
@@ -43,20 +44,23 @@ namespace Smash_Forge
         public static bool renderOtherLVDEntries { get; set; }
 
         public static string TargetAnimString { get; set; }
+        public static string TargetMTAString { get; set; }
 
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
+        public static Dictionary<string, MTA> MaterialAnimations { get; set; }
         public static MovesetManager Moveset { get; set; }
 
+        public static string CanonicalizePath(string path)
+        {
+            return path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+        }
         public static void StartupFromConfig(string config)
         {
             throw new NotImplementedException();
         }
 
         public static bool killWorkspace { get; set; }
-        public static string CanonicalizePath(string input)
-        {
-            return input.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-        }
+
         // Make sure subscribers unsubscribe or this
         // will prevent garbage collection!
         public static event EventHandler AnimationChanged;

@@ -23,6 +23,74 @@ namespace Smash_Forge
         public Matrix4 transform, invert;
     }
 
+    public class HelperBone
+    {
+        public void Read(FileData f)
+        {
+            f.Endian = Endianness.Little;
+            f.seek(4);
+            int count = f.readInt();
+            f.skip(12);
+            int dataCount = f.readInt();
+            int boneCount = f.readInt();
+            int hashCount = f.readInt();
+            int hashOffset = f.readInt() + 0x28;
+            f.skip(4);
+
+            Console.WriteLine("Count " + count);
+
+            for (int i = 0; i < dataCount; i++)
+            {
+                Console.WriteLine("Bone " + i + " start at " + f.pos().ToString("x"));
+                // 3 sections
+                int secLength = f.readInt();
+                int someCount = f.readInt(); // usually 2?
+
+                int size1 = f.readInt();
+                Console.Write(size1 + "\t");
+                for (int j = 0; j < (size1 / 4) - 1; j++)
+                    Console.Write(f.readShort() + " " + f.readShort() + "\t");
+                Console.WriteLine();
+
+                int size2 = f.readInt();
+                Console.Write(size2 + "\t");
+                for (int j = 0; j < (size2 / 4) - 1; j++)
+                    Console.Write(f.readShort() + " " + f.readShort() + "\t");
+                Console.WriteLine();
+
+                int size3 = f.readInt();
+                Console.Write(size3 + "\t");
+                for (int j = 0; j < (size3 / 4) - 1; j++)
+                    Console.Write(f.readShort() + " " + f.readShort() + "\t");
+                Console.WriteLine();
+
+                int size4 = f.readInt();
+                Console.Write(size4 + "\t");
+                for (int j = 0; j < (size4 / 4) - 1; j++)
+                    Console.Write(f.readShort() + " " + f.readShort() + "\t");
+                Console.WriteLine();
+
+                int size5 = f.readInt();
+                Console.Write(size5 + "\t");
+                for (int j = 0; j < (size5 / 4) - 1; j++)
+                    Console.Write(f.readShort() + " " + f.readShort() + "\t");
+                Console.WriteLine();
+
+                f.skip(8);
+            }
+
+            Console.WriteLine("0x" + f.pos().ToString("X"));
+            f.skip(8);
+            int hashSize = f.readInt();
+            int unk = f.readInt();
+
+            for (int i = 0; i < hashCount; i++)
+            {
+                Console.WriteLine(f.readInt().ToString("X"));
+            }
+        }
+    }
+
     public class VBN : FileBase
     {
         public VBN() { }
@@ -39,6 +107,7 @@ namespace Smash_Forge
         public List<Bone> bones = new List<Bone>();
 
         public List<List<int>> jointTable = new List<List<int>>();
+        public SB swingBones = new SB();
 
         public List<Bone> getBoneTreeOrder()
         {
@@ -159,7 +228,7 @@ namespace Smash_Forge
                     bones[i].scale[1] = file.readFloat();
                     bones[i].scale[2] = file.readFloat();
                     Bone temp = bones[i];
-                    Debug.Write(temp.parentIndex);
+                    //Debug.Write(temp.parentIndex);
                     if (temp.parentIndex != 0x0FFFFFFF && temp.parentIndex > -1)
                         bones[temp.parentIndex].children.Add(i);
                     bones[i] = temp;
@@ -276,6 +345,28 @@ namespace Smash_Forge
             //throw new Exception("No bone of char[] name");
         }
 
+        public int jtbShiftAmount = 8;
+
+        public int getJTBIndex(string name)
+        {
+            int index = -1;
+            int vbnIndex = boneIndex(name);
+            if(jointTable != null)
+            {
+                for(int i = 0; i < jointTable.Count; i++)
+                {
+                    for(int j = 0; j < jointTable[i].Count; j++)
+                    {
+                        if(jointTable[i][j] == vbnIndex)
+                        {
+                            index = j + (i << 8);
+                        }
+                    }
+                }
+            }
+            return index;
+        }
+
         public void deleteBone(int index)
         {
             boneCountPerType[bones[index].boneType]--;
@@ -338,6 +429,173 @@ namespace Smash_Forge
                 if (bones[i].parentIndex != 0x0FFFFFFF)
                     bones[(int)bones[i].parentIndex].children.Add(i);
             }
+        }
+    }
+
+    public class SB : FileBase
+    {
+        public override Endianness Endian
+        {
+            get;
+            set;
+        }
+
+        public class SBEntry
+        {
+            public uint hash;
+            public float param1_1, param2_1;
+            public int param1_2, param1_3, param2_2, param2_3;
+            public float rx1, rx2, ry1, ry2, rz1, rz2;
+            public float[] unks1 = new float[12], unks2 = new float[5];
+            public float factor;
+            public int[] ints = new int[4];
+        }
+
+        public Dictionary<uint, SBEntry> bones = new Dictionary<uint, SBEntry>();
+
+        public override void Read(string filename)
+        {
+            FileData d = new FileData(filename);
+            d.Endian = Endianness.Little; // characters are little
+            d.seek(8); // skip magic and version?
+            int count = d.readInt(); // entry count
+
+            for(int i = 0; i < count; i++)
+            {
+                SBEntry sb = new SBEntry()
+                {
+                    hash = (uint)d.readInt(),
+                    param1_1 = d.readFloat(),
+                    param1_2 = d.readInt(),
+                    param1_3 = d.readInt(),
+                    param2_1 = d.readFloat(),
+                    param2_2 = d.readInt(),
+                    param2_3 = d.readInt(),
+                    rx1 = d.readFloat(),
+                    rx2 = d.readFloat(),
+                    ry1 = d.readFloat(),
+                    ry2 = d.readFloat(),
+                    rz1 = d.readFloat(),
+                    rz2 = d.readFloat()
+                };
+
+                for (int j = 0; j < 12; j++)
+                    sb.unks1[j] = d.readFloat();
+
+                for (int j = 0; j < 5; j++)
+                    sb.unks2[j] = d.readFloat();
+
+                sb.factor = d.readFloat();
+
+                for (int j = 0; j < 4; j++)
+                    sb.ints[j] = d.readInt();
+
+                bones.Add(sb.hash, sb);
+
+                /*Console.WriteLine(sb.hash.ToString("x"));
+                Console.WriteLine(d.readFloat() + " " + d.readInt() + " " + d.readInt());
+                Console.WriteLine(d.readFloat() + " " + d.readInt() + " " + d.readInt());
+
+                //28 floats?
+                Console.WriteLine(d.readFloat() + " " + d.readFloat());
+                Console.WriteLine(d.readFloat() + " " + d.readFloat());
+                Console.WriteLine(d.readFloat() + " " + d.readFloat());
+                Console.WriteLine(d.readFloat() + " " + d.readFloat() + " " + d.readFloat() + " " + d.readFloat());
+                Console.WriteLine(d.readFloat() + " " + d.readFloat() + " " + d.readFloat() + " " + d.readFloat());
+
+                Console.WriteLine(d.readFloat() + " " + d.readFloat() + " " + d.readFloat() + " " + d.readFloat());
+                Console.WriteLine(d.readFloat() + " " + d.readFloat() + " " + d.readFloat() + " " + d.readFloat());
+
+                Console.WriteLine(d.readFloat() + " " + d.readFloat());
+                Console.WriteLine(d.readInt() +  " " + d.readInt());
+                Console.WriteLine(d.readInt() + " " + d.readInt());
+                Console.WriteLine();*/
+            }
+        }
+
+        public override byte[] Rebuild()
+        {
+            FileOutput o = new FileOutput();
+            o.Endian = Endianness.Little;
+
+            using (StreamReader sr = new StreamReader("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\model\\body\\hmera\\SweingBone\\swb.txt"))
+            {
+                String line = sr.ReadLine();
+                int count = int.Parse(line);
+
+                o.writeString(" BWS");
+                o.writeShort(0x05);
+                o.writeShort(0x01);
+                o.writeInt(count);
+
+                for (int i = 0; i < count; i++)
+                {
+                    line = sr.ReadLine();
+                    o.writeInt(int.Parse(line, System.Globalization.NumberStyles.HexNumber));
+                    string[] args = sr.ReadLine().Split(' ');
+                    o.writeFloat(float.Parse(args[0]));
+                    o.writeInt(int.Parse(args[1]));
+                    o.writeInt(int.Parse(args[2]));
+
+                    args = sr.ReadLine().Split(' ');
+                    o.writeFloat(float.Parse(args[0]));
+                    o.writeInt(int.Parse(args[1]));
+                    o.writeInt(int.Parse(args[2]));
+
+                    args = sr.ReadLine().Split(' ');
+                    o.writeFloat(float.Parse(args[0]));
+                    o.writeFloat(float.Parse(args[1]));
+
+                    args = sr.ReadLine().Split(' ');
+                    o.writeFloat(float.Parse(args[0]));
+                    o.writeFloat(float.Parse(args[1]));
+
+                    args = sr.ReadLine().Split(' ');
+                    o.writeFloat(float.Parse(args[0]));
+                    o.writeFloat(float.Parse(args[1]));
+
+                    args = sr.ReadLine().Split(' ');
+                    o.writeFloat(float.Parse(args[0]));
+                    o.writeFloat(float.Parse(args[1]));
+                    o.writeFloat(float.Parse(args[2]));
+                    o.writeFloat(float.Parse(args[3]));
+
+                    args = sr.ReadLine().Split(' ');
+                    o.writeFloat(float.Parse(args[0]));
+                    o.writeFloat(float.Parse(args[1]));
+                    o.writeFloat(float.Parse(args[2]));
+                    o.writeFloat(float.Parse(args[3]));
+
+                    args = sr.ReadLine().Split(' ');
+                    o.writeFloat(float.Parse(args[0]));
+                    o.writeFloat(float.Parse(args[1]));
+                    o.writeFloat(float.Parse(args[2]));
+                    o.writeFloat(float.Parse(args[3]));
+
+                    args = sr.ReadLine().Split(' ');
+                    o.writeFloat(float.Parse(args[0]));
+                    o.writeFloat(float.Parse(args[1]));
+                    o.writeFloat(float.Parse(args[2]));
+                    o.writeFloat(float.Parse(args[3]));
+
+                    args = sr.ReadLine().Split(' ');
+                    o.writeFloat(float.Parse(args[0]));
+                    o.writeFloat(float.Parse(args[1]));
+
+                    args = sr.ReadLine().Split(' ');
+                    o.writeInt(int.Parse(args[0]));
+                    o.writeInt(int.Parse(args[1]));
+
+                    args = sr.ReadLine().Split(' ');
+                    o.writeInt(int.Parse(args[0]));
+                    o.writeInt(int.Parse(args[1]));
+                }
+
+            }
+
+            o.save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\model\\body\\hmera\\SweingBone\\model.sb");
+
+            return null;
         }
     }
 }

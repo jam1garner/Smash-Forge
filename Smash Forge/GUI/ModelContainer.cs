@@ -9,8 +9,11 @@ namespace Smash_Forge
         public NUD nud;
         public VBN vbn;
         public MTA mta;
+        public MOI moi;
 
-        public MBN mbn;
+        public BCH bch;
+
+        public DAT dat_melee;
 
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
         public static MovesetManager Moveset { get; set; }
