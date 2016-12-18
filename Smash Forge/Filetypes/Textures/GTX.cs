@@ -376,7 +376,7 @@ namespace Smash_Forge
         sur.data = data;
         sur.imageSize = data.Length;
         //return swizzleBC(sur);
-        return swizzleSurface(sur, (GX2SurfaceFormat)sur.format != GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM);
+        return swizzleSurface(sur,((GX2SurfaceFormat)sur.format != GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM) & (GX2SurfaceFormat)sur.format != GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_SRGB);
     }
 
     public static int getBPP(int i)

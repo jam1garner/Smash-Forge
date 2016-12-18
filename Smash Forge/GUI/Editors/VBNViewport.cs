@@ -268,7 +268,7 @@ namespace Smash_Forge
 
         #region Rendering
 
-        string vs = @"#version 450
+        string vs = @"#version 330
  
 in vec3 vPosition;
 in vec4 vColor;
@@ -305,6 +305,9 @@ main()
 
     vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;
 
+
+    //gl_TexCoord[0] = vUV0;
+    //gl_TexCoord[1] = vUV1;
     f_texcoord0 = vUV0;
     f_texcoord1 = vUV1;
 
@@ -312,7 +315,7 @@ main()
     color = vColor;
 }";
 
-        string fs = @"#version 450
+        string fs = @"#version 330
 
 in vec2 f_texcoord0;
 in vec2 f_texcoord1;
@@ -335,13 +338,14 @@ main()
 
     vec4 ambiant = vec4(0.3,0.3,0.3,1.0) * texture(tex0, f_texcoord0).rgba;
 
-    float specular = -0.4 *(texture(spl, f_texcoord0).r - 1);
+    //float specular = -0.4 *(texture(spl, f_texcoord0).r - 1);
     //specular = normalize(specular);
 
     vec4 alpha = texture2D(tex0, f_texcoord0).aaaa;
     //if(alpha.a < 0.5) discard;    
 	vec4 outputColor = ambiant + (vec4(texture(tex0, f_texcoord0).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * normal);
-    gl_FragColor =  vec4(((color * alpha * outputColor) * specular).xyz, alpha.x * color.w);
+    gl_FragData[0] =  vec4(((color * alpha * outputColor)).xyz, alpha.x * color.w);
+    //gl_FragData[1] = vec4(texture2D(tex0, f_texcoord0))
 }
 ";
 

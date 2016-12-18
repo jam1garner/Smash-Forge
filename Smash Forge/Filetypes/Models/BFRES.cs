@@ -83,11 +83,11 @@ namespace Smash_Forge
 
                         if (v.tx.Count > 0) { 
                             u0.Add(v.tx[0]);
-                            u1.Add(v.tx[1]);
+                            //u1.Add(v.tx[1]);
                         }
                         else { 
                             u0.Add(new Vector2(0, 0));
-                            u1.Add(new Vector2(0, 0));
+                            //u1.Add(new Vector2(0, 0));
                         }
 
                         while (v.node.Count < 4)
@@ -120,7 +120,7 @@ namespace Smash_Forge
             coldata = col.ToArray();
             nrmdata = nrm.ToArray();
             uvdata0 = u0.ToArray();
-            uvdata1 = u1.ToArray();
+            //uvdata1 = u1.ToArray();
             facedata = face.ToArray();
             bonedata = bone.ToArray();
             weightdata = weight.ToArray();
@@ -144,9 +144,9 @@ namespace Smash_Forge
             GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, (IntPtr)(uvdata0.Length * Vector2.SizeInBytes), uvdata0, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(shader.getAttribute("vUV0"), 2, VertexAttribPointerType.Float, false, 0, 0);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_uv0);
-            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, (IntPtr)(uvdata0.Length * Vector2.SizeInBytes), uvdata0, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("vUV1"), 2, VertexAttribPointerType.Float, false, 0, 0);
+            //GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_uv0);
+            //GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, (IntPtr)(uvdata0.Length * Vector2.SizeInBytes), uvdata0, BufferUsageHint.StaticDraw);
+            //GL.VertexAttribPointer(shader.getAttribute("vUV1"), 2, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_bone);
             GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(bonedata.Length * Vector4.SizeInBytes), bonedata, BufferUsageHint.StaticDraw);
@@ -170,7 +170,7 @@ namespace Smash_Forge
                         GL.ActiveTexture(TextureUnit.Texture0);
                         GL.BindTexture(TextureTarget.Texture2D, m.texHashs[0]);
                         GL.Uniform1(shader.getAttribute("tex0"), 0);
-                        if (m.texHashs.Count == 4)
+                        /*if (m.texHashs.Count == 4)
                         {
                             GL.ActiveTexture(TextureUnit.Texture1);
                             GL.BindTexture(TextureTarget.Texture2D, m.texHashs[3]);
@@ -181,7 +181,7 @@ namespace Smash_Forge
                             GL.ActiveTexture(TextureUnit.Texture3);
                             GL.BindTexture(TextureTarget.Texture2D, m.texHashs[1]);
                             GL.Uniform1(shader.getAttribute("nrm"), 3);
-                        }
+                        }*/
                     }
                     //GL.BindTexture(TextureTarget.Texture2D, m.texId);
                     //GL.Uniform1(shader.getAttribute("tex"), 0);
@@ -267,7 +267,10 @@ namespace Smash_Forge
                 f.skip(0xC);
                 int offset = readOffset(f);
                 int NextFMDL = f.pos();
-                f.seek(offset+4);
+                f.seek(offset);
+                FMDL modelTest = new FMDL();
+                modelTest.Read(f);
+                f.seek(offset + 4);
                 FMDLheader fmdl_info = new FMDLheader
                 {
                     name = f.readString(readOffset(f), -1),
@@ -573,7 +576,13 @@ namespace Smash_Forge
                     for(int tex = 0; FMATheaders[FSHPArr[m].fmatIndx].texAttSelCount > tex; tex++)
                     {
                         string TextureName = f.readString(readOffset(f), -1);
+                        try { 
                         poly.texHashs.Add(textures[TextureName].texture.display);
+                        }
+                        catch
+                        {
+                            poly.texHashs.Add(0);
+                        }
                         f.skip(4);
                     }
                     model.poly.Add(poly);

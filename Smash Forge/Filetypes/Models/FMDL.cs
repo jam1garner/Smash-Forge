@@ -10,9 +10,10 @@ namespace Smash_Forge
     public class FMDL
     {
         public Header HDR = new Header();
+        public List<FMAT> FMATArr = new List<FMAT>();
         public class Header
         {
-            public int magic;
+            public string magic;
             public string name;
             public int eofString;
             public int fsklOff;
@@ -26,6 +27,19 @@ namespace Smash_Forge
             public int paramCount;
             public void Read(FileData f)
             {
+                magic = f.readString(f.pos(), 4);
+                f.skip(4);
+                name = f.readString(f.readOffset(), -1);
+                eofString = f.readInt();
+                fsklOff = f.readOffset();
+                fvtxArrOff = f.readOffset();
+                fshpIndx = f.readOffset();
+                fmatIndx = f.readOffset();
+                paramOff = f.readOffset();
+                fvtxCount = f.readInt();
+                fshpCount = f.readInt();
+                fmatCount = f.readInt();
+                paramCount = f.readInt();
 
             }
         }
@@ -170,9 +184,16 @@ namespace Smash_Forge
 
             }
         }
-        public class FMATH
+        public class FMAT
             {
             public Header HDR = new Header();
+            public List<RenderParam> RenderParams = new List<RenderParam>();
+            public List<Texture> Textures = new List<Texture>();
+            public List<TextureAttribute> TextureAttributes = new List<TextureAttribute>();
+            public List<MateralParam> MateralParams = new List<MateralParam>();
+            public Unknown unkData = new Unknown();
+            public ShaderControl Shader = new ShaderControl();
+            public ShadowParam Shadows = new ShadowParam();
             public class Header {
                 public int magic = 0x464D4154;
                 public string name;
@@ -240,7 +261,7 @@ namespace Smash_Forge
                         renderName = f.readString(f.readOffset(), -1);
                 }
             }
-            public class Textures
+            public class Texture
             {
                 public string texture;
                 public int FTEXOffset;
@@ -250,7 +271,7 @@ namespace Smash_Forge
                     FTEXOffset = f.readOffset();
                 }
             }
-            public class TextureAttributes
+            public class TextureAttribute
             {
                 public int u1;
                 public int u2;
@@ -335,7 +356,7 @@ namespace Smash_Forge
                     f.getSection(f.pos(), 0x30);
                 }
             }
-            public class Shader
+            public class ShaderControl
             {
                 public string name0, name1;
                 public int u1, vertSCount, pixelSCount, ParamCount, vertOffset, pixelOffset, ParamOffset;
@@ -366,9 +387,63 @@ namespace Smash_Forge
 
                 }
             }
+            public class ShadowParam
+            {
+                string varName;
+                int u1, typeIdx, u2, value;
+                public void Read(FileData f)
+                {
+                    varName = f.readString(f.readOffset(), -1);
+                    u1 = f.readShort();
+                    typeIdx = f.readByte();
+                    u2 = f.readByte();
+                    value = f.readInt();
+                }
+
+                }
+            public void Read(FileData f)
+            {
+                HDR.Read(f);
+                f.seek(HDR.rendParamIndx);
+                for(int i = 0;i < HDR.rendParamCount; i++)
+                {
+                    RenderParam Render = new RenderParam();
+                    Render.Read(f);
+                    RenderParams.Add(Render);
+                }
+                f.seek(HDR.texSelOff);
+                for (int i = 0; i < HDR.texSelCount; i++)
+                {
+                    Texture Tex = new Texture();
+                    Tex.Read(f);
+                    Textures.Add(Tex);
+                }
+                f.seek(HDR.texAttSelOff);
+                for (int i = 0; i < HDR.texAttSelCount; i++)
+                {
+                    TextureAttribute TexAtt = new TextureAttribute();
+                    TexAtt.Read(f);
+                    TextureAttributes.Add(TexAtt);
+                }
+                f.seek(HDR.matParamOff);
+                for (int i = 0; i < HDR.matParamCount; i++)
+                {
+                    MateralParam MatParam = new MateralParam();
+                    MatParam.Read(f);
+                    MateralParams.Add(MatParam);
+                }
+                f.seek(HDR.unkMatOff);
+                unkData.Read(f);
+                f.seek(HDR.shadeOff);
+                Shader.Read(f);
+                f.seek(HDR.shadParamIndxOff);
+                Shadows.Read(f);
+
+            }
         }
         public class FSKL
         {
+            public Header HDR = new Header();
             public class Header
             {
                 public int fsklType;
@@ -414,6 +489,17 @@ namespace Smash_Forge
             public int visGrpOff;
             public int indxBuffOff;
             public int elmSkip;
+        }
+        public void Read(FileData f)
+        {
+            HDR.Read(f);
+            f.seek(HDR.fmatIndx);
+            for(int i = 0; i < HDR.fmatCount; i++)
+            {
+                FMAT FM = new FMAT();
+                FM.Read(f);
+                FMATArr.Add(FM);
+            }
         }
     }
 }
