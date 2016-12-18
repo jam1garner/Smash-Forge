@@ -88,7 +88,7 @@ void
 main()
 {
     vec4 alpha = texture(tex, f_texcoord*uvscale).aaaa;
-    gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale)).xyz, alpha.a * color.w);
+    gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale) * normal).xyz, alpha.a * color.w);
 }
 ";
 
@@ -180,13 +180,38 @@ main()
                 }
             }
 
+            Console.WriteLine("Done");
+
             // now to fix single binds
             List<JOBJ> boneTrack = GetBoneOrder();
+            Matrix4 mt = new Matrix4();
+            int w = 0;
             foreach (Vertex v in vertBank)
             {
-                if(v.Tag != null)
+                w = 0;
+                v.bones.Clear();
+                mt = new Matrix4();
+
+                foreach (object o in v.Tags)
                 {
-                    v.bones.Add(boneTrack.IndexOf((JOBJ)v.Tag));
+                    if(o is JOBJ)
+                    {
+                        v.bones.Add(boneTrack.IndexOf((JOBJ)o));
+                        mt = Matrix4.CreateScale(1,1,1);
+                        v.nrm = TransformNormal(((JOBJ)o).transform, v.nrm);
+                    }
+                    else
+                    if(o is int)
+                    {
+                        v.bones.Add(boneTrack.IndexOf(jobjOffsetLinker[(int)o]));
+                        mt += jobjOffsetLinker[(int)o].transform * v.weights[w++];
+                    }
+                }
+
+                if (v.bones.Count == 1)
+                {
+                    v.pos = Vector3.Transform(v.pos, mt);
+                    v.nrm = TransformNormal(mt, v.nrm);
                 }
             }
 
@@ -443,6 +468,13 @@ main()
                 boneTrack.Add((JOBJ)node.Tag);
             }
             return boneTrack;
+        }
+        
+        public static Vector3 TransformNormal(Matrix4 M, Vector3 N)
+        {
+            return new Vector3((M.M11 * N.X) + (M.M12 * N.Y) + (M.M13 * N.Z),
+            (M.M21 * N.X) + (M.M22 * N.Y) + (M.M23 * N.Z),
+            (M.M31 * N.X) + (M.M32 * N.Y) + (M.M33 * N.Z));
         }
 
         #region Converting
@@ -1054,8 +1086,8 @@ main()
             public Vector4 clr = new Vector4(1, 1, 1, 1);
             public List<int> bones = new List<int>();
             public List<float> weights = new List<float>();
-
-            public object Tag;
+            
+            public List<object> Tags = new List<object>(); // this is for post processing of vertices
         }
 
         public List<Vertex> vertBank = new List<Vertex>();
@@ -1150,7 +1182,7 @@ main()
 
                 // display list
                 d.seek(displayListOffset);
-                //Console.WriteLine("Display 0x" + displayListOffset);
+                //Console.WriteLine("Display 0x" + displayListOffset + " " + displayListSize);
                 int bid = 0;
                 List<Vertex> used = new List<Vertex>();
                 if (displayListOffset != headerSize)
@@ -1174,6 +1206,7 @@ main()
                             Vertex v = new Vertex();
                             dat.vertBank.Add(v);
                             ob.faces.Add(dat.vertBank.IndexOf(v));
+
                             foreach (VertexAttr att in vertexAttributes)
                             {
                                 int value = 0;
@@ -1227,27 +1260,19 @@ main()
                                             {
                                                 int off1 = d.readInt() + headerSize;
                                                 float wei1 = d.readFloat();
-                                                Vector3 newp = Vector3.Zero;
-                                                v.bones.Clear();
                                                 while (off1 > headerSize)
                                                 {
-                                                    if (!dat.jobjOffsetLinker.ContainsKey(off1))
-                                                        continue;
-
-                                                    newp += Vector3.Transform(v.pos, dat.jobjOffsetLinker[off1].transform) * wei1;
-
-                                                    //Hacky and the hackjobs----------------------------------------
-                                                    List<JOBJ> boneTrack = dat.GetBoneOrder();
-                                                    //----------------------------------------------------------
-
-                                                    v.bones.Add(boneTrack.IndexOf(dat.jobjOffsetLinker[off1]));
+                                                    v.Tags.Add(off1);
                                                     v.weights.Add(wei1);
                                                     off1 = d.readInt() + headerSize;
                                                     wei1 = d.readFloat();
+
+                                                    if (v.weights.Count > 4)
+                                                    {
+                                                        MessageBox.Show("Weight>4error");
+                                                        break;
+                                                    }
                                                 }
-                                                
-                                                if (v.bones.Count == 1)
-                                                    v.pos = newp;
                                             }
 
                                             d.seek(temp);
@@ -1255,14 +1280,9 @@ main()
 
                                         if (parent.Parent.Tag is JOBJ)
                                         {
-                                            if(v.bones.Count == 0)
+                                            if(v.weights.Count == 0)
                                             {
-                                                //Hacky and the hackjobs----------------------------------------
-                                                //List<JOBJ> boneTrack = dat.GetBoneOrder();
-                                                //----------------------------------------------------------
-                                                //Console.WriteLine(((JOBJ)parent.Parent.Tag).node.Text);
-                                                //v.bones.Add(boneTrack.IndexOf((JOBJ)parent.Parent.Tag));
-                                                v.Tag = parent.Parent.Tag;
+                                                v.Tags.Add(parent.Parent.Tag);
                                                 v.weights.Add(1);
                                             }
                                             v.pos = Vector3.Transform(v.pos, ((JOBJ)parent.Parent.Tag).transform);
@@ -1278,32 +1298,6 @@ main()
                                         v.nrm.Z = f[2];
                                         v.nrm = Vector3.Divide(v.nrm, (float)Math.Pow(2, att.scale));
                                         d.seek(ten);
-
-                                        if (weightListOffset > headerSize && bid > -1)
-                                        {
-                                            temp = d.pos();
-                                            d.seek(weightListOffset + (bid / 3) * 4);
-                                            d.seek(d.readInt() + headerSize);
-                                            if (d.pos() > headerSize)
-                                            {
-                                                int off1 = d.readInt() + headerSize;
-                                                float wei1 = d.readFloat();
-                                                Matrix4 mt = new Matrix4();
-                                                while (off1 > headerSize)
-                                                {
-                                                    if (!dat.jobjOffsetLinker.ContainsKey(off1))
-                                                        continue;
-
-                                                    mt += (dat.jobjOffsetLinker[off1].transform * wei1);
-
-                                                    off1 = d.readInt() + headerSize;
-                                                    wei1 = d.readFloat();
-                                                }
-
-                                                v.nrm = TransformNormal(mt, v.nrm);
-                                            }
-                                            d.seek(temp);
-                                        }
                                         break;
 
                                     case GXAttr.GX_VA_TEX0:
@@ -1331,6 +1325,7 @@ main()
 
                         display.Add(ob);
                     }
+                
 
                 if (nextOffset != headerSize)
                 {
@@ -1338,13 +1333,6 @@ main()
                     POBJ pol = new POBJ();
                     pol.Read(d, dat, dobj, parent);
                 }
-            }
-
-            public static Vector3 TransformNormal(Matrix4 M, Vector3 N)
-            {
-                return new Vector3((M.M11 * N.X) + (M.M12 * N.Y) + (M.M13 * N.Z),
-                (M.M21 * N.X) + (M.M22 * N.Y) + (M.M23 * N.Z),
-                (M.M31 * N.X) + (M.M32 * N.Y) + (M.M33 * N.Z));
             }
 
             public static Vector4 readGXClr(FileData d, int type)
