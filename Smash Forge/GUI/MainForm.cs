@@ -256,7 +256,7 @@ namespace Smash_Forge
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.dat|" +
+                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.dat;*.mta|" +
                              "Smash 4 Boneset (.vbn)|*.vbn|" +
                              "Namco Model (.nud)|*.nud|" +
                              "Smash 4 Level Data (.lvd)|*.lvd|" +
@@ -481,8 +481,9 @@ namespace Smash_Forge
 
         private void addMaterialAnimation(string name,MTA m)
         {
-            Runtime.MaterialAnimations.Add(name, m);
-            MainForm.Instance.viewports[0].loadMTA(m);
+            if (!Runtime.MaterialAnimations.ContainsValue(m) || Runtime.MaterialAnimations.ContainsKey(name))
+                Runtime.MaterialAnimations.Add(name, m);
+            viewports[0].loadMTA(m);
         }
 
         private void importToolStripMenuItem_Click(object sender, EventArgs e)

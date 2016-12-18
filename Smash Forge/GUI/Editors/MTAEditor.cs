@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
+using System.IO;
 
 namespace Smash_Forge
 {
@@ -24,6 +25,46 @@ namespace Smash_Forge
         private void MTAEditor_Load(object sender, EventArgs e)
         {
             richTextBox1.Text = mta.Decompile();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //try
+            //{
+            mta = new MTA();
+            mta.Compile(new List<string>(richTextBox1.Text.Split('\n')));
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Material Animation (.mta)|*.mta|" +
+                                "All Files (*.*)|*.*";
+                    
+                if(sfd.ShowDialog() == DialogResult.OK)
+                {
+                    File.WriteAllBytes(sfd.FileName,mta.Rebuild());
+                }
+            }
+            //}
+            /*catch (Exception ex)
+            {
+                throw;
+                Console.WriteLine(ex.ToString());
+                MessageBox.Show("Failed to build MTA, make sure your formatting is correct", "MTA Build Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }*/
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                mta = new MTA();
+                mta.Compile(new List<string>(richTextBox1.Text.Split('\n')));
+                MainForm.Instance.viewports[0].loadMTA(mta);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                MessageBox.Show("Failed to build MTA, make sure your formatting is correct", "MTA Build Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
