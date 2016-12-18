@@ -472,6 +472,8 @@ main()
             if (Runtime.renderFloor)
                 RenderTools.drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
 
+            //RenderTools.drawSphere(new Vector3(2,2,2), 3, 5);
+
             GL.Enable(EnableCap.LineSmooth); // This is Optional 
             GL.Enable(EnableCap.Normalize);  // These is critical to have
             GL.Enable(EnableCap.RescaleNormal);
@@ -1563,6 +1565,33 @@ main()
                 {
                 }
             }
+        }
+
+        private void glControl1_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            /*//create ray for mouse
+            //normalize mouse in 3d space
+            Vector4 ray = new Vector4(
+                (2.0f * e.X) / glControl1.Width - 1.0f,
+                1.0f - (2.0f * e.Y) / glControl1.Height,
+                -1.0f,
+                1.0f);
+            ray = Vector4.Transform(ray, v.Inverted());
+            ray = new Vector4(ray.X,ray.Y,-1.0f, 1.0f);
+            ray.Normalize();
+            Console.WriteLine(ray.ToString());
+            int t = 0;
+            while(t < 20)
+            {
+
+                Vector4 b = ray * t * new Vector4((new Vector3(0, 0, 0) - new Vector3(2, 2, 2)), 1);
+                Vector4 c = (new Vector4((new Vector3(0, 0, 0) - new Vector3(2, 2, 2)), 1))
+                    * new Vector4((new Vector3(0, 0, 0) - new Vector3(2, 2, 2)), 1)
+                    - new Vector4(16, 16, 16, 16);
+                Console.WriteLine(b * b - c);
+                t++;
+            }*/
+
         }
 
         public void FPSCamera()

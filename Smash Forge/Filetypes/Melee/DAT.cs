@@ -1344,9 +1344,9 @@ main()
                 {
                     case 0: // GX_RGB565
                         b = d.readShort();
-                        clr.X = (((b >> 11) & 0x1F) << 3) | (((b >> 11) & 0x1F) >> 2);
-                        clr.Y = (((b >> 5) & 0x3F) << 2) | (((b >> 5) & 0x3F) >> 4);
-                        clr.Z = (((b) & 0x1F) << 3) | (((b) & 0x1F) >> 2);
+                        clr.X = ((((b >> 11) & 0x1F) << 3) | (((b >> 11) & 0x1F) >> 2)) / (float)0xFF;
+                        clr.Y = ((((b >> 5) & 0x3F) << 2) | (((b >> 5) & 0x3F) >> 4)) / (float)0xFF;
+                        clr.Z = ((((b) & 0x1F) << 3) | (((b) & 0x1F) >> 2)) / (float)0xFF;
                         break;
                     case 1: // GX_RGB888
                         clr.X = d.readByte() / (float)0xFF;
