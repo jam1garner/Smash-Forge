@@ -98,20 +98,22 @@ namespace Smash_Forge
             foreach (KeyFrame f in frames)
                 foreach (KeyNode n in f.nodes)
                 {
-                    if (!node.Contains(n.id) && n.id != -1)
+                    if (fromHash && vbn != null)
                     {
-                        if (fromHash && vbn != null)
+                        foreach (Bone bo in vbn.bones)
                         {
-                            foreach (Bone bo in vbn.bones) {
-                                if (bo.boneId == n.hash)
-                                {
+                            if (bo.boneId == n.hash)
+                            {
+                                if (!node.Contains(vbn.bones.IndexOf(bo)))
                                     node.Add(vbn.bones.IndexOf(bo));
-                                    break;
-                                }
+                                break;
                             }
                         }
-                        else
-                            node.Add(n.id);
+                    }
+                    else
+                    if (!node.Contains(n.id) && n.id != -1)
+                    {
+                        node.Add(n.id);
                     }
                 }
 

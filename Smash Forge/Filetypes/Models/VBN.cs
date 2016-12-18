@@ -109,6 +109,23 @@ namespace Smash_Forge
         public List<List<int>> jointTable = new List<List<int>>();
         public SB swingBones = new SB();
 
+        public List<Bone> getBoneTreeOrderol()
+        {
+            List<Bone> bone = new List<Bone>();
+            Queue<Bone> q = new Queue<Bone>();
+
+            q.Enqueue(bones[0]);
+
+            while (q.Count > 0)
+            {
+                Bone b = q.Dequeue();
+                foreach (int c in b.children)
+                    q.Enqueue(bones[c]);
+                bone.Add(b);
+            }
+            return bone;
+        }
+
         public List<Bone> getBoneTreeOrder()
         {
             List<Bone> bone = new List<Bone>();
@@ -255,6 +272,8 @@ namespace Smash_Forge
                 file.writeShort(unk_1);
                 file.writeShort(unk_2);
                 file.writeInt(bones.Count);
+                if (boneCountPerType[0] == 0)
+                    boneCountPerType[0] = (uint)bones.Count;
                 for (int i = 0; i < 4; i++)
                     file.writeInt((int)boneCountPerType[i]);
 
@@ -264,7 +283,10 @@ namespace Smash_Forge
                     for (int j = 0; j < 64 - bones[i].boneName.Length; j++)
                         file.writeByte(0);
                     file.writeInt((int)bones[i].boneType);
-                    file.writeInt(bones[i].parentIndex);
+                    if(bones[i].parentIndex == -1)
+                        file.writeInt(0x0FFFFFFF);
+                    else
+                        file.writeInt(bones[i].parentIndex);
                     file.writeInt((int)bones[i].boneId);
                 }
 
@@ -403,10 +425,11 @@ namespace Smash_Forge
         }
 
         public float[] f = null;
+        public Matrix4[] bonemat;
 
         public Matrix4[] getShaderMatrix()
         {
-            Matrix4[] bonemat = new Matrix4[bones.Count];
+            bonemat = new Matrix4[bones.Count];
 
             for (int i = 0; i < bones.Count; i++)
             {

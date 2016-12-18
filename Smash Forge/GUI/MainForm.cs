@@ -12,6 +12,8 @@ namespace Smash_Forge
 {
     public partial class MainForm : Form
     {
+
+
         public static MainForm Instance;
 
         public MainForm()
@@ -48,7 +50,9 @@ namespace Smash_Forge
             Runtime.renderSpawns = true;
             Runtime.renderRespawns = true;
             Runtime.renderOtherLVDEntries = true;
-            
+            //Pichu.MakePichu();
+            //meshList.refresh();
+            //ReadChimeraLucas();
         }
 
         private void MainForm_Close(object sender, EventArgs e)
@@ -80,7 +84,7 @@ namespace Smash_Forge
         #region Members
         public AnimListPanel rightPanel = new AnimListPanel() { ShowHint = DockState.DockRight };
         public BoneTreePanel leftPanel = new BoneTreePanel() { ShowHint = DockState.DockLeft };
-        public TreeNode animNode = new TreeNode("Bone Animations");
+        public static TreeNode animNode = new TreeNode("Bone Animations");
         public TreeNode mtaNode = new TreeNode("Material Animations");
         public ProjectTree project = new ProjectTree() { ShowHint = DockState.DockLeft };
         public LVDList lvdList = new LVDList() { ShowHint = DockState.DockLeft };
@@ -283,6 +287,11 @@ namespace Smash_Forge
 
                     if (ofd.FileName.EndsWith(".dat"))
                     {
+                        if (ofd.FileName.EndsWith("AJ.dat"))
+                        {
+                            MessageBox.Show("This is animation; load with Animation -> Import");
+                            return;
+                        }
                         DAT dat = new DAT();
                         dat.Read(new FileData(ofd.FileName));
                         ModelContainer c = new ModelContainer();
@@ -292,28 +301,27 @@ namespace Smash_Forge
                         
                         HashMatch();
 
-                        //DAT_Animation anim = new DAT_Animation();
-                        //anim.Read(new FileData("C:\\Users\\ploaj_000\\Desktop\\Melee\\zJiggyWait"));
-                        //anim.Apply(dat.bones);
-                        //AnimTrack t = new AnimTrack(anim);
-                        //t.Show();
-
                         //SkelAnimation an = t.BakeToSkel(dat.bones);
                         //Runtime.Animations.Add(anim.Name, an);
                         //animNode.Nodes.Add(anim.Name);
-
-                        //Runtime.ModelContainers.Add(dat.wrapToNUD());
-                        //Collada dae = new Collada();
-                        //dae.Save("C:\\Users\\ploaj_000\\Desktop\\Melee\\Test.dae", dat);
+                        //DAT_Animation.LoadAJ("C:\\Users\\ploaj_000\\Desktop\\Melee\\PlPrAJ.dat", dat.bones);
+                        Runtime.TargetVBN = dat.bones;
+                        
                         DAT_TreeView p = new DAT_TreeView() { ShowHint = DockState.DockLeft };
                         p.setDAT(dat);
                         AddDockedControl(p);
                         //Runtime.TargetVBN = dat.bones;
                         meshList.refresh();
+
+
+                        /*DAT_Animation anim = new DAT_Animation();
+                        anim.Read(new FileData("C:\\Users\\ploaj_000\\Desktop\\Melee\\zJiggyWait"));
+                        anim.Apply(dat.bones);
+                        AnimTrack t = new AnimTrack(anim);
+                        t.Show();
+                        t.createANIM("C:\\Users\\ploaj_000\\Desktop\\Melee\\JiggIdle.anim", dat.bones);*/
                     }
-
-
-
+                    
                     if (ofd.FileName.EndsWith(".nut"))
                         Runtime.TextureContainers.Add(new NUT(ofd.FileName));
 
@@ -481,7 +489,7 @@ namespace Smash_Forge
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd;*.mta;*.pac|" +
+                ofd.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd;*.mta;*.pac;*.dat|" +
                              "Object Motion|*.omo|" +
                              "Maya Animation|*.anim|" +
                              "NW4R Animation|*.chr0|" +
@@ -559,8 +567,22 @@ namespace Smash_Forge
                             }
                         }
                     }
-                    //if (Runtime.TargetVBN.bones.Count > 0)
-                    //{
+
+                    if (ofd.FileName.EndsWith(".dat"))
+                    {
+                        if (!ofd.FileName.EndsWith("AJ.dat"))
+                            MessageBox.Show("Not a DAT animation");
+                        else
+                        {
+                            if (Runtime.ModelContainers[0].dat_melee == null)
+                                MessageBox.Show("Load a DAT model first");
+                            else
+                                DAT_Animation.LoadAJ(ofd.FileName, Runtime.ModelContainers[0].dat_melee.bones);
+                        }
+
+                    }
+                        //if (Runtime.TargetVBN.bones.Count > 0)
+                        //{
                     if (ofd.FileName.EndsWith(".omo"))
                     {
                         Runtime.Animations.Add(ofd.FileName, OMO.read(new FileData(ofd.FileName)));

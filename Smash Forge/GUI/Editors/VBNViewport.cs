@@ -109,7 +109,7 @@ namespace Smash_Forge
                 Runtime.killWorkspace = false;
                 Runtime.Animations = new Dictionary<string, SkelAnimation>();
                 MainForm.Instance.lvdList.fillList();
-                MainForm.Instance.animNode.Nodes.Clear();
+                MainForm.animNode.Nodes.Clear();
                 MainForm.Instance.mtaNode.Nodes.Clear();
                 MainForm.Instance.meshList.refresh();
                 MainForm.Instance.paramEditors = new List<PARAMEditor>();
@@ -378,10 +378,10 @@ main()
                 shader = new Shader();
 
                 {
-                    if (GL.GetInteger(GetPName.MajorVersion) < 3)
+                    if (GL.GetInteger(GetPName.MajorVersion) < 3 || (GL.GetInteger(GetPName.MajorVersion) == 3 && GL.GetInteger(GetPName.MinorVersion) < 3))
                     {
-                        shader.vertexShader(vs.Replace("#version 330", "#version 120"));
-                        shader.fragmentShader(fs.Replace("#version 330", "#version 120"));
+                        shader.vertexShader(vs.Replace("#version 330", "#version 130"));
+                        shader.fragmentShader(fs.Replace("#version 330", "#version 130"));
                     }
                     else
                     {

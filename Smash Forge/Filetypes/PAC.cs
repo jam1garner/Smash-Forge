@@ -86,16 +86,18 @@ namespace Smash_Forge
                         strOffs.Add((int)writer.BaseStream.Position);
                         writer.WriteStringNT(pair.Key);
                     }
-
-                    // Align to 0x10
-                    while (writer.BaseStream.Position % 0x10 > 0)
-                        writer.Write((byte)0);
+                    
 
                     // OMO
                     foreach (var pair in Files)
                     {
+                        // Align to 0x10
+                        while (writer.BaseStream.Position % 0x10 > 0)
+                            writer.Write((byte)0);
+
                         dataOffs.Add((int)writer.BaseStream.Position);
                         writer.Write(pair.Value);
+
                     }
 
                     // Seek back and fill in offset + size data
@@ -111,6 +113,7 @@ namespace Smash_Forge
                         // sizes
                         writer.BaseStream.Seek(0x10 + (strOffs.Count * 8) + (i * 4), SeekOrigin.Begin);
                         writer.Write(pair.Value.Length, Endian);
+
                     }
                 }
                 return stream.ToArray();
