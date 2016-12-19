@@ -51,7 +51,9 @@ namespace Smash_Forge
 		}
 
 		public void vertexShader(string filename){
-			loadShader(filename, ShaderType.VertexShader, programID, out vsID);
+            //MessageBox.Show("GL major: " + GL.GetInteger(GetPName.MajorVersion) );
+            //MessageBox.Show("GL minor: " + GL.GetInteger(GetPName.MinorVersion));
+            loadShader(filename, ShaderType.VertexShader, programID, out vsID);
 			GL.LinkProgram (programID);
 		}
 

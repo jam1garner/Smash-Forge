@@ -126,6 +126,8 @@ namespace Smash_Forge
                             {
                                 case SemanticType.JOINT:
                                     string bname = sources[input.source].data[skin.weights.v[v]];
+                                    if (bname.StartsWith("_"))
+                                        bname = bname.Substring(6, bname.Length - 6);
                                     int index = con.vbn.boneIndex(bname);
                                     vert.node.Add(index);
                                     break;
@@ -172,8 +174,11 @@ namespace Smash_Forge
                         if(input.semantic == SemanticType.VERTEX)
                         {
                             v = new NUD.Vertex();
-                            v.node.AddRange(vertices["#" + geom.id][p.p[i]].node);
-                            v.weight.AddRange(vertices["#" + geom.id][p.p[i]].weight);
+                            if(dae.library_controllers.Count > 0)
+                            {
+                                v.node.AddRange(vertices["#" + geom.id][p.p[i]].node);
+                                v.weight.AddRange(vertices["#" + geom.id][p.p[i]].weight);
+                            }
                             npoly.vertices.Add(v);
                             npoly.faces.Add(npoly.vertices.IndexOf(v));
                             foreach (ColladaInput vinput in mesh.vertices.inputs)
@@ -185,8 +190,11 @@ namespace Smash_Forge
                         i++;
                     }
 
-                    v.pos = Vector3.Transform(v.pos, bindMatrix["#" + geom.id]);
-                    v.nrm = Vector3.Transform(v.nrm, bindMatrix["#" + geom.id]);
+                    if (dae.library_controllers.Count > 0)
+                    {
+                        v.pos = Vector3.Transform(v.pos, bindMatrix["#" + geom.id]);
+                        v.nrm = Vector3.Transform(v.nrm, bindMatrix["#" + geom.id]);
+                    }
                 }
 
                 while(npoly.materials.Count < npoly.vertices[0].tx.Count)
