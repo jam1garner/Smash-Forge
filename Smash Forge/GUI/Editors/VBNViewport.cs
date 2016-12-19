@@ -878,17 +878,19 @@ main()
                                     GL.Begin(PrimitiveType.Quads);
                                 }
                                 
+				if(c.flag4)
+				    color = Color.FromArgb(128, Color.Yellow);
                                 if (Math.Abs(c.normals[i].x) > Math.Abs(c.normals[i].y))
                                     color = Color.FromArgb(128, Color.Lime);
                                 else if(c.normals[i].y < 0)
                                     color = Color.FromArgb(128, Color.Red);
                                 else
-                                    color = Color.FromArgb(128, Color.Yellow);
+				    color = Color.FromArgb(128, Color.Cyan);
 
                                 if (Runtime.CurrentLVDLine == c.normals[i] && (DateTime.Now.Second % 2 == 0))
                                 {
                                     color = Color.FromArgb(255, 255 - color.R, 255 - color.G, 255 - color.B);
-                                }
+                                } 
 
                                 GL.Color4(color);
                             }
