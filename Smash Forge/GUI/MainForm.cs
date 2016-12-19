@@ -45,6 +45,7 @@ namespace Smash_Forge
             Runtime.renderModel = true;
             Runtime.renderPath = true;
             Runtime.renderCollisions = true;
+            Runtime.renderCollisionNormals = false;
             Runtime.renderGeneralPoints = true;
             Runtime.renderItemSpawners = true;
             Runtime.renderSpawns = true;
