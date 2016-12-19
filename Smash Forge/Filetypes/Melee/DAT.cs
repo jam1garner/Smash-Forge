@@ -15,6 +15,7 @@ namespace Smash_Forge
 {
     public class DAT
     {
+
         public static int headerSize = 0x20;
         Header header = new Header();
 
@@ -72,7 +73,7 @@ main()
 
     f_texcoord = vUV;
     color = vColor;
-    normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
+    normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.3,0.3,0.3,1.0)) ;
 }";
 
         static string fs = @"#version 330
@@ -141,10 +142,11 @@ main()
             header.Read(d);
             d.skip(header.dataBlockSize); // skip to relocation table
             d.skip(header.relocationTableCount * 4); // skip relocation table
-
-            int strOffset = d.pos() + header.rootCount * 8;
+            
+            int strOffset = d.pos() + header.rootCount * 8 + header.referenceNodeCount * 8;
             int[] sectionOffset = new int[header.rootCount];
             string[] sectionNames = new string[header.rootCount];
+            Console.WriteLine(d.pos().ToString("x") + " " + strOffset.ToString("x"));
             for (int i = 0; i < header.rootCount; i++)
             {
                 // data then string
@@ -159,6 +161,7 @@ main()
                 node.Tag = data;
                 tree.Add(node);
             }
+            Console.WriteLine(d.pos().ToString("x") + " " + strOffset.ToString("x"));
 
             foreach (TreeNode node in tree)
             {
@@ -166,7 +169,7 @@ main()
                 d.seek((int)node.Tag);
                 // now, the name determines what happens here
                 // for now, it just assumes the _joint
-                if (node.Text.EndsWith("_joint") && !node.Text.Contains("matanim"))
+                if (node.Text.EndsWith("_joint") && !node.Text.Contains("matanim") && !node.Text.Contains("anim_joint"))
                 {
                     JOBJ j = new JOBJ();
                     j.Read(d, this, node);
@@ -181,6 +184,7 @@ main()
             }
 
             Console.WriteLine("Done");
+            //ExportTextures("",0);
 
             // now to fix single binds
             List<JOBJ> boneTrack = GetBoneOrder();
@@ -426,6 +430,8 @@ main()
                 GL.BindTexture(TextureTarget.Texture2D, data.material.texture.texid);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)GX_TEXTUREWRAP[data.material.texture.wrap_s]);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)GX_TEXTUREWRAP[data.material.texture.wrap_t]);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
                 GL.Uniform1(shader.getAttribute("tex"), 0);
 
                 GL.Uniform2(shader.getAttribute("uvscale"), new Vector2(data.material.texture.scale_w, data.material.texture.scale_h));
@@ -745,7 +751,7 @@ main()
                         node.Tag = this;
                         node.Text = "NodeObject";
 
-                        Console.WriteLine(d.pos().ToString("x"));
+                        //Console.WriteLine(d.pos().ToString("x"));
                         int jPointer = d.readInt() + headerSize;
                         Console.WriteLine((d.readInt() + headerSize).ToString("x") + " " + 
                             (d.readInt() + headerSize).ToString("x") + " " +
@@ -763,7 +769,11 @@ main()
                         //d.skip(7 * 4); // unkown pointers
                         //d.skip(5 * 4); // extra unknown (looks like more pointers, usually 0)
 
+                        if (jPointer == headerSize)
+                            return;
+
                         int temp = d.pos();
+                        //Console.WriteLine(jPointer.ToString("x"));
                         d.seek(jPointer);
                         if (!dat.jobjOffsetLinker.ContainsKey(jPointer))
                         {
@@ -778,11 +788,13 @@ main()
 
             public void Read(FileData d, DAT dat, TreeNode parentNode)
             {
-                Console.WriteLine(d.pos());
+                Console.WriteLine("Start " + d.pos());
                 int off = d.readInt() + headerSize;
                 int id = d.readInt();
+                off = d.readInt() + headerSize;
+                id = d.readInt();
 
-                for (int i = 0; i < 2; i++)
+                for (int i = 0; i < 1; i++)
                 {
                     if (off != headerSize && id != 0)
                     {

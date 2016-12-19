@@ -13,7 +13,6 @@ namespace Smash_Forge
     public partial class MainForm : Form
     {
 
-
         public static MainForm Instance;
 
         public MainForm()

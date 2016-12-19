@@ -308,14 +308,15 @@ namespace Smash_Forge
                                 {
                                     cvalue = node.value;
                                     //value = Interpolate(f - currentFrame, nextFrame - currentFrame, cvalue, nvalue, ctan, ntan);
-                                    value = CHR0.interHermite(f, currentFrame, nextFrame + 1, ctan, ntan, cvalue, nvalue);
+                                    value = CHR0.interHermite(f, currentFrame, nextFrame+1, ctan, ntan, cvalue, nvalue);
                                 }
                                 break;
                             case DAT_Animation.InterpolationType.HermiteValue:
                                 {
                                     cvalue = node.value;
+                                    ctan = 0;
                                     //value = Interpolate(f - currentFrame, nextFrame - currentFrame, cvalue, nvalue, ctan, ntan);
-                                    value = CHR0.interHermite(f, currentFrame, nextFrame + 1, ctan, ntan, cvalue, nvalue);
+                                    value = CHR0.interHermite(f, currentFrame, nextFrame+1, 0, 0, cvalue, nvalue);
                                 }
                                 break;
                            case DAT_Animation.InterpolationType.Step:

@@ -190,11 +190,6 @@ namespace Smash_Forge
             int temp = d.pos();
             d.seek(dataoff);
 
-            List<int> types = new List<int>();
-            List<float> values = new List<float>();
-            List<float> tans = new List<float>();
-            List<int> frames = new List<int>();
-
             if (Debug)
                 Console.WriteLine("Start 0x" + d.pos() + " " + keyframeCount);
 
@@ -214,7 +209,7 @@ namespace Smash_Forge
                 
                 for (int i = 0; i < numOfKey; i++)
                 {
-                    float value = -99, tan = -99;
+                    double value = -99, tan = -99;
                     int time = 0;
                     if (interpolation == 1)
                     { // step
@@ -232,6 +227,7 @@ namespace Smash_Forge
                     if (interpolation == 3)
                     { // hermite
                         value = readVal(d, valueFormat);
+                        tan = 0;
                         time = readExtendedByte(d);
                         if (Debug)
                             Console.WriteLine("\t" + value + "\t" + time);
@@ -257,15 +253,10 @@ namespace Smash_Forge
                         //Console.WriteLine("\t" + value + "\t" + time);
                     }
 
-                    types.Add(interpolation);
-                    frames.Add(time);
-                    tans.Add(tan);
-                    values.Add(value);
-
                     KeyNode node = new KeyNode();
-                    node.value = value;
+                    node.value = (float)value;
                     node.frame = time;
-                    node.tan = tan;
+                    node.tan = (float)tan;
                     node.interpolationType = (InterpolationType)interpolation;
                     track.keys.Add(node);
                     //node.boneID = boneId;
@@ -291,7 +282,7 @@ namespace Smash_Forge
         }
 
 
-        public static float readVal(FileData d, int valueFormat)
+        public static double readVal(FileData d, int valueFormat)
         {
             int scale = (int)Math.Pow(2, valueFormat & 0x1F);
 
@@ -302,13 +293,13 @@ namespace Smash_Forge
                 case 0x00:
                     return d.readFloat();
                 case 0x20:
-                    return unchecked((short)d.readShort()) / (float)scale;
+                    return unchecked((short)d.readShort()) / (double)scale;
                 case 0x40:
-                    return d.readShort() / (float)scale;
+                    return d.readShort() / (double)scale;
                 case 0x60:
-                    return unchecked((sbyte)d.readByte()) / (float)scale;
+                    return unchecked((sbyte)d.readByte()) / (double)scale;
                 case 0x80:
-                    return d.readByte() / (float)scale;
+                    return d.readByte() / (double)scale;
                 default:
                     return 0;
             }
@@ -329,6 +320,7 @@ namespace Smash_Forge
 
             while(pos < f.size())
             {
+                Console.WriteLine(pos.ToString("x"));
                 int len = f.readInt();
                 DAT_Animation anim = new DAT_Animation();
                 anim.Read(new FileData(f.getSection(pos, len)));

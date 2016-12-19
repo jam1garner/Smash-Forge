@@ -74,9 +74,12 @@ namespace Smash_Forge
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            Runtime.TargetVBN.bones[Runtime.TargetVBN.boneIndex(currentNode)].boneName = textBox1.Text.ToCharArray();
-            currentNode = textBox1.Text;
-            treeView1.SelectedNode.Text = textBox1.Text;
+            if(Runtime.TargetVBN != null)
+            {
+                Runtime.TargetVBN.bones[Runtime.TargetVBN.boneIndex(currentNode)].boneName = textBox1.Text.ToCharArray();
+                currentNode = textBox1.Text;
+                treeView1.SelectedNode.Text = textBox1.Text;
+            }
         }
 
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)

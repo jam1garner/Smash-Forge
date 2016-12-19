@@ -474,7 +474,7 @@ main()
 
             //RenderTools.drawSphere(new Vector3(2,2,2), 3, 5);
 
-            GL.Enable(EnableCap.LineSmooth); // This is Optional 
+            //GL.Enable(EnableCap.LineSmooth); // This is Optional 
             GL.Enable(EnableCap.Normalize);  // These is critical to have
             GL.Enable(EnableCap.RescaleNormal);
 
@@ -533,7 +533,7 @@ main()
             }
 
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft))
-                zoomscale = 3;
+                zoomscale = 6;
 
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Down))
                 zoom -= 1 * zoomscale;
