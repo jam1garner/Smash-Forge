@@ -112,10 +112,11 @@ namespace Smash_Forge
         private void lines_AfterSelect(object sender, TreeViewEventArgs e)
         {
             currentNormal = (Vector2D)((object[])e.Node.Tag)[0];
+            Runtime.CurrentLVDLine = currentNormal;
             currentMat = (CollisionMat)((object[])e.Node.Tag)[1];
-            leftLedge.Checked = currentMat.getFlag(2);
-            rightLedge.Checked = currentMat.getFlag(3);
-            noWallJump.Checked = currentMat.getFlag(1);
+            leftLedge.Checked = currentMat.getFlag(6);
+            rightLedge.Checked = currentMat.getFlag(7);
+            noWallJump.Checked = currentMat.getFlag(5);
             comboBox1.Text = Enum.GetName(typeof(materialTypes), currentMat.getPhysics());
             passthroughAngle.Value = (decimal)(Math.Atan2(currentNormal.y, currentNormal.x) * 180.0 / Math.PI);
         }
@@ -177,11 +178,11 @@ namespace Smash_Forge
         private void lineFlagChange(object sender, EventArgs e)
         {
             if (sender == rightLedge)
-                currentMat.setFlag(3, ((CheckBox)sender).Checked);
+                currentMat.setFlag(7, ((CheckBox)sender).Checked);
             if (sender == leftLedge)
-                currentMat.setFlag(2, ((CheckBox)sender).Checked);
+                currentMat.setFlag(6, ((CheckBox)sender).Checked);
             if (sender == noWallJump)
-                currentMat.setFlag(1, ((CheckBox)sender).Checked);
+                currentMat.setFlag(5, ((CheckBox)sender).Checked);
         }
 
         private void LVDEditor_Load(object sender, EventArgs e)

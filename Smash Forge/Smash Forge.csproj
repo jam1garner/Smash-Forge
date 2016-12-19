@@ -198,10 +198,10 @@
       <DependentUpon>DAEImportSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\ModelContainer.cs" />
-    <Compile Include="GUI\RenderSettings.cs">
+    <Compile Include="GUI\Menus\RenderSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\RenderSettings.Designer.cs">
+    <Compile Include="GUI\Menus\RenderSettings.Designer.cs">
       <DependentUpon>RenderSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="IO\FileBase.cs" />
@@ -275,7 +275,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="GUI\RenderSettings.resx">
+    <None Include="GUI\Menus\RenderSettings.resx">
       <DependentUpon>RenderSettings.cs</DependentUpon>
     </None>
     <None Include="hashTable.csv">

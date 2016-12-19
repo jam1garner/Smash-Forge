@@ -43,12 +43,12 @@ namespace Smash_Forge
             Runtime.renderModel = true;
             Runtime.renderPath = true;
             Runtime.renderCollisions = true;
+            Runtime.renderCollisionNormals = false;
             Runtime.renderGeneralPoints = true;
             Runtime.renderItemSpawners = true;
             Runtime.renderSpawns = true;
             Runtime.renderRespawns = true;
             Runtime.renderOtherLVDEntries = true;
-            
         }
 
         private void MainForm_Close(object sender, EventArgs e)

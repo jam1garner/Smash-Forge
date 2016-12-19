@@ -26,6 +26,7 @@ namespace Smash_Forge.GUI
             checkBox9.Enabled = checkBox6.Checked;
             checkBox10.Enabled = checkBox6.Checked;
             checkBox11.Enabled = checkBox6.Checked;
+            checkBox12.Enabled = checkBox6.Checked && checkBox7.Checked;
         }
 
         private void checkChanged()
@@ -41,6 +42,8 @@ namespace Smash_Forge.GUI
             Runtime.renderRespawns = checkBox9.Checked;
             Runtime.renderItemSpawners = checkBox10.Checked;
             Runtime.renderGeneralPoints = checkBox11.Checked;
+            Runtime.renderCollisionNormals = checkBox12.Checked;
+            checkBox12.Enabled = checkBox6.Checked && checkBox7.Checked;
         }
 
         private void checkChanged(object sender, EventArgs e)
