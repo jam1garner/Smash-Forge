@@ -23,6 +23,7 @@ namespace Smash_Forge
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            Runtime.renderDepth = 2500f;
             foreach (var vp in viewports)
                 AddDockedControl(vp);
 
@@ -50,6 +51,9 @@ namespace Smash_Forge
             Runtime.renderSpawns = true;
             Runtime.renderRespawns = true;
             Runtime.renderOtherLVDEntries = true;
+            Runtime.renderNormals = true;
+            Runtime.renderVertColor = true;
+            Runtime.renderType = Runtime.RenderTypes.Texture;
             //Pichu.MakePichu();
             //meshList.refresh();
             //ReadChimeraLucas();

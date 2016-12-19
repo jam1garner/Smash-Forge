@@ -298,6 +298,8 @@ out float fresNelR;
 
 uniform mat4 modelview;
 uniform mat4 bones[200];
+
+uniform int renderType;
  
 void
 main()
@@ -315,15 +317,24 @@ main()
 
     gl_Position = modelview * vec4(objPos.xyz, 1.0);
 
-    vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;
+    if(renderType == 1){
+        f_texcoord = vUV;
+        normal = 0;
+        color = vec4(vNormal, 1);
+    }else{
+        vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;
 
-    f_texcoord = vUV;
-    normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;// vec4(distance, 1.0)
-    color = vColor;
+        f_texcoord = vUV;
+        normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;// vec4(distance, 1.0)
+        if(renderType == 2)
+            color = vec4(normal, normal, normal, 1);
+        else
+            color = vColor;
 
-    vec4 normWorld = normalize(vec4(vNormal, 1.0));
-	vec4 I = normalize(vec4(vPosition, 1.0));
-    fresNelR = 0.2 + 0.2 * pow(1.0 + dot(I, normWorld), 1);
+        vec4 normWorld = normalize(vec4(vNormal, 1.0));
+	    vec4 I = normalize(vec4(vPosition, 1.0));
+        fresNelR = 0.2 + 0.2 * pow(1.0 + dot(I, normWorld), 1);
+    }
 }";
 
         string fs = @"#version 330
@@ -340,6 +351,8 @@ uniform vec4 colorOffset;
 uniform vec4 colorGain;
 uniform vec4 minGain;
 
+uniform int renderType;
+
 vec4 lerp(float v, vec4 from, vec4 to)
 {
     return from + (to - from) * v;
@@ -348,22 +361,32 @@ vec4 lerp(float v, vec4 from, vec4 to)
 void
 main()
 {
-    vec2 texcoord = vec2((f_texcoord * colorSamplerUV.xy) + colorSamplerUV.zw) ;
+    if(renderType == 1 || renderType == 2 || renderType == 3){
+        gl_FragColor = color;
+    } else {
+        vec2 texcoord = vec2((f_texcoord * colorSamplerUV.xy) + colorSamplerUV.zw) ;
 
-    vec3 norm = 2.0 * texture2D (nrm, texcoord).rgb - 1.0;
-    norm = normalize (norm);
-    float lamberFactor= max (dot (vec3(0.85, 0.85, 0.85), norm), 0.75) * 1.5;
+        vec3 norm = 2.0 * texture2D (nrm, texcoord).rgb - 1.0;
+        norm = normalize (norm);
+        float lamberFactor= max (dot (vec3(0.85, 0.85, 0.85), norm), 0.75) * 1.5;
 
-    //vec4 ambiant = vec4(0.1,0.1,0.1,1.0) * texture(tex, texcoord).rgba;
+        //vec4 ambiant = vec4(0.1,0.1,0.1,1.0) * texture(tex, texcoord).rgba;
 
-    vec4 alpha = (1-minGain) + texture2D(nrm, texcoord).aaaa;
-    //if(alpha.a < 0.5) discard;
+        vec4 alpha = (1-minGain) + texture2D(nrm, texcoord).aaaa;
+        //if(alpha.a < 0.5) discard;
 
-	vec4 outputColor = colorOffset + (vec4(texture(tex, texcoord).rgba) * normal) * colorGain;
-    outputColor = outputColor;
+        vec4 fcolor = color;
+        float fnormal = normal;
 
-    vec4 fincol = vec4(((color * alpha * outputColor)).xyz, texture2D(tex, texcoord).a * color.w);
-    gl_FragColor = fincol;//vec4(lerp(fresNelR, fincol, vec4(1.75,1.75,1.75,1)).xyz, fincol.w);
+        if(renderType == 0x20 || renderType == 0x60)
+            fnormal = 1;
+        if(renderType == 0x40 || renderType == 0x60)
+            fcolor = vec4(1,1,1,1);
+
+	    vec4 outputColor = colorOffset + (vec4(texture(tex, texcoord).rgba) * fnormal) * colorGain;
+        vec4 fincol = vec4(((fcolor * alpha * outputColor)).xyz, texture2D(tex, texcoord).a * fcolor.w);
+        gl_FragColor = fincol;//vec4(lerp(fresNelR, fincol, vec4(1.75,1.75,1.75,1)).xyz, fincol.w);
+    }
 }
 ";
 
@@ -404,6 +427,8 @@ main()
                     shader.addAttribute("colorOffset", true);
                     shader.addAttribute("colorGain", true);
                     shader.addAttribute("minGain", true);
+
+                    shader.addAttribute("renderType", true);
                 }
             }
 
@@ -411,7 +436,8 @@ main()
             int w = Width;
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
-            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 2500.0f);
+            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
+                * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, Runtime.renderDepth);
 
         }
 
@@ -545,7 +571,8 @@ main()
 
             zoom += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale;
 
-            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 2500.0f);
+            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
+                * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, Runtime.renderDepth);
         }
         public bool IsMouseOverViewport()
         {
@@ -562,7 +589,8 @@ main()
                 if (cf >= Runtime.TargetPath.Frames.Count)
                     cf = 0;
                 pathFrame f = Runtime.TargetPath.Frames[cf];
-                v = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
+                v = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() 
+                    * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
                 cf++;
             }
             else if (Runtime.TargetCMR0 != null && checkBox1.Checked)
@@ -570,7 +598,8 @@ main()
                 if (cf >= Runtime.TargetCMR0.frames.Count)
                     cf = 0;
                 Matrix4 m = Runtime.TargetCMR0.frames[cf].Inverted();
-                v = Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
+                v = Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) 
+                    * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
                 cf++;
             }
         }
@@ -591,6 +620,15 @@ main()
             }*/
 
             GL.UseProgram(shader.programID);
+            int rt = (int)Runtime.renderType;
+            if(rt == 0)
+            {
+                if (Runtime.renderNormals)
+                    rt = rt | (0x10);
+                if (Runtime.renderVertColor)
+                    rt = rt | (0x20);
+            }
+            GL.Uniform1(shader.getAttribute("renderType"), rt);
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
                 if (m.bch != null)
@@ -1591,7 +1629,8 @@ main()
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
-            v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 2500.0f);
+            v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) 
+                * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, Runtime.renderDepth);
         }
     }
 }

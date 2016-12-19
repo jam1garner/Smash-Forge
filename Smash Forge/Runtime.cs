@@ -45,6 +45,19 @@ namespace Smash_Forge
         public static bool renderGeneralPoints { get; set; }
         public static bool renderOtherLVDEntries { get; set; }
 
+        public static float renderDepth { get; set; }
+        public static bool renderNormals { get; set; }
+        public static bool renderVertColor { get; set; }
+        public static RenderTypes renderType { get; set; }
+
+        public enum RenderTypes
+        {
+            Texture = 0,
+            Normals = 1,
+            NormalsBnW = 2,
+            VertColor = 3
+        }
+
         public static string TargetAnimString { get; set; }
         public static string TargetMTAString { get; set; }
 
