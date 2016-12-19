@@ -853,114 +853,94 @@ main()
             {
                 if (Runtime.renderCollisions)
                 {
+                    Vector2D vi;
+                    Color color;
+                    GL.LineWidth(4);
                     foreach (Collision c in Runtime.TargetLVD.collisions)
                     {
-                        // draw the ground quads
-                        int dir = 1;
-                        int cg = 0;
-                        GL.LineWidth(3);
-
-                        GL.Begin(PrimitiveType.Quads);
-                        foreach (Vector2D vi in c.verts)
+                        for(int i = 0; i < c.verts.Count - 1; i++)
                         {
-                            if (cg < c.materials.Count)
+                            GL.Begin(PrimitiveType.Quads);
+                            if(c.normals.Count > i)
                             {
-                                //Console.Write(" " + c.materials[cg].getPhysics());
-                                switch (c.materials[cg].getPhysics())
+                                if (Runtime.renderCollisionNormals)
                                 {
-                                    case 0x0d:
-                                    case 0x0e:
-                                    case 0x10:
-                                    case 0x0c:
-                                        GL.Color4(Color.FromArgb(100, 0xa0, 0xff, 0xfd));//Snow, Ice, Ice2, SnowIce
-                                        break;
-                                    case 0x04:
-                                        GL.Color4(Color.FromArgb(100, 0x94, 0x47, 0x0c));//wood
-                                        break;
-                                    case 0x0b:
-                                    case 0x15:
-                                        GL.Color4(Color.FromArgb(100, 0xd4, 0xfb, 0xfa));//bubbles
-                                        break;
-                                    case 0x0a:
-                                        GL.Color4(Color.FromArgb(100, 0x32, 0x8a, 0xe5));//water
-                                        break;
-                                    case 0x16:
-                                        GL.Color4(Color.FromArgb(100, 0xfd, 0xf9, 0xfb));//water
-                                        break;
-                                    case 0x03:
-                                        GL.Color4(Color.FromArgb(100, 0x33, 0x18, 0x03)); //soil
-                                        break;
-                                    case 0x02:
-                                        GL.Color4(Color.FromArgb(100, 0x18, 0x96, 0x4f)); //grass
-                                        break;
-                                    case 0x1C:
-                                        GL.Color4(Color.FromArgb(100, 0xcd, 0xbe, 0x7e)); //sand
-                                        break;
-                                    case 0x06:
-                                        GL.Color4(Color.FromArgb(100, 0xb3, 0xb3, 0xb3));//Iron
-                                        break;
-                                    case 0x0f:
-                                    case 0x09:
-                                    case 0x05:
-                                    case 0x11:
-                                        GL.Color4(Color.FromArgb(100, 0, 0, 0));//Weird types
-                                        break;
-                                    case 0x08:
-                                        GL.Color4(Color.FromArgb(100, 0xd8, 0x97, 0x58));//Fence
-                                        break;
-                                    case 0x01:
-                                        GL.Color4(Color.FromArgb(100, 0x46, 0x46, 0x46));//Rock
-                                        break;
-                                    case 0x07:
-                                        GL.Color4(Color.FromArgb(100, 0xd7, 0xd0, 0x2d));//Carpet
-                                        break;
-                                    case 0x1f:
-                                        GL.Color4(Color.FromArgb(100, Color.Red));//Hurt
-                                        break;
-                                    default:
-                                        GL.Color4(Color.FromArgb(100, 0x65, 0x1e, 0x03));//brick
-                                        break;
+                                    Vector2D v1 = c.verts[i];
+                                    Vector2D v2 = c.verts[i + 1];
+                                    float x = ((v1.x - v2.x) / 2f) + v2.x;
+                                    float y = ((v1.y - v2.y) / 2f) + v2.y;
+                                    GL.End();
+                                    GL.Begin(PrimitiveType.Lines);
+                                    GL.Color3(Color.Blue);
+                                    GL.Vertex3(x, y, 0);
+                                    GL.Vertex3(x + (c.normals[i].x * 5), y + (c.normals[i].y * 5), 0);
+                                    GL.End();
+                                    GL.Begin(PrimitiveType.Quads);
                                 }
-                            }
+                                
+				if(c.flag4)
+				    color = Color.FromArgb(128, Color.Yellow);
+                                if (Math.Abs(c.normals[i].x) > Math.Abs(c.normals[i].y))
+                                    color = Color.FromArgb(128, Color.Lime);
+                                else if(c.normals[i].y < 0)
+                                    color = Color.FromArgb(128, Color.Red);
+                                else
+				    color = Color.FromArgb(128, Color.Cyan);
 
-                            GL.Vertex3(vi.x, vi.y, 5 * dir);
-                            GL.Vertex3(vi.x, vi.y, -5 * dir);
-                            if (cg > 0)
+                                if (Runtime.CurrentLVDLine == c.normals[i] && (DateTime.Now.Second % 2 == 0))
+                                {
+                                    color = Color.FromArgb(255, 255 - color.R, 255 - color.G, 255 - color.B);
+                                } 
+
+                                GL.Color4(color);
+                            }
+                            else
                             {
-                                GL.Vertex3(vi.x, vi.y, 5 * dir);
-                                GL.Vertex3(vi.x, vi.y, -5 * dir);
+                                GL.Color4(Color.FromArgb(128, Color.Gray));
                             }
-                            cg++;
-                            dir *= -1;
-                        }
-                        GL.End();
-
-
-                        // draw outside borders
-                        GL.Color3(Color.DarkRed);
-                        GL.Begin(PrimitiveType.LineStrip);
-                        foreach (Vector2D vi in c.verts)
-                        {
-                            GL.Vertex3(vi.x, vi.y, 5);
-                        }
-                        GL.End();
-                        GL.Begin(PrimitiveType.LineStrip);
-                        foreach (Vector2D vi in c.verts)
-                        {
-                            GL.Vertex3(vi.x, vi.y, -5);
-                        }
-                        GL.End();
-
-
-                        // draw vertices
-                        GL.Color3(Color.White);
-                        GL.Begin(PrimitiveType.Lines);
-                        foreach (Vector2D vi in c.verts)
-                        {
+                            vi = c.verts[i];
                             GL.Vertex3(vi.x, vi.y, 5);
                             GL.Vertex3(vi.x, vi.y, -5);
+                            vi = c.verts[i+1];
+                            GL.Vertex3(vi.x, vi.y, -5);
+                            GL.Vertex3(vi.x, vi.y, 5);
+                            GL.End();
+
+                            GL.Begin(PrimitiveType.Lines);
+                            if (c.materials.Count > i)
+                            {
+                                if (c.materials[i].getFlag(6))
+                                    GL.Color4(Color.FromArgb(128, Color.Purple));
+                                else
+                                    GL.Color4(Color.FromArgb(128, Color.Orange));
+                            }
+                            else
+                            {
+                                GL.Color4(Color.FromArgb(128, Color.Gray));
+                            }
+                            vi = c.verts[i];
+                            GL.Vertex3(vi.x, vi.y, 5);
+                            GL.Vertex3(vi.x, vi.y, -5);
+
+                            if (i == c.verts.Count - 2)
+                            {
+                                if (c.materials.Count > i)
+                                {
+                                    if (c.materials[i].getFlag(7))
+                                        GL.Color4(Color.FromArgb(128, Color.Purple));
+                                    else
+                                        GL.Color4(Color.FromArgb(128, Color.Orange));
+                                }
+                                else
+                                {
+                                    GL.Color4(Color.FromArgb(128, Color.Gray));
+                                }
+                                vi = c.verts[i + 1];
+                                GL.Vertex3(vi.x, vi.y, 5);
+                                GL.Vertex3(vi.x, vi.y, -5);
+                            }
+                            GL.End();
                         }
-                        GL.End();
                     }
                 }
 
