@@ -66,6 +66,7 @@ namespace Smash_Forge
 
         private void BoneRiggingSelector_Load(object sender, EventArgs e)
         {
+            treeView1.Nodes.Clear();
             foreach(ModelContainer model in Runtime.ModelContainers)
             {
                 foreach(Bone b in model.vbn.bones)
