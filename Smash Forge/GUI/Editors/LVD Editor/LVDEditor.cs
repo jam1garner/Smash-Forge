@@ -30,6 +30,9 @@ namespace Smash_Forge
         private TreeNode currentTreeNode;
         private Point currentPoint;
         private Bounds currentBounds;
+        private ItemSpawner currentItemSpawner;
+        private Section currentItemSection;
+        private Vector2D currentItemPoint;
 
         enum materialTypes : byte
         {
@@ -66,6 +69,7 @@ namespace Smash_Forge
             collisionGroup.Visible = false;
             pointGroup.Visible = false;
             boundGroup.Visible = false;
+            itemSpawnerGroup.Visible = false;
             name.Text = currentEntry.name;
             subname.Text = currentEntry.subname;
             if (entry is Collision)
@@ -111,6 +115,11 @@ namespace Smash_Forge
                 rightVal.Value = (decimal)currentBounds.right;
                 leftVal.Value = (decimal)currentBounds.left;
                 bottomVal.Value = (decimal)currentBounds.bottom;
+            }
+            else if(entry is ItemSpawner)
+            {
+                itemSpawnerGroup.Visible = true;
+
             }
         }
 
@@ -313,6 +322,48 @@ namespace Smash_Forge
             if (boneNameRigging.Length == 0)
                 boneNameRigging = "None";
             button3.Text = boneNameRigging;
+        }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            //selecting something in the sections tab of the item spawner editor
+
+        }
+
+        private void treeView2_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            //selecting something in the vertices tab of the item spawner editor
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            //Add section
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            //remove section
+
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            //Add item spawner vertex
+
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            //Delete item spawner vertex
+
+        }
+
+        private void changeItemVertPosition(object sender, EventArgs e)
+        {
+            //changed either X or Y pos of item spawner vertex
+
         }
     }
 }

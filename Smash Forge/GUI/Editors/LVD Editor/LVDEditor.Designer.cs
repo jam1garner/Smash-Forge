@@ -76,6 +76,19 @@
             this.rightVal = new System.Windows.Forms.NumericUpDown();
             this.label17 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
+            this.itemSpawnerGroup = new System.Windows.Forms.GroupBox();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
+            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
+            this.label20 = new System.Windows.Forms.Label();
+            this.treeView2 = new System.Windows.Forms.TreeView();
+            this.label21 = new System.Windows.Forms.Label();
+            this.button6 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
             this.flowLayoutPanel1.SuspendLayout();
             this.collisionGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zStart)).BeginInit();
@@ -92,6 +105,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.leftVal)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.topVal)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rightVal)).BeginInit();
+            this.itemSpawnerGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.SuspendLayout();
             // 
             // flowLayoutPanel1
@@ -101,11 +117,12 @@
             this.flowLayoutPanel1.Controls.Add(this.collisionGroup);
             this.flowLayoutPanel1.Controls.Add(this.pointGroup);
             this.flowLayoutPanel1.Controls.Add(this.boundGroup);
+            this.flowLayoutPanel1.Controls.Add(this.itemSpawnerGroup);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(280, 1045);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(603, 828);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // name
@@ -732,11 +749,164 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
+            // itemSpawnerGroup
+            // 
+            this.itemSpawnerGroup.Controls.Add(this.treeView2);
+            this.itemSpawnerGroup.Controls.Add(this.label21);
+            this.itemSpawnerGroup.Controls.Add(this.button6);
+            this.itemSpawnerGroup.Controls.Add(this.button7);
+            this.itemSpawnerGroup.Controls.Add(this.numericUpDown1);
+            this.itemSpawnerGroup.Controls.Add(this.treeView1);
+            this.itemSpawnerGroup.Controls.Add(this.numericUpDown2);
+            this.itemSpawnerGroup.Controls.Add(this.label20);
+            this.itemSpawnerGroup.Controls.Add(this.button5);
+            this.itemSpawnerGroup.Controls.Add(this.label18);
+            this.itemSpawnerGroup.Controls.Add(this.button4);
+            this.itemSpawnerGroup.Controls.Add(this.label19);
+            this.itemSpawnerGroup.Location = new System.Drawing.Point(286, 3);
+            this.itemSpawnerGroup.Name = "itemSpawnerGroup";
+            this.itemSpawnerGroup.Size = new System.Drawing.Size(250, 392);
+            this.itemSpawnerGroup.TabIndex = 35;
+            this.itemSpawnerGroup.TabStop = false;
+            this.itemSpawnerGroup.Text = "Item Spawner";
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.DecimalPlaces = 3;
+            this.numericUpDown1.Location = new System.Drawing.Point(122, 362);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(67, 20);
+            this.numericUpDown1.TabIndex = 41;
+            this.numericUpDown1.ValueChanged += new System.EventHandler(this.changeItemVertPosition);
+            // 
+            // numericUpDown2
+            // 
+            this.numericUpDown2.DecimalPlaces = 3;
+            this.numericUpDown2.Location = new System.Drawing.Point(29, 362);
+            this.numericUpDown2.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.numericUpDown2.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDown2.Name = "numericUpDown2";
+            this.numericUpDown2.Size = new System.Drawing.Size(67, 20);
+            this.numericUpDown2.TabIndex = 40;
+            this.numericUpDown2.ValueChanged += new System.EventHandler(this.changeItemVertPosition);
+            // 
+            // treeView1
+            // 
+            this.treeView1.HideSelection = false;
+            this.treeView1.Location = new System.Drawing.Point(6, 52);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(238, 134);
+            this.treeView1.TabIndex = 39;
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(102, 364);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(14, 13);
+            this.label18.TabIndex = 38;
+            this.label18.Text = "Y";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(9, 364);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(14, 13);
+            this.label19.TabIndex = 37;
+            this.label19.Text = "X";
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(195, 26);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(49, 23);
+            this.button4.TabIndex = 36;
+            this.button4.Text = "-";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(140, 26);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(49, 23);
+            this.button5.TabIndex = 35;
+            this.button5.Text = "+";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(89, 33);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(48, 13);
+            this.label20.TabIndex = 34;
+            this.label20.Text = "Sections";
+            // 
+            // treeView2
+            // 
+            this.treeView2.HideSelection = false;
+            this.treeView2.Location = new System.Drawing.Point(6, 220);
+            this.treeView2.Name = "treeView2";
+            this.treeView2.Size = new System.Drawing.Size(238, 134);
+            this.treeView2.TabIndex = 45;
+            this.treeView2.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView2_AfterSelect);
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(89, 201);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(45, 13);
+            this.label21.TabIndex = 42;
+            this.label21.Text = "Vertices";
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(140, 194);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(49, 23);
+            this.button6.TabIndex = 43;
+            this.button6.Text = "+";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(195, 194);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(49, 23);
+            this.button7.TabIndex = 44;
+            this.button7.Text = "-";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
             // LVDEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(280, 1045);
+            this.ClientSize = new System.Drawing.Size(603, 828);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MinimumSize = new System.Drawing.Size(296, 822);
@@ -763,6 +933,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.leftVal)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.topVal)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rightVal)).EndInit();
+            this.itemSpawnerGroup.ResumeLayout(false);
+            this.itemSpawnerGroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -817,5 +991,18 @@
         private System.Windows.Forms.NumericUpDown leftVal;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.GroupBox itemSpawnerGroup;
+        private System.Windows.Forms.TreeView treeView2;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.NumericUpDown numericUpDown2;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Label label19;
     }
 }
