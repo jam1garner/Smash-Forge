@@ -13,6 +13,11 @@ namespace Smash_Forge
 {
     public partial class LVDEditor : DockContent
     {
+        public class StringWrapper
+        {
+            public char[] data;
+        } 
+
         public LVDEditor()
         {
             InitializeComponent();
@@ -25,6 +30,9 @@ namespace Smash_Forge
         private TreeNode currentTreeNode;
         private Point currentPoint;
         private Bounds currentBounds;
+        private ItemSpawner currentItemSpawner;
+        private Section currentItemSection;
+        private Vector2D currentItemPoint;
 
         enum materialTypes : byte
         {
@@ -61,6 +69,7 @@ namespace Smash_Forge
             collisionGroup.Visible = false;
             pointGroup.Visible = false;
             boundGroup.Visible = false;
+            itemSpawnerGroup.Visible = false;
             name.Text = currentEntry.name;
             subname.Text = currentEntry.subname;
             if (entry is Collision)
@@ -75,6 +84,13 @@ namespace Smash_Forge
                 flag3.Checked = col.flag3;
                 flag4.Checked = col.flag4;
                 vertices.Nodes.Clear();
+                string boneNameRigging = "";
+                foreach (char b in col.unk4)
+                    if (b != (char)0)
+                        boneNameRigging += b;
+                if (boneNameRigging.Length == 0)
+                    boneNameRigging = "None";
+                button3.Text = boneNameRigging; 
                 for (int i = 0; i < col.verts.Count; i++)
                     vertices.Nodes.Add(new TreeNode($"Vertex {i}") { Tag = col.verts[i] });
                 lines.Nodes.Clear();
@@ -100,11 +116,17 @@ namespace Smash_Forge
                 leftVal.Value = (decimal)currentBounds.left;
                 bottomVal.Value = (decimal)currentBounds.bottom;
             }
+            else if(entry is ItemSpawner)
+            {
+                itemSpawnerGroup.Visible = true;
+
+            }
         }
 
         private void vertices_AfterSelect(object sender, TreeViewEventArgs e)
         {
             currentVert = (Vector2D)e.Node.Tag;
+            Runtime.LVDSelection = currentVert;
             xVert.Value = (decimal)currentVert.x;
             yVert.Value = (decimal)currentVert.y;
         }
@@ -112,7 +134,7 @@ namespace Smash_Forge
         private void lines_AfterSelect(object sender, TreeViewEventArgs e)
         {
             currentNormal = (Vector2D)((object[])e.Node.Tag)[0];
-            Runtime.CurrentLVDLine = currentNormal;
+            Runtime.LVDSelection = currentNormal;
             currentMat = (CollisionMat)((object[])e.Node.Tag)[1];
             leftLedge.Checked = currentMat.getFlag(6);
             rightLedge.Checked = currentMat.getFlag(7);
@@ -284,6 +306,64 @@ namespace Smash_Forge
                 vertices.Nodes[i].Text = $"Vertex {i}";
             for(int i = 0; i < lines.Nodes.Count; i++)
                 lines.Nodes[i].Text = $"Line {i}";
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            //Open bone selector for collision rigging
+            StringWrapper str = new StringWrapper() { data = ((Collision) currentEntry).unk4 };
+            BoneRiggingSelector bs = new BoneRiggingSelector(str);
+            bs.ShowDialog();
+            ((Collision)currentEntry).unk4 = str.data;
+            string boneNameRigging = "";
+            foreach (char b in ((Collision)currentEntry).unk4)
+                if (b != (char)0)
+                    boneNameRigging += b;
+            if (boneNameRigging.Length == 0)
+                boneNameRigging = "None";
+            button3.Text = boneNameRigging;
+        }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            //selecting something in the sections tab of the item spawner editor
+
+        }
+
+        private void treeView2_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            //selecting something in the vertices tab of the item spawner editor
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            //Add section
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            //remove section
+
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            //Add item spawner vertex
+
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            //Delete item spawner vertex
+
+        }
+
+        private void changeItemVertPosition(object sender, EventArgs e)
+        {
+            //changed either X or Y pos of item spawner vertex
+
         }
     }
 }

@@ -846,6 +846,11 @@ main()
             return Color.FromArgb(128, Color.DarkCyan);
         }
 
+        public static Color invertColor(Color color)
+        {
+            return Color.FromArgb(color.A, 255 - color.R, 255 - color.G, 255 - color.B);
+        }
+
         public void DrawLVD()
         {
             foreach (ModelContainer m in Runtime.ModelContainers)
@@ -916,19 +921,18 @@ main()
                                     GL.Begin(PrimitiveType.Quads);
                                 }
                                 
-				if(c.flag4)
-				    color = Color.FromArgb(128, Color.Yellow);
-                                if (Math.Abs(c.normals[i].x) > Math.Abs(c.normals[i].y))
+				                if(c.flag4)
+				                    color = Color.FromArgb(128, Color.Yellow);
+                                else if (Math.Abs(c.normals[i].x) > Math.Abs(c.normals[i].y))
                                     color = Color.FromArgb(128, Color.Lime);
                                 else if(c.normals[i].y < 0)
                                     color = Color.FromArgb(128, Color.Red);
                                 else
-				    color = Color.FromArgb(128, Color.Cyan);
+				                    color = Color.FromArgb(128, Color.Cyan);
 
-                                if (Runtime.CurrentLVDLine == c.normals[i] && (DateTime.Now.Second % 2 == 0))
-                                {
-                                    color = Color.FromArgb(255, 255 - color.R, 255 - color.G, 255 - color.B);
-                                } 
+                                if (Runtime.LVDSelection == c.normals[i] && ((int)(DateTime.Now.Millisecond / 500) == 0))
+                                    color = invertColor(color);
+                                
 
                                 GL.Color4(color);
                             }
@@ -947,14 +951,18 @@ main()
                             GL.Begin(PrimitiveType.Lines);
                             if (c.materials.Count > i)
                             {
-                                if (c.materials[i].getFlag(6))
-                                    GL.Color4(Color.FromArgb(128, Color.Purple));
+                                if (c.materials[i].getFlag(6) || (i > 0 && c.materials[i - 1].getFlag(7)))
+                                    color = Color.Purple;
                                 else
-                                    GL.Color4(Color.FromArgb(128, Color.Orange));
+                                    color = Color.Orange;
+
+                                if (Runtime.LVDSelection == c.verts[i] && ((int)(DateTime.Now.Millisecond / 500) == 0))
+                                    color = invertColor(color);
+                                GL.Color4(color);
                             }
                             else
                             {
-                                GL.Color4(Color.FromArgb(128, Color.Gray));
+                                GL.Color4(Color.Gray);
                             }
                             vi = c.verts[i];
                             GL.Vertex3(vi.x, vi.y, 5);
@@ -965,13 +973,17 @@ main()
                                 if (c.materials.Count > i)
                                 {
                                     if (c.materials[i].getFlag(7))
-                                        GL.Color4(Color.FromArgb(128, Color.Purple));
+                                        color = Color.Purple;
                                     else
-                                        GL.Color4(Color.FromArgb(128, Color.Orange));
+                                        color = Color.Orange;
+
+                                    if (Runtime.LVDSelection == c.verts[i+1] && ((int)(DateTime.Now.Millisecond / 500) == 0))
+                                        color = invertColor(color);
+                                    GL.Color4(color);
                                 }
                                 else
                                 {
-                                    GL.Color4(Color.FromArgb(128, Color.Gray));
+                                    GL.Color4(Color.Gray);
                                 }
                                 vi = c.verts[i + 1];
                                 GL.Vertex3(vi.x, vi.y, 5);

@@ -26,7 +26,7 @@ namespace Smash_Forge
         public static PathBin TargetPath { get; set; }
         public static CMR0 TargetCMR0 { get; set; }
         public static MTA TargetMTA { get; set; }
-        public static Vector2D CurrentLVDLine { get; set; }
+        public static Object LVDSelection { get; set; }
         public static SkelAnimation TargetAnim { get { return _targetAnim; } set { _targetAnim = value; OnAnimationChanged(); } }
         private static SkelAnimation _targetAnim;
         

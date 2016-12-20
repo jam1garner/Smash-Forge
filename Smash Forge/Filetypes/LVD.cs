@@ -131,6 +131,27 @@ namespace Smash_Forge
                 sections.Add(temp);
             }
         }
+
+        public void save(FileOutput f)
+        {
+            f.writeHex("010401017735BB750000000201");
+            f.writeChars(name.PadRight(0x38,(char)0).ToCharArray());
+            f.writeByte(1);
+            f.writeChars(subname.PadRight(0x40, (char)0).ToCharArray());
+            f.writeHex("0100000000000000000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001098400010101");
+            f.writeInt(sections.Count);
+            foreach(Section s in sections)
+            {
+                f.writeHex("010300000004000000000000000000000000000000000101");
+                f.writeInt(s.points.Count);
+                foreach(Vector2D p in s.points)
+                {
+                    f.writeByte(1);
+                    f.writeFloat(p.x);
+                    f.writeFloat(p.y);
+                }
+            }
+        }
     }
 
     public class EnemyGenerator : LVDEntry
@@ -728,7 +749,18 @@ namespace Smash_Forge
                 f.writeFloat(b.bottom);
             }
 
-            for(int i = 0; i < 14; i++)
+            for (int i = 0; i < 7; i++)
+            {
+                f.writeByte(1);
+                f.writeInt(0);
+            }
+
+            f.writeByte(1);
+            f.writeInt(items.Count);
+            foreach (ItemSpawner item in items)
+                item.save(f);
+
+            for(int i = 0; i < 6; i++)
             {
                 f.writeByte(1);
                 f.writeInt(0);
@@ -738,3 +770,22 @@ namespace Smash_Forge
         }
     }
 }
+/*        type 1  - collisions
+          type 2  - spawns
+          type 3  - respawns
+          type 4  - camera bounds
+          type 5  - death boundaries
+          type 6  - ???
+          type 7  - ITEMPT_transform
+          type 8  - enemyGenerator
+          type 9  - ITEMPT
+          type 10 - fsAreaCam (and other fsArea's ? )
+          type 11 - fsCamLimit
+          type 12 - damageShapes (damage sphere and damage capsule are the only ones I've seen, type 2 and 3 respectively)
+          type 13 - item spawners
+          type 14 - general shapes (general rect, general path, etc.)
+          type 15 - general points
+          type 16 - ???
+          type 17 - FsStartPoint
+          type 18 - ???
+          type 19 - ???*/
