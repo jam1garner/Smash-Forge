@@ -64,6 +64,7 @@ namespace Smash_Forge
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
         public static Dictionary<string, MTA> MaterialAnimations { get; set; }
         public static MovesetManager Moveset { get; set; }
+        public static ACMDPreviewEditor acmdEditor;
 
         public static void StartupFromConfig(string config)
         {

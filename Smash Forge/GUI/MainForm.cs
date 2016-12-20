@@ -30,6 +30,9 @@ namespace Smash_Forge
             animationsWindowToolStripMenuItem.Checked =
             boneTreeToolStripMenuItem.Checked = true;
 
+            Runtime.acmdEditor = new ACMDPreviewEditor() { ShowHint = DockState.DockRight};
+            AddDockedControl(Runtime.acmdEditor);
+
             AddDockedControl(meshList);
             AddDockedControl(leftPanel);
             AddDockedControl(rightPanel);
@@ -965,6 +968,22 @@ namespace Smash_Forge
         {
             NUTEditor ev = new NUTEditor();
             ev.Show();
+        }
+
+        private void exportToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new FolderSelectDialog())
+            {
+                ofd.Title = "Export ACMD Folder";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    Runtime.Moveset.MotionTable.Export(ofd.SelectedPath + "\\motion.mtable");
+                    Runtime.Moveset.Game.Export(ofd.SelectedPath + "\\game.bin");
+                    Runtime.Moveset.Sound.Export(ofd.SelectedPath + "\\sound.bin");
+                    Runtime.Moveset.Expression.Export(ofd.SelectedPath + "\\expression.bin");
+                    Runtime.Moveset.Effect.Export(ofd.SelectedPath + "\\effect.bin");
+                }
+            }
         }
     }
 }

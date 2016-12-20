@@ -82,6 +82,12 @@
     <Compile Include="GUI\Editors\ACMDEditor.Designer.cs">
       <DependentUpon>ACMDEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\ACMDPreviewEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\ACMDPreviewEditor.Designer.cs">
+      <DependentUpon>ACMDPreviewEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\AnimList.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -212,6 +218,9 @@
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Editors\ACMDEditor.resx">
       <DependentUpon>ACMDEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\ACMDPreviewEditor.resx">
+      <DependentUpon>ACMDPreviewEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\AnimList.resx">
       <DependentUpon>AnimList.cs</DependentUpon>

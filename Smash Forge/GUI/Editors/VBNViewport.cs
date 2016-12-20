@@ -1508,6 +1508,8 @@ main()
 
             //Console.WriteLine("Handling " + animname);
             script = (ACMDScript)Runtime.Moveset.Game.Scripts[crc];
+            if(Runtime.acmdEditor.crc != crc)
+                Runtime.acmdEditor.SetAnimation(crc);
         }
 
         #endregion

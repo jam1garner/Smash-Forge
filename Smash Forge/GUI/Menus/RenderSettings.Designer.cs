@@ -44,9 +44,9 @@
             this.depthSlider = new System.Windows.Forms.TrackBar();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.cb_vertcolor = new System.Windows.Forms.CheckBox();
-            this.renderMode = new System.Windows.Forms.ComboBox();
             this.cb_normals = new System.Windows.Forms.CheckBox();
+            this.renderMode = new System.Windows.Forms.ComboBox();
+            this.cb_vertcolor = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -228,7 +228,7 @@
             // depthSlider
             // 
             this.depthSlider.Location = new System.Drawing.Point(12, 32);
-            this.depthSlider.Maximum = 5000;
+            this.depthSlider.Maximum = 10000;
             this.depthSlider.Minimum = 1;
             this.depthSlider.Name = "depthSlider";
             this.depthSlider.Size = new System.Drawing.Size(265, 45);
@@ -260,17 +260,17 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model Render Settings";
             // 
-            // cb_vertcolor
+            // cb_normals
             // 
-            this.cb_vertcolor.AutoSize = true;
-            this.cb_vertcolor.Checked = true;
-            this.cb_vertcolor.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_vertcolor.Location = new System.Drawing.Point(12, 79);
-            this.cb_vertcolor.Name = "cb_vertcolor";
-            this.cb_vertcolor.Size = new System.Drawing.Size(118, 17);
-            this.cb_vertcolor.TabIndex = 15;
-            this.cb_vertcolor.Text = "Show Vertex Colors";
-            this.cb_vertcolor.UseVisualStyleBackColor = true;
+            this.cb_normals.AutoSize = true;
+            this.cb_normals.Checked = true;
+            this.cb_normals.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_normals.Location = new System.Drawing.Point(12, 102);
+            this.cb_normals.Name = "cb_normals";
+            this.cb_normals.Size = new System.Drawing.Size(94, 17);
+            this.cb_normals.TabIndex = 17;
+            this.cb_normals.Text = "Show Normals";
+            this.cb_normals.UseVisualStyleBackColor = true;
             // 
             // renderMode
             // 
@@ -288,17 +288,17 @@
             this.renderMode.SelectedIndexChanged += new System.EventHandler(this.checkBox6_CheckedChanged);
             this.renderMode.SelectionChangeCommitted += new System.EventHandler(this.renderMode_SelectionChangeCommitted);
             // 
-            // cb_normals
+            // cb_vertcolor
             // 
-            this.cb_normals.AutoSize = true;
-            this.cb_normals.Checked = true;
-            this.cb_normals.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_normals.Location = new System.Drawing.Point(12, 102);
-            this.cb_normals.Name = "cb_normals";
-            this.cb_normals.Size = new System.Drawing.Size(94, 17);
-            this.cb_normals.TabIndex = 17;
-            this.cb_normals.Text = "Show Normals";
-            this.cb_normals.UseVisualStyleBackColor = true;
+            this.cb_vertcolor.AutoSize = true;
+            this.cb_vertcolor.Checked = true;
+            this.cb_vertcolor.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_vertcolor.Location = new System.Drawing.Point(12, 79);
+            this.cb_vertcolor.Name = "cb_vertcolor";
+            this.cb_vertcolor.Size = new System.Drawing.Size(118, 17);
+            this.cb_vertcolor.TabIndex = 15;
+            this.cb_vertcolor.Text = "Show Vertex Colors";
+            this.cb_vertcolor.UseVisualStyleBackColor = true;
             // 
             // RenderSettings
             // 
