@@ -78,6 +78,8 @@ namespace Smash_Forge
     public class SkelAnimation
     {
 
+        public object Tag;
+        public List<SkelAnimation> children = new List<SkelAnimation>();
         public List<KeyFrame> frames = new List<KeyFrame>();
         private int frame = 0;
 
@@ -137,10 +139,20 @@ namespace Smash_Forge
 
         public void nextFrame(VBN vbn)
         {
-            if (frame == 0)
+            if (frame >= frames.Count)
+                return;
+
+            foreach (SkelAnimation child in children)
+            {
+                child.setFrame(frame);
+                child.nextFrame(vbn);
+            }
+
+            if (frame == 0 && children.Count == 0)
                 vbn.reset();
 
 			KeyFrame key = frames[frame];
+
 
             foreach (KeyNode n in key.nodes)
             {

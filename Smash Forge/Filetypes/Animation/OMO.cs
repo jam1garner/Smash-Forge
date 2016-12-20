@@ -27,6 +27,7 @@ namespace Smash_Forge
             int offset3 = d.readInt();
 
             SkelAnimation anim = new SkelAnimation();
+            anim.Tag = d;
             //anim.setModel(m);
 
             // base frames

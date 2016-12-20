@@ -550,13 +550,23 @@ namespace Smash_Forge
                                 //AnimName = AnimName.Insert(3, "_");
                                 if (!string.IsNullOrEmpty(AnimName))
                                 {
-                                    animNode.Nodes.Add(AnimName);
-                                    Runtime.Animations.Add(AnimName, anim);
+                                    if (Runtime.Animations.ContainsKey(AnimName))
+                                        Runtime.Animations[AnimName].children.Add(anim);
+                                    else
+                                    {
+                                        animNode.Nodes.Add(AnimName);
+                                        Runtime.Animations.Add(AnimName, anim);
+                                    }
                                 }
                                 else
                                 {
-                                    animNode.Nodes.Add(pair.Key);
-                                    Runtime.Animations.Add(pair.Key, anim);
+                                    if (Runtime.Animations.ContainsKey(pair.Key))
+                                        Runtime.Animations[pair.Key].children.Add(anim);
+                                    else
+                                    {
+                                        animNode.Nodes.Add(pair.Key);
+                                        Runtime.Animations.Add(pair.Key, anim);
+                                    }
                                 }
                             }
                             else if (pair.Key.EndsWith(".mta"))
@@ -633,10 +643,24 @@ namespace Smash_Forge
                     sfd.FileName = sfd.FileName;
 
                     if (sfd.FileName.EndsWith(".anim"))
-                        ANIM.createANIM(sfd.FileName, Runtime.TargetAnim, Runtime.TargetVBN);
+                    {
+                        if (Runtime.TargetAnim.Tag is AnimTrack)
+                            ((AnimTrack)Runtime.TargetAnim.Tag).createANIM(sfd.FileName, Runtime.TargetVBN);
+                        else
+                            ANIM.createANIM(sfd.FileName, Runtime.TargetAnim, Runtime.TargetVBN);
+                    }
 
                     if (sfd.FileName.EndsWith(".omo"))
-                        OMO.createOMO(Runtime.TargetAnim, Runtime.TargetVBN, sfd.FileName);
+                    {
+                        if (Runtime.TargetAnim.Tag is FileData)
+                        {
+                            FileOutput o = new FileOutput();
+                            o.writeBytes(((FileData)Runtime.TargetAnim.Tag).getSection(0, ((FileData)Runtime.TargetAnim.Tag).size()));
+                            o.save(sfd.FileName);
+                        }
+                        else
+                            OMO.createOMO(Runtime.TargetAnim, Runtime.TargetVBN, sfd.FileName);
+                    }
 
                     if (sfd.FileName.EndsWith(".pac"))
                     {
@@ -644,6 +668,9 @@ namespace Smash_Forge
                         foreach (var anim in Runtime.Animations)
                         {
                             var bytes = OMO.createOMO(anim.Value, Runtime.TargetVBN);
+                            if (Runtime.TargetAnim.Tag is FileData)
+                                bytes = ((FileData)Runtime.TargetAnim.Tag).getSection(0, ((FileData)Runtime.TargetAnim.Tag).size());
+
                             pac.Files.Add(anim.Key, bytes);
                         }
                         pac.Save(sfd.FileName);

@@ -541,6 +541,7 @@ namespace Smash_Forge
                     case DAT_Animation.InterpolationType.HermiteValue:
                         {
                             cvalue = no.value;
+                            ctan = 0;
                             file.WriteLine(" " + (time + 1) + " {0:N6} fixed fixed 1 1 0 {1:N6} 1 {2:N6} 1;", cvalue * (rotation ? 180 / (float)Math.PI : 1), ctan, ctan);
                         }
                         break;
