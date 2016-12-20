@@ -119,6 +119,11 @@ namespace Smash_Forge
             else if(entry is ItemSpawner)
             {
                 itemSpawnerGroup.Visible = true;
+                ItemSpawner spawner = (ItemSpawner)entry;
+                treeView1.Nodes.Clear();
+                int i = 1;
+                foreach(Section section in spawner.sections)
+                    treeView1.Nodes.Add(new TreeNode($"Section {i++}") { Tag = section });
 
             }
         }
@@ -327,43 +332,85 @@ namespace Smash_Forge
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
             //selecting something in the sections tab of the item spawner editor
-
+            Section section = (Section)e.Node.Tag;
+            treeView2.Nodes.Clear();
+            currentItemSection = section;
+            int i = 1;
+            foreach (Vector2D v in section.points)
+                treeView2.Nodes.Add(new TreeNode($"Point {i++} ({v.x},{v.y})") { Tag = v });
         }
 
         private void treeView2_AfterSelect(object sender, TreeViewEventArgs e)
         {
             //selecting something in the vertices tab of the item spawner editor
-
+            numericUpDown2.Value = (Decimal)((Vector2D)e.Node.Tag).x;
+            numericUpDown1.Value = (Decimal)((Vector2D)e.Node.Tag).y;
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
             //Add section
-
+            Section section = new Section();
+            
+            TreeNode node = new TreeNode($"Section {treeView1.Nodes.Count + 1}") { Tag = section };
+            ((ItemSpawner)currentEntry).sections.Add(section);
+            treeView1.Nodes.Add(node);
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
             //remove section
-
+            Section section = (Section)treeView1.SelectedNode.Tag;
+            TreeNode node = treeView1.SelectedNode;
+            ((ItemSpawner)currentEntry).sections.Remove(section);
+            treeView1.Nodes.Remove(node);
+            int i = 1;
+            foreach (TreeNode n in treeView1.Nodes)
+                n.Text = $"Section {i++}";
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
             //Add item spawner vertex
-
+            Vector2D v = new Vector2D();
+            if(treeView2.SelectedNode == null)
+            {
+                treeView2.Nodes.Add(new TreeNode("temp") { Tag = v });
+                currentItemSection.points.Add(v);
+            }
+            else
+            {
+                int index = treeView2.SelectedNode.Index;
+                treeView2.Nodes.Insert(index + 1, new TreeNode("temp") { Tag = v });
+                currentItemSection.points.Insert(index + 1, v);
+            }
+            int i = 1;
+            foreach (TreeNode t in treeView2.Nodes)
+                t.Text = $"Point {i++} ({((Vector2D)t.Tag).x},{((Vector2D)t.Tag).y})";
         }
 
         private void button7_Click(object sender, EventArgs e)
         {
             //Delete item spawner vertex
-
+            if(treeView2.SelectedNode != null)
+            {
+                Vector2D v = (Vector2D)treeView2.SelectedNode.Tag;
+                currentItemSection.points.Remove(v);
+                treeView2.Nodes.Remove(treeView2.SelectedNode);
+                int i = 1;
+                foreach (TreeNode t in treeView2.Nodes)
+                    t.Text = $"Point {i++} ({((Vector2D)t.Tag).x},{((Vector2D)t.Tag).y})";
+            }
         }
 
         private void changeItemVertPosition(object sender, EventArgs e)
         {
             //changed either X or Y pos of item spawner vertex
-
+            if (sender == numericUpDown2)
+                ((Vector2D)treeView2.SelectedNode.Tag).x = (float)numericUpDown2.Value;
+            if(sender == numericUpDown1)
+                ((Vector2D)treeView2.SelectedNode.Tag).y = (float)numericUpDown1.Value;
+            treeView2.SelectedNode.Text = $"Point {treeView2.SelectedNode.Index + 1} ({((Vector2D)treeView2.SelectedNode.Tag).x},{((Vector2D)treeView2.SelectedNode.Tag).y})";
         }
     }
 }

@@ -92,7 +92,7 @@ namespace Smash_Forge
 
     public class Section
     {
-        public List<Vector2D> points;
+        public List<Vector2D> points = new List<Vector2D>();
     }
 
 

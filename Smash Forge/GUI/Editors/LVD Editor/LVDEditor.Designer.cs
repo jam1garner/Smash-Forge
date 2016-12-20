@@ -32,6 +32,8 @@
             this.name = new System.Windows.Forms.TextBox();
             this.subname = new System.Windows.Forms.TextBox();
             this.collisionGroup = new System.Windows.Forms.GroupBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.label17 = new System.Windows.Forms.Label();
             this.zStart = new System.Windows.Forms.NumericUpDown();
             this.yStart = new System.Windows.Forms.NumericUpDown();
             this.xStart = new System.Windows.Forms.NumericUpDown();
@@ -74,21 +76,19 @@
             this.label14 = new System.Windows.Forms.Label();
             this.topVal = new System.Windows.Forms.NumericUpDown();
             this.rightVal = new System.Windows.Forms.NumericUpDown();
-            this.label17 = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
             this.itemSpawnerGroup = new System.Windows.Forms.GroupBox();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
-            this.treeView1 = new System.Windows.Forms.TreeView();
-            this.label18 = new System.Windows.Forms.Label();
-            this.label19 = new System.Windows.Forms.Label();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.label20 = new System.Windows.Forms.Label();
             this.treeView2 = new System.Windows.Forms.TreeView();
             this.label21 = new System.Windows.Forms.Label();
             this.button6 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
+            this.label20 = new System.Windows.Forms.Label();
+            this.button5 = new System.Windows.Forms.Button();
+            this.label18 = new System.Windows.Forms.Label();
+            this.button4 = new System.Windows.Forms.Button();
+            this.label19 = new System.Windows.Forms.Label();
             this.flowLayoutPanel1.SuspendLayout();
             this.collisionGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zStart)).BeginInit();
@@ -179,6 +179,25 @@
             this.collisionGroup.TabIndex = 0;
             this.collisionGroup.TabStop = false;
             this.collisionGroup.Text = "Collision Editing";
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(85, 121);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(186, 31);
+            this.button3.TabIndex = 33;
+            this.button3.Text = "None";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(6, 130);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(79, 13);
+            this.label17.TabIndex = 32;
+            this.label17.Text = "Bone to Rig To";
             // 
             // zStart
             // 
@@ -730,25 +749,6 @@
             this.rightVal.TabIndex = 32;
             this.rightVal.ValueChanged += new System.EventHandler(this.boundsChanged);
             // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(6, 130);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(79, 13);
-            this.label17.TabIndex = 32;
-            this.label17.Text = "Bone to Rig To";
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(85, 121);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(186, 31);
-            this.button3.TabIndex = 33;
-            this.button3.Text = "None";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
             // itemSpawnerGroup
             // 
             this.itemSpawnerGroup.Controls.Add(this.treeView2);
@@ -769,100 +769,7 @@
             this.itemSpawnerGroup.TabIndex = 35;
             this.itemSpawnerGroup.TabStop = false;
             this.itemSpawnerGroup.Text = "Item Spawner";
-            // 
-            // numericUpDown1
-            // 
-            this.numericUpDown1.DecimalPlaces = 3;
-            this.numericUpDown1.Location = new System.Drawing.Point(122, 362);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.numericUpDown1.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(67, 20);
-            this.numericUpDown1.TabIndex = 41;
-            this.numericUpDown1.ValueChanged += new System.EventHandler(this.changeItemVertPosition);
-            // 
-            // numericUpDown2
-            // 
-            this.numericUpDown2.DecimalPlaces = 3;
-            this.numericUpDown2.Location = new System.Drawing.Point(29, 362);
-            this.numericUpDown2.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.numericUpDown2.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.numericUpDown2.Name = "numericUpDown2";
-            this.numericUpDown2.Size = new System.Drawing.Size(67, 20);
-            this.numericUpDown2.TabIndex = 40;
-            this.numericUpDown2.ValueChanged += new System.EventHandler(this.changeItemVertPosition);
-            // 
-            // treeView1
-            // 
-            this.treeView1.HideSelection = false;
-            this.treeView1.Location = new System.Drawing.Point(6, 52);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(238, 134);
-            this.treeView1.TabIndex = 39;
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(102, 364);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(14, 13);
-            this.label18.TabIndex = 38;
-            this.label18.Text = "Y";
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(9, 364);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(14, 13);
-            this.label19.TabIndex = 37;
-            this.label19.Text = "X";
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(195, 26);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(49, 23);
-            this.button4.TabIndex = 36;
-            this.button4.Text = "-";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(140, 26);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(49, 23);
-            this.button5.TabIndex = 35;
-            this.button5.Text = "+";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(89, 33);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(48, 13);
-            this.label20.TabIndex = 34;
-            this.label20.Text = "Sections";
+            this.itemSpawnerGroup.Visible = false;
             // 
             // treeView2
             // 
@@ -901,6 +808,100 @@
             this.button7.Text = "-";
             this.button7.UseVisualStyleBackColor = true;
             this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.DecimalPlaces = 3;
+            this.numericUpDown1.Location = new System.Drawing.Point(122, 362);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(67, 20);
+            this.numericUpDown1.TabIndex = 41;
+            this.numericUpDown1.ValueChanged += new System.EventHandler(this.changeItemVertPosition);
+            // 
+            // treeView1
+            // 
+            this.treeView1.HideSelection = false;
+            this.treeView1.Location = new System.Drawing.Point(6, 52);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(238, 134);
+            this.treeView1.TabIndex = 39;
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            // 
+            // numericUpDown2
+            // 
+            this.numericUpDown2.DecimalPlaces = 3;
+            this.numericUpDown2.Location = new System.Drawing.Point(29, 362);
+            this.numericUpDown2.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.numericUpDown2.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDown2.Name = "numericUpDown2";
+            this.numericUpDown2.Size = new System.Drawing.Size(67, 20);
+            this.numericUpDown2.TabIndex = 40;
+            this.numericUpDown2.ValueChanged += new System.EventHandler(this.changeItemVertPosition);
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(89, 33);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(48, 13);
+            this.label20.TabIndex = 34;
+            this.label20.Text = "Sections";
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(140, 26);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(49, 23);
+            this.button5.TabIndex = 35;
+            this.button5.Text = "+";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(102, 364);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(14, 13);
+            this.label18.TabIndex = 38;
+            this.label18.Text = "Y";
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(195, 26);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(49, 23);
+            this.button4.TabIndex = 36;
+            this.button4.Text = "-";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(9, 364);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(14, 13);
+            this.label19.TabIndex = 37;
+            this.label19.Text = "X";
             // 
             // LVDEditor
             // 

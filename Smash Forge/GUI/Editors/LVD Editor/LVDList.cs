@@ -118,5 +118,37 @@ namespace Smash_Forge
                 MainForm.Instance.lvdEditor.open((LVDEntry)e.Node.Tag, e.Node);
             }
         }
+
+        public void deleteSelected()
+        {
+            if(treeView1.SelectedNode.Tag is LVDEntry)
+            {
+                LVDEntry entry = (LVDEntry)treeView1.SelectedNode.Tag;
+                if (entry is Bounds)
+                {
+                    Runtime.TargetLVD.blastzones.Remove((Bounds)entry);
+                    Runtime.TargetLVD.cameraBounds.Remove((Bounds)entry);
+                }
+                if (entry is Point)
+                {
+                    Runtime.TargetLVD.generalPoints.Remove((Point)entry);
+                    Runtime.TargetLVD.respawns.Remove((Point)entry);
+                    Runtime.TargetLVD.spawns.Remove((Point)entry);
+                }
+                if (entry is Collision)
+                    Runtime.TargetLVD.collisions.Remove((Collision)entry);
+                if (entry is Capsule)
+                    Runtime.TargetLVD.damageCapsules.Remove((Capsule) entry);
+                if (entry is Sphere)
+                    Runtime.TargetLVD.damageSpheres.Remove((Sphere)entry);
+                if (entry is EnemyGenerator)
+                    Runtime.TargetLVD.enemySpawns.Remove((EnemyGenerator)entry);
+                if (entry is LVDGeneralShape)
+                    Runtime.TargetLVD.generalShapes.Remove((LVDGeneralShape)entry);
+                if (entry is ItemSpawner)
+                    Runtime.TargetLVD.items.Remove((ItemSpawner)entry);
+                
+            }
+        }
     }
 }
