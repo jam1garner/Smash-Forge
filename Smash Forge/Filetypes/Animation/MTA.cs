@@ -566,8 +566,8 @@ namespace Smash_Forge
             numFrames = Convert.ToUInt32(f[2].Split(',')[1]);
             frameRate = Convert.ToUInt32(f[3].Split(',')[1]);
             int l = 3;
-            //try
-            //{
+            try
+            {
                 while (l < f.Count)
                 {
                     if (f[l++].StartsWith("---"))
@@ -687,13 +687,13 @@ namespace Smash_Forge
                         }
                     }
                 }
-            /*}
+            }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
                 MessageBox.Show($"Failed to build MTA\nError on line {l}\n{ex.ToString()}", "MTA Build Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 //throw;
-            }*/
+            }
         }
     }
 }

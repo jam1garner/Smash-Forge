@@ -760,7 +760,25 @@ namespace Smash_Forge
             foreach (ItemSpawner item in items)
                 item.save(f);
 
-            for(int i = 0; i < 6; i++)
+            f.writeByte(1);
+            f.writeInt(0);
+
+            f.writeByte(1);
+            f.writeInt(generalPoints.Count);
+            foreach (Point p in generalPoints)
+            {
+                f.writeHex("010401017735BB750000000201");
+                f.writeChars(p.name.PadRight(0x38,(char)0).ToCharArray());
+                f.writeByte(1);
+                f.writeChars(p.subname.PadRight(0x40, (char)0).ToCharArray());
+                f.writeByte(1);
+                f.writeHex("00000000432100000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000100000004");
+                f.writeFloat(p.x);
+                f.writeFloat(p.y);
+                f.writeBytes(new byte[0x14]);
+            }
+
+            for (int i = 0; i < 4; i++)
             {
                 f.writeByte(1);
                 f.writeInt(0);
