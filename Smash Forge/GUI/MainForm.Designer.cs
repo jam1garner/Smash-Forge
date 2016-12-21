@@ -48,6 +48,7 @@
             this.cameraBoundsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.blastzonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.itemSpawnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteLVDEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.animationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -74,7 +75,7 @@
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.glControl1 = new OpenTK.GLControl();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.deleteLVDEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generalPointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -185,7 +186,8 @@
             this.respawnToolStripMenuItem,
             this.cameraBoundsToolStripMenuItem,
             this.blastzonesToolStripMenuItem,
-            this.itemSpawnerToolStripMenuItem});
+            this.itemSpawnerToolStripMenuItem,
+            this.generalPointToolStripMenuItem});
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
             this.addToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.addToolStripMenuItem.Text = "Add";
@@ -231,6 +233,13 @@
             this.itemSpawnerToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.itemSpawnerToolStripMenuItem.Text = "Item Spawner";
             this.itemSpawnerToolStripMenuItem.Click += new System.EventHandler(this.itemSpawnerToolStripMenuItem_Click);
+            // 
+            // deleteLVDEntryToolStripMenuItem
+            // 
+            this.deleteLVDEntryToolStripMenuItem.Name = "deleteLVDEntryToolStripMenuItem";
+            this.deleteLVDEntryToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.deleteLVDEntryToolStripMenuItem.Text = "Delete Selected LVD Entry";
+            this.deleteLVDEntryToolStripMenuItem.Click += new System.EventHandler(this.deleteLVDEntryToolStripMenuItem_Click);
             // 
             // animationToolStripMenuItem
             // 
@@ -440,12 +449,12 @@
             this.checkBox1.Text = "Big Endian Bones";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
-            // deleteLVDEntryToolStripMenuItem
+            // generalPointToolStripMenuItem
             // 
-            this.deleteLVDEntryToolStripMenuItem.Name = "deleteLVDEntryToolStripMenuItem";
-            this.deleteLVDEntryToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.deleteLVDEntryToolStripMenuItem.Text = "Delete Selected LVD Entry";
-            this.deleteLVDEntryToolStripMenuItem.Click += new System.EventHandler(this.deleteLVDEntryToolStripMenuItem_Click);
+            this.generalPointToolStripMenuItem.Name = "generalPointToolStripMenuItem";
+            this.generalPointToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.generalPointToolStripMenuItem.Text = "General Point";
+            this.generalPointToolStripMenuItem.Click += new System.EventHandler(this.generalPointToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -520,6 +529,7 @@
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.ToolStripMenuItem itemSpawnerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteLVDEntryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem generalPointToolStripMenuItem;
     }
 }
 

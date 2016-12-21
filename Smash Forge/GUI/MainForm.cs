@@ -999,6 +999,14 @@ namespace Smash_Forge
             lvdList.fillList();
         }
 
+        private void generalPointToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.generalPoints.Add(new Point() { name = "POINT_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+        }
+
         private void openNUTEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NUTEditor ev = new NUTEditor();
