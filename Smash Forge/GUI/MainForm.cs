@@ -1009,6 +1009,22 @@ namespace Smash_Forge
             lvdList.fillList();
         }
 
+        private void itemSpawnerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.items.Add(new ItemSpawner() { name = "ITEM_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+        }
+
+        private void generalPointToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.generalPoints.Add(new Point() { name = "POINT_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+        }
+
         private void openNUTEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NUTEditor ev = new NUTEditor();
@@ -1029,6 +1045,11 @@ namespace Smash_Forge
                     Runtime.Moveset.Effect.Export(ofd.SelectedPath + "\\effect.bin");
                 }
             }
+        }
+
+        private void deleteLVDEntryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            lvdList.deleteSelected();
         }
     }
 }

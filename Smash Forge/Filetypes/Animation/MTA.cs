@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {
@@ -536,7 +537,7 @@ namespace Smash_Forge
                     f += "PAT0\n";
                     f += $"Default TexId,{matEntry.pat0.defaultTexId.ToString("X")}\n";
                     f += $"Keyframe Count,{matEntry.pat0.keyframes.Count}\n";
-                    f += $"PAT0_Unkown,{matEntry.pat0.unknown}";
+                    f += $"PAT0_Unkown,{matEntry.pat0.unknown}\n";
                     foreach (PatData.keyframe keyframe in matEntry.pat0.keyframes)
                         f += $"frameNum,{keyframe.frameNum},texId,{keyframe.texId.ToString("X")}\n";
                 }
@@ -565,124 +566,133 @@ namespace Smash_Forge
             numFrames = Convert.ToUInt32(f[2].Split(',')[1]);
             frameRate = Convert.ToUInt32(f[3].Split(',')[1]);
             int l = 3;
-            while(l < f.Count)
+            try
             {
-                l++;
-                if (f[l].StartsWith("---"))
+                while (l < f.Count)
                 {
-                    l++;
-                    if (f[l].StartsWith("Material"))
+                    if (f[l++].StartsWith("---"))
                     {
-                        l++;
-                        MatEntry m = new MatEntry();
-                        m.name = f[l];
-                        l++;
-                        m.matHash = Convert.ToInt32(f[l].Split(',')[1], 16);
-                        l++;
-                        m.hasPat = Convert.ToBoolean(f[l].Split(',')[1]);
-                        l++;
-                        if (!f[l].StartsWith("###"))
+                        if (l >= f.Count)
+                            break;
+                        if (f[l].StartsWith("Material"))
                         {
-                            m.matHash2 = Convert.ToInt32(f[l].Split(',')[1], 16);
                             l++;
-                        }
-                        while((f[l].StartsWith("###") || string.IsNullOrWhiteSpace(f[l])) && l < f.Count - 1)
-                        {
-                            if(f[l + 1].StartsWith("Material Property"))
+                            MatEntry m = new MatEntry();
+                            m.name = f[l];
+                            l++;
+                            m.matHash = Convert.ToInt32(f[l].Split(',')[1], 16);
+                            l++;
+                            m.hasPat = Convert.ToBoolean(f[l].Split(',')[1]);
+                            l++;
+                            if (!f[l].StartsWith("###"))
                             {
-                                l += 2;
-                                MatData md = new MatData();
-                                md.name = f[l++];
-                                md.unknown = Convert.ToInt32(f[l++].Split(',')[1]);
-                                md.unknown2 = Convert.ToInt32(f[l++].Split(',')[1]);
-                                md.unknown3 = Convert.ToInt32(f[l++].Split(',')[1]);
-                                bool keyed = (f[l++].Split(',')[1].Equals("Keyed") || f[l].Split(',')[1].Equals("keyed"));
-                                int lastFrame = 0;
-                                MatData.frame lastKeyframe = null;
-                                List<MatData.frame> frames = new List<MatData.frame>();
-                                while (l < f.Count && !f[l].StartsWith("---") && !f[l].StartsWith("###"))
+                                m.matHash2 = Convert.ToInt32(f[l].Split(',')[1], 16);
+                                l++;
+                            }
+                            while (l < f.Count - 1 && (f[l].StartsWith("###") || string.IsNullOrWhiteSpace(f[l])))
+                            {
+                                if (f[++l].StartsWith("Material Property"))
                                 {
-                                    if (keyed)
+                                    l++;
+                                    MatData md = new MatData();
+                                    md.name = f[l++];
+                                    md.unknown = Convert.ToInt32(f[l++].Split(',')[1]);
+                                    md.unknown2 = Convert.ToInt32(f[l++].Split(',')[1]);
+                                    md.unknown3 = Convert.ToInt32(f[l++].Split(',')[1]);
+                                    bool keyed = (f[l++].Split(',')[1].Equals("Keyed") || f[l].Split(',')[1].Equals("keyed"));
+                                    int lastFrame = 0;
+                                    MatData.frame lastKeyframe = null;
+                                    List<MatData.frame> frames = new List<MatData.frame>();
+                                    while (l < f.Count && !f[l].StartsWith("---") && !f[l].StartsWith("###"))
                                     {
-                                        int currentFrame = frames.Count, fnum = Convert.ToInt32(f[l].Split(',')[0]);
-                                        MatData.frame tempFrame = new MatData.frame();
-                                        tempFrame.values = new float[f[l].Split(',').Length - 1];
-                                        int i = 0;
-                                        foreach (string value in (new List<string>(f[l].Split(',')).GetRange(1, f[l].Split(',').Length - 1)))
-                                            tempFrame.values[i++] = Convert.ToSingle(value);
-                                        if (lastKeyframe == null)
+                                        if (keyed)
                                         {
-                                            while (currentFrame <= fnum)
+                                            int currentFrame = frames.Count, fnum = Convert.ToInt32(f[l].Split(',')[0]);
+                                            MatData.frame tempFrame = new MatData.frame();
+                                            tempFrame.values = new float[f[l].Split(',').Length - 1];
+                                            int i = 0;
+                                            foreach (string value in (new List<string>(f[l].Split(',')).GetRange(1, f[l].Split(',').Length - 1)))
+                                                tempFrame.values[i++] = Convert.ToSingle(value);
+                                            if (lastKeyframe == null)
                                             {
-                                                frames.Add(tempFrame);
-                                                currentFrame = frames.Count;
+                                                while (currentFrame <= fnum)
+                                                {
+                                                    frames.Add(tempFrame);
+                                                    currentFrame = frames.Count;
+                                                }
                                             }
+                                            else
+                                            {
+                                                while (currentFrame <= fnum)
+                                                {
+                                                    List<float> thisFrame = new List<float>();
+                                                    for (int k = 0; k < lastKeyframe.values.Length; k++)
+                                                    {
+                                                        float slope = (tempFrame.values[k] - lastKeyframe.values[k]) / (float)(fnum - lastFrame);
+                                                        thisFrame.Add(lastKeyframe.values[k] + (slope * (currentFrame - lastFrame)));
+                                                    }
+                                                    frames.Add(new MatData.frame() { values = thisFrame.ToArray() });
+                                                    currentFrame = frames.Count;
+                                                }
+                                            }
+                                            lastFrame = fnum;
+                                            lastKeyframe = tempFrame;
                                         }
                                         else
                                         {
-                                            while (currentFrame <= fnum)
-                                            {
-                                                List<float> thisFrame = new List<float>();
-                                                for (int k = 0; k < lastKeyframe.values.Length; k++)
-                                                {
-                                                    float slope = (tempFrame.values[k] - lastKeyframe.values[k]) / (float)(fnum - lastFrame);
-                                                    thisFrame.Add(lastKeyframe.values[k] + (slope * (currentFrame - lastFrame)));
-                                                }
-                                                frames.Add(new MatData.frame() { values = thisFrame.ToArray() });
-                                                currentFrame = frames.Count;
-                                            }
+                                            float[] values = new float[f[l].Split(',').Length];
+                                            int i = 0;
+                                            foreach (string value in f[l].Split(','))
+                                                values[i++] = Convert.ToSingle(value);
+
+                                            frames.Add(new MatData.frame() { values = values });
                                         }
-                                        lastFrame = fnum;
-                                        lastKeyframe = tempFrame;
+                                        l++;
                                     }
-                                    else
-                                    {
-                                        float[] values = new float[f[l].Split(',').Length];
-                                        int i = 0;
-                                        foreach (string value in f[l].Split(','))
-                                            values[i++] = Convert.ToSingle(value);
-
-                                        frames.Add(new MatData.frame() { values = values });
-                                    }
-                                    l++;
+                                    md.frames = frames;
+                                    if (md.frames.Count > 0)
+                                        md.valueCount = md.frames[0].values.Length;
+                                    m.properties.Add(md);
                                 }
-                                md.frames = frames;
-                                if (md.frames.Count > 0)
-                                    md.valueCount = md.frames[0].values.Length;
-                                m.properties.Add(md);
-                            }
-                            else if(f[l+1].StartsWith("PAT0"))
-                            {
-                                l += 2;
-                                PatData p = new PatData();
-                                p.defaultTexId = Convert.ToInt32(f[l++].Split(',')[1]);
-                                int keyFrameCount = Convert.ToInt32(f[l++].Split(',')[1]);
-                                p.unknown = Convert.ToInt32(f[l++].Split(',')[1]);
-                                for (int i = 0; i < keyFrameCount; i++)
-                                    p.keyframes.Add(new PatData.keyframe() { frameNum = Convert.ToInt32(f[l].Split(',')[1]), texId = Convert.ToInt32(f[l++].Split(',')[3], 16) });
-                                m.pat0 = p;
-                            }
+                                else if (f[l + 1].StartsWith("PAT0"))
+                                {
+                                    l += 2;
+                                    PatData p = new PatData();
+                                    p.defaultTexId = Convert.ToInt32(f[l++].Split(',')[1]);
+                                    int keyFrameCount = Convert.ToInt32(f[l++].Split(',')[1]);
+                                    p.unknown = Convert.ToInt32(f[l++].Split(',')[1]);
+                                    for (int i = 0; i < keyFrameCount; i++)
+                                        p.keyframes.Add(new PatData.keyframe() { frameNum = Convert.ToInt32(f[l].Split(',')[1]), texId = Convert.ToInt32(f[l++].Split(',')[3], 16) });
+                                    m.pat0 = p;
+                                }
 
+                            }
+                            //while (l < f.Count && !f[l].StartsWith("---"))
+                            //    l++;
+
+                            matEntries.Add(m);
                         }
-                        while (l < f.Count && !f[l].StartsWith("---"))
+                        else if (f[l].StartsWith("VIS0"))
+                        {
                             l++;
-
-                        matEntries.Add(m);
-                    }
-                    else if (f[l].StartsWith("VIS0"))
-                    {
-                        l++;
-                        VisEntry v = new VisEntry();
-                        v.name = f[l++];
-                        v.frameCount = Convert.ToInt32(f[l++].Split(',')[1]);
-                        int keyframeCount = Convert.ToInt32(f[l++].Split(',')[1]);
-                        v.unk1 = Convert.ToBoolean(f[l++].Split(',')[1]);
-                        v.unk2 = Convert.ToBoolean(f[l++].Split(',')[1]);
-                        for (int i = 0; i < keyframeCount; i++)
-                            v.frames.Add(new VisEntry.frame() { frameNum = Convert.ToInt16(f[l].Split(',')[1]), state = Convert.ToByte(f[l].Split(',')[3]), unknown = Convert.ToByte(f[l++].Split(',')[1]) });
-                        visEntries.Add(v);
+                            VisEntry v = new VisEntry();
+                            v.name = f[l++];
+                            v.frameCount = Convert.ToInt32(f[l++].Split(',')[1]);
+                            int keyframeCount = Convert.ToInt32(f[l++].Split(',')[1]);
+                            v.unk1 = Convert.ToBoolean(f[l++].Split(',')[1]);
+                            v.unk2 = Convert.ToBoolean(f[l++].Split(',')[1]);
+                            for (int i = 0; i < keyframeCount; i++)
+                                v.frames.Add(new VisEntry.frame() { frameNum = Convert.ToInt16(f[l].Split(',')[1]), state = Convert.ToByte(f[l].Split(',')[3]), unknown = Convert.ToByte(f[l++].Split(',')[1]) });
+                            visEntries.Add(v);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                MessageBox.Show($"Failed to build MTA\nError on line {l}\n{ex.ToString()}", "MTA Build Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //throw;
             }
         }
     }

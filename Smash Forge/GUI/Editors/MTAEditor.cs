@@ -54,17 +54,9 @@ namespace Smash_Forge
 
         private void button2_Click(object sender, EventArgs e)
         {
-            try
-            {
-                mta = new MTA();
-                mta.Compile(new List<string>(richTextBox1.Text.Split('\n')));
-                MainForm.Instance.viewports[0].loadMTA(mta);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                MessageBox.Show("Failed to build MTA, make sure your formatting is correct", "MTA Build Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            mta = new MTA();
+            mta.Compile(new List<string>(richTextBox1.Text.Split('\n')));
+            MainForm.Instance.viewports[0].loadMTA(mta);
         }
     }
 }
