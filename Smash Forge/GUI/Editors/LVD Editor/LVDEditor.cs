@@ -92,12 +92,12 @@ namespace Smash_Forge
                     boneNameRigging = "None";
                 button3.Text = boneNameRigging; 
                 for (int i = 0; i < col.verts.Count; i++)
-                    vertices.Nodes.Add(new TreeNode($"Vertex {i}") { Tag = col.verts[i] });
+                    vertices.Nodes.Add(new TreeNode($"Vertex {i+1} ({col.verts[i].x},{col.verts[i].y})") { Tag = col.verts[i] });
                 lines.Nodes.Clear();
                 for (int i = 0; i < col.normals.Count; i++)
                 {
                     object[] temp = { col.normals[i], col.materials[i] };
-                    lines.Nodes.Add(new TreeNode($"Line {i}") { Tag = temp });
+                    lines.Nodes.Add(new TreeNode($"Line {i+1}") { Tag = temp });
                 }
             }
             else if(entry is Point)
@@ -166,6 +166,7 @@ namespace Smash_Forge
                 currentVert.x = (float)xVert.Value;
             if(sender == yVert)
                 currentVert.y = (float)yVert.Value;
+            vertices.SelectedNode.Text = $"Vertex {vertices.SelectedNode.Index + 1} ({currentVert.x},{currentVert.y})";
         }
 
         private void nameChange(object sender, EventArgs e)
@@ -308,9 +309,9 @@ namespace Smash_Forge
         private void renumber()
         {
             for(int i = 0; i < vertices.Nodes.Count; i++)
-                vertices.Nodes[i].Text = $"Vertex {i}";
+                vertices.Nodes[i].Text = $"Vertex {i + 1} ({((Collision)currentEntry).verts[i].x},{((Collision)currentEntry).verts[i].y})";
             for(int i = 0; i < lines.Nodes.Count; i++)
-                lines.Nodes[i].Text = $"Line {i}";
+                lines.Nodes[i].Text = $"Line {i + 1}";
         }
 
         private void button3_Click(object sender, EventArgs e)
