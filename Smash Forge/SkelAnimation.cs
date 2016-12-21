@@ -80,7 +80,7 @@ namespace Smash_Forge
 
         public object Tag;
         public bool Main = false;
-        public List<SkelAnimation> children = new List<SkelAnimation>();
+        public List<object> children = new List<object>();
         public List<KeyFrame> frames = new List<KeyFrame>();
         private int frame = 0;
 
@@ -144,14 +144,37 @@ namespace Smash_Forge
                 return;
             
             if (frame == 0 && Main)
+            {
                 vbn.reset();
+
+                foreach (ModelContainer con in Runtime.ModelContainers)
+                {
+                    if (con.nud != null && con.mta != null)
+                    {
+                        con.nud.applyMTA(con.mta, 0);
+                    }
+                }
+            }
 
             if (children.Count > 0) Main = true;
 
-            foreach (SkelAnimation child in children)
+            foreach (object child in children)
             {
-                child.setFrame(frame);
-                child.nextFrame(vbn);
+                if(child is SkelAnimation)
+                {
+                    ((SkelAnimation)child).setFrame(frame);
+                    ((SkelAnimation)child).nextFrame(vbn);
+                }
+                if (child is MTA)
+                {
+                    foreach(ModelContainer con in Runtime.ModelContainers)
+                    {
+                        if(con.nud != null)
+                        {
+                            con.nud.applyMTA(((MTA)child), frame);
+                        }
+                    }
+                }
             }
 
 			KeyFrame key = frames[frame];

@@ -779,5 +779,10 @@ namespace Smash_Forge
         {
             RenderTexture();
         }
+
+        private void tableLayoutPanel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

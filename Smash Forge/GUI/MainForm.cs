@@ -33,12 +33,12 @@ namespace Smash_Forge
             Runtime.acmdEditor = new ACMDPreviewEditor() { ShowHint = DockState.DockRight};
             AddDockedControl(Runtime.acmdEditor);
 
-            AddDockedControl(meshList);
             AddDockedControl(leftPanel);
             AddDockedControl(rightPanel);
             AddDockedControl(lvdEditor);
-            AddDockedControl(project);
             AddDockedControl(lvdList);
+            AddDockedControl(project);
+            AddDockedControl(meshList);
             rightPanel.treeView1.Nodes.Add(animNode);
             rightPanel.treeView1.Nodes.Add(mtaNode);
             Runtime.renderBones = true;
@@ -135,7 +135,7 @@ namespace Smash_Forge
             {
                 string filename = "";
                 SaveFileDialog save = new SaveFileDialog();
-                save.Filter = "Supported Filetypes (VBN,LVD)|*.vbn;*.lvd|Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
+                save.Filter = "Supported Filetypes (VBN,LVD)|*.vbn;*.lvd;*.dae|Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
                 DialogResult result = save.ShowDialog();
 
                 if (result == DialogResult.OK)
@@ -150,6 +150,13 @@ namespace Smash_Forge
                     }
                     if (filename.EndsWith(".lvd") && Runtime.TargetLVD != null)
                         File.WriteAllBytes(filename, Runtime.TargetLVD.Rebuild());
+                    if (filename.EndsWith(".dae"))
+                    {
+                        if(Runtime.ModelContainers.Count > 0)
+                        {
+                            Collada.Save(filename, Runtime.ModelContainers[0]);
+                        }
+                    }
                     //OMO.createOMO (anim, vbn, "C:\\Users\\ploaj_000\\Desktop\\WebGL\\test_outut.omo", -1, -1);
                 }
             }
@@ -574,9 +581,20 @@ namespace Smash_Forge
                                 MTA mta = new MTA();
                                 try
                                 {
-                                    mta.read(new FileData(pair.Value));
-                                    Runtime.MaterialAnimations.Add(pair.Key, mta);
-                                    mtaNode.Nodes.Add(pair.Key);
+                                    if (!Runtime.MaterialAnimations.ContainsKey(pair.Key))
+                                    {
+                                        mta.read(new FileData(pair.Value));
+                                        Runtime.MaterialAnimations.Add(pair.Key, mta);
+                                        mtaNode.Nodes.Add(pair.Key);
+                                    }
+                                    
+                                    // matching
+                                    string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString().Replace(".mta", ".omo");
+                                    if (Runtime.Animations.ContainsKey(AnimName))
+                                    {
+                                        Runtime.Animations[AnimName].children.Add(mta);
+                                    }
+                                    
                                 }
                                 catch (EndOfStreamException)
                                 {
