@@ -666,7 +666,7 @@ namespace Smash_Forge
 
             // bones
 
-            SaveBoneNodes(dae, con.vbn.bones[0], con.vbn.bones, null);
+            SaveBoneNodes(dae, con.vbn.bones[0], con.vbn, null);
 
             // geometry
 
