@@ -38,7 +38,7 @@ namespace Smash_Forge
         public static Shader shader = null;
 
         Dictionary<int, JOBJ> jobjOffsetLinker = new Dictionary<int, JOBJ>();
-        Dictionary<int, Bitmap> texturesLinker = new Dictionary<int, Bitmap>();
+        public Dictionary<int, Bitmap> texturesLinker = new Dictionary<int, Bitmap>();
 
         static string vs = @"#version 330
  

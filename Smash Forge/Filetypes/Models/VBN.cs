@@ -269,8 +269,8 @@ namespace Smash_Forge
                     file.writeString("VBN ");
                 }
 
-                file.writeShort(unk_1);
-                file.writeShort(unk_2);
+                file.writeShort(0x01);
+                file.writeShort(0x02);
                 file.writeInt(bones.Count);
                 if (boneCountPerType[0] == 0)
                     boneCountPerType[0] = (uint)bones.Count;

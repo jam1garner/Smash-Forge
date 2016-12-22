@@ -22,9 +22,9 @@ namespace Smash_Forge
                 }
                 else
                 {
-                    newFace.Add(input[i + 2]);
                     newFace.Add(input[i + 1]);
-                    newFace.Add(input[i + 0]);
+                    newFace.Add(input[i]);
+                    newFace.Add(input[i + 2]);
                 }
             }
 
