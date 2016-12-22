@@ -585,12 +585,17 @@ namespace Smash_Forge
                 ColladaEffects eff = new ColladaEffects();
                 eff.id = "Effect" + num;
                 eff.name = geom.name + "-effect";
-                if(data.material.texture.image != null)
+                if (data.material.texture.image != null && texbank.ContainsKey(data.material.texture.image))
                     eff.source = texbank[data.material.texture.image];
+                else
+                    eff.source = texbank[texbank.Keys.First()];
                 dae.library_effects.Add(eff);
 
                 ColladaSampler2D samp = new ColladaSampler2D();
-                samp.url = texbank[data.material.texture.image];
+                if(data.material.texture.image != null && texbank.ContainsKey(data.material.texture.image))
+                    samp.url = texbank[data.material.texture.image];
+                else
+                    samp.url = texbank[texbank.Keys.First()];
                 eff.sampler = samp;
                 Dictionary<int, COLLADA_WRAPMODE> wraptranslate = new Dictionary<int, COLLADA_WRAPMODE>
                 {
@@ -1514,7 +1519,7 @@ namespace Smash_Forge
         public class ColladaEffects
         {
             public string id, name;
-            public string source;
+            public string source = "#";
             public ColladaSampler2D sampler;
 
             // for writing
