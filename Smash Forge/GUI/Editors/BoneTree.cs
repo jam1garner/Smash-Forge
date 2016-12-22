@@ -48,6 +48,7 @@ namespace Smash_Forge
 
         public DataTable tbl;
         public string currentNode;
+        public static Bone selectedBone = null;
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
             currentNode = treeView1.SelectedNode.Text;
@@ -57,7 +58,9 @@ namespace Smash_Forge
             tbl.Columns.Add("Value");
             dataGridView1.DataSource = tbl;
             tbl.Rows.Clear();
-            
+
+            selectedBone = Runtime.TargetVBN.bone(treeView1.SelectedNode.Text);
+
             tbl.Rows.Add("Bone Index", Runtime.TargetVBN.getJTBIndex(treeView1.SelectedNode.Text));
             tbl.Rows.Add("Bone Hash", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).boneId.ToString("X"));
             tbl.Rows.Add("Bone Type", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).boneType);

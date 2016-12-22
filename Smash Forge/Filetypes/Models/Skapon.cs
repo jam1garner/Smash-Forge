@@ -206,32 +206,43 @@ namespace Smash_Forge
 
             BoneNameFix(dat.bones);
 
+            // model--------------------------------------------------------
             ModelContainer converted = dat.wrapToNUD();
             NUD nud = converted.nud;
-
+            float sca = 0.6f;
+            
+            
             removeLowPolyNr(nud);
             nud.PreRender();
-
-
+            
             Runtime.ModelContainers.Add(converted);
+            //-------------------------------------------------
+
             Runtime.TargetVBN = converted.vbn;
 
             MainForm.HashMatch();
 
-            Directory.CreateDirectory(path+"build\\model\\body\\c00\\");
+            Dictionary<string, SkelAnimation> anims = DAT_Animation.LoadAJ(path + "PlPcAJ.dat", converted.vbn);
+
+            //ArrangeBones(converted.vbn, converted.nud);
+
+            // note bone 40 - 51 is disabled for pika
+
+            foreach (string an in anims.Keys)
+            {
+                effectiveScale(anims[an], Matrix4.CreateTranslation(0, 0, 0) * Matrix4.CreateScale(sca, sca, sca));
+            }
+            effectiveScale(converted.nud, converted.vbn, Matrix4.CreateTranslation(0, 0, 0) * Matrix4.CreateScale(sca, sca, sca));
+            
+            Directory.CreateDirectory(path + "build\\model\\body\\c00\\");
             nud.Save(path + "build\\model\\body\\c00\\model.nud");
             converted.vbn.Endian = Endianness.Little;
             converted.vbn.Save(path + "build\\model\\body\\c00\\model.vbn");
-            //Runtime.TextureContainers[0].Save(path + "build\\model\\body\\c00\\model.nut");
 
-            Dictionary<string, SkelAnimation> anims = DAT_Animation.LoadAJ(path + "PlPcAJ.dat", converted.vbn);
-
-            ArrangeBones(converted.vbn, converted.nud);
 
             PAC org = new PAC();
             PAC npac = new PAC();
             org.Read(path + "main.pac");
-
             foreach (string key in org.Files.Keys)
             {
                 byte[] d = org.Files[key];
@@ -277,6 +288,64 @@ namespace Smash_Forge
                 n.mesh.Remove(m);
         }
 
+
+        public static void effectiveScale(SkelAnimation anim, Matrix4 sca)
+        {
+            foreach(KeyFrame frame in anim.frames)
+            {
+                foreach(KeyNode node in frame.nodes)
+                {
+                    if(node.t_type != -1)
+                    {
+                        Vector3 pos = Vector3.Transform(node.t, sca);
+                        if (node.t.X != -99) node.t.X = pos.X;
+                        if (node.t.Y != -99) node.t.Y = pos.Y;
+                        if (node.t.Z != -99) node.t.Z = pos.Z;
+                    }
+                }
+            }
+        }
+        public static void effectiveScale(DAT_Animation anim, Matrix4 sca)
+        {
+            foreach (List<DAT_Animation.DATAnimTrack> track in anim.nodes)
+            {
+                foreach (DAT_Animation.DATAnimTrack track2 in track)
+                {
+                    if(track2.type == DAT_Animation.AnimType.XPOS
+                        || track2.type == DAT_Animation.AnimType.YPOS
+                        || track2.type == DAT_Animation.AnimType.ZPOS)
+                    foreach (DAT_Animation.KeyNode node in track2.keys)
+                    {
+                        node.value = Vector3.Transform(new Vector3(node.value, 0, 0), sca).X;
+                    }
+                }
+            }
+        }
+        public static void effectiveScale(NUD nud, VBN vbn, Matrix4 sca)
+        {
+            foreach(Bone b in vbn.bones)
+            {
+                Vector3 pos = Vector3.Transform(new Vector3(b.position[0], b.position[1], b.position[2]), sca);
+                b.position[0] = pos.X;
+                b.position[1] = pos.Y;
+                b.position[2] = pos.Z;
+            }
+
+            vbn.reset();
+
+            foreach(NUD.Mesh mesh in nud.mesh)
+            {
+                foreach(NUD.Polygon poly in mesh.polygons)
+                {
+                    foreach(NUD.Vertex v in poly.vertices)
+                    {
+                        v.pos = Vector3.Transform(v.pos, sca);
+                    }
+                }
+            }
+            nud.PreRender();
+        }
+
         public static void ArrangeBones(VBN vbn, NUD nud)
         {
             Dictionary<int, int> boneReorder = new Dictionary<int, int>();
@@ -304,6 +373,7 @@ namespace Smash_Forge
             foreach(int k in boneReorder.Keys)
             {
                 nList[boneReorder[k]] = vbn.bones[k];
+                //if (new string(vbn.bones[k].boneName).Equals("RotN")) vbn.bones[k].parentIndex = 0;
                 if (vbn.bones[k].parentIndex != -1 && vbn.bones[k].parentIndex != 0x0FFFFFFF)
                 {
                     vbn.bones[k].parentIndex = boneReorder[vbn.bones[k].parentIndex];

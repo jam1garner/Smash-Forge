@@ -156,7 +156,7 @@ namespace Smash_Forge
         {
             SkelAnimation a = new SkelAnimation();
 
-            for (int i = 0; i < anim.frameCount+1; i++)
+            for (int i = 1; i < anim.frameCount+1; i++)
                 a.frames.Add(new KeyFrame());
 
             for (int i = 0; i < anim.nodes.Count; i++)
@@ -166,10 +166,15 @@ namespace Smash_Forge
                 int fr = 0;
                 foreach(Frame f in frames)
                 {
+                    if(fr == 0)
+                    {
+                        fr++;
+                        continue;
+                    }
                     if (i >= skel.bones.Count)
                         continue;
 
-                    KeyFrame frame = a.frames[fr];
+                    KeyFrame frame = a.frames[fr-1];
                     KeyNode node = new KeyNode();
                     frame.nodes.Add(node);
 

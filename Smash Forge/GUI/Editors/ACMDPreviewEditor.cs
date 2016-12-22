@@ -25,8 +25,9 @@ namespace Smash_Forge
         public void SetAnimation(uint crc)
         {
             this.crc = crc;
+            richTextBox1.Clear();
             richTextBox1.Text = SALT.Scripting.AnimCMD.ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
-            HighlightSyntax();
+            //HighlightSyntax();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -41,6 +42,7 @@ namespace Smash_Forge
                 {
                     foreach (string str in line)
                     {
+                        if (str.Equals("")) continue;
                         ACMDCompiler.CompileSingleCommand(str); // try to compile
                         index++;
                     }

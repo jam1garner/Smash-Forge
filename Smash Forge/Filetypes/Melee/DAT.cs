@@ -54,7 +54,7 @@ out vec4 color;
 out float normal;
 
 uniform mat4 modelview;
-uniform mat4 bones[150];
+uniform mat4 bones[300];
  
 void
 main()

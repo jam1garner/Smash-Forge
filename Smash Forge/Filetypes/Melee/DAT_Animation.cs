@@ -354,6 +354,21 @@ namespace Smash_Forge
 
         // Writing
 
+        public void Save(string fname)
+        {
+            FileOutput f = new FileOutput();
+            f.Endian = System.IO.Endianness.Big;
+
+            // header
+            FileOutput header = new FileOutput();
+            header.Endian = System.IO.Endianness.Big;
+
+            FileOutput data = new FileOutput();
+            data.Endian = System.IO.Endianness.Big;
+
+
+            f.save(fname);
+        }
 
     }
 }
