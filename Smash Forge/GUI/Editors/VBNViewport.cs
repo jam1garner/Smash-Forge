@@ -472,6 +472,7 @@ main()
             GL.Vertex2(1.0, -1.0);
             GL.End();
 
+            //GL.DepthFunc(DepthFunction.Never);
             GL.Enable(EnableCap.DepthTest);
             GL.ClearDepth(1.0);
 
@@ -775,7 +776,10 @@ main()
                 foreach (Bone bone in vbn.bones)
                 {
                     // first calcuate the point and draw a point
-                    GL.Color3(Color.GreenYellow);
+                    if(bone == BoneTreePanel.selectedBone)
+                        GL.Color3(Color.Red);
+                    else
+                        GL.Color3(Color.GreenYellow);
 
                     Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform);
                     RenderTools.drawCube(pos_c, .085f);
