@@ -157,7 +157,18 @@ namespace Smash_Forge
                             if (c.dat_melee != null)
                                 d = c.dat_melee;
                         if (d != null)
-                            File.WriteAllBytes(filename, d.toLVD().Rebuild());
+                        {
+                            DialogResult r = MessageBox.Show("Would you like to save in safe mode?\n(This is not suggested, only use when needed)", "DAT -> LVD safe mode", MessageBoxButtons.YesNo);
+                            if(r == DialogResult.Yes)
+                            {
+                                File.WriteAllBytes(filename, d.toLVD(true).Rebuild());
+                            }
+                            else if(r == DialogResult.No)
+                            {
+                                File.WriteAllBytes(filename, d.toLVD(false).Rebuild());
+                            }
+                        }
+                            
                     }
                         
                     if (filename.EndsWith(".dae"))

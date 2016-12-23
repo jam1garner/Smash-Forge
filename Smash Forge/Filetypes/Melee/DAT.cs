@@ -563,23 +563,35 @@ main()
                 recursivelyGrabPoints(link.connectors[1], c);
         }
 
-        public LVD toLVD()
+        public LVD toLVD(bool safemode)
         {
             LVD lvd = new LVD();
             int j = 0;
-            foreach(int[] poly in collisions.polyRanges)
+            if (safemode)
             {
-                Collision c = new Collision() { name = $"COL_MELEE_{j}", subname = $"MELEE_{j++}" };
-                int k = 0;
                 foreach (COLL_DATA.Link link in collisions.links)
                 {
-                    if (inRange(poly, link.vertexIndices[0]) && link.connectors[0] == 0xFFFF)
-                    {
-                        recursivelyGrabPoints(k,c);
-                    }
-                    k++;
+                    Collision c = new Collision() { name = $"COL_MELEE_{j}", subname = $"MELEE_{j++}" };
+                    addLink(link, c);
+                    lvd.collisions.Add(c);
                 }
-                lvd.collisions.Add(c);
+            }
+            else
+            {
+                foreach (int[] poly in collisions.polyRanges)
+                {
+                    Collision c = new Collision() { name = $"COL_MELEE_{j}", subname = $"MELEE_{j++}" };
+                    int k = 0;
+                    foreach (COLL_DATA.Link link in collisions.links)
+                    {
+                        if (inRange(poly, link.vertexIndices[0]) && link.connectors[0] == 0xFFFF)
+                        {
+                            recursivelyGrabPoints(k, c);
+                        }
+                        k++;
+                    }
+                    lvd.collisions.Add(c);
+                }
             }
 
             lvd.blastzones.Add(blastzones);
@@ -593,6 +605,17 @@ main()
             j = 0;
             foreach (Vector3 p in itemSpawns)
                 lvd.generalPoints.Add(new Point() { x = p.X, y = p.Y, name = $"Item_{j}", subname = $"{j++}" });
+
+            /*//This is basically for DSX8 for him quickly converting items in the "dumb" way
+            foreach (Vector3 p in itemSpawns)
+            {
+                ItemSpawner item = new ItemSpawner() { name = $"Item_{j}", subname = $"{j++}" };
+                item.sections.Add(new Section());
+                Vector2D[] f = { new Vector2D() { x = p.X, y = p.Y }, new Vector2D() { x = p.X, y = p.Y } };
+                item.sections[0].points = new List<Vector2D>(f);
+                lvd.items.Add(item);
+            }
+            */
 
             return lvd;
         }
