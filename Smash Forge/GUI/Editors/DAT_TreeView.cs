@@ -36,5 +36,14 @@ namespace Smash_Forge
                 treeView1.Nodes.AddRange(dat.tree.ToArray());
             }
         }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if(e.Node.Tag is DAT.JOBJ)
+            {
+                DAT.JOBJ jobj = (DAT.JOBJ)e.Node.Tag;
+                Console.WriteLine($"Position - {jobj.pos}");
+            }
+        }
     }
 }

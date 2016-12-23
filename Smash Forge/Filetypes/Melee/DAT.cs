@@ -22,6 +22,11 @@ namespace Smash_Forge
         public List<TreeNode> tree = new List<TreeNode>();
         public List<TreeNode> displayList = new List<TreeNode>();
         public COLL_DATA collisions = null;
+        public List<Vector3d> spawns = null;
+        public List<Vector3d> respawns = null;
+        public List<Vector3d> itemSpawns = null;
+        public Bounds cameraBounds = null;
+        public Bounds blastzones = null;
 
         public VBN bones = new VBN();
 
@@ -180,6 +185,7 @@ main()
                 {
                     Map_Head head = new Map_Head();
                     head.Read(d, this, node);
+                    //levelDataNodes = node.Nodes[0].Nodes[0].Nodes[0].Nodes;
                 }
             }
 
@@ -705,13 +711,13 @@ main()
                     link.material = (byte)f.readByte();
                     links.Add(link);
                 }
-                foreach (List<Vector2D> poly in polys)
+                /*foreach (List<Vector2D> poly in polys)
                 {
                     inc++;
-                    //Console.WriteLine("\nPoly" + inc);
-                    //foreach (Vector2D point in poly)
-                    //    Console.WriteLine("(" + point.x + ", " + point.y + ")");
-                }
+                    Console.WriteLine("\nPoly" + inc);
+                    foreach (Vector2D point in poly)
+                        Console.WriteLine("(" + point.x + ", " + point.y + ")");
+                }*/
             }
         }
 
@@ -788,29 +794,21 @@ main()
 
             public void Read(FileData d, DAT dat, TreeNode parentNode)
             {
-                Console.WriteLine("Start " + d.pos());
-                int off = d.readInt() + headerSize;
-                int id = d.readInt();
-                off = d.readInt() + headerSize;
-                id = d.readInt();
+                int start = d.pos();
+                Console.WriteLine($"Map_Head Start {start}");
+                d.seek(d.readInt()+0x20);
+                int stageBonesRoot = d.readInt() + 0x20;
+                int boneIdTableOffset = d.readInt() + 0x20;
+                int idEntryCount = d.readInt();
 
-                for (int i = 0; i < 1; i++)
-                {
-                    if (off != headerSize && id != 0)
-                    {
-                        int temp = d.pos();
-                        d.seek(off);
+                d.seek(boneIdTableOffset);
+                Dictionary<short, short> boneIds = new Dictionary<short, short>();
+                for (int i = 0; i < idEntryCount; i++)
+                    boneIds.Add((short)d.readShort(), (short)d.readShort());
 
-                        Head_Node node = new Head_Node();
-                        node.id = id;
-                        node.Read(d, dat, parentNode);
-
-                        d.seek(temp);
-                    }
-                    off = d.readInt() + headerSize;
-                    id = d.readInt();
-                }
-
+                d.seek(stageBonesRoot);
+                //PLOAJ WORK YOUR MAGIC HERE <3
+                
             }
         }
 

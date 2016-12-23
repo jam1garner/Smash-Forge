@@ -890,6 +890,29 @@ main()
                         GL.End();
                     }
                 }
+                /*if (m.dat_melee != null && m.dat_melee.levelDataNodes != null)
+                {
+                    Vector3 camTopLeft = ((DAT.JOBJ)m.dat_melee.levelDataNodes[1].Tag).pos;
+                    Vector3 camBottomRight = ((DAT.JOBJ)m.dat_melee.levelDataNodes[2].Tag).pos;
+                    Vector3 deathTopLeft = ((DAT.JOBJ)m.dat_melee.levelDataNodes[3].Tag).pos;
+                    Vector3 deathBottomRight = ((DAT.JOBJ)m.dat_melee.levelDataNodes[4].Tag).pos;
+
+
+                    GL.Color3(Color.Blue);
+                    GL.Begin(PrimitiveType.LineLoop);
+                    GL.Vertex3(camTopLeft.X, camTopLeft.Y, 0);
+                    GL.Vertex3(camBottomRight.X, camTopLeft.Y, 0);
+                    GL.Vertex3(camBottomRight.X, camBottomRight.Y, 0);
+                    GL.Vertex3(camTopLeft.X, camBottomRight.Y, 0);
+                    GL.End();
+                    GL.Color3(Color.Red);
+                    GL.Begin(PrimitiveType.LineLoop);
+                    GL.Vertex3(deathTopLeft.X, deathTopLeft.Y, 0);
+                    GL.Vertex3(deathBottomRight.X, deathTopLeft.Y, 0);
+                    GL.Vertex3(deathBottomRight.X, deathBottomRight.Y, 0);
+                    GL.Vertex3(deathTopLeft.X, deathBottomRight.Y, 0);
+                    GL.End();
+                }*/
             }
 
             if (Runtime.TargetLVD != null)
