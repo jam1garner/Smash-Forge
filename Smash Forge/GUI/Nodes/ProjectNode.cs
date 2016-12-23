@@ -58,12 +58,13 @@ namespace Smash_Forge
         {
             return MainForm.Instance.project.treeView1.SelectedNode as T;
         }
+
         public ProjectNode ProjectNode
         {
             get
             {
-                TreeNode node = null;
-                node = this.Parent;
+
+                TreeNode node = this;
                 while (node != null)
                 {
                     if (node is ProjectNode)
@@ -79,6 +80,75 @@ namespace Smash_Forge
 
     public class ProjectFolderNode : ProjectExplorerNode
     {
+        static ProjectFolderNode()
+        {
+            _menu.Items.Add(new ToolStripMenuItem("Add", null,
+                                                 new ToolStripMenuItem("New Item", null, NewFileAction),
+                                                 new ToolStripMenuItem("New Folder", null, AddFolderAction),
+                                                 new ToolStripMenuItem("Existing Item", null, ImportFileAction))
+
+                           );
+        }
+        private static void NewFileAction(object sender, EventArgs e)
+        {
+            GetInstance<ProjectFolderNode>().NewFile();
+        }
+        private static void ImportFileAction(object sender, EventArgs e)
+        {
+            GetInstance<ProjectFolderNode>().ImportFile();
+        }
+        private static void AddFolderAction(object sender, EventArgs e)
+        {
+            GetInstance<ProjectFolderNode>().AddFolder();
+        }
+
+        public void NewFile()
+        {
+            throw new NotImplementedException();
+        }
+        public void AddFolder()
+        {
+
+            int i = 0;
+            foreach (TreeNode n in this.Nodes)
+            {
+                if (n.Text == $"NewFolder{i}")
+                {
+                    i++;
+                }
+                else break;
+            }
+
+            string path = "";
+            if (this is ProjectNode)
+                path = Path.Combine(Path.GetDirectoryName((((FileInfo)this.Tag).FullName)), $"NewFolder{i}");
+            else
+                path = Path.Combine((((DirectoryInfo)this.Tag).FullName), $"NewFolder{i}");
+
+            ProjectNode.Project.AddFolder(path);
+            Directory.CreateDirectory(path);
+            var node = new ProjectFolderNode()
+            {
+                Tag = new DirectoryInfo(path)
+            };
+            node.Text = $"NewFolder{i}";
+            Nodes.Add(node);
+            node.EnsureVisible();
+            node.BeginEdit();
+        }
+
+        public void ImportFile()
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    ProjectNode.Project.AddFile(ofd.FileName);
+                    Nodes.Add(new ProjectFileNode() { Tag = new FileInfo(ofd.FileName) });
+                }
+            }
+        }
+
         public ProjectFolderNode()
         {
             this.ImageIndex = this.SelectedImageIndex = 0;
@@ -95,12 +165,6 @@ namespace Smash_Forge
     // Inherit from folder as the proj file is treated as one
     public class ProjectNode : ProjectFolderNode
     {
-        //public static ContextMenuStrip _menu;
-        static ProjectNode()
-        {
-            _menu = new ContextMenuStrip();
-            _menu.Items.Add("Delete Project", null, DeleteAction);
-        }
         public ProjectNode(Project p)
         {
             this.Project = p;
@@ -108,14 +172,7 @@ namespace Smash_Forge
             this.ContextMenuStrip = _menu;
             this.ImageIndex = this.SelectedImageIndex = 3;
         }
-        public static void DeleteAction(object sender, EventArgs e)
-        {
-            GetInstance<ProjectNode>().DeleteFileOrFolder();
-        }
-        protected static T GetInstance<T>() where T : TreeNode
-        {
-            return MainForm.Instance.project.treeView1.SelectedNode as T;
-        }
+
         public Project Project { get; private set; }
         public string ProjectName
         {

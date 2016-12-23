@@ -33,11 +33,14 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openVBNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openStageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openCharacterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openStageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.openFIghterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.openNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.clearWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.clearWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.edittToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addBoneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hashMatchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,8 +76,6 @@
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.glControl1 = new OpenTK.GLControl();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.openWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -97,60 +98,79 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openVBNToolStripMenuItem,
-            this.openStageToolStripMenuItem,
-            this.openCharacterToolStripMenuItem,
-            this.openWorkspaceToolStripMenuItem,
             this.toolStripSeparator4,
             this.openNUDToolStripMenuItem,
-            this.clearWorkspaceToolStripMenuItem,
-            this.saveNUDToolStripMenuItem});
+            this.saveNUDToolStripMenuItem,
+            this.toolStripSeparator5,
+            this.clearWorkspaceToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // openVBNToolStripMenuItem
             // 
+            this.openVBNToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openFileToolStripMenuItem,
+            this.openStageToolStripMenuItem1,
+            this.openFIghterToolStripMenuItem});
             this.openVBNToolStripMenuItem.Name = "openVBNToolStripMenuItem";
-            this.openVBNToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openVBNToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.openVBNToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.openVBNToolStripMenuItem.Text = "Open";
             this.openVBNToolStripMenuItem.Click += new System.EventHandler(this.openVBNToolStripMenuItem_Click);
             // 
-            // openStageToolStripMenuItem
+            // openFileToolStripMenuItem
             // 
-            this.openStageToolStripMenuItem.Name = "openStageToolStripMenuItem";
-            this.openStageToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.openStageToolStripMenuItem.Text = "Open Stage";
-            this.openStageToolStripMenuItem.Click += new System.EventHandler(this.openStageToolStripMenuItem_Click);
+            this.openFileToolStripMenuItem.Name = "openFileToolStripMenuItem";
+            this.openFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.openFileToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.openFileToolStripMenuItem.Text = "Open File";
+            this.openFileToolStripMenuItem.Click += new System.EventHandler(this.openFileToolStripMenuItem_Click);
             // 
-            // openCharacterToolStripMenuItem
+            // openStageToolStripMenuItem1
             // 
-            this.openCharacterToolStripMenuItem.Name = "openCharacterToolStripMenuItem";
-            this.openCharacterToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.openCharacterToolStripMenuItem.Text = "Open Character";
-            this.openCharacterToolStripMenuItem.Click += new System.EventHandler(this.openCharacterToolStripMenuItem_Click);
+            this.openStageToolStripMenuItem1.Name = "openStageToolStripMenuItem1";
+            this.openStageToolStripMenuItem1.Size = new System.Drawing.Size(159, 22);
+            this.openStageToolStripMenuItem1.Text = "Open Stage";
+            this.openStageToolStripMenuItem1.Click += new System.EventHandler(this.openStageToolStripMenuItem_Click);
+            // 
+            // openFIghterToolStripMenuItem
+            // 
+            this.openFIghterToolStripMenuItem.Name = "openFIghterToolStripMenuItem";
+            this.openFIghterToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.openFIghterToolStripMenuItem.Text = "Open FIghter";
+            this.openFIghterToolStripMenuItem.Click += new System.EventHandler(this.openCharacterToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(152, 6);
             // 
             // openNUDToolStripMenuItem
             // 
             this.openNUDToolStripMenuItem.Name = "openNUDToolStripMenuItem";
             this.openNUDToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.openNUDToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.openNUDToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.openNUDToolStripMenuItem.Text = "Save";
             this.openNUDToolStripMenuItem.Click += new System.EventHandler(this.openNUDToolStripMenuItem_Click);
-            // 
-            // clearWorkspaceToolStripMenuItem
-            // 
-            this.clearWorkspaceToolStripMenuItem.Name = "clearWorkspaceToolStripMenuItem";
-            this.clearWorkspaceToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.clearWorkspaceToolStripMenuItem.Text = "Clear Workspace";
-            this.clearWorkspaceToolStripMenuItem.Click += new System.EventHandler(this.clearWorkspaceToolStripMenuItem_Click);
             // 
             // saveNUDToolStripMenuItem
             // 
             this.saveNUDToolStripMenuItem.Name = "saveNUDToolStripMenuItem";
-            this.saveNUDToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.saveNUDToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.saveNUDToolStripMenuItem.Text = "Save NUD";
             this.saveNUDToolStripMenuItem.Click += new System.EventHandler(this.saveNUDToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(152, 6);
+            // 
+            // clearWorkspaceToolStripMenuItem
+            // 
+            this.clearWorkspaceToolStripMenuItem.Name = "clearWorkspaceToolStripMenuItem";
+            this.clearWorkspaceToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.clearWorkspaceToolStripMenuItem.Text = "Clear Workspace";
+            this.clearWorkspaceToolStripMenuItem.Click += new System.EventHandler(this.clearWorkspaceToolStripMenuItem_Click);
             // 
             // edittToolStripMenuItem
             // 
@@ -432,18 +452,6 @@
             this.checkBox1.Text = "Big Endian Bones";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
-            // openWorkspaceToolStripMenuItem
-            // 
-            this.openWorkspaceToolStripMenuItem.Name = "openWorkspaceToolStripMenuItem";
-            this.openWorkspaceToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.openWorkspaceToolStripMenuItem.Text = "Open Workspace";
-            this.openWorkspaceToolStripMenuItem.Click += new System.EventHandler(this.openWorkspaceToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(153, 6);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -498,12 +506,10 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem boneTreeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openStageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearWorkspaceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem renderSettingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem meshListToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem projectTreeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openCharacterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveNUDToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem collisionToolStripMenuItem;
@@ -515,8 +521,11 @@
         private System.Windows.Forms.ToolStripMenuItem texturesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openNUTEditorToolStripMenuItem;
         private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.ToolStripMenuItem openWorkspaceToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem openFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openStageToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem openFIghterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
     }
 }
 

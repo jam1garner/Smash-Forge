@@ -165,6 +165,12 @@ namespace Smash_Forge
 
     public class Project
     {
+        public Project()
+        {
+            IncludedFiles = new List<ProjectItem>();
+            IncludedFolders = new List<ProjectItem>();
+        }
+
         // Project Properties
         public XmlDocument ProjFile { get; set; }
         public string ProjFilepath { get; set; }
@@ -175,6 +181,9 @@ namespace Smash_Forge
         public ProjType Type { get; set; }
         public ProjPlatform Platform { get; set; }
         public List<ProjectItem> IncludedFiles { get; set; }
+
+        // Folders are only included here if empty.
+        public List<ProjectItem> IncludedFolders { get; set; }
 
         public ProjectItem GetFile(string path)
         {
@@ -192,6 +201,21 @@ namespace Smash_Forge
                 return false;
         }
 
+        public void AddFile(string filepath)
+        {
+            var item = new ProjectItem();
+            item.RealPath = filepath;
+            item.RelativePath = filepath.Replace(ProjDirectory, "");
+            IncludedFiles.Add(item);
+        }
+        public void AddFolder(string path)
+        {
+            var item = new ProjectItem();
+            item.RealPath = path;
+            item.RelativePath = path.Replace(ProjDirectory, "");
+            IncludedFolders.Add(item);
+        }
+
         public ProjectItem this[string key]
         {
             get
@@ -207,9 +231,9 @@ namespace Smash_Forge
     {
         public FitProj()
         {
-            IncludedFiles = new List<ProjectItem>();
+
         }
-        public FitProj(string name) : this()
+        public FitProj(string name)
         {
             ProjName = name;
         }
@@ -347,6 +371,13 @@ namespace Smash_Forge
         }
         public string RelativePath { get; set; }
         public string RealPath { get; set; }
+        public bool IsDirectory
+        {
+            get
+            {
+                return RelativePath.EndsWith("/") || RelativePath.EndsWith("\\");
+            }
+        }
         public List<ProjectItem> Depends { get; set; }
         public override string ToString()
         {
