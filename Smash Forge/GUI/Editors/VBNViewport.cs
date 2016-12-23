@@ -855,6 +855,72 @@ main()
             return Color.FromArgb(color.A, 255 - color.R, 255 - color.G, 255 - color.B);
         }
 
+        public void DrawSpawn(Point s, bool isRespawn)
+        {
+            GL.Color4(Color.FromArgb(100, Color.Blue));
+            GL.Begin(PrimitiveType.QuadStrip);
+            GL.Vertex3(s.x - 3f, s.y, 0f);
+            GL.Vertex3(s.x + 3f, s.y, 0f);
+            GL.Vertex3(s.x - 3f, s.y + 10f, 0f);
+            GL.Vertex3(s.x + 3f, s.y + 10f, 0f);
+            GL.End();
+
+            //Draw respawn platform
+            if (isRespawn)
+            {
+                GL.Color4(Color.FromArgb(200, Color.Gray));
+                GL.Begin(PrimitiveType.Triangles);
+                GL.Vertex3(s.x - 5, s.y, 0);
+                GL.Vertex3(s.x + 5, s.y, 0);
+                GL.Vertex3(s.x, s.y, 5);
+
+                GL.Vertex3(s.x - 5, s.y, 0);
+                GL.Vertex3(s.x + 5, s.y, 0);
+                GL.Vertex3(s.x, s.y, -5);
+
+                GL.Vertex3(s.x - 5, s.y, 0);
+                GL.Vertex3(s.x, s.y - 5, 0);
+                GL.Vertex3(s.x, s.y, 5);
+
+                GL.Vertex3(s.x + 5, s.y, 0);
+                GL.Vertex3(s.x, s.y - 5, 0);
+                GL.Vertex3(s.x, s.y, -5);
+
+                GL.Vertex3(s.x + 5, s.y, 0);
+                GL.Vertex3(s.x, s.y - 5, 0);
+                GL.Vertex3(s.x, s.y, 5);
+
+                GL.Vertex3(s.x - 5, s.y, 0);
+                GL.Vertex3(s.x, s.y - 5, 0);
+                GL.Vertex3(s.x, s.y, -5);
+                GL.End();
+
+                GL.Color4(Color.FromArgb(200, Color.Black));
+                GL.Begin(PrimitiveType.Lines);
+                GL.Vertex3(s.x - 5, s.y, 0);
+                GL.Vertex3(s.x, s.y - 5, 0);
+                GL.Vertex3(s.x + 5, s.y, 0);
+                GL.Vertex3(s.x, s.y - 5, 0);
+
+                GL.Vertex3(s.x, s.y, -5);
+                GL.Vertex3(s.x, s.y - 5, 0);
+                GL.Vertex3(s.x, s.y, 5);
+                GL.Vertex3(s.x, s.y - 5, 0);
+
+                GL.Vertex3(s.x, s.y, -5);
+                GL.Vertex3(s.x + 5, s.y, 0);
+                GL.Vertex3(s.x, s.y, -5);
+                GL.Vertex3(s.x - 5, s.y, 0);
+
+                GL.Vertex3(s.x, s.y, 5);
+                GL.Vertex3(s.x + 5, s.y, 0);
+                GL.Vertex3(s.x, s.y, 5);
+                GL.Vertex3(s.x - 5, s.y, 0);
+
+                GL.End();
+            }
+        }
+
         public void DrawLVD()
         {
             foreach (ModelContainer m in Runtime.ModelContainers)
@@ -894,29 +960,43 @@ main()
                         GL.End();
                     }
                 }
-                /*if (m.dat_melee != null && m.dat_melee.levelDataNodes != null)
+
+                if(m.dat_melee != null && m.dat_melee.blastzones != null)
                 {
-                    Vector3 camTopLeft = ((DAT.JOBJ)m.dat_melee.levelDataNodes[1].Tag).pos;
-                    Vector3 camBottomRight = ((DAT.JOBJ)m.dat_melee.levelDataNodes[2].Tag).pos;
-                    Vector3 deathTopLeft = ((DAT.JOBJ)m.dat_melee.levelDataNodes[3].Tag).pos;
-                    Vector3 deathBottomRight = ((DAT.JOBJ)m.dat_melee.levelDataNodes[4].Tag).pos;
-
-
-                    GL.Color3(Color.Blue);
-                    GL.Begin(PrimitiveType.LineLoop);
-                    GL.Vertex3(camTopLeft.X, camTopLeft.Y, 0);
-                    GL.Vertex3(camBottomRight.X, camTopLeft.Y, 0);
-                    GL.Vertex3(camBottomRight.X, camBottomRight.Y, 0);
-                    GL.Vertex3(camTopLeft.X, camBottomRight.Y, 0);
-                    GL.End();
+                    Bounds b = m.dat_melee.blastzones;
                     GL.Color3(Color.Red);
                     GL.Begin(PrimitiveType.LineLoop);
-                    GL.Vertex3(deathTopLeft.X, deathTopLeft.Y, 0);
-                    GL.Vertex3(deathBottomRight.X, deathTopLeft.Y, 0);
-                    GL.Vertex3(deathBottomRight.X, deathBottomRight.Y, 0);
-                    GL.Vertex3(deathTopLeft.X, deathBottomRight.Y, 0);
+                    GL.Vertex3(b.left, b.top, 0);
+                    GL.Vertex3(b.right, b.top, 0);
+                    GL.Vertex3(b.right, b.bottom, 0);
+                    GL.Vertex3(b.left, b.bottom, 0);
                     GL.End();
-                }*/
+                }
+
+                if (m.dat_melee != null && m.dat_melee.cameraBounds != null)
+                {
+                    Bounds b = m.dat_melee.cameraBounds;
+                    GL.Color3(Color.Blue);
+                    GL.Begin(PrimitiveType.LineLoop);
+                    GL.Vertex3(b.left, b.top, 0);
+                    GL.Vertex3(b.right, b.top, 0);
+                    GL.Vertex3(b.right, b.bottom, 0);
+                    GL.Vertex3(b.left, b.bottom, 0);
+                    GL.End();
+                }
+
+                if (m.dat_melee != null && m.dat_melee.respawns != null)
+                    foreach (Vector3 r in m.dat_melee.respawns)
+                        DrawSpawn(new Point() { x = r.X, y = r.Y }, true);
+
+                if (m.dat_melee != null && m.dat_melee.spawns != null)
+                    foreach (Vector3 r in m.dat_melee.spawns)
+                        DrawSpawn(new Point() { x = r.X, y = r.Y }, false);
+
+                GL.Color4(Color.FromArgb(200, Color.Fuchsia));
+                if (m.dat_melee != null && m.dat_melee.itemSpawns != null)
+                    foreach (Vector3 r in m.dat_melee.itemSpawns)
+                        RenderTools.drawCubeWireframe(r, 3);
             }
 
             if (Runtime.TargetLVD != null)
@@ -1063,13 +1143,7 @@ main()
                 {
                     foreach (Point s in Runtime.TargetLVD.spawns)
                     {
-                        GL.Color4(Color.FromArgb(100, Color.Blue));
-                        GL.Begin(PrimitiveType.QuadStrip);
-                        GL.Vertex3(s.x - 3f, s.y, 0f);
-                        GL.Vertex3(s.x + 3f, s.y, 0f);
-                        GL.Vertex3(s.x - 3f, s.y + 10f, 0f);
-                        GL.Vertex3(s.x + 3f, s.y + 10f, 0f);
-                        GL.End();
+                        DrawSpawn(s, false);
                     }
                 }
 
@@ -1077,65 +1151,7 @@ main()
                 {
                     foreach (Point s in Runtime.TargetLVD.respawns)
                     {
-                        GL.Color4(Color.FromArgb(100, Color.Blue));
-                        GL.Begin(PrimitiveType.QuadStrip);
-                        GL.Vertex3(s.x - 3f, s.y, 0f);
-                        GL.Vertex3(s.x + 3f, s.y, 0f);
-                        GL.Vertex3(s.x - 3f, s.y + 10f, 0f);
-                        GL.Vertex3(s.x + 3f, s.y + 10f, 0f);
-                        GL.End();
-
-                        //Draw respawn platform
-                        GL.Color4(Color.FromArgb(200, Color.Gray));
-                        GL.Begin(PrimitiveType.Triangles);
-                        GL.Vertex3(s.x - 5, s.y, 0);
-                        GL.Vertex3(s.x + 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y, 5);
-
-                        GL.Vertex3(s.x - 5, s.y, 0);
-                        GL.Vertex3(s.x + 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y, -5);
-
-                        GL.Vertex3(s.x - 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y - 5, 0);
-                        GL.Vertex3(s.x, s.y, 5);
-
-                        GL.Vertex3(s.x + 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y - 5, 0);
-                        GL.Vertex3(s.x, s.y, -5);
-
-                        GL.Vertex3(s.x + 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y - 5, 0);
-                        GL.Vertex3(s.x, s.y, 5);
-
-                        GL.Vertex3(s.x - 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y - 5, 0);
-                        GL.Vertex3(s.x, s.y, -5);
-                        GL.End();
-
-                        GL.Color4(Color.FromArgb(200, Color.Black));
-                        GL.Begin(PrimitiveType.Lines);
-                        GL.Vertex3(s.x - 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y - 5, 0);
-                        GL.Vertex3(s.x + 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y - 5, 0);
-
-                        GL.Vertex3(s.x, s.y, -5);
-                        GL.Vertex3(s.x, s.y - 5, 0);
-                        GL.Vertex3(s.x, s.y, 5);
-                        GL.Vertex3(s.x, s.y - 5, 0);
-
-                        GL.Vertex3(s.x, s.y, -5);
-                        GL.Vertex3(s.x + 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y, -5);
-                        GL.Vertex3(s.x - 5, s.y, 0);
-
-                        GL.Vertex3(s.x, s.y, 5);
-                        GL.Vertex3(s.x + 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y, 5);
-                        GL.Vertex3(s.x - 5, s.y, 0);
-
-                        GL.End();
+                        DrawSpawn(s,true);
                     }
                 }
 

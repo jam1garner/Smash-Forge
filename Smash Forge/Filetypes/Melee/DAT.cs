@@ -22,9 +22,9 @@ namespace Smash_Forge
         public List<TreeNode> tree = new List<TreeNode>();
         public List<TreeNode> displayList = new List<TreeNode>();
         public COLL_DATA collisions = null;
-        public List<Vector3d> spawns = null;
-        public List<Vector3d> respawns = null;
-        public List<Vector3d> itemSpawns = null;
+        public List<Vector3> spawns = null;
+        public List<Vector3> respawns = null;
+        public List<Vector3> itemSpawns = null;
         public Bounds cameraBounds = null;
         public Bounds blastzones = null;
 
@@ -810,14 +810,14 @@ main()
                 d.seek(boneIdTableOffset);
                 Dictionary<short, short> boneIds = new Dictionary<short, short>();
                 for (int i = 0; i < idEntryCount; i++)
-                    boneIds.Add((short)d.readShort(), (short)d.readShort());
+                    boneIds.Add((short)(d.readShort() - 1), (short)d.readShort());
 
                 d.seek(stageBonesRoot);
                 //PLOAJ WORK YOUR MAGIC HERE <3
                 // you got it fam
                 JOBJ j = new JOBJ();
                 j.Read(d, dat, parentNode);
-
+                
 
                 // models I guess gosh
                 d.seek(mappymodelOffset);
@@ -825,6 +825,54 @@ main()
                 node.id = mappymodelCount;
                 node.Read(d, dat, parentNode);
 
+                short index = 0;
+                dat.cameraBounds = new Bounds();
+                dat.blastzones = new Bounds();
+                dat.itemSpawns = new List<Vector3>();
+                dat.spawns = new List<Vector3>();
+                dat.respawns = new List<Vector3>();
+                foreach(TreeNode t in j.node.Nodes)
+                {
+                    Vector3 pos = ((JOBJ)t.Tag).pos;
+                    int type = -1;
+                    try
+                    {
+                        type = boneIds[index];
+
+                        if (type >= 0 && type <= 3)
+                            dat.spawns.Add(pos);
+                        else if (type >= 4 && type <= 7)
+                            dat.respawns.Add(pos);
+                        else if (0x7F <= type && type <= 0x93)
+                            dat.itemSpawns.Add(pos);
+                        //else if (type == 0x94) (idk what this is tbh)
+                        else if (type == 0x95)
+                        {
+                            dat.cameraBounds.left = pos.X;
+                            dat.cameraBounds.top = pos.Y;
+                        }
+                        else if (type == 0x96)
+                        {
+                            dat.cameraBounds.right = pos.X;
+                            dat.cameraBounds.bottom = pos.Y;
+                        }
+                        else if (type == 0x97)
+                        {
+                            dat.blastzones.left = pos.X;
+                            dat.blastzones.top = pos.Y;
+                        }
+                        else if (type == 0x98)
+                        {
+                            dat.blastzones.right = pos.X;
+                            dat.blastzones.bottom = pos.Y;
+                        }
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        Console.WriteLine("No key for node found");
+                    }
+                    index++;
+                }
             }
         }
 
