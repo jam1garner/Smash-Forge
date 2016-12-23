@@ -511,6 +511,77 @@ main()
             }
         }
 
+        private static bool inRange(int[] range, int val)
+        {
+            return (range[0] <= val && range[1] >= val);
+        }
+
+        private static bool vertExists(Collision c, Vector2D v)
+        {
+            foreach (Vector2D v2 in c.verts)
+                if (v2.x == v.x && v2.y == v.y)
+                    return true;
+            return false;
+        }
+
+        public LVD toLVD()
+        {
+            LVD lvd = new LVD();
+            int j = 0;
+            foreach(int[] poly in collisions.polyRanges)
+            {
+                Collision c = new Collision() { name = $"COL_MELEE_{j}", subname = $"MELEE_{j++}" };
+                foreach(COLL_DATA.Link link in collisions.links)
+                {
+                    if (inRange(poly, link.vertexIndices[0]))
+                    {
+                        int l1 = link.vertexIndices[0], l2 = link.vertexIndices[1];
+                        if (!vertExists(c, collisions.vertices[l1]))
+                            c.verts.Add(collisions.vertices[l1]);
+                        if (!vertExists(c, collisions.vertices[l2]))
+                            c.verts.Add(collisions.vertices[l2]);
+
+                        Vector2D currentNormal = new Vector2D();
+                        if ((link.collisionAngle & 1) != 0)
+                            currentNormal.y = 1;
+                        if ((link.collisionAngle & 2) != 0)
+                            currentNormal.y = -1;
+                        if ((link.collisionAngle & 4) != 0)
+                            currentNormal.x = 1;
+                        if ((link.collisionAngle & 8) != 0)
+                            currentNormal.x = -1;
+                        c.normals.Add(currentNormal);
+
+                        if ((link.flags & 1) != 0)
+                            c.flag4 = true;
+                        CollisionMat currentMat = new CollisionMat();
+                        if ((link.flags & 2) != 0)
+                        {
+                            currentMat.setFlag(6, true);
+                            currentMat.setFlag(7, true);
+                        }
+                        currentMat.setPhysics(link.material);
+                        c.materials.Add(currentMat);
+                    }
+                }
+                lvd.collisions.Add(c);
+            }
+
+            lvd.blastzones.Add(blastzones);
+            lvd.cameraBounds.Add(cameraBounds);
+            j = 0;
+            foreach (Vector3 s in spawns)
+                lvd.spawns.Add(new Point() { x = s.X, y = s.Y, name = $"Spawn_{j}", subname = $"{j++}" });
+            j = 0;
+            foreach (Vector3 s in respawns)
+                lvd.respawns.Add(new Point() { x = s.X, y = s.Y, name = $"Respawn_{j}", subname = $"{j++}" });
+            j = 0;
+            foreach (Vector3 p in itemSpawns)
+                lvd.generalPoints.Add(new Point() { x = p.X, y = p.Y, name = $"Item_{j}", subname = $"{j++}" });
+
+            return lvd;
+        }
+
         public ModelContainer wrapToNUD()
         {
             ModelContainer con = new ModelContainer();
@@ -670,6 +741,7 @@ main()
             public List<Vector2D> vertices = new List<Vector2D>();
             public List<List<Vector2D>> polys = new List<List<Vector2D>>();
             public List<Link> links = new List<Link>();
+            public List<int[]> polyRanges = new List<int[]>();
 
             public void Read(FileData f)
             {
@@ -695,9 +767,10 @@ main()
                     f.skip(0x24);
                     int start = f.readShort();
                     int length = f.readShort();
+                    int[] range = { start, start + length };
+                    polyRanges.Add(range);
                     polys.Add(vertices.GetRange(start, length));
                 }
-                int inc = 0;
                 f.seek(linkOff);
                 for (int i = 0; i < linkCount; i++)
                 {
@@ -826,8 +899,8 @@ main()
                 node.Read(d, dat, parentNode);
 
                 short index = 0;
-                dat.cameraBounds = new Bounds();
-                dat.blastzones = new Bounds();
+                dat.cameraBounds = new Bounds() { name = "CAMERA_00", subname = "00" };
+                dat.blastzones = new Bounds() { name = "DEATH_00", subname = "00" };
                 dat.itemSpawns = new List<Vector3>();
                 dat.spawns = new List<Vector3>();
                 dat.respawns = new List<Vector3>();

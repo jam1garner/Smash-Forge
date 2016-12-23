@@ -150,6 +150,16 @@ namespace Smash_Forge
                     }
                     if (filename.EndsWith(".lvd") && Runtime.TargetLVD != null)
                         File.WriteAllBytes(filename, Runtime.TargetLVD.Rebuild());
+                    else if (filename.EndsWith(".lvd"))
+                    {
+                        DAT d = null;
+                        foreach (ModelContainer c in Runtime.ModelContainers)
+                            if (c.dat_melee != null)
+                                d = c.dat_melee;
+                        if (d != null)
+                            File.WriteAllBytes(filename, d.toLVD().Rebuild());
+                    }
+                        
                     if (filename.EndsWith(".dae"))
                     {
                         if(Runtime.ModelContainers.Count > 0)
