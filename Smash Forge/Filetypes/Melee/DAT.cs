@@ -757,8 +757,8 @@ main()
                         parentNode.Nodes.Add(node);
                         node.Tag = this;
                         node.Text = "NodeObject";
-
-                        //Console.WriteLine(d.pos().ToString("x"));
+                        
+                        // WTF ARE THESE OFFSETS OMG
                         int jPointer = d.readInt() + headerSize;
                         Console.WriteLine((d.readInt() + headerSize).ToString("x") + " " + 
                             (d.readInt() + headerSize).ToString("x") + " " +
@@ -773,14 +773,11 @@ main()
                             (d.readInt() + headerSize).ToString("x") + " " +
                             (d.readInt() + headerSize).ToString("x") + " " +
                             (d.readInt() + headerSize).ToString("x") + " ");
-                        //d.skip(7 * 4); // unkown pointers
-                        //d.skip(5 * 4); // extra unknown (looks like more pointers, usually 0)
 
                         if (jPointer == headerSize)
                             return;
 
                         int temp = d.pos();
-                        //Console.WriteLine(jPointer.ToString("x"));
                         d.seek(jPointer);
                         if (!dat.jobjOffsetLinker.ContainsKey(jPointer))
                         {
@@ -797,7 +794,15 @@ main()
             {
                 int start = d.pos();
                 Console.WriteLine($"Map_Head Start {start}");
-                d.seek(d.readInt()+0x20);
+                int spawnyOffset = d.readInt() + 0x20;
+                int spawnyCount = d.readInt(); // ?? jammy-senpai assist ploaj-chan pls
+
+                int mappymodelOffset = d.readInt() + headerSize;
+                int mappymodelCount = d.readInt();
+
+                // and some other nonsense
+
+                d.seek(spawnyOffset);
                 int stageBonesRoot = d.readInt() + 0x20;
                 int boneIdTableOffset = d.readInt() + 0x20;
                 int idEntryCount = d.readInt();
@@ -809,7 +814,17 @@ main()
 
                 d.seek(stageBonesRoot);
                 //PLOAJ WORK YOUR MAGIC HERE <3
-                
+                // you got it fam
+                JOBJ j = new JOBJ();
+                j.Read(d, dat, parentNode);
+
+
+                // models I guess gosh
+                d.seek(mappymodelOffset);
+                Head_Node node = new Head_Node();
+                node.id = mappymodelCount;
+                node.Read(d, dat, parentNode);
+
             }
         }
 
