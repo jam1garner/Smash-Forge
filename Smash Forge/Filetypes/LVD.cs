@@ -336,6 +336,8 @@ namespace Smash_Forge
         public int type;
 
         public abstract void Read(FileData f);
+
+        public abstract void save(FileOutput f);
     }
 
     public class GeneralPoint : LVDGeneralShape
@@ -352,6 +354,19 @@ namespace Smash_Forge
             x = f.readFloat();
             y = f.readFloat();
             f.skip(0xE);
+        }
+
+        public override void save(FileOutput f)
+        {
+            f.writeHex("010401017735BB750000000201");
+            f.writeString(name);
+            f.writeByte(1);
+            f.writeString(subname);
+            f.writeHex("0100000000000000000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001014C800203");
+            f.writeInt(type);
+            f.writeFloat(x);
+            f.writeFloat(y);
+            f.writeHex("0000000000000000010100000000");
         }
     }
 
@@ -370,7 +385,22 @@ namespace Smash_Forge
             y1 = f.readFloat();
             x2 = f.readFloat();
             y2 = f.readFloat();
-            f.skip(0xE);
+            f.skip(0x6);
+        }
+
+        public override void save(FileOutput f)
+        {
+            f.writeHex("010401017735BB750000000201");
+            f.writeString(name);
+            f.writeByte(1);
+            f.writeString(subname);
+            f.writeHex("0100000000000000000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001014C800203");
+            f.writeInt(type);
+            f.writeFloat(x1);
+            f.writeFloat(y1);
+            f.writeFloat(x2);
+            f.writeFloat(y2);
+            f.writeHex("010100000000");
         }
     }
 
@@ -391,6 +421,24 @@ namespace Smash_Forge
             {
                 f.skip(1);//seperator char
                 points.Add(new Vector2D() { x = f.readFloat(), y = f.readFloat() });
+            }
+        }
+
+        public override void save(FileOutput f)
+        {
+            f.writeHex("010401017735BB750000000201");
+            f.writeString(name);
+            f.writeByte(1);
+            f.writeString(subname);
+            f.writeHex("0100000000000000000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001014C800203");
+            f.writeInt(type);
+            f.writeHex("000000000000000000000000000000000101");
+            f.writeInt(points.Count);
+            foreach (Vector2D point in points)
+            {
+                f.writeByte(1);
+                f.writeFloat(point.x);
+                f.writeFloat(point.y);
             }
         }
     }
@@ -630,7 +678,7 @@ namespace Smash_Forge
                 else if (shapeType == 4)
                     p = new GeneralPath();
                 else
-                    throw new Exception("Unknown shape type");
+                    throw new Exception($"Unknown shape type {shapeType} at offset {f.pos() - 4}");
                 p.name = tempName;
                 p.subname = tempSubname;
                 p.Read(f);
