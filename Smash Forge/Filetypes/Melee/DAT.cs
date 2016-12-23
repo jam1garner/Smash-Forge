@@ -27,6 +27,7 @@ namespace Smash_Forge
         public List<Vector3> itemSpawns = null;
         public Bounds cameraBounds = null;
         public Bounds blastzones = null;
+        private float stageScale; 
 
         public VBN bones = new VBN();
 
@@ -180,12 +181,16 @@ main()
                     j.Read(d, this, node);
                     //break;
                 }
-                else
-                if (node.Text.EndsWith("map_head"))
+                else if (node.Text.EndsWith("map_head"))
                 {
                     Map_Head head = new Map_Head();
                     head.Read(d, this, node);
                     //levelDataNodes = node.Nodes[0].Nodes[0].Nodes[0].Nodes;
+                }
+                else if (node.Text.EndsWith("grGroundParam"))
+                {
+                    stageScale = d.readFloat();//Ploaj please figure out how we should handle this 
+                    Console.WriteLine($"Stage scale - {stageScale}");
                 }
             }
 
@@ -956,26 +961,29 @@ main()
                             dat.respawns.Add(pos);
                         else if (0x7F <= type && type <= 0x93)
                             dat.itemSpawns.Add(pos);
-                        //else if (type == 0x94) (idk what this is tbh)
                         else if (type == 0x95)
                         {
-                            dat.cameraBounds.left = pos.X;
-                            dat.cameraBounds.top = pos.Y;
+                            dat.cameraBounds.left += pos.X;
+                            dat.cameraBounds.top += pos.Y;
+                            //Console.WriteLine($"Cam0 - {pos}");
                         }
                         else if (type == 0x96)
                         {
-                            dat.cameraBounds.right = pos.X;
-                            dat.cameraBounds.bottom = pos.Y;
+                            dat.cameraBounds.right += pos.X;
+                            dat.cameraBounds.bottom += pos.Y;
+                            //Console.WriteLine($"Cam1 - {pos}");
                         }
                         else if (type == 0x97)
                         {
-                            dat.blastzones.left = pos.X;
-                            dat.blastzones.top = pos.Y;
+                            dat.blastzones.left += pos.X;
+                            dat.blastzones.top += pos.Y;
+                            //Console.WriteLine($"Death0 - {pos}");
                         }
                         else if (type == 0x98)
                         {
-                            dat.blastzones.right = pos.X;
-                            dat.blastzones.bottom = pos.Y;
+                            dat.blastzones.right += pos.X;
+                            dat.blastzones.bottom += pos.Y;
+                            //Console.WriteLine($"Death1 - {pos}");
                         }
                     }
                     catch (KeyNotFoundException)
