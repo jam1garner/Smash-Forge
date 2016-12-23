@@ -231,7 +231,7 @@ main()
 
         }
 
-        Dictionary<int, PrimitiveType> primitiesTypes = new Dictionary<int, PrimitiveType>()
+        Dictionary<int, PrimitiveType> primitiveTypes = new Dictionary<int, PrimitiveType>()
         {
             { 0xB8, PrimitiveType.Points},
             { 0xA8, PrimitiveType.Lines},
@@ -441,7 +441,7 @@ main()
                     foreach (POBJ.DisplayObject d in poly.display)
                     {
                         if (da.Checked)
-                            GL.DrawElements(primitiesTypes[d.type], d.faces.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
+                            GL.DrawElements(primitiveTypes[d.type], d.faces.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
                         indiceat += d.faces.Count;
                     }
                 }
@@ -571,6 +571,7 @@ main()
                 {
                     foreach (POBJ.DisplayObject d in poly.display)
                     {
+                        Console.WriteLine("Mesh Type" + primitiveTypes[d.type]);
                         List<int> faces = d.faces;
                         if (d.type == 0x98)
                             faces = TriangleTools.fromTriangleStrip(d.faces);
@@ -1198,7 +1199,7 @@ main()
                 int bid = 0;
                 List<Vertex> used = new List<Vertex>();
                 if (displayListOffset != headerSize)
-                    for (int i = 0; i < displayListSize - 1; i++)
+                    for (int i = 0; i < displayListSize; i++)
                     {
                         byte prim = (byte)d.readByte();
                         int count = d.readShort();
