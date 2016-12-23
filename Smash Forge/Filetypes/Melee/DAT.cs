@@ -524,6 +524,45 @@ main()
             return false;
         }
 
+        private void addLink(COLL_DATA.Link link, Collision c)
+        {
+            int l1 = link.vertexIndices[0], l2 = link.vertexIndices[1];
+            if (!vertExists(c, collisions.vertices[l1]))
+                c.verts.Add(collisions.vertices[l1]);
+            if (!vertExists(c, collisions.vertices[l2]))
+                c.verts.Add(collisions.vertices[l2]);
+
+            Vector2D currentNormal = new Vector2D();
+            if ((link.collisionAngle & 1) != 0)
+                currentNormal.y = 1;
+            if ((link.collisionAngle & 2) != 0)
+                currentNormal.y = -1;
+            if ((link.collisionAngle & 4) != 0)
+                currentNormal.x = 1;
+            if ((link.collisionAngle & 8) != 0)
+                currentNormal.x = -1;
+            c.normals.Add(currentNormal);
+
+            if ((link.flags & 1) != 0)
+                c.flag4 = true;
+            CollisionMat currentMat = new CollisionMat();
+            if ((link.flags & 2) != 0)
+            {
+                currentMat.setFlag(6, true);
+                currentMat.setFlag(7, true);
+            }
+            currentMat.setPhysics(link.material);
+            c.materials.Add(currentMat);
+        }
+
+        private void recursivelyGrabPoints(int linkIndex, Collision c)
+        {
+            COLL_DATA.Link link = collisions.links[linkIndex];
+            addLink(link, c);
+            if (link.connectors[1] != 0xFFFF)
+                recursivelyGrabPoints(link.connectors[1], c);
+        }
+
         public LVD toLVD()
         {
             LVD lvd = new LVD();
@@ -531,38 +570,14 @@ main()
             foreach(int[] poly in collisions.polyRanges)
             {
                 Collision c = new Collision() { name = $"COL_MELEE_{j}", subname = $"MELEE_{j++}" };
-                foreach(COLL_DATA.Link link in collisions.links)
+                int k = 0;
+                foreach (COLL_DATA.Link link in collisions.links)
                 {
-                    if (inRange(poly, link.vertexIndices[0]))
+                    if (inRange(poly, link.vertexIndices[0]) && link.connectors[0] == 0xFFFF)
                     {
-                        int l1 = link.vertexIndices[0], l2 = link.vertexIndices[1];
-                        if (!vertExists(c, collisions.vertices[l1]))
-                            c.verts.Add(collisions.vertices[l1]);
-                        if (!vertExists(c, collisions.vertices[l2]))
-                            c.verts.Add(collisions.vertices[l2]);
-
-                        Vector2D currentNormal = new Vector2D();
-                        if ((link.collisionAngle & 1) != 0)
-                            currentNormal.y = 1;
-                        if ((link.collisionAngle & 2) != 0)
-                            currentNormal.y = -1;
-                        if ((link.collisionAngle & 4) != 0)
-                            currentNormal.x = 1;
-                        if ((link.collisionAngle & 8) != 0)
-                            currentNormal.x = -1;
-                        c.normals.Add(currentNormal);
-
-                        if ((link.flags & 1) != 0)
-                            c.flag4 = true;
-                        CollisionMat currentMat = new CollisionMat();
-                        if ((link.flags & 2) != 0)
-                        {
-                            currentMat.setFlag(6, true);
-                            currentMat.setFlag(7, true);
-                        }
-                        currentMat.setPhysics(link.material);
-                        c.materials.Add(currentMat);
+                        recursivelyGrabPoints(k,c);
                     }
+                    k++;
                 }
                 lvd.collisions.Add(c);
             }
