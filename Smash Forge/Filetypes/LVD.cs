@@ -359,9 +359,9 @@ namespace Smash_Forge
         public override void save(FileOutput f)
         {
             f.writeHex("010401017735BB750000000201");
-            f.writeString(name);
+            f.writeChars(name.PadRight(0x38).ToCharArray());
             f.writeByte(1);
-            f.writeString(subname);
+            f.writeChars(subname.PadRight(0x40).ToCharArray());
             f.writeHex("0100000000000000000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001014C800203");
             f.writeInt(type);
             f.writeFloat(x);
@@ -391,9 +391,9 @@ namespace Smash_Forge
         public override void save(FileOutput f)
         {
             f.writeHex("010401017735BB750000000201");
-            f.writeString(name);
+            f.writeChars(name.PadRight(0x38).ToCharArray());
             f.writeByte(1);
-            f.writeString(subname);
+            f.writeChars(subname.PadRight(0x40).ToCharArray());
             f.writeHex("0100000000000000000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001014C800203");
             f.writeInt(type);
             f.writeFloat(x1);
@@ -427,9 +427,9 @@ namespace Smash_Forge
         public override void save(FileOutput f)
         {
             f.writeHex("010401017735BB750000000201");
-            f.writeString(name);
+            f.writeChars(name.PadRight(0x38).ToCharArray());
             f.writeByte(1);
-            f.writeString(subname);
+            f.writeChars(subname.PadRight(0x40).ToCharArray());
             f.writeHex("0100000000000000000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001014C800203");
             f.writeInt(type);
             f.writeHex("000000000000000000000000000000000101");
@@ -809,7 +809,10 @@ namespace Smash_Forge
                 item.save(f);
 
             f.writeByte(1);
-            f.writeInt(0);
+            f.writeInt(generalShapes.Count);
+            foreach (LVDGeneralShape shape in generalShapes)
+                shape.save(f);
+            
 
             f.writeByte(1);
             f.writeInt(generalPoints.Count);
