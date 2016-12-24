@@ -19,7 +19,7 @@ namespace Smash_Forge
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-            Application.Run(new MainForm());
+            Application.Run(MainForm.Instance);
         }
     }
 }
