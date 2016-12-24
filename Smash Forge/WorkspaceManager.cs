@@ -59,8 +59,6 @@ namespace Smash_Forge
                     WorkspaceFile.SelectSingleNode("//Workspace").RemoveChild(node);
                 }
             }
-            // TODO: Save the workspace file
-            // after anything is added/removed
         }
         public void RemoveProject(string name)
         {
@@ -191,7 +189,9 @@ namespace Smash_Forge
         }
         public bool RemoveFile(ProjectItem item)
         {
-            return IncludedFiles.Remove(item);
+            bool result = IncludedFiles.Remove(item);
+            SaveProject();
+            return result;
         }
         public bool RemoveFile(string path)
         {
@@ -207,6 +207,7 @@ namespace Smash_Forge
             item.RealPath = filepath;
             item.RelativePath = filepath.Replace(ProjDirectory, "");
             IncludedFiles.Add(item);
+            SaveProject();
         }
         public void AddFolder(string path)
         {
@@ -214,8 +215,24 @@ namespace Smash_Forge
             item.RealPath = path;
             item.RelativePath = path.Replace(ProjDirectory, "");
             IncludedFolders.Add(item);
+            SaveProject();
         }
 
+        public void RenameFile(string filepath, string oldname, string newname)
+        {
+            var entry = IncludedFiles.FirstOrDefault(x => x.RealPath == filepath || x.RelativePath == filepath);
+            entry.RelativePath = entry.RelativePath.Replace(oldname, newname);
+            entry.RealPath = entry.RealPath.Replace(oldname, newname);
+            if (entry.RealPath.EndsWith(".fitproj"))
+            {
+                File.Move(entry.RealPath, entry.RealPath.Remove(Runtime.CanonicalizePath(entry.RealPath).LastIndexOf(Path.DirectorySeparatorChar)) + newname + ".fitproj");
+            }
+            else
+            {
+                File.Move(filepath,entry.RealPath);
+            }
+            SaveProject();
+        }
         public ProjectItem this[string key]
         {
             get
@@ -225,6 +242,11 @@ namespace Smash_Forge
         }
 
         public virtual void ReadProject(string filepath) { }
+        public virtual void SaveProject(string filepath) { }
+        public virtual void SaveProject()
+        {
+            SaveProject(ProjFilepath);
+        }
     }
 
     public class FitProj : Project
@@ -263,7 +285,8 @@ namespace Smash_Forge
                 foreach (XmlNode child in n.ChildNodes)
                 {
                     var item = new ProjectItem();
-                    item.RelativePath = Runtime.CanonicalizePath(child.Attributes["include"].Value);
+                    item.RelativePath = Runtime.CanonicalizePath(child.Attributes["Include"].Value);
+                    item.RealPath = Runtime.CanonicalizePath(Path.Combine(ProjDirectory, item.RelativePath));
                     if (child.HasChildNodes)
                     {
                         foreach (XmlNode child2 in child.ChildNodes)
@@ -275,93 +298,53 @@ namespace Smash_Forge
                             }
                         }
                     }
-                    IncludedFiles.Add(item);
+                    if (child.Name == "Folder")
+                    {
+                        IncludedFolders.Add(item);
+                    }
+                    else
+                    {
+                        IncludedFiles.Add(item);
+                    }
                 }
             }
             ProjFile = proj;
         }
+        public override void SaveProject(string filepath)
+        {
+            var writer = XmlWriter.Create(filepath, new XmlWriterSettings() { Indent = true, IndentChars = "\t" });
+            writer.WriteStartDocument();
+            writer.WriteStartElement("Project");
+            writer.WriteAttributeString("Name", ProjName);
+            writer.WriteAttributeString("ToolVer", ToolVer);
+            writer.WriteAttributeString("GameVer", GameVer);
+            writer.WriteAttributeString("Platform", Enum.GetName(typeof(ProjPlatform), Platform));
 
-        //public XmlDocument WriteFitproj(string filepath)
-        //{
-        //    var writer = XmlWriter.Create(filepath, new XmlWriterSettings() { Indent = true, IndentChars = "\t" });
-        //    writer.WriteStartDocument();
-        //    writer.WriteStartElement("Project");
-        //    writer.WriteAttributeString("Name", ProjName);
-        //    writer.WriteAttributeString("ToolVer", ToolVer);
-        //    writer.WriteAttributeString("GameVer", GameVer);
-        //    writer.WriteAttributeString("Platform", Enum.GetName(typeof(ProjPlatform), Platform));
+            writer.WriteStartElement("FileGroup");
+            foreach (var item in IncludedFolders)
+            {
+                writer.WriteStartElement("Folder");
+                writer.WriteAttributeString("Include", item.RelativePath);
+                writer.WriteEndElement();
+            }
+            writer.WriteEndElement();
 
-        //    writer.WriteStartElement("MLIST");
-        //    if (!string.IsNullOrEmpty(MLIST))
-        //    {
-        //        writer.WriteStartElement("Import");
-        //        writer.WriteAttributeString("include", MLIST);
-        //        writer.WriteEndElement();
-        //    }
-        //    writer.WriteEndElement();
+            writer.WriteStartElement("FileGroup");
+            foreach (var item in IncludedFiles)
+            {
+                writer.WriteStartElement("Content");
+                writer.WriteAttributeString("Include", item.RelativePath);
+                writer.WriteEndElement();
+            }
+            writer.WriteEndElement();
 
-        //    writer.WriteStartElement("PARAMS");
-        //    foreach (var param in PARAM_FILES)
-        //    {
-        //        writer.WriteStartElement("Import");
-        //        writer.WriteAttributeString("include", param);
-        //        writer.WriteEndElement();
-        //    }
-        //    writer.WriteEndElement();
-
-        //    writer.WriteStartElement("ACMD");
-        //    foreach (var acmd in ACMD_FILES)
-        //    {
-        //        writer.WriteStartElement("Import");
-        //        writer.WriteAttributeString("include", acmd);
-        //        writer.WriteEndElement();
-        //    }
-        //    writer.WriteEndElement();
-
-        //    writer.WriteStartElement("MSC");
-        //    foreach (var msc in MSC_FILES)
-        //    {
-        //        writer.WriteStartElement("Import");
-        //        writer.WriteAttributeString("include", msc);
-        //        writer.WriteEndElement();
-        //    }
-        //    writer.WriteEndElement();
-
-        //    writer.WriteStartElement("ANIM");
-        //    foreach (var anim in ANIM_FILES)
-        //    {
-        //        writer.WriteStartElement("Import");
-        //        writer.WriteAttributeString("include", anim);
-
-        //        writer.WriteEndElement();
-        //    }
-        //    writer.WriteEndElement();
-
-        //    writer.WriteStartElement("MODEL");
-        //    foreach (var mdl in MODEL_FILES)
-        //    {
-        //        writer.WriteStartElement("Import");
-        //        writer.WriteAttributeString("include", mdl);
-        //        writer.WriteEndElement();
-        //    }
-        //    writer.WriteEndElement();
-
-        //    writer.WriteStartElement("TEX");
-        //    foreach (var tex in TEXTURE_FILES)
-        //    {
-        //        writer.WriteStartElement("Import");
-        //        writer.WriteAttributeString("include", tex);
-        //        writer.WriteEndElement();
-        //    }
-        //    writer.WriteEndElement();
-
-        //    writer.WriteEndElement();
-        //    writer.WriteEndDocument();
-        //    writer.Close();
-        //    var doc = new XmlDocument();
-        //    doc.Load(filepath);
-        //    return doc;
-        //}
+            writer.WriteEndElement();
+            writer.WriteEndDocument();
+            writer.Close();
+            var doc = new XmlDocument();
+            doc.Load(filepath);
+            ProjFile = doc;
+        }
     }
     public class ProjectItem
     {

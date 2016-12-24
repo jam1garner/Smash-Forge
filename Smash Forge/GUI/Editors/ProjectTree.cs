@@ -203,9 +203,13 @@ namespace Smash_Forge
             // is also present elsewhere in the path, it will be replaced as well.
             // this is mostly a problem for nested folders / files of the same names
             if (e.Node.Tag is DirectoryInfo)
+            {
                 Directory.Move(((DirectoryInfo)e.Node.Tag).FullName, ((DirectoryInfo)e.Node.Tag).FullName.Replace(e.Node.Text, e.Label));
-            else if (e.Node is ProjectNode)
-                File.Move(((FileInfo)e.Node.Tag).FullName, ((FileInfo)e.Node.Tag).FullName.Replace(e.Node.Text + ".fitproj", e.Label + ".fitproj"));
+            }
+            if(e.Node.Tag is FileInfo)
+            {
+                ((ProjectExplorerNode)e.Node).ProjectNode.Project.RenameFile(((FileInfo)e.Node.Tag).FullName, e.Node.Text, e.Label);
+            }
         }
     }
 }

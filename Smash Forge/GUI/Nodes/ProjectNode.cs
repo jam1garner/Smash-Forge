@@ -15,6 +15,7 @@ namespace Smash_Forge
         {
             _menu = new ContextMenuStrip();
             _menu.Items.Add("Delete", null, DeleteAction);
+            _menu.Items.Add("Rename", null, RenameAction);
         }
         public ProjectExplorerNode()
         {
@@ -49,11 +50,19 @@ namespace Smash_Forge
                 this.Remove();
             }
         }
+        public virtual void Rename()
+        {
+            this.EnsureVisible();
+            this.BeginEdit();
+        }
         private static void DeleteAction(object sender, EventArgs e)
         {
             GetInstance<ProjectExplorerNode>().DeleteFileOrFolder();
         }
-
+        private static void RenameAction(object sender, EventArgs e)
+        {
+            GetInstance<ProjectExplorerNode>().Rename();
+        }
         protected static T GetInstance<T>() where T : TreeNode
         {
             return MainForm.Instance.project.treeView1.SelectedNode as T;
@@ -186,8 +195,5 @@ namespace Smash_Forge
                 this.Text = value;
             }
         }
-
-        public ProjPlatform Platform { get { return Project.Platform; } }
-        public ProjType ProjectType { get { return Project.Type; } }
     }
 }
