@@ -228,7 +228,7 @@
             // depthSlider
             // 
             this.depthSlider.Location = new System.Drawing.Point(12, 32);
-            this.depthSlider.Maximum = 10000;
+            this.depthSlider.Maximum = 60000;
             this.depthSlider.Minimum = 1;
             this.depthSlider.Name = "depthSlider";
             this.depthSlider.Size = new System.Drawing.Size(265, 45);
