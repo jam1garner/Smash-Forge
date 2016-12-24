@@ -31,10 +31,10 @@ namespace Smash_Forge
 			public int dwFlags = 0x04;
 			public int dwFourCC;
 			public int dwBitmask = 0;
-			public int dwCaps = 0;
-			public int dwCaps2 = 0;
-			public int dwCaps3 = 0;
-			public int dwCaps4 = 0;
+			public uint dwCaps = 0;
+			public uint dwCaps2 = 0;
+			public uint dwCaps3 = 0;
+			public uint dwCaps4 = 0;
 			public int reserve = 0;
 		}
 
@@ -66,10 +66,10 @@ namespace Smash_Forge
 			header.dwFlags = d.readInt ();
 			header.dwFourCC = d.readInt ();
 			header.dwBitmask = d.readInt ();
-			header.dwCaps = d.readInt ();
-			header.dwCaps2 = d.readInt ();
-			header.dwCaps3 = d.readInt ();
-			header.dwCaps4 = d.readInt ();
+			header.dwCaps = (uint)d.readInt ();
+			header.dwCaps2 = (uint)d.readInt ();
+			header.dwCaps3 = (uint)d.readInt ();
+			header.dwCaps4 = (uint)d.readInt ();
 			header.reserve = d.readInt ();
 
 			d.skip (16);// not needed another header
@@ -102,11 +102,11 @@ namespace Smash_Forge
             f.writeInt(header.dwFlags);
             f.writeInt(header.dwFourCC);
             f.writeInt(header.dwBitmask);
-            f.writeInt(header.dwCaps);
-            f.writeInt(header.dwCaps2);
-            f.writeInt(header.dwCaps3);
-            f.writeInt(header.dwCaps4);
-            f.writeInt(header.reserve);
+            f.writeInt((int)header.dwCaps);
+            f.writeInt((int)header.dwCaps2);
+            f.writeInt((int)header.dwCaps3);
+            f.writeInt((int)header.dwCaps4);
+            f.writeInt((int)header.reserve);
 
             for (int i = 0; i < 4; i++)
                 f.writeInt(0);
@@ -134,8 +134,16 @@ namespace Smash_Forge
                     header.dwFourCC = 0x35545844;
                     break;
                 case PixelInternalFormat.Rgba:
-                    if (tex.utype == OpenTK.Graphics.OpenGL.PixelFormat.Rgba)
+                    if (tex.utype == OpenTK.Graphics.OpenGL.PixelFormat.Rgba) { 
                         header.dwFourCC = 0x0;
+                        header.dwBitmask = 0x20;
+                        header.dwCaps = 0xFF;
+                        header.dwCaps2 = 0xFF00;
+                        header.dwCaps3 = 0xFF0000;
+                        header.dwCaps4 = 0xFF000000;
+                        header.reserve = 0x401008;
+                        header.dwFlags = 0x41;
+                    }
                     else
                         header.dwFourCC = 0x0;
                     break;
@@ -172,6 +180,7 @@ namespace Smash_Forge
             switch (header.dwFourCC)
             {
                 case 0x0:
+                    size = 4f;
                     tex.type = PixelInternalFormat.Rgba;
                     tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     break;
