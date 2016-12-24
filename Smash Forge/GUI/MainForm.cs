@@ -13,13 +13,14 @@ namespace Smash_Forge
     public partial class MainForm : Form
     {
 
-        public static MainForm Instance;
+        public static MainForm Instance { get { return _instance != null ? _instance : (_instance = new MainForm()); } }
+        private static MainForm _instance;
+
         public WorkspaceManager Workspace { get; set; }
 
         public MainForm()
         {
             InitializeComponent();
-            Instance = this;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
