@@ -13,9 +13,11 @@ namespace Smash_Forge
 
         //Dicionary<int, int> nodes = new Dicionary<int, int>();
         //Dictionary<int, KeyNode> nodes = new Dictionary<int, KeyNode>();
-        public List<List<AnimTrack>> nodes = new List<List<AnimTrack>>();
+        public List<List<DATAnimTrack>> nodes = new List<List<DATAnimTrack>>();
         public int frameCount = 0;
         public string Name = "";
+
+        public bool Debug = false;
         
         public enum AnimType
         {
@@ -42,10 +44,11 @@ namespace Smash_Forge
             Constant = 6
         }
 
-        public class AnimTrack
+        public class DATAnimTrack
         {
             public AnimType type;
             public List<KeyNode> keys = new List<KeyNode>();
+            private DAT_Animation anim;
         }
 
         public class KeyNode
@@ -69,11 +72,12 @@ namespace Smash_Forge
                 Bone b = bone.bones[i];
                 Vector3 erot = ANIM.quattoeul(b.rot);
 
-                foreach (AnimTrack track in nodes[i])
+                foreach (DATAnimTrack track in nodes[i])
                 {
                     KeyNode node = track.keys[0];
 
-                    Console.WriteLine("Bone " + i + " " + track.type + " " + node.value);
+                    if(Debug)
+                     Console.WriteLine("Bone " + i + " " + track.type + " " + node.value);
 
                     switch (track.type)
                     {
@@ -124,19 +128,25 @@ namespace Smash_Forge
             float frameCount = d.readFloat();
             int keyOffset = d.readInt();
 
-            Console.WriteLine(name + "\tCount: " + frameCount);
+            if(Debug)
+                Console.WriteLine(name + "\tCount: " + frameCount);
             this.frameCount = (int)frameCount;
 
             int temp = d.pos();
 
             d.seek(keyOffset + 0x20);
-            int boneCount = 0x32; // TODO: Use actual bone count 0x35
-            int[] keyFrameCount = new int[boneCount];
-            for (int i = 0; i < boneCount; i++)
+            //int boneCount = 0x2E; // TODO: Use actual bone count 0x35
+            List<int> keyFrameCount = new List<int>();
+            int bid = d.readByte();
+            while(bid != 0xFF)
             {
-                keyFrameCount[i] = d.readByte();
-                nodes.Add(new List<AnimTrack>());
+                keyFrameCount.Add(bid);
+                bid = d.readByte();
+                nodes.Add(new List<DATAnimTrack>());
             }
+            int boneCount = keyFrameCount.Count;
+            if (Debug)
+                Console.WriteLine(boneCount);
 
             d.seek(temp);
 
@@ -153,7 +163,8 @@ namespace Smash_Forge
             for (int i = 0; i < boneCount; i++)
             { // bonecount
 
-                //Console.WriteLine("Bone " + i + ": " + keyFrameCount[i] + "\t" + d.pos().ToString("x"));
+                if(Debug)
+                Console.WriteLine("Bone " + i + ": " + keyFrameCount[i] + "\t" + d.pos().ToString("x"));
 
                 for (int j = 0; j < keyFrameCount[i]; j++)
                 {
@@ -165,7 +176,8 @@ namespace Smash_Forge
                     d.skip(1);
                     int dataoff = d.readInt() + 0x20;
 
-                    //Console.WriteLine((AnimType)trackType + "\tLength: " + length + "\tOffset: " + dataoff.ToString("x") + " " + valueFormat.ToString("x") + " " + tanFormat.ToString("x"));
+                    if (Debug)
+                        Console.WriteLine((AnimType)trackType + "\tLength: " + length + "\tOffset: " + dataoff.ToString("x") + " " + valueFormat.ToString("x") + " " + tanFormat.ToString("x"));
                     // System.out.println(valueFormat + " " + tanFormat);
                     readKeyFrame(d, length, dataoff, valueFormat, tanFormat, keyFrameCount[i], i, trackType);
                 }
@@ -178,14 +190,10 @@ namespace Smash_Forge
             int temp = d.pos();
             d.seek(dataoff);
 
-            List<int> types = new List<int>();
-            List<float> values = new List<float>();
-            List<float> tans = new List<float>();
-            List<int> frames = new List<int>();
+            if (Debug)
+                Console.WriteLine("Start 0x" + d.pos() + " " + keyframeCount);
 
-            //Console.WriteLine("Start 0x" + d.pos() + " " + keyframeCount);
-
-            AnimTrack track = new AnimTrack();
+            DATAnimTrack track = new DATAnimTrack();
             track.type = (AnimType)trackType;
             nodes[boneId].Add(track);
 
@@ -196,16 +204,19 @@ namespace Smash_Forge
                 int interpolation = ((type) & 0x0F);
                 int numOfKey = ((type >> 4) & 0xFF) + 1;
 
-                //Console.WriteLine("Interpolation type: " + (InterpolationType)interpolation + "\tnumofkey: " + numOfKey);
-                float value = 0, tan = 0;
-                int time = 0;
+                if (Debug)
+                    Console.WriteLine("Interpolation type: " + (InterpolationType)interpolation + "\tnumofkey: " + numOfKey);
+                
                 for (int i = 0; i < numOfKey; i++)
                 {
+                    double value = -99, tan = -99;
+                    int time = 0;
                     if (interpolation == 1)
                     { // step
                         value = readVal(d, valueFormat);
                         time = readExtendedByte(d);
-                        //Console.WriteLine("\t" + value + "\t" + time);
+                        if (Debug)
+                            Console.WriteLine("\t" + value + "\t" + time);
                     }
                     if (interpolation == 2)
                     { // linear
@@ -216,20 +227,24 @@ namespace Smash_Forge
                     if (interpolation == 3)
                     { // hermite
                         value = readVal(d, valueFormat);
+                        tan = 0;
                         time = readExtendedByte(d);
-                        //Console.WriteLine("\t" + value + "\t" + time);
+                        if (Debug)
+                            Console.WriteLine("\t" + value + "\t" + time);
                     }
                     if (interpolation == 4)
                     { // hermite
                         value = readVal(d, valueFormat);
                         tan = readVal(d, tanFormat);
                         time = readExtendedByte(d);
-                        //Console.WriteLine("\t" + value + "\t" + tan + "\t" + time);
+                        if (Debug)
+                            Console.WriteLine("\t" + value + "\t" + tan + "\t" + time);
                     }
                     if (interpolation == 5)
                     { // hermite
                         tan = readVal(d, tanFormat);
-                        //Console.WriteLine("\t" + "Tan" + tan + "\t" + time);
+                        if (Debug)
+                            Console.WriteLine("\t" + "Tan" + tan);
                     }
                     if (interpolation == 6)
                     { // constant
@@ -238,15 +253,10 @@ namespace Smash_Forge
                         //Console.WriteLine("\t" + value + "\t" + time);
                     }
 
-                    types.Add(interpolation);
-                    frames.Add(time);
-                    tans.Add(tan);
-                    values.Add(value);
-
                     KeyNode node = new KeyNode();
-                    node.value = value;
+                    node.value = (float)value;
                     node.frame = time;
-                    node.tan = tan;
+                    node.tan = (float)tan;
                     node.interpolationType = (InterpolationType)interpolation;
                     track.keys.Add(node);
                     //node.boneID = boneId;
@@ -261,14 +271,9 @@ namespace Smash_Forge
 
         public static int readExtendedByte(FileData d)
         {
-            int type = d.readByte(); //??
-            if(type == 0xFF)
-            {
-                //Console.WriteLine("Weird---------------------------------------------");
-                //type = d.readByte();
-            }
+            int type = d.readByte(); 
             int i = type;
-            while ((i & 0x80) != 0)
+            if ((i & 0x80) != 0) // max 16 bit I think
             {
                 i = d.readByte();
                 type = (type & 0x7F) | (i << 7);
@@ -277,27 +282,93 @@ namespace Smash_Forge
         }
 
 
-        public static float readVal(FileData d, int valueFormat)
+        public static double readVal(FileData d, int valueFormat)
         {
             int scale = (int)Math.Pow(2, valueFormat & 0x1F);
 
-            d.Endian = System.IO.Endianness.Little; // why?
+            d.Endian = System.IO.Endianness.Little;
 
             switch (valueFormat & 0xF0)
             {
                 case 0x00:
-                    return 0f + d.readFloat();
+                    return d.readFloat();
                 case 0x20:
-                    return 0f + (short)d.readShort() / (float)scale;
+                    return unchecked((short)d.readShort()) / (double)scale;
                 case 0x40:
-                    return 0f + d.readShort() / (float)scale;
+                    return d.readShort() / (double)scale;
                 case 0x60:
-                    return 0f + (byte)d.readByte() / (float)scale;
+                    return unchecked((sbyte)d.readByte()) / (double)scale;
                 case 0x80:
-                    return 0f + d.readByte() / (float)scale;
+                    return d.readByte() / (double)scale;
                 default:
                     return 0;
             }
         }
+
+
+        // temp stuff
+        public static Dictionary<string, SkelAnimation> LoadAJ(string fname, VBN vbn)
+        {
+            // a note, I know that the main player file has the offsets for
+            // animations, this is just for viewing
+            FileData f = new FileData(fname);
+            f.Endian = System.IO.Endianness.Big;
+
+            int pos = 0;
+
+            Dictionary<string, SkelAnimation> animations = new Dictionary<string, SkelAnimation>();
+
+            while(pos < f.size())
+            {
+                Console.WriteLine(pos.ToString("x"));
+                int len = f.readInt();
+                DAT_Animation anim = new DAT_Animation();
+                anim.Read(new FileData(f.getSection(pos, len)));
+                AnimTrack track = new AnimTrack(anim);
+
+                if (pos == 0)
+                {
+                    //track.Show();
+                }
+
+                SkelAnimation sa = track.BakeToSkel(vbn);
+                sa.Tag = track;
+                Runtime.Animations.Add(anim.Name, sa);
+                MainForm.animNode.Nodes.Add(anim.Name);
+                animations.Add(anim.Name, sa);
+
+                if (pos != 0)
+                {
+                    track.Dispose();
+                    track.Close();
+                }
+
+                f.skip(len - 4);
+                f.align(32);
+                pos = f.pos();
+            }
+
+            return animations;
+        }
+
+
+        // Writing
+
+        public void Save(string fname)
+        {
+            FileOutput f = new FileOutput();
+            f.Endian = System.IO.Endianness.Big;
+
+            // header
+            FileOutput header = new FileOutput();
+            header.Endian = System.IO.Endianness.Big;
+
+            FileOutput data = new FileOutput();
+            data.Endian = System.IO.Endianness.Big;
+
+
+            f.save(fname);
+        }
+
     }
 }

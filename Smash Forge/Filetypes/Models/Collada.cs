@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Globalization;
 using System.Xml;
+using System.Drawing;
 using OpenTK;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -105,7 +106,7 @@ namespace Smash_Forge
                 bindMatrix.Add(skin.source, skin.mat);
 
                 int v = 0;
-                for(int i = 0; i < skin.weights.count; i++)
+                for (int i = 0; i < skin.weights.count; i++)
                 {
                     //basically, I need to find all verts that use this position and apply that.........
 
@@ -126,6 +127,8 @@ namespace Smash_Forge
                             {
                                 case SemanticType.JOINT:
                                     string bname = sources[input.source].data[skin.weights.v[v]];
+                                    if (bname.StartsWith("_"))
+                                        bname = bname.Substring(6, bname.Length - 6);
                                     int index = con.vbn.boneIndex(bname);
                                     vert.node.Add(index);
                                     break;
@@ -139,10 +142,10 @@ namespace Smash_Forge
                     }
                 }
             }
-            
 
-            Dictionary<string, NUD.Mesh> geometries = new Dictionary<string, NUD.Mesh>(); 
-            foreach(ColladaGeometry geom in dae.library_geometries)
+
+            Dictionary<string, NUD.Mesh> geometries = new Dictionary<string, NUD.Mesh>();
+            foreach (ColladaGeometry geom in dae.library_geometries)
             {
                 ColladaMesh mesh = geom.mesh;
                 ColladaPolygons p = mesh.polygons[0];
@@ -164,32 +167,38 @@ namespace Smash_Forge
                 nmesh.polygons.Add(npoly);
 
                 int i = 0;
-                while(i < p.p.Length)
+                while (i < p.p.Length)
                 {
                     NUD.Vertex v = new NUD.Vertex();
                     foreach (ColladaInput input in p.inputs)
                     {
-                        if(input.semantic == SemanticType.VERTEX)
+                        if (input.semantic == SemanticType.VERTEX)
                         {
                             v = new NUD.Vertex();
-                            v.node.AddRange(vertices["#" + geom.id][p.p[i]].node);
-                            v.weight.AddRange(vertices["#" + geom.id][p.p[i]].weight);
+                            if (dae.library_controllers.Count > 0)
+                            {
+                                v.node.AddRange(vertices["#" + geom.id][p.p[i]].node);
+                                v.weight.AddRange(vertices["#" + geom.id][p.p[i]].weight);
+                            }
                             npoly.vertices.Add(v);
                             npoly.faces.Add(npoly.vertices.IndexOf(v));
                             foreach (ColladaInput vinput in mesh.vertices.inputs)
                             {
                                 ReadSemantic(vinput, v, p.p[i], sources);
                             }
-                        }else
+                        } else
                             ReadSemantic(input, v, p.p[i], sources);
                         i++;
                     }
 
-                    v.pos = Vector3.Transform(v.pos, bindMatrix["#" + geom.id]);
-                    v.nrm = Vector3.Transform(v.nrm, bindMatrix["#" + geom.id]);
+                    if (dae.library_controllers.Count > 0)
+                    {
+                        v.pos = Vector3.Transform(v.pos, bindMatrix["#" + geom.id]);
+                        v.nrm = Vector3.Transform(v.nrm, bindMatrix["#" + geom.id]);
+                    }
                 }
 
-                while(npoly.materials.Count < npoly.vertices[0].tx.Count)
+                while (npoly.materials.Count < npoly.vertices[0].tx.Count)
                 {
                     NUD.Polygon nd = new NUD.Polygon();
                     nd.setDefaultMaterial();
@@ -200,14 +209,14 @@ namespace Smash_Forge
 
             // then image materials and effects
 
-            
+
             n.MergePoly();
             n.PreRender();
         }
 
         private static void ReadSemantic(ColladaInput input, NUD.Vertex v, int p, Dictionary<string, ColladaSource> sources)
         {
-            switch(input.semantic)
+            switch (input.semantic)
             {
                 case SemanticType.POSITION:
                     v.pos.X = float.Parse(sources[input.source].data[p * 3 + 0]);
@@ -502,138 +511,600 @@ namespace Smash_Forge
             n.MergePoly();
             n.PreRender();
         }
-
-        public void Save(string fname, DAT mod)
+        
+        public static void SaveBoneNodes(Collada dae, Bone b, VBN vbn, ColladaNode parent)
         {
-            COLLADA dae = new Smash_Forge.COLLADA();
-
-            List<object> Items = new List<object>();
-
-            library_geometries mesh = new library_geometries();
-            Items.Add(mesh);
-            List<geometry> Mesh = new List<geometry>();
-            /*foreach (DAT.DOBJ d in mod.dobjs)
-            {
-                geometry geom = new geometry();
-                Mesh.Add(geom);
-                geom.id = "Mesh_" + mod.dobjs.IndexOf(d);
-                geom.name = "Mesh";
-
-                mesh finmesh = new mesh();
-                
-                List<DAT.Vertex> verts = new List<DAT.Vertex>();
-                List<int> faces = new List<int>();
-                List<source> msources = new List<source>();
-                //sources
-                {
-                    source pos = new source();
-                    msources.Add(pos);
-                    float_array posa = new float_array();
-                    sourceTechnique_common post = new sourceTechnique_common();
-                    pos.technique_common = post;
-                    post.accessor = new accessor();
-                    post.accessor.stride = 3;
-                    post.accessor.param = new param[3];
-                    post.accessor.source = "#" + "Mesh_" + mod.dobjs.IndexOf(d) + "_POSARR";
-
-                    {
-                        param p1 = new Smash_Forge.param();
-                        p1.name = "X"; p1.type = "float";
-                        post.accessor.param[0] = p1;
-                        p1 = new Smash_Forge.param();
-                        p1.name = "Y"; p1.type = "float";
-                        post.accessor.param[1] = p1;
-                        p1 = new Smash_Forge.param();
-                        p1.name = "Z"; p1.type = "float";
-                        post.accessor.param[2] = p1;
-                    }
-
-                    pos.Item = posa;
-
-                    pos.id = "Mesh_" + mod.dobjs.IndexOf(d) + "_POS";
-                    posa.id = "Mesh_" + mod.dobjs.IndexOf(d) + "_POSARR";
-                    string positions = "";
-
-                    foreach (DAT.POBJ poly in d.polygons)
-                    {
-                        foreach(DAT.POBJ.DisplayObject dispoly in poly.display)
-                        {
-                            foreach(int i in dispoly.faces)
-                            {
-                                DAT.Vertex v = mod.vertBank[i];
-                                if (!verts.Contains(v))
-                                    verts.Add(v);
-                                faces.Add(verts.IndexOf(v));
-                            }
-                        }
-                    }
-
-                    foreach(DAT.Vertex v in verts)
-                    {
-                        positions += v.pos.X + " ";
-                        positions += v.pos.Y + " ";
-                        positions += v.pos.Z + " ";
-                    }
-
-                    posa._Text_ = positions;
-                    post.accessor.count = (ulong)verts.Count;
-                    posa.count = (ulong)verts.Count*4;
-                }
-
-                finmesh.source = msources.ToArray();
-
-                //vertex
-
-                vertices vertices = new vertices();
-
-                finmesh.vertices = vertices;
-
-                vertices.id = "Mesh_" + mod.dobjs.IndexOf(d) + "_Vertices";
-                vertices.input = new InputLocal[1];
-                vertices.input[0] = new InputLocal();
-                vertices.input[0].semantic = "POSITION";
-                vertices.input[0].source = " #" + "Mesh_" + mod.dobjs.IndexOf(d) + "_POS";
-
-
-                // triangle
-                triangles triangles = new triangles();
-                finmesh.Items = new object[1];
-                finmesh.Items[0] = triangles;
-                triangles.count = (ulong)faces.Count;
-
-                triangles.input = new InputLocalOffset[1];
-                triangles.input[0] = new InputLocalOffset();
-                triangles.input[0].semantic = "VERTEX";
-                triangles.input[0].offset = 0;
-                triangles.input[0].source = "#" + "Mesh_" + mod.dobjs.IndexOf(d) + "_Vertices";
-
-                string ps = "";
-                foreach(int i in faces)
-                    ps += i + " ";
-
-                triangles.p = ps;
-
-                geom.Item = finmesh;
-            }
-            mesh.geometry = Mesh.ToArray();
-
-
-
-            /*COLLADAScene scene = new COLLADAScene();
-            scene.instance_visual_scene = new InstanceWithExtra();
-            scene.instance_visual_scene.url = "#RootNode";
-            Items.Add(scene);*/
-
-            dae.Items = Items.ToArray();
-
-            dae.Save(fname);
+            ColladaNode node = new ColladaNode();
+            if (parent != null)
+                parent.children.Add(node);
+            else
+                dae.scene.nodes.Add(node);
+            node.name = new string(b.boneName);
+            node.id = node.name + "_id";
+            node.type = "JOINT";
+            node.mat = Matrix4.CreateScale(b.sca) * Matrix4.CreateFromQuaternion(b.rot) * Matrix4.CreateTranslation(b.pos);
+            node.pos = b.pos;
+            node.sca = b.sca;
+            node.rot = ANIM.quattoeul(b.rot);
+            foreach (int bone in b.children)
+                SaveBoneNodes(dae, vbn.bones[bone], vbn, node);
         }
 
+
+        public static void Save(string fname, DAT dat)
+        {
+            Collada dae = new Collada();
+            // bones
+
+            SaveBoneNodes(dae, dat.bones.bones[0], dat.bones, null);
+
+            // images
+            Dictionary<Bitmap, string> texbank = new Dictionary<Bitmap, string>();
+            int tid = 0;
+            foreach(int tex in dat.texturesLinker.Keys)
+            {
+                ColladaImages image = new ColladaImages();
+                dae.library_images.Add(image);
+                image.id = "Tex" + tid;
+                image.name = image.id;
+                image.initref = image.id + ".png";
+                dat.texturesLinker[tex].Save(fname.Substring(0, fname.LastIndexOf("\\")+1) + image.initref);
+                texbank.Add(dat.texturesLinker[tex], "#" + image.id);
+                tid++;
+            }
+
+            // geometry
+
+            int num = 0;
+            foreach (var da in dat.displayList)
+            {
+                DAT.DOBJ data = (DAT.DOBJ)da.Tag;
+                ColladaGeometry geom = new ColladaGeometry();
+                dae.library_geometries.Add(geom);
+                geom.name = "Mesh_" + dat.displayList.IndexOf(da);
+                geom.id = "Mesh_" + dat.displayList.IndexOf(da);
+                geom.mesh = new ColladaMesh();
+
+                // create a node for this
+                ColladaNode colnode = new ColladaNode();
+                dae.scene.nodes.Add(colnode);
+                colnode.id = "VisualScene" + num;
+                colnode.name = geom.name;
+                colnode.geomid = "#" + geom.id;
+                colnode.type = "NODE";
+                colnode.instance = "instance_controller";
+
+                // create material
+                ColladaMaterials mat = new ColladaMaterials();
+                mat.id = "VisualMaterial" + num;
+                mat.effecturl = "#Effect" + num;
+                dae.library_materials.Add(mat);
+                colnode.materialSymbol = "Material" + num;
+                colnode.materialTarget = "#" + mat.id;
+
+                ColladaEffects eff = new ColladaEffects();
+                eff.id = "Effect" + num;
+                eff.name = geom.name + "-effect";
+                if (data.material.texture.image != null && texbank.ContainsKey(data.material.texture.image))
+                    eff.source = texbank[data.material.texture.image];
+                else
+                    eff.source = texbank[texbank.Keys.First()];
+                dae.library_effects.Add(eff);
+
+                ColladaSampler2D samp = new ColladaSampler2D();
+                if(data.material.texture.image != null && texbank.ContainsKey(data.material.texture.image))
+                    samp.url = texbank[data.material.texture.image];
+                else
+                    samp.url = texbank[texbank.Keys.First()];
+                eff.sampler = samp;
+                Dictionary<int, COLLADA_WRAPMODE> wraptranslate = new Dictionary<int, COLLADA_WRAPMODE>
+                {
+                    {0, COLLADA_WRAPMODE.CLAMP },
+                    {1, COLLADA_WRAPMODE.REPEAT },
+                    {2, COLLADA_WRAPMODE.MIRROR }
+                };
+                samp.wrap_t = wraptranslate[data.material.texture.wrap_t];
+                samp.wrap_s = wraptranslate[data.material.texture.wrap_t];
+
+                // create vertex object
+                ColladaVertices vertex = new ColladaVertices();
+                vertex.id = geom.name + "_verts";
+                geom.mesh.vertices = vertex;
+
+                // create polygon objects (NUD uses basically 1)
+                ColladaPolygons p = new ColladaPolygons();
+                ColladaInput inv = new ColladaInput();
+                inv.offset = 0;
+                inv.semantic = SemanticType.VERTEX;
+                inv.source = "#" + "Mesh_" + dat.displayList.IndexOf(da) + "_verts";
+                List<DAT.Vertex> usedVertices = new List<DAT.Vertex>();
+                List<int> faces = new List<int>();
+                p.materialid = "Material" + num;
+                foreach (DAT.POBJ poly in data.polygons)
+                {
+                    foreach (DAT.POBJ.DisplayObject di in poly.display)
+                    {
+                        List<int> f = di.faces;
+                        if (di.type == 0x98)
+                            f = TriangleTools.fromTriangleStrip(di.faces);
+                        else
+                        if (di.type == 0x80)
+                            f = TriangleTools.fromQuad(di.faces);
+
+                        foreach (int index in f)
+                        {
+                            if (!usedVertices.Contains(dat.vertBank[index]))
+                                usedVertices.Add(dat.vertBank[index]);
+                            faces.Add(usedVertices.IndexOf(dat.vertBank[index]));
+                        }
+                    }
+                }
+                p.inputs.Add(inv);
+                p.count = faces.Count;
+                p.p = faces.ToArray();
+                geom.mesh.polygons.Add(p);
+
+                // create sources... this may take a minute
+                // POSITION
+                {
+                    ColladaSource src = new ColladaSource();
+                    geom.mesh.sources.Add(src);
+                    src.id = geom.name + "_pos";
+                    //src.name = mesh.name + "src1";
+                    vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.POSITION });
+                    List<string> d = new List<string>();
+                    foreach (DAT.Vertex v in usedVertices)
+                    {
+                        d.AddRange(new string[] { v.pos.X.ToString(), v.pos.Y.ToString(), v.pos.Z.ToString() });
+                    }
+                    src.accessor.Add("X");
+                    src.accessor.Add("Y");
+                    src.accessor.Add("Z");
+                    src.data = d.ToArray();
+                    src.count = d.Count * 3;
+                }
+                // NORMAL
+                {
+                    ColladaSource src = new ColladaSource();
+                    geom.mesh.sources.Add(src);
+                    src.id = geom.name + "_nrm";
+                    //src.name = mesh.name + "src1";
+                    vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.NORMAL });
+                    List<string> d = new List<string>();
+                    foreach (DAT.Vertex v in usedVertices)
+                    {
+                        d.AddRange(new string[] { v.nrm.X.ToString(), v.nrm.Y.ToString(), v.nrm.Z.ToString() });
+                    }
+                    src.accessor.Add("X");
+                    src.accessor.Add("Y");
+                    src.accessor.Add("Z");
+                    src.data = d.ToArray();
+                    src.count = d.Count * 3;
+                }
+                // TEXTURE
+                {
+                    ColladaSource src = new ColladaSource();
+                    geom.mesh.sources.Add(src);
+                    src.id = geom.name + "_tx0";
+                    //src.name = mesh.name + "src1";
+                    vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.TEXCOORD });
+                    List<string> d = new List<string>();
+                    foreach (DAT.Vertex v in usedVertices)
+                    {
+                        d.AddRange(new string[] {( v.tx0.X * data.material.texture.scale_w).ToString(), (v.tx0.Y * data.material.texture.scale_h).ToString() });
+                    }
+                    src.accessor.Add("S");
+                    src.accessor.Add("T");
+                    src.data = d.ToArray();
+                    src.count = d.Count * 2;
+                }
+                // COLOR
+                {
+                    ColladaSource src = new ColladaSource();
+                    geom.mesh.sources.Add(src);
+                    src.id = geom.name + "_clr";
+                    //src.name = mesh.name + "src1";
+                    vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.COLOR });
+                    List<string> d = new List<string>();
+                    foreach (DAT.Vertex v in usedVertices)
+                    {
+                        d.AddRange(new string[] { (v.clr.X).ToString(), (v.clr.Y).ToString(), (v.clr.Z).ToString(), (v.clr.W).ToString() });
+                    }
+                    src.accessor.Add("R");
+                    src.accessor.Add("G");
+                    src.accessor.Add("B");
+                    src.accessor.Add("A");
+                    src.data = d.ToArray();
+                    src.count = d.Count * 4;
+                }
+
+                // create controllers too
+                ColladaController control = new ColladaController();
+                control.id = "Controller" + num;
+                colnode.geomid = "#" + control.id;
+                dae.library_controllers.Add(control);
+                ColladaSkin skin = new ColladaSkin();
+                control.skin = skin;
+                skin.source = "#" + geom.id;
+                skin.mat = Matrix4.CreateScale(1, 1, 1);
+                skin.joints = new ColladaJoints();
+
+                ColladaVertexWeights weights = new ColladaVertexWeights();
+                skin.weights = weights;
+
+                // JOINT
+                {
+                    ColladaSource src = new ColladaSource();
+                    skin.sources.Add(src);
+                    src.id = control.id + "_joints";
+                    src.type = ArrayType.Name_array;
+                    //src.name = mesh.name + "src1";
+                    skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT });
+                    weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT, offset = 0 });
+                    List<string> d = new List<string>();
+                    foreach (Bone b in dat.bones.bones)
+                        d.Add(new string(b.boneName));
+                    src.accessor.Add("JOINT");
+                    src.data = d.ToArray();
+                    src.count = d.Count;
+                }
+                // INVTRANSFORM
+                {
+                    ColladaSource src = new ColladaSource();
+                    skin.sources.Add(src);
+                    src.id = control.id + "_trans";
+                    skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.INV_BIND_MATRIX });
+                    List<string> d = new List<string>();
+                    foreach (Bone b in dat.bones.bones)
+                    {
+                        d.Add(b.invert.M11 + " " + b.invert.M21 + " " + b.invert.M31 + " " + b.invert.M41 + " "
+                            + b.invert.M12 + " " + b.invert.M22 + " " + b.invert.M32 + " " + b.invert.M42 + " "
+                            + b.invert.M13 + " " + b.invert.M23 + " " + b.invert.M33 + " " + b.invert.M43 + " "
+                            + b.invert.M14 + " " + b.invert.M24 + " " + b.invert.M34 + " " + b.invert.M44);
+                    }
+                    src.accessor.Add("TRANSFORM");
+                    src.data = d.ToArray();
+                    src.count = d.Count * 16;
+                }
+                // WEIGHT
+                {
+                    ColladaSource src = new ColladaSource();
+                    skin.sources.Add(src);
+                    src.id = control.id + "_weights";
+                    weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.WEIGHT, offset = 1 });
+                    List<string> d = new List<string>();
+                    List<int> vcount = new List<int>();
+                    List<int> vert = new List<int>();
+                    foreach (DAT.Vertex v in usedVertices)
+                    {
+                        int vc = 0;
+
+                        for (int i = 0; i < v.bones.Count; i++)
+                        {
+                            string w = v.weights[i].ToString();
+                            if (w.Equals("0")) continue;
+                            vc++;
+                            if (!d.Contains(w))
+                                d.Add(w);
+                            vert.Add(v.bones[i]);
+                            vert.Add(d.IndexOf(w));
+                        };
+                        vcount.Add(vc);
+                    }
+                    
+                    weights.vcount = vcount.ToArray();
+                    weights.v = vert.ToArray();
+                    src.accessor.Add("WEIGHT");
+                    src.data = d.ToArray();
+                    src.count = d.Count;
+                }
+
+                num++;
+            }
+
+            dae.Write(fname);
+        }
+
+        public static void Save(string fname, ModelContainer con)
+        {
+            Collada dae = new Collada();
+
+            if (con.dat_melee != null)
+            {
+                Save(fname, con.dat_melee);
+                return;
+            }
+            NUD nud = con.nud;
+
+
+            // bones
+
+            SaveBoneNodes(dae, con.vbn.bones[0], con.vbn, null);
+
+            // geometry
+
+            int num = 0;
+            foreach (NUD.Mesh mesh in nud.mesh)
+            {
+                foreach (NUD.Polygon poly in mesh.polygons)
+                {
+                    ColladaGeometry geom = new ColladaGeometry();
+                    dae.library_geometries.Add(geom);
+                    geom.name = mesh.name;
+                    geom.id = mesh.name;
+                    geom.mesh = new ColladaMesh();
+
+                    // create a node for this
+                    ColladaNode colnode = new ColladaNode();
+                    dae.scene.nodes.Add(colnode);
+                    colnode.id = "VisualScene" + num;
+                    colnode.name = geom.name;
+                    colnode.geomid = "#" + geom.id;
+                    colnode.type = "NODE";
+                    colnode.instance = "instance_controller";
+
+                    // create vertex object
+                    ColladaVertices vertex = new ColladaVertices();
+                    vertex.id = mesh.name + "_verts";
+                    geom.mesh.vertices = vertex;
+
+                    // create sources... this may take a minute
+                    // POSITION
+                    {
+                        ColladaSource src = new ColladaSource();
+                        geom.mesh.sources.Add(src);
+                        src.id = mesh.name + "_pos";
+                        //src.name = mesh.name + "src1";
+                        vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.POSITION });
+                        List<string> d = new List<string>();
+                        foreach (NUD.Vertex v in poly.vertices)
+                        {
+                            d.AddRange(new string[] { v.pos.X.ToString(), v.pos.Y.ToString(), v.pos.Z.ToString() });
+                        }
+                        src.accessor.Add("X");
+                        src.accessor.Add("Y");
+                        src.accessor.Add("Z");
+                        src.data = d.ToArray();
+                        src.count = d.Count * 3;
+                    }
+                    // NORMAL
+                    {
+                        ColladaSource src = new ColladaSource();
+                        geom.mesh.sources.Add(src);
+                        src.id = mesh.name + "_nrm";
+                        //src.name = mesh.name + "src1";
+                        vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.NORMAL });
+                        List<string> d = new List<string>();
+                        foreach (NUD.Vertex v in poly.vertices)
+                        {
+                            d.AddRange(new string[] { v.nrm.X.ToString(), v.nrm.Y.ToString(), v.nrm.Z.ToString() });
+                        }
+                        src.accessor.Add("X");
+                        src.accessor.Add("Y");
+                        src.accessor.Add("Z");
+                        src.data = d.ToArray();
+                        src.count = d.Count * 3;
+                    }
+                    // TEXTURE
+                    {
+                        ColladaSource src = new ColladaSource();
+                        geom.mesh.sources.Add(src);
+                        src.id = mesh.name + "_tx0";
+                        //src.name = mesh.name + "src1";
+                        vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.TEXCOORD });
+                        List<string> d = new List<string>();
+                        foreach (NUD.Vertex v in poly.vertices)
+                        {
+                            d.AddRange(new string[] { v.tx[0].X.ToString(), v.tx[0].Y.ToString()});
+                        }
+                        src.accessor.Add("S");
+                        src.accessor.Add("T");
+                        src.data = d.ToArray();
+                        src.count = d.Count * 2;
+                    }
+                    // COLOR
+                    {
+                        ColladaSource src = new ColladaSource();
+                        geom.mesh.sources.Add(src);
+                        src.id = mesh.name + "_clr";
+                        //src.name = mesh.name + "src1";
+                        vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.COLOR });
+                        List<string> d = new List<string>();
+                        foreach (NUD.Vertex v in poly.vertices)
+                        {
+                            d.AddRange(new string[] { (v.col.X/255).ToString(), (v.col.Y / 255).ToString(), (v.col.Z / 255).ToString(), (v.col.W / 255).ToString() });
+                        }
+                        src.accessor.Add("R");
+                        src.accessor.Add("G");
+                        src.accessor.Add("B");
+                        src.accessor.Add("A");
+                        src.data = d.ToArray();
+                        src.count = d.Count * 4;
+                    }
+
+                    // create polygon objects (NUD uses basically 1)
+                    ColladaPolygons p = new ColladaPolygons();
+                    ColladaInput inv = new ColladaInput();
+                    inv.offset = 0;
+                    inv.semantic = SemanticType.VERTEX;
+                    inv.source = "#" + mesh.name + "_verts";
+                    p.inputs.Add(inv);
+                    p.count = poly.displayFaceSize;
+                    p.p = poly.getDisplayFace().ToArray();
+                    geom.mesh.polygons.Add(p);
+
+                    // create controllers too
+                    ColladaController control = new ColladaController();
+                    control.id = "Controller" + num;
+                    colnode.geomid = "#" + control.id;
+                    dae.library_controllers.Add(control);
+                    ColladaSkin skin = new ColladaSkin();
+                    control.skin = skin;
+                    skin.source = "#" + geom.id;
+                    skin.mat = Matrix4.CreateScale(1,1,1);
+                    skin.joints = new ColladaJoints();
+                    
+                    ColladaVertexWeights weights = new ColladaVertexWeights();
+                    skin.weights = weights;
+
+                    // JOINT
+                    {
+                        ColladaSource src = new ColladaSource();
+                        skin.sources.Add(src);
+                        src.id = control.id + "_joints";
+                        src.type = ArrayType.Name_array;
+                        //src.name = mesh.name + "src1";
+                        skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT });
+                        weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT, offset = 0 });
+                        List<string> d = new List<string>();
+                        foreach (Bone b in con.vbn.bones)
+                            d.Add(new string(b.boneName));
+                        src.accessor.Add("JOINT");
+                        src.data = d.ToArray();
+                        src.count = d.Count;
+                    }
+                    // INVTRANSFORM
+                    {
+                        ColladaSource src = new ColladaSource();
+                        skin.sources.Add(src);
+                        src.id = control.id + "_trans";
+                        skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.INV_BIND_MATRIX });
+                        List<string> d = new List<string>();
+                        foreach (Bone b in con.vbn.bones)
+                        {
+                            d.Add(b.invert.M11 + " " + b.invert.M21 + " " + b.invert.M31 + " " + b.invert.M41 + " "
+                                + b.invert.M12 + " " + b.invert.M22 + " " + b.invert.M32 + " " + b.invert.M42 + " "
+                                + b.invert.M13 + " " + b.invert.M23 + " " + b.invert.M33 + " " + b.invert.M43 + " "
+                                + b.invert.M14 + " " + b.invert.M24 + " " + b.invert.M34 + " " + b.invert.M44);
+                        }
+                        src.accessor.Add("TRANSFORM");
+                        src.data = d.ToArray();
+                        src.count = d.Count * 16;
+                    }
+                    // WEIGHT
+                    {
+                        ColladaSource src = new ColladaSource();
+                        skin.sources.Add(src);
+                        src.id = control.id + "_weights";
+                        weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.WEIGHT, offset=1 });
+                        List<string> d = new List<string>();
+                        List<int> vcount = new List<int>();
+                        List<int> vert = new List<int>();
+                        foreach (NUD.Vertex v in poly.vertices)
+                        {
+                            int vc = 0;
+                            for (int i = 0; i < v.node.Count; i++)
+                            {
+                                string w = v.weight[i].ToString();
+                                if (w.Equals("0")) continue;
+                                vc++;
+                                if (!d.Contains(w))
+                                    d.Add(w);
+                                vert.Add(v.node[i]);
+                                vert.Add(d.IndexOf(w));
+                            };
+                            vcount.Add(vc);
+                        }
+                        weights.vcount = vcount.ToArray();
+                        weights.v = vert.ToArray();
+                        src.accessor.Add("WEIGHT");
+                        src.data = d.ToArray();
+                        src.count = d.Count;
+                    }
+
+                    num++;
+                }
+            }
+
+            dae.Write(fname);
+        }
+
+        private void Write(string fname)
+        {
+            XmlDocument doc = new XmlDocument();
+            
+            XmlNode colladaNode = doc.CreateElement("COLLADA");
+            colladaNode.Attributes.Append(createAttribute(doc, "xmlns", "http://www.collada.org/2005/11/COLLADASchema"));
+            colladaNode.Attributes.Append(createAttribute(doc, "version", "1.4.1"));
+
+            // asset
+
+            XmlNode asset = doc.CreateElement("asset");
+            XmlNode created = doc.CreateElement("created");
+            XmlNode modified = doc.CreateElement("modified");
+            asset.AppendChild(created);
+            asset.AppendChild(modified);
+            colladaNode.AppendChild(asset);
+
+            // library images
+            XmlNode li = doc.CreateElement("library_images");
+            foreach (ColladaImages geom in library_images)
+            {
+                geom.Write(doc, li);
+            }
+            colladaNode.AppendChild(li);
+            
+            // library materials
+            XmlNode lm = doc.CreateElement("library_materials");
+            foreach (ColladaMaterials geom in library_materials)
+            {
+                geom.Write(doc, lm);
+            }
+            colladaNode.AppendChild(lm);
+
+            // library effects
+            XmlNode le = doc.CreateElement("library_effects");
+            foreach (ColladaEffects geom in library_effects)
+            {
+                geom.Write(doc, le);
+            }
+            colladaNode.AppendChild(le);
+
+
+            // library geometries
+            XmlNode lg = doc.CreateElement("library_geometries");
+            foreach (ColladaGeometry geom in library_geometries)
+            {
+                geom.Write(doc, lg);
+            }
+            colladaNode.AppendChild(lg);
+            
+            // library controllers
+            XmlNode lc = doc.CreateElement("library_controllers");
+            foreach (ColladaController geom in library_controllers)
+            {
+                geom.Write(doc, lc);
+            }
+            colladaNode.AppendChild(lc);
+
+            // library_visual_scenes
+            this.scene.Write(doc, colladaNode);
+
+            // scene
+            XmlNode scene = doc.CreateElement("scene");
+            XmlNode vs = doc.CreateElement("instance_visual_scene");
+            vs.Attributes.Append(createAttribute(doc, "url", "#VisualSceneNode"));
+            scene.AppendChild(vs);
+            colladaNode.AppendChild(scene);
+            
+            doc.AppendChild(colladaNode);
+            doc.Save(fname);
+        }
+
+        public static XmlAttribute createAttribute(XmlDocument doc, string att, string value)
+        {
+            XmlAttribute at = doc.CreateAttribute(att);
+            at.Value = value;
+            return at;
+        }
 
         // collada containers
 
         Dictionary<string, object> sourceLinks = new Dictionary<string, object>();
 
+        List<ColladaImages> library_images = new List<ColladaImages>();
+        List<ColladaMaterials> library_materials = new List<ColladaMaterials>();
+        List<ColladaEffects> library_effects = new List<ColladaEffects>();
         List<ColladaGeometry> library_geometries = new List<ColladaGeometry>();
         List<ColladaController> library_controllers = new List<ColladaController>();
         ColladaVisualScene scene = new ColladaVisualScene();
@@ -726,7 +1197,7 @@ namespace Smash_Forge
 
         public void ParseGeometry(XmlNode root)
         {
-            foreach(XmlNode node in root.ChildNodes)
+            foreach (XmlNode node in root.ChildNodes)
             {
                 ColladaGeometry g = new ColladaGeometry();
                 g.Read(node);
@@ -745,16 +1216,23 @@ namespace Smash_Forge
                 id = (string)root.Attributes["id"].Value;
                 name = (string)root.Attributes["name"].Value;
                 mesh = new ColladaMesh();
-                foreach(XmlNode node in root.ChildNodes)
+                foreach (XmlNode node in root.ChildNodes)
                 {
-                    if(node.Name.Equals("mesh"))
+                    if (node.Name.Equals("mesh"))
                         mesh.Read(node);
                 }
             }
 
-            public XmlNode Write()
+            public void Write(XmlDocument doc, XmlNode parent)
             {
-                return null;
+                XmlNode node = doc.CreateElement("geometry");
+                node.Attributes.Append(createAttribute(doc, "id", id));
+                node.Attributes.Append(createAttribute(doc, "name", name));
+
+                // write mesh
+                mesh.Write(doc, node);
+
+                parent.AppendChild(node);
             }
         }
 
@@ -787,6 +1265,29 @@ namespace Smash_Forge
                     }
                 }
             }
+
+            public void Write(XmlDocument doc, XmlNode parent)
+            {
+                XmlNode node = doc.CreateElement("mesh");
+
+                foreach (ColladaSource src in sources)
+                {
+                    src.Write(doc, node);
+                }
+                vertices.Write(doc, node);
+                foreach (ColladaPolygons p in polygons)
+                {
+                    p.Write(doc, node);
+                }
+
+                parent.AppendChild(node);
+            }
+        }
+
+        public enum ArrayType
+        {
+            float_array,
+            Name_array
         }
 
         public class ColladaSource
@@ -795,6 +1296,8 @@ namespace Smash_Forge
 
             public string[] data;
             public int count;
+            public ArrayType type;
+            public List<string> accessor = new List<string>();
 
             public void Read(XmlNode root)
             {
@@ -813,13 +1316,53 @@ namespace Smash_Forge
                     }
                 }
             }
+
+            public void Write(XmlDocument doc, XmlNode parent)
+            {
+                XmlNode node = doc.CreateElement("source");
+
+                node.Attributes.Append(createAttribute(doc, "id", id));
+                //node.Attributes.Append(createAttribute(doc, "count", count));
+
+                XmlNode arr = doc.CreateElement(type + "");
+                node.AppendChild(arr);
+                arr.Attributes.Append(createAttribute(doc, "id", id + "-array"));
+                arr.Attributes.Append(createAttribute(doc, "count", count + ""));
+                string aa = "";
+                foreach (string s in data) aa += s + " ";
+                arr.InnerText = aa;
+
+                XmlNode tc = doc.CreateElement("technique_common");
+                node.AppendChild(tc);
+                XmlNode accessor = doc.CreateElement("accessor");
+                accessor.Attributes.Append(createAttribute(doc, "source", "#" + id + "-array"));
+                accessor.Attributes.Append(createAttribute(doc, "count", (count / this.accessor.Count) + ""));
+                if(this.accessor.Count > 0 && this.accessor[0].Equals("TRANSFORM"))
+                    accessor.Attributes.Append(createAttribute(doc, "stride", 16 + ""));
+                else
+                    accessor.Attributes.Append(createAttribute(doc, "stride", this.accessor.Count + ""));
+                tc.AppendChild(accessor);
+
+                foreach (string param in this.accessor)
+                {
+                    XmlNode pa = doc.CreateElement("param");
+                    accessor.AppendChild(pa);
+                    pa.Attributes.Append(createAttribute(doc, "name", param));
+                    if(param.Equals("TRANSFORM"))
+                        pa.Attributes.Append(createAttribute(doc, "type", "float4x4"));
+                    else
+                        pa.Attributes.Append(createAttribute(doc, "type", type.ToString().Replace("_array", "")));
+                }
+
+                parent.AppendChild(node);
+            }
         }
 
         public class ColladaVertices
         {
             public string id;
             public List<ColladaInput> inputs = new List<ColladaInput>();
-            
+
             public void Read(XmlNode root)
             {
                 id = (string)root.Attributes["id"].Value;
@@ -834,6 +1377,20 @@ namespace Smash_Forge
                     }
                 }
             }
+
+            public void Write(XmlDocument doc, XmlNode parent)
+            {
+                XmlNode node = doc.CreateElement("vertices");
+
+                node.Attributes.Append(createAttribute(doc, "id", id));
+
+                foreach (ColladaInput input in inputs)
+                {
+                    input.Write(doc, node);
+                }
+
+                parent.AppendChild(node);
+            }
         }
 
         public class ColladaPolygons
@@ -842,11 +1399,11 @@ namespace Smash_Forge
             public List<ColladaInput> inputs = new List<ColladaInput>();
             public int[] p;
             public int count;
-            public string material;
+            public string materialid;
 
             public void Read(XmlNode root)
             {
-                material = (string)root.Attributes["material"].Value;
+                materialid = (string)root.Attributes["material"].Value;
                 int.TryParse((string)root.Attributes["count"].Value, out count);
 
                 foreach (XmlNode node in root.ChildNodes)
@@ -861,38 +1418,206 @@ namespace Smash_Forge
                     {
                         string[] ps = node.InnerText.Trim().Split(' ');
                         p = new int[ps.Length];
-                        for(int i = 0; i < ps.Length; i++)
+                        for (int i = 0; i < ps.Length; i++)
                             p[i] = int.Parse(ps[i]);
                     }
                 }
             }
 
+            public void Write(XmlDocument doc, XmlNode parent)
+            {
+                XmlNode node = doc.CreateElement(type.ToString());
+
+                node.Attributes.Append(createAttribute(doc, "material", materialid));
+                node.Attributes.Append(createAttribute(doc, "count", count+""));
+
+                foreach (ColladaInput input in inputs)
+                {
+                    input.Write(doc, node);
+                }
+                string p = "";
+                foreach(int i in this.p)
+                {
+                    p += i + " ";
+                }
+                XmlNode pi = doc.CreateElement("p");
+                pi.InnerText = p;
+                node.AppendChild(pi);
+
+                parent.AppendChild(node);
+            }
         }
 
         public class ColladaInput
         {
             public SemanticType semantic;
             public string source;
-            public int set, offset;
+            public int set = -99, offset =-99;
 
             public void Read(XmlNode root)
             {
                 semantic = (SemanticType)Enum.Parse(typeof(SemanticType), (string)root.Attributes["semantic"].Value);
                 source = (string)root.Attributes["source"].Value;
-                if(root.Attributes["set"]!=null)
-                int.TryParse((string)root.Attributes["set"].Value, out set);
+                if (root.Attributes["set"] != null)
+                    int.TryParse((string)root.Attributes["set"].Value, out set);
                 if (root.Attributes["offset"] != null)
                     int.TryParse((string)root.Attributes["offset"].Value, out offset);
+            }
+
+            public void Write(XmlDocument doc, XmlNode parent)
+            {
+                XmlNode node = doc.CreateElement("input");
+
+                node.Attributes.Append(createAttribute(doc, "semantic", semantic.ToString()));
+                node.Attributes.Append(createAttribute(doc, "source", source));
+                if (set != -99)
+                    node.Attributes.Append(createAttribute(doc, "set", set + ""));
+                if (offset != -99)
+                    node.Attributes.Append(createAttribute(doc, "offset", offset+""));
+
+                parent.AppendChild(node);
+
             }
         }
         #endregion
 
         #region Materials
         // Images and Materials
-        public class ColladaMaterial
+        public class ColladaImages
         {
+            public string id, name, initref;
 
+            public void Write(XmlDocument doc, XmlNode parent)
+            {
+                XmlNode node = doc.CreateElement("image");
+                node.Attributes.Append(createAttribute(doc, "id", id));
+                node.Attributes.Append(createAttribute(doc, "name", name));
+
+                XmlNode init = doc.CreateElement("init_from");
+                init.InnerText=initref;
+                node.AppendChild(init);
+
+                parent.AppendChild(node);
+            }
         }
+        public class ColladaMaterials
+        {
+            public string id, effecturl;
+
+            public void Write(XmlDocument doc, XmlNode parent)
+            {
+                XmlNode node = doc.CreateElement("material");
+                node.Attributes.Append(createAttribute(doc, "id", id));
+                
+                XmlNode init = doc.CreateElement("instance_effect");
+                init.Attributes.Append(createAttribute(doc, "url", effecturl));
+                node.AppendChild(init);
+
+                parent.AppendChild(node);
+            }
+        }
+        public class ColladaEffects
+        {
+            public string id, name;
+            public string source = "#";
+            public ColladaSampler2D sampler;
+
+            // for writing
+
+            public void Write(XmlDocument doc, XmlNode parent)
+            {
+                XmlNode node = doc.CreateElement("effect");
+                node.Attributes.Append(createAttribute(doc, "id", id));
+                node.Attributes.Append(createAttribute(doc, "name", name));
+
+                XmlNode prof = doc.CreateElement("profile_COMMON");
+                node.AppendChild(prof);
+                {
+                    XmlNode np = doc.CreateElement("newparam");
+                    prof.AppendChild(np);
+                    np.Attributes.Append(createAttribute(doc, "sid", id + "-surface"));
+                    
+                    XmlNode sur = doc.CreateElement("surface");
+                    np.AppendChild(sur);
+                    XmlNode init = doc.CreateElement("init_from");
+                    sur.AppendChild(init);
+                    init.InnerText = source.Replace("#", "");
+                    sur.Attributes.Append(createAttribute(doc, "type", "2D"));
+                }
+                {
+                    XmlNode np = doc.CreateElement("newparam");
+                    prof.AppendChild(np);
+                    np.Attributes.Append(createAttribute(doc, "sid", id + "-sampler"));
+                    sampler.source = id + "-surface";
+                    sampler.Write(doc, np);
+                }
+                {
+                    XmlNode tech = doc.CreateElement("technique");
+                    prof.AppendChild(tech);
+                    tech.Attributes.Append(createAttribute(doc, "sid", "COMMON"));
+
+                    XmlNode sur = doc.CreateElement("phong");
+                    tech.AppendChild(sur);
+                    XmlNode init = doc.CreateElement("diffuse");
+                    sur.AppendChild(init);
+                    XmlNode reff = doc.CreateElement("texture");
+                    init.AppendChild(reff);
+                    reff.Attributes.Append(createAttribute(doc, "texture", id + "-sampler"));
+                    reff.Attributes.Append(createAttribute(doc, "texcoord", ""));
+                }
+
+                parent.AppendChild(node);
+            }
+        }
+
+        public enum COLLADA_WRAPMODE
+        {
+            WRAP,
+            REPEAT,
+            CLAMP,
+            CLAMP_TO_EDGE,
+            MIRROR
+        }
+        public enum COLLADA_FILTER
+        {
+            NONE,
+            NEAREST,
+            LINEAR
+        }
+
+        public class ColladaSampler2D
+        {
+            public string source, url;
+            public COLLADA_WRAPMODE wrap_s, wrap_t;
+            public COLLADA_FILTER minfilter, magfilter;
+            public void Write(XmlDocument doc, XmlNode parent)
+            {
+                XmlNode node = doc.CreateElement("sampler2D");
+                {
+                    XmlNode src = doc.CreateElement("source");
+                    src.InnerText = source;
+                    node.AppendChild(src);
+                }
+                {
+                    XmlNode src = doc.CreateElement("wrap_s");
+                    src.InnerText = wrap_s.ToString();
+                    node.AppendChild(src);
+                }
+                {
+                    XmlNode src = doc.CreateElement("wrap_t");
+                    src.InnerText = wrap_t.ToString();
+                    node.AppendChild(src);
+                }
+
+                /*XmlNode inst = doc.CreateElement("instance_image");
+                inst.Attributes.Append(createAttribute(doc, "url", url));
+                node.AppendChild(inst);*/
+
+
+                parent.AppendChild(node);
+            }
+        }
+
         #endregion
 
         #region Controllers
@@ -924,12 +1649,22 @@ namespace Smash_Forge
                     }
                 }
             }
+
+            public void Write(XmlDocument doc, XmlNode parent)
+            {
+                XmlNode node = doc.CreateElement("controller");
+                node.Attributes.Append(createAttribute(doc, "id", id));
+
+                skin.Write(doc, node);
+
+                parent.AppendChild(node);
+            }
         }
 
         public class ColladaSkin
         {
             public string source;
-            public Matrix4 mat = new Matrix4();
+            public Matrix4 mat = Matrix4.CreateScale(1,1,1);
             public List<ColladaSource> sources = new List<ColladaSource>();
             public ColladaJoints joints = new ColladaJoints();
             public ColladaVertexWeights weights = new ColladaVertexWeights();
@@ -965,6 +1700,27 @@ namespace Smash_Forge
                 }
             }
 
+            public void Write(XmlDocument doc, XmlNode parent)
+            {
+                XmlNode node = doc.CreateElement("skin");
+                node.Attributes.Append(createAttribute(doc, "source", source));
+
+                XmlNode matrix = doc.CreateElement("matrix");
+                node.AppendChild(matrix);
+                matrix.InnerText = mat.M11 + " " + mat.M21 + " " + mat.M31 + " " + mat.M41
+                    + " " + mat.M12 + " " + mat.M22 + " " + mat.M32 + " " + mat.M42
+                    + " " + mat.M13 + " " + mat.M23 + " " + mat.M33 + " " + mat.M43
+                    + " " + mat.M14 + " " + mat.M24 + " " + mat.M34 + " " + mat.M44;
+                foreach (ColladaSource src in sources)
+                {
+                    src.Write(doc, node);
+                }
+                joints.Write(doc, node);
+                weights.Write(doc, node);
+
+                parent.AppendChild(node);
+            }
+
         }
 
         public class ColladaJoints
@@ -982,6 +1738,18 @@ namespace Smash_Forge
                         inputs.Add(input);
                     }
                 }
+            }
+
+            public void Write(XmlDocument doc, XmlNode parent)
+            {
+                XmlNode node = doc.CreateElement("joints");
+
+                foreach (ColladaInput input in inputs)
+                {
+                    input.Write(doc, node);
+                }
+
+                parent.AppendChild(node);
             }
         }
 
@@ -1019,6 +1787,34 @@ namespace Smash_Forge
                     }
                 }
             }
+
+            public void Write(XmlDocument doc, XmlNode parent)
+            {
+                XmlNode node = doc.CreateElement("vertex_weights");
+                node.Attributes.Append(createAttribute(doc, "count", vcount.Length.ToString()));
+
+                foreach (ColladaInput input in inputs)
+                {
+                    input.Write(doc, node);
+                }
+
+                XmlNode vc = doc.CreateElement("vcount");
+                XmlNode p = doc.CreateElement("v");
+                node.AppendChild(vc);
+                node.AppendChild(p);
+
+                string ar = "";
+                foreach (int i in vcount)
+                    ar += i + " ";
+                vc.InnerText = ar;
+
+                ar = "";
+                foreach (int i in v)
+                    ar += i + " ";
+                p.InnerText = ar;
+
+                parent.AppendChild(node);
+            }
         }
 
         #endregion
@@ -1046,15 +1842,36 @@ namespace Smash_Forge
                     }
                 }
             }
+
+            public void Write(XmlDocument doc, XmlNode parent)
+            {
+                XmlNode node = doc.CreateElement("library_visual_scenes");
+                XmlNode vs = doc.CreateElement("visual_scene");
+                vs.Attributes.Append(createAttribute(doc, "id", "VisualSceneNode"));
+                vs.Attributes.Append(createAttribute(doc, "name", "rdmscene"));
+                node.AppendChild(vs);
+
+                foreach(ColladaNode no in nodes)
+                {
+                    no.Write(doc, vs);
+                }
+                
+
+                parent.AppendChild(node);
+            }
         }
 
         public class ColladaNode
         {
             public ColladaNode parent;
-            public string id, name, type = "NODE";
+            public string id, name, type = "NODE", geomid, instance = "";
             public List<ColladaNode> children = new List<ColladaNode>();
-            
+
+            public Matrix4 mat = Matrix4.CreateScale(1,1,1);
             public Vector3 pos = new Vector3(), sca = new Vector3(), rot = new Vector3();
+
+            // material
+            public string materialSymbol, materialTarget;
 
             public void Read(XmlNode root, ColladaNode parent)
             {
@@ -1095,6 +1912,59 @@ namespace Smash_Forge
                         Console.WriteLine(node.Name);
                     }
                 }
+            }
+            
+            public void Write(XmlDocument doc, XmlNode parent)
+            {
+                XmlNode node = doc.CreateElement("node");
+                node.Attributes.Append(createAttribute(doc, "id", id));
+                node.Attributes.Append(createAttribute(doc, "name", name));
+                node.Attributes.Append(createAttribute(doc, "type", type));
+                if(type.Equals("JOINT"))
+                    node.Attributes.Append(createAttribute(doc, "sid", name));
+
+                // transform matrix
+
+                XmlNode matrix = doc.CreateElement("matrix");
+                node.AppendChild(matrix);
+                matrix.InnerText = mat.M11 + " " + mat.M21 + " " + mat.M31 + " " + mat.M41
+                    + " " + mat.M12 + " " + mat.M22 + " " + mat.M32 + " " + mat.M42
+                    + " " + mat.M13 + " " + mat.M23 + " " + mat.M33 + " " + mat.M43
+                    + " " + mat.M14 + " " + mat.M24 + " " + mat.M34 + " " + mat.M44;
+
+                // instance geometry (no rigging) instance controller for rigging
+                if (!instance.Equals(""))
+                {
+                    XmlNode inst = doc.CreateElement(instance);
+                    inst.Attributes.Append(createAttribute(doc, "url", geomid));
+                    node.AppendChild(inst);
+                    if (instance.Equals("instance_controller"))
+                    {
+                        XmlNode skel = doc.CreateElement("skeleton");
+                        inst.AppendChild(skel);
+                        skel.InnerText = "#Bone_0_id";
+                    }
+                    if (materialSymbol != null && materialTarget != null)
+                    {
+                        XmlNode bn = doc.CreateElement("bind_material");
+                        inst.AppendChild(bn);
+                        XmlNode tc = doc.CreateElement("technique_common");
+                        bn.AppendChild(tc);
+                        XmlNode im = doc.CreateElement("instance_material");
+                        tc.AppendChild(im);
+                        im.Attributes.Append(createAttribute(doc, "symbol", materialSymbol));
+                        im.Attributes.Append(createAttribute(doc, "target", materialTarget));
+
+                    }
+                }
+
+
+                foreach (ColladaNode no in children)
+                {
+                    no.Write(doc, node);
+                }
+
+                parent.AppendChild(node);
             }
         }
 

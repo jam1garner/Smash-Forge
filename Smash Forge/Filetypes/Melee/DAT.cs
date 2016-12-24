@@ -9,17 +9,25 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.Windows.Forms;
 using static Smash_Forge.DAT.POBJ;
+using System.IO;
 
 namespace Smash_Forge
 {
     public class DAT
     {
+
         public static int headerSize = 0x20;
         Header header = new Header();
 
         public List<TreeNode> tree = new List<TreeNode>();
         public List<TreeNode> displayList = new List<TreeNode>();
         public COLL_DATA collisions = null;
+        public List<Vector3> spawns = null;
+        public List<Vector3> respawns = null;
+        public List<Vector3> itemSpawns = null;
+        public Bounds cameraBounds = null;
+        public Bounds blastzones = null;
+        private float stageScale; 
 
         public VBN bones = new VBN();
 
@@ -36,6 +44,7 @@ namespace Smash_Forge
         public static Shader shader = null;
 
         Dictionary<int, JOBJ> jobjOffsetLinker = new Dictionary<int, JOBJ>();
+        public Dictionary<int, Bitmap> texturesLinker = new Dictionary<int, Bitmap>();
 
         static string vs = @"#version 330
  
@@ -51,7 +60,7 @@ out vec4 color;
 out float normal;
 
 uniform mat4 modelview;
-uniform mat4 bones[150];
+uniform mat4 bones[300];
  
 void
 main()
@@ -70,7 +79,7 @@ main()
 
     f_texcoord = vUV;
     color = vColor;
-    normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
+    normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.3,0.3,0.3,1.0)) ;
 }";
 
         static string fs = @"#version 330
@@ -86,7 +95,7 @@ void
 main()
 {
     vec4 alpha = texture(tex, f_texcoord*uvscale).aaaa;
-    gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale)).xyz, alpha.a * color.w);
+    gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale) * normal).xyz, alpha.a * color.w);
 }
 ";
 
@@ -139,10 +148,11 @@ main()
             header.Read(d);
             d.skip(header.dataBlockSize); // skip to relocation table
             d.skip(header.relocationTableCount * 4); // skip relocation table
-
-            int strOffset = d.pos() + header.rootCount * 8;
+            
+            int strOffset = d.pos() + header.rootCount * 8 + header.referenceNodeCount * 8;
             int[] sectionOffset = new int[header.rootCount];
             string[] sectionNames = new string[header.rootCount];
+            Console.WriteLine(d.pos().ToString("x") + " " + strOffset.ToString("x"));
             for (int i = 0; i < header.rootCount; i++)
             {
                 // data then string
@@ -157,6 +167,7 @@ main()
                 node.Tag = data;
                 tree.Add(node);
             }
+            Console.WriteLine(d.pos().ToString("x") + " " + strOffset.ToString("x"));
 
             foreach (TreeNode node in tree)
             {
@@ -164,21 +175,62 @@ main()
                 d.seek((int)node.Tag);
                 // now, the name determines what happens here
                 // for now, it just assumes the _joint
-                if (node.Text.EndsWith("_joint") && !node.Text.Contains("matanim"))
+                if (node.Text.EndsWith("_joint") && !node.Text.Contains("matanim") && !node.Text.Contains("anim_joint"))
                 {
                     JOBJ j = new JOBJ();
                     j.Read(d, this, node);
                     //break;
                 }
-                else
-                if (node.Text.EndsWith("map_head"))
+                else if (node.Text.EndsWith("map_head"))
                 {
                     Map_Head head = new Map_Head();
                     head.Read(d, this, node);
+                    //levelDataNodes = node.Nodes[0].Nodes[0].Nodes[0].Nodes;
+                }
+                else if (node.Text.EndsWith("grGroundParam"))
+                {
+                    stageScale = d.readFloat();//Ploaj please figure out how we should handle this 
+                    Console.WriteLine($"Stage scale - {stageScale}");
                 }
             }
 
-            foreach (TreeNode node in tree)
+            Console.WriteLine("Done");
+            //ExportTextures("",0);
+
+            // now to fix single binds
+            List<JOBJ> boneTrack = GetBoneOrder();
+            Matrix4 mt = new Matrix4();
+            int w = 0;
+            foreach (Vertex v in vertBank)
+            {
+                w = 0;
+                v.bones.Clear();
+                mt = new Matrix4();
+
+                foreach (object o in v.Tags)
+                {
+                    if(o is JOBJ)
+                    {
+                        v.bones.Add(boneTrack.IndexOf((JOBJ)o));
+                        mt = Matrix4.CreateScale(1,1,1);
+                        v.nrm = TransformNormal(((JOBJ)o).transform, v.nrm);
+                    }
+                    else
+                    if(o is int)
+                    {
+                        v.bones.Add(boneTrack.IndexOf(jobjOffsetLinker[(int)o]));
+                        mt += jobjOffsetLinker[(int)o].transform * v.weights[w++];
+                    }
+                }
+
+                if (v.bones.Count == 1)
+                {
+                    v.pos = Vector3.Transform(v.pos, mt);
+                    v.nrm = TransformNormal(mt, v.nrm);
+                }
+            }
+
+                foreach (TreeNode node in tree)
             {
                 if (node.Text.EndsWith("coll_data"))
                 {
@@ -190,7 +242,7 @@ main()
 
         }
 
-        Dictionary<int, PrimitiveType> primitiesTypes = new Dictionary<int, PrimitiveType>()
+        Dictionary<int, PrimitiveType> primitiveTypes = new Dictionary<int, PrimitiveType>()
         {
             { 0xB8, PrimitiveType.Points},
             { 0xA8, PrimitiveType.Lines},
@@ -209,6 +261,7 @@ main()
         };
 
 
+        #region Rendering
         Vector3[] vertdata, nrmdata;
         Vector2[] uvdata;
         Vector4[] bonedata, coldata, weightdata;
@@ -272,7 +325,7 @@ main()
                 boneTrack.Add(j);
 
                 Bone b = new Bone();
-                b.boneName = boneTrack.IndexOf(j).ToString().ToCharArray();
+                b.boneName = ("Bone_" + boneTrack.IndexOf(j).ToString()).ToCharArray();
                 if (node.Parent.Tag is JOBJ)
                     b.parentIndex = boneTrack.IndexOf((JOBJ)node.Parent.Tag);
                 else
@@ -388,6 +441,8 @@ main()
                 GL.BindTexture(TextureTarget.Texture2D, data.material.texture.texid);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)GX_TEXTUREWRAP[data.material.texture.wrap_s]);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)GX_TEXTUREWRAP[data.material.texture.wrap_t]);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
                 GL.Uniform1(shader.getAttribute("tex"), 0);
 
                 GL.Uniform2(shader.getAttribute("uvscale"), new Vector2(data.material.texture.scale_w, data.material.texture.scale_h));
@@ -397,7 +452,7 @@ main()
                     foreach (POBJ.DisplayObject d in poly.display)
                     {
                         if (da.Checked)
-                            GL.DrawElements(primitiesTypes[d.type], d.faces.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
+                            GL.DrawElements(primitiveTypes[d.type], d.faces.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
                         indiceat += d.faces.Count;
                     }
                 }
@@ -407,16 +462,167 @@ main()
 
         }
 
+        #endregion
+
+
+        public List<JOBJ> GetBoneOrder()
+        {
+            Stack<TreeNode> queue = new Stack<TreeNode>();
+            for (int k = tree.Count - 1; k >= 0; k--)
+                queue.Push(tree[k]);
+
+            List<JOBJ> boneTrack = new List<JOBJ>();
+            while (queue.Any())
+            {
+                TreeNode node = queue.Pop();
+
+                for (int k = node.Nodes.Count - 1; k >= 0; k--)
+                    queue.Push(node.Nodes[k]);
+
+                if (!(node.Tag is JOBJ))
+                    continue;
+
+                boneTrack.Add((JOBJ)node.Tag);
+            }
+            return boneTrack;
+        }
+        
+        public static Vector3 TransformNormal(Matrix4 M, Vector3 N)
+        {
+            return new Vector3((M.M11 * N.X) + (M.M12 * N.Y) + (M.M13 * N.Z),
+            (M.M21 * N.X) + (M.M22 * N.Y) + (M.M23 * N.Z),
+            (M.M31 * N.X) + (M.M32 * N.Y) + (M.M33 * N.Z));
+        }
+
+        #region Converting
         public static byte[] ConvertBitmapToByteArray(Bitmap bitmap)
         {
             byte[] result = null;
             if (bitmap != null)
             {
-                System.IO.MemoryStream stream = new System.IO.MemoryStream();
-                bitmap.Save(stream, bitmap.RawFormat);
-                result = stream.ToArray();
+                MemoryStream stream = new MemoryStream();
+                bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Bmp);
+                result = new FileData(stream.ToArray()).getSection(0x36, (int)stream.Length - 0x36);
             }
             return result;
+        }
+
+        public void ExportTextures(string path, int key)
+        {
+            int index = 0;
+            foreach (int k in texturesLinker.Keys)
+            {
+                texturesLinker[k].Save(path + (key+index++).ToString("x") + ".png");
+            }
+        }
+
+        private static bool inRange(int[] range, int val)
+        {
+            return (range[0] <= val && range[1] >= val);
+        }
+
+        private static bool vertExists(Collision c, Vector2D v)
+        {
+            foreach (Vector2D v2 in c.verts)
+                if (v2.x == v.x && v2.y == v.y)
+                    return true;
+            return false;
+        }
+
+        private void addLink(COLL_DATA.Link link, Collision c)
+        {
+            int l1 = link.vertexIndices[0], l2 = link.vertexIndices[1];
+            if (!vertExists(c, collisions.vertices[l1]))
+                c.verts.Add(collisions.vertices[l1]);
+            if (!vertExists(c, collisions.vertices[l2]))
+                c.verts.Add(collisions.vertices[l2]);
+
+            Vector2D currentNormal = new Vector2D();
+            if ((link.collisionAngle & 1) != 0)
+                currentNormal.y = 1;
+            if ((link.collisionAngle & 2) != 0)
+                currentNormal.y = -1;
+            if ((link.collisionAngle & 4) != 0)
+                currentNormal.x = 1;
+            if ((link.collisionAngle & 8) != 0)
+                currentNormal.x = -1;
+            c.normals.Add(currentNormal);
+
+            if ((link.flags & 1) != 0)
+                c.flag4 = true;
+            CollisionMat currentMat = new CollisionMat();
+            if ((link.flags & 2) != 0)
+            {
+                currentMat.setFlag(6, true);
+                currentMat.setFlag(7, true);
+            }
+            currentMat.setPhysics(link.material);
+            c.materials.Add(currentMat);
+        }
+
+        private void recursivelyGrabPoints(int linkIndex, Collision c)
+        {
+            COLL_DATA.Link link = collisions.links[linkIndex];
+            addLink(link, c);
+            if (link.connectors[1] != 0xFFFF)
+                recursivelyGrabPoints(link.connectors[1], c);
+        }
+
+        public LVD toLVD(bool safemode)
+        {
+            LVD lvd = new LVD();
+            int j = 0;
+            if (safemode)
+            {
+                foreach (COLL_DATA.Link link in collisions.links)
+                {
+                    Collision c = new Collision() { name = $"COL_MELEE_{j}", subname = $"MELEE_{j++}" };
+                    addLink(link, c);
+                    lvd.collisions.Add(c);
+                }
+            }
+            else
+            {
+                foreach (int[] poly in collisions.polyRanges)
+                {
+                    Collision c = new Collision() { name = $"COL_MELEE_{j}", subname = $"MELEE_{j++}" };
+                    int k = 0;
+                    foreach (COLL_DATA.Link link in collisions.links)
+                    {
+                        if (inRange(poly, link.vertexIndices[0]) && link.connectors[0] == 0xFFFF)
+                        {
+                            recursivelyGrabPoints(k, c);
+                        }
+                        k++;
+                    }
+                    lvd.collisions.Add(c);
+                }
+            }
+
+            lvd.blastzones.Add(blastzones);
+            lvd.cameraBounds.Add(cameraBounds);
+            j = 0;
+            foreach (Vector3 s in spawns)
+                lvd.spawns.Add(new Point() { x = s.X, y = s.Y, name = $"Spawn_{j}", subname = $"{j++}" });
+            j = 0;
+            foreach (Vector3 s in respawns)
+                lvd.respawns.Add(new Point() { x = s.X, y = s.Y, name = $"Respawn_{j}", subname = $"{j++}" });
+            j = 0;
+            foreach (Vector3 p in itemSpawns)
+                lvd.generalPoints.Add(new Point() { x = p.X, y = p.Y, name = $"Item_{j}", subname = $"{j++}" });
+
+            /*//This is basically for DSX8 for him quickly converting items in the "dumb" way
+            foreach (Vector3 p in itemSpawns)
+            {
+                ItemSpawner item = new ItemSpawner() { name = $"Item_{j}", subname = $"{j++}" };
+                item.sections.Add(new Section());
+                Vector2D[] f = { new Vector2D() { x = p.X, y = p.Y }, new Vector2D() { x = p.X, y = p.Y } };
+                item.sections[0].points = new List<Vector2D>(f);
+                lvd.items.Add(item);
+            }
+            */
+
+            return lvd;
         }
 
         public ModelContainer wrapToNUD()
@@ -431,6 +637,22 @@ main()
             NUT nut = new NUT();
             Runtime.TextureContainers.Add(nut);
             int texid = 0;
+            foreach(int key in texturesLinker.Keys)
+            {
+                NUT.NUD_Texture tex = new NUT.NUD_Texture();
+                tex.width = texturesLinker[key].Width;
+                tex.height = texturesLinker[key].Height;
+                tex.id = 0x401B1000 + texid;
+                tex.mipmaps = new List<byte[]>();
+                byte[] mip1 = ConvertBitmapToByteArray(texturesLinker[key]);
+                Console.WriteLine(mip1.Length);
+                tex.mipmaps.Add(mip1);
+                tex.type = PixelInternalFormat.Rgba;
+                tex.utype = PixelFormat.Bgra;
+                nut.textures.Add(tex);
+                nut.draw.Add(0x40545400 + texid, NUT.loadImage(tex));
+                texid++;
+            }
 
             foreach (var da in displayList)
             {
@@ -441,17 +663,27 @@ main()
                 polygon.setDefaultMaterial();
 
 
-                polygon.materials[0].textures[0].hash = 0x40545400 + texid;
-                NUT.NUD_Texture tex = new NUT.NUD_Texture();
-                tex.width = data.material.texture.width;
-                tex.height = data.material.texture.height;
-                tex.id = 0x40545400 + texid;
-                tex.mipmaps.Add(ConvertBitmapToByteArray(data.material.texture.image));
-                tex.type = PixelInternalFormat.Rgba;
-                tex.utype = PixelFormat.Rgba;
-                nut.textures.Add(tex);
-                nut.draw.Add(0x40545400 + texid, NUT.loadImage(tex));
-                texid++;
+                texid = 0;
+                foreach (int key in texturesLinker.Keys)
+                {
+                    if (key == data.material.texture.imageDataOffset)
+                        break;
+
+                    texid++;
+                }
+                polygon.materials[0].textures[0].hash = 0x401B1000 + texid;
+                switch (data.material.texture.wrap_s)
+                {
+                    case 0: polygon.materials[0].textures[0].WrapMode1 = 3; break;
+                    case 1: polygon.materials[0].textures[0].WrapMode1 = 1; break;
+                    case 2: polygon.materials[0].textures[0].WrapMode1 = 2; break;
+                }
+                switch (data.material.texture.wrap_t)
+                {
+                    case 0: polygon.materials[0].textures[0].WrapMode2 = 3; break;
+                    case 1: polygon.materials[0].textures[0].WrapMode2 = 1; break;
+                    case 2: polygon.materials[0].textures[0].WrapMode2 = 2; break;
+                }
 
 
                 List<Vertex> usedVertices = new List<Vertex>();
@@ -459,6 +691,7 @@ main()
                 {
                     foreach (POBJ.DisplayObject d in poly.display)
                     {
+                        Console.WriteLine("Mesh Type" + primitiveTypes[d.type]);
                         List<int> faces = d.faces;
                         if (d.type == 0x98)
                             faces = TriangleTools.fromTriangleStrip(d.faces);
@@ -485,7 +718,7 @@ main()
                     // convert to nud vert
                     NUD.Vertex nv = new NUD.Vertex();
                     nv.pos = vert.pos;
-                    nv.tx.Add(vert.tx0);
+                    nv.tx.Add(new Vector2(vert.tx0.X * data.material.texture.scale_w, (vert.tx0.Y * data.material.texture.scale_h)));
                     nv.nrm = vert.nrm;
                     nv.col = (vert.clr*0xFF)/2;
                     nv.node.AddRange(vert.bones);
@@ -501,6 +734,7 @@ main()
 
             return con;
         }
+        #endregion
 
         /*
             Header
@@ -534,6 +768,8 @@ main()
             }
         }
 
+        #region Collisions
+
         public class COLL_DATA
         {
             public class Link
@@ -548,6 +784,7 @@ main()
             public List<Vector2D> vertices = new List<Vector2D>();
             public List<List<Vector2D>> polys = new List<List<Vector2D>>();
             public List<Link> links = new List<Link>();
+            public List<int[]> polyRanges = new List<int[]>();
 
             public void Read(FileData f)
             {
@@ -573,9 +810,10 @@ main()
                     f.skip(0x24);
                     int start = f.readShort();
                     int length = f.readShort();
+                    int[] range = { start, start + length };
+                    polyRanges.Add(range);
                     polys.Add(vertices.GetRange(start, length));
                 }
-                int inc = 0;
                 f.seek(linkOff);
                 for (int i = 0; i < linkCount; i++)
                 {
@@ -590,15 +828,17 @@ main()
                     link.material = (byte)f.readByte();
                     links.Add(link);
                 }
-                foreach (List<Vector2D> poly in polys)
+                /*foreach (List<Vector2D> poly in polys)
                 {
                     inc++;
-                    //Console.WriteLine("\nPoly" + inc);
-                    //foreach (Vector2D point in poly)
-                    //    Console.WriteLine("(" + point.x + ", " + point.y + ")");
-                }
+                    Console.WriteLine("\nPoly" + inc);
+                    foreach (Vector2D point in poly)
+                        Console.WriteLine("(" + point.x + ", " + point.y + ")");
+                }*/
             }
         }
+
+        #endregion
 
         public class Map_Head
         {
@@ -633,8 +873,8 @@ main()
                         parentNode.Nodes.Add(node);
                         node.Tag = this;
                         node.Text = "NodeObject";
-
-                        Console.WriteLine(d.pos().ToString("x"));
+                        
+                        // WTF ARE THESE OFFSETS OMG
                         int jPointer = d.readInt() + headerSize;
                         Console.WriteLine((d.readInt() + headerSize).ToString("x") + " " + 
                             (d.readInt() + headerSize).ToString("x") + " " +
@@ -649,8 +889,9 @@ main()
                             (d.readInt() + headerSize).ToString("x") + " " +
                             (d.readInt() + headerSize).ToString("x") + " " +
                             (d.readInt() + headerSize).ToString("x") + " ");
-                        //d.skip(7 * 4); // unkown pointers
-                        //d.skip(5 * 4); // extra unknown (looks like more pointers, usually 0)
+
+                        if (jPointer == headerSize)
+                            return;
 
                         int temp = d.pos();
                         d.seek(jPointer);
@@ -667,33 +908,96 @@ main()
 
             public void Read(FileData d, DAT dat, TreeNode parentNode)
             {
-                Console.WriteLine(d.pos());
-                int off = d.readInt() + headerSize;
-                int id = d.readInt();
+                int start = d.pos();
+                Console.WriteLine($"Map_Head Start {start}");
+                int spawnyOffset = d.readInt() + 0x20;
+                int spawnyCount = d.readInt(); // ?? jammy-senpai assist ploaj-chan pls
 
-                for (int i = 0; i < 2; i++)
+                int mappymodelOffset = d.readInt() + headerSize;
+                int mappymodelCount = d.readInt();
+
+                // and some other nonsense
+
+                d.seek(spawnyOffset);
+                int stageBonesRoot = d.readInt() + 0x20;
+                int boneIdTableOffset = d.readInt() + 0x20;
+                int idEntryCount = d.readInt();
+
+                d.seek(boneIdTableOffset);
+                Dictionary<short, short> boneIds = new Dictionary<short, short>();
+                for (int i = 0; i < idEntryCount; i++)
+                    boneIds.Add((short)(d.readShort() - 1), (short)d.readShort());
+
+                d.seek(stageBonesRoot);
+                //PLOAJ WORK YOUR MAGIC HERE <3
+                // you got it fam
+                JOBJ j = new JOBJ();
+                j.Read(d, dat, parentNode);
+                
+
+                // models I guess gosh
+                d.seek(mappymodelOffset);
+                Head_Node node = new Head_Node();
+                node.id = mappymodelCount;
+                node.Read(d, dat, parentNode);
+
+                short index = 0;
+                dat.cameraBounds = new Bounds() { name = "CAMERA_00", subname = "00" };
+                dat.blastzones = new Bounds() { name = "DEATH_00", subname = "00" };
+                dat.itemSpawns = new List<Vector3>();
+                dat.spawns = new List<Vector3>();
+                dat.respawns = new List<Vector3>();
+                foreach(TreeNode t in j.node.Nodes)
                 {
-                    if (off != headerSize && id != 0)
+                    Vector3 pos = ((JOBJ)t.Tag).pos;
+                    int type = -1;
+                    try
                     {
-                        int temp = d.pos();
-                        d.seek(off);
+                        type = boneIds[index];
 
-                        Head_Node node = new Head_Node();
-                        node.id = id;
-                        node.Read(d, dat, parentNode);
-
-                        d.seek(temp);
+                        if (type >= 0 && type <= 3)
+                            dat.spawns.Add(pos);
+                        else if (type >= 4 && type <= 7)
+                            dat.respawns.Add(pos);
+                        else if (0x7F <= type && type <= 0x93)
+                            dat.itemSpawns.Add(pos);
+                        else if (type == 0x95)
+                        {
+                            dat.cameraBounds.left += pos.X;
+                            dat.cameraBounds.top += pos.Y;
+                            //Console.WriteLine($"Cam0 - {pos}");
+                        }
+                        else if (type == 0x96)
+                        {
+                            dat.cameraBounds.right += pos.X;
+                            dat.cameraBounds.bottom += pos.Y;
+                            //Console.WriteLine($"Cam1 - {pos}");
+                        }
+                        else if (type == 0x97)
+                        {
+                            dat.blastzones.left += pos.X;
+                            dat.blastzones.top += pos.Y;
+                            //Console.WriteLine($"Death0 - {pos}");
+                        }
+                        else if (type == 0x98)
+                        {
+                            dat.blastzones.right += pos.X;
+                            dat.blastzones.bottom += pos.Y;
+                            //Console.WriteLine($"Death1 - {pos}");
+                        }
                     }
-                    off = d.readInt() + headerSize;
-                    id = d.readInt();
+                    catch (KeyNotFoundException)
+                    {
+                        Console.WriteLine("No key for node found");
+                    }
+                    index++;
                 }
-
             }
         }
 
         public class JOBJ
         {
-            TreeNode node = new TreeNode();
+            public TreeNode node = new TreeNode();
 
             public int unk1 = 0; // padding?
             public int flags = 0x1004008E;
@@ -753,7 +1057,7 @@ main()
                 inverseTransform = transform.Inverted(); // screw the given transform
 
                 //dat.jobjs.Add(this);
-                node.Text = "Bone_" + parentNode.Nodes.Count;
+                node.Text = "Bone_" + dat.jobjOffsetLinker.Count;
                 node.Tag = this;
                 parentNode.Nodes.Add(node);
 
@@ -772,7 +1076,7 @@ main()
 
                 if (dobjOffset != headerSize)
                 {
-                    Console.WriteLine("DOBJ" + dobjOffset.ToString("X"));
+                    //Console.WriteLine("DOBJ" + dobjOffset.ToString("X"));
                     d.seek(dobjOffset);
                     DOBJ dobj = new DOBJ();
                     dobj.Read(d, dat, node);
@@ -801,18 +1105,18 @@ main()
                 mobjOffset = d.readInt() + headerSize;
                 pobjOffset = d.readInt() + headerSize;
 
+                node.Text = "Mesh_" + unk1;
+                node.Tag = this;
+                node.Checked = true;
+                parent.Nodes.Add(node);
+
                 d.seek(pobjOffset);
-                Console.WriteLine("POBJ" + pobjOffset.ToString("x"));
+                //Console.WriteLine("POBJ" + pobjOffset.ToString("x"));
                 POBJ p = new POBJ();
                 p.Read(d, dat, this, node);
 
                 d.seek(mobjOffset);
                 material.Read(d, dat);
-
-                node.Text = "Mesh_" + unk1;
-                node.Tag = this;
-                node.Checked = true;
-                parent.Nodes.Add(node);
 
                 if (nextOffset != headerSize)
                 {
@@ -838,7 +1142,7 @@ main()
                     materialOffset = d.readInt() + headerSize;
                     unk3 = d.readInt();
                     unk4 = d.readInt();
-
+                    
                     d.seek(tobjOffset);
                     if (d.pos() > headerSize)
                         texture.Read(d, dat);
@@ -893,11 +1197,20 @@ main()
                     count = d.readShort();
                     unkown = d.readShort();
 
-                    texid = NUT.loadImage(
-                        TPL.ConvertFromTextureMelee(d.getSection(imageDataOffset, TPL.textureByteSize((TPL_TextureFormat)format, width, height)),
-                        width, height, format,
-                        paletteOffset == headerSize ? null : d.getSection(paletteDataOffset, 4 * count), count, paletteFormat)
-                        );
+
+                    if (dat.texturesLinker.Keys.Contains(imageDataOffset))
+                        image = dat.texturesLinker[imageDataOffset];
+                    else
+                    {
+                        image = TPL.ConvertFromTextureMelee(d.getSection(imageDataOffset, TPL.textureByteSize((TPL_TextureFormat)format, width, height)),
+                            width, height, format,
+                            paletteOffset == headerSize ? null : d.getSection(paletteDataOffset, 4 * count), count, paletteFormat);
+
+                        dat.texturesLinker.Add(imageDataOffset, image);
+                    }
+
+
+                    texid = NUT.loadImage(image);
                 }
             }
         }
@@ -951,7 +1264,7 @@ main()
                 vtxStride = (short)d.readShort();
                 dataOffset = d.readInt() + headerSize;
 
-                Console.WriteLine((GXAttr)vtxAttr + " " + vtxAttrType + " comp type " + compType + " Data Offset: " + dataOffset.ToString("x") + " Scale: " + scale);
+                //Console.WriteLine((GXAttr)vtxAttr + " " + vtxAttrType + " comp type " + compType + " Data Offset: " + dataOffset.ToString("x") + " Scale: " + scale);
 
                 return this;
             }
@@ -966,6 +1279,8 @@ main()
             public Vector4 clr = new Vector4(1, 1, 1, 1);
             public List<int> bones = new List<int>();
             public List<float> weights = new List<float>();
+            
+            public List<object> Tags = new List<object>(); // this is for post processing of vertices
         }
 
         public List<Vertex> vertBank = new List<Vertex>();
@@ -1060,11 +1375,11 @@ main()
 
                 // display list
                 d.seek(displayListOffset);
-                //Console.WriteLine("Display 0x" + displayListOffset);
+                //Console.WriteLine("Display 0x" + displayListOffset + " " + displayListSize);
                 int bid = 0;
                 List<Vertex> used = new List<Vertex>();
                 if (displayListOffset != headerSize)
-                    for (int i = 0; i < displayListSize - 1; i++)
+                    for (int i = 0; i < displayListSize; i++)
                     {
                         byte prim = (byte)d.readByte();
                         int count = d.readShort();
@@ -1084,6 +1399,7 @@ main()
                             Vertex v = new Vertex();
                             dat.vertBank.Add(v);
                             ob.faces.Add(dat.vertBank.IndexOf(v));
+
                             foreach (VertexAttr att in vertexAttributes)
                             {
                                 int value = 0;
@@ -1101,7 +1417,9 @@ main()
                                         value = d.readByte();
                                         break;
                                     case GXAttrType.GX_INDEX16:
-                                        value = d.readShort();
+                                        value = (short)d.readShort();
+                                        break;
+                                    default:
                                         break;
                                 }
 
@@ -1135,46 +1453,32 @@ main()
                                             {
                                                 int off1 = d.readInt() + headerSize;
                                                 float wei1 = d.readFloat();
-                                                Vector3 newp = Vector3.Zero;
-                                                v.bones.Clear();
                                                 while (off1 > headerSize)
                                                 {
-                                                    if (!dat.jobjOffsetLinker.ContainsKey(off1))
-                                                        continue;
-
-                                                    newp += Vector3.Transform(v.pos, dat.jobjOffsetLinker[off1].transform) * wei1;
-
-                                                    //Hacky and the hackjobs----------------------------------------
-                                                    Stack<TreeNode> queue = new Stack<TreeNode>();
-                                                    for (int k = dat.tree.Count - 1; k >= 0; k--)
-                                                        queue.Push(dat.tree[k]);
-
-                                                    List<JOBJ> boneTrack = new List<JOBJ>();
-                                                    while (queue.Any())
-                                                    {
-                                                        TreeNode node = queue.Pop();
-
-                                                        for (int k = node.Nodes.Count - 1; k >= 0; k--)
-                                                            queue.Push(node.Nodes[k]);
-
-                                                        if (!(node.Tag is JOBJ))
-                                                            continue;
-
-                                                        boneTrack.Add((JOBJ)node.Tag);
-                                                    }
-                                                    //----------------------------------------------------------
-
-                                                    v.bones.Add(boneTrack.IndexOf(dat.jobjOffsetLinker[off1]));
+                                                    v.Tags.Add(off1);
                                                     v.weights.Add(wei1);
                                                     off1 = d.readInt() + headerSize;
                                                     wei1 = d.readFloat();
+
+                                                    if (v.weights.Count > 4)
+                                                    {
+                                                        MessageBox.Show("Weight>4error");
+                                                        break;
+                                                    }
                                                 }
-                                                
-                                                if (v.bones.Count == 1)
-                                                    v.pos = newp;
                                             }
 
                                             d.seek(temp);
+                                        }
+
+                                        if (parent.Parent.Tag is JOBJ)
+                                        {
+                                            if(v.weights.Count == 0)
+                                            {
+                                                v.Tags.Add(parent.Parent.Tag);
+                                                v.weights.Add(1);
+                                            }
+                                            v.pos = Vector3.Transform(v.pos, ((JOBJ)parent.Parent.Tag).transform);
                                         }
                                         break;
 
@@ -1187,31 +1491,6 @@ main()
                                         v.nrm.Z = f[2];
                                         v.nrm = Vector3.Divide(v.nrm, (float)Math.Pow(2, att.scale));
                                         d.seek(ten);
-
-                                        /*if (weightListOffset > headerSize && bid > -1)
-                                        {
-                                            temp = d.pos();
-                                            d.seek(weightListOffset + (bid / 3) * 4);
-                                            d.seek(d.readInt() + headerSize);
-                                            if (d.pos() > headerSize)
-                                            {
-                                                int off1 = d.readInt() + headerSize;
-                                                float wei1 = d.readFloat();
-                                                Vector3 newp = Vector3.Zero;
-
-                                                while (off1 > headerSize)
-                                                {
-                                                    newp += Vector3.Transform(v.nrm, dat.jobjOffsetLinker[off1].transform) * wei1;
-                                                    off1 = d.readInt() + headerSize;
-                                                    wei1 = d.readFloat();
-                                                }
-
-                                                if (v.weights.Count == 1)
-                                                    v.nrm = newp;
-                                            }
-
-                                            d.seek(temp);
-                                        }*/
                                         break;
 
                                     case GXAttr.GX_VA_TEX0:
@@ -1239,6 +1518,7 @@ main()
 
                         display.Add(ob);
                     }
+                
 
                 if (nextOffset != headerSize)
                 {
@@ -1257,9 +1537,9 @@ main()
                 {
                     case 0: // GX_RGB565
                         b = d.readShort();
-                        clr.X = (((b >> 11) & 0x1F) << 3) | (((b >> 11) & 0x1F) >> 2);
-                        clr.Y = (((b >> 5) & 0x3F) << 2) | (((b >> 5) & 0x3F) >> 4);
-                        clr.Z = (((b) & 0x1F) << 3) | (((b) & 0x1F) >> 2);
+                        clr.X = ((((b >> 11) & 0x1F) << 3) | (((b >> 11) & 0x1F) >> 2)) / (float)0xFF;
+                        clr.Y = ((((b >> 5) & 0x3F) << 2) | (((b >> 5) & 0x3F) >> 4)) / (float)0xFF;
+                        clr.Z = ((((b) & 0x1F) << 3) | (((b) & 0x1F) >> 2)) / (float)0xFF;
                         break;
                     case 1: // GX_RGB888
                         clr.X = d.readByte() / (float)0xFF;
@@ -1309,7 +1589,7 @@ main()
                         break;
                     case 1:
                         for (int i = 0; i < size; i++)
-                            a[i] = (byte)(d.readByte());
+                            a[i] = unchecked((sbyte)(d.readByte()));
                         break;
                     case 2:
                         for (int i = 0; i < size; i++)

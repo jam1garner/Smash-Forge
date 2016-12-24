@@ -92,7 +92,7 @@ namespace Smash_Forge
 
     public class Section
     {
-        public List<Vector2D> points;
+        public List<Vector2D> points = new List<Vector2D>();
     }
 
 
@@ -129,6 +129,27 @@ namespace Smash_Forge
                     temp.points.Add(point);
                 }
                 sections.Add(temp);
+            }
+        }
+
+        public void save(FileOutput f)
+        {
+            f.writeHex("010401017735BB750000000201");
+            f.writeChars(name.PadRight(0x38,(char)0).ToCharArray());
+            f.writeByte(1);
+            f.writeChars(subname.PadRight(0x40, (char)0).ToCharArray());
+            f.writeHex("0100000000000000000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001098400010101");
+            f.writeInt(sections.Count);
+            foreach(Section s in sections)
+            {
+                f.writeHex("010300000004000000000000000000000000000000000101");
+                f.writeInt(s.points.Count);
+                foreach(Vector2D p in s.points)
+                {
+                    f.writeByte(1);
+                    f.writeFloat(p.x);
+                    f.writeFloat(p.y);
+                }
             }
         }
     }
@@ -315,6 +336,8 @@ namespace Smash_Forge
         public int type;
 
         public abstract void Read(FileData f);
+
+        public abstract void save(FileOutput f);
     }
 
     public class GeneralPoint : LVDGeneralShape
@@ -331,6 +354,19 @@ namespace Smash_Forge
             x = f.readFloat();
             y = f.readFloat();
             f.skip(0xE);
+        }
+
+        public override void save(FileOutput f)
+        {
+            f.writeHex("010401017735BB750000000201");
+            f.writeString(name);
+            f.writeByte(1);
+            f.writeString(subname);
+            f.writeHex("0100000000000000000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001014C800203");
+            f.writeInt(type);
+            f.writeFloat(x);
+            f.writeFloat(y);
+            f.writeHex("0000000000000000010100000000");
         }
     }
 
@@ -349,7 +385,22 @@ namespace Smash_Forge
             y1 = f.readFloat();
             x2 = f.readFloat();
             y2 = f.readFloat();
-            f.skip(0xE);
+            f.skip(0x6);
+        }
+
+        public override void save(FileOutput f)
+        {
+            f.writeHex("010401017735BB750000000201");
+            f.writeString(name);
+            f.writeByte(1);
+            f.writeString(subname);
+            f.writeHex("0100000000000000000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001014C800203");
+            f.writeInt(type);
+            f.writeFloat(x1);
+            f.writeFloat(y1);
+            f.writeFloat(x2);
+            f.writeFloat(y2);
+            f.writeHex("010100000000");
         }
     }
 
@@ -370,6 +421,24 @@ namespace Smash_Forge
             {
                 f.skip(1);//seperator char
                 points.Add(new Vector2D() { x = f.readFloat(), y = f.readFloat() });
+            }
+        }
+
+        public override void save(FileOutput f)
+        {
+            f.writeHex("010401017735BB750000000201");
+            f.writeString(name);
+            f.writeByte(1);
+            f.writeString(subname);
+            f.writeHex("0100000000000000000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001014C800203");
+            f.writeInt(type);
+            f.writeHex("000000000000000000000000000000000101");
+            f.writeInt(points.Count);
+            foreach (Vector2D point in points)
+            {
+                f.writeByte(1);
+                f.writeFloat(point.x);
+                f.writeFloat(point.y);
             }
         }
     }
@@ -609,7 +678,7 @@ namespace Smash_Forge
                 else if (shapeType == 4)
                     p = new GeneralPath();
                 else
-                    throw new Exception("Unknown shape type");
+                    throw new Exception($"Unknown shape type {shapeType} at offset {f.pos() - 4}");
                 p.name = tempName;
                 p.subname = tempSubname;
                 p.Read(f);
@@ -728,7 +797,36 @@ namespace Smash_Forge
                 f.writeFloat(b.bottom);
             }
 
-            for(int i = 0; i < 14; i++)
+            for (int i = 0; i < 7; i++)
+            {
+                f.writeByte(1);
+                f.writeInt(0);
+            }
+
+            f.writeByte(1);
+            f.writeInt(items.Count);
+            foreach (ItemSpawner item in items)
+                item.save(f);
+
+            f.writeByte(1);
+            f.writeInt(0);
+
+            f.writeByte(1);
+            f.writeInt(generalPoints.Count);
+            foreach (Point p in generalPoints)
+            {
+                f.writeHex("010401017735BB750000000201");
+                f.writeChars(p.name.PadRight(0x38,(char)0).ToCharArray());
+                f.writeByte(1);
+                f.writeChars(p.subname.PadRight(0x40, (char)0).ToCharArray());
+                f.writeByte(1);
+                f.writeHex("00000000432100000000000000010000000001000000000000000000000000FFFFFFFF010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000100000004");
+                f.writeFloat(p.x);
+                f.writeFloat(p.y);
+                f.writeBytes(new byte[0x14]);
+            }
+
+            for (int i = 0; i < 4; i++)
             {
                 f.writeByte(1);
                 f.writeInt(0);
@@ -738,3 +836,22 @@ namespace Smash_Forge
         }
     }
 }
+/*        type 1  - collisions
+          type 2  - spawns
+          type 3  - respawns
+          type 4  - camera bounds
+          type 5  - death boundaries
+          type 6  - ???
+          type 7  - ITEMPT_transform
+          type 8  - enemyGenerator
+          type 9  - ITEMPT
+          type 10 - fsAreaCam (and other fsArea's ? )
+          type 11 - fsCamLimit
+          type 12 - damageShapes (damage sphere and damage capsule are the only ones I've seen, type 2 and 3 respectively)
+          type 13 - item spawners
+          type 14 - general shapes (general rect, general path, etc.)
+          type 15 - general points
+          type 16 - ???
+          type 17 - FsStartPoint
+          type 18 - ???
+          type 19 - ???*/

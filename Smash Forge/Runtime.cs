@@ -27,13 +27,16 @@ namespace Smash_Forge
         public static PathBin TargetPath { get; set; }
         public static CMR0 TargetCMR0 { get; set; }
         public static MTA TargetMTA { get; set; }
+        public static Object LVDSelection { get; set; }
         public static SkelAnimation TargetAnim { get { return _targetAnim; } set { _targetAnim = value; OnAnimationChanged(); } }
         private static SkelAnimation _targetAnim;
+        
 
         public static bool renderLVD { get; set; }
         public static bool renderModel { get; set; }
         public static bool renderBones { get; set; }
         public static bool renderCollisions { get; set; }
+        public static bool renderCollisionNormals { get; set; }
         public static bool renderHitboxes { get; set; }
         public static bool renderFloor { get; set; }
         public static bool renderPath { get; set; }
@@ -43,12 +46,26 @@ namespace Smash_Forge
         public static bool renderGeneralPoints { get; set; }
         public static bool renderOtherLVDEntries { get; set; }
 
+        public static float renderDepth { get; set; }
+        public static bool renderNormals { get; set; }
+        public static bool renderVertColor { get; set; }
+        public static RenderTypes renderType { get; set; }
+
+        public enum RenderTypes
+        {
+            Texture = 0,
+            Normals = 1,
+            NormalsBnW = 2,
+            VertColor = 3
+        }
+
         public static string TargetAnimString { get; set; }
         public static string TargetMTAString { get; set; }
 
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
         public static Dictionary<string, MTA> MaterialAnimations { get; set; }
         public static MovesetManager Moveset { get; set; }
+        public static ACMDPreviewEditor acmdEditor;
 
         public static string CanonicalizePath(string path)
         {

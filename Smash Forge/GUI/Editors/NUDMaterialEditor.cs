@@ -334,14 +334,20 @@ namespace Smash_Forge
             textBox10.Text = tex.hash.ToString("X");
 
             comboBox9.SelectedItem = mapmode[tex.MapMode];
-            comboBox10.SelectedIndex = tex.WrapMode1 - 1;
-            comboBox8.SelectedIndex = tex.WrapMode2 - 1;
+            comboBox10.SelectedItem = wrapmode[tex.WrapMode1];
+            comboBox8.SelectedItem = wrapmode[tex.WrapMode2];
             comboBox11.SelectedItem = minfilter[tex.minFilter];
             comboBox12.SelectedItem = magfilter[tex.magFilter];
             comboBox13.SelectedItem = mip[tex.mipDetail];
             RenderTexture();
         }
-        
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            int f = -1;
+            int.TryParse(textBox1.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f);
+            if (f != -1 && listView1.SelectedIndices.Count > 0)
+                material[current].flags = (uint)f;
+        }
         private void textBox10_TextChanged(object sender, EventArgs e)
         {
             int f = -1;
@@ -380,7 +386,7 @@ namespace Smash_Forge
         private void comboBox9_SelectedIndexChanged(object sender, EventArgs e)
         {
             foreach (int i in mapmode.Keys)
-                if (mapmode[i].Equals(comboBox6.SelectedItem))
+                if (mapmode[i].Equals(comboBox9.SelectedItem))
                 {
                     material[current].textures[listView1.SelectedIndices[0]].MapMode = i;
                     break;
@@ -412,7 +418,7 @@ namespace Smash_Forge
         private void comboBox11_SelectedIndexChanged(object sender, EventArgs e)
         {
             foreach (int i in minfilter.Keys)
-                if (minfilter[i].Equals(comboBox1.SelectedItem))
+                if (minfilter[i].Equals(comboBox11.SelectedItem))
                 {
                     if (listView1.SelectedItems.Count > 0)
                         material[current].textures[listView1.SelectedIndices[0]].minFilter = i;
@@ -426,7 +432,7 @@ namespace Smash_Forge
                 if (magfilter[i].Equals(comboBox12.SelectedItem))
                 {
                     if (listView1.SelectedItems.Count > 0)
-                        material[current].textures[listView1.SelectedIndices[0]].WrapMode2 = i;
+                        material[current].textures[listView1.SelectedIndices[0]].magFilter = i;
                     break;
                 }
         }
@@ -772,6 +778,11 @@ namespace Smash_Forge
         private void NUDMaterialEditor_Scroll(object sender, ScrollEventArgs e)
         {
             RenderTexture();
+        }
+
+        private void tableLayoutPanel2_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

@@ -109,7 +109,7 @@ namespace Smash_Forge
                 Runtime.killWorkspace = false;
                 Runtime.Animations = new Dictionary<string, SkelAnimation>();
                 MainForm.Instance.lvdList.fillList();
-                MainForm.Instance.animNode.Nodes.Clear();
+                MainForm.animNode.Nodes.Clear();
                 MainForm.Instance.mtaNode.Nodes.Clear();
                 MainForm.Instance.meshList.refresh();
                 MainForm.Instance.paramEditors = new List<PARAMEditor>();
@@ -298,6 +298,8 @@ out float fresNelR;
 
 uniform mat4 modelview;
 uniform mat4 bones[200];
+
+uniform int renderType;
  
 void
 main()
@@ -315,15 +317,24 @@ main()
 
     gl_Position = modelview * vec4(objPos.xyz, 1.0);
 
-    vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;
+    if(renderType == 1){
+        f_texcoord = vUV;
+        normal = 0;
+        color = vec4(vNormal, 1);
+    }else{
+        vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;
 
-    f_texcoord = vUV;
-    normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;// vec4(distance, 1.0)
-    color = vColor;
+        f_texcoord = vUV;
+        normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;// vec4(distance, 1.0)
+        if(renderType == 2)
+            color = vec4(normal, normal, normal, 1);
+        else
+            color = vColor;
 
-    vec4 normWorld = normalize(vec4(vNormal, 1.0));
-	vec4 I = normalize(vec4(vPosition, 1.0));
-    fresNelR = 0.2 + 0.2 * pow(1.0 + dot(I, normWorld), 1);
+        vec4 normWorld = normalize(vec4(vNormal, 1.0));
+	    vec4 I = normalize(vec4(vPosition, 1.0));
+        fresNelR = 0.2 + 0.2 * pow(1.0 + dot(I, normWorld), 1);
+    }
 }";
 
         string fs = @"#version 330
@@ -340,6 +351,8 @@ uniform vec4 colorOffset;
 uniform vec4 colorGain;
 uniform vec4 minGain;
 
+uniform int renderType;
+
 vec4 lerp(float v, vec4 from, vec4 to)
 {
     return from + (to - from) * v;
@@ -348,22 +361,32 @@ vec4 lerp(float v, vec4 from, vec4 to)
 void
 main()
 {
-    vec2 texcoord = vec2((f_texcoord * colorSamplerUV.xy) + colorSamplerUV.zw) ;
+    if(renderType == 1 || renderType == 2 || renderType == 3){
+        gl_FragColor = color;
+    } else {
+        vec2 texcoord = vec2((f_texcoord * colorSamplerUV.xy) + colorSamplerUV.zw) ;
 
-    vec3 norm = 2.0 * texture2D (nrm, texcoord).rgb - 1.0;
-    norm = normalize (norm);
-    float lamberFactor= max (dot (vec3(0.85, 0.85, 0.85), norm), 0.75) * 1.5;
+        vec3 norm = 2.0 * texture2D (nrm, texcoord).rgb - 1.0;
+        norm = normalize (norm);
+        float lamberFactor= max (dot (vec3(0.85, 0.85, 0.85), norm), 0.75) * 1.5;
 
-    //vec4 ambiant = vec4(0.1,0.1,0.1,1.0) * texture(tex, texcoord).rgba;
+        //vec4 ambiant = vec4(0.1,0.1,0.1,1.0) * texture(tex, texcoord).rgba;
 
-    vec4 alpha = (1-minGain) + texture2D(nrm, texcoord).aaaa;
-    //if(alpha.a < 0.5) discard;
+        vec4 alpha = (1-minGain) + texture2D(nrm, texcoord).aaaa;
+        //if(alpha.a < 0.5) discard;
 
-	vec4 outputColor = colorOffset + (vec4(texture(tex, texcoord).rgba) * normal) * colorGain;
-    outputColor = outputColor;
+        vec4 fcolor = color;
+        float fnormal = normal;
 
-    vec4 fincol = vec4(((color * alpha * outputColor)).xyz, texture2D(tex, texcoord).a * color.w);
-    gl_FragColor = fincol;//vec4(lerp(fresNelR, fincol, vec4(1.75,1.75,1.75,1)).xyz, fincol.w);
+        if(renderType == 0x20 || renderType == 0x60)
+            fnormal = 1;
+        if(renderType == 0x40 || renderType == 0x60)
+            fcolor = vec4(1,1,1,1);
+
+	    vec4 outputColor = colorOffset + (vec4(texture(tex, texcoord).rgba) * fnormal) * colorGain;
+        vec4 fincol = vec4(((fcolor * alpha * outputColor)).xyz, texture2D(tex, texcoord).a * fcolor.w);
+        gl_FragColor = fincol;//vec4(lerp(fresNelR, fincol, vec4(1.75,1.75,1.75,1)).xyz, fincol.w);
+    }
 }
 ";
 
@@ -378,10 +401,10 @@ main()
                 shader = new Shader();
 
                 {
-                    if (GL.GetInteger(GetPName.MajorVersion) < 3)
+                    if (GL.GetInteger(GetPName.MajorVersion) < 3 || (GL.GetInteger(GetPName.MajorVersion) == 3 && GL.GetInteger(GetPName.MinorVersion) < 3))
                     {
-                        shader.vertexShader(vs.Replace("#version 330", "#version 120"));
-                        shader.fragmentShader(fs.Replace("#version 330", "#version 120"));
+                        shader.vertexShader(vs.Replace("#version 330", "#version 130"));
+                        shader.fragmentShader(fs.Replace("#version 330", "#version 130"));
                     }
                     else
                     {
@@ -404,6 +427,8 @@ main()
                     shader.addAttribute("colorOffset", true);
                     shader.addAttribute("colorGain", true);
                     shader.addAttribute("minGain", true);
+
+                    shader.addAttribute("renderType", true);
                 }
             }
 
@@ -411,7 +436,8 @@ main()
             int w = Width;
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
-            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 2500.0f);
+            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
+                * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, Runtime.renderDepth);
 
         }
 
@@ -446,6 +472,7 @@ main()
             GL.Vertex2(1.0, -1.0);
             GL.End();
 
+            //GL.DepthFunc(DepthFunction.Never);
             GL.Enable(EnableCap.DepthTest);
             GL.ClearDepth(1.0);
 
@@ -472,7 +499,9 @@ main()
             if (Runtime.renderFloor)
                 RenderTools.drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
 
-            GL.Enable(EnableCap.LineSmooth); // This is Optional 
+            //RenderTools.drawSphere(new Vector3(2,2,2), 3, 5);
+
+            //GL.Enable(EnableCap.LineSmooth); // This is Optional 
             GL.Enable(EnableCap.Normalize);  // These is critical to have
             GL.Enable(EnableCap.RescaleNormal);
 
@@ -531,7 +560,7 @@ main()
             }
 
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft))
-                zoomscale = 3;
+                zoomscale = 6;
 
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Down))
                 zoom -= 1 * zoomscale;
@@ -543,7 +572,8 @@ main()
 
             zoom += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale;
 
-            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 2500.0f);
+            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
+                * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, Runtime.renderDepth);
         }
         public bool IsMouseOverViewport()
         {
@@ -560,7 +590,8 @@ main()
                 if (cf >= Runtime.TargetPath.Frames.Count)
                     cf = 0;
                 pathFrame f = Runtime.TargetPath.Frames[cf];
-                v = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
+                v = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() 
+                    * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
                 cf++;
             }
             else if (Runtime.TargetCMR0 != null && checkBox1.Checked)
@@ -568,7 +599,8 @@ main()
                 if (cf >= Runtime.TargetCMR0.frames.Count)
                     cf = 0;
                 Matrix4 m = Runtime.TargetCMR0.frames[cf].Inverted();
-                v = Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
+                v = Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) 
+                    * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
                 cf++;
             }
         }
@@ -589,6 +621,15 @@ main()
             }*/
 
             GL.UseProgram(shader.programID);
+            int rt = (int)Runtime.renderType;
+            if(rt == 0)
+            {
+                if (Runtime.renderNormals)
+                    rt = rt | (0x10);
+                if (Runtime.renderVertColor)
+                    rt = rt | (0x20);
+            }
+            GL.Uniform1(shader.getAttribute("renderType"), rt);
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
                 if (m.bch != null)
@@ -735,7 +776,10 @@ main()
                 foreach (Bone bone in vbn.bones)
                 {
                     // first calcuate the point and draw a point
-                    GL.Color3(Color.GreenYellow);
+                    if(bone == BoneTreePanel.selectedBone)
+                        GL.Color3(Color.Red);
+                    else
+                        GL.Color3(Color.GreenYellow);
 
                     Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform);
                     RenderTools.drawCube(pos_c, .085f);
@@ -806,6 +850,77 @@ main()
             return Color.FromArgb(128, Color.DarkCyan);
         }
 
+        public static Color invertColor(Color color)
+        {
+            return Color.FromArgb(color.A, 255 - color.R, 255 - color.G, 255 - color.B);
+        }
+
+        public void DrawSpawn(Point s, bool isRespawn)
+        {
+            GL.Color4(Color.FromArgb(100, Color.Blue));
+            GL.Begin(PrimitiveType.QuadStrip);
+            GL.Vertex3(s.x - 3f, s.y, 0f);
+            GL.Vertex3(s.x + 3f, s.y, 0f);
+            GL.Vertex3(s.x - 3f, s.y + 10f, 0f);
+            GL.Vertex3(s.x + 3f, s.y + 10f, 0f);
+            GL.End();
+
+            //Draw respawn platform
+            if (isRespawn)
+            {
+                GL.Color4(Color.FromArgb(200, Color.Gray));
+                GL.Begin(PrimitiveType.Triangles);
+                GL.Vertex3(s.x - 5, s.y, 0);
+                GL.Vertex3(s.x + 5, s.y, 0);
+                GL.Vertex3(s.x, s.y, 5);
+
+                GL.Vertex3(s.x - 5, s.y, 0);
+                GL.Vertex3(s.x + 5, s.y, 0);
+                GL.Vertex3(s.x, s.y, -5);
+
+                GL.Vertex3(s.x - 5, s.y, 0);
+                GL.Vertex3(s.x, s.y - 5, 0);
+                GL.Vertex3(s.x, s.y, 5);
+
+                GL.Vertex3(s.x + 5, s.y, 0);
+                GL.Vertex3(s.x, s.y - 5, 0);
+                GL.Vertex3(s.x, s.y, -5);
+
+                GL.Vertex3(s.x + 5, s.y, 0);
+                GL.Vertex3(s.x, s.y - 5, 0);
+                GL.Vertex3(s.x, s.y, 5);
+
+                GL.Vertex3(s.x - 5, s.y, 0);
+                GL.Vertex3(s.x, s.y - 5, 0);
+                GL.Vertex3(s.x, s.y, -5);
+                GL.End();
+
+                GL.Color4(Color.FromArgb(200, Color.Black));
+                GL.Begin(PrimitiveType.Lines);
+                GL.Vertex3(s.x - 5, s.y, 0);
+                GL.Vertex3(s.x, s.y - 5, 0);
+                GL.Vertex3(s.x + 5, s.y, 0);
+                GL.Vertex3(s.x, s.y - 5, 0);
+
+                GL.Vertex3(s.x, s.y, -5);
+                GL.Vertex3(s.x, s.y - 5, 0);
+                GL.Vertex3(s.x, s.y, 5);
+                GL.Vertex3(s.x, s.y - 5, 0);
+
+                GL.Vertex3(s.x, s.y, -5);
+                GL.Vertex3(s.x + 5, s.y, 0);
+                GL.Vertex3(s.x, s.y, -5);
+                GL.Vertex3(s.x - 5, s.y, 0);
+
+                GL.Vertex3(s.x, s.y, 5);
+                GL.Vertex3(s.x + 5, s.y, 0);
+                GL.Vertex3(s.x, s.y, 5);
+                GL.Vertex3(s.x - 5, s.y, 0);
+
+                GL.End();
+            }
+        }
+
         public void DrawLVD()
         {
             foreach (ModelContainer m in Runtime.ModelContainers)
@@ -845,120 +960,144 @@ main()
                         GL.End();
                     }
                 }
+
+                if(m.dat_melee != null && m.dat_melee.blastzones != null)
+                {
+                    Bounds b = m.dat_melee.blastzones;
+                    GL.Color3(Color.Red);
+                    GL.Begin(PrimitiveType.LineLoop);
+                    GL.Vertex3(b.left, b.top, 0);
+                    GL.Vertex3(b.right, b.top, 0);
+                    GL.Vertex3(b.right, b.bottom, 0);
+                    GL.Vertex3(b.left, b.bottom, 0);
+                    GL.End();
+                }
+
+                if (m.dat_melee != null && m.dat_melee.cameraBounds != null)
+                {
+                    Bounds b = m.dat_melee.cameraBounds;
+                    GL.Color3(Color.Blue);
+                    GL.Begin(PrimitiveType.LineLoop);
+                    GL.Vertex3(b.left, b.top, 0);
+                    GL.Vertex3(b.right, b.top, 0);
+                    GL.Vertex3(b.right, b.bottom, 0);
+                    GL.Vertex3(b.left, b.bottom, 0);
+                    GL.End();
+                }
+
+                if (m.dat_melee != null && m.dat_melee.respawns != null)
+                    foreach (Vector3 r in m.dat_melee.respawns)
+                        DrawSpawn(new Point() { x = r.X, y = r.Y }, true);
+
+                if (m.dat_melee != null && m.dat_melee.spawns != null)
+                    foreach (Vector3 r in m.dat_melee.spawns)
+                        DrawSpawn(new Point() { x = r.X, y = r.Y }, false);
+
+                GL.Color4(Color.FromArgb(200, Color.Fuchsia));
+                if (m.dat_melee != null && m.dat_melee.itemSpawns != null)
+                    foreach (Vector3 r in m.dat_melee.itemSpawns)
+                        RenderTools.drawCubeWireframe(r, 3);
             }
 
             if (Runtime.TargetLVD != null)
             {
                 if (Runtime.renderCollisions)
                 {
+                    Vector2D vi;
+                    Color color;
+                    GL.LineWidth(4);
                     foreach (Collision c in Runtime.TargetLVD.collisions)
                     {
-                        // draw the ground quads
-                        int dir = 1;
-                        int cg = 0;
-                        GL.LineWidth(3);
-
-                        GL.Begin(PrimitiveType.Quads);
-                        foreach (Vector2D vi in c.verts)
+                        for(int i = 0; i < c.verts.Count - 1; i++)
                         {
-                            if (cg < c.materials.Count)
+                            GL.Begin(PrimitiveType.Quads);
+                            if(c.normals.Count > i)
                             {
-                                //Console.Write(" " + c.materials[cg].getPhysics());
-                                switch (c.materials[cg].getPhysics())
+                                if (Runtime.renderCollisionNormals)
                                 {
-                                    case 0x0d:
-                                    case 0x0e:
-                                    case 0x10:
-                                    case 0x0c:
-                                        GL.Color4(Color.FromArgb(100, 0xa0, 0xff, 0xfd));//Snow, Ice, Ice2, SnowIce
-                                        break;
-                                    case 0x04:
-                                        GL.Color4(Color.FromArgb(100, 0x94, 0x47, 0x0c));//wood
-                                        break;
-                                    case 0x0b:
-                                    case 0x15:
-                                        GL.Color4(Color.FromArgb(100, 0xd4, 0xfb, 0xfa));//bubbles
-                                        break;
-                                    case 0x0a:
-                                        GL.Color4(Color.FromArgb(100, 0x32, 0x8a, 0xe5));//water
-                                        break;
-                                    case 0x16:
-                                        GL.Color4(Color.FromArgb(100, 0xfd, 0xf9, 0xfb));//water
-                                        break;
-                                    case 0x03:
-                                        GL.Color4(Color.FromArgb(100, 0x33, 0x18, 0x03)); //soil
-                                        break;
-                                    case 0x02:
-                                        GL.Color4(Color.FromArgb(100, 0x18, 0x96, 0x4f)); //grass
-                                        break;
-                                    case 0x1C:
-                                        GL.Color4(Color.FromArgb(100, 0xcd, 0xbe, 0x7e)); //sand
-                                        break;
-                                    case 0x06:
-                                        GL.Color4(Color.FromArgb(100, 0xb3, 0xb3, 0xb3));//Iron
-                                        break;
-                                    case 0x0f:
-                                    case 0x09:
-                                    case 0x05:
-                                    case 0x11:
-                                        GL.Color4(Color.FromArgb(100, 0, 0, 0));//Weird types
-                                        break;
-                                    case 0x08:
-                                        GL.Color4(Color.FromArgb(100, 0xd8, 0x97, 0x58));//Fence
-                                        break;
-                                    case 0x01:
-                                        GL.Color4(Color.FromArgb(100, 0x46, 0x46, 0x46));//Rock
-                                        break;
-                                    case 0x07:
-                                        GL.Color4(Color.FromArgb(100, 0xd7, 0xd0, 0x2d));//Carpet
-                                        break;
-                                    case 0x1f:
-                                        GL.Color4(Color.FromArgb(100, Color.Red));//Hurt
-                                        break;
-                                    default:
-                                        GL.Color4(Color.FromArgb(100, 0x65, 0x1e, 0x03));//brick
-                                        break;
+                                    Vector2D v1 = c.verts[i];
+                                    Vector2D v2 = c.verts[i + 1];
+                                    float x = ((v1.x - v2.x) / 2f) + v2.x;
+                                    float y = ((v1.y - v2.y) / 2f) + v2.y;
+                                    GL.End();
+                                    GL.Begin(PrimitiveType.Lines);
+                                    GL.Color3(Color.Blue);
+                                    GL.Vertex3(x, y, 0);
+                                    GL.Vertex3(x + (c.normals[i].x * 5), y + (c.normals[i].y * 5), 0);
+                                    GL.End();
+                                    GL.Begin(PrimitiveType.Quads);
                                 }
-                            }
+                                
+				                if(c.flag4)
+				                    color = Color.FromArgb(128, Color.Yellow);
+                                else if (Math.Abs(c.normals[i].x) > Math.Abs(c.normals[i].y))
+                                    color = Color.FromArgb(128, Color.Lime);
+                                else if(c.normals[i].y < 0)
+                                    color = Color.FromArgb(128, Color.Red);
+                                else
+				                    color = Color.FromArgb(128, Color.Cyan);
 
-                            GL.Vertex3(vi.x, vi.y, 5 * dir);
-                            GL.Vertex3(vi.x, vi.y, -5 * dir);
-                            if (cg > 0)
+                                if (Runtime.LVDSelection == c.normals[i] && ((int)(DateTime.Now.Millisecond / 500) == 0))
+                                    color = invertColor(color);
+                                
+
+                                GL.Color4(color);
+                            }
+                            else
                             {
-                                GL.Vertex3(vi.x, vi.y, 5 * dir);
-                                GL.Vertex3(vi.x, vi.y, -5 * dir);
+                                GL.Color4(Color.FromArgb(128, Color.Gray));
                             }
-                            cg++;
-                            dir *= -1;
-                        }
-                        GL.End();
-
-
-                        // draw outside borders
-                        GL.Color3(Color.DarkRed);
-                        GL.Begin(PrimitiveType.LineStrip);
-                        foreach (Vector2D vi in c.verts)
-                        {
-                            GL.Vertex3(vi.x, vi.y, 5);
-                        }
-                        GL.End();
-                        GL.Begin(PrimitiveType.LineStrip);
-                        foreach (Vector2D vi in c.verts)
-                        {
-                            GL.Vertex3(vi.x, vi.y, -5);
-                        }
-                        GL.End();
-
-
-                        // draw vertices
-                        GL.Color3(Color.White);
-                        GL.Begin(PrimitiveType.Lines);
-                        foreach (Vector2D vi in c.verts)
-                        {
+                            vi = c.verts[i];
                             GL.Vertex3(vi.x, vi.y, 5);
                             GL.Vertex3(vi.x, vi.y, -5);
+                            vi = c.verts[i+1];
+                            GL.Vertex3(vi.x, vi.y, -5);
+                            GL.Vertex3(vi.x, vi.y, 5);
+                            GL.End();
+
+                            GL.Begin(PrimitiveType.Lines);
+                            if (c.materials.Count > i)
+                            {
+                                if (c.materials[i].getFlag(6) || (i > 0 && c.materials[i - 1].getFlag(7)))
+                                    color = Color.Purple;
+                                else
+                                    color = Color.Orange;
+
+                                if (Runtime.LVDSelection == c.verts[i] && ((int)(DateTime.Now.Millisecond / 500) == 0))
+                                    color = invertColor(color);
+                                GL.Color4(color);
+                            }
+                            else
+                            {
+                                GL.Color4(Color.Gray);
+                            }
+                            vi = c.verts[i];
+                            GL.Vertex3(vi.x, vi.y, 5);
+                            GL.Vertex3(vi.x, vi.y, -5);
+
+                            if (i == c.verts.Count - 2)
+                            {
+                                if (c.materials.Count > i)
+                                {
+                                    if (c.materials[i].getFlag(7))
+                                        color = Color.Purple;
+                                    else
+                                        color = Color.Orange;
+
+                                    if (Runtime.LVDSelection == c.verts[i+1] && ((int)(DateTime.Now.Millisecond / 500) == 0))
+                                        color = invertColor(color);
+                                    GL.Color4(color);
+                                }
+                                else
+                                {
+                                    GL.Color4(Color.Gray);
+                                }
+                                vi = c.verts[i + 1];
+                                GL.Vertex3(vi.x, vi.y, 5);
+                                GL.Vertex3(vi.x, vi.y, -5);
+                            }
+                            GL.End();
                         }
-                        GL.End();
                     }
                 }
 
@@ -1004,13 +1143,7 @@ main()
                 {
                     foreach (Point s in Runtime.TargetLVD.spawns)
                     {
-                        GL.Color4(Color.FromArgb(100, Color.Blue));
-                        GL.Begin(PrimitiveType.QuadStrip);
-                        GL.Vertex3(s.x - 3f, s.y, 0f);
-                        GL.Vertex3(s.x + 3f, s.y, 0f);
-                        GL.Vertex3(s.x - 3f, s.y + 10f, 0f);
-                        GL.Vertex3(s.x + 3f, s.y + 10f, 0f);
-                        GL.End();
+                        DrawSpawn(s, false);
                     }
                 }
 
@@ -1018,65 +1151,7 @@ main()
                 {
                     foreach (Point s in Runtime.TargetLVD.respawns)
                     {
-                        GL.Color4(Color.FromArgb(100, Color.Blue));
-                        GL.Begin(PrimitiveType.QuadStrip);
-                        GL.Vertex3(s.x - 3f, s.y, 0f);
-                        GL.Vertex3(s.x + 3f, s.y, 0f);
-                        GL.Vertex3(s.x - 3f, s.y + 10f, 0f);
-                        GL.Vertex3(s.x + 3f, s.y + 10f, 0f);
-                        GL.End();
-
-                        //Draw respawn platform
-                        GL.Color4(Color.FromArgb(200, Color.Gray));
-                        GL.Begin(PrimitiveType.Triangles);
-                        GL.Vertex3(s.x - 5, s.y, 0);
-                        GL.Vertex3(s.x + 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y, 5);
-
-                        GL.Vertex3(s.x - 5, s.y, 0);
-                        GL.Vertex3(s.x + 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y, -5);
-
-                        GL.Vertex3(s.x - 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y - 5, 0);
-                        GL.Vertex3(s.x, s.y, 5);
-
-                        GL.Vertex3(s.x + 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y - 5, 0);
-                        GL.Vertex3(s.x, s.y, -5);
-
-                        GL.Vertex3(s.x + 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y - 5, 0);
-                        GL.Vertex3(s.x, s.y, 5);
-
-                        GL.Vertex3(s.x - 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y - 5, 0);
-                        GL.Vertex3(s.x, s.y, -5);
-                        GL.End();
-
-                        GL.Color4(Color.FromArgb(200, Color.Black));
-                        GL.Begin(PrimitiveType.Lines);
-                        GL.Vertex3(s.x - 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y - 5, 0);
-                        GL.Vertex3(s.x + 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y - 5, 0);
-
-                        GL.Vertex3(s.x, s.y, -5);
-                        GL.Vertex3(s.x, s.y - 5, 0);
-                        GL.Vertex3(s.x, s.y, 5);
-                        GL.Vertex3(s.x, s.y - 5, 0);
-
-                        GL.Vertex3(s.x, s.y, -5);
-                        GL.Vertex3(s.x + 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y, -5);
-                        GL.Vertex3(s.x - 5, s.y, 0);
-
-                        GL.Vertex3(s.x, s.y, 5);
-                        GL.Vertex3(s.x + 5, s.y, 0);
-                        GL.Vertex3(s.x, s.y, 5);
-                        GL.Vertex3(s.x - 5, s.y, 0);
-
-                        GL.End();
+                        DrawSpawn(s,true);
                     }
                 }
 
@@ -1488,6 +1563,8 @@ main()
 
             //Console.WriteLine("Handling " + animname);
             script = (ACMDScript)Runtime.Moveset.Game.Scripts[crc];
+            if(Runtime.acmdEditor.crc != crc)
+                Runtime.acmdEditor.SetAnimation(crc);
         }
 
         #endregion
@@ -1565,6 +1642,33 @@ main()
             }
         }
 
+        private void glControl1_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            /*//create ray for mouse
+            //normalize mouse in 3d space
+            Vector4 ray = new Vector4(
+                (2.0f * e.X) / glControl1.Width - 1.0f,
+                1.0f - (2.0f * e.Y) / glControl1.Height,
+                -1.0f,
+                1.0f);
+            ray = Vector4.Transform(ray, v.Inverted());
+            ray = new Vector4(ray.X,ray.Y,-1.0f, 1.0f);
+            ray.Normalize();
+            Console.WriteLine(ray.ToString());
+            int t = 0;
+            while(t < 20)
+            {
+
+                Vector4 b = ray * t * new Vector4((new Vector3(0, 0, 0) - new Vector3(2, 2, 2)), 1);
+                Vector4 c = (new Vector4((new Vector3(0, 0, 0) - new Vector3(2, 2, 2)), 1))
+                    * new Vector4((new Vector3(0, 0, 0) - new Vector3(2, 2, 2)), 1)
+                    - new Vector4(16, 16, 16, 16);
+                Console.WriteLine(b * b - c);
+                t++;
+            }*/
+
+        }
+
         public void FPSCamera()
         {
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.A))
@@ -1582,7 +1686,8 @@ main()
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
-            v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 2500.0f);
+            v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) 
+                * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, Runtime.renderDepth);
         }
     }
 }

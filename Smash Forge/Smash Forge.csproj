@@ -82,6 +82,12 @@
     <Compile Include="GUI\Editors\ACMDEditor.Designer.cs">
       <DependentUpon>ACMDEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\ACMDPreviewEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\ACMDPreviewEditor.Designer.cs">
+      <DependentUpon>ACMDPreviewEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\AnimList.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -191,6 +197,12 @@
     <Compile Include="GUI\MaterialSelector.Designer.cs">
       <DependentUpon>MaterialSelector.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Menus\BoneRiggingSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\BoneRiggingSelector.Designer.cs">
+      <DependentUpon>BoneRiggingSelector.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Menus\DAEImportSettings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -198,13 +210,13 @@
       <DependentUpon>DAEImportSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\ModelContainer.cs" />
-    <Compile Include="GUI\Nodes\ProjectNode.cs" />
-    <Compile Include="GUI\RenderSettings.cs">
+    <Compile Include="GUI\Menus\RenderSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\RenderSettings.Designer.cs">
+    <Compile Include="GUI\Menus\RenderSettings.Designer.cs">
       <DependentUpon>RenderSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Nodes\ProjectNode.cs" />
     <Compile Include="IO\FileBase.cs" />
     <Compile Include="MovesetManager.cs" />
     <Compile Include="Program.cs" />
@@ -213,6 +225,9 @@
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Editors\ACMDEditor.resx">
       <DependentUpon>ACMDEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\ACMDPreviewEditor.resx">
+      <DependentUpon>ACMDPreviewEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\AnimList.resx">
       <DependentUpon>AnimList.cs</DependentUpon>
@@ -263,6 +278,9 @@
     <EmbeddedResource Include="GUI\MaterialSelector.resx">
       <DependentUpon>MaterialSelector.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\BoneRiggingSelector.resx">
+      <DependentUpon>BoneRiggingSelector.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\DAEImportSettings.resx">
       <DependentUpon>DAEImportSettings.cs</DependentUpon>
     </EmbeddedResource>
@@ -276,7 +294,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="GUI\RenderSettings.resx">
+    <None Include="GUI\Menus\RenderSettings.resx">
       <DependentUpon>RenderSettings.cs</DependentUpon>
     </None>
     <None Include="hashTable.csv">

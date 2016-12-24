@@ -8,12 +8,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
+using OpenTK;
+using OpenTK.Graphics.OpenGL;
+using System.IO;
 
 namespace Smash_Forge
 {
     public partial class AnimTrack : DockContent
     {
         public DAT_Animation anim;
+        Frame[] frames;
 
         public AnimTrack()
         {
@@ -40,31 +44,31 @@ namespace Smash_Forge
             public override string ToString()
             {
                 string s = "[";
-                s += Format(frame, " ");
+                s += Format(frame + "", " ");
                 s += "](";
-                s += Format(sx, "_");
+                s += Format(sx == -99 ? "" : sx + "", "_");
                 s += ",";
-                s += Format(sy, "_");
+                s += Format(sy == -99 ? "" : sy + "", "_");
                 s += ",";
-                s += Format(sz, "_");
+                s += Format(sz == -99 ? "" : sz + "", "_");
                 s += ")(";
-                s += Format(rx, "_");
+                s += Format(rx == -99 ? "" : rx + "", "_");
                 s += ",";
-                s += Format(ry, "_");
+                s += Format(ry == -99 ? "" : ry + "", "_");
                 s += ",";
-                s += Format(rz, "_");
+                s += Format(rz == -99 ? "" : rz + "", "_");
                 s += ")(";
-                s += Format(x, "_");
+                s += Format(x == -99 ? "" : x + "", "_");
                 s += ",";
-                s += Format(y, "_");
+                s += Format(y == -99 ? "" : y + "", "_");
                 s += ",";
-                s += Format(z, "_");
+                s += Format(z == -99 ? "" : z + "", "_");
                 s += ")";
 
                 return s;
             }
 
-            private string Format(float f, string p)
+            private string Format(string f, string p)
             {
                 string s = "";
                 string n = f + "";
@@ -104,7 +108,7 @@ namespace Smash_Forge
 
             int x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0, sx = 0, sy = 0, sz = 0;
 
-            foreach (DAT_Animation.AnimTrack track in anim.nodes[boneid])
+            foreach (DAT_Animation.DATAnimTrack track in anim.nodes[boneid])
                 foreach (DAT_Animation.KeyNode node in track.keys)
                 {
                     if (node.frame >= frames.Length)
@@ -144,7 +148,7 @@ namespace Smash_Forge
         {
             if (treeView1.SelectedNode != null)
             {
-                //Generate((int)treeView1.SelectedNode.Tag);
+                Generate((int)treeView1.SelectedNode.Tag);
             }
         }
 
@@ -152,7 +156,7 @@ namespace Smash_Forge
         {
             SkelAnimation a = new SkelAnimation();
 
-            for (int i = 0; i < anim.frameCount+1; i++)
+            for (int i = 1; i < anim.frameCount+1; i++)
                 a.frames.Add(new KeyFrame());
 
             for (int i = 0; i < anim.nodes.Count; i++)
@@ -162,7 +166,15 @@ namespace Smash_Forge
                 int fr = 0;
                 foreach(Frame f in frames)
                 {
-                    KeyFrame frame = a.frames[fr];
+                    if(fr == 0)
+                    {
+                        fr++;
+                        continue;
+                    }
+                    if (i >= skel.bones.Count)
+                        continue;
+
+                    KeyFrame frame = a.frames[fr-1];
                     KeyNode node = new KeyNode();
                     frame.nodes.Add(node);
 
@@ -176,7 +188,7 @@ namespace Smash_Forge
                     node.t.Y = f.y != -99 ? f.y : skel.bones[i].position[1];
                     node.t.Z = f.z != -99 ? f.z : skel.bones[i].position[2];
 
-                    node.r.X = f.rx != -99 ? f.rx * (float)Math.PI/180 : skel.bones[i].rotation[0];
+                    node.r.X = f.rx != -99 ? f.rx * (float)Math.PI / 180 : skel.bones[i].rotation[0];
                     node.r.Y = f.ry != -99 ? f.ry * (float)Math.PI / 180 : skel.bones[i].rotation[1];
                     node.r.Z = f.rz != -99 ? f.rz * (float)Math.PI / 180 : skel.bones[i].rotation[2];
 
@@ -195,89 +207,157 @@ namespace Smash_Forge
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Frame[] frames = Bake((int)treeView1.SelectedNode.Tag);
+            frames = Bake((int)treeView1.SelectedNode.Tag);
             listBox1.Items.Clear();
             for (int i = 0; i < frames.Length; i++)
             {
                 listBox1.Items.Add(frames[i]);
             }
+            Render();
+        }
 
+        public void Render()
+        {
+            glControl1.MakeCurrent();
+
+            GL.ClearColor(Color.White);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+
+            float max = 0, min = 99;
+
+            for (int i = 0; i < frames.Length; i++)
+            {
+                if (frames[i].rx > max) max = frames[i].rx;
+                if (frames[i].rx < min) min = frames[i].rx;
+            }
+
+            max -= min;
+            GL.PointSize(5f);
+            GL.Color3(Color.Red);
+            GL.Begin(PrimitiveType.Points);
+            GL.Vertex2(-1, 0);
+            GL.Vertex2(1, 0);
+            GL.End();
+
+            GL.Color3(Color.Red);
+            GL.Begin(PrimitiveType.LineStrip);
+            for(int i = 0;i < frames.Length; i++)
+            {
+                GL.Vertex2((float)i / frames.Length * 2 - 1, ((frames[i].rx-min)/max)*2 - 1);
+            }
+            GL.End();
+
+            GL.Color3(Color.Black);
+            GL.Begin(PrimitiveType.Lines);
+            for (int i = 0; i < frames.Length; i++)
+            {
+                GL.Vertex2((float)i / frames.Length * 2 - 1, 0f-1);
+                GL.Vertex2((float)i / frames.Length * 2 - 1, 0.2f-1);
+            }
+            GL.End();
+
+            glControl1.SwapBuffers();
         }
 
         private Frame[] Bake(int bone)
         {
-            Frame[] frames = new Frame[anim.frameCount + 1];
+            Frame[] frames = new Frame[anim.frameCount];
             for (int i = 0; i < frames.Length; i++)
             {
                 frames[i] = new Frame(i);
             }
 
-            foreach (DAT_Animation.AnimTrack track in anim.nodes[bone])
+            foreach (DAT_Animation.DATAnimTrack track in anim.nodes[bone])
             {
                 int f = 0, ni = 0, currentFrame = 0, nextFrame = 0;
                 DAT_Animation.KeyNode node = track.keys[ni++];
                 nextFrame = (int)node.frame;
                 float cvalue = node.value, ctan = node.tan;
-                while (f < anim.frameCount && ni < track.keys.Count - 1)
+                while (f < anim.frameCount)
                     try
                     {
                         // calculate value
-                        DAT_Animation.KeyNode next;
-                        if (ni >= track.keys.Count)
-                            next = track.keys[0];
-                        else
-                            next = track.keys[ni];
+                        float nvalue = -99, ntan = -99;
+                        for(int j = ni; j < track.keys.Count; j++)
+                        {
+                            //if (track.keys[j].interpolationType != DAT_Animation.InterpolationType.HermiteCurve)
+                            {
+                                if (track.keys[j].interpolationType == DAT_Animation.InterpolationType.HermiteCurve)
+                                    ctan = track.keys[j].tan;
+                                else
+                                if (track.keys[j].tan != -99 && ntan == -99)
+                                    ntan = track.keys[j].tan;
+                                if (track.keys[j].value != -99 && nvalue == -99)
+                                    nvalue = track.keys[j].value;
+                                if (nvalue != -99 && ntan != -99)
+                                    break;
+                            }
+                        }
+                        if (nvalue == -99)
+                            nvalue = track.keys[0].value;
+                        if (ntan == -99)
+                            ntan = 0;
+                        if (ctan == -99)
+                            ctan = 0;
 
                         float value = 0;
-
+                        //Console.WriteLine(track.type + " " + node.interpolationType);
                         switch (node.interpolationType)
                         {
                             case DAT_Animation.InterpolationType.Hermite:
                                 {
-                                    value = CHR0.interHermite(f, currentFrame, nextFrame, next.tan, node.tan, node.value, next.value);
+                                    cvalue = node.value;
+                                    //value = Interpolate(f - currentFrame, nextFrame - currentFrame, cvalue, nvalue, ctan, ntan);
+                                    value = CHR0.interHermite(f, currentFrame, nextFrame+1, ctan, ntan, cvalue, nvalue);
                                 }
                                 break;
                             case DAT_Animation.InterpolationType.HermiteValue:
                                 {
-                                    value = CHR0.interHermite(f, currentFrame, nextFrame, 0, next.tan, node.value, next.value);
+                                    cvalue = node.value;
+                                    ctan = 0;
+                                    //value = Interpolate(f - currentFrame, nextFrame - currentFrame, cvalue, nvalue, ctan, ntan);
+                                    value = CHR0.interHermite(f, currentFrame, nextFrame+1, 0, 0, cvalue, nvalue);
                                 }
                                 break;
-                            /*case DAT_Animation.InterpolationType.HermiteCurve:
-                               {
-                                   value = CHR0.interHermite(f, currentFrame, nextFrame, next.tan, node.tan, cvalue, next.value);
-                               }
-                               break;
                            case DAT_Animation.InterpolationType.Step:
                                {
                                    value = node.value;
                                }
-                               break;*/
+                               break;
+                            case DAT_Animation.InterpolationType.Linear:
+                                {
+                                    cvalue = node.value;
+                                    value = CHR0.lerp(cvalue, nvalue, currentFrame, nextFrame, f);
+                                }
+                                break;
                             default:
                                 Console.WriteLine(node.interpolationType);
                                 break;
                         }
 
-                        if (f > nextFrame)
-                        {
-                            node = track.keys[ni++];
-                            currentFrame = f;
-                            nextFrame += (int)node.frame;
-                            cvalue = node.value;
-                            ctan = node.tan;
-                        }
+                        if (float.IsNaN(value) || f == currentFrame)
+                            value = node.value;
 
                         switch (track.type)
                         {
                             case DAT_Animation.AnimType.XROT:
-                                //Console.WriteLine(node.tan + " " + next.tan + " " + node.value + " " + next.value + " " + f + " " + currentFrame + " " + nextFrame);
+                                //Console.WriteLine(ctan + " " + ntan + " " + node.value + " " + nvalue + " " + f + " " + currentFrame + " " + nextFrame);
                                 frames[f].rx = value * 180 / (float)Math.PI;
                                 break;
                             case DAT_Animation.AnimType.YROT:
-                                //Console.WriteLine(node.tan + " " + next.tan + " " + node.value + " " + next.value + " " + f + " " + currentFrame + " " + nextFrame);
+                                //Console.WriteLine(ctan + " " + ntan + " " + cvalue + " " + nvalue + " " + f + " " + currentFrame + " " + nextFrame);
 
                                 frames[f].ry = value * 180 / (float)Math.PI;
                                 break;
-                            case DAT_Animation.AnimType.ZROT: frames[f].rz = value * 180 / (float)Math.PI; break;
+                            case DAT_Animation.AnimType.ZROT:
+                                //Console.WriteLine(ctan + " " + ntan + " " + cvalue + " " + nvalue + " " + f + " " + currentFrame + " " + nextFrame);
+                                frames[f].rz = value * 180 / (float)Math.PI; 
+                                break;
                             case DAT_Animation.AnimType.XPOS: frames[f].x = value; break;
                             case DAT_Animation.AnimType.YPOS: frames[f].y = value; break;
                             case DAT_Animation.AnimType.ZPOS: frames[f].z = value; break;
@@ -285,8 +365,33 @@ namespace Smash_Forge
                             case DAT_Animation.AnimType.YSCA: frames[f].sy = value; break;
                             case DAT_Animation.AnimType.ZSCA: frames[f].sz = value; break;
                         }
-
+                        
                         f++;
+                        if (f > nextFrame)
+                        {
+
+                            if (ni >= track.keys.Count)
+                            {
+                                node = track.keys[0];
+                                continue;
+                            }
+                            node = track.keys[ni++];
+                            while (node.interpolationType == DAT_Animation.InterpolationType.HermiteCurve)
+                            {
+                                node = track.keys[ni++];
+                            }
+                            currentFrame = f;
+                            nextFrame += (int)node.frame;
+
+                            switch (node.interpolationType)
+                            {
+                                case DAT_Animation.InterpolationType.Hermite:
+                                    {
+                                        ctan = node.tan;
+                                    }
+                                    break;
+                            }
+                        }
                     }
                     catch (IndexOutOfRangeException ex)
                     {
@@ -294,6 +399,176 @@ namespace Smash_Forge
                     }
             }
             return frames;
+        }
+
+        public float Interpolate(float offset, float span, float _value, float _nvalue, float tan, float ntan)
+        {
+            //Return this value if no offset from this keyframe
+            if (offset == 0)
+                return _value;
+
+            //Return next value if offset is to the next keyframe
+            if (offset == span)
+                return _nvalue;
+
+            //Get the difference in values
+            float diff = _nvalue - _value;
+
+            //Calculate a percentage from this keyframe to the next
+            float time = offset / span; //Normalized, 0 to 1
+
+            //bool prevDouble = _prev._index >= 0 && _prev._index == _index - 1;
+            //bool nextDouble = next._next._index >= 0 && next._next._index == next._index + 1;
+            //bool oneApart = _next._index == _index + 1;
+            
+            //if (prevDouble || oneApart)
+            //    tan = (next._value - _value) / (next._index - _index);
+            //if (nextDouble || oneApart)
+            //    nextTan = (next._value - _value) / (next._index - _index);
+
+            //Interpolate using a hermite curve
+            float inv = time - 1.0f; //-1 to 0
+            return _value
+                + (offset * inv * ((inv * tan) + (time * ntan)))
+                + ((time * time) * (3.0f - 2.0f * time) * diff);
+        }
+
+
+        public void createANIM(string fname, VBN vbn)
+        {
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@fname))
+            {
+                file.WriteLine("animVersion 1.1;");
+                file.WriteLine("mayaVersion 2014 x64;\ntimeUnit ntscf;\nlinearUnit cm;\nangularUnit deg;\nstartTime 1;\nendTime " + (anim.frameCount+1) + ";");
+                
+                int i = 0;
+
+                // writing node attributes
+                foreach (Bone b in vbn.getBoneTreeOrder())
+                {
+                    i = vbn.boneIndex(new string(b.boneName));
+
+                    if (i < anim.nodes.Count)
+                    {
+                        // write the bone attributes
+                        // count the attributes
+                        List<DAT_Animation.DATAnimTrack> tracks = anim.nodes[i];
+
+                        int tracknum = 0;
+                        if (tracks.Count == 0)
+                            file.WriteLine("anim " + new string(b.boneName) + " 0 0 0;");
+                               
+                        foreach (DAT_Animation.DATAnimTrack track in tracks)
+                        {
+                            switch (track.type)
+                            {
+                                case DAT_Animation.AnimType.XPOS:
+                                    file.WriteLine("anim translate.translateX translateX " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    WriteAnimKey(file, i, track, false);
+                                    break;
+                                case DAT_Animation.AnimType.YPOS:
+                                    file.WriteLine("anim translate.translateY translateY " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    WriteAnimKey(file, i, track, false);
+                                    break;
+                                case DAT_Animation.AnimType.ZPOS:
+                                    file.WriteLine("anim translate.translateZ translateZ " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    WriteAnimKey(file, i, track, false);
+                                    break;
+                                case DAT_Animation.AnimType.XROT:
+                                    file.WriteLine("anim rotate.rotateX rotateX " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    WriteAnimKey(file, i, track, true);
+                                    break;
+                                case DAT_Animation.AnimType.YROT:
+                                    file.WriteLine("anim rotate.rotateY rotateY " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    WriteAnimKey(file, i, track, true);
+                                    break;
+                                case DAT_Animation.AnimType.ZROT:
+                                    file.WriteLine("anim rotate.rotateZ rotateZ " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    WriteAnimKey(file, i, track, true);
+                                    break;
+                                case DAT_Animation.AnimType.XSCA:
+                                    file.WriteLine("anim scale.scaleX scaleX " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    WriteAnimKey(file, i, track, false);
+                                    break;
+                                case DAT_Animation.AnimType.YSCA:
+                                    file.WriteLine("anim scale.scaleY scaleY " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    WriteAnimKey(file, i, track, false);
+                                    break;
+                                case DAT_Animation.AnimType.ZSCA:
+                                    file.WriteLine("anim scale.scaleZ scaleZ " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    WriteAnimKey(file, i, track, false);
+                                    break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        file.WriteLine("anim " + new string(b.boneName) + " 0 0 0;");
+                    }
+                }
+            }
+        }
+
+        private static void WriteAnimKey(StreamWriter file, int i, DAT_Animation.DATAnimTrack track, bool rotation)
+        {
+
+            file.WriteLine("animData {\n input time;\n output linear;\n weighted 1;\n preInfinity constant;\n postInfinity constant;\n keys {");
+
+            int size = track.keys.Count;
+
+            int time = 0;
+            float cvalue = 0, ctan = 0;
+
+            for (int f = 0; f < size; f++)
+            {
+                while (track.keys[f].interpolationType == DAT_Animation.InterpolationType.HermiteCurve)
+                    f++;
+
+                DAT_Animation.KeyNode no = track.keys[f];
+                DAT_Animation.KeyNode curve = track.keys[f+1 >= track.keys.Count ? 0: f+1];
+
+                if (curve.interpolationType == DAT_Animation.InterpolationType.HermiteCurve)
+                {
+                    cvalue = no.value;
+                    ctan = curve.tan;
+                    file.WriteLine(" " + (time + 1) + " {0:N6} fixed fixed 1 1 0 {1:N6} 1 {2:N6} 1;", cvalue * (rotation ? 180 / (float)Math.PI : 1), no.tan, ctan);
+                }
+                else
+                switch (no.interpolationType)
+                {
+                    case DAT_Animation.InterpolationType.Hermite:
+                        {
+                            cvalue = no.value;
+                            ctan = no.tan;
+                            file.WriteLine(" " + (time + 1) + " {0:N6} fixed fixed 1 1 0 {1:N6} 1 {2:N6} 1;", cvalue * (rotation ? 180 / (float)Math.PI : 1), ctan, ctan);
+                        }
+                        break;
+                    case DAT_Animation.InterpolationType.HermiteValue:
+                        {
+                            cvalue = no.value;
+                            ctan = 0;
+                            file.WriteLine(" " + (time + 1) + " {0:N6} fixed fixed 1 1 0 {1:N6} 1 {2:N6} 1;", cvalue * (rotation ? 180 / (float)Math.PI : 1), ctan, ctan);
+                        }
+                        break;
+                    case DAT_Animation.InterpolationType.Step:
+                        {
+                            cvalue = no.value;
+                            file.WriteLine(" " + (time + 1) + " {0:N6} fixed fixed 1 1 0 0 1 0 1;", cvalue * (rotation ? 180 / (float)Math.PI : 1));
+                        }
+                        break;
+                    case DAT_Animation.InterpolationType.Linear:
+                        {
+                            cvalue = no.value;
+                            file.WriteLine(" " + (time + 1) + " {0:N6} linear linear 1 1 0", cvalue * (rotation ? 180 / (float)Math.PI : 1));
+                        }
+                        break;
+                }
+
+                time += (int)no.frame;
+            }
+
+            file.WriteLine(" }");
+            file.WriteLine("}");
         }
     }
 }

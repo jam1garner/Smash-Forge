@@ -13,6 +13,11 @@ namespace Smash_Forge
 {
     public partial class LVDEditor : DockContent
     {
+        public class StringWrapper
+        {
+            public char[] data;
+        } 
+
         public LVDEditor()
         {
             InitializeComponent();
@@ -25,6 +30,9 @@ namespace Smash_Forge
         private TreeNode currentTreeNode;
         private Point currentPoint;
         private Bounds currentBounds;
+        private ItemSpawner currentItemSpawner;
+        private Section currentItemSection;
+        private Vector2D currentItemPoint;
 
         enum materialTypes : byte
         {
@@ -61,6 +69,7 @@ namespace Smash_Forge
             collisionGroup.Visible = false;
             pointGroup.Visible = false;
             boundGroup.Visible = false;
+            itemSpawnerGroup.Visible = false;
             name.Text = currentEntry.name;
             subname.Text = currentEntry.subname;
             if (entry is Collision)
@@ -75,13 +84,20 @@ namespace Smash_Forge
                 flag3.Checked = col.flag3;
                 flag4.Checked = col.flag4;
                 vertices.Nodes.Clear();
+                string boneNameRigging = "";
+                foreach (char b in col.unk4)
+                    if (b != (char)0)
+                        boneNameRigging += b;
+                if (boneNameRigging.Length == 0)
+                    boneNameRigging = "None";
+                button3.Text = boneNameRigging; 
                 for (int i = 0; i < col.verts.Count; i++)
-                    vertices.Nodes.Add(new TreeNode($"Vertex {i}") { Tag = col.verts[i] });
+                    vertices.Nodes.Add(new TreeNode($"Vertex {i+1} ({col.verts[i].x},{col.verts[i].y})") { Tag = col.verts[i] });
                 lines.Nodes.Clear();
                 for (int i = 0; i < col.normals.Count; i++)
                 {
                     object[] temp = { col.normals[i], col.materials[i] };
-                    lines.Nodes.Add(new TreeNode($"Line {i}") { Tag = temp });
+                    lines.Nodes.Add(new TreeNode($"Line {i+1}") { Tag = temp });
                 }
             }
             else if(entry is Point)
@@ -100,11 +116,22 @@ namespace Smash_Forge
                 leftVal.Value = (decimal)currentBounds.left;
                 bottomVal.Value = (decimal)currentBounds.bottom;
             }
+            else if(entry is ItemSpawner)
+            {
+                itemSpawnerGroup.Visible = true;
+                ItemSpawner spawner = (ItemSpawner)entry;
+                treeView1.Nodes.Clear();
+                int i = 1;
+                foreach(Section section in spawner.sections)
+                    treeView1.Nodes.Add(new TreeNode($"Section {i++}") { Tag = section });
+
+            }
         }
 
         private void vertices_AfterSelect(object sender, TreeViewEventArgs e)
         {
             currentVert = (Vector2D)e.Node.Tag;
+            Runtime.LVDSelection = currentVert;
             xVert.Value = (decimal)currentVert.x;
             yVert.Value = (decimal)currentVert.y;
         }
@@ -112,10 +139,11 @@ namespace Smash_Forge
         private void lines_AfterSelect(object sender, TreeViewEventArgs e)
         {
             currentNormal = (Vector2D)((object[])e.Node.Tag)[0];
+            Runtime.LVDSelection = currentNormal;
             currentMat = (CollisionMat)((object[])e.Node.Tag)[1];
-            leftLedge.Checked = currentMat.getFlag(2);
-            rightLedge.Checked = currentMat.getFlag(3);
-            noWallJump.Checked = currentMat.getFlag(1);
+            leftLedge.Checked = currentMat.getFlag(6);
+            rightLedge.Checked = currentMat.getFlag(7);
+            noWallJump.Checked = currentMat.getFlag(5);
             comboBox1.Text = Enum.GetName(typeof(materialTypes), currentMat.getPhysics());
             passthroughAngle.Value = (decimal)(Math.Atan2(currentNormal.y, currentNormal.x) * 180.0 / Math.PI);
         }
@@ -138,6 +166,7 @@ namespace Smash_Forge
                 currentVert.x = (float)xVert.Value;
             if(sender == yVert)
                 currentVert.y = (float)yVert.Value;
+            vertices.SelectedNode.Text = $"Vertex {vertices.SelectedNode.Index + 1} ({currentVert.x},{currentVert.y})";
         }
 
         private void nameChange(object sender, EventArgs e)
@@ -177,11 +206,11 @@ namespace Smash_Forge
         private void lineFlagChange(object sender, EventArgs e)
         {
             if (sender == rightLedge)
-                currentMat.setFlag(3, ((CheckBox)sender).Checked);
+                currentMat.setFlag(7, ((CheckBox)sender).Checked);
             if (sender == leftLedge)
-                currentMat.setFlag(2, ((CheckBox)sender).Checked);
+                currentMat.setFlag(6, ((CheckBox)sender).Checked);
             if (sender == noWallJump)
-                currentMat.setFlag(1, ((CheckBox)sender).Checked);
+                currentMat.setFlag(5, ((CheckBox)sender).Checked);
         }
 
         private void LVDEditor_Load(object sender, EventArgs e)
@@ -280,9 +309,109 @@ namespace Smash_Forge
         private void renumber()
         {
             for(int i = 0; i < vertices.Nodes.Count; i++)
-                vertices.Nodes[i].Text = $"Vertex {i}";
+                vertices.Nodes[i].Text = $"Vertex {i + 1} ({((Collision)currentEntry).verts[i].x},{((Collision)currentEntry).verts[i].y})";
             for(int i = 0; i < lines.Nodes.Count; i++)
-                lines.Nodes[i].Text = $"Line {i}";
+                lines.Nodes[i].Text = $"Line {i + 1}";
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            //Open bone selector for collision rigging
+            StringWrapper str = new StringWrapper() { data = ((Collision) currentEntry).unk4 };
+            BoneRiggingSelector bs = new BoneRiggingSelector(str);
+            bs.ShowDialog();
+            ((Collision)currentEntry).unk4 = str.data;
+            string boneNameRigging = "";
+            foreach (char b in ((Collision)currentEntry).unk4)
+                if (b != (char)0)
+                    boneNameRigging += b;
+            if (boneNameRigging.Length == 0)
+                boneNameRigging = "None";
+            button3.Text = boneNameRigging;
+        }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            //selecting something in the sections tab of the item spawner editor
+            Section section = (Section)e.Node.Tag;
+            treeView2.Nodes.Clear();
+            currentItemSection = section;
+            int i = 1;
+            foreach (Vector2D v in section.points)
+                treeView2.Nodes.Add(new TreeNode($"Point {i++} ({v.x},{v.y})") { Tag = v });
+        }
+
+        private void treeView2_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            //selecting something in the vertices tab of the item spawner editor
+            numericUpDown2.Value = (Decimal)((Vector2D)e.Node.Tag).x;
+            numericUpDown1.Value = (Decimal)((Vector2D)e.Node.Tag).y;
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            //Add section
+            Section section = new Section();
+            
+            TreeNode node = new TreeNode($"Section {treeView1.Nodes.Count + 1}") { Tag = section };
+            ((ItemSpawner)currentEntry).sections.Add(section);
+            treeView1.Nodes.Add(node);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            //remove section
+            Section section = (Section)treeView1.SelectedNode.Tag;
+            TreeNode node = treeView1.SelectedNode;
+            ((ItemSpawner)currentEntry).sections.Remove(section);
+            treeView1.Nodes.Remove(node);
+            int i = 1;
+            foreach (TreeNode n in treeView1.Nodes)
+                n.Text = $"Section {i++}";
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            //Add item spawner vertex
+            Vector2D v = new Vector2D();
+            if(treeView2.SelectedNode == null)
+            {
+                treeView2.Nodes.Add(new TreeNode("temp") { Tag = v });
+                currentItemSection.points.Add(v);
+            }
+            else
+            {
+                int index = treeView2.SelectedNode.Index;
+                treeView2.Nodes.Insert(index + 1, new TreeNode("temp") { Tag = v });
+                currentItemSection.points.Insert(index + 1, v);
+            }
+            int i = 1;
+            foreach (TreeNode t in treeView2.Nodes)
+                t.Text = $"Point {i++} ({((Vector2D)t.Tag).x},{((Vector2D)t.Tag).y})";
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            //Delete item spawner vertex
+            if(treeView2.SelectedNode != null)
+            {
+                Vector2D v = (Vector2D)treeView2.SelectedNode.Tag;
+                currentItemSection.points.Remove(v);
+                treeView2.Nodes.Remove(treeView2.SelectedNode);
+                int i = 1;
+                foreach (TreeNode t in treeView2.Nodes)
+                    t.Text = $"Point {i++} ({((Vector2D)t.Tag).x},{((Vector2D)t.Tag).y})";
+            }
+        }
+
+        private void changeItemVertPosition(object sender, EventArgs e)
+        {
+            //changed either X or Y pos of item spawner vertex
+            if (sender == numericUpDown2)
+                ((Vector2D)treeView2.SelectedNode.Tag).x = (float)numericUpDown2.Value;
+            if(sender == numericUpDown1)
+                ((Vector2D)treeView2.SelectedNode.Tag).y = (float)numericUpDown1.Value;
+            treeView2.SelectedNode.Text = $"Point {treeView2.SelectedNode.Index + 1} ({((Vector2D)treeView2.SelectedNode.Tag).x},{((Vector2D)treeView2.SelectedNode.Tag).y})";
         }
     }
 }

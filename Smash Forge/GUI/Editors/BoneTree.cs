@@ -48,6 +48,7 @@ namespace Smash_Forge
 
         public DataTable tbl;
         public string currentNode;
+        public static Bone selectedBone = null;
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
             currentNode = treeView1.SelectedNode.Text;
@@ -57,7 +58,9 @@ namespace Smash_Forge
             tbl.Columns.Add("Value");
             dataGridView1.DataSource = tbl;
             tbl.Rows.Clear();
-            
+
+            selectedBone = Runtime.TargetVBN.bone(treeView1.SelectedNode.Text);
+
             tbl.Rows.Add("Bone Index", Runtime.TargetVBN.getJTBIndex(treeView1.SelectedNode.Text));
             tbl.Rows.Add("Bone Hash", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).boneId.ToString("X"));
             tbl.Rows.Add("Bone Type", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).boneType);
@@ -74,9 +77,12 @@ namespace Smash_Forge
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            Runtime.TargetVBN.bones[Runtime.TargetVBN.boneIndex(currentNode)].boneName = textBox1.Text.ToCharArray();
-            currentNode = textBox1.Text;
-            treeView1.SelectedNode.Text = textBox1.Text;
+            if(Runtime.TargetVBN != null)
+            {
+                Runtime.TargetVBN.bones[Runtime.TargetVBN.boneIndex(currentNode)].boneName = textBox1.Text.ToCharArray();
+                currentNode = textBox1.Text;
+                treeView1.SelectedNode.Text = textBox1.Text;
+            }
         }
 
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)

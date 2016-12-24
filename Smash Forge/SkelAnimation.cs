@@ -78,6 +78,9 @@ namespace Smash_Forge
     public class SkelAnimation
     {
 
+        public object Tag;
+        public bool Main = false;
+        public List<object> children = new List<object>();
         public List<KeyFrame> frames = new List<KeyFrame>();
         private int frame = 0;
 
@@ -98,20 +101,22 @@ namespace Smash_Forge
             foreach (KeyFrame f in frames)
                 foreach (KeyNode n in f.nodes)
                 {
-                    if (!node.Contains(n.id) && n.id != -1)
+                    if (fromHash && vbn != null)
                     {
-                        if (fromHash && vbn != null)
+                        foreach (Bone bo in vbn.bones)
                         {
-                            foreach (Bone bo in vbn.bones) {
-                                if (bo.boneId == n.hash)
-                                {
+                            if (bo.boneId == n.hash)
+                            {
+                                if (!node.Contains(vbn.bones.IndexOf(bo)))
                                     node.Add(vbn.bones.IndexOf(bo));
-                                    break;
-                                }
+                                break;
                             }
                         }
-                        else
-                            node.Add(n.id);
+                    }
+                    else
+                    if (!node.Contains(n.id) && n.id != -1)
+                    {
+                        node.Add(n.id);
                     }
                 }
 
@@ -135,11 +140,45 @@ namespace Smash_Forge
 
         public void nextFrame(VBN vbn)
         {
-            if (frame == 0)
+            if (frame >= frames.Count)
+                return;
+            
+            if (frame == 0 && Main)
+            {
                 vbn.reset();
 
-			KeyFrame key = frames[frame];
+                foreach (ModelContainer con in Runtime.ModelContainers)
+                {
+                    if (con.nud != null && con.mta != null)
+                    {
+                        con.nud.applyMTA(con.mta, 0);
+                    }
+                }
+            }
 
+            if (children.Count > 0) Main = true;
+
+            foreach (object child in children)
+            {
+                if(child is SkelAnimation)
+                {
+                    ((SkelAnimation)child).setFrame(frame);
+                    ((SkelAnimation)child).nextFrame(vbn);
+                }
+                if (child is MTA)
+                {
+                    foreach(ModelContainer con in Runtime.ModelContainers)
+                    {
+                        if(con.nud != null)
+                        {
+                            con.nud.applyMTA(((MTA)child), frame);
+                        }
+                    }
+                }
+            }
+
+			KeyFrame key = frames[frame];
+            
             foreach (KeyNode n in key.nodes)
             {
 				//if (n.id == -1)

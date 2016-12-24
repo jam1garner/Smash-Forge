@@ -22,9 +22,9 @@ namespace Smash_Forge
                 }
                 else
                 {
-                    newFace.Add(input[i + 2]);
                     newFace.Add(input[i + 1]);
-                    newFace.Add(input[i + 0]);
+                    newFace.Add(input[i]);
+                    newFace.Add(input[i + 2]);
                 }
             }
 
@@ -37,12 +37,12 @@ namespace Smash_Forge
 
             for (int i = 0; i < input.Count / 4; i++)
             {
-                newFace.Add(input[i * 4 + 0]);
+                newFace.Add(input[i * 4 + 2]);
                 newFace.Add(input[i * 4 + 1]);
-                newFace.Add(input[i * 4 + 2]);
-                newFace.Add(input[i * 4 + 2]);
-                newFace.Add(input[i * 4 + 3]);
                 newFace.Add(input[i * 4 + 0]);
+                newFace.Add(input[i * 4 + 0]);
+                newFace.Add(input[i * 4 + 3]);
+                newFace.Add(input[i * 4 + 2]);
             }
                 return newFace;
         }
