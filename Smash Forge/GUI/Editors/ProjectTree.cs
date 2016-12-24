@@ -196,5 +196,20 @@ namespace Smash_Forge
                 }
             }
         }
+
+        private void treeView1_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            // this is kind of a hack at the moment. If the previous name for this item
+            // is also present elsewhere in the path, it will be replaced as well.
+            // this is mostly a problem for nested folders / files of the same names
+            if (e.Node.Tag is DirectoryInfo)
+            {
+                Directory.Move(((DirectoryInfo)e.Node.Tag).FullName, ((DirectoryInfo)e.Node.Tag).FullName.Replace(e.Node.Text, e.Label));
+            }
+            if(e.Node.Tag is FileInfo)
+            {
+                ((ProjectExplorerNode)e.Node).ProjectNode.Project.RenameFile(((FileInfo)e.Node.Tag).FullName, e.Node.Text, e.Label);
+            }
+        }
     }
 }

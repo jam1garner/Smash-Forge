@@ -13,6 +13,7 @@ namespace Smash_Forge
     public partial class MainForm : Form
     {
         public static MainForm Instance;
+        public WorkspaceManager Workspace { get; set; }
 
         public MainForm()
         {

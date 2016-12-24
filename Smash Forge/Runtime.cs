@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,6 +50,10 @@ namespace Smash_Forge
         public static Dictionary<string, MTA> MaterialAnimations { get; set; }
         public static MovesetManager Moveset { get; set; }
 
+        public static string CanonicalizePath(string path)
+        {
+            return path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+        }
         public static void StartupFromConfig(string config)
         {
             throw new NotImplementedException();
