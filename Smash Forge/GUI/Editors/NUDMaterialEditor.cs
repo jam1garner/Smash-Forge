@@ -98,6 +98,7 @@ namespace Smash_Forge
             { "NU_specularColor", new string[] { "Red", "Green", "Blue", "Intensity"} },
             { "NU_diffuseColor", new string[] { "Red", "Green", "Blue", "Alpha"} },
             { "NU_colorGain", new string[] { "Red", "Green", "Blue", "Intensity" } },
+            { "NU_finalColorGain", new string[] { "Red", "Green", "Blue", "Intensity" } },
             { "NU_reflectionColor", new string[] { "Red", "Green", "Blue", "Intensity" } },
             { "NU_aoMinGain", new string[] { "Red", "Green", "Blue", "Alpha"} },
             { "NU_reflectionParams", new string[] { "Tex Sharpness", "Cubemap Brightness", "Cubemap Intensity", ""} },
