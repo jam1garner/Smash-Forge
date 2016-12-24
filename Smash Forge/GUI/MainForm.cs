@@ -760,6 +760,27 @@ namespace Smash_Forge
             lvdList.fillList();
         }
 
+        private void pointToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GeneralPoint g = new GeneralPoint() { name = "POINT_00_NEW", subname = "00_NEW" };
+            Runtime.TargetLVD.generalShapes.Add(g);
+            lvdList.fillList();
+        }
+
+        private void rectangleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GeneralRect g = new GeneralRect() { name = "RECT_00_NEW", subname = "00_NEW" };
+            Runtime.TargetLVD.generalShapes.Add(g);
+            lvdList.fillList();
+        }
+
+        private void pathToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GeneralPath g = new GeneralPath() { name = "PATH_00_NEW", subname = "00_NEW" };
+            Runtime.TargetLVD.generalShapes.Add(g);
+            lvdList.fillList();
+        }
+
         private void openNUTEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NUTEditor ev = new NUTEditor();
