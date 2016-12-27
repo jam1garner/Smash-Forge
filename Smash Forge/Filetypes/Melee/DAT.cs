@@ -27,7 +27,7 @@ namespace Smash_Forge
         public List<Vector3> itemSpawns = null;
         public Bounds cameraBounds = null;
         public Bounds blastzones = null;
-        private float stageScale; 
+        private float stageScale = 1; 
 
         public VBN bones = new VBN();
 
@@ -228,9 +228,11 @@ main()
                     v.pos = Vector3.Transform(v.pos, mt);
                     v.nrm = TransformNormal(mt, v.nrm);
                 }
+                // scale it
+                v.pos = Vector3.Multiply(v.pos, stageScale);
             }
 
-                foreach (TreeNode node in tree)
+            foreach (TreeNode node in tree)
             {
                 if (node.Text.EndsWith("coll_data"))
                 {
@@ -336,9 +338,9 @@ main()
                 b.scale = new float[3];
                 b.rotation = new float[3];
                 b.position = new float[3];
-                b.position[0] = j.pos.X;
-                b.position[1] = j.pos.Y;
-                b.position[2] = j.pos.Z;
+                b.position[0] = j.pos.X * stageScale;
+                b.position[1] = j.pos.Y * stageScale;
+                b.position[2] = j.pos.Z * stageScale;
                 b.scale[0] = j.sca.X;
                 b.scale[1] = j.sca.Y;
                 b.scale[2] = j.sca.Z;
