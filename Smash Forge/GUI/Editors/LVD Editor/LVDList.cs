@@ -147,6 +147,8 @@ namespace Smash_Forge
                     Runtime.TargetLVD.generalShapes.Remove((LVDGeneralShape)entry);
                 if (entry is ItemSpawner)
                     Runtime.TargetLVD.items.Remove((ItemSpawner)entry);
+                if (entry is LVDGeneralShape)
+                    Runtime.TargetLVD.generalShapes.Remove((LVDGeneralShape)entry);
 
                 treeView1.Nodes.Remove(treeView1.SelectedNode);
             }

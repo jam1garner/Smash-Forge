@@ -27,6 +27,7 @@ namespace Smash_Forge
         public List<Vector3> itemSpawns = null;
         public Bounds cameraBounds = null;
         public Bounds blastzones = null;
+        private float stageScale; 
 
         public VBN bones = new VBN();
 
@@ -180,12 +181,16 @@ main()
                     j.Read(d, this, node);
                     //break;
                 }
-                else
-                if (node.Text.EndsWith("map_head"))
+                else if (node.Text.EndsWith("map_head"))
                 {
                     Map_Head head = new Map_Head();
                     head.Read(d, this, node);
                     //levelDataNodes = node.Nodes[0].Nodes[0].Nodes[0].Nodes;
+                }
+                else if (node.Text.EndsWith("grGroundParam"))
+                {
+                    stageScale = d.readFloat();//Ploaj please figure out how we should handle this 
+                    Console.WriteLine($"Stage scale - {stageScale}");
                 }
             }
 
@@ -563,23 +568,35 @@ main()
                 recursivelyGrabPoints(link.connectors[1], c);
         }
 
-        public LVD toLVD()
+        public LVD toLVD(bool safemode)
         {
             LVD lvd = new LVD();
             int j = 0;
-            foreach(int[] poly in collisions.polyRanges)
+            if (safemode)
             {
-                Collision c = new Collision() { name = $"COL_MELEE_{j}", subname = $"MELEE_{j++}" };
-                int k = 0;
                 foreach (COLL_DATA.Link link in collisions.links)
                 {
-                    if (inRange(poly, link.vertexIndices[0]) && link.connectors[0] == 0xFFFF)
-                    {
-                        recursivelyGrabPoints(k,c);
-                    }
-                    k++;
+                    Collision c = new Collision() { name = $"COL_MELEE_{j}", subname = $"MELEE_{j++}" };
+                    addLink(link, c);
+                    lvd.collisions.Add(c);
                 }
-                lvd.collisions.Add(c);
+            }
+            else
+            {
+                foreach (int[] poly in collisions.polyRanges)
+                {
+                    Collision c = new Collision() { name = $"COL_MELEE_{j}", subname = $"MELEE_{j++}" };
+                    int k = 0;
+                    foreach (COLL_DATA.Link link in collisions.links)
+                    {
+                        if (inRange(poly, link.vertexIndices[0]) && link.connectors[0] == 0xFFFF)
+                        {
+                            recursivelyGrabPoints(k, c);
+                        }
+                        k++;
+                    }
+                    lvd.collisions.Add(c);
+                }
             }
 
             lvd.blastzones.Add(blastzones);
@@ -593,6 +610,17 @@ main()
             j = 0;
             foreach (Vector3 p in itemSpawns)
                 lvd.generalPoints.Add(new Point() { x = p.X, y = p.Y, name = $"Item_{j}", subname = $"{j++}" });
+
+            /*//This is basically for DSX8 for him quickly converting items in the "dumb" way
+            foreach (Vector3 p in itemSpawns)
+            {
+                ItemSpawner item = new ItemSpawner() { name = $"Item_{j}", subname = $"{j++}" };
+                item.sections.Add(new Section());
+                Vector2D[] f = { new Vector2D() { x = p.X, y = p.Y }, new Vector2D() { x = p.X, y = p.Y } };
+                item.sections[0].points = new List<Vector2D>(f);
+                lvd.items.Add(item);
+            }
+            */
 
             return lvd;
         }
@@ -933,26 +961,29 @@ main()
                             dat.respawns.Add(pos);
                         else if (0x7F <= type && type <= 0x93)
                             dat.itemSpawns.Add(pos);
-                        //else if (type == 0x94) (idk what this is tbh)
                         else if (type == 0x95)
                         {
-                            dat.cameraBounds.left = pos.X;
-                            dat.cameraBounds.top = pos.Y;
+                            dat.cameraBounds.left += pos.X;
+                            dat.cameraBounds.top += pos.Y;
+                            //Console.WriteLine($"Cam0 - {pos}");
                         }
                         else if (type == 0x96)
                         {
-                            dat.cameraBounds.right = pos.X;
-                            dat.cameraBounds.bottom = pos.Y;
+                            dat.cameraBounds.right += pos.X;
+                            dat.cameraBounds.bottom += pos.Y;
+                            //Console.WriteLine($"Cam1 - {pos}");
                         }
                         else if (type == 0x97)
                         {
-                            dat.blastzones.left = pos.X;
-                            dat.blastzones.top = pos.Y;
+                            dat.blastzones.left += pos.X;
+                            dat.blastzones.top += pos.Y;
+                            //Console.WriteLine($"Death0 - {pos}");
                         }
                         else if (type == 0x98)
                         {
-                            dat.blastzones.right = pos.X;
-                            dat.blastzones.bottom = pos.Y;
+                            dat.blastzones.right += pos.X;
+                            dat.blastzones.bottom += pos.Y;
+                            //Console.WriteLine($"Death1 - {pos}");
                         }
                     }
                     catch (KeyNotFoundException)

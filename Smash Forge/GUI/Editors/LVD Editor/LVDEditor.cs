@@ -30,9 +30,10 @@ namespace Smash_Forge
         private TreeNode currentTreeNode;
         private Point currentPoint;
         private Bounds currentBounds;
-        private ItemSpawner currentItemSpawner;
         private Section currentItemSection;
-        private Vector2D currentItemPoint;
+        private GeneralPoint currentGeneralPoint;
+        private GeneralRect currentGeneralRect;
+        private GeneralPath currentGeneralPath;
 
         enum materialTypes : byte
         {
@@ -70,6 +71,9 @@ namespace Smash_Forge
             pointGroup.Visible = false;
             boundGroup.Visible = false;
             itemSpawnerGroup.Visible = false;
+            generalPointShapeBox.Visible = false;
+            rectangleGroup.Visible = false;
+            pathGroup.Visible = false;
             name.Text = currentEntry.name;
             subname.Text = currentEntry.subname;
             if (entry is Collision)
@@ -125,6 +129,34 @@ namespace Smash_Forge
                 foreach(Section section in spawner.sections)
                     treeView1.Nodes.Add(new TreeNode($"Section {i++}") { Tag = section });
 
+            }
+            else if(entry is GeneralPoint)
+            {
+                generalPointShapeBox.Visible = true;
+                GeneralPoint p = (GeneralPoint)entry;
+                currentGeneralPoint = p;
+                pointShapeX.Value = (Decimal)p.x;
+                pointShapeX.Value = (Decimal)p.y;
+            }
+            else if(entry is GeneralRect)
+            {
+                rectangleGroup.Visible = true;
+                GeneralRect r = (GeneralRect)entry;
+                currentGeneralRect = r;
+                rectUpperX.Value = (Decimal)r.x2;
+                rectUpperY.Value = (Decimal)r.y2;
+                rectLowerX.Value = (Decimal)r.x1;
+                rectLowerY.Value = (Decimal)r.y1;
+            }
+            else if(entry is GeneralPath)
+            {
+                pathGroup.Visible = true;
+                GeneralPath p = (GeneralPath)entry;
+                currentGeneralPath = p;
+                treeViewPath.Nodes.Clear();
+                int j = 0;
+                foreach(Vector2D v in p.points)
+                    treeViewPath.Nodes.Add(new TreeNode($"Point {++j} ({v.x},{v.y})") { Tag = v });
             }
         }
 
@@ -412,6 +444,76 @@ namespace Smash_Forge
             if(sender == numericUpDown1)
                 ((Vector2D)treeView2.SelectedNode.Tag).y = (float)numericUpDown1.Value;
             treeView2.SelectedNode.Text = $"Point {treeView2.SelectedNode.Index + 1} ({((Vector2D)treeView2.SelectedNode.Tag).x},{((Vector2D)treeView2.SelectedNode.Tag).y})";
+        }
+
+        private void pointShape_ValueChanged(object sender, EventArgs e)
+        {
+            //General point editing
+            if (sender == pointShapeX)
+                currentGeneralPoint.x = (float)pointShapeX.Value;
+            if (sender == pointShapeY)
+                currentGeneralPoint.y = (float)pointShapeY.Value;
+        }
+
+        private void rectValueChanged(object sender, EventArgs e)
+        {
+            GeneralRect r = currentGeneralRect;
+            if(sender == rectUpperX)
+                r.x2 = (float)rectUpperX.Value;
+            if (sender == rectUpperY)
+                r.y2 = (float)rectUpperY.Value;
+            if (sender == rectLowerX)
+                r.x1 = (float)rectLowerX.Value;
+            if (sender == rectLowerY)
+                r.y1 = (float)rectLowerY.Value;
+        }
+
+        private void treeViewPath_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            //select vertex in path
+            Vector2D v = (Vector2D)e.Node.Tag;
+            pathNodeX.Value = (Decimal)v.x;
+            pathNodeY.Value = (Decimal)v.y;
+        }
+
+        private void pathValueChanged(object sender, EventArgs e)
+        {
+            Vector2D v = (Vector2D)treeViewPath.SelectedNode.Tag;
+            if (sender == pathNodeX)
+                v.x = (float)pathNodeX.Value;
+            if (sender == pathNodeY)
+                v.y = (float)pathNodeY.Value;
+            renamePathTreeview();
+        }
+
+        private void renamePathTreeview()
+        {
+            int i = 0;
+            foreach(TreeNode t in treeViewPath.Nodes)
+            {
+                Vector2D v = (Vector2D)t.Tag;
+                t.Text = $"Point {++i} ({v.x},{v.y})";
+            }
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            //Add path point
+            Vector2D newPoint = new Vector2D();
+            currentGeneralPath.points.Add(newPoint);
+            treeViewPath.Nodes.Add(new TreeNode("") { Tag = newPoint });
+            renamePathTreeview();
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            //Remove path point
+            if (treeViewPath.SelectedNode == null)
+                treeViewPath.SelectedNode = treeViewPath.Nodes[0];
+            Vector2D v = (Vector2D)treeViewPath.SelectedNode.Tag;
+            treeViewPath.Nodes.Remove(treeViewPath.SelectedNode);
+            currentGeneralPath.points.Remove(v);
+            renamePathTreeview();
         }
     }
 }

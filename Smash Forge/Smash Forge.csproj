@@ -216,6 +216,7 @@
     <Compile Include="GUI\Menus\RenderSettings.Designer.cs">
       <DependentUpon>RenderSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Nodes\ProjectNode.cs" />
     <Compile Include="IO\FileBase.cs" />
     <Compile Include="MovesetManager.cs" />
     <Compile Include="Program.cs" />
@@ -297,6 +298,66 @@
       <DependentUpon>RenderSettings.cs</DependentUpon>
     </None>
     <None Include="hashTable.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Char - Char Mat1.nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Char - Char Mat2.nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Char - Char Mat3 [Bowser Orig].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Char - Char Mat4 [cell-shade].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Char - Char Mat5 [JoeTE Glow].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Char - Char Mat6 [Nano Metal].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Char - Char Mat7 [Smash64 Look].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Char - Eyes.nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Stg - Stg Mat01 [Regular].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Stg - Stg Mat02 [Glow].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Stg - Stg Mat03 [Diffuse+Light map].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Stg - Stg Mat04 [DiffuseSpec+Reflection].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Stg - Stg Mat05 [Water+Norm].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Stg - Stg Mat06 [Water+Cubemap].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Stg - Stg Mat07 [Diffuse+Norm].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Stg - Stg Mat08 [Diffuse+Cubemap].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Stg - Stg Mat09 [Diffuse+Cubemap+Norm].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Stg - Stg Mat10 [Diffuse+Diffuse].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Stg - Stg Mat11 [Regular+Colors].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Stg - Stg Mat12 [Magma+3 UV].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Properties\Settings.settings">
