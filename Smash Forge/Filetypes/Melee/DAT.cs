@@ -181,16 +181,20 @@ main()
                     j.Read(d, this, node);
                     //break;
                 }
-                else if (node.Text.EndsWith("map_head"))
-                {
-                    Map_Head head = new Map_Head();
-                    head.Read(d, this, node);
-                    //levelDataNodes = node.Nodes[0].Nodes[0].Nodes[0].Nodes;
-                }
                 else if (node.Text.EndsWith("grGroundParam"))
                 {
                     stageScale = d.readFloat();//Ploaj please figure out how we should handle this 
                     Console.WriteLine($"Stage scale - {stageScale}");
+                }
+            }
+
+            foreach(TreeNode node in tree)
+            {
+                d.seek((int)node.Tag);
+                if (node.Text.EndsWith("map_head"))
+                {
+                    Map_Head head = new Map_Head();
+                    head.Read(d, this, node);
                 }
             }
 
@@ -246,7 +250,6 @@ main()
                 v.x *= stageScale;
                 v.y *= stageScale;
             }
-
         }
 
         Dictionary<int, PrimitiveType> primitiveTypes = new Dictionary<int, PrimitiveType>()
@@ -956,7 +959,7 @@ main()
                 dat.respawns = new List<Vector3>();
                 foreach(TreeNode t in j.node.Nodes)
                 {
-                    Vector3 pos = ((JOBJ)t.Tag).pos;
+                    Vector3 pos = Vector3.Multiply(((JOBJ)t.Tag).pos, dat.stageScale);
                     int type = -1;
                     try
                     {
