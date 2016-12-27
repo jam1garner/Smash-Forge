@@ -241,6 +241,11 @@ main()
                     collisions.Read(d);
                 }
             }
+            foreach (Vector2D v in collisions.vertices)
+            {
+                v.x *= stageScale;
+                v.y *= stageScale;
+            }
 
         }
 
