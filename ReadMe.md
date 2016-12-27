@@ -10,8 +10,20 @@ Smash Forge
  - Can view and preview stage camera animation (path.bin and CMR0 types)
  - Can edit ACMD files, just use file -> open then select a .mtable 
  - Can edit Parameter files (Certain .bins)
+ - Can import models from DAE and DAT
+ - Can import textures from DDS
+ - Can convert DAT level data into Smash 4 level data (LVD)
+ - Can export DAE and NUD models
+ - Can create, edit and delete parts of LVDs
+ - Can edit materials for Namco models including exporting or importing materials from any model available.
+ - Can edit and preivew Smash 4 movesets in real time (ACMD)
+ - Can edit and preview Smash 4 material animations in real time (.mta)
+ - Can open and preview BFRES (Wii U) Models (Only available on Wii U General Branch)
+ - Includes a set of standard materials to help get started with more quickly adding and editing materials
  
 NOTE: this entire program is still very much a WIP. There may be bugs or incomplete features. Please stick with us as we're working on it!
+ 
+ While credit on projects made using this tool is in no way necessary it is very much appreciated, thank you to those who use it.
  
 ##Building##
 ###Windows###
