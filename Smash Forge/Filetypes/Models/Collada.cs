@@ -211,7 +211,8 @@ namespace Smash_Forge
 
 
             n.MergePoly();
-            n.PreRender();
+            n.Optimize();
+            //n.PreRender();
         }
 
         private static void ReadSemantic(ColladaInput input, NUD.Vertex v, int p, Dictionary<string, ColladaSource> sources)
@@ -691,7 +692,7 @@ namespace Smash_Forge
                     List<string> d = new List<string>();
                     foreach (DAT.Vertex v in usedVertices)
                     {
-                        d.AddRange(new string[] {( v.tx0.X * data.material.texture.scale_w).ToString(), (v.tx0.Y * data.material.texture.scale_h).ToString() });
+                        d.AddRange(new string[] {( v.tx0.X * data.material.texture.scale_w).ToString(), (1-(v.tx0.Y * data.material.texture.scale_h)).ToString() });
                     }
                     src.accessor.Add("S");
                     src.accessor.Add("T");
@@ -819,7 +820,8 @@ namespace Smash_Forge
 
             // bones
 
-            SaveBoneNodes(dae, con.vbn.bones[0], con.vbn, null);
+            if(con.vbn != null)
+                SaveBoneNodes(dae, con.vbn.bones[0], con.vbn, null);
 
             // geometry
 

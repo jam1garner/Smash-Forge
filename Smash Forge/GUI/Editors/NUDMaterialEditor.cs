@@ -46,8 +46,8 @@ namespace Smash_Forge
                 };
 
         Dictionary<int, string> afunc = new Dictionary<int, string>(){
-                    { 0x00, "Nothing"},
-                    { 0x02, "GreaterOrEqual + 128"}
+                    { 0x0000, "Nothing"},
+                    { 0x0204, "GreaterOrEqual + 128"}
                 };
 
         Dictionary<int, string> ref1 = new Dictionary<int, string>(){

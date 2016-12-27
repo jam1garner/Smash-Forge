@@ -26,6 +26,7 @@ namespace Smash_Forge
         {
             { "No Bones", 0x00},
             { "Bone Weight (Float)", 0x10},
+            { "Bone Weight (Half Float)", 0x20},
             { "Bone Weight (Byte)", 0x40}
         };
 

@@ -784,7 +784,19 @@ namespace Smash_Forge
                     v[i].weight.Add(d.readFloat());
                     v[i].weight.Add(d.readFloat());
                     v[i].weight.Add(d.readFloat());
-                } else if (weight == 4)
+                }
+                else if (weight == 2)
+                {
+                    v[i].node.Add(d.readShort());
+                    v[i].node.Add(d.readShort());
+                    v[i].node.Add(d.readShort());
+                    v[i].node.Add(d.readShort());
+                    v[i].weight.Add(d.readHalfFloat());
+                    v[i].weight.Add(d.readHalfFloat());
+                    v[i].weight.Add(d.readHalfFloat());
+                    v[i].weight.Add(d.readHalfFloat());
+                }
+                else if (weight == 4)
                 {
                     v[i].node.Add(d.readByte());
                     v[i].node.Add(d.readByte());
@@ -819,7 +831,6 @@ namespace Smash_Forge
             d.writeInt(0); //FileSize
             d.writeShort(0x200); //  version num
             d.writeShort(mesh.Count); // polysets
-            d.writeShort(2); // type
 
             foreach (ModelContainer con in Runtime.ModelContainers)
             {
@@ -827,7 +838,8 @@ namespace Smash_Forge
                     boneCount = con.vbn.bones.Count;
             }
 
-            d.writeShort(boneCount - 1); // Number of bones
+            d.writeShort(boneCount == 0 ? 0 : 2); // type
+            d.writeShort(boneCount == 0 ? boneCount : boneCount - 1); // Number of bones
 
             d.writeInt(0); // polyClump start
             d.writeInt(0); // polyClump size
@@ -1074,6 +1086,17 @@ namespace Smash_Forge
                     d.writeFloat(v.weight[2]);
                     d.writeFloat(v.weight[3]);
                 }
+                if (weight == 2)
+                {
+                    d.writeShort(v.node[0]);
+                    d.writeShort(v.node[1]);
+                    d.writeShort(v.node[2]);
+                    d.writeShort(v.node[3]);
+                    d.writeHalfFloat(v.weight[0]);
+                    d.writeHalfFloat(v.weight[1]);
+                    d.writeHalfFloat(v.weight[2]);
+                    d.writeHalfFloat(v.weight[3]);
+                }
 
                 if (weight == 4)
                 {
@@ -1192,6 +1215,15 @@ namespace Smash_Forge
             public Vertex(float x, float y, float z)
             {
                 pos = new Vector3(x, y, z);
+            }
+
+            public override bool Equals(object o)
+            {
+                if (o == null || GetType() != o.GetType())
+                    return false;
+
+                Vertex p = (Vertex)o;
+                return pos.Equals(p.pos) && tx.Equals(p.tx) && nrm.Equals(p.nrm);
             }
         }
 
@@ -1425,6 +1457,38 @@ namespace Smash_Forge
             //Console.WriteLine(m.vertices.Count + " " + m.descript.Count);
 
             return m;
+        }
+
+
+        public void Optimize()
+        {
+            // to help with duplicates
+
+            foreach(Mesh m in mesh)
+            {
+                foreach(Polygon p in m.polygons)
+                {
+                    List<Vertex> nVert = new List<Vertex>();
+                    List<int> nFace = new List<int>();
+                    foreach(int f in p.faces)
+                    {
+                        int pos = nVert.IndexOf(p.vertices[f]);
+                        if (pos != -1)
+                        {
+                            nFace.Add(pos);
+                        }else
+                        {
+                            nVert.Add(p.vertices[f]);
+                            nFace.Add(nVert.Count - 1);
+                        }
+                    }
+                    p.vertices = nVert;
+                    p.faces = nFace;
+                    p.displayFaceSize = 0;
+                }
+            }
+
+            PreRender();
         }
 
         #endregion
