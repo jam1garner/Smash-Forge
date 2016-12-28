@@ -190,7 +190,7 @@ namespace Smash_Forge
 
         }
 
-        private void openNud(string filename)
+        private void openNud(string filename, string name = "")
         {
             string[] files = Directory.GetFiles(System.IO.Path.GetDirectoryName(filename));
 
@@ -224,7 +224,7 @@ namespace Smash_Forge
             }
 
             ModelContainer model = new ModelContainer();
-
+            model.name = name;
             if (!pvbn.Equals(""))
             {
                 model.vbn = new VBN(pvbn);
@@ -268,7 +268,9 @@ namespace Smash_Forge
                 {
                     model.mta = new MTA();
                     model.mta.Read(pmta);
-                    viewports[0].loadMTA(model.mta);
+                    string mtaName = Path.Combine(Path.GetFileName(Path.GetDirectoryName(pmta)),Path.GetFileName(pmta));
+                    Console.WriteLine($"MTA Name - {mtaName}");
+                    addMaterialAnimation(mtaName, model.mta);
                 }
                 catch (EndOfStreamException)
                 {
@@ -292,9 +294,10 @@ namespace Smash_Forge
 
         private void addMaterialAnimation(string name, MTA m)
         {
-            if (!Runtime.MaterialAnimations.ContainsValue(m) || Runtime.MaterialAnimations.ContainsKey(name))
+            if (!Runtime.MaterialAnimations.ContainsValue(m) && !Runtime.MaterialAnimations.ContainsKey(name))
                 Runtime.MaterialAnimations.Add(name, m);
             viewports[0].loadMTA(m);
+            mtaNode.Nodes.Add(name);
         }
 
         private void importToolStripMenuItem_Click(object sender, EventArgs e)
@@ -829,8 +832,7 @@ namespace Smash_Forge
                             {
                                 if (f.EndsWith(".nud"))
                                 {
-                                    //Console.WriteLine(f);
-                                    openNud(f);
+                                    openNud(f, Path.GetFileName(d));
                                 }
                             }
                         }
@@ -841,7 +843,7 @@ namespace Smash_Forge
                         Runtime.TargetLVD = null;
                         foreach (string f in Directory.GetFiles(paramPath))
                         {
-                            if (f.EndsWith(".lvd") && Runtime.TargetLVD != null)
+                            if (Path.GetExtension(f).Equals(".lvd") && Runtime.TargetLVD == null)
                             {
                                 Runtime.TargetLVD = new LVD(f);
                                 lvdList.fillList();

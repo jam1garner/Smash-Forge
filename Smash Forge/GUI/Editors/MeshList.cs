@@ -29,7 +29,11 @@ namespace Smash_Forge
             {
                 if (m.nud != null)
                 {
-                    TreeNode model = new TreeNode($"Model {j}") { Tag = m.nud };
+                    TreeNode model;
+                    if (string.IsNullOrWhiteSpace(m.name))
+                        model = new TreeNode($"Model {j}") { Tag = m.nud };
+                    else
+                        model = new TreeNode(m.name) { Tag = m.nud };
                     treeView1.Nodes.Add(model);
                     j++; 
                     foreach (NUD.Mesh mesh in m.nud.mesh)
