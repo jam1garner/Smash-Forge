@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
+using OpenTK;
 
 namespace Smash_Forge
 {
@@ -23,7 +24,7 @@ namespace Smash_Forge
             InitializeComponent();
         }
 
-        private LVDEntry currentEntry;
+        public LVDEntry currentEntry;
         private Vector2D currentVert;
         private Vector2D currentNormal;
         private CollisionMat currentMat;
@@ -514,6 +515,39 @@ namespace Smash_Forge
             treeViewPath.Nodes.Remove(treeViewPath.SelectedNode);
             currentGeneralPath.points.Remove(v);
             renamePathTreeview();
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            //This was code to attempt to guess passthroughs for a collision if you are reading this DO NOT USE THIS
+            Collision c = (Collision)currentEntry;
+            Bounds collisionBounds = new Bounds() { top = -1000000, bottom = 1000000, left = 1000000, right = -1000000 };
+            foreach (Vector2D v in c.verts)
+            {
+                if (v.y > collisionBounds.top)
+                    collisionBounds.top = v.y;
+                if (v.y < collisionBounds.bottom)
+                    collisionBounds.bottom = v.y;
+                if (v.x > collisionBounds.right)
+                    collisionBounds.right = v.x;
+                if (v.x < collisionBounds.left)
+                    collisionBounds.left = v.x;
+            }
+            Vector2d centerPoint = new Vector2d();
+            centerPoint.X = ((collisionBounds.right - collisionBounds.left) / 2) + collisionBounds.left;
+            centerPoint.Y = ((collisionBounds.top - collisionBounds.bottom) / 2) + collisionBounds.bottom;
+            for (int i = 0; i < c.verts.Count - 1; i++)
+            {
+                Vector2d midpoint = new Vector2d();
+                midpoint.X = ((c.verts[i].x - c.verts[i + 1].x) / 2) + c.verts[i + 1].x;
+                midpoint.Y = ((c.verts[i].y - c.verts[i + 1].y) / 2) + c.verts[i + 1].y;
+                Vector2d normal = Vector2d.Normalize(Vector2d.Subtract(midpoint, centerPoint));
+                if(c.normals.Count > i)
+                {
+                    c.normals[i].x = (float)normal.X;
+                    c.normals[i].x = (float)normal.Y;
+                }
+            }
         }
     }
 }

@@ -115,6 +115,7 @@ namespace Smash_Forge
         {
             if(e.Node.Level != 0)
             {
+                Runtime.LVDSelection = e.Node.Tag;
                 MainForm.Instance.lvdEditor.open((LVDEntry)e.Node.Tag, e.Node);
             }
         }

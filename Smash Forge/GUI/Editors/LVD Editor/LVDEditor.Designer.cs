@@ -104,7 +104,9 @@
             this.rectUpperY = new System.Windows.Forms.NumericUpDown();
             this.rectUpperX = new System.Windows.Forms.NumericUpDown();
             this.pathGroup = new System.Windows.Forms.GroupBox();
+            this.label29 = new System.Windows.Forms.Label();
             this.treeViewPath = new System.Windows.Forms.TreeView();
+            this.label32 = new System.Windows.Forms.Label();
             this.label28 = new System.Windows.Forms.Label();
             this.button8 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
@@ -112,8 +114,6 @@
             this.pathNodeX = new System.Windows.Forms.NumericUpDown();
             this.label30 = new System.Windows.Forms.Label();
             this.label31 = new System.Windows.Forms.Label();
-            this.label29 = new System.Windows.Forms.Label();
-            this.label32 = new System.Windows.Forms.Label();
             this.flowLayoutPanel1.SuspendLayout();
             this.collisionGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zStart)).BeginInit();
@@ -151,10 +151,10 @@
             this.flowLayoutPanel1.Controls.Add(this.name);
             this.flowLayoutPanel1.Controls.Add(this.subname);
             this.flowLayoutPanel1.Controls.Add(this.collisionGroup);
+            this.flowLayoutPanel1.Controls.Add(this.generalPointShapeBox);
             this.flowLayoutPanel1.Controls.Add(this.pointGroup);
             this.flowLayoutPanel1.Controls.Add(this.boundGroup);
             this.flowLayoutPanel1.Controls.Add(this.itemSpawnerGroup);
-            this.flowLayoutPanel1.Controls.Add(this.generalPointShapeBox);
             this.flowLayoutPanel1.Controls.Add(this.rectangleGroup);
             this.flowLayoutPanel1.Controls.Add(this.pathGroup);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -214,7 +214,7 @@
             this.collisionGroup.Controls.Add(this.label1);
             this.collisionGroup.Location = new System.Drawing.Point(3, 55);
             this.collisionGroup.Name = "collisionGroup";
-            this.collisionGroup.Size = new System.Drawing.Size(277, 607);
+            this.collisionGroup.Size = new System.Drawing.Size(277, 602);
             this.collisionGroup.TabIndex = 0;
             this.collisionGroup.TabStop = false;
             this.collisionGroup.Text = "Collision Editing";
@@ -596,7 +596,7 @@
             this.pointGroup.Controls.Add(this.label11);
             this.pointGroup.Controls.Add(this.yPoint);
             this.pointGroup.Controls.Add(this.xPoint);
-            this.pointGroup.Location = new System.Drawing.Point(3, 668);
+            this.pointGroup.Location = new System.Drawing.Point(3, 729);
             this.pointGroup.Name = "pointGroup";
             this.pointGroup.Size = new System.Drawing.Size(205, 60);
             this.pointGroup.TabIndex = 3;
@@ -669,7 +669,7 @@
             this.boundGroup.Controls.Add(this.label14);
             this.boundGroup.Controls.Add(this.topVal);
             this.boundGroup.Controls.Add(this.rightVal);
-            this.boundGroup.Location = new System.Drawing.Point(3, 734);
+            this.boundGroup.Location = new System.Drawing.Point(286, 3);
             this.boundGroup.Name = "boundGroup";
             this.boundGroup.Size = new System.Drawing.Size(214, 88);
             this.boundGroup.TabIndex = 34;
@@ -802,7 +802,7 @@
             this.itemSpawnerGroup.Controls.Add(this.label18);
             this.itemSpawnerGroup.Controls.Add(this.button4);
             this.itemSpawnerGroup.Controls.Add(this.label19);
-            this.itemSpawnerGroup.Location = new System.Drawing.Point(286, 3);
+            this.itemSpawnerGroup.Location = new System.Drawing.Point(286, 97);
             this.itemSpawnerGroup.Name = "itemSpawnerGroup";
             this.itemSpawnerGroup.Size = new System.Drawing.Size(250, 392);
             this.itemSpawnerGroup.TabIndex = 35;
@@ -948,7 +948,7 @@
             this.generalPointShapeBox.Controls.Add(this.label23);
             this.generalPointShapeBox.Controls.Add(this.pointShapeY);
             this.generalPointShapeBox.Controls.Add(this.pointShapeX);
-            this.generalPointShapeBox.Location = new System.Drawing.Point(286, 401);
+            this.generalPointShapeBox.Location = new System.Drawing.Point(3, 663);
             this.generalPointShapeBox.Name = "generalPointShapeBox";
             this.generalPointShapeBox.Size = new System.Drawing.Size(200, 60);
             this.generalPointShapeBox.TabIndex = 34;
@@ -1022,7 +1022,7 @@
             this.rectangleGroup.Controls.Add(this.label27);
             this.rectangleGroup.Controls.Add(this.rectUpperY);
             this.rectangleGroup.Controls.Add(this.rectUpperX);
-            this.rectangleGroup.Location = new System.Drawing.Point(286, 467);
+            this.rectangleGroup.Location = new System.Drawing.Point(286, 495);
             this.rectangleGroup.Name = "rectangleGroup";
             this.rectangleGroup.Size = new System.Drawing.Size(214, 88);
             this.rectangleGroup.TabIndex = 38;
@@ -1154,13 +1154,22 @@
             this.pathGroup.Controls.Add(this.pathNodeX);
             this.pathGroup.Controls.Add(this.label30);
             this.pathGroup.Controls.Add(this.label31);
-            this.pathGroup.Location = new System.Drawing.Point(286, 561);
+            this.pathGroup.Location = new System.Drawing.Point(286, 589);
             this.pathGroup.Name = "pathGroup";
             this.pathGroup.Size = new System.Drawing.Size(250, 217);
             this.pathGroup.TabIndex = 46;
             this.pathGroup.TabStop = false;
             this.pathGroup.Text = "General Path (Shape)";
             this.pathGroup.Visible = false;
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(105, 187);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(14, 13);
+            this.label29.TabIndex = 47;
+            this.label29.Text = "Y";
             // 
             // treeViewPath
             // 
@@ -1170,6 +1179,15 @@
             this.treeViewPath.Size = new System.Drawing.Size(238, 134);
             this.treeViewPath.TabIndex = 45;
             this.treeViewPath.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewPath_AfterSelect);
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(12, 187);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(14, 13);
+            this.label32.TabIndex = 46;
+            this.label32.Text = "X";
             // 
             // label28
             // 
@@ -1255,24 +1273,6 @@
             this.label31.Size = new System.Drawing.Size(14, 13);
             this.label31.TabIndex = 37;
             this.label31.Text = "X";
-            // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(105, 187);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(14, 13);
-            this.label29.TabIndex = 47;
-            this.label29.Text = "Y";
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(12, 187);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(14, 13);
-            this.label32.TabIndex = 46;
-            this.label32.Text = "X";
             // 
             // LVDEditor
             // 

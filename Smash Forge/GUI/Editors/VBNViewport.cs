@@ -1008,6 +1008,15 @@ main()
                     GL.LineWidth(4);
                     foreach (Collision c in Runtime.TargetLVD.collisions)
                     {
+                        bool colSelected = (Runtime.LVDSelection == c);
+                        float addX = 0, addY = 0, addZ = 0;
+                        if (c.useStartPos)
+                        {
+                            addX = c.startPos[0];
+                            addY = c.startPos[1];
+                            addZ = c.startPos[2];
+                        }
+
                         for(int i = 0; i < c.verts.Count - 1; i++)
                         {
                             GL.Begin(PrimitiveType.Quads);
@@ -1017,13 +1026,13 @@ main()
                                 {
                                     Vector2D v1 = c.verts[i];
                                     Vector2D v2 = c.verts[i + 1];
-                                    float x = ((v1.x - v2.x) / 2f) + v2.x;
-                                    float y = ((v1.y - v2.y) / 2f) + v2.y;
+                                    float x = ((v1.x - v2.x) / 2f) + v2.x + addX;
+                                    float y = ((v1.y - v2.y) / 2f) + v2.y + addY;
                                     GL.End();
                                     GL.Begin(PrimitiveType.Lines);
                                     GL.Color3(Color.Blue);
-                                    GL.Vertex3(x, y, 0);
-                                    GL.Vertex3(x + (c.normals[i].x * 5), y + (c.normals[i].y * 5), 0);
+                                    GL.Vertex3(x, y, addZ);
+                                    GL.Vertex3(x + (c.normals[i].x * 5), y + (c.normals[i].y * 5), addZ);
                                     GL.End();
                                     GL.Begin(PrimitiveType.Quads);
                                 }
@@ -1037,7 +1046,7 @@ main()
                                 else
 				                    color = Color.FromArgb(128, Color.Cyan);
 
-                                if (Runtime.LVDSelection == c.normals[i] && ((int)(DateTime.Now.Millisecond / 500) == 0))
+                                if ((colSelected || Runtime.LVDSelection == c.normals[i]) && ((int)(DateTime.Now.Millisecond / 500) == 0))
                                     color = invertColor(color);
                                 
 
@@ -1048,11 +1057,11 @@ main()
                                 GL.Color4(Color.FromArgb(128, Color.Gray));
                             }
                             vi = c.verts[i];
-                            GL.Vertex3(vi.x, vi.y, 5);
-                            GL.Vertex3(vi.x, vi.y, -5);
+                            GL.Vertex3(vi.x + addX, vi.y + addY, addZ + 5);
+                            GL.Vertex3(vi.x + addX, vi.y + addY, addZ - 5);
                             vi = c.verts[i+1];
-                            GL.Vertex3(vi.x, vi.y, -5);
-                            GL.Vertex3(vi.x, vi.y, 5);
+                            GL.Vertex3(vi.x + addX, vi.y + addY, addZ - 5);
+                            GL.Vertex3(vi.x + addX, vi.y + addY, addZ + 5);
                             GL.End();
 
                             GL.Begin(PrimitiveType.Lines);
@@ -1063,7 +1072,7 @@ main()
                                 else
                                     color = Color.Orange;
 
-                                if (Runtime.LVDSelection == c.verts[i] && ((int)(DateTime.Now.Millisecond / 500) == 0))
+                                if ((colSelected || Runtime.LVDSelection == c.verts[i]) && ((int)(DateTime.Now.Millisecond / 500) == 0))
                                     color = invertColor(color);
                                 GL.Color4(color);
                             }
@@ -1072,8 +1081,8 @@ main()
                                 GL.Color4(Color.Gray);
                             }
                             vi = c.verts[i];
-                            GL.Vertex3(vi.x, vi.y, 5);
-                            GL.Vertex3(vi.x, vi.y, -5);
+                            GL.Vertex3(vi.x + addX, vi.y + addY, addZ + 5);
+                            GL.Vertex3(vi.x + addX, vi.y + addY, addZ - 5);
 
                             if (i == c.verts.Count - 2)
                             {
@@ -1093,8 +1102,8 @@ main()
                                     GL.Color4(Color.Gray);
                                 }
                                 vi = c.verts[i + 1];
-                                GL.Vertex3(vi.x, vi.y, 5);
-                                GL.Vertex3(vi.x, vi.y, -5);
+                                GL.Vertex3(vi.x + addX, vi.y + addY, addZ + 5);
+                                GL.Vertex3(vi.x + addX, vi.y + addY, addZ - 5);
                             }
                             GL.End();
                         }
