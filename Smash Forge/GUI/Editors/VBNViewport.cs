@@ -1006,7 +1006,7 @@ main()
                     Vector2D vi;
                     Color color;
                     GL.LineWidth(4);
-                    Matrix4 transform = new Matrix4();
+                    Matrix4 transform = Matrix4.Identity;
                     foreach (Collision c in Runtime.TargetLVD.collisions)
                     {
                         bool colSelected = (Runtime.LVDSelection == c);
