@@ -1003,7 +1003,6 @@ main()
             {
                 if (Runtime.renderCollisions)
                 {
-                    Vector2D vi;
                     Color color;
                     GL.LineWidth(4);
                     Matrix4 transform = Matrix4.Identity;
@@ -1031,7 +1030,7 @@ main()
                                     {
                                         foreach(Bone b in m.vbn.bones)
                                         {
-                                            if (b.boneName.Equals(c.unk4))
+                                            if ((new string(b.boneName)).Equals(new string(c.unk4)))
                                             {
                                                 riggedBone = b;
                                             }
