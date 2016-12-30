@@ -21,8 +21,8 @@ namespace Smash_Forge
         }
 
         public Endianness endianess = Endianness.Big;
-        List<Entry> entries = new List<Entry>();
-        List<Entry> otherEntries = new List<Entry>();
+        public List<Entry> entries = new List<Entry>();
+        public List<Entry> otherEntries = new List<Entry>();
 
         public void Read(FileData f)
         {
