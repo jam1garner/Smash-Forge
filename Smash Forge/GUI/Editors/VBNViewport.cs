@@ -114,6 +114,7 @@ namespace Smash_Forge
                 MainForm.Instance.meshList.refresh();
                 MainForm.Instance.paramEditors = new List<PARAMEditor>();
                 MainForm.Instance.lvdEditor.Clear();
+                MainForm.Instance.leftPanel.Clear();
                 if (Directory.Exists("workspace/animcmd/"))
                 {
                     foreach (string file in Directory.EnumerateFiles("workspace/animcmd/"))
