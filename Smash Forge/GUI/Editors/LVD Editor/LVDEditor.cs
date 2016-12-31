@@ -204,6 +204,8 @@ namespace Smash_Forge
 
         private void nameChange(object sender, EventArgs e)
         {
+            if (currentEntry == null)
+                return;
             if (sender == name)
             {
                 currentEntry.name = name.Text;
@@ -548,6 +550,30 @@ namespace Smash_Forge
                     c.normals[i].x = (float)normal.Y;
                 }
             }
+        }
+
+        public void Clear()
+        {
+            currentEntry = null;
+            currentVert = null;
+            currentNormal = null;
+            currentMat = null;
+            currentTreeNode = null;
+            currentPoint = null;
+            currentBounds = null;
+            currentItemSection = null;
+            currentGeneralPoint = null;
+            currentGeneralRect = null;
+            currentGeneralPath = null;
+            name.Text = "";
+            subname.Text = "";
+            collisionGroup.Visible = false;
+            pointGroup.Visible = false;
+            boundGroup.Visible = false;
+            itemSpawnerGroup.Visible = false;
+            generalPointShapeBox.Visible = false;
+            rectangleGroup.Visible = false;
+            pathGroup.Visible = false;
         }
     }
 }
