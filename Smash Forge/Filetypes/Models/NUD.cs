@@ -1295,6 +1295,11 @@ namespace Smash_Forge
             public int strip = 0x40;
             public int polflag = 0x04;
 
+            public Polygon()
+            {
+                Checked = true;
+            }
+
             public void AddVertex(Vertex v)
             {
                 vertices.Add(v);
@@ -1391,6 +1396,11 @@ namespace Smash_Forge
             public short singlebind = -1;
             
             public float[] bbox = new float[8];
+
+            public Mesh()
+            {
+                Checked = true;
+            }
 
             public void addVertex(Vertex v)
             {
