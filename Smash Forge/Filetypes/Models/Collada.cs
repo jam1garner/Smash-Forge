@@ -161,7 +161,7 @@ namespace Smash_Forge
                 NUD.Mesh nmesh = new NUD.Mesh();
                 geometries.Add("#" + geom.id, nmesh);
                 n.mesh.Add(nmesh);
-                nmesh.name = geom.name;
+                nmesh.Text = geom.name;
                 NUD.Polygon npoly = new NUD.Polygon();
                 npoly.setDefaultMaterial();
                 nmesh.polygons.Add(npoly);
@@ -269,7 +269,7 @@ namespace Smash_Forge
 
                         NUD.Mesh n_mesh = new NUD.Mesh();
                         n.mesh.Add(n_mesh);
-                        n_mesh.name = geom.name;
+                        n_mesh.Text = geom.name;
 
                         Dictionary<string, double[]> sources = new Dictionary<string, double[]>();
                         Dictionary<string, string> vertex = new Dictionary<string, string>();
@@ -832,8 +832,8 @@ namespace Smash_Forge
                 {
                     ColladaGeometry geom = new ColladaGeometry();
                     dae.library_geometries.Add(geom);
-                    geom.name = mesh.name;
-                    geom.id = mesh.name;
+                    geom.name = mesh.Text;
+                    geom.id = mesh.Text;
                     geom.mesh = new ColladaMesh();
 
                     // create a node for this
@@ -847,7 +847,7 @@ namespace Smash_Forge
 
                     // create vertex object
                     ColladaVertices vertex = new ColladaVertices();
-                    vertex.id = mesh.name + "_verts";
+                    vertex.id = mesh.Text + "_verts";
                     geom.mesh.vertices = vertex;
 
                     // create sources... this may take a minute
@@ -855,7 +855,7 @@ namespace Smash_Forge
                     {
                         ColladaSource src = new ColladaSource();
                         geom.mesh.sources.Add(src);
-                        src.id = mesh.name + "_pos";
+                        src.id = mesh.Text + "_pos";
                         //src.name = mesh.name + "src1";
                         vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.POSITION });
                         List<string> d = new List<string>();
@@ -873,7 +873,7 @@ namespace Smash_Forge
                     {
                         ColladaSource src = new ColladaSource();
                         geom.mesh.sources.Add(src);
-                        src.id = mesh.name + "_nrm";
+                        src.id = mesh.Text + "_nrm";
                         //src.name = mesh.name + "src1";
                         vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.NORMAL });
                         List<string> d = new List<string>();
@@ -891,7 +891,7 @@ namespace Smash_Forge
                     {
                         ColladaSource src = new ColladaSource();
                         geom.mesh.sources.Add(src);
-                        src.id = mesh.name + "_tx0";
+                        src.id = mesh.Text + "_tx0";
                         //src.name = mesh.name + "src1";
                         vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.TEXCOORD });
                         List<string> d = new List<string>();
@@ -908,7 +908,7 @@ namespace Smash_Forge
                     {
                         ColladaSource src = new ColladaSource();
                         geom.mesh.sources.Add(src);
-                        src.id = mesh.name + "_clr";
+                        src.id = mesh.Text + "_clr";
                         //src.name = mesh.name + "src1";
                         vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.COLOR });
                         List<string> d = new List<string>();
@@ -929,7 +929,7 @@ namespace Smash_Forge
                     ColladaInput inv = new ColladaInput();
                     inv.offset = 0;
                     inv.semantic = SemanticType.VERTEX;
-                    inv.source = "#" + mesh.name + "_verts";
+                    inv.source = "#" + mesh.Text + "_verts";
                     p.inputs.Add(inv);
                     p.count = poly.displayFaceSize;
                     p.p = poly.getDisplayFace().ToArray();

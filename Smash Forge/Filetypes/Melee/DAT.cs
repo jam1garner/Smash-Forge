@@ -245,6 +245,7 @@ main()
                     collisions.Read(d);
                 }
             }
+            if(collisions != null)
             foreach (Vector2D v in collisions.vertices)
             {
                 v.x *= stageScale;
@@ -668,7 +669,7 @@ main()
             {
                 DOBJ data = (DOBJ)da.Tag;
                 NUD.Mesh mesh = new NUD.Mesh();
-                mesh.name = "Mesh_" + displayList.IndexOf(da);
+                mesh.Text = "Mesh_" + displayList.IndexOf(da);
                 NUD.Polygon polygon = new NUD.Polygon();
                 polygon.setDefaultMaterial();
 

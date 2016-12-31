@@ -21,7 +21,7 @@ namespace Smash_Forge
 {
     public partial class VBNViewport : DockContent
     {
-        int defaulttex = 0;
+        public static int defaulttex = 0;
 
         public VBNViewport()
         {

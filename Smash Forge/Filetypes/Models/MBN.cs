@@ -556,7 +556,7 @@ namespace Smash_Forge
             {
                 NUD.Mesh n_mesh = new NUD.Mesh();
                 nud.mesh.Add(n_mesh);
-                n_mesh.name = "Mesh_" + j++;
+                n_mesh.Text = "Mesh_" + j++;
                 foreach (List<int> i in m.faces)
                 {
                     NUD.Polygon poly = new NUD.Polygon();
