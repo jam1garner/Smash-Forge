@@ -282,5 +282,28 @@ namespace Smash_Forge
                 }
             }
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("Clear all NUTs from the list? You'll lose any unsaved work!", "Clear all NUTs?", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                //ListBox.ObjectCollection items = new ListBox.ObjectCollection(listBox1);
+                ListBox.ObjectCollection items = listBox1.Items;
+                for (int i = items.Count - 1; i >= 0; i--)
+                {
+                    //Apparantly I have to do both
+                    items.RemoveAt(i);
+                    Runtime.TextureContainers.RemoveAt(i);
+
+                    //It also doesn't work correctly, the index isn't updating
+                }
+
+            }
+            else if (dialogResult == DialogResult.No)
+            {
+                //do something else
+            }
+        }
     }
 }
