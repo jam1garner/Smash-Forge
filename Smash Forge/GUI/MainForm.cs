@@ -960,10 +960,10 @@ namespace Smash_Forge
                         Runtime.TargetMTA = new MTA();
                         Runtime.TargetMTA.Read(ofd.FileName);
                         viewports[0].loadMTA(Runtime.TargetMTA);
-                        MTAEditor temp = new MTAEditor(Runtime.TargetMTA) { ShowHint = DockState.DockLeft };
-                        temp.Text = Path.GetFileName(ofd.FileName);
+                        MTAEditorGUI temp = new MTAEditorGUI(Runtime.TargetMTA) { ShowHint = DockState.DockLeft };
+                        //temp.Text = Path.GetFileName(ofd.FileName);
                         AddDockedControl(temp);
-                        mtaEditors.Add(temp);
+                        //mtaEditors.Add(temp);
                     }
 
                     if (ofd.FileName.EndsWith(".mtable"))
@@ -1070,6 +1070,13 @@ namespace Smash_Forge
 
 
                     }
+
+                    if (ofd.FileName.EndsWith(".moi"))
+                    {
+                        MOI moi = new MOI(ofd.FileName);
+                        AddDockedControl(new MOIEditor(moi) { ShowHint = DockState.DockRight });
+                    }
+
                     if (ofd.FileName.EndsWith(".wrkspc"))
                     {
                         Workspace = new WorkspaceManager(project);

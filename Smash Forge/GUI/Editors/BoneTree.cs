@@ -20,8 +20,21 @@ namespace Smash_Forge
         public void treeRefresh()
         {
             treeView1.Nodes.Clear();
+            if (Runtime.TargetVBN == null)
+                return;
             buildBoneTree(0);
         }
+
+        public void Clear()
+        {
+            treeRefresh();
+            textBox1.Text = "";
+            tbl = new DataTable();
+            tbl.Rows.Clear();
+            tbl.Columns.Clear();
+            dataGridView1.DataSource = tbl;
+        }
+
         private TreeNode buildBoneTree(int index)
         {
             treeView1.BeginUpdate();
