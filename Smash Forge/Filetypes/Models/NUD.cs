@@ -7,6 +7,7 @@ using System.Linq;
 using System.Diagnostics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {
@@ -188,12 +189,18 @@ namespace Smash_Forge
                         {
                             nut.draw.TryGetValue(texHash, out tex);
 
-                            if (tex != 0)
+                            if (tex != -1)
                             {
                                 GL.ActiveTexture(TextureUnit.Texture0);
                                 GL.BindTexture(TextureTarget.Texture2D, tex);
                                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[0].WrapMode1]);
                                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[0].WrapMode2]);
+                                GL.Uniform1(shader.getAttribute("tex"), 0);
+                                tex = -1;
+                            } else
+                            {
+                                GL.ActiveTexture(TextureUnit.Texture0);
+                                GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
                                 GL.Uniform1(shader.getAttribute("tex"), 0);
                                 tex = -1;
                             }
@@ -207,7 +214,6 @@ namespace Smash_Forge
                                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[1].WrapMode1]);
                                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[1].WrapMode2]);
                                 GL.Uniform1(shader.getAttribute("nrm"), 1);
-                                break;
                             } else
                             {
                                 GL.ActiveTexture(TextureUnit.Texture1);
@@ -242,7 +248,7 @@ namespace Smash_Forge
 
                         float[] ao;
                         mat.entries.TryGetValue("NU_aoMinGain", out ao);
-                        if (ao == null) ao = new float[] { 0, 0, 0, 0 };
+                        if (ao == null) ao = new float[] { 1, 1, 1, 1 };
                         Vector4 aoo = new Vector4(ao[0], ao[1], ao[2], ao[3]);
                         GL.Uniform4(shader.getAttribute("minGain"), aoo);
 
@@ -289,7 +295,7 @@ namespace Smash_Forge
                                 break;
                         }
 
-                        if (p.isVisible && m.isVisible)
+                        if (p.Checked && m.Checked)
                         {
                             //(p.strip >> 4) == 4 ? PrimitiveType.Triangles : PrimitiveType.TriangleStrip
                             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
@@ -395,16 +401,16 @@ namespace Smash_Forge
                 int state = e.getState(frame);
                 foreach (Mesh me in mesh)
                 {
-                    if (me.name.Equals(e.name))
+                    if (me.Text.Equals(e.name))
                     {
                         //Console.WriteLine("Set " + me.name + " to " + state);
                         if (state == 0)
                         {
-                            me.isVisible = false;
+                            me.Checked = false;
                         }
                         else
                         {
-                            me.isVisible = true;
+                            me.Checked = true;
                         }
                         break;
                     }
@@ -418,7 +424,6 @@ namespace Smash_Forge
         //------------------------------------------------------------------------------------------------------------------------
         /*
          * Reads the contents of the nud file into this class
-         * Not all info will be saved, so the file will be different on export
          */
         //------------------------------------------------------------------------------------------------------------------------
         // HELPERS FOR READING
@@ -505,7 +510,7 @@ namespace Smash_Forge
             foreach (var o in obj)
             {
                 Mesh m = new Mesh();
-                m.name = o.name;
+                m.Text = o.name;
                 mesh.Add(m);
                 m.boneflag = boneflags[mi];
                 m.singlebind = (short)o.singlebind;
@@ -874,7 +879,7 @@ namespace Smash_Forge
             FileOutput tempstring = new FileOutput(); // data
             for (int i = 0; i < mesh.Count; i++)
             {
-                str.writeString(mesh[i].name);
+                str.writeString(mesh[i].Text);
                 str.writeByte(0);
                 str.align(16);
             }
@@ -890,7 +895,7 @@ namespace Smash_Forge
 
                 d.writeInt(tempstring.size());
 
-                tempstring.writeString(mesh[i].name);
+                tempstring.writeString(mesh[i].Text);
                 tempstring.writeByte(0);
                 tempstring.align(16);
 
@@ -1180,13 +1185,13 @@ namespace Smash_Forge
             Dictionary<string, Mesh> nmesh = new Dictionary<string, Mesh>();
             foreach(Mesh m in mesh)
             {
-                if (nmesh.ContainsKey(m.name))
+                if (nmesh.ContainsKey(m.Text))
                 {
                     // merge poly
-                    nmesh[m.name].polygons.AddRange(m.polygons);
+                    nmesh[m.Text].polygons.AddRange(m.polygons);
                 } else
                 {
-                    nmesh.Add(m.name, m);
+                    nmesh.Add(m.Text, m);
                 }
             }
             // consolidate
@@ -1276,13 +1281,11 @@ namespace Smash_Forge
             }
         }
 
-        public class Polygon
+        public class Polygon : TreeNode
         {
             public List<Vertex> vertices = new List<Vertex>();
             public List<int> faces = new List<int>();
             public int displayFaceSize = 0;
-
-            public bool isVisible = true;
 
             // Material
             public List<Material> materials = new List<Material>();
@@ -1292,6 +1295,11 @@ namespace Smash_Forge
             public int UVSize = 0x12;
             public int strip = 0x40;
             public int polflag = 0x04;
+
+            public Polygon()
+            {
+                Checked = true;
+            }
 
             public void AddVertex(Vertex v)
             {
@@ -1382,15 +1390,18 @@ namespace Smash_Forge
 
         // typically a mesh will just have 1 polygon
         // but you can just use the mesh class without polygons
-        public class Mesh
+        public class Mesh : TreeNode
         {
-            public string name;
             public List<Polygon> polygons = new List<Polygon>();
             public int boneflag = 4; // 0 not rigged 4 rigged 8 singlebind
             public short singlebind = -1;
-
-            public bool isVisible = true;
+            
             public float[] bbox = new float[8];
+
+            public Mesh()
+            {
+                Checked = true;
+            }
 
             public void addVertex(Vertex v)
             {

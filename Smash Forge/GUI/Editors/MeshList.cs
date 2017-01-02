@@ -38,12 +38,13 @@ namespace Smash_Forge
                     j++; 
                     foreach (NUD.Mesh mesh in m.nud.mesh)
                     {
-                        TreeNode tempMesh = new TreeNode(mesh.name) { Tag = mesh, Checked = mesh.isVisible };
-                        model.Nodes.Add(tempMesh);
+                        model.Nodes.Add(mesh);
                         int i = 0;
+                        mesh.Nodes.Clear();
                         foreach(NUD.Polygon poly in mesh.polygons)
                         {
-                            tempMesh.Nodes.Add(new TreeNode($"Polygon {i}") { Tag = poly, Checked = poly.isVisible });
+                            mesh.Nodes.Add(poly);
+                            poly.Text = "Polygon_" + i;
                             i++;
                         }
                     }
@@ -53,7 +54,7 @@ namespace Smash_Forge
 
         private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
         {
-            if (e.Node.Tag is NUD.Mesh) {
+            /*if (e.Node.Tag is NUD.Mesh) {
                 ((NUD.Mesh)e.Node.Tag).isVisible = e.Node.Checked;
                 
             }
@@ -63,11 +64,11 @@ namespace Smash_Forge
             else if (e.Node.Tag is NUD){
                 foreach (NUD.Mesh mesh in ((NUD)e.Node.Tag).mesh)
                 {
-                    mesh.isVisible = e.Node.Checked;
-                    foreach(NUD.Polygon poly in mesh.polygons)
-                    {
-                        poly.isVisible = e.Node.Checked;
-                    }
+                    //mesh.isVisible = e.Node.Checked;
+                    //foreach(NUD.Polygon poly in mesh.polygons)
+                    //{
+                     //   poly.isVisible = e.Node.Checked;
+                   // }
                 }
                 foreach (TreeNode meshNode in e.Node.Nodes)
                 {
@@ -75,7 +76,7 @@ namespace Smash_Forge
                     foreach (TreeNode polyNode in meshNode.Nodes)
                         polyNode.Checked = e.Node.Checked;
                 }
-            }
+            }*/
         }
 
         private void polySelected(NUD.Polygon poly, string name)

@@ -18,7 +18,7 @@ namespace Smash_Forge
             NUD nud = new NUD();
             NUD.Mesh head = new NUD.Mesh();
             nud.mesh.Add(head);
-            head.name = "Skapon";
+            head.Text = "Skapon";
 
             NUT nut = new NUT();
             NUT.NUD_Texture tex = new DDS(new FileData("Skapon//tex.dds")).toNUT_Texture();
