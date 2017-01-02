@@ -282,5 +282,76 @@ namespace Smash_Forge
                 }
             }
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("Clear all NUTs from the list? You'll lose any unsaved work!", "Clear all NUTs?", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                listBox1.Items.Clear();
+                listBox2.Items.Clear();
+                Runtime.TextureContainers.Clear();
+                ListBox.ObjectCollection items = listBox1.Items;
+                for (int i = items.Count - 1; i >= 0; i--)
+                {
+                    Runtime.TextureContainers.RemoveAt(i);
+                    Runtime.TextureContainers.ElementAt(i).Destroy();
+                }
+
+            }
+            else if (dialogResult == DialogResult.No)
+            {
+                //do nothing. Alternatively the else if statement can be removed.
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (dontAskBeforeRemovingNUTsToolStripMenuItem.Checked == false)
+            {
+                DialogResult dialogResult = MessageBox.Show("Remove this NUT from the list?\nHint: Options -> Don't ask before removing NUTs", "Remove NUTs?", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.No)
+                {
+                    return;
+                }
+            }
+            deleteSelectedNUTs();
+
+
+        }
+
+        //TODO: It doesn't work.
+        private void KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                deleteSelectedNUTs();
+            }
+        }
+        
+        private void dontAskBeforeRemovingNUTsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!dontAskBeforeRemovingNUTsToolStripMenuItem.Checked)
+                dontAskBeforeRemovingNUTsToolStripMenuItem.Checked = true;
+            else
+                dontAskBeforeRemovingNUTsToolStripMenuItem.Checked = false;
+        }
+        /// <summary>
+        /// Deletes all selected NUTs.
+        /// Although the function can delete multiple NUTs, the rest of the application has not been updated to support selecting more than one at once...
+        /// </summary>
+        private void deleteSelectedNUTs()
+        {
+            listBox2.Items.Clear();
+            while (listBox1.SelectedItems.Count > 0)
+            {
+                listBox1.Items.Remove(listBox1.SelectedItems[0]);
+            }
+            foreach (NUT nut in listBox1.SelectedItems)
+            {
+                nut.Destroy();
+                Runtime.TextureContainers.Remove(nut);
+            }
+        }
     }
 }

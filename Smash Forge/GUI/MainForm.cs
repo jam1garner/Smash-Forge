@@ -62,6 +62,7 @@ namespace Smash_Forge
             //Pichu.MakePichu();
             //meshList.refresh();
             //ReadChimeraLucas();
+            viewportWindowToolStripMenuItem.Checked = true;
         }
 
         private void MainForm_Close(object sender, EventArgs e)
@@ -596,9 +597,14 @@ namespace Smash_Forge
         }
         private void viewportWindowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //var vp = new VBNViewport();
-            //viewports.Add(vp);
-            //AddDockedControl(vp);
+            if (viewportWindowToolStripMenuItem.Checked == false)
+            {
+                var vp = new VBNViewport();
+                viewports.Add(vp);
+                AddDockedControl(vp);
+                viewportWindowToolStripMenuItem.Checked = true;
+            }
+
         }
 
         private void animationsWindowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1116,5 +1122,6 @@ namespace Smash_Forge
                 }
             }
         }
+        
     }
 }
