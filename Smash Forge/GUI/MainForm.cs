@@ -18,6 +18,8 @@ namespace Smash_Forge
 
         public WorkspaceManager Workspace { get; set; }
 
+        public String[] filesToOpen = null;
+
         public MainForm()
         {
             InitializeComponent();
@@ -63,6 +65,12 @@ namespace Smash_Forge
             //meshList.refresh();
             //ReadChimeraLucas();
             viewportWindowToolStripMenuItem.Checked = true;
+            if(filesToOpen != null)
+            {
+                foreach (String file in filesToOpen)
+                    openFile(file);
+                filesToOpen = null;
+            }
         }
 
         private void MainForm_Close(object sender, EventArgs e)
@@ -881,6 +889,196 @@ namespace Smash_Forge
 
         }
 
+        ///<summary>
+        ///Open a file based on the filename
+        ///</summary>
+        /// <param name="filename"> Filename of file to open</param>
+        public void openFile(string filename)
+        {
+            if (filename.EndsWith(".vbn"))
+            {
+                Runtime.TargetVBN = new VBN(filename);
+
+                if (Directory.Exists("Skapon\\"))
+                {
+                    NUD nud = Skapon.Create(Runtime.TargetVBN);
+                    ModelContainer con = new ModelContainer();
+                    con.vbn = Runtime.TargetVBN;
+                    con.nud = nud;
+                    nud.PreRender();
+                    Runtime.ModelContainers.Add(con);
+                }
+            }
+
+            if (filename.EndsWith(".dat"))
+            {
+                if (filename.EndsWith("AJ.dat"))
+                {
+                    MessageBox.Show("This is animation; load with Animation -> Import");
+                    return;
+                }
+                DAT dat = new DAT();
+                dat.Read(new FileData(filename));
+                ModelContainer c = new ModelContainer();
+                Runtime.ModelContainers.Add(c);
+                c.dat_melee = dat;
+                dat.PreRender();
+
+                HashMatch();
+                
+                Runtime.TargetVBN = dat.bones;
+
+                DAT_TreeView p = new DAT_TreeView() { ShowHint = DockState.DockLeft };
+                p.setDAT(dat);
+                AddDockedControl(p);
+                //Runtime.TargetVBN = dat.bones;
+                meshList.refresh();
+            }
+
+            if (filename.EndsWith(".nut"))
+                Runtime.TextureContainers.Add(new NUT(filename));
+
+            if (filename.EndsWith(".lvd"))
+            {
+                Runtime.TargetLVD = new LVD(filename);
+                LVD test = Runtime.TargetLVD;
+                lvdList.fillList();
+            }
+
+            if (filename.EndsWith(".mta"))
+            {
+                Runtime.TargetMTA = new MTA();
+                Runtime.TargetMTA.Read(filename);
+                viewports[0].loadMTA(Runtime.TargetMTA);
+                MTAEditorGUI temp = new MTAEditorGUI(Runtime.TargetMTA) { ShowHint = DockState.DockLeft };
+                //temp.Text = Path.GetFileName(filename);
+                AddDockedControl(temp);
+                //mtaEditors.Add(temp);
+            }
+
+            if (filename.EndsWith(".mtable"))
+            {
+                project.openACMD(filename);
+            }
+
+            if (filename.EndsWith("path.bin"))
+            {
+                Runtime.TargetPath = new PathBin(filename);
+            }
+            else
+            if (filename.EndsWith(".bin"))
+            {
+                //Note to whoever is readin this: 
+                //Eventually we need to look at the magic here (and also make all .bins look at magic)
+                //Runtime.TargetCMR0 = new CMR0();
+                //Runtime.TargetCMR0.read(new FileData(filename));
+                PARAMEditor p = new PARAMEditor(filename) { ShowHint = DockState.Document };
+                p.Text = Path.GetFileName(filename);
+                AddDockedControl(p);
+                paramEditors.Add(p);
+            }
+
+            if (filename.EndsWith(".mdl0"))
+            {
+                MDL0Bones mdl0 = new MDL0Bones();
+                Runtime.TargetVBN = mdl0.GetVBN(new FileData(filename));
+            }
+
+            if (filename.EndsWith(".smd"))
+            {
+                Runtime.TargetVBN = new VBN();
+                SMD.read(filename, new SkelAnimation(), Runtime.TargetVBN);
+            }
+
+            if (filename.ToLower().EndsWith(".dae"))
+            {
+                DAEImportSettings m = new DAEImportSettings();
+                m.ShowDialog();
+                if (m.exitStatus == DAEImportSettings.Opened)
+                {
+                    if (Runtime.ModelContainers.Count < 1)
+                        Runtime.ModelContainers.Add(new ModelContainer());
+
+                    Collada.DAEtoNUD(filename, Runtime.ModelContainers[0]);
+
+                    // apply settings
+                    m.Apply(Runtime.ModelContainers[0].nud);
+                    Runtime.ModelContainers[0].nud.MergePoly();
+
+                    meshList.refresh();
+                }
+            }
+
+            if (filename.EndsWith(".mbn"))
+            {
+                MBN m = new MBN();
+                m.Read(filename);
+                ModelContainer con = new ModelContainer();
+                BCH b = new BCH();
+                con.bch = b;
+                b.mbn = m;
+                b.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\normal.bch");
+                Runtime.ModelContainers.Add(con);
+            }
+
+            /*if (filename.EndsWith(".bch"))
+            {
+                ModelContainer con = new ModelContainer();
+                BCH b = new BCH();
+                b.Read(filename);
+                con.bch = b;
+                Runtime.ModelContainers.Add(con);
+            }*/
+
+            if (filename.EndsWith(".nud"))
+            {
+                openNud(filename);
+            }
+
+            if (filename.EndsWith(".moi"))
+            {
+                MOI moi = new MOI(filename);
+                AddDockedControl(new MOIEditor(moi) { ShowHint = DockState.DockRight });
+            }
+
+            if (filename.EndsWith(".wrkspc"))
+            {
+                Workspace = new WorkspaceManager(project);
+                Workspace.OpenWorkspace(filename);
+            }
+
+            if (Runtime.TargetVBN != null)
+            {
+                ModelContainer m = new ModelContainer();
+                m.name = new DirectoryInfo(filename).Name;
+                m.vbn = Runtime.TargetVBN;
+                Runtime.ModelContainers.Add(m);
+
+                if (filename.EndsWith(".smd"))
+                {
+                    m.nud = SMD.toNUD(filename);
+                    meshList.refresh();
+                }
+
+                leftPanel.treeRefresh();
+            }
+            else
+            {
+                foreach (ModelContainer m in Runtime.ModelContainers)
+                {
+                    if (m.vbn != null)
+                    {
+                        Runtime.TargetVBN = Runtime.ModelContainers[0].vbn;
+                        break;
+                    }
+                }
+            }
+            // Don't want to mess up the project tree if we
+            // just set it up already
+            if (!filename.EndsWith(".wrkspc"))
+                project.fillTree();
+        }
+
         private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (var ofd = new OpenFileDialog())
@@ -899,226 +1097,7 @@ namespace Smash_Forge
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    if (ofd.FileName.EndsWith(".vbn"))
-                    {
-                        Runtime.TargetVBN = new VBN(ofd.FileName);
-
-                        if (Directory.Exists("Skapon\\"))
-                        {
-                            NUD nud = Skapon.Create(Runtime.TargetVBN);
-                            ModelContainer con = new ModelContainer();
-                            con.vbn = Runtime.TargetVBN;
-                            con.nud = nud;
-                            nud.PreRender();
-                            Runtime.ModelContainers.Add(con);
-                        }
-                    }
-
-                    if (ofd.FileName.EndsWith(".dat"))
-                    {
-                        if (ofd.FileName.EndsWith("AJ.dat"))
-                        {
-                            MessageBox.Show("This is animation; load with Animation -> Import");
-                            return;
-                        }
-                        DAT dat = new DAT();
-                        dat.Read(new FileData(ofd.FileName));
-                        ModelContainer c = new ModelContainer();
-                        Runtime.ModelContainers.Add(c);
-                        c.dat_melee = dat;
-                        dat.PreRender();
-
-                        HashMatch();
-
-                        //SkelAnimation an = t.BakeToSkel(dat.bones);
-                        //Runtime.Animations.Add(anim.Name, an);
-                        //animNode.Nodes.Add(anim.Name);
-                        //DAT_Animation.LoadAJ("C:\\Users\\ploaj_000\\Desktop\\Melee\\PlPrAJ.dat", dat.bones);
-                        Runtime.TargetVBN = dat.bones;
-
-                        DAT_TreeView p = new DAT_TreeView() { ShowHint = DockState.DockLeft };
-                        p.setDAT(dat);
-                        AddDockedControl(p);
-                        //Runtime.TargetVBN = dat.bones;
-                        meshList.refresh();
-
-
-                        /*DAT_Animation anim = new DAT_Animation();
-                        anim.Read(new FileData("C:\\Users\\ploaj_000\\Desktop\\Melee\\zJiggyWait"));
-                        anim.Apply(dat.bones);
-                        AnimTrack t = new AnimTrack(anim);
-                        t.Show();
-                        t.createANIM("C:\\Users\\ploaj_000\\Desktop\\Melee\\JiggIdle.anim", dat.bones);*/
-                    }
-
-                    if (ofd.FileName.EndsWith(".nut"))
-                        Runtime.TextureContainers.Add(new NUT(ofd.FileName));
-
-                    if (ofd.FileName.EndsWith(".lvd"))
-                    {
-                        Runtime.TargetLVD = new LVD(ofd.FileName);
-                        LVD test = Runtime.TargetLVD;
-                        lvdList.fillList();
-                    }
-
-                    if (ofd.FileName.EndsWith(".mta"))
-                    {
-                        Runtime.TargetMTA = new MTA();
-                        Runtime.TargetMTA.Read(ofd.FileName);
-                        viewports[0].loadMTA(Runtime.TargetMTA);
-                        MTAEditorGUI temp = new MTAEditorGUI(Runtime.TargetMTA) { ShowHint = DockState.DockLeft };
-                        //temp.Text = Path.GetFileName(ofd.FileName);
-                        AddDockedControl(temp);
-                        //mtaEditors.Add(temp);
-                    }
-
-                    if (ofd.FileName.EndsWith(".mtable"))
-                    {
-                        project.openACMD(ofd.FileName);
-                    }
-
-                    if (ofd.FileName.EndsWith("path.bin"))
-                    {
-                        Runtime.TargetPath = new PathBin(ofd.FileName);
-                    }
-                    else
-                    if (ofd.FileName.EndsWith(".bin"))
-                    {
-                        //Note to whoever is readin this: 
-                        //Eventually we need to look at the magic here (and also make all .bins look at magic)
-                        //Runtime.TargetCMR0 = new CMR0();
-                        //Runtime.TargetCMR0.read(new FileData(ofd.FileName));
-                        PARAMEditor p = new PARAMEditor(ofd.FileName) { ShowHint = DockState.Document };
-                        p.Text = Path.GetFileName(ofd.FileName);
-                        AddDockedControl(p);
-                        paramEditors.Add(p);
-                    }
-
-                    if (ofd.FileName.EndsWith(".mdl0"))
-                    {
-                        MDL0Bones mdl0 = new MDL0Bones();
-                        Runtime.TargetVBN = mdl0.GetVBN(new FileData(ofd.FileName));
-                    }
-
-                    if (ofd.FileName.EndsWith(".smd"))
-                    {
-                        Runtime.TargetVBN = new VBN();
-                        SMD.read(ofd.FileName, new SkelAnimation(), Runtime.TargetVBN);
-                    }
-                    //Viewport.Runtime.TargetVBN = Runtime.TargetVBN;
-
-                    if (ofd.FileName.ToLower().EndsWith(".dae"))
-                    {
-                        DAEImportSettings m = new DAEImportSettings();
-                        m.ShowDialog();
-                        if (m.exitStatus == DAEImportSettings.Opened)
-                        {
-                            if (Runtime.ModelContainers.Count < 1)
-                                Runtime.ModelContainers.Add(new ModelContainer());
-
-                            Collada.DAEtoNUD(ofd.FileName, Runtime.ModelContainers[0]);
-
-                            // apply settings
-                            m.Apply(Runtime.ModelContainers[0].nud);
-                            Runtime.ModelContainers[0].nud.MergePoly();
-
-                            meshList.refresh();
-                        }
-                    }
-
-                    if (ofd.FileName.EndsWith(".mbn"))
-                    {
-                        MBN m = new MBN();
-                        m.Read(ofd.FileName);
-                        ModelContainer con = new ModelContainer();
-                        BCH b = new BCH();
-                        con.bch = b;
-                        b.mbn = m;
-                        b.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\normal.bch");
-                        //m.mesh.RemoveAt(m.mesh.Count - 1);
-                        //m.mesh.RemoveAt(m.mesh.Count - 2);
-                        //m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\rebuild.mbn");
-                        Runtime.ModelContainers.Add(con);
-                        //m.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\test.mbn");
-                        /*NUD n = m.toNUD();
-                        n.PreRender();
-                        n.Save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\mbn.nud");*/
-                    }
-
-                    /*if (ofd.FileName.EndsWith(".bch"))
-                    {
-                        ModelContainer con = new ModelContainer();
-                        BCH b = new BCH();
-                        b.Read(ofd.FileName);
-                        con.bch = b;
-                        Runtime.ModelContainers.Add(con);
-                    }*/
-
-                    if (ofd.FileName.EndsWith(".nud"))
-                    {
-                        openNud(ofd.FileName);
-                        //File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\model_new.nud",Runtime.ModelContainers[0].nud.Rebuild());
-                        /*PAC p = new PAC();
-                        p.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\model\\body\\c00\\material_anime_face.pac");
-                        byte[] data;
-                        p.Files.TryGetValue ("display.mta", out data);
-                        MTA m = new MTA();
-                        m.read(new FileData(data));
-                        Runtime.TargetNUD.applyMTA (m, 0);
-
-
-                        p = new PAC();
-                        p.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\model\\body\\c00\\material_anime_eyelid.pac");
-                        p.Files.TryGetValue ("display.mta", out data);
-                        m = new MTA();
-                        m.read(new FileData(data));
-                        Runtime.TargetNUD.applyMTA (m, 0);*/
-
-
-                    }
-
-                    if (ofd.FileName.EndsWith(".moi"))
-                    {
-                        MOI moi = new MOI(ofd.FileName);
-                        AddDockedControl(new MOIEditor(moi) { ShowHint = DockState.DockRight });
-                    }
-
-                    if (ofd.FileName.EndsWith(".wrkspc"))
-                    {
-                        Workspace = new WorkspaceManager(project);
-                        Workspace.OpenWorkspace(ofd.FileName);
-                    }
-
-                    if (Runtime.TargetVBN != null)
-                    {
-                        ModelContainer m = new ModelContainer();
-                        m.name = new DirectoryInfo(ofd.FileName).Name;
-                        m.vbn = Runtime.TargetVBN;
-                        Runtime.ModelContainers.Add(m);
-
-                        if (ofd.FileName.EndsWith(".smd"))
-                        {
-                            m.nud = SMD.toNUD(ofd.FileName);
-                            meshList.refresh();
-                        }
-
-                        leftPanel.treeRefresh();
-                    }
-                    else
-                    {
-                        foreach (ModelContainer m in Runtime.ModelContainers)
-                        {
-                            if (m.vbn != null)
-                            {
-                                Runtime.TargetVBN = Runtime.ModelContainers[0].vbn;
-                                break;
-                            }
-                        }
-                    }
-                    // Don't want to mess up the project tree if we
-                    // just set it up already
-                    if (!ofd.FileName.EndsWith(".wrkspc"))
-                        project.fillTree();
+                    openFile(ofd.FileName);
                 }
             }
         }
