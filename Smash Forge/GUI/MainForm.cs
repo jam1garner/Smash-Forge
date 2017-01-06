@@ -204,9 +204,7 @@ namespace Smash_Forge
         {
             string[] files = Directory.GetFiles(System.IO.Path.GetDirectoryName(filename));
 
-            string pnud = "";
-            if (File.Exists(filename))
-                pnud = filename;
+            string pnud = filename;
             string pnut = "";
             string pjtb = "";
             string pvbn = "";
@@ -937,7 +935,11 @@ namespace Smash_Forge
             }
 
             if (filename.EndsWith(".nut"))
+            {
                 Runtime.TextureContainers.Add(new NUT(filename));
+                NUTEditor ev = new NUTEditor();
+                ev.Show();
+            }
 
             if (filename.EndsWith(".lvd"))
             {
