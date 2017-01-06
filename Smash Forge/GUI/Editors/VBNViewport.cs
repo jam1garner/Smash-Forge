@@ -115,11 +115,12 @@ namespace Smash_Forge
                 MainForm.Instance.paramEditors = new List<PARAMEditor>();
                 MainForm.Instance.lvdEditor.Clear();
                 MainForm.Instance.leftPanel.Clear();
-                if (Directory.Exists("workspace/animcmd/"))
+                string acmdpath = Path.Combine(MainForm.executableDir, "workspace/animcmd/");
+                if (Directory.Exists(acmdpath))
                 {
-                    foreach (string file in Directory.EnumerateFiles("workspace/animcmd/"))
+                    foreach (string file in Directory.EnumerateFiles(acmdpath))
                         File.Delete(file);
-                    Directory.Delete("workspace/animcmd/");
+                    Directory.Delete(acmdpath);
                 }
 
                 MainForm.Instance.project.fillTree();

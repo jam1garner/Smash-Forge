@@ -19,6 +19,7 @@ namespace Smash_Forge
         public WorkspaceManager Workspace { get; set; }
 
         public String[] filesToOpen = null;
+        public static string executableDir = null;
 
         public MainForm()
         {
@@ -204,6 +205,8 @@ namespace Smash_Forge
             string[] files = Directory.GetFiles(System.IO.Path.GetDirectoryName(filename));
 
             string pnud = "";
+            if (File.Exists(filename))
+                pnud = filename;
             string pnut = "";
             string pjtb = "";
             string pvbn = "";
@@ -214,8 +217,6 @@ namespace Smash_Forge
 
             foreach (string s in files)
             {
-                if (s.EndsWith(".nud"))
-                    pnud = s;
                 if (s.EndsWith(".nut"))
                     pnut = s;
                 if (s.EndsWith(".vbn"))
@@ -519,7 +520,7 @@ namespace Smash_Forge
         }
         public static void HashMatch()
         {
-            csvHashes csv = new csvHashes("hashTable.csv");
+            csvHashes csv = new csvHashes(Path.Combine(executableDir, "hashTable.csv"));
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
                 if (m.vbn != null)

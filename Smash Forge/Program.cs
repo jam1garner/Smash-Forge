@@ -20,6 +20,7 @@ namespace Smash_Forge
             Application.SetCompatibleTextRenderingDefault(false);
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             MainForm.Instance.filesToOpen = args;
+            MainForm.executableDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
             Application.Run(MainForm.Instance);
         }
     }
