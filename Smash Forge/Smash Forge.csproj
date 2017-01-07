@@ -228,7 +228,7 @@
     <Compile Include="GUI\Menus\DAEImportSettings.Designer.cs">
       <DependentUpon>DAEImportSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\ModelContainer.cs" />
+    <Compile Include="Filetypes\Models\ModelContainer.cs" />
     <Compile Include="GUI\Menus\RenderSettings.cs">
       <SubType>Form</SubType>
     </Compile>

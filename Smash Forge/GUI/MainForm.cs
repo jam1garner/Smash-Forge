@@ -962,6 +962,7 @@ namespace Smash_Forge
             if (filename.EndsWith(".mtable"))
             {
                 project.openACMD(filename);
+                //Runtime.Moveset = new MovesetManager(filename);
             }
 
             if (filename.EndsWith("path.bin"))
@@ -1053,7 +1054,6 @@ namespace Smash_Forge
             if (Runtime.TargetVBN != null)
             {
                 ModelContainer m = new ModelContainer();
-                m.name = new DirectoryInfo(filename).Name;
                 m.vbn = Runtime.TargetVBN;
                 Runtime.ModelContainers.Add(m);
 
