@@ -307,14 +307,14 @@ namespace Smash_Forge
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (dontAskBeforeRemovingNUTsToolStripMenuItem.Checked == false)
-            {
+            //if (dontAskBeforeRemovingNUTsToolStripMenuItem.Checked == false)
+            //{
                 DialogResult dialogResult = MessageBox.Show("Remove this NUT from the list?\nHint: Options -> Don't ask before removing NUTs", "Remove NUTs?", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.No)
                 {
                     return;
                 }
-            }
+            //}
             deleteSelectedNUTs();
 
 
@@ -331,10 +331,10 @@ namespace Smash_Forge
         
         private void dontAskBeforeRemovingNUTsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!dontAskBeforeRemovingNUTsToolStripMenuItem.Checked)
+            /*if (!dontAskBeforeRemovingNUTsToolStripMenuItem.Checked)
                 dontAskBeforeRemovingNUTsToolStripMenuItem.Checked = true;
             else
-                dontAskBeforeRemovingNUTsToolStripMenuItem.Checked = false;
+                dontAskBeforeRemovingNUTsToolStripMenuItem.Checked = false;*/
         }
         /// <summary>
         /// Deletes all selected NUTs.
