@@ -322,127 +322,7 @@ namespace Smash_Forge
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    //Runtime.Animations.Clear();
-                    if (ofd.FileName.EndsWith(".mta"))
-                    {
-                        MTA mta = new MTA();
-                        try
-                        {
-                            mta.Read(ofd.FileName);
-                            Runtime.MaterialAnimations.Add(ofd.FileName, mta);
-                            mtaNode.Nodes.Add(ofd.FileName);
-                            MainForm.Instance.viewports[0].loadMTA(mta);
-                            Runtime.TargetMTAString = ofd.FileName;
-                        }
-                        catch (EndOfStreamException)
-                        {
-                            mta = null;
-                        }
-                    }
-                    else if (ofd.FileName.EndsWith(".smd"))
-                    {
-                        var anim = new SkelAnimation();
-                        if (Runtime.TargetVBN == null)
-                            Runtime.TargetVBN = new VBN();
-                        SMD.read(ofd.FileName, anim, Runtime.TargetVBN);
-                        leftPanel.treeRefresh();
-                        Runtime.Animations.Add(ofd.FileName, anim);
-                        animNode.Nodes.Add(ofd.FileName);
-                    }
-                    else if (ofd.FileName.EndsWith(".pac"))
-                    {
-                        PAC p = new PAC();
-                        p.Read(ofd.FileName);
-
-                        foreach (var pair in p.Files)
-                        {
-                            if (pair.Key.EndsWith(".omo"))
-                            {
-                                var anim = OMO.read(new FileData(pair.Value));
-                                string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
-                                //AnimName = pair.Key;
-                                //AnimName = AnimName.Remove(AnimName.Length - 4);
-                                //AnimName = AnimName.Insert(3, "_");
-                                if (!string.IsNullOrEmpty(AnimName))
-                                {
-                                    if (Runtime.Animations.ContainsKey(AnimName))
-                                        Runtime.Animations[AnimName].children.Add(anim);
-                                    else
-                                    {
-                                        animNode.Nodes.Add(AnimName);
-                                        Runtime.Animations.Add(AnimName, anim);
-                                    }
-                                }
-                                else
-                                {
-                                    if (Runtime.Animations.ContainsKey(pair.Key))
-                                        Runtime.Animations[pair.Key].children.Add(anim);
-                                    else
-                                    {
-                                        animNode.Nodes.Add(pair.Key);
-                                        Runtime.Animations.Add(pair.Key, anim);
-                                    }
-                                }
-                            }
-                            else if (pair.Key.EndsWith(".mta"))
-                            {
-                                MTA mta = new MTA();
-                                try
-                                {
-                                    if (!Runtime.MaterialAnimations.ContainsKey(pair.Key))
-                                    {
-                                        mta.read(new FileData(pair.Value));
-                                        Runtime.MaterialAnimations.Add(pair.Key, mta);
-                                        mtaNode.Nodes.Add(pair.Key);
-                                    }
-
-                                    // matching
-                                    string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString().Replace(".mta", ".omo");
-                                    if (Runtime.Animations.ContainsKey(AnimName))
-                                    {
-                                        Runtime.Animations[AnimName].children.Add(mta);
-                                    }
-
-                                }
-                                catch (EndOfStreamException)
-                                {
-                                    mta = null;
-                                }
-                            }
-                        }
-                    }
-
-                    if (ofd.FileName.EndsWith(".dat"))
-                    {
-                        if (!ofd.FileName.EndsWith("AJ.dat"))
-                            MessageBox.Show("Not a DAT animation");
-                        else
-                        {
-                            if (Runtime.ModelContainers[0].dat_melee == null)
-                                MessageBox.Show("Load a DAT model first");
-                            else
-                                DAT_Animation.LoadAJ(ofd.FileName, Runtime.ModelContainers[0].dat_melee.bones);
-                        }
-
-                    }
-                    //if (Runtime.TargetVBN.bones.Count > 0)
-                    //{
-                    if (ofd.FileName.EndsWith(".omo"))
-                    {
-                        Runtime.Animations.Add(ofd.FileName, OMO.read(new FileData(ofd.FileName)));
-                        animNode.Nodes.Add(ofd.FileName);
-                    }
-                    if (ofd.FileName.EndsWith(".chr0"))
-                    {
-                        Runtime.Animations.Add(ofd.FileName, CHR0.read(new FileData(ofd.FileName), Runtime.TargetVBN));
-                        animNode.Nodes.Add(ofd.FileName);
-                    }
-                    if (ofd.FileName.EndsWith(".anim"))
-                    {
-                        Runtime.Animations.Add(ofd.FileName, ANIM.read(ofd.FileName, Runtime.TargetVBN));
-                        animNode.Nodes.Add(ofd.FileName);
-                    }
-                    //}
+                    openAnimation(ofd.FileName);
                 }
             }
         }
@@ -888,12 +768,143 @@ namespace Smash_Forge
 
         }
 
+        //<summary>
+        //Open an animation based on filename
+        //</summary>
+        public void openAnimation(string filename)
+        {
+
+            //Runtime.Animations.Clear();
+            if (filename.EndsWith(".mta"))
+            {
+                MTA mta = new MTA();
+                try
+                {
+                    mta.Read(filename);
+                    Runtime.MaterialAnimations.Add(filename, mta);
+                    mtaNode.Nodes.Add(filename);
+                    MainForm.Instance.viewports[0].loadMTA(mta);
+                    Runtime.TargetMTAString = filename;
+                }
+                catch (EndOfStreamException)
+                {
+                    mta = null;
+                }
+            }
+            else if (filename.EndsWith(".smd"))
+            {
+                var anim = new SkelAnimation();
+                if (Runtime.TargetVBN == null)
+                    Runtime.TargetVBN = new VBN();
+                SMD.read(filename, anim, Runtime.TargetVBN);
+                leftPanel.treeRefresh();
+                Runtime.Animations.Add(filename, anim);
+                animNode.Nodes.Add(filename);
+            }
+            else if (filename.EndsWith(".pac"))
+            {
+                PAC p = new PAC();
+                p.Read(filename);
+
+                foreach (var pair in p.Files)
+                {
+                    if (pair.Key.EndsWith(".omo"))
+                    {
+                        var anim = OMO.read(new FileData(pair.Value));
+                        string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
+                        //AnimName = pair.Key;
+                        //AnimName = AnimName.Remove(AnimName.Length - 4);
+                        //AnimName = AnimName.Insert(3, "_");
+                        if (!string.IsNullOrEmpty(AnimName))
+                        {
+                            if (Runtime.Animations.ContainsKey(AnimName))
+                                Runtime.Animations[AnimName].children.Add(anim);
+                            else
+                            {
+                                animNode.Nodes.Add(AnimName);
+                                Runtime.Animations.Add(AnimName, anim);
+                            }
+                        }
+                        else
+                        {
+                            if (Runtime.Animations.ContainsKey(pair.Key))
+                                Runtime.Animations[pair.Key].children.Add(anim);
+                            else
+                            {
+                                animNode.Nodes.Add(pair.Key);
+                                Runtime.Animations.Add(pair.Key, anim);
+                            }
+                        }
+                    }
+                    else if (pair.Key.EndsWith(".mta"))
+                    {
+                        MTA mta = new MTA();
+                        try
+                        {
+                            if (!Runtime.MaterialAnimations.ContainsKey(pair.Key))
+                            {
+                                mta.read(new FileData(pair.Value));
+                                Runtime.MaterialAnimations.Add(pair.Key, mta);
+                                mtaNode.Nodes.Add(pair.Key);
+                            }
+
+                            // matching
+                            string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString().Replace(".mta", ".omo");
+                            if (Runtime.Animations.ContainsKey(AnimName))
+                            {
+                                Runtime.Animations[AnimName].children.Add(mta);
+                            }
+
+                        }
+                        catch (EndOfStreamException)
+                        {
+                            mta = null;
+                        }
+                    }
+                }
+            }
+
+            if (filename.EndsWith(".dat"))
+            {
+                if (!filename.EndsWith("AJ.dat"))
+                    MessageBox.Show("Not a DAT animation");
+                else
+                {
+                    if (Runtime.ModelContainers[0].dat_melee == null)
+                        MessageBox.Show("Load a DAT model first");
+                    else
+                        DAT_Animation.LoadAJ(filename, Runtime.ModelContainers[0].dat_melee.bones);
+                }
+
+            }
+            //if (Runtime.TargetVBN.bones.Count > 0)
+            //{
+            if (filename.EndsWith(".omo"))
+            {
+                Runtime.Animations.Add(filename, OMO.read(new FileData(filename)));
+                animNode.Nodes.Add(filename);
+            }
+            if (filename.EndsWith(".chr0"))
+            {
+                Runtime.Animations.Add(filename, CHR0.read(new FileData(filename), Runtime.TargetVBN));
+                animNode.Nodes.Add(filename);
+            }
+            if (filename.EndsWith(".anim"))
+            {
+                Runtime.Animations.Add(filename, ANIM.read(filename, Runtime.TargetVBN));
+                animNode.Nodes.Add(filename);
+            }
+        }
+
         ///<summary>
         ///Open a file based on the filename
         ///</summary>
         /// <param name="filename"> Filename of file to open</param>
         public void openFile(string filename)
         {
+            if(!filename.EndsWith(".mta") && !filename.EndsWith(".dat") && !filename.EndsWith(".smd"))
+                openAnimation(filename);
+            
             if (filename.EndsWith(".vbn"))
             {
                 Runtime.TargetVBN = new VBN(filename);
@@ -961,8 +972,8 @@ namespace Smash_Forge
 
             if (filename.EndsWith(".mtable"))
             {
-                project.openACMD(filename);
-                //Runtime.Moveset = new MovesetManager(filename);
+                //project.openACMD(filename);
+                Runtime.Moveset = new MovesetManager(filename);
             }
 
             if (filename.EndsWith("path.bin"))
