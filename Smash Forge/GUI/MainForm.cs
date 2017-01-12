@@ -7,6 +7,9 @@ using System.Security.Cryptography;
 using WeifenLuo.WinFormsUI.Docking;
 using OpenTK;
 using System.Data;
+using Octokit;
+using System.Diagnostics;
+using System.Threading;
 
 namespace Smash_Forge
 {
@@ -28,6 +31,9 @@ namespace Smash_Forge
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            ThreadStart t = new ThreadStart(Smash_Forge.Update.CheckLatest);
+            Thread thread = new Thread(t);
+            thread.Start();
             Runtime.renderDepth = 2500f;
             foreach (var vp in viewports)
                 AddDockedControl(vp);
@@ -1138,6 +1144,17 @@ namespace Smash_Forge
             {
                 e.Effect = DragDropEffects.None;
             }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            Process p = new Process();
+            p.StartInfo.FileName = Path.Combine(executableDir, "updater/ForgeUpdater.exe");
+            p.StartInfo.Arguments = "-i -r";
+            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            p.StartInfo.CreateNoWindow = true;
+            p.Start();
+            System.Windows.Forms.Application.Exit();
         }
     }
 }

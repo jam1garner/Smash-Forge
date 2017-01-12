@@ -144,8 +144,8 @@ namespace Smash_Forge
 {25, "???3"},
 {26, "RArmJ"},
 {27, "RHandN"},
-{28, "LIndex1"},
-{29, "LThumbN"},
+{28, "RIndex1"},
+{29, "RThumbN"},
 {30, "RHaveN"},
 {31, "LLegJ"},
 {32, "LKneeJ"},
@@ -194,7 +194,7 @@ namespace Smash_Forge
             "ThrowN"
         };
 
-        private static string path = "C:\\Users\\ploaj_000\\Desktop\\Melee\\Pichu\\";
+        private static string path = "C:\\Pichu\\";
 
         public static void MakePichu()
         {
@@ -266,7 +266,7 @@ namespace Smash_Forge
 
                 npac.Files.Add(key, d);
             }
-
+            Directory.CreateDirectory(path + "build\\motion\\");
             npac.Save(path + "build\\motion\\main.pac");
 
             /*FileOutput omo = new FileOutput();

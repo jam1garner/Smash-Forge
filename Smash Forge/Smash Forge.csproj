@@ -7,7 +7,7 @@
     <ProjectGuid>{055E5BC6-BB1B-4F76-8710-9991CA79C04D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SForge</RootNamespace>
+    <RootNamespace>Smash_Forge</RootNamespace>
     <AssemblyName>Smash Forge</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -38,6 +38,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Octokit, Version=0.23.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Octokit.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
@@ -136,6 +140,24 @@
     </Compile>
     <Compile Include="GUI\Editors\MOIEditor.Designer.cs">
       <DependentUpon>MOIEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\MTA Editor GUI\ColorList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\MTA Editor GUI\ColorList.Designer.cs">
+      <DependentUpon>ColorList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\MTA Editor GUI\MatHeaderBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\MTA Editor GUI\MatHeaderBox.Designer.cs">
+      <DependentUpon>MatHeaderBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\MTA Editor GUI\MatPropList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\MTA Editor GUI\MatPropList.Designer.cs">
+      <DependentUpon>MatPropList.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\MTAEditor.cs">
       <SubType>Form</SubType>
@@ -241,6 +263,12 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Filetypes\Models\VBN.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Editors\ACMDEditor.resx">
       <DependentUpon>ACMDEditor.cs</DependentUpon>
@@ -268,6 +296,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\MOIEditor.resx">
       <DependentUpon>MOIEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\MTA Editor GUI\ColorList.resx">
+      <DependentUpon>ColorList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\MTA Editor GUI\MatHeaderBox.resx">
+      <DependentUpon>MatHeaderBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\MTA Editor GUI\MatPropList.resx">
+      <DependentUpon>MatPropList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\MTAEditor.resx">
       <DependentUpon>MTAEditor.cs</DependentUpon>
@@ -315,9 +352,13 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
+    <Compile Include="Resources\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
@@ -431,6 +472,9 @@
     <Content Include="lib\FITD.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="lib\Octokit.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="lib\OpenTK.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -443,6 +487,7 @@
     <Content Include="lib\WeifenLuo.WinFormsUI.Docking.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\sexy_green_down_arrow.png" />
     <None Include="Resources\DefaultTexture.png" />
   </ItemGroup>
   <ItemGroup />

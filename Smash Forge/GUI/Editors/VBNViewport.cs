@@ -50,7 +50,7 @@ namespace Smash_Forge
             }
             render = true;
             _controlLoaded = true;
-            defaulttex = NUT.loadImage(SForge.Properties.Resources.DefaultTexture);
+            defaulttex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
         }
 
         protected override void OnResize(EventArgs e)
