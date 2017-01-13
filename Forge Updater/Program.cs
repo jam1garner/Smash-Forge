@@ -29,8 +29,13 @@ namespace Forge_Updater
             }
             var client = new GitHubClient(new ProductHeaderValue("forge-updater"));
             GetReleases(client).Wait();
-            
-            foreach(string arg in args)
+
+            bool foundRelease = false;
+            string alreadyDownloaded = "";
+            if (File.Exists(Path.Combine(executableDir, "currentRelease\\version.txt")))
+                alreadyDownloaded = File.ReadAllText(Path.Combine(executableDir, "currentRelease\\version.txt"));
+
+            foreach (string arg in args)
             {
                 if (arg.Equals("-info"))
                 {
@@ -48,13 +53,19 @@ namespace Forge_Updater
                     {
                         if (!latest.Prerelease)
                         {
-                            Console.WriteLine($"Name: {latest.Name}\nDescription:\n{latest.Body}");
-                            Console.WriteLine($"URL: {latest.Assets[0].BrowserDownloadUrl}");
-                            Console.WriteLine($"Upload Date: {latest.Assets[0].UpdatedAt}");
-                            int code = DownloadRelease(latest.Assets[0].BrowserDownloadUrl, "currentRelease", latest.Assets[0].UpdatedAt.ToString());
-                            if (code != 0)
-                                return code;
-                            break;
+                            if (!foundRelease)
+                            {
+                                Console.WriteLine($"Name: {latest.Name}\nDescription:\n{latest.Body}");
+                                Console.WriteLine($"URL: {latest.Assets[0].BrowserDownloadUrl}");
+                                Console.WriteLine($"Upload Date: {latest.Assets[0].UpdatedAt}");
+                                if (!latest.Assets[0].UpdatedAt.ToString().Equals(alreadyDownloaded))
+                                {
+                                    int code = DownloadRelease(latest.Assets[0].BrowserDownloadUrl, "currentRelease", latest.Assets[0].UpdatedAt.ToString());
+                                    if (code != 0)
+                                        return code;
+                                }
+                                foundRelease = true;
+                            }
                         }
                     }
                 }
@@ -62,13 +73,19 @@ namespace Forge_Updater
                 {
                     foreach (Release latest in releases)
                     {
-                        Console.WriteLine($"Name: {latest.Name}\nDescription:\n{latest.Body}");
-                        Console.WriteLine($"URL: {latest.Assets[0].BrowserDownloadUrl}");
-                        Console.WriteLine($"Upload Date: {latest.Assets[0].UpdatedAt}");
-                        int code = DownloadRelease(latest.Assets[0].BrowserDownloadUrl, "currentRelease", latest.Assets[0].UpdatedAt.ToString());
-                        if (code != 0)
-                            return code;
-                        break;
+                        if (!foundRelease)
+                        {
+                            Console.WriteLine($"Name: {latest.Name}\nDescription:\n{latest.Body}");
+                            Console.WriteLine($"URL: {latest.Assets[0].BrowserDownloadUrl}");
+                            Console.WriteLine($"Upload Date: {latest.Assets[0].UpdatedAt}");
+                            if (!latest.Assets[0].UpdatedAt.ToString().Equals(alreadyDownloaded))
+                            {
+                                int code = DownloadRelease(latest.Assets[0].BrowserDownloadUrl, "currentRelease", latest.Assets[0].UpdatedAt.ToString());
+                                if (code != 0)
+                                    return code;
+                            }
+                            foundRelease = true;
+                        }
                     }
                 }
                 else if (arg.Equals("-i"))
@@ -94,13 +111,11 @@ namespace Forge_Updater
                         File.Move(file, Path.Combine(forgeDir,Path.GetFileName(file)));
                     }
                 }
-                else if (arg.Equals("-r"))
-                {
-                    restartForge = true;
-                }
             }
-            if (restartForge)
-                System.Diagnostics.Process.Start(Path.Combine(forgeDir, "Smash Forge.exe"));
+
+            foreach(string arg in args)
+                if(arg.Equals("-r"))
+                    System.Diagnostics.Process.Start(Path.Combine(forgeDir, "Smash Forge.exe"));
 
             return 0;
         }
