@@ -14,6 +14,8 @@ namespace Smash_Forge
     {
         static Release[] releases;
         public static bool includeNightlies = true;
+        public static MainForm mainform;
+        public static bool Downloaded = false;
 
         public static void CheckLatest()
         {
@@ -40,32 +42,39 @@ namespace Smash_Forge
                         }
                         if (!version.Equals(latest.Assets[0].UpdatedAt.ToString()))
                         {
-                            ProcessStartInfo p = new ProcessStartInfo();
-                            p.WindowStyle = ProcessWindowStyle.Hidden;
-                            p.CreateNoWindow = true;
-                            p.FileName = Path.Combine(MainForm.executableDir, "updater/ForgeUpdater.exe");
-                            if (includeNightlies)
-                                p.Arguments = "-dn";
-                            else
-                                p.Arguments = "-d";
-                            Process process = new Process();
-                            process.StartInfo = p;
-                            Console.WriteLine("Downloading...");
-                            process.Start();
-                            process.WaitForExit();
-                            if (process.ExitCode != 0)
-                                throw new TimeoutException();
-                            Console.WriteLine("Finished downloading");
-                            MainForm.Instance.pictureBox1.Visible = true;
+                            DownloadRelease();
                         }
                         break;
                     }
                 }
             }
-            catch
+            catch (Exception e)
             {
-                Console.WriteLine("Failed to get latest update");
+                Console.WriteLine($"Failed to get latest update\n{e.ToString()}");
             }
+        }
+
+        static void DownloadRelease()
+        {
+            ProcessStartInfo p = new ProcessStartInfo();
+            p.WindowStyle = ProcessWindowStyle.Hidden;
+            p.CreateNoWindow = true;
+            p.FileName = Path.Combine(MainForm.executableDir, "updater/ForgeUpdater.exe");
+            p.WorkingDirectory = Path.Combine(MainForm.executableDir, "updater/");
+            Console.WriteLine($"Updater: {p.FileName}");
+            if (includeNightlies)
+                p.Arguments = "-dn";
+            else
+                p.Arguments = "-d";
+            Process process = new Process();
+            process.StartInfo = p;
+            Console.WriteLine("Downloading...");
+            process.Start();
+            process.WaitForExit();
+            if (process.ExitCode != 0)
+                throw new TimeoutException();
+            Console.WriteLine("Finished downloading");
+            Downloaded = true;
         }
 
         static async Task GetReleases(GitHubClient client)

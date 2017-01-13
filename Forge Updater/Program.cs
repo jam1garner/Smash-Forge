@@ -75,9 +75,11 @@ namespace Forge_Updater
                 {
                     foreach(string dir in Directory.GetDirectories("currentRelease/"))
                     {
-                        if (!dir.Equals(Path.Combine(executableDir, "currentRelease/updater/")))
+                        string dirName = new DirectoryInfo(dir).Name;
+                        if (!dirName.Equals("updater"))
                         {
-                            string dirName = new DirectoryInfo(dir).Name;
+                            if (Directory.Exists(Path.Combine(forgeDir, dirName + @"\")))
+                                Directory.Delete(Path.Combine(forgeDir, dirName + @"\"), true);
                             Directory.Move(dir, Path.Combine(forgeDir, dirName + @"\"));
                         }
                         else
@@ -87,8 +89,9 @@ namespace Forge_Updater
                     }
                     foreach (string file in Directory.GetFiles("currentRelease/"))
                     {
-                        Directory.Move(file, Path.Combine(forgeDir,Path.GetFileName(file)));
-                        File.Delete(file);
+                        if (File.Exists(Path.Combine(forgeDir, Path.GetFileName(file))))
+                            File.Delete(Path.Combine(forgeDir, Path.GetFileName(file)));
+                        File.Move(file, Path.Combine(forgeDir,Path.GetFileName(file)));
                     }
                 }
                 else if (arg.Equals("-r"))

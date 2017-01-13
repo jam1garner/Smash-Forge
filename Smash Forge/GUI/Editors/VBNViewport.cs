@@ -131,6 +131,8 @@ namespace Smash_Forge
 
             while (render && _controlLoaded && glControl1.IsIdle)
             {
+                if (Smash_Forge.Update.Downloaded)
+                    MainForm.Instance.pictureBox1.Image = Resources.Resources.sexy_green_down_arrow;
                 if (isPlaying)
                 {
                     if (nupdFrame.Value < nupdMaxFrame.Value)

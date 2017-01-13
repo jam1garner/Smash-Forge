@@ -1148,13 +1148,17 @@ namespace Smash_Forge
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            Process p = new Process();
-            p.StartInfo.FileName = Path.Combine(executableDir, "updater/ForgeUpdater.exe");
-            p.StartInfo.Arguments = "-i -r";
-            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            p.StartInfo.CreateNoWindow = true;
-            p.Start();
-            System.Windows.Forms.Application.Exit();
+            if (Smash_Forge.Update.Downloaded)
+            {
+                Process p = new Process();
+                p.StartInfo.FileName = Path.Combine(executableDir, "updater/ForgeUpdater.exe");
+                p.StartInfo.WorkingDirectory = Path.Combine(executableDir, "updater/");
+                p.StartInfo.Arguments = "-i -r";
+                p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                p.StartInfo.CreateNoWindow = true;
+                p.Start();
+                System.Windows.Forms.Application.Exit();
+            }
         }
     }
 }

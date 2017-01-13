@@ -18,7 +18,6 @@ namespace Smash_Forge
         [STAThread]
         static void Main()
         {
-            
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
@@ -27,7 +26,7 @@ namespace Smash_Forge
             //If the update has been installed and there is an update for the updater then run it
             if (Directory.Exists(Path.Combine(MainForm.executableDir, "new_updater/")))
             {
-                Directory.Delete(Path.Combine(MainForm.executableDir, "updater/"));
+                Directory.Delete(Path.Combine(MainForm.executableDir, "updater/"), true);
                 Directory.Move(Path.Combine(MainForm.executableDir, "new_updater/"), Path.Combine(MainForm.executableDir, "updater/"));
             }
             SingleInstanceController controller = new SingleInstanceController();
