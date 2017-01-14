@@ -578,31 +578,31 @@ namespace Smash_Forge
             }
             f.skip(1);//Seperation char
 
-            if (f.readInt() != 0)//1
-                throw new NotImplementedException();
+            if (f.readInt() != 0) //1
+                return;
             f.skip(1);//Seperation char
 
             if (f.readInt() != 0)//2
-                throw new NotImplementedException();
+                return;
             f.skip(1);//Seperation char
 
             int enemyGeneratorCount = f.readInt();
             if (enemyGeneratorCount != 0)
-                throw new NotImplementedException();
+                return;
             f.skip(1);//Seperation char
 
             if (f.readInt() != 0)//4
-                throw new NotImplementedException();
+                return;
             f.skip(1);//Seperation char
 
             int fsAreaCamCount = f.readInt();
             if (fsAreaCamCount != 0)
-                throw new NotImplementedException();
+                return;
             f.skip(1);//Seperation char
 
             int fsCamLimitCount = f.readInt();
             if (fsCamLimitCount != 0)
-                throw new NotImplementedException();
+                return;
             f.skip(1);//Seperation char
 
             int damageShapeCount = f.readInt();
