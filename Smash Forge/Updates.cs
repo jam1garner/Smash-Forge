@@ -93,8 +93,15 @@ namespace Smash_Forge
             Console.WriteLine("Finished downloading");
             string updateExe = MainForm.executableDir,
                   currentExe = System.Reflection.Assembly.GetEntryAssembly().Location;
-            if (!Md5File(currentExe).SequenceEqual(Md5File(updateExe)))
+            try
+            {
+                if (!Md5File(currentExe).SequenceEqual(Md5File(updateExe)))
+                    Downloaded = true;
+            }
+            catch
+            {
                 Downloaded = true;
+            }
         }
 
         static async Task GetReleases(GitHubClient client)
