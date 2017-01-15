@@ -17,7 +17,6 @@ namespace Smash_Forge
     public partial class NUTEditor : Form
     {
         private NUT selected;
-        private Dictionary<NUT.NUD_Texture, string> extractedImages = new Dictionary<NUT.NUD_Texture, string>();
 
         public NUTEditor()
         {
@@ -400,7 +399,7 @@ namespace Smash_Forge
         {
             NUT.NUD_Texture tex = (NUT.NUD_Texture)(listBox2.SelectedItem);
 
-            DDS dds = new DDS(new FileData(Path.ChangeExtension(extractedImages[(NUT.NUD_Texture)(listBox2.SelectedItem)], ".dds")));
+            DDS dds = new DDS(new FileData(filename));
             NUT.NUD_Texture ntex = dds.toNUT_Texture();
 
             tex.height = ntex.height;
