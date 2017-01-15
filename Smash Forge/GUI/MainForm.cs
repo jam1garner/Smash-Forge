@@ -1148,7 +1148,7 @@ namespace Smash_Forge
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            if (Smash_Forge.Update.Downloaded)
+            if (Smash_Forge.Update.Downloaded && MessageBox.Show($"Would you like to download the following update?\n{Smash_Forge.Update.DownloadedRelease.Name}\n{Smash_Forge.Update.DownloadedRelease.Body}", "Smash Forge Updater", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 Process p = new Process();
                 p.StartInfo.FileName = Path.Combine(executableDir, "updater/ForgeUpdater.exe");

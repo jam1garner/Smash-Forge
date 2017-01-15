@@ -7,6 +7,7 @@ using Octokit;
 using System.Threading;
 using System.IO;
 using System.Diagnostics;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace Smash_Forge
 {
@@ -15,7 +16,9 @@ namespace Smash_Forge
         static Release[] releases;
         public static bool includeNightlies = true;
         public static MainForm mainform;
+
         public static bool Downloaded = false;
+        public static Release DownloadedRelease;
 
         public static void CheckLatest()
         {
@@ -43,6 +46,8 @@ namespace Smash_Forge
                         if (!version.Equals(latest.Assets[0].UpdatedAt.ToString()))
                         {
                             DownloadRelease();
+                            if(Downloaded)
+                                DownloadedRelease = latest;
                         }
                         break;
                     }
