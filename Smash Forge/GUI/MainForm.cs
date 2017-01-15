@@ -541,7 +541,7 @@ namespace Smash_Forge
         public void openMats(NUD.Polygon poly, string name)
         {
             NUDMaterialEditor matEditor = new NUDMaterialEditor() { Text = name };
-            matEditor.ShowDialog();
+            AddDockedControl(matEditor);
         }
 
 
