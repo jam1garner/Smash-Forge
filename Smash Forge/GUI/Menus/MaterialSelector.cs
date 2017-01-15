@@ -78,9 +78,11 @@ namespace Smash_Forge
 
         private void treeView1_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.Enter)
+            if (e.KeyCode == Keys.Enter)
+            {
                 openButton();
-            e.Handled = true;
+                e.Handled = true;
+            }
         }
     }
 }
