@@ -144,7 +144,7 @@ namespace Smash_Forge
 {25, "???3"},
 {26, "RArmJ"},
 {27, "RHandN"},
-{28, "RIndex1"},
+{28, "RIndex1N"},
 {29, "RThumbN"},
 {30, "RHaveN"},
 {31, "LLegJ"},
