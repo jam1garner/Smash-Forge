@@ -232,10 +232,10 @@
     <Compile Include="GUI\Editors\VBNViewport.Designer.cs">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\MaterialSelector.cs">
+    <Compile Include="GUI\Menus\MaterialSelector.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\MaterialSelector.Designer.cs">
+    <Compile Include="GUI\Menus\MaterialSelector.Designer.cs">
       <DependentUpon>MaterialSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Menus\BoneRiggingSelector.cs">
@@ -340,7 +340,7 @@
     <EmbeddedResource Include="GUI\Editors\VBNViewport.resx">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\MaterialSelector.resx">
+    <EmbeddedResource Include="GUI\Menus\MaterialSelector.resx">
       <DependentUpon>MaterialSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\BoneRiggingSelector.resx">
