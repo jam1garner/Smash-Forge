@@ -48,6 +48,10 @@
             this.exportAsDDSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportAsDDSToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.replaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extractAndOpenInDefaultEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extractAndPickAProgramToEditWithToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importFromExtractedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -166,7 +170,8 @@
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.textureToolStripMenuItem});
+            this.textureToolStripMenuItem,
+            this.editingToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
@@ -244,6 +249,37 @@
             this.replaceToolStripMenuItem.Text = "Replace";
             this.replaceToolStripMenuItem.Click += new System.EventHandler(this.replaceToolStripMenuItem_Click);
             // 
+            // editingToolStripMenuItem
+            // 
+            this.editingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.extractAndOpenInDefaultEditorToolStripMenuItem,
+            this.extractAndPickAProgramToEditWithToolStripMenuItem,
+            this.importFromExtractedToolStripMenuItem});
+            this.editingToolStripMenuItem.Name = "editingToolStripMenuItem";
+            this.editingToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
+            this.editingToolStripMenuItem.Text = "Editing";
+            // 
+            // extractAndOpenInDefaultEditorToolStripMenuItem
+            // 
+            this.extractAndOpenInDefaultEditorToolStripMenuItem.Name = "extractAndOpenInDefaultEditorToolStripMenuItem";
+            this.extractAndOpenInDefaultEditorToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.extractAndOpenInDefaultEditorToolStripMenuItem.Text = "Extract and Open in Default Editor";
+            this.extractAndOpenInDefaultEditorToolStripMenuItem.Click += new System.EventHandler(this.extractAndOpenInDefaultEditorToolStripMenuItem_Click);
+            // 
+            // extractAndPickAProgramToEditWithToolStripMenuItem
+            // 
+            this.extractAndPickAProgramToEditWithToolStripMenuItem.Name = "extractAndPickAProgramToEditWithToolStripMenuItem";
+            this.extractAndPickAProgramToEditWithToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.extractAndPickAProgramToEditWithToolStripMenuItem.Text = "Extract and Pick a Program to Edit With";
+            this.extractAndPickAProgramToEditWithToolStripMenuItem.Click += new System.EventHandler(this.extractAndPickAProgramToEditWithToolStripMenuItem_Click);
+            // 
+            // importFromExtractedToolStripMenuItem
+            // 
+            this.importFromExtractedToolStripMenuItem.Name = "importFromExtractedToolStripMenuItem";
+            this.importFromExtractedToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.importFromExtractedToolStripMenuItem.Text = "Import from Extracted";
+            this.importFromExtractedToolStripMenuItem.Click += new System.EventHandler(this.importFromExtractedToolStripMenuItem_Click);
+            // 
             // NUTEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -292,5 +328,9 @@
         private System.Windows.Forms.ToolStripMenuItem exportAsDDSToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem saveNUTToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem replaceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem extractAndOpenInDefaultEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem extractAndPickAProgramToEditWithToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importFromExtractedToolStripMenuItem;
     }
 }

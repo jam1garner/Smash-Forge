@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -9,12 +10,14 @@ using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
+using System.IO;
 
 namespace Smash_Forge
 {
     public partial class NUTEditor : Form
     {
         private NUT selected;
+        private Dictionary<NUT.NUD_Texture, string> extractedImages = new Dictionary<NUT.NUD_Texture, string>();
 
         public NUTEditor()
         {
@@ -352,6 +355,80 @@ namespace Smash_Forge
                 nut.Destroy();
                 Runtime.TextureContainers.Remove(nut);
             }
+        }
+
+        public static Process ShowOpenWithDialog(string path)
+        {
+            var args = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "shell32.dll");
+            args += ",OpenAs_RunDLL " + path;
+            return Process.Start("rundll32.exe", args);
+        }
+
+        private static void DeleteIfExists(string path)
+        {
+            if(File.Exists(path))
+                File.Delete(path);
+        }
+
+        private void extractAndOpenInDefaultEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string tempFileName;
+            if (!extractedImages.ContainsKey((NUT.NUD_Texture) (listBox2.SelectedItem)))
+            {
+                tempFileName = Path.GetTempFileName();
+                extractedImages.Add((NUT.NUD_Texture) (listBox2.SelectedItem), tempFileName);
+            }
+            else
+            {
+                tempFileName = extractedImages[(NUT.NUD_Texture) (listBox2.SelectedItem)];
+            }
+            DDS dds = new DDS();
+            dds.fromNUT_Texture((NUT.NUD_Texture)(listBox2.SelectedItem));
+            dds.Save(tempFileName);
+            DeleteIfExists(Path.ChangeExtension(tempFileName, ".dds"));
+            File.Move(tempFileName, Path.ChangeExtension(tempFileName, ".dds"));
+            System.Diagnostics.Process.Start(Path.ChangeExtension(tempFileName, ".dds")).WaitForExit();
+        }
+
+        private void extractAndPickAProgramToEditWithToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string tempFileName;
+            if (!extractedImages.ContainsKey((NUT.NUD_Texture)(listBox2.SelectedItem)))
+            {
+                tempFileName = Path.GetTempFileName();
+                extractedImages.Add((NUT.NUD_Texture)(listBox2.SelectedItem), tempFileName);
+            }
+            else
+            {
+                tempFileName = extractedImages[(NUT.NUD_Texture)(listBox2.SelectedItem)];
+            }
+            DDS dds = new DDS();
+            dds.fromNUT_Texture((NUT.NUD_Texture)(listBox2.SelectedItem));
+            dds.Save(tempFileName);
+            DeleteIfExists(Path.ChangeExtension(tempFileName, ".dds"));
+            File.Move(tempFileName, Path.ChangeExtension(tempFileName, ".dds"));
+            ShowOpenWithDialog(Path.ChangeExtension(tempFileName, ".dds")).WaitForExit();
+        }
+
+        private void importBack()
+        {
+            if (!extractedImages.ContainsKey((NUT.NUD_Texture) (listBox2.SelectedItem)))
+            {
+                MessageBox.Show("Error Importing Image", "Texture has not been extracted yet", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            DDS dds = new DDS(new FileData(Path.ChangeExtension(extractedImages[(NUT.NUD_Texture)(listBox2.SelectedItem)], ".dds")));
+            NUT.NUD_Texture tex = dds.toNUT_Texture();
+            tex.id = ((NUT.NUD_Texture) listBox2.SelectedItem).id;
+            NUT nut = (NUT) listBox1.SelectedItem;
+            //Replace Selected Texture with new texture
+            int index = nut.textures.IndexOf((NUT.NUD_Texture) (listBox2.SelectedItem));
+            nut.textures[index] = tex;
+        }
+
+        private void importFromExtractedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            importBack();
         }
     }
 }
