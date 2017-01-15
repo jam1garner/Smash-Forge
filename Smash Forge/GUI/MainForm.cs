@@ -9,6 +9,7 @@ using OpenTK;
 using System.Data;
 using Octokit;
 using System.Diagnostics;
+using System.Drawing;
 using System.Threading;
 using Microsoft.VisualBasic.Devices;
 
@@ -539,7 +540,8 @@ namespace Smash_Forge
 
         public void openMats(NUD.Polygon poly, string name)
         {
-            AddDockedControl(new NUDMaterialEditor(poly) { ShowHint = DockState.Float, Text = name });
+            NUDMaterialEditor matEditor = new NUDMaterialEditor() { Text = name };
+            matEditor.ShowDialog();
         }
 
 
