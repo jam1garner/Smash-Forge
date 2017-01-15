@@ -8,6 +8,7 @@ using System.Threading;
 using System.IO;
 using System.Diagnostics;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Security.Cryptography;
 
 namespace Smash_Forge
 {
@@ -19,6 +20,17 @@ namespace Smash_Forge
 
         public static bool Downloaded = false;
         public static Release DownloadedRelease;
+
+        private static byte[] Md5File(string filename)
+        {
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = File.OpenRead(filename))
+                {
+                    return md5.ComputeHash(stream);
+                }
+            }
+        }
 
         public static void CheckLatest()
         {
@@ -79,7 +91,10 @@ namespace Smash_Forge
             if (process.ExitCode != 0)
                 throw new TimeoutException();
             Console.WriteLine("Finished downloading");
-            Downloaded = true;
+            string updateExe = MainForm.executableDir,
+                  currentExe = System.Reflection.Assembly.GetEntryAssembly().Location;
+            if (!Md5File(currentExe).SequenceEqual(Md5File(updateExe)))
+                Downloaded = true;
         }
 
         static async Task GetReleases(GitHubClient client)

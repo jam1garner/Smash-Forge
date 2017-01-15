@@ -31,6 +31,7 @@
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -56,6 +57,7 @@
             this.numericUpDown1.Name = "numericUpDown1";
             this.numericUpDown1.Size = new System.Drawing.Size(117, 20);
             this.numericUpDown1.TabIndex = 1;
+            this.numericUpDown1.Visible = false;
             this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
             // 
             // label1
@@ -67,12 +69,26 @@
             this.label1.Size = new System.Drawing.Size(62, 13);
             this.label1.TabIndex = 2;
             this.label1.Text = "Mesh Index";
+            this.label1.Visible = false;
+            // 
+            // button1
+            // 
+            this.button1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.button1.Location = new System.Drawing.Point(46, 124);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(105, 23);
+            this.button1.TabIndex = 3;
+            this.button1.Text = "Match To NUD";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Visible = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // MeshList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(199, 147);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.treeView1);
@@ -90,5 +106,6 @@
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button button1;
     }
 }
