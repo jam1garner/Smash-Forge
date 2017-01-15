@@ -194,10 +194,10 @@ namespace Smash_Forge
             "ThrowN"
         };
 
-        private static string path = "C:\\Pichu\\";
-
-        public static void MakePichu()
+        public static void MakePichu(string path = "C:\\Pichu\\")
         {
+            if (!path.EndsWith("\\"))
+                path += "\\";
             DAT dat = new DAT();
             dat.Read(new FileData(path + "PlPcNr.dat"));
             dat.PreRender();

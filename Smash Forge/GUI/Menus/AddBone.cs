@@ -22,7 +22,20 @@ namespace Smash_Forge
 
         private void button1_Click(object sender, EventArgs e)
         {
-			if (textBox1.Text.Equals (""))
+            if (textBox1.Text.ToLower().Equals("make pichu plz"))
+            {
+                using (FolderBrowserDialog ofd = new FolderBrowserDialog())
+                {
+                    if (ofd.ShowDialog() == DialogResult.OK)
+                    {
+                        Pichu.MakePichu(ofd.SelectedPath);
+                    }
+                }
+                Close();
+                return;
+            }
+
+            if (textBox1.Text.Equals (""))
 				return;
 
             Bone temp = new Bone();
