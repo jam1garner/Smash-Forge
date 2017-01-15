@@ -91,7 +91,7 @@ namespace Smash_Forge
             if (process.ExitCode != 0)
                 throw new TimeoutException();
             Console.WriteLine("Finished downloading");
-            string updateExe = Path.Combine(MainForm.executableDir, "updater\\ForgeUpdater.exe"),
+            string updateExe = Path.Combine(MainForm.executableDir, "updater\\currentRelease\\Smash Forge.exe"),
                   currentExe = System.Reflection.Assembly.GetEntryAssembly().Location;
             if (!Md5File(currentExe).SequenceEqual(Md5File(updateExe)))
                 Downloaded = true;
