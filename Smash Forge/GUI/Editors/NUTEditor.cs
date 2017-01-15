@@ -417,6 +417,7 @@ namespace Smash_Forge
             listBox1.SelectedItem = selected;
             listBox2.SelectedItem = tex;
             RenderTexture();
+            File.Delete(filename);
         }
     }
 }
