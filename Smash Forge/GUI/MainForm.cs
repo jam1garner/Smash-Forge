@@ -69,7 +69,7 @@ namespace Smash_Forge
             Runtime.renderNormals = true;
             Runtime.renderVertColor = true;
             Runtime.renderType = Runtime.RenderTypes.Texture;
-            //Pichu.MakePichu();
+            //Pichu.MakePichu("C:\\Users\\ploaj_000\\Desktop\\Melee\\Pichu\\");
             //meshList.refresh();
             //ReadChimeraLucas();
             viewportWindowToolStripMenuItem.Checked = true;

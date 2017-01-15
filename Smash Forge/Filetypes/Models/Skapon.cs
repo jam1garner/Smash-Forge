@@ -117,8 +117,8 @@ namespace Smash_Forge
         private static Dictionary<int, string> bonematch = new Dictionary<int, string>()
         {
             { 0, "TransN"},
-            { 1, "RotN"},
-{2, "YRotN"},
+            { 1, "XRotN"},
+{2, "RotN"},
 {3, "HipN"},
 {4, "WaistN"},
 {5, "BustN"},
@@ -227,6 +227,7 @@ namespace Smash_Forge
             //ArrangeBones(converted.vbn, converted.nud);
 
             // note bone 40 - 51 is disabled for pika
+            DummyBones(converted.vbn, converted.nud);
 
             foreach (string an in anims.Keys)
             {
@@ -346,6 +347,57 @@ namespace Smash_Forge
             nud.PreRender();
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="vbn"></param>
+        /// <param name="nud"></param>
+        public static void DummyBones(VBN vbn, NUD nud)
+        {
+            // bone 40 - 51
+            List<Bone> bones = new List<Bone>();
+            for (int i = 40; i < vbn.bones.Count; i++)
+            {
+                bones.Add(vbn.bones[i]);
+                if(vbn.bones[i].parentIndex >= 40)
+                    vbn.bones[i].parentIndex += 12;
+            }
+
+            for (int i = 40; i <= 51; i++)
+            {
+                vbn.bones.Insert(40, new Bone()
+                {
+                    boneName = new char[] { 'b', 'l', (char)i },
+                    parentIndex = 0,
+                    position = new float[] { 0, 0, 0 },
+                    rotation = new float[] { 0, 0, 0 },
+                    scale = new float[] { 0, 0, 0 },
+                    children = new List<int>(),
+                });
+            }
+
+            vbn.reset();
+
+            // now fix the nud
+
+            foreach (NUD.Mesh mesh in nud.mesh)
+            {
+                foreach (NUD.Polygon poly in mesh.polygons)
+                {
+                    foreach (NUD.Vertex v in poly.vertices)
+                    {
+                        for (int k = 0; k < v.node.Count; k++)
+                        {
+                            if (v.node[k] > 40)
+                                v.node[k] = v.node[k] + 12;
+                        }
+                    }
+                }
+            }
+            nud.PreRender();
+        }
+
         public static void ArrangeBones(VBN vbn, NUD nud)
         {
             Dictionary<int, int> boneReorder = new Dictionary<int, int>();
@@ -374,6 +426,10 @@ namespace Smash_Forge
             {
                 nList[boneReorder[k]] = vbn.bones[k];
                 //if (new string(vbn.bones[k].boneName).Equals("RotN")) vbn.bones[k].parentIndex = 0;
+                if (vbn.bones[k].parentIndex == 1)
+                {
+                    vbn.bones[k].parentIndex = 0;
+                }else
                 if (vbn.bones[k].parentIndex != -1 && vbn.bones[k].parentIndex != 0x0FFFFFFF)
                 {
                     vbn.bones[k].parentIndex = boneReorder[vbn.bones[k].parentIndex];
