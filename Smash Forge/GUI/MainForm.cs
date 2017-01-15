@@ -539,9 +539,8 @@ namespace Smash_Forge
 
         public void openMats(NUD.Polygon poly, string name)
         {
-            AddDockedControl(new NUDMaterialEditor(poly) { ShowHint = DockState.Float, Text = name });
+            (new NUDMaterialEditor(poly) { ShowHint = DockState.Float, Text = name }).Show();
         }
-
 
         private void clearWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
         {

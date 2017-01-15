@@ -91,8 +91,6 @@ namespace Smash_Forge
             button1.Visible = false;
             if (e.Node is NUD.Polygon)
                 polySelected((NUD.Polygon)e.Node, $"{e.Node.Parent.Text} {e.Node.Text}");
-
-            
             else if (e.Node is NUD.Mesh)
             {
                 changingValue = true;//Since we are changing value but we don't want the entire model order to swap we are disabling the event for on change value temporarily
