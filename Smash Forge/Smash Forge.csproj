@@ -165,10 +165,10 @@
     <Compile Include="GUI\Editors\MTAEditor.Designer.cs">
       <DependentUpon>MTAEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\MTA Editor GUI\MTAEditorGUI.cs">
+    <Compile Include="GUI\Editors\MTAEditorGUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\MTA Editor GUI\MTAEditorGUI.Designer.cs">
+    <Compile Include="GUI\Editors\MTAEditorGUI.Designer.cs">
       <DependentUpon>MTAEditorGUI.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\NUDMaterialEditor.cs">
@@ -232,10 +232,10 @@
     <Compile Include="GUI\Editors\VBNViewport.Designer.cs">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Menus\MaterialSelector.cs">
+    <Compile Include="GUI\MaterialSelector.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Menus\MaterialSelector.Designer.cs">
+    <Compile Include="GUI\MaterialSelector.Designer.cs">
       <DependentUpon>MaterialSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Menus\BoneRiggingSelector.cs">
@@ -309,7 +309,7 @@
     <EmbeddedResource Include="GUI\Editors\MTAEditor.resx">
       <DependentUpon>MTAEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\MTA Editor GUI\MTAEditorGUI.resx">
+    <EmbeddedResource Include="GUI\Editors\MTAEditorGUI.resx">
       <DependentUpon>MTAEditorGUI.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\NUDMaterialEditor.resx">
@@ -340,7 +340,7 @@
     <EmbeddedResource Include="GUI\Editors\VBNViewport.resx">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Menus\MaterialSelector.resx">
+    <EmbeddedResource Include="GUI\MaterialSelector.resx">
       <DependentUpon>MaterialSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\BoneRiggingSelector.resx">
