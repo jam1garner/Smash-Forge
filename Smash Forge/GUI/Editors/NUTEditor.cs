@@ -68,7 +68,7 @@ namespace Smash_Forge
 
         private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(listBox2.SelectedIndex >= 0)
+            if (listBox2.SelectedIndex >= 0)
             {
                 NUT.NUD_Texture tex = ((NUT.NUD_Texture)listBox2.SelectedItem);
                 textBox1.Text = tex.ToString();
@@ -372,63 +372,51 @@ namespace Smash_Forge
 
         private void extractAndOpenInDefaultEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string tempFileName;
-            if (!extractedImages.ContainsKey((NUT.NUD_Texture) (listBox2.SelectedItem)))
-            {
-                tempFileName = Path.GetTempFileName();
-                extractedImages.Add((NUT.NUD_Texture) (listBox2.SelectedItem), tempFileName);
-            }
-            else
-            {
-                tempFileName = extractedImages[(NUT.NUD_Texture) (listBox2.SelectedItem)];
-            }
+            string tempFileName = Path.GetTempFileName();
             DDS dds = new DDS();
             dds.fromNUT_Texture((NUT.NUD_Texture)(listBox2.SelectedItem));
             dds.Save(tempFileName);
             DeleteIfExists(Path.ChangeExtension(tempFileName, ".dds"));
             File.Move(tempFileName, Path.ChangeExtension(tempFileName, ".dds"));
-            System.Diagnostics.Process.Start(Path.ChangeExtension(tempFileName, ".dds")).WaitForExit();
+            tempFileName = Path.ChangeExtension(tempFileName, ".dds");
+            System.Diagnostics.Process.Start(tempFileName).WaitForExit();
+            importBack(tempFileName);
         }
 
         private void extractAndPickAProgramToEditWithToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string tempFileName;
-            if (!extractedImages.ContainsKey((NUT.NUD_Texture)(listBox2.SelectedItem)))
-            {
-                tempFileName = Path.GetTempFileName();
-                extractedImages.Add((NUT.NUD_Texture)(listBox2.SelectedItem), tempFileName);
-            }
-            else
-            {
-                tempFileName = extractedImages[(NUT.NUD_Texture)(listBox2.SelectedItem)];
-            }
+            string tempFileName = Path.GetTempFileName();
             DDS dds = new DDS();
             dds.fromNUT_Texture((NUT.NUD_Texture)(listBox2.SelectedItem));
             dds.Save(tempFileName);
             DeleteIfExists(Path.ChangeExtension(tempFileName, ".dds"));
             File.Move(tempFileName, Path.ChangeExtension(tempFileName, ".dds"));
-            ShowOpenWithDialog(Path.ChangeExtension(tempFileName, ".dds")).WaitForExit();
+            tempFileName = Path.ChangeExtension(tempFileName, ".dds");
+            ShowOpenWithDialog(tempFileName).WaitForExit();
+            importBack(tempFileName);
         }
 
-        private void importBack()
+        private void importBack(string filename)
         {
-            if (!extractedImages.ContainsKey((NUT.NUD_Texture) (listBox2.SelectedItem)))
-            {
-                MessageBox.Show("Error Importing Image", "Texture has not been extracted yet", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+            NUT.NUD_Texture tex = (NUT.NUD_Texture)(listBox2.SelectedItem);
+
             DDS dds = new DDS(new FileData(Path.ChangeExtension(extractedImages[(NUT.NUD_Texture)(listBox2.SelectedItem)], ".dds")));
-            NUT.NUD_Texture tex = dds.toNUT_Texture();
-            tex.id = ((NUT.NUD_Texture) listBox2.SelectedItem).id;
-            NUT nut = (NUT) listBox1.SelectedItem;
-            //Replace Selected Texture with new texture
-            int index = nut.textures.IndexOf((NUT.NUD_Texture) (listBox2.SelectedItem));
-            nut.textures[index] = tex;
-        }
+            NUT.NUD_Texture ntex = dds.toNUT_Texture();
 
-        private void importFromExtractedToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            importBack();
+            tex.height = ntex.height;
+            tex.width = ntex.width;
+            tex.type = ntex.type;
+            tex.mipmaps = ntex.mipmaps;
+            tex.utype = ntex.utype;
+
+            GL.DeleteTexture(selected.draw[tex.id]);
+            selected.draw.Remove(tex.id);
+            selected.draw.Add(tex.id, NUT.loadImage(tex));
+
+            FillForm();
+            listBox1.SelectedItem = selected;
+            listBox2.SelectedItem = tex;
+            RenderTexture();
         }
     }
 }
