@@ -429,6 +429,12 @@
     <None Include="materials\Standard\Stg - Stg Mat12 [Magma+3 UV].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="materials\Standard\Stg - Stg Mat13 [Diffuse+Refl+finalColor].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Stg - Stg Mat14 [Clouds+Norm].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
