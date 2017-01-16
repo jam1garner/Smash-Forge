@@ -41,7 +41,6 @@
             this.colorAnimList.Name = "colorAnimList";
             this.colorAnimList.Size = new System.Drawing.Size(240, 322);
             this.colorAnimList.TabIndex = 1;
-            this.colorAnimList.Visible = false;
             // 
             // ColorList
             // 

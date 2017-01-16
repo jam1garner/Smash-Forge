@@ -165,10 +165,10 @@
     <Compile Include="GUI\Editors\MTAEditor.Designer.cs">
       <DependentUpon>MTAEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\MTAEditorGUI.cs">
+    <Compile Include="GUI\Editors\MTA Editor GUI\MTAEditorGUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\MTAEditorGUI.Designer.cs">
+    <Compile Include="GUI\Editors\MTA Editor GUI\MTAEditorGUI.Designer.cs">
       <DependentUpon>MTAEditorGUI.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\NUDMaterialEditor.cs">
@@ -309,7 +309,7 @@
     <EmbeddedResource Include="GUI\Editors\MTAEditor.resx">
       <DependentUpon>MTAEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\MTAEditorGUI.resx">
+    <EmbeddedResource Include="GUI\Editors\MTA Editor GUI\MTAEditorGUI.resx">
       <DependentUpon>MTAEditorGUI.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\NUDMaterialEditor.resx">

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
 using System.IO;
+using System.Threading;
 
 namespace Smash_Forge
 {
@@ -41,6 +42,7 @@ namespace Smash_Forge
         {
             Console.WriteLine("File modified!");
             string filename = e.FullPath;
+            //Thread.Sleep(1000);
             //importBack(filename);
         }
 
