@@ -220,6 +220,8 @@ namespace Smash_Forge
                             break;
                         }
                     }
+
+                    refresh();
                 }
             }
         }

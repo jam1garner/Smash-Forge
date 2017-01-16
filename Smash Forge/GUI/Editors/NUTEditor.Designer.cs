@@ -51,12 +51,16 @@
             this.editingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractAndOpenInDefaultEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractAndPickAProgramToEditWithToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importEditedFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // glControl1
             // 
+            this.glControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.glControl1.BackColor = System.Drawing.Color.Black;
             this.glControl1.Location = new System.Drawing.Point(195, 22);
             this.glControl1.Name = "glControl1";
@@ -66,6 +70,8 @@
             // 
             // listBox1
             // 
+            this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(14, 22);
             this.listBox1.Margin = new System.Windows.Forms.Padding(2);
@@ -76,6 +82,8 @@
             // 
             // listBox2
             // 
+            this.listBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.listBox2.FormattingEnabled = true;
             this.listBox2.Location = new System.Drawing.Point(100, 22);
             this.listBox2.Margin = new System.Windows.Forms.Padding(2);
@@ -86,7 +94,8 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(120, 2);
+            this.textBox1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.textBox1.Location = new System.Drawing.Point(141, 2);
             this.textBox1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(72, 20);
@@ -105,6 +114,7 @@
             // 
             // label2
             // 
+            this.label2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(197, 333);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
@@ -126,6 +136,7 @@
             // 
             // tableLayoutPanel1
             // 
+            this.tableLayoutPanel1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -252,7 +263,8 @@
             // 
             this.editingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.extractAndOpenInDefaultEditorToolStripMenuItem,
-            this.extractAndPickAProgramToEditWithToolStripMenuItem});
+            this.extractAndPickAProgramToEditWithToolStripMenuItem,
+            this.importEditedFileToolStripMenuItem});
             this.editingToolStripMenuItem.Name = "editingToolStripMenuItem";
             this.editingToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             this.editingToolStripMenuItem.Text = "Editing";
@@ -270,6 +282,13 @@
             this.extractAndPickAProgramToEditWithToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.extractAndPickAProgramToEditWithToolStripMenuItem.Text = "Pick Program to Edit With";
             this.extractAndPickAProgramToEditWithToolStripMenuItem.Click += new System.EventHandler(this.extractAndPickAProgramToEditWithToolStripMenuItem_Click);
+            // 
+            // importEditedFileToolStripMenuItem
+            // 
+            this.importEditedFileToolStripMenuItem.Name = "importEditedFileToolStripMenuItem";
+            this.importEditedFileToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.importEditedFileToolStripMenuItem.Text = "Import Edited File";
+            this.importEditedFileToolStripMenuItem.Click += new System.EventHandler(this.importEditedFileToolStripMenuItem_Click);
             // 
             // NUTEditor
             // 
@@ -322,5 +341,6 @@
         private System.Windows.Forms.ToolStripMenuItem editingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractAndOpenInDefaultEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractAndPickAProgramToEditWithToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importEditedFileToolStripMenuItem;
     }
 }

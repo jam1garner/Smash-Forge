@@ -17,6 +17,10 @@ namespace Smash_Forge
     public partial class NUTEditor : Form
     {
         private NUT selected;
+        private FileSystemWatcher fw;
+        private Dictionary<NUT.NUD_Texture,string> fileFromTexture = new Dictionary<NUT.NUD_Texture, string>();
+        private Dictionary<string,NUT.NUD_Texture> textureFromFile = new Dictionary<string, NUT.NUD_Texture>();
+        private bool dontModify;
 
         public NUTEditor()
         {
@@ -24,6 +28,20 @@ namespace Smash_Forge
             FillForm();
             if (Runtime.TextureContainers.Count > 0)
                 listBox1.SelectedIndex = 0;
+
+            fw = new FileSystemWatcher();
+            fw.Path = Path.GetTempPath();
+            fw.NotifyFilter = NotifyFilters.Size | NotifyFilters.LastAccess | NotifyFilters.LastWrite;
+            fw.EnableRaisingEvents = false;
+            fw.Changed += new FileSystemEventHandler(OnChanged);
+            fw.Filter = "";
+        }
+
+        private void OnChanged(object sender, FileSystemEventArgs e)
+        {
+            Console.WriteLine("File modified!");
+            string filename = e.FullPath;
+            //importBack(filename);
         }
 
         private void FillForm()
@@ -371,52 +389,113 @@ namespace Smash_Forge
 
         private void extractAndOpenInDefaultEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string tempFileName = Path.GetTempFileName();
+            string tempFileName;
+            bool setupFileModifying = false;
+            dontModify = true;
+            fw.EnableRaisingEvents = true;
+            if (!fileFromTexture.ContainsKey((NUT.NUD_Texture) (listBox2.SelectedItem)))
+            {
+                tempFileName = Path.GetTempFileName();
+                DeleteIfExists(Path.ChangeExtension(tempFileName, ".dds"));
+                File.Move(tempFileName, Path.ChangeExtension(tempFileName, ".dds"));
+                tempFileName = Path.ChangeExtension(tempFileName, ".dds");
+                fileFromTexture.Add((NUT.NUD_Texture)listBox2.SelectedItem, tempFileName);
+                textureFromFile.Add(tempFileName, (NUT.NUD_Texture)listBox2.SelectedItem);
+                setupFileModifying = true;
+            }
+            else
+            {
+                tempFileName = fileFromTexture[(NUT.NUD_Texture) listBox2.SelectedItem];
+            }
+
             DDS dds = new DDS();
             dds.fromNUT_Texture((NUT.NUD_Texture)(listBox2.SelectedItem));
             dds.Save(tempFileName);
-            DeleteIfExists(Path.ChangeExtension(tempFileName, ".dds"));
-            File.Move(tempFileName, Path.ChangeExtension(tempFileName, ".dds"));
-            tempFileName = Path.ChangeExtension(tempFileName, ".dds");
-            System.Diagnostics.Process.Start(tempFileName).WaitForExit();
-            importBack(tempFileName);
+            System.Diagnostics.Process.Start(tempFileName);
+            if (setupFileModifying)
+            {
+                if (fw.Filter.Equals("*.*"))
+                    fw.Filter = Path.GetFileName(tempFileName);
+                else
+                    fw.Filter += "|" + Path.GetFileName(tempFileName);
+                Console.WriteLine(fw.Filter);
+            }
+            dontModify = false;
         }
 
         private void extractAndPickAProgramToEditWithToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string tempFileName = Path.GetTempFileName();
+            string tempFileName;
+            bool setupFileModifying = false;
+            dontModify = true;
+            fw.EnableRaisingEvents = true;
+            if (!fileFromTexture.ContainsKey((NUT.NUD_Texture)(listBox2.SelectedItem)))
+            {
+                tempFileName = Path.GetTempFileName();
+                DeleteIfExists(Path.ChangeExtension(tempFileName, ".dds"));
+                File.Move(tempFileName, Path.ChangeExtension(tempFileName, ".dds"));
+                tempFileName = Path.ChangeExtension(tempFileName, ".dds");
+                fileFromTexture.Add((NUT.NUD_Texture)(listBox2.SelectedItem), tempFileName);
+                textureFromFile.Add(tempFileName, (NUT.NUD_Texture)listBox2.SelectedItem);
+                setupFileModifying = true;
+            }
+            else
+            {
+                tempFileName = fileFromTexture[(NUT.NUD_Texture)listBox2.SelectedItem];
+            }
+
             DDS dds = new DDS();
             dds.fromNUT_Texture((NUT.NUD_Texture)(listBox2.SelectedItem));
             dds.Save(tempFileName);
-            DeleteIfExists(Path.ChangeExtension(tempFileName, ".dds"));
-            File.Move(tempFileName, Path.ChangeExtension(tempFileName, ".dds"));
-            tempFileName = Path.ChangeExtension(tempFileName, ".dds");
-            ShowOpenWithDialog(tempFileName).WaitForExit();
-            importBack(tempFileName);
+            ShowOpenWithDialog(tempFileName);
+            if (setupFileModifying)
+            {
+                if (fw.Filter.Equals("*.*"))
+                    fw.Filter = Path.GetFileName(tempFileName);
+                else
+                    fw.Filter += "|" + Path.GetFileName(tempFileName);
+                Console.WriteLine(fw.Filter);
+            }
+
+            dontModify = false;
         }
 
         private void importBack(string filename)
         {
-            NUT.NUD_Texture tex = (NUT.NUD_Texture)(listBox2.SelectedItem);
+            if (dontModify)
+                return;
+            
+            NUT.NUD_Texture tex = textureFromFile[filename];
 
-            DDS dds = new DDS(new FileData(filename));
-            NUT.NUD_Texture ntex = dds.toNUT_Texture();
+            try
+            {
+                DDS dds = new DDS(new FileData(filename));
+                NUT.NUD_Texture ntex = dds.toNUT_Texture();
 
-            tex.height = ntex.height;
-            tex.width = ntex.width;
-            tex.type = ntex.type;
-            tex.mipmaps = ntex.mipmaps;
-            tex.utype = ntex.utype;
+                tex.height = ntex.height;
+                tex.width = ntex.width;
+                tex.type = ntex.type;
+                tex.mipmaps = ntex.mipmaps;
+                tex.utype = ntex.utype;
 
-            GL.DeleteTexture(selected.draw[tex.id]);
-            selected.draw.Remove(tex.id);
-            selected.draw.Add(tex.id, NUT.loadImage(tex));
+                GL.DeleteTexture(selected.draw[tex.id]);
+                selected.draw.Remove(tex.id);
+                selected.draw.Add(tex.id, NUT.loadImage(tex));
 
-            FillForm();
-            listBox1.SelectedItem = selected;
-            listBox2.SelectedItem = tex;
-            RenderTexture();
-            File.Delete(filename);
+                FillForm();
+                listBox1.SelectedItem = selected;
+                listBox2.SelectedItem = tex;
+                RenderTexture();
+            }
+            catch
+            {
+                Console.WriteLine("Could not be open for editing");
+            }
+        }
+
+        private void importEditedFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            importBack(fileFromTexture[(NUT.NUD_Texture)listBox2.SelectedItem]);
         }
     }
 }
