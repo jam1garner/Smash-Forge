@@ -50,6 +50,7 @@ namespace Smash_Forge
                     }
                 }
             }
+            treeView1.ExpandAll();
         }
 
         private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
@@ -231,6 +232,41 @@ namespace Smash_Forge
             if (e.Node is NUD.Mesh)
                 ((NUD.Mesh) e.Node).Name = e.Label;
             
+        }
+
+        private void treeView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = false;
+            if (e.KeyCode == Keys.Delete)
+            {
+                e.Handled = true;
+                if (treeView1.SelectedNode is NUD.Mesh)
+                {
+                    NUD parent = ((NUD) treeView1.SelectedNode.Parent.Tag);
+                    parent.mesh.Remove((NUD.Mesh)treeView1.SelectedNode);
+                    parent.PreRender();
+                    
+                }
+                else if (treeView1.SelectedNode.Tag is NUD)
+                {
+                    NUD model = (NUD)treeView1.SelectedNode.Tag;
+                    ModelContainer m = null;
+                    foreach (ModelContainer modelContainer in Runtime.ModelContainers)
+                    {
+                        if (modelContainer.nud == model)
+                            m = modelContainer;
+                    }
+                    if(m != null)
+                        Runtime.ModelContainers.Remove(m);
+                    if (Runtime.TargetVBN == m.vbn)
+                        Runtime.TargetVBN = null;
+                    if (Runtime.TargetMTA == m.mta)
+                        Runtime.TargetMTA = null;
+                    if (Runtime.TargetNUD == m.nud)
+                        Runtime.TargetNUD = null;
+                }
+                refresh();
+            }
         }
     }
 }

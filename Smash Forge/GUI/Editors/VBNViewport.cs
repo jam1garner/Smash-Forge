@@ -790,7 +790,7 @@ main()
                     RenderTools.drawCube(pos_c, .085f);
 
                     // if swing bones then draw swing radius
-                    if(vbn.swingBones.bones.Count > 0)
+                    if(vbn.swingBones.bones.Count > 0 && Runtime.renderSwag)
                     {
                         SB.SBEntry sb = null;
                         vbn.swingBones.bones.TryGetValue(bone.boneId, out sb);
