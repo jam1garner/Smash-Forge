@@ -34,6 +34,13 @@ namespace Smash_Forge
                 Close();
                 return;
             }
+            else if (textBox1.Text.Equals("THRoW"))
+            {
+                //If you are reading this he kidnapped me and made me do it
+                System.Diagnostics.Process.Start("https://twitter.com/realheroofwinds");
+                Close();
+                return;
+            }
 
             if (textBox1.Text.Equals (""))
 				return;

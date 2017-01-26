@@ -380,7 +380,7 @@ namespace Smash_Forge
                                         if (md.frames.Count > 0)
                                         {
                                             if (ma.anims.ContainsKey(md.name))
-                                                ma.anims.Add(md.name, md.frames[(int)((frame * 60 / m.frameRate) % (m.numFrames))].values);
+                                                ma.anims[md.name] = md.frames[(int)((frame * 60 / m.frameRate) % (m.numFrames))].values;
                                             else
                                                 if(md.frames.Count > (int)((frame * 60 / m.frameRate) % (m.numFrames)))
                                                     ma.anims.Add(md.name, md.frames[(int)((frame * 60 / m.frameRate) % (m.numFrames))].values);
