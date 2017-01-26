@@ -47,6 +47,7 @@
             this.cb_normals = new System.Windows.Forms.CheckBox();
             this.renderMode = new System.Windows.Forms.ComboBox();
             this.cb_vertcolor = new System.Windows.Forms.CheckBox();
+            this.swagViewing = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -248,6 +249,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.swagViewing);
             this.groupBox1.Controls.Add(this.cb_normals);
             this.groupBox1.Controls.Add(this.renderMode);
             this.groupBox1.Controls.Add(this.cb_vertcolor);
@@ -300,6 +302,17 @@
             this.cb_vertcolor.Text = "Show Vertex Colors";
             this.cb_vertcolor.UseVisualStyleBackColor = true;
             // 
+            // swagViewing
+            // 
+            this.swagViewing.AutoSize = true;
+            this.swagViewing.Location = new System.Drawing.Point(12, 125);
+            this.swagViewing.Name = "swagViewing";
+            this.swagViewing.Size = new System.Drawing.Size(109, 17);
+            this.swagViewing.TabIndex = 18;
+            this.swagViewing.Text = "Show Swag Data";
+            this.swagViewing.UseVisualStyleBackColor = true;
+            this.swagViewing.CheckedChanged += new System.EventHandler(this.swagViewing_CheckedChanged);
+            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -340,5 +353,6 @@
         private System.Windows.Forms.ComboBox renderMode;
         private System.Windows.Forms.CheckBox cb_vertcolor;
         private System.Windows.Forms.CheckBox cb_normals;
+        private System.Windows.Forms.CheckBox swagViewing;
     }
 }

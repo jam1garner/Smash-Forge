@@ -45,6 +45,7 @@ namespace Smash_Forge
         public static bool renderItemSpawners { get; set; }
         public static bool renderGeneralPoints { get; set; }
         public static bool renderOtherLVDEntries { get; set; }
+        public static bool renderSwag { get; set; }
 
         public static float renderDepth { get; set; }
         public static bool renderNormals { get; set; }

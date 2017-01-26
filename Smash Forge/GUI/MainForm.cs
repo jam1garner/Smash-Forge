@@ -68,6 +68,7 @@ namespace Smash_Forge
             Runtime.renderOtherLVDEntries = true;
             Runtime.renderNormals = true;
             Runtime.renderVertColor = true;
+            Runtime.renderSwag = false;
             Runtime.renderType = Runtime.RenderTypes.Texture;
             //Pichu.MakePichu();
             //meshList.refresh();
@@ -970,10 +971,10 @@ namespace Smash_Forge
                 Runtime.TargetMTA = new MTA();
                 Runtime.TargetMTA.Read(filename);
                 viewports[0].loadMTA(Runtime.TargetMTA);
-                MTAEditorGUI temp = new MTAEditorGUI(Runtime.TargetMTA) { ShowHint = DockState.DockLeft };
-                //temp.Text = Path.GetFileName(filename);
+                MTAEditor temp = new MTAEditor(Runtime.TargetMTA) { ShowHint = DockState.DockLeft };
+                temp.Text = Path.GetFileName(filename);
                 AddDockedControl(temp);
-                //mtaEditors.Add(temp);
+                mtaEditors.Add(temp);
             }
 
             if (filename.EndsWith(".mtable"))

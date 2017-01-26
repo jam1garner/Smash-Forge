@@ -225,5 +225,12 @@ namespace Smash_Forge
                 }
             }
         }
+
+        private void treeView1_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            if (e.Node is NUD.Mesh)
+                ((NUD.Mesh) e.Node).Name = e.Label;
+            
+        }
     }
 }
