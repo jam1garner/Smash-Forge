@@ -90,9 +90,7 @@ namespace Smash_Forge
             numericUpDown1.Visible = false;
             label1.Visible = false;
             button1.Visible = false;
-            if (e.Node is NUD.Polygon)
-                polySelected((NUD.Polygon)e.Node, $"{e.Node.Parent.Text} {e.Node.Text}");
-            else if (e.Node is NUD.Mesh)
+            if (e.Node is NUD.Mesh)
             {
                 changingValue = true;//Since we are changing value but we don't want the entire model order to swap we are disabling the event for on change value temporarily
                 numericUpDown1.Value = ((NUD)e.Node.Parent.Tag).mesh.IndexOf((NUD.Mesh)e.Node);
@@ -267,6 +265,32 @@ namespace Smash_Forge
                 }
                 refresh();
             }
+        }
+
+        public void mergeModel()
+        {
+            if (treeView1.SelectedNode.Tag is NUD)
+            {
+                using (var ofd = new OpenFileDialog())
+                {
+                    ofd.Filter = "Namco Model (.nud)|*.nud";
+                    if (ofd.ShowDialog() == DialogResult.OK)
+                    {
+                        string filename = ofd.FileName;
+                        NUD nud = new NUD(filename);
+                        foreach (NUD.Mesh mesh in nud.mesh)
+                            ((NUD)treeView1.SelectedNode.Tag).mesh.Add((mesh));
+                        ((NUD)treeView1.SelectedNode.Tag).PreRender();
+                        refresh();
+                    }
+                }
+            }
+        }
+
+        private void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Polygon)
+                polySelected((NUD.Polygon)treeView1.SelectedNode, $"{treeView1.SelectedNode.Parent.Text} {treeView1.SelectedNode.Text}");
         }
     }
 }

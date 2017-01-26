@@ -83,6 +83,7 @@
             this.glControl1 = new OpenTK.GLControl();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.mergeModelsMeshListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -180,7 +181,8 @@
             this.addBoneToolStripMenuItem,
             this.hashMatchToolStripMenuItem,
             this.addToolStripMenuItem,
-            this.deleteLVDEntryToolStripMenuItem});
+            this.deleteLVDEntryToolStripMenuItem,
+            this.mergeModelsMeshListToolStripMenuItem});
             this.edittToolStripMenuItem.Name = "edittToolStripMenuItem";
             this.edittToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.edittToolStripMenuItem.Text = "Edit";
@@ -189,14 +191,14 @@
             // 
             this.addBoneToolStripMenuItem.Name = "addBoneToolStripMenuItem";
             this.addBoneToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.addBoneToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.addBoneToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.addBoneToolStripMenuItem.Text = "Add Bone";
             this.addBoneToolStripMenuItem.Click += new System.EventHandler(this.addBoneToolStripMenuItem_Click);
             // 
             // hashMatchToolStripMenuItem
             // 
             this.hashMatchToolStripMenuItem.Name = "hashMatchToolStripMenuItem";
-            this.hashMatchToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.hashMatchToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.hashMatchToolStripMenuItem.Text = "Hash Match";
             this.hashMatchToolStripMenuItem.ToolTipText = "Gives the bones a hash based on their name. Used for animation";
             this.hashMatchToolStripMenuItem.Click += new System.EventHandler(this.hashMatchToolStripMenuItem_Click);
@@ -213,8 +215,8 @@
             this.generalPointToolStripMenuItem,
             this.generalShapeToolStripMenuItem});
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.addToolStripMenuItem.Text = "Add";
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.addToolStripMenuItem.Text = "Add LVD Entry";
             // 
             // collisionToolStripMenuItem
             // 
@@ -299,7 +301,7 @@
             // deleteLVDEntryToolStripMenuItem
             // 
             this.deleteLVDEntryToolStripMenuItem.Name = "deleteLVDEntryToolStripMenuItem";
-            this.deleteLVDEntryToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.deleteLVDEntryToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.deleteLVDEntryToolStripMenuItem.Text = "Delete Selected LVD Entry";
             this.deleteLVDEntryToolStripMenuItem.Click += new System.EventHandler(this.deleteLVDEntryToolStripMenuItem_Click);
             // 
@@ -525,6 +527,13 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
+            // mergeModelsMeshListToolStripMenuItem
+            // 
+            this.mergeModelsMeshListToolStripMenuItem.Name = "mergeModelsMeshListToolStripMenuItem";
+            this.mergeModelsMeshListToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.mergeModelsMeshListToolStripMenuItem.Text = "Merge Models (Mesh List)";
+            this.mergeModelsMeshListToolStripMenuItem.Click += new System.EventHandler(this.mergeModelsMeshListToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AllowDrop = true;
@@ -611,6 +620,7 @@
         private System.Windows.Forms.ToolStripMenuItem rectangleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pathToolStripMenuItem;
         public System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.ToolStripMenuItem mergeModelsMeshListToolStripMenuItem;
     }
 }
 

@@ -1161,5 +1161,10 @@ namespace Smash_Forge
                 System.Windows.Forms.Application.Exit();
             }
         }
+
+        private void mergeModelsMeshListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            meshList.mergeModel();
+        }
     }
 }
