@@ -328,10 +328,12 @@ namespace Smash_Forge
                              "Smash 4 Material Animation (MTA)|*.mta|" +
                              "All files(*.*)|*.*";
 
+                ofd.Multiselect = true;
+
                 if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    openAnimation(ofd.FileName);
-                }
+                    foreach(string filename in ofd.FileNames)
+                        openAnimation(filename);
+                
             }
         }
 
@@ -1104,7 +1106,7 @@ namespace Smash_Forge
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.dat;*.mta;*.wrkspc|" +
+                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.dat;*.mta;*.wrkspc;*.nut|" +
                              "Smash 4 Boneset (.vbn)|*.vbn|" +
                              "Namco Model (.nud)|*.nud|" +
                              "Smash 4 Level Data (.lvd)|*.lvd|" +
@@ -1114,12 +1116,12 @@ namespace Smash_Forge
                              "Collada Model Format (.dae)|*.dae|" +
                              "All files(*.*)|*.*";
 
+                ofd.Multiselect = true;
                 // "Namco Universal Data Folder (.NUD)|*.nud|" +
 
                 if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    openFile(ofd.FileName);
-                }
+                    foreach(string filename in ofd.FileNames)
+                        openFile(filename);
             }
         }
 
