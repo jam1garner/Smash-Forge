@@ -21,6 +21,16 @@ namespace Smash_Forge
             currentValue = initialValue;
         }
 
+        public BoneRiggingSelector()
+        {
+            InitializeComponent();
+            str = new LVDEditor.StringWrapper();
+            initialValue = str.data;
+            //textBox1.Text = charsToString(initialValue);
+            //urrentValue = initialValue;
+            textBox1.Visible = false;
+        }
+
         private static string charsToString(char[] c)
         {
             string boneNameRigging = "";
@@ -30,9 +40,11 @@ namespace Smash_Forge
             return boneNameRigging;
         }
 
-        LVDEditor.StringWrapper str;
-        char[] initialValue;
-        char[] currentValue;
+        public LVDEditor.StringWrapper str;
+        public char[] initialValue;
+        public char[] currentValue;
+        public short boneIndex = -1;
+        public bool Cancelled = false;
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
@@ -42,11 +54,13 @@ namespace Smash_Forge
             while (newValue.Count < 0x40)
                 newValue.Add((char)0);
             currentValue = newValue.ToArray();
+            boneIndex = (short)((VBN)((object[]) e.Node.Tag)[0]).bones.IndexOf((Bone) ((object[]) e.Node.Tag)[1]);
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             str.data = initialValue;
+            Cancelled = true;
             Close();
         }
 
@@ -61,6 +75,7 @@ namespace Smash_Forge
         private void button1_Click(object sender, EventArgs e)
         {
             str.data = new char[0x40];
+            boneIndex = -1;
             Close();
         }
 
@@ -71,7 +86,8 @@ namespace Smash_Forge
             {
                 foreach(Bone b in model.vbn.bones)
                 {
-                    treeView1.Nodes.Add(new TreeNode(new string(b.boneName)) { Tag = b.boneName });
+                    object[] objs = {model.vbn, b};
+                    treeView1.Nodes.Add(new TreeNode(new string(b.boneName)) { Tag = objs });
                 }
             }
         }

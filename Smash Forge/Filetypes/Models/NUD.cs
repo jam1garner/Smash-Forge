@@ -509,6 +509,7 @@ namespace Smash_Forge
             foreach (var o in obj)
             {
                 Mesh m = new Mesh();
+                //Console.WriteLine($"{o.name} singlebind: {o.singlebind}");
                 m.Text = o.name;
                 mesh.Add(m);
                 m.boneflag = boneflags[mi];

@@ -289,8 +289,31 @@ namespace Smash_Forge
 
         private void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if (treeView1.SelectedNode is NUD.Polygon)
-                polySelected((NUD.Polygon)treeView1.SelectedNode, $"{treeView1.SelectedNode.Parent.Text} {treeView1.SelectedNode.Text}");
+            if (treeView1.SelectedNode is NUD.Mesh)
+            {
+                NUD.Mesh mesh = (NUD.Mesh) treeView1.SelectedNode;
+                BoneRiggingSelector brs = new BoneRiggingSelector();
+                brs.ShowDialog();
+                if (!brs.Cancelled)
+                {
+                    mesh.singlebind = brs.boneIndex;
+                    foreach(NUD.Polygon poly in mesh.polygons)
+                    {
+                        foreach (NUD.Vertex vi in poly.vertices)
+                        {
+                            vi.node.Clear();
+                            vi.node.Add(mesh.singlebind);
+                            vi.weight.Clear();
+                            vi.weight.Add(1);
+                        }
+                    }
+                    ((NUD)treeView1.SelectedNode.Parent.Tag).PreRender();
+                }
+            }
+            else if (treeView1.SelectedNode is NUD.Polygon)
+            {
+                polySelected((NUD.Polygon) treeView1.SelectedNode, $"{treeView1.SelectedNode.Parent.Text} {treeView1.SelectedNode.Text}");
+            }
         }
     }
 }
