@@ -21,14 +21,14 @@ namespace Smash_Forge
             currentValue = initialValue;
         }
 
-        public BoneRiggingSelector()
+        public BoneRiggingSelector(LVDEditor.StringWrapper s, NUD exclusiveNud)
         {
             InitializeComponent();
-            str = new LVDEditor.StringWrapper();
+            str = s;
             initialValue = str.data;
-            //textBox1.Text = charsToString(initialValue);
-            //urrentValue = initialValue;
-            textBox1.Visible = false;
+            textBox1.Text = charsToString(initialValue);
+            currentValue = initialValue;
+            exNud = exclusiveNud;
         }
 
         private static string charsToString(char[] c)
@@ -45,6 +45,7 @@ namespace Smash_Forge
         public char[] currentValue;
         public short boneIndex = -1;
         public bool Cancelled = false;
+        private NUD exNud = null;
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
@@ -79,24 +80,23 @@ namespace Smash_Forge
             Close();
         }
 
-        private bool alreadyAdded(TreeNodeCollection tnCollection, object tag)
-        {
-            foreach (TreeNode node in tnCollection)
-                if (node.Tag == tag || alreadyAdded(node.Nodes, tag))
-                    return true;
-            return false;
-        }
-
         private void BoneRiggingSelector_Load(object sender, EventArgs e)
         {
+            //List<ModelContainer> m = Runtime.ModelContainers;
+            //Console.WriteLine($"Model Count: {Runtime.ModelContainers.Count}");
             treeView1.Nodes.Clear();
             foreach(ModelContainer model in Runtime.ModelContainers)
             {
-                foreach(Bone b in model.vbn.bones)
+                if (model.nud != null)
                 {
-                    object[] objs = {model.vbn, b};
-                    if(!alreadyAdded(treeView1.Nodes, objs))
-                        treeView1.Nodes.Add(new TreeNode(new string(b.boneName)) { Tag = objs });
+                    foreach (Bone b in model.vbn.bones)
+                    {
+                        object[] objs = { model.vbn, b };
+                        TreeNode temp = new TreeNode(new string(b.boneName)) {Tag = objs};
+                        treeView1.Nodes.Add(temp);
+                        if (str.data == b.boneName)
+                            treeView1.SelectedNode = temp;
+                    }
                 }
             }
         }

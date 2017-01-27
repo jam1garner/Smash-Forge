@@ -292,7 +292,14 @@ namespace Smash_Forge
             if (treeView1.SelectedNode is NUD.Mesh)
             {
                 NUD.Mesh mesh = (NUD.Mesh) treeView1.SelectedNode;
-                BoneRiggingSelector brs = new BoneRiggingSelector();
+                char[] d = "None".ToCharArray();
+                LVDEditor.StringWrapper str = new LVDEditor.StringWrapper() { data = d };
+                foreach (ModelContainer mc in Runtime.ModelContainers)
+                    if (treeView1.SelectedNode.Parent.Tag == mc.nud)
+                        if (mc.vbn.bones.Count > mesh.singlebind && mesh.singlebind != -1)
+                            str = new LVDEditor.StringWrapper() {data = mc.vbn.bones[mesh.singlebind].boneName};
+                        
+                BoneRiggingSelector brs = new BoneRiggingSelector(str);
                 brs.ShowDialog();
                 if (!brs.Cancelled)
                 {
