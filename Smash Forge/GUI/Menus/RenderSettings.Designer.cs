@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RenderSettings));
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
@@ -44,10 +45,10 @@
             this.depthSlider = new System.Windows.Forms.TrackBar();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.swagViewing = new System.Windows.Forms.CheckBox();
             this.cb_normals = new System.Windows.Forms.CheckBox();
             this.renderMode = new System.Windows.Forms.ComboBox();
             this.cb_vertcolor = new System.Windows.Forms.CheckBox();
-            this.swagViewing = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -262,6 +263,17 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model Render Settings";
             // 
+            // swagViewing
+            // 
+            this.swagViewing.AutoSize = true;
+            this.swagViewing.Location = new System.Drawing.Point(12, 125);
+            this.swagViewing.Name = "swagViewing";
+            this.swagViewing.Size = new System.Drawing.Size(109, 17);
+            this.swagViewing.TabIndex = 18;
+            this.swagViewing.Text = "Show Swag Data";
+            this.swagViewing.UseVisualStyleBackColor = true;
+            this.swagViewing.CheckedChanged += new System.EventHandler(this.swagViewing_CheckedChanged);
+            // 
             // cb_normals
             // 
             this.cb_normals.AutoSize = true;
@@ -302,17 +314,6 @@
             this.cb_vertcolor.Text = "Show Vertex Colors";
             this.cb_vertcolor.UseVisualStyleBackColor = true;
             // 
-            // swagViewing
-            // 
-            this.swagViewing.AutoSize = true;
-            this.swagViewing.Location = new System.Drawing.Point(12, 125);
-            this.swagViewing.Name = "swagViewing";
-            this.swagViewing.Size = new System.Drawing.Size(109, 17);
-            this.swagViewing.TabIndex = 18;
-            this.swagViewing.Text = "Show Swag Data";
-            this.swagViewing.UseVisualStyleBackColor = true;
-            this.swagViewing.CheckedChanged += new System.EventHandler(this.swagViewing_CheckedChanged);
-            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -320,6 +321,7 @@
             this.ClientSize = new System.Drawing.Size(598, 324);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.panel1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "RenderSettings";
             this.Text = "Render Settings";
             this.Load += new System.EventHandler(this.RenderSettings_Load);

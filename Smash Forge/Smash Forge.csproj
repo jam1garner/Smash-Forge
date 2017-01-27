@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>forge.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\forge.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
@@ -480,7 +480,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="forge.ico" />
+    <Content Include="Resources\forge.ico" />
     <Content Include="lib\FITC.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -503,6 +503,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\sexy_green_down_arrow.png" />
+    <Content Include="Resources\forge2.ico" />
     <None Include="Resources\DefaultTexture.png" />
   </ItemGroup>
   <ItemGroup />

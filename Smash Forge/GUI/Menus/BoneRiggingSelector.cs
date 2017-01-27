@@ -79,6 +79,14 @@ namespace Smash_Forge
             Close();
         }
 
+        private bool alreadyAdded(TreeNodeCollection tnCollection, object tag)
+        {
+            foreach (TreeNode node in tnCollection)
+                if (node.Tag == tag || alreadyAdded(node.Nodes, tag))
+                    return true;
+            return false;
+        }
+
         private void BoneRiggingSelector_Load(object sender, EventArgs e)
         {
             treeView1.Nodes.Clear();
@@ -87,7 +95,8 @@ namespace Smash_Forge
                 foreach(Bone b in model.vbn.bones)
                 {
                     object[] objs = {model.vbn, b};
-                    treeView1.Nodes.Add(new TreeNode(new string(b.boneName)) { Tag = objs });
+                    if(!alreadyAdded(treeView1.Nodes, objs))
+                        treeView1.Nodes.Add(new TreeNode(new string(b.boneName)) { Tag = objs });
                 }
             }
         }
