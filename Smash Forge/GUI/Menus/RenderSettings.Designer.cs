@@ -321,7 +321,7 @@
             this.ClientSize = new System.Drawing.Size(598, 324);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.panel1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Icon = Resources.Resources.forge2;
             this.Name = "RenderSettings";
             this.Text = "Render Settings";
             this.Load += new System.EventHandler(this.RenderSettings_Load);
