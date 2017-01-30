@@ -21,16 +21,6 @@ namespace Smash_Forge
             currentValue = initialValue;
         }
 
-        public BoneRiggingSelector(LVDEditor.StringWrapper s, NUD exclusiveNud)
-        {
-            InitializeComponent();
-            str = s;
-            initialValue = str.data;
-            textBox1.Text = charsToString(initialValue);
-            currentValue = initialValue;
-            exNud = exclusiveNud;
-        }
-
         private static string charsToString(char[] c)
         {
             string boneNameRigging = "";
@@ -45,7 +35,8 @@ namespace Smash_Forge
         public char[] currentValue;
         public short boneIndex = -1;
         public bool Cancelled = false;
-        private NUD exNud = null;
+        public bool SelectedNone = false;
+        public Bone CurrentBone = null;
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
@@ -55,7 +46,8 @@ namespace Smash_Forge
             while (newValue.Count < 0x40)
                 newValue.Add((char)0);
             currentValue = newValue.ToArray();
-            boneIndex = (short)((VBN)((object[]) e.Node.Tag)[0]).bones.IndexOf((Bone) ((object[]) e.Node.Tag)[1]);
+            CurrentBone = (Bone) ((object[]) e.Node.Tag)[1];
+            boneIndex = (short)((VBN)((object[]) e.Node.Tag)[0]).bones.IndexOf(CurrentBone);
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -77,6 +69,8 @@ namespace Smash_Forge
         {
             str.data = new char[0x40];
             boneIndex = -1;
+            CurrentBone = null;
+            SelectedNone = true;
             Close();
         }
 
@@ -85,10 +79,12 @@ namespace Smash_Forge
             //List<ModelContainer> m = Runtime.ModelContainers;
             //Console.WriteLine($"Model Count: {Runtime.ModelContainers.Count}");
             treeView1.Nodes.Clear();
+            List<VBN> alreadyUsedVbns = new List<VBN>();
             foreach(ModelContainer model in Runtime.ModelContainers)
             {
-                if (model.nud != null)
+                if (!alreadyUsedVbns.Contains(model.vbn) && model.vbn != null)
                 {
+                    alreadyUsedVbns.Add(model.vbn);
                     foreach (Bone b in model.vbn.bones)
                     {
                         object[] objs = { model.vbn, b };

@@ -105,6 +105,12 @@
     <Compile Include="GUI\Editors\AnimTrack.Designer.cs">
       <DependentUpon>AnimTrack.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\BoneButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BoneButton.Designer.cs">
+      <DependentUpon>BoneButton.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\BoneTree.cs">
       <SubType>Form</SubType>
     </Compile>

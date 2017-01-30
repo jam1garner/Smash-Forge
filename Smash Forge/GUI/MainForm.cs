@@ -119,6 +119,7 @@ namespace Smash_Forge
         public List<PARAMEditor> paramEditors = new List<PARAMEditor>() { };
         public List<MTAEditor> mtaEditors = new List<MTAEditor>() { };
         public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() { };
+        public List<SwagEditor> SwagEditors = new List<SwagEditor>() { };
         public MeshList meshList = new MeshList() { ShowHint = DockState.DockRight };
         public List<VBNViewport> viewports = new List<VBNViewport>() { new VBNViewport() }; // Default viewport
         #endregion
@@ -128,29 +129,25 @@ namespace Smash_Forge
         {
             PARAMEditor currentParam = null;
             ACMDEditor currentACMD = null;
+            SwagEditor currentSwagEditor = null;
             foreach (PARAMEditor p in paramEditors)
-            {
                 if (p.ContainsFocus)
-                {
                     currentParam = p;
-                }
-            }
+            
             foreach (ACMDEditor a in ACMDEditors)
-            {
                 if (a.ContainsFocus)
-                {
                     currentACMD = a;
-                }
-            }
+            
+            foreach (SwagEditor s in SwagEditors)
+                if (s.ContainsFocus)
+                    currentSwagEditor = s;
+            
             if (currentParam != null)
-            {
                 currentParam.saveAs();
-            }
-            else
-            if (currentACMD != null)
-            {
+            else if (currentACMD != null)
                 currentACMD.save();
-            }
+            else if (currentSwagEditor != null)
+                currentSwagEditor.save();
             else
             {
                 string filename = "";
@@ -927,6 +924,15 @@ namespace Smash_Forge
                     nud.PreRender();
                     Runtime.ModelContainers.Add(con);
                 }
+            }
+
+            if (filename.EndsWith(".sb"))
+            {
+                SB sb = new SB();
+                sb.Read(filename);
+                SwagEditor swagEditor = new SwagEditor(sb) { ShowHint = DockState.DockRight };
+                AddDockedControl(swagEditor);
+                SwagEditors.Add(swagEditor);
             }
 
             if (filename.EndsWith(".dat"))

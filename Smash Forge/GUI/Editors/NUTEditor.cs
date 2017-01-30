@@ -252,7 +252,6 @@ namespace Smash_Forge
                     if (!selected.draw.ContainsKey(newid))
                     {
                         ((NUT.NUD_Texture)listBox2.SelectedItem).id = newid;
-
                         selected.draw.Add(newid, selected.draw[oldid]);
                         selected.draw.Remove(oldid);
                     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
@@ -453,6 +454,44 @@ namespace Smash_Forge
                     bones[(int)bones[i].parentIndex].children.Add(i);
             }
         }
+
+        private static string charsToString(char[] c)
+        {
+            string boneNameRigging = "";
+            foreach (char b in c)
+                if (b != (char)0)
+                    boneNameRigging += b;
+            return boneNameRigging;
+        }
+
+        public static string BoneNameFromHash(uint boneHash)
+        {
+            foreach (ModelContainer m in Runtime.ModelContainers)
+                if (m.vbn != null)
+                    foreach (Bone b in m.vbn.bones)
+                        if (b.boneId == boneHash)
+                            return charsToString(b.boneName);
+
+            csvHashes csv = new csvHashes(Path.Combine(MainForm.executableDir, "hashTable.csv"));
+            for (int i = 0; i < csv.ids.Count; i++)
+                if (csv.ids[i] == boneHash)
+                    return csv.names[i]+" (From hashTable.csv)";
+
+            return $"[Bonehash {boneHash.ToString("X")}]";
+        }
+
+        public static Bone GetBone(uint boneHash)
+        {
+            if(boneHash == 3449071621)
+                return null;
+            foreach (ModelContainer m in Runtime.ModelContainers)
+                if (m.vbn != null)
+                    foreach (Bone b in m.vbn.bones)
+                        if (b.boneId == boneHash)
+                            return b;
+            MessageBox.Show("Open the VBN before editing the SB");
+            return null;
+        }
     }
 
     public class SB : FileBase
@@ -469,9 +508,15 @@ namespace Smash_Forge
             public float param1_1, param2_1;
             public int param1_2, param1_3, param2_2, param2_3;
             public float rx1, rx2, ry1, ry2, rz1, rz2;
-            public float[] unks1 = new float[12], unks2 = new float[5];
+            public uint[] boneHashes = new uint[8];
+            public float[] unks1 = new float[4], unks2 = new float[5];
             public float factor;
             public int[] ints = new int[4];
+
+            public override string ToString()
+            {
+                return VBN.BoneNameFromHash(hash);
+            }
         }
 
         public Dictionary<uint, SBEntry> bones = new Dictionary<uint, SBEntry>();
@@ -502,7 +547,10 @@ namespace Smash_Forge
                     rz2 = d.readFloat()
                 };
 
-                for (int j = 0; j < 12; j++)
+                for (int j = 0; j < 8; j++)
+                    sb.boneHashes[j] = (uint)d.readInt();
+
+                for (int j = 0; j < 4; j++)
                     sb.unks1[j] = d.readFloat();
 
                 for (int j = 0; j < 5; j++)
