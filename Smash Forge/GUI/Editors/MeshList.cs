@@ -50,7 +50,7 @@ namespace Smash_Forge
                     }
                 }
             }
-            treeView1.ExpandAll();
+            //treeView1.ExpandAll();
         }
 
         private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
