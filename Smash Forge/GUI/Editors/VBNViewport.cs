@@ -793,7 +793,7 @@ main()
                     if(vbn.swingBones.bones.Count > 0 && Runtime.renderSwag)
                     {
                         SB.SBEntry sb = null;
-                        vbn.swingBones.bones.TryGetValue(bone.boneId, out sb);
+                        vbn.swingBones.TryGetEntry(bone.boneId, out sb);
                         if (sb != null)
                         {
                             // draw

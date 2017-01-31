@@ -44,12 +44,31 @@ namespace Smash_Forge
             zMin.Value = (Decimal)sbEntry.rz1;
             zMax.Value = (Decimal)sbEntry.rz2;
             weightBox.Value = (Decimal) sbEntry.factor;
+            numericUpDown1.Value = (Decimal) sbEntry.param1_1;
+            numericUpDown2.Value = (Decimal)sbEntry.param1_2;
+            numericUpDown3.Value = (Decimal)sbEntry.param1_3;
+            numericUpDown4.Value = (Decimal)sbEntry.param2_1;
+            numericUpDown5.Value = (Decimal)sbEntry.param2_2;
+            numericUpDown6.Value = (Decimal)sbEntry.param2_3;
+            numericUpDown7.Value = (Decimal) sbEntry.unks1[0];
+            numericUpDown8.Value = (Decimal)sbEntry.unks1[1];
+            numericUpDown9.Value = (Decimal)sbEntry.unks1[2];
+            numericUpDown10.Value = (Decimal)sbEntry.unks1[3];
+            numericUpDown11.Value = (Decimal)sbEntry.unks2[0];
+            numericUpDown12.Value = (Decimal)sbEntry.unks2[1];
+            numericUpDown13.Value = (Decimal)sbEntry.unks2[2];
+            numericUpDown14.Value = (Decimal)sbEntry.unks2[3];
+            numericUpDown15.Value = (Decimal)sbEntry.unks2[4];
+            numericUpDown16.Value = (Decimal)sbEntry.ints[0];
+            numericUpDown17.Value = (Decimal)sbEntry.ints[1];
+            numericUpDown18.Value = (Decimal)sbEntry.ints[2];
+            numericUpDown19.Value = (Decimal)sbEntry.ints[3];
             dontChange = false;
         }
 
         private void SwagEditor_Load(object sender, EventArgs e)
         {
-            foreach (SB.SBEntry swagEntry in swag.bones.Values)
+            foreach (SB.SBEntry swagEntry in swag.bones)
                 listBox1.Items.Add(swagEntry);
             if (listBox1.Items.Count >= 1)
                 listBox1.SelectedItem = listBox1.Items[0];
@@ -85,6 +104,25 @@ namespace Smash_Forge
                 sbEntry.rz1 = (float) zMin.Value;
                 sbEntry.rz2 = (float) zMax.Value;
                 sbEntry.factor = (float) weightBox.Value;
+                sbEntry.param1_1 = (float)numericUpDown1.Value;
+                sbEntry.param1_2 = (int)numericUpDown2.Value;
+                sbEntry.param1_3 = (int)numericUpDown3.Value;
+                sbEntry.param2_1 = (float)numericUpDown4.Value;
+                sbEntry.param2_2 = (int)numericUpDown5.Value;
+                sbEntry.param2_3 = (int)numericUpDown6.Value;
+                sbEntry.unks1[0] = (float)numericUpDown7.Value;
+                sbEntry.unks1[1] = (float)numericUpDown8.Value;
+                sbEntry.unks1[2] = (float)numericUpDown9.Value;
+                sbEntry.unks1[3] = (float)numericUpDown10.Value;
+                sbEntry.unks2[0] = (float)numericUpDown11.Value;
+                sbEntry.unks2[1] = (float)numericUpDown12.Value;
+                sbEntry.unks2[2] = (float)numericUpDown13.Value;
+                sbEntry.unks2[3] = (float)numericUpDown14.Value;
+                sbEntry.unks2[4] = (float)numericUpDown15.Value;
+                sbEntry.ints[0] = (int) numericUpDown16.Value;
+                sbEntry.ints[1] = (int)numericUpDown17.Value;
+                sbEntry.ints[2] = (int)numericUpDown18.Value;
+                sbEntry.ints[3] = (int)numericUpDown19.Value;
             }
         }
     }

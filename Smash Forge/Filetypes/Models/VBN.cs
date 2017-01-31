@@ -519,7 +519,15 @@ namespace Smash_Forge
             }
         }
 
-        public Dictionary<uint, SBEntry> bones = new Dictionary<uint, SBEntry>();
+        public List<SBEntry> bones = new List<SBEntry>();
+
+        public void TryGetEntry(uint hash, out SBEntry entry)
+        {
+            entry = null;
+            foreach(SBEntry sb in bones)
+                if (sb.hash == hash)
+                    entry = sb;
+        }
 
         public override void Read(string filename)
         {
@@ -561,7 +569,7 @@ namespace Smash_Forge
                 for (int j = 0; j < 4; j++)
                     sb.ints[j] = d.readInt();
 
-                bones.Add(sb.hash, sb);
+                bones.Add(sb);
 
                 /*Console.WriteLine(sb.hash.ToString("x"));
                 Console.WriteLine(d.readFloat() + " " + d.readInt() + " " + d.readInt());
@@ -589,84 +597,43 @@ namespace Smash_Forge
             FileOutput o = new FileOutput();
             o.Endian = Endianness.Little;
 
-            using (StreamReader sr = new StreamReader("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\model\\body\\hmera\\SweingBone\\swb.txt"))
+            o.writeString(" BWS");
+            o.writeShort(0x05);
+            o.writeShort(0x01);
+            o.writeInt(bones.Count);
+
+            foreach(SBEntry s in bones)
             {
-                String line = sr.ReadLine();
-                int count = int.Parse(line);
+                o.writeInt((int)s.hash);
+                o.writeFloat(s.param1_1);
+                o.writeInt(s.param1_2);
+                o.writeInt(s.param1_3);
+                o.writeFloat(s.param2_1);
+                o.writeInt(s.param2_2);
+                o.writeInt(s.param2_3);
+                o.writeFloat(s.rx1);
+                o.writeFloat(s.rx2);
+                o.writeFloat(s.ry1);
+                o.writeFloat(s.ry2);
+                o.writeFloat(s.rz1);
+                o.writeFloat(s.rz2);
 
-                o.writeString(" BWS");
-                o.writeShort(0x05);
-                o.writeShort(0x01);
-                o.writeInt(count);
+                for (int j = 0; j < 8; j++)
+                    o.writeInt((int)s.boneHashes[j]);
 
-                for (int i = 0; i < count; i++)
-                {
-                    line = sr.ReadLine();
-                    o.writeInt(int.Parse(line, System.Globalization.NumberStyles.HexNumber));
-                    string[] args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeInt(int.Parse(args[1]));
-                    o.writeInt(int.Parse(args[2]));
+                for (int j = 0; j < 4; j++)
+                    o.writeFloat(s.unks1[j]);
 
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeInt(int.Parse(args[1]));
-                    o.writeInt(int.Parse(args[2]));
+                for (int j = 0; j < 5; j++)
+                    o.writeFloat(s.unks2[j]);
 
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeFloat(float.Parse(args[1]));
+                o.writeFloat(s.factor);
 
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeFloat(float.Parse(args[1]));
-
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeFloat(float.Parse(args[1]));
-
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeFloat(float.Parse(args[1]));
-                    o.writeFloat(float.Parse(args[2]));
-                    o.writeFloat(float.Parse(args[3]));
-
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeFloat(float.Parse(args[1]));
-                    o.writeFloat(float.Parse(args[2]));
-                    o.writeFloat(float.Parse(args[3]));
-
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeFloat(float.Parse(args[1]));
-                    o.writeFloat(float.Parse(args[2]));
-                    o.writeFloat(float.Parse(args[3]));
-
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeFloat(float.Parse(args[1]));
-                    o.writeFloat(float.Parse(args[2]));
-                    o.writeFloat(float.Parse(args[3]));
-
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeFloat(float.Parse(args[1]));
-
-                    args = sr.ReadLine().Split(' ');
-                    o.writeInt(int.Parse(args[0]));
-                    o.writeInt(int.Parse(args[1]));
-
-                    args = sr.ReadLine().Split(' ');
-                    o.writeInt(int.Parse(args[0]));
-                    o.writeInt(int.Parse(args[1]));
-                }
-
+                for (int j = 0; j < 4; j++)
+                    o.writeInt(s.ints[j]);
             }
 
-            o.save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\model\\body\\hmera\\SweingBone\\model.sb");
-
-            return null;
+            return o.getBytes();
         }
     }
 }
