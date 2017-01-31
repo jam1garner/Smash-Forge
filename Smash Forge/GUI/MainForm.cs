@@ -1112,7 +1112,7 @@ namespace Smash_Forge
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.dat;*.mta;*.wrkspc;*.nut|" +
+                ofd.Filter = "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.dat;*.mta;*.wrkspc;*.nut;*.sb|" +
                              "Smash 4 Boneset (.vbn)|*.vbn|" +
                              "Namco Model (.nud)|*.nud|" +
                              "Smash 4 Level Data (.lvd)|*.lvd|" +

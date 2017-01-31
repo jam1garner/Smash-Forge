@@ -28,22 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.label2 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.boneButton9 = new Smash_Forge.BoneButton();
-            this.boneButton8 = new Smash_Forge.BoneButton();
-            this.boneButton7 = new Smash_Forge.BoneButton();
-            this.boneButton6 = new Smash_Forge.BoneButton();
-            this.boneButton5 = new Smash_Forge.BoneButton();
-            this.boneButton4 = new Smash_Forge.BoneButton();
-            this.boneButton3 = new Smash_Forge.BoneButton();
-            this.boneButton2 = new Smash_Forge.BoneButton();
             this.label1 = new System.Windows.Forms.Label();
-            this.boneButton1 = new Smash_Forge.BoneButton();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.zMin = new System.Windows.Forms.NumericUpDown();
@@ -104,6 +96,18 @@
             this.numericUpDown17 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown18 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown19 = new System.Windows.Forms.NumericUpDown();
+            this.boneButton9 = new Smash_Forge.BoneButton();
+            this.boneButton8 = new Smash_Forge.BoneButton();
+            this.boneButton7 = new Smash_Forge.BoneButton();
+            this.boneButton6 = new Smash_Forge.BoneButton();
+            this.boneButton5 = new Smash_Forge.BoneButton();
+            this.boneButton4 = new Smash_Forge.BoneButton();
+            this.boneButton3 = new Smash_Forge.BoneButton();
+            this.boneButton2 = new Smash_Forge.BoneButton();
+            this.boneButton1 = new Smash_Forge.BoneButton();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -146,6 +150,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown17)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown18)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown19)).BeginInit();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -168,6 +173,7 @@
             // 
             // listBox1
             // 
+            this.listBox1.ContextMenuStrip = this.contextMenuStrip1;
             this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(0, 0);
@@ -238,86 +244,6 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(209, 140);
             this.tableLayoutPanel1.TabIndex = 2;
             // 
-            // boneButton9
-            // 
-            this.boneButton9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton9.Location = new System.Drawing.Point(107, 107);
-            this.boneButton9.Name = "boneButton9";
-            this.boneButton9.Size = new System.Drawing.Size(99, 30);
-            this.boneButton9.TabIndex = 7;
-            this.boneButton9.Text = "boneButton9";
-            this.boneButton9.UseVisualStyleBackColor = true;
-            // 
-            // boneButton8
-            // 
-            this.boneButton8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton8.Location = new System.Drawing.Point(3, 107);
-            this.boneButton8.Name = "boneButton8";
-            this.boneButton8.Size = new System.Drawing.Size(98, 30);
-            this.boneButton8.TabIndex = 6;
-            this.boneButton8.Text = "boneButton8";
-            this.boneButton8.UseVisualStyleBackColor = true;
-            // 
-            // boneButton7
-            // 
-            this.boneButton7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton7.Location = new System.Drawing.Point(107, 73);
-            this.boneButton7.Name = "boneButton7";
-            this.boneButton7.Size = new System.Drawing.Size(99, 28);
-            this.boneButton7.TabIndex = 5;
-            this.boneButton7.Text = "boneButton7";
-            this.boneButton7.UseVisualStyleBackColor = true;
-            // 
-            // boneButton6
-            // 
-            this.boneButton6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton6.Location = new System.Drawing.Point(3, 73);
-            this.boneButton6.Name = "boneButton6";
-            this.boneButton6.Size = new System.Drawing.Size(98, 28);
-            this.boneButton6.TabIndex = 4;
-            this.boneButton6.Text = "boneButton6";
-            this.boneButton6.UseVisualStyleBackColor = true;
-            // 
-            // boneButton5
-            // 
-            this.boneButton5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton5.Location = new System.Drawing.Point(107, 34);
-            this.boneButton5.Name = "boneButton5";
-            this.boneButton5.Size = new System.Drawing.Size(99, 33);
-            this.boneButton5.TabIndex = 3;
-            this.boneButton5.Text = "boneButton5";
-            this.boneButton5.UseVisualStyleBackColor = true;
-            // 
-            // boneButton4
-            // 
-            this.boneButton4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton4.Location = new System.Drawing.Point(3, 34);
-            this.boneButton4.Name = "boneButton4";
-            this.boneButton4.Size = new System.Drawing.Size(98, 33);
-            this.boneButton4.TabIndex = 2;
-            this.boneButton4.Text = "boneButton4";
-            this.boneButton4.UseVisualStyleBackColor = true;
-            // 
-            // boneButton3
-            // 
-            this.boneButton3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton3.Location = new System.Drawing.Point(107, 3);
-            this.boneButton3.Name = "boneButton3";
-            this.boneButton3.Size = new System.Drawing.Size(99, 25);
-            this.boneButton3.TabIndex = 1;
-            this.boneButton3.Text = "boneButton3";
-            this.boneButton3.UseVisualStyleBackColor = true;
-            // 
-            // boneButton2
-            // 
-            this.boneButton2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton2.Location = new System.Drawing.Point(3, 3);
-            this.boneButton2.Name = "boneButton2";
-            this.boneButton2.Size = new System.Drawing.Size(98, 25);
-            this.boneButton2.TabIndex = 0;
-            this.boneButton2.Text = "boneButton2";
-            this.boneButton2.UseVisualStyleBackColor = true;
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -326,15 +252,6 @@
             this.label1.Size = new System.Drawing.Size(59, 13);
             this.label1.TabIndex = 1;
             this.label1.Text = "Entry Bone";
-            // 
-            // boneButton1
-            // 
-            this.boneButton1.Location = new System.Drawing.Point(84, 6);
-            this.boneButton1.Name = "boneButton1";
-            this.boneButton1.Size = new System.Drawing.Size(75, 23);
-            this.boneButton1.TabIndex = 0;
-            this.boneButton1.Text = "boneButton1";
-            this.boneButton1.UseVisualStyleBackColor = true;
             // 
             // tabPage3
             // 
@@ -1271,6 +1188,117 @@
             this.numericUpDown19.TabIndex = 24;
             this.numericUpDown19.ValueChanged += new System.EventHandler(this.valueChanged);
             // 
+            // boneButton9
+            // 
+            this.boneButton9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneButton9.Location = new System.Drawing.Point(107, 107);
+            this.boneButton9.Name = "boneButton9";
+            this.boneButton9.Size = new System.Drawing.Size(99, 30);
+            this.boneButton9.TabIndex = 7;
+            this.boneButton9.Text = "boneButton9";
+            this.boneButton9.UseVisualStyleBackColor = true;
+            // 
+            // boneButton8
+            // 
+            this.boneButton8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneButton8.Location = new System.Drawing.Point(3, 107);
+            this.boneButton8.Name = "boneButton8";
+            this.boneButton8.Size = new System.Drawing.Size(98, 30);
+            this.boneButton8.TabIndex = 6;
+            this.boneButton8.Text = "boneButton8";
+            this.boneButton8.UseVisualStyleBackColor = true;
+            // 
+            // boneButton7
+            // 
+            this.boneButton7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneButton7.Location = new System.Drawing.Point(107, 73);
+            this.boneButton7.Name = "boneButton7";
+            this.boneButton7.Size = new System.Drawing.Size(99, 28);
+            this.boneButton7.TabIndex = 5;
+            this.boneButton7.Text = "boneButton7";
+            this.boneButton7.UseVisualStyleBackColor = true;
+            // 
+            // boneButton6
+            // 
+            this.boneButton6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneButton6.Location = new System.Drawing.Point(3, 73);
+            this.boneButton6.Name = "boneButton6";
+            this.boneButton6.Size = new System.Drawing.Size(98, 28);
+            this.boneButton6.TabIndex = 4;
+            this.boneButton6.Text = "boneButton6";
+            this.boneButton6.UseVisualStyleBackColor = true;
+            // 
+            // boneButton5
+            // 
+            this.boneButton5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneButton5.Location = new System.Drawing.Point(107, 34);
+            this.boneButton5.Name = "boneButton5";
+            this.boneButton5.Size = new System.Drawing.Size(99, 33);
+            this.boneButton5.TabIndex = 3;
+            this.boneButton5.Text = "boneButton5";
+            this.boneButton5.UseVisualStyleBackColor = true;
+            // 
+            // boneButton4
+            // 
+            this.boneButton4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneButton4.Location = new System.Drawing.Point(3, 34);
+            this.boneButton4.Name = "boneButton4";
+            this.boneButton4.Size = new System.Drawing.Size(98, 33);
+            this.boneButton4.TabIndex = 2;
+            this.boneButton4.Text = "boneButton4";
+            this.boneButton4.UseVisualStyleBackColor = true;
+            // 
+            // boneButton3
+            // 
+            this.boneButton3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneButton3.Location = new System.Drawing.Point(107, 3);
+            this.boneButton3.Name = "boneButton3";
+            this.boneButton3.Size = new System.Drawing.Size(99, 25);
+            this.boneButton3.TabIndex = 1;
+            this.boneButton3.Text = "boneButton3";
+            this.boneButton3.UseVisualStyleBackColor = true;
+            // 
+            // boneButton2
+            // 
+            this.boneButton2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneButton2.Location = new System.Drawing.Point(3, 3);
+            this.boneButton2.Name = "boneButton2";
+            this.boneButton2.Size = new System.Drawing.Size(98, 25);
+            this.boneButton2.TabIndex = 0;
+            this.boneButton2.Text = "boneButton2";
+            this.boneButton2.UseVisualStyleBackColor = true;
+            // 
+            // boneButton1
+            // 
+            this.boneButton1.Location = new System.Drawing.Point(84, 6);
+            this.boneButton1.Name = "boneButton1";
+            this.boneButton1.Size = new System.Drawing.Size(75, 23);
+            this.boneButton1.TabIndex = 0;
+            this.boneButton1.Text = "boneButton1";
+            this.boneButton1.UseVisualStyleBackColor = true;
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addEntryToolStripMenuItem,
+            this.removeEntryToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(148, 48);
+            // 
+            // addEntryToolStripMenuItem
+            // 
+            this.addEntryToolStripMenuItem.Name = "addEntryToolStripMenuItem";
+            this.addEntryToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.addEntryToolStripMenuItem.Text = "Add Entry";
+            this.addEntryToolStripMenuItem.Click += new System.EventHandler(this.addEntryToolStripMenuItem_Click);
+            // 
+            // removeEntryToolStripMenuItem
+            // 
+            this.removeEntryToolStripMenuItem.Name = "removeEntryToolStripMenuItem";
+            this.removeEntryToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.removeEntryToolStripMenuItem.Text = "Remove Entry";
+            this.removeEntryToolStripMenuItem.Click += new System.EventHandler(this.removeEntryToolStripMenuItem_Click);
+            // 
             // SwagEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1328,6 +1356,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown17)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown18)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown19)).EndInit();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1410,5 +1439,8 @@
         private System.Windows.Forms.NumericUpDown numericUpDown18;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.NumericUpDown numericUpDown19;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem addEntryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeEntryToolStripMenuItem;
     }
 }

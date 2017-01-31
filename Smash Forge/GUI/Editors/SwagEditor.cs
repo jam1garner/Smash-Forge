@@ -125,5 +125,15 @@ namespace Smash_Forge
                 sbEntry.ints[3] = (int)numericUpDown19.Value;
             }
         }
+
+        private void addEntryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void removeEntryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
