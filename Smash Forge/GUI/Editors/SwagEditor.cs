@@ -31,6 +31,8 @@ namespace Smash_Forge
         {
             dontChange = true;
             SB.SBEntry sbEntry = (SB.SBEntry) listBox1.SelectedItem;
+            if (sbEntry == null)
+                return;
             boneButton1.SetBone(VBN.GetBone(sbEntry.hash));
             for (int i = 0; i < buttons.Length; i++)
             {
@@ -76,9 +78,12 @@ namespace Smash_Forge
 
         private void BoneChange(object sender, EventArgs e)
         {
-            ((SB.SBEntry)listBox1.SelectedItem).hash = boneButton1.boneId;
+            SB.SBEntry sbEntry = (SB.SBEntry) listBox1.SelectedItem;
+            if (sbEntry == null)
+                return;
+            sbEntry.hash = boneButton1.boneId;
             for (int i = 0; i < 8; i++)
-                ((SB.SBEntry) listBox1.SelectedItem).boneHashes[i] = buttons[i].boneId;
+                sbEntry.boneHashes[i] = buttons[i].boneId;
         }
 
         public void save()
@@ -97,6 +102,8 @@ namespace Smash_Forge
             if (!dontChange)
             {
                 SB.SBEntry sbEntry = (SB.SBEntry)listBox1.SelectedItem;
+                if (sbEntry == null)
+                    return;
                 sbEntry.rx1 = (float) xMin.Value;
                 sbEntry.rx2 = (float) xMax.Value;
                 sbEntry.ry1 = (float) yMin.Value;
@@ -128,12 +135,15 @@ namespace Smash_Forge
 
         private void addEntryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+            SB.SBEntry newEntry = new SB.SBEntry();
+            swag.bones.Add(newEntry);
+            listBox1.Items.Add(newEntry);
         }
 
         private void removeEntryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            swag.bones.Remove((SB.SBEntry)listBox1.SelectedItem);
+            listBox1.Items.Remove(listBox1.SelectedItem);
         }
     }
 }

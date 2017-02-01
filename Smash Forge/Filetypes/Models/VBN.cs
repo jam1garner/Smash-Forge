@@ -504,11 +504,11 @@ namespace Smash_Forge
 
         public class SBEntry
         {
-            public uint hash;
+            public uint hash = 3449071621;
             public float param1_1, param2_1;
             public int param1_2, param1_3, param2_2, param2_3;
             public float rx1, rx2, ry1, ry2, rz1, rz2;
-            public uint[] boneHashes = new uint[8];
+            public uint[] boneHashes = new uint[8] { 3449071621, 3449071621, 3449071621, 3449071621, 3449071621, 3449071621, 3449071621, 3449071621 };
             public float[] unks1 = new float[4], unks2 = new float[5];
             public float factor;
             public int[] ints = new int[4];
