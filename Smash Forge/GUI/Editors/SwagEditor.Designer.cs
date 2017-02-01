@@ -96,6 +96,9 @@
             this.numericUpDown17 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown18 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown19 = new System.Windows.Forms.NumericUpDown();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.boneButton9 = new Smash_Forge.BoneButton();
             this.boneButton8 = new Smash_Forge.BoneButton();
             this.boneButton7 = new Smash_Forge.BoneButton();
@@ -105,9 +108,6 @@
             this.boneButton3 = new Smash_Forge.BoneButton();
             this.boneButton2 = new Smash_Forge.BoneButton();
             this.boneButton1 = new Smash_Forge.BoneButton();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.addEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -234,14 +234,14 @@
             this.tableLayoutPanel1.Controls.Add(this.boneButton4, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.boneButton3, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.boneButton2, 0, 0);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(8, 61);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(6, 61);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 4;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 44.59459F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 55.40541F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(209, 140);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(216, 140);
             this.tableLayoutPanel1.TabIndex = 2;
             // 
             // label1
@@ -1188,12 +1188,35 @@
             this.numericUpDown19.TabIndex = 24;
             this.numericUpDown19.ValueChanged += new System.EventHandler(this.valueChanged);
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addEntryToolStripMenuItem,
+            this.removeEntryToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 70);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
+            // 
+            // addEntryToolStripMenuItem
+            // 
+            this.addEntryToolStripMenuItem.Name = "addEntryToolStripMenuItem";
+            this.addEntryToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.addEntryToolStripMenuItem.Text = "Add Entry";
+            this.addEntryToolStripMenuItem.Click += new System.EventHandler(this.addEntryToolStripMenuItem_Click);
+            // 
+            // removeEntryToolStripMenuItem
+            // 
+            this.removeEntryToolStripMenuItem.Name = "removeEntryToolStripMenuItem";
+            this.removeEntryToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.removeEntryToolStripMenuItem.Text = "Remove Entry";
+            this.removeEntryToolStripMenuItem.Click += new System.EventHandler(this.removeEntryToolStripMenuItem_Click);
+            // 
             // boneButton9
             // 
             this.boneButton9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton9.Location = new System.Drawing.Point(107, 107);
+            this.boneButton9.Location = new System.Drawing.Point(111, 107);
             this.boneButton9.Name = "boneButton9";
-            this.boneButton9.Size = new System.Drawing.Size(99, 30);
+            this.boneButton9.Size = new System.Drawing.Size(102, 30);
             this.boneButton9.TabIndex = 7;
             this.boneButton9.Text = "boneButton9";
             this.boneButton9.UseVisualStyleBackColor = true;
@@ -1203,7 +1226,7 @@
             this.boneButton8.Dock = System.Windows.Forms.DockStyle.Fill;
             this.boneButton8.Location = new System.Drawing.Point(3, 107);
             this.boneButton8.Name = "boneButton8";
-            this.boneButton8.Size = new System.Drawing.Size(98, 30);
+            this.boneButton8.Size = new System.Drawing.Size(102, 30);
             this.boneButton8.TabIndex = 6;
             this.boneButton8.Text = "boneButton8";
             this.boneButton8.UseVisualStyleBackColor = true;
@@ -1211,9 +1234,9 @@
             // boneButton7
             // 
             this.boneButton7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton7.Location = new System.Drawing.Point(107, 73);
+            this.boneButton7.Location = new System.Drawing.Point(111, 73);
             this.boneButton7.Name = "boneButton7";
-            this.boneButton7.Size = new System.Drawing.Size(99, 28);
+            this.boneButton7.Size = new System.Drawing.Size(102, 28);
             this.boneButton7.TabIndex = 5;
             this.boneButton7.Text = "boneButton7";
             this.boneButton7.UseVisualStyleBackColor = true;
@@ -1223,7 +1246,7 @@
             this.boneButton6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.boneButton6.Location = new System.Drawing.Point(3, 73);
             this.boneButton6.Name = "boneButton6";
-            this.boneButton6.Size = new System.Drawing.Size(98, 28);
+            this.boneButton6.Size = new System.Drawing.Size(102, 28);
             this.boneButton6.TabIndex = 4;
             this.boneButton6.Text = "boneButton6";
             this.boneButton6.UseVisualStyleBackColor = true;
@@ -1231,9 +1254,9 @@
             // boneButton5
             // 
             this.boneButton5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton5.Location = new System.Drawing.Point(107, 34);
+            this.boneButton5.Location = new System.Drawing.Point(111, 34);
             this.boneButton5.Name = "boneButton5";
-            this.boneButton5.Size = new System.Drawing.Size(99, 33);
+            this.boneButton5.Size = new System.Drawing.Size(102, 33);
             this.boneButton5.TabIndex = 3;
             this.boneButton5.Text = "boneButton5";
             this.boneButton5.UseVisualStyleBackColor = true;
@@ -1243,7 +1266,7 @@
             this.boneButton4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.boneButton4.Location = new System.Drawing.Point(3, 34);
             this.boneButton4.Name = "boneButton4";
-            this.boneButton4.Size = new System.Drawing.Size(98, 33);
+            this.boneButton4.Size = new System.Drawing.Size(102, 33);
             this.boneButton4.TabIndex = 2;
             this.boneButton4.Text = "boneButton4";
             this.boneButton4.UseVisualStyleBackColor = true;
@@ -1251,9 +1274,9 @@
             // boneButton3
             // 
             this.boneButton3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton3.Location = new System.Drawing.Point(107, 3);
+            this.boneButton3.Location = new System.Drawing.Point(111, 3);
             this.boneButton3.Name = "boneButton3";
-            this.boneButton3.Size = new System.Drawing.Size(99, 25);
+            this.boneButton3.Size = new System.Drawing.Size(102, 25);
             this.boneButton3.TabIndex = 1;
             this.boneButton3.Text = "boneButton3";
             this.boneButton3.UseVisualStyleBackColor = true;
@@ -1263,7 +1286,7 @@
             this.boneButton2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.boneButton2.Location = new System.Drawing.Point(3, 3);
             this.boneButton2.Name = "boneButton2";
-            this.boneButton2.Size = new System.Drawing.Size(98, 25);
+            this.boneButton2.Size = new System.Drawing.Size(102, 25);
             this.boneButton2.TabIndex = 0;
             this.boneButton2.Text = "boneButton2";
             this.boneButton2.UseVisualStyleBackColor = true;
@@ -1272,32 +1295,10 @@
             // 
             this.boneButton1.Location = new System.Drawing.Point(84, 6);
             this.boneButton1.Name = "boneButton1";
-            this.boneButton1.Size = new System.Drawing.Size(75, 23);
+            this.boneButton1.Size = new System.Drawing.Size(138, 23);
             this.boneButton1.TabIndex = 0;
             this.boneButton1.Text = "boneButton1";
             this.boneButton1.UseVisualStyleBackColor = true;
-            // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addEntryToolStripMenuItem,
-            this.removeEntryToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(148, 48);
-            // 
-            // addEntryToolStripMenuItem
-            // 
-            this.addEntryToolStripMenuItem.Name = "addEntryToolStripMenuItem";
-            this.addEntryToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.addEntryToolStripMenuItem.Text = "Add Entry";
-            this.addEntryToolStripMenuItem.Click += new System.EventHandler(this.addEntryToolStripMenuItem_Click);
-            // 
-            // removeEntryToolStripMenuItem
-            // 
-            this.removeEntryToolStripMenuItem.Name = "removeEntryToolStripMenuItem";
-            this.removeEntryToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.removeEntryToolStripMenuItem.Text = "Remove Entry";
-            this.removeEntryToolStripMenuItem.Click += new System.EventHandler(this.removeEntryToolStripMenuItem_Click);
             // 
             // SwagEditor
             // 

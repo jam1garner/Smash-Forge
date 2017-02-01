@@ -517,13 +517,7 @@ namespace Smash_Forge
                 leftPanel.Hide();
         }
         #endregion
-
-        private void addBoneToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var newForm = new AddBone(this);
-            newForm.ShowDialog();
-            Console.WriteLine("Done");
-        }
+        
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.TargetVBN.Endian = Endianness.Big;
@@ -1173,6 +1167,11 @@ namespace Smash_Forge
         private void mergeModelsMeshListToolStripMenuItem_Click(object sender, EventArgs e)
         {
             meshList.mergeModel();
+        }
+
+        private void mergeBonesBoneListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //stub
         }
     }
 }

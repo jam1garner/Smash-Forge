@@ -22,7 +22,15 @@ namespace Smash_Forge
             treeView1.Nodes.Clear();
             if (Runtime.TargetVBN == null)
                 return;
-            buildBoneTree(0);
+            treeView1.BeginUpdate();
+            foreach (Bone b in Runtime.TargetVBN.bones)
+                if (b.ParentBone == null)
+                    treeView1.Nodes.Add(buildBoneTree(b));
+            treeView1.EndUpdate();
+            treeView1.ExpandAll();
+            listBox1.Items.Clear();
+            foreach (var item in Runtime.TargetVBN.bones)
+                listBox1.Items.Add(item);
         }
 
         public void Clear()
@@ -35,28 +43,12 @@ namespace Smash_Forge
             dataGridView1.DataSource = tbl;
         }
 
-        private TreeNode buildBoneTree(int index)
+        private TreeNode buildBoneTree(Bone b)
         {
-            treeView1.BeginUpdate();
-
-            List<TreeNode> children = new List<TreeNode>();
-            foreach (int i in Runtime.TargetVBN.bones[index].children)
-            {
-                children.Add(buildBoneTree(i));
-            }
-
-            TreeNode temp = new TreeNode(new string(Runtime.TargetVBN.bones[index].boneName), children.ToArray());
-
-            if (index == 0)
-                treeView1.Nodes.Add(temp);
-
-            temp.Expand();
-            foreach (TreeNode t in children)
-                t.Expand();
-
-            treeView1.EndUpdate();
+            TreeNode temp = new TreeNode(b.ToString()) { Tag = b };
+            foreach (Bone childBone in b.GetChildren())
+                temp.Nodes.Add(buildBoneTree(childBone));
             return temp;
-
         }
 
         public DataTable tbl;
@@ -64,6 +56,7 @@ namespace Smash_Forge
         public static Bone selectedBone = null;
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            listBox1.SelectedItem = treeView1.SelectedNode.Tag;
             currentNode = treeView1.SelectedNode.Text;
             textBox1.Text = treeView1.SelectedNode.Text;
             tbl = new DataTable();
@@ -136,17 +129,23 @@ namespace Smash_Forge
             if (!draggedNode.Equals(targetNode) && targetNode != null && !isAChildOfB(targetNode, draggedNode))
             {
                 int oldParent = (int)Runtime.TargetVBN.bones[Runtime.TargetVBN.boneIndex(draggedNode.Text)].parentIndex;
-                Runtime.TargetVBN.bones[oldParent].children.Remove(Runtime.TargetVBN.boneIndex(draggedNode.Text));
+                //Runtime.TargetVBN.bones[oldParent].children.Remove(Runtime.TargetVBN.boneIndex(draggedNode.Text));
                 int newParent = Runtime.TargetVBN.boneIndex(targetNode.Text);
                 Bone temp = Runtime.TargetVBN.bones[Runtime.TargetVBN.boneIndex(draggedNode.Text)];
                 temp.parentIndex = (int)newParent;
                 Runtime.TargetVBN.bones[Runtime.TargetVBN.boneIndex(draggedNode.Text)] = temp;
-                Runtime.TargetVBN.bones[newParent].children.Add(Runtime.TargetVBN.boneIndex(draggedNode.Text));
+                //Runtime.TargetVBN.bones[newParent].children.Add(Runtime.TargetVBN.boneIndex(draggedNode.Text));
 
                 draggedNode.Remove();
                 targetNode.Nodes.Add(draggedNode);
 
                 targetNode.Expand();
+            }
+            if (targetNode == null)
+            {
+                draggedNode.Remove();
+                treeView1.Nodes.Add(draggedNode);
+                ((Bone) draggedNode.Tag).ParentBone = null;
             }
         }
 
@@ -169,6 +168,66 @@ namespace Smash_Forge
             //}
 
             //Deleting is currently broken... gotta find a fix
+        }
+
+        private void listBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (this.listBox1.SelectedItem == null) return;
+            this.listBox1.DoDragDrop(this.listBox1.SelectedItem, DragDropEffects.Move);
+        }
+
+        private void listBox1_DragOver(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Move;
+        }
+
+        private void listBox1_DragDrop(object sender, DragEventArgs e)
+        {
+            System.Drawing.Point point = listBox1.PointToClient(new System.Drawing.Point(e.X, e.Y));
+            int index = this.listBox1.IndexFromPoint(point);
+            if (index < 0) index = this.listBox1.Items.Count - 1;
+            object data = listBox1.SelectedItem;
+            this.listBox1.Items.Remove(data);
+            this.listBox1.Items.Insert(index, data);
+            Runtime.TargetVBN.bones.Clear();
+            foreach (var item in listBox1.Items)
+                Runtime.TargetVBN.bones.Add((Bone)item);
+        }
+
+        private void selectBone(object bone, TreeNode t)
+        {
+            if (t.Tag == bone)
+                treeView1.SelectedNode = t;
+            foreach (TreeNode child in t.Nodes)
+                selectBone(bone, child);
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            foreach (TreeNode child in treeView1.Nodes)
+                selectBone(listBox1.SelectedItem, child);
+        }
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+            if (treeView1.SelectedNode == null)
+                removeBoneToolStripMenuItem.Visible = false;
+            else
+                removeBoneToolStripMenuItem.Visible = true;
+        }
+
+        private void addBoneToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Bone parent = (Bone)treeView1.SelectedNode.Tag;
+            new AddBone(parent).Show();
+        }
+
+        private void removeBoneToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode == null)
+                return;
+            Runtime.TargetVBN.bones.Remove((Bone) treeView1.SelectedNode.Tag);
+            treeRefresh();
         }
     }
 }

@@ -81,7 +81,7 @@ namespace Smash_Forge
                     int index = d.readInt(); // id
                     d.skip(4); // index
                     d.skip(8); // idk billboard settings and padding
-                    Bone n = new Bone();
+                    Bone n = new Bone(v);
                     
                     n.scale = new float[3];
                     n.position = new float[3];
@@ -123,7 +123,7 @@ namespace Smash_Forge
                 d.seek(temp);
             }
 			v.update ();
-            v.updateChildren();
+            //v.updateChildren();
             v.boneCountPerType[0] = (uint)v.bones.Count;
 
             return v;

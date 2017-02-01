@@ -12,12 +12,53 @@ namespace Smash_Forge
     {
         public char[] boneName;
         public UInt32 boneType;
-        public int parentIndex;
+
+        public int parentIndex
+        {
+            set
+            {
+                if (value == 268435455)
+                {
+                    ParentBone = null;
+                    return;
+                }
+                ParentBone = vbnParent.bones[value];
+            }
+
+            get
+            {
+                if (ParentBone == null)
+                    return -1;
+                return vbnParent.bones.IndexOf(ParentBone);
+            }
+        }
+
+        public Bone ParentBone;
         public UInt32 boneId;
         public float[] position;
         public float[] rotation;
         public float[] scale;
-        public List<int> children;
+        public VBN vbnParent;
+        //public List<int> children;
+
+        public Bone(VBN v)
+        {
+            vbnParent = v;
+        }
+
+        public List<Bone> GetChildren()
+        {
+            List<Bone> l = new List<Bone>();
+            foreach (Bone b in vbnParent.bones)
+                if(b.ParentBone == this)
+                    l.Add(b);
+            return l;
+        }
+
+        public override string ToString()
+        {
+            return new string(boneName).TrimEnd( (char)0 );
+        }
 
         public Vector3 pos = Vector3.Zero, sca = new Vector3(1f, 1f, 1f);
         public Quaternion rot = Quaternion.FromMatrix(Matrix3.Zero);
@@ -120,8 +161,8 @@ namespace Smash_Forge
             while (q.Count > 0)
             {
                 Bone b = q.Dequeue();
-                foreach (int c in b.children)
-                    q.Enqueue(bones[c]);
+                foreach (Bone bo in b.GetChildren())
+                    q.Enqueue(bo);
                 bone.Add(b);
             }
             return bone;
@@ -144,8 +185,8 @@ namespace Smash_Forge
         public void queueBones(Bone b, Queue<Bone> q)
         {
             q.Enqueue(b);
-            foreach (int c in b.children)
-                queueBones(bones[c], q);
+            foreach (Bone c in b.GetChildren())
+                queueBones(c, q);
         }
 
         public static Quaternion FromEulerAngles(float z, float y, float x)
@@ -221,8 +262,7 @@ namespace Smash_Forge
 
                 for (int i = 0; i < totalBoneCount; i++)
                 {
-                    Bone temp = new Bone();
-                    temp.children = new List<int>();
+                    Bone temp = new Bone(this);
                     temp.boneName = file.readString(file.pos(), -1).ToCharArray();
                     file.skip(64);
                     temp.boneType = (UInt32)file.readInt();
@@ -247,8 +287,8 @@ namespace Smash_Forge
                     bones[i].scale[2] = file.readFloat();
                     Bone temp = bones[i];
                     //Debug.Write(temp.parentIndex);
-                    if (temp.parentIndex != 0x0FFFFFFF && temp.parentIndex > -1)
-                        bones[temp.parentIndex].children.Add(i);
+                    //if (temp.parentIndex != 0x0FFFFFFF && temp.parentIndex > -1)
+                    //    bones[temp.parentIndex].children.Add(i);
                     bones[i] = temp;
                 }
                 reset();
@@ -394,30 +434,10 @@ namespace Smash_Forge
         {
             boneCountPerType[bones[index].boneType]--;
             totalBoneCount--;
-            bones[(int)bones[index].parentIndex].children.Remove(index);
-            for (int j = 0; j < bones.Count; j++)
-            {
-                if (bones[j].parentIndex > (uint)index)
-                {
-                    Bone tmp = bones[j];
-                    tmp.parentIndex -= 1;
-                    bones[j] = tmp;
-                }
-
-                for (int i = 0; i < bones[j].children.Count; i++)
-                {
-                    if (bones[j].children[i] > index)
-                    {
-                        bones[j].children[i]--;
-                    }
-                }
-            }
-            List<int> temp = bones[index].children;
-            bones.Remove(bones[index]);
-            foreach (int i in temp)
-            {
-                deleteBone(i);
-            }
+            List<Bone> children = bones[index].GetChildren();
+            bones.RemoveAt(index);
+            foreach (Bone b in children)
+                deleteBone(bones.IndexOf(b));
         }
 
         public void deleteBone(string name)
@@ -438,21 +458,6 @@ namespace Smash_Forge
             }
 
             return bonemat;
-        }
-
-
-        public void updateChildren()
-        {
-            for (int i = 0; i < bones.Count; i++)
-            {
-                bones[i].children = new List<int>();
-            }
-
-            for (int i = 0; i < bones.Count; i++)
-            {
-                if (bones[i].parentIndex != 0x0FFFFFFF)
-                    bones[(int)bones[i].parentIndex].children.Add(i);
-            }
         }
 
         private static string charsToString(char[] c)

@@ -46,10 +46,10 @@ namespace Smash_Forge
 				}
 
 				if (current.Equals ("nodes")) {
-					Bone b = new Bone ();
+					Bone b = new Bone (vbn);
 					b.boneName = args [1].Replace ("\"", "").ToCharArray();
 					b.parentIndex = int.Parse(args [2]);
-					b.children = new System.Collections.Generic.List<int> ();
+					//b.children = new System.Collections.Generic.List<int> ();
 					vbn.totalBoneCount++;
 					vbn.bones.Add (b);
 				}
@@ -85,8 +85,8 @@ namespace Smash_Forge
 						b.pos = new Vector3 (float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
 						b.rot = VBN.FromEulerAngles (float.Parse(args[6]), float.Parse(args[5]), float.Parse(args[4]));
 
-						if(b.parentIndex!=-1)
-							vbn.bones [b.parentIndex].children.Add (int.Parse(args[0]));
+						//if(b.parentIndex!=-1)
+						//	vbn.bones [b.parentIndex].children.Add (int.Parse(args[0]));
 					}
 
 					n.t_type = KeyNode.INTERPOLATED;

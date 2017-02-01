@@ -797,7 +797,7 @@ main()
                         if (sb != null)
                         {
                             // draw
-                            if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex != -1)
+                            if (bone.ParentBone != null)
                             {
                                 int i = bone.parentIndex;
                                 float degtorad = (float)(Math.PI / 180);
@@ -830,10 +830,9 @@ main()
                     GL.LineWidth(2f);
 
                     GL.Begin(PrimitiveType.Lines);
-                    if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex != -1)
+                    if (bone.ParentBone != null)
                     {
-                        int i = bone.parentIndex;
-                        Vector3 pos_p = Vector3.Transform(Vector3.Zero, vbn.bones[i].transform);
+                        Vector3 pos_p = Vector3.Transform(Vector3.Zero, bone.ParentBone.transform);
                         GL.Vertex3(pos_c);
                         GL.Color3(Color.Blue);
                         GL.Vertex3(pos_p);
@@ -1334,7 +1333,7 @@ main()
                         bid >>= 8;
                     }
 
-                    Bone b = new Bone();
+                    Bone b = new Bone(null);
 
                     if (h.Bone != -1)
                     {

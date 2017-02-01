@@ -145,5 +145,13 @@ namespace Smash_Forge
             swag.bones.Remove((SB.SBEntry)listBox1.SelectedItem);
             listBox1.Items.Remove(listBox1.SelectedItem);
         }
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+            if (listBox1.SelectedItem == null)
+                removeEntryToolStripMenuItem.Visible = false;
+            else
+                removeEntryToolStripMenuItem.Visible = true;
+        }
     }
 }

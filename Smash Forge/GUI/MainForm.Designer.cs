@@ -41,7 +41,6 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.clearWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.edittToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addBoneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hashMatchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.collisionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,6 +55,8 @@
             this.rectangleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteLVDEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mergeModelsMeshListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mergeBonesBoneListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.animationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -83,7 +84,6 @@
             this.glControl1 = new OpenTK.GLControl();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.mergeModelsMeshListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -178,22 +178,14 @@
             // edittToolStripMenuItem
             // 
             this.edittToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addBoneToolStripMenuItem,
             this.hashMatchToolStripMenuItem,
             this.addToolStripMenuItem,
             this.deleteLVDEntryToolStripMenuItem,
-            this.mergeModelsMeshListToolStripMenuItem});
+            this.mergeModelsMeshListToolStripMenuItem,
+            this.mergeBonesBoneListToolStripMenuItem});
             this.edittToolStripMenuItem.Name = "edittToolStripMenuItem";
             this.edittToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.edittToolStripMenuItem.Text = "Edit";
-            // 
-            // addBoneToolStripMenuItem
-            // 
-            this.addBoneToolStripMenuItem.Name = "addBoneToolStripMenuItem";
-            this.addBoneToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.addBoneToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
-            this.addBoneToolStripMenuItem.Text = "Add Bone";
-            this.addBoneToolStripMenuItem.Click += new System.EventHandler(this.addBoneToolStripMenuItem_Click);
             // 
             // hashMatchToolStripMenuItem
             // 
@@ -304,6 +296,20 @@
             this.deleteLVDEntryToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.deleteLVDEntryToolStripMenuItem.Text = "Delete Selected LVD Entry";
             this.deleteLVDEntryToolStripMenuItem.Click += new System.EventHandler(this.deleteLVDEntryToolStripMenuItem_Click);
+            // 
+            // mergeModelsMeshListToolStripMenuItem
+            // 
+            this.mergeModelsMeshListToolStripMenuItem.Name = "mergeModelsMeshListToolStripMenuItem";
+            this.mergeModelsMeshListToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.mergeModelsMeshListToolStripMenuItem.Text = "Merge Models (Mesh List)";
+            this.mergeModelsMeshListToolStripMenuItem.Click += new System.EventHandler(this.mergeModelsMeshListToolStripMenuItem_Click);
+            // 
+            // mergeBonesBoneListToolStripMenuItem
+            // 
+            this.mergeBonesBoneListToolStripMenuItem.Name = "mergeBonesBoneListToolStripMenuItem";
+            this.mergeBonesBoneListToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.mergeBonesBoneListToolStripMenuItem.Text = "Merge Bones (Bone List)";
+            this.mergeBonesBoneListToolStripMenuItem.Click += new System.EventHandler(this.mergeBonesBoneListToolStripMenuItem_Click);
             // 
             // animationToolStripMenuItem
             // 
@@ -527,13 +533,6 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
-            // mergeModelsMeshListToolStripMenuItem
-            // 
-            this.mergeModelsMeshListToolStripMenuItem.Name = "mergeModelsMeshListToolStripMenuItem";
-            this.mergeModelsMeshListToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
-            this.mergeModelsMeshListToolStripMenuItem.Text = "Merge Models (Mesh List)";
-            this.mergeModelsMeshListToolStripMenuItem.Click += new System.EventHandler(this.mergeModelsMeshListToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AllowDrop = true;
@@ -572,7 +571,6 @@
 		private System.Windows.Forms.ToolStripMenuItem openNUDToolStripMenuItem;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
 		private System.Windows.Forms.ToolStripMenuItem edittToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem addBoneToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem animationToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
@@ -621,6 +619,7 @@
         private System.Windows.Forms.ToolStripMenuItem pathToolStripMenuItem;
         public System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem mergeModelsMeshListToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mergeBonesBoneListToolStripMenuItem;
     }
 }
 
