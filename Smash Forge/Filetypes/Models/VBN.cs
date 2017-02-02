@@ -17,7 +17,7 @@ namespace Smash_Forge
         {
             set
             {
-                if (value == 268435455)
+                if (value == 268435455 || value == -1)
                 {
                     ParentBone = null;
                     return;

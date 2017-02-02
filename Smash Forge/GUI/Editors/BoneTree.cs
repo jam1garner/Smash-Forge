@@ -20,6 +20,7 @@ namespace Smash_Forge
         public void treeRefresh()
         {
             treeView1.Nodes.Clear();
+            Runtime.TargetVBN.reset();
             if (Runtime.TargetVBN == null)
                 return;
             treeView1.BeginUpdate();
@@ -79,6 +80,7 @@ namespace Smash_Forge
             tbl.Rows.Add("X Scale", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).scale[0]);
             tbl.Rows.Add("Y Scale", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).scale[1]);
             tbl.Rows.Add("Z Scale", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).scale[2]);
+            Runtime.TargetVBN.reset();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -93,24 +95,24 @@ namespace Smash_Forge
 
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            Bone editingBone = Runtime.TargetVBN.bones[Runtime.TargetVBN.boneIndex(currentNode)];
+            Bone editingBone = (Bone)treeView1.SelectedNode.Tag;
             editingBone.boneId = (uint)int.Parse(tbl.Rows[1][1].ToString(), System.Globalization.NumberStyles.HexNumber);
             editingBone.boneType = Convert.ToUInt32(tbl.Rows[2][1]);
-            Runtime.TargetVBN.bones[Runtime.TargetVBN.boneIndex(currentNode)] = editingBone;
 
-            Runtime.TargetVBN.bone(currentNode).position[0] = Convert.ToSingle(tbl.Rows[3][1]);
-            Runtime.TargetVBN.bone(currentNode).position[1] = Convert.ToSingle(tbl.Rows[4][1]);
-            Runtime.TargetVBN.bone(currentNode).position[2] = Convert.ToSingle(tbl.Rows[5][1]);
+            editingBone.position[0] = Convert.ToSingle(tbl.Rows[3][1]);
+            editingBone.position[1] = Convert.ToSingle(tbl.Rows[4][1]);
+            editingBone.position[2] = Convert.ToSingle(tbl.Rows[5][1]);
 
-            Runtime.TargetVBN.bone(currentNode).rotation[0] = Convert.ToSingle(tbl.Rows[6][1]);
-            Runtime.TargetVBN.bone(currentNode).rotation[1] = Convert.ToSingle(tbl.Rows[7][1]);
-            Runtime.TargetVBN.bone(currentNode).rotation[2] = Convert.ToSingle(tbl.Rows[8][1]);
+            editingBone.rotation[0] = Convert.ToSingle(tbl.Rows[6][1]);
+            editingBone.rotation[1] = Convert.ToSingle(tbl.Rows[7][1]);
+            editingBone.rotation[2] = Convert.ToSingle(tbl.Rows[8][1]);
 
-            Runtime.TargetVBN.bone(currentNode).scale[0] = Convert.ToSingle(tbl.Rows[9][1]);
-            Runtime.TargetVBN.bone(currentNode).scale[1] = Convert.ToSingle(tbl.Rows[10][1]);
-            Runtime.TargetVBN.bone(currentNode).scale[2] = Convert.ToSingle(tbl.Rows[11][1]);
+            editingBone.scale[0] = Convert.ToSingle(tbl.Rows[11][1]);
+            editingBone.scale[1] = Convert.ToSingle(tbl.Rows[10][1]);
+            editingBone.scale[2] = Convert.ToSingle(tbl.Rows[9][1]);
 
             //vbn.update ();
+            Runtime.TargetVBN.reset();
             Runtime.TargetVBN.reset();
         }
 
@@ -147,6 +149,7 @@ namespace Smash_Forge
                 treeView1.Nodes.Add(draggedNode);
                 ((Bone) draggedNode.Tag).ParentBone = null;
             }
+            Runtime.TargetVBN.reset();
         }
 
         private void treeView1_ItemDrag(object sender, ItemDragEventArgs e)
@@ -218,7 +221,9 @@ namespace Smash_Forge
 
         private void addBoneToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Bone parent = (Bone)treeView1.SelectedNode.Tag;
+            Bone parent = null;
+            if (treeView1.SelectedNode != null)
+                parent = (Bone) treeView1.SelectedNode.Tag;
             new AddBone(parent).Show();
         }
 
