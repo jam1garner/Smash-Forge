@@ -540,6 +540,7 @@ namespace Smash_Forge
         {
             Runtime.killWorkspace = true;
         }
+
         private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
 

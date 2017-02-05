@@ -19,10 +19,10 @@ namespace Smash_Forge
         }
         public void treeRefresh()
         {
-            treeView1.Nodes.Clear();
-            Runtime.TargetVBN.reset();
             if (Runtime.TargetVBN == null)
                 return;
+            treeView1.Nodes.Clear();
+            Runtime.TargetVBN.reset();
             treeView1.BeginUpdate();
             foreach (Bone b in Runtime.TargetVBN.bones)
                 if (b.ParentBone == null)
