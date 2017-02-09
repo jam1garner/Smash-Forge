@@ -184,30 +184,28 @@ namespace Smash_Forge
                         if (mat.textures.Count > 1)
                             nrmHash = mat.textures[1].hash;
 
-                        int tex = -1;
+                        int tex;
                         foreach (NUT nut in Runtime.TextureContainers)
                         {
-                            nut.draw.TryGetValue(texHash, out tex);
+                            bool success = nut.draw.TryGetValue(texHash, out tex);
 
-                            if (tex != -1)
+                            if (success)
                             {
                                 GL.ActiveTexture(TextureUnit.Texture0);
                                 GL.BindTexture(TextureTarget.Texture2D, tex);
                                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[0].WrapMode1]);
                                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[0].WrapMode2]);
                                 GL.Uniform1(shader.getAttribute("tex"), 0);
-                                tex = -1;
                             } else
                             {
                                 GL.ActiveTexture(TextureUnit.Texture0);
                                 GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
                                 GL.Uniform1(shader.getAttribute("tex"), 0);
-                                tex = -1;
                             }
 
-                            nut.draw.TryGetValue(nrmHash, out tex);
+                            success = nut.draw.TryGetValue(nrmHash, out tex);
 
-                            if (tex != -1 && mat.textures.Count > 1)
+                            if (success && mat.textures.Count > 1)
                             {
                                 GL.ActiveTexture(TextureUnit.Texture1);
                                 GL.BindTexture(TextureTarget.Texture2D, tex);
@@ -1504,6 +1502,17 @@ namespace Smash_Forge
         }
 
         #endregion
+
+        public List<int> GetTexIds()
+        {
+            List<int> texIds = new List<int>();
+            foreach (var m in mesh)
+                foreach (var poly in m.polygons)
+                    foreach (var mat in poly.materials)
+                        if(!texIds.Contains(mat.displayTexId))
+                            texIds.Add(mat.displayTexId);
+            return texIds;
+        }
     }
 }
 

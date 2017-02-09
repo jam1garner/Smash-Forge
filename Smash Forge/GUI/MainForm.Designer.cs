@@ -37,6 +37,7 @@
             this.openStageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.openCharacterToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.openNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.clearWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -109,6 +110,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openVBNToolStripMenuItem,
             this.openNUDToolStripMenuItem,
+            this.exportModelToolStripMenuItem,
             this.saveNUDToolStripMenuItem,
             this.toolStripSeparator4,
             this.clearWorkspaceToolStripMenuItem});
@@ -155,6 +157,14 @@
             this.openNUDToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.openNUDToolStripMenuItem.Text = "Save";
             this.openNUDToolStripMenuItem.Click += new System.EventHandler(this.openNUDToolStripMenuItem_Click);
+            // 
+            // exportModelToolStripMenuItem
+            // 
+            this.exportModelToolStripMenuItem.Name = "exportModelToolStripMenuItem";
+            this.exportModelToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.exportModelToolStripMenuItem.Text = "Export Model";
+            this.exportModelToolStripMenuItem.Visible = false;
+            this.exportModelToolStripMenuItem.Click += new System.EventHandler(this.saveAsDAEToolStripMenuItem_Click);
             // 
             // saveNUDToolStripMenuItem
             // 
@@ -620,6 +630,7 @@
         public System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem mergeModelsMeshListToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mergeBonesBoneListToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem exportModelToolStripMenuItem;
     }
 }
 

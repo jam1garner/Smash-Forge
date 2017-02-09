@@ -126,6 +126,11 @@ namespace Smash_Forge
                 MainForm.Instance.project.fillTree();
             }
 
+            //if (Runtime.ModelContainers.Count > 0)
+            //    MainForm.Instance.exportModelToolStripMenuItem.Visible = true;
+            //else
+            //    MainForm.Instance.exportModelToolStripMenuItem.Visible = false;
+
             if (this.IsDisposed == true)
                 return;
 
