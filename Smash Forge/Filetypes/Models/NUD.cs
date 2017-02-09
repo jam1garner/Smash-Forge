@@ -179,47 +179,62 @@ namespace Smash_Forge
                     //foreach (Material mat in p.materials)
                     {
                         Material mat = p.materials[0];
+                        int fl = ((int)mat.flags & 0xFF);
+                        GL.Uniform1(shader.getAttribute("flags"), fl);
                         int texHash = mat.displayTexId == -1 ? mat.textures[0].hash : mat.displayTexId;
                         int nrmHash = -1;
                         if (mat.textures.Count > 1)
                             nrmHash = mat.textures[1].hash;
 
-                        int tex;
+                        int tex = -1, finalTex = -1, finalNrm = -1;
+                        bool success;
+                        GL.ActiveTexture(TextureUnit.Texture0);
+                        GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
+                        GL.Uniform1(shader.getAttribute("tex"), 0);
+                        GL.ActiveTexture(TextureUnit.Texture1);
+                        GL.BindTexture(TextureTarget.Texture2D, 0);
+                        GL.Uniform1(shader.getAttribute("nrm"), 1);
                         foreach (NUT nut in Runtime.TextureContainers)
                         {
-                            bool success = nut.draw.TryGetValue(texHash, out tex);
-
+                            success = nut.draw.TryGetValue(texHash, out tex);
                             if (success)
-                            {
-                                GL.ActiveTexture(TextureUnit.Texture0);
-                                GL.BindTexture(TextureTarget.Texture2D, tex);
-                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[0].WrapMode1]);
-                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[0].WrapMode2]);
-                                GL.Uniform1(shader.getAttribute("tex"), 0);
-                            } else
-                            {
-                                GL.ActiveTexture(TextureUnit.Texture0);
-                                GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
-                                GL.Uniform1(shader.getAttribute("tex"), 0);
-                            }
-
+                                finalTex = tex;
                             success = nut.draw.TryGetValue(nrmHash, out tex);
-
-                            if (success && mat.textures.Count > 1)
-                            {
-                                GL.ActiveTexture(TextureUnit.Texture1);
-                                GL.BindTexture(TextureTarget.Texture2D, tex);
-                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[1].WrapMode1]);
-                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[1].WrapMode2]);
-                                GL.Uniform1(shader.getAttribute("nrm"), 1);
-                            } else
-                            {
-                                GL.ActiveTexture(TextureUnit.Texture1);
-                                GL.BindTexture(TextureTarget.Texture2D, 0);
-                                GL.Uniform1(shader.getAttribute("nrm"), 1);
-                            }
+                            if (success)
+                                finalNrm = tex;
                         }
 
+                        if (finalTex != 0)
+                        {
+                            tex = finalTex;
+                            GL.ActiveTexture(TextureUnit.Texture0);
+                            GL.BindTexture(TextureTarget.Texture2D, tex);
+                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[0].WrapMode1]);
+                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[0].WrapMode2]);
+                            GL.Uniform1(shader.getAttribute("tex"), 0);
+                        }
+                        else
+                        {
+                            GL.ActiveTexture(TextureUnit.Texture0);
+                            GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
+                            GL.Uniform1(shader.getAttribute("tex"), 0);
+                        }
+
+                        if (finalNrm != 0 && mat.textures.Count > 1)
+                        {
+                            tex = finalNrm;
+                            GL.ActiveTexture(TextureUnit.Texture1);
+                            GL.BindTexture(TextureTarget.Texture2D, tex);
+                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[1].WrapMode1]);
+                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[1].WrapMode2]);
+                            GL.Uniform1(shader.getAttribute("nrm"), 1);
+                        }
+                        else
+                        {
+                            GL.ActiveTexture(TextureUnit.Texture1);
+                            GL.BindTexture(TextureTarget.Texture2D, 0);
+                            GL.Uniform1(shader.getAttribute("nrm"), 1);
+                        }
 
                         Vector4 colorSamplerUV = new Vector4(1, 1, 0, 0);
                         {
