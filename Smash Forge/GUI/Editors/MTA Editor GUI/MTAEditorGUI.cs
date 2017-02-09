@@ -24,6 +24,7 @@ namespace Smash_Forge
             treeView1.Nodes.Add(headerNode);
             treeView1.Nodes.Add(matNode);
             treeView1.Nodes.Add(visNode);
+            
             foreach(MatEntry m in mta.matEntries)
             {
                 TreeNode mNode = new TreeNode(m.name) { Tag = m };
@@ -33,6 +34,8 @@ namespace Smash_Forge
             }
             foreach (VisEntry v in mta.visEntries)
                 visNode.Nodes.Add(new TreeNode(v.name) { Tag = v });
+
+            treeView1.ExpandAll();
         }
 
         readonly Font CONSOLAS = new Font("Consolas", 11);

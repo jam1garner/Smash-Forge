@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
@@ -11,12 +12,53 @@ namespace Smash_Forge
     {
         public char[] boneName;
         public UInt32 boneType;
-        public int parentIndex;
+
+        public int parentIndex
+        {
+            set
+            {
+                if (value == 268435455 || value == -1)
+                {
+                    ParentBone = null;
+                    return;
+                }
+                ParentBone = vbnParent.bones[value];
+            }
+
+            get
+            {
+                if (ParentBone == null)
+                    return -1;
+                return vbnParent.bones.IndexOf(ParentBone);
+            }
+        }
+
+        public Bone ParentBone;
         public UInt32 boneId;
         public float[] position;
         public float[] rotation;
         public float[] scale;
-        public List<int> children;
+        public VBN vbnParent;
+        //public List<int> children;
+
+        public Bone(VBN v)
+        {
+            vbnParent = v;
+        }
+
+        public List<Bone> GetChildren()
+        {
+            List<Bone> l = new List<Bone>();
+            foreach (Bone b in vbnParent.bones)
+                if(b.ParentBone == this)
+                    l.Add(b);
+            return l;
+        }
+
+        public override string ToString()
+        {
+            return new string(boneName).TrimEnd( (char)0 );
+        }
 
         public Vector3 pos = Vector3.Zero, sca = new Vector3(1f, 1f, 1f);
         public Quaternion rot = Quaternion.FromMatrix(Matrix3.Zero);
@@ -119,8 +161,8 @@ namespace Smash_Forge
             while (q.Count > 0)
             {
                 Bone b = q.Dequeue();
-                foreach (int c in b.children)
-                    q.Enqueue(bones[c]);
+                foreach (Bone bo in b.GetChildren())
+                    q.Enqueue(bo);
                 bone.Add(b);
             }
             return bone;
@@ -143,8 +185,8 @@ namespace Smash_Forge
         public void queueBones(Bone b, Queue<Bone> q)
         {
             q.Enqueue(b);
-            foreach (int c in b.children)
-                queueBones(bones[c], q);
+            foreach (Bone c in b.GetChildren())
+                queueBones(c, q);
         }
 
         public static Quaternion FromEulerAngles(float z, float y, float x)
@@ -220,8 +262,7 @@ namespace Smash_Forge
 
                 for (int i = 0; i < totalBoneCount; i++)
                 {
-                    Bone temp = new Bone();
-                    temp.children = new List<int>();
+                    Bone temp = new Bone(this);
                     temp.boneName = file.readString(file.pos(), -1).ToCharArray();
                     file.skip(64);
                     temp.boneType = (UInt32)file.readInt();
@@ -246,8 +287,8 @@ namespace Smash_Forge
                     bones[i].scale[2] = file.readFloat();
                     Bone temp = bones[i];
                     //Debug.Write(temp.parentIndex);
-                    if (temp.parentIndex != 0x0FFFFFFF && temp.parentIndex > -1)
-                        bones[temp.parentIndex].children.Add(i);
+                    //if (temp.parentIndex != 0x0FFFFFFF && temp.parentIndex > -1)
+                    //    bones[temp.parentIndex].children.Add(i);
                     bones[i] = temp;
                 }
                 reset();
@@ -393,30 +434,10 @@ namespace Smash_Forge
         {
             boneCountPerType[bones[index].boneType]--;
             totalBoneCount--;
-            bones[(int)bones[index].parentIndex].children.Remove(index);
-            for (int j = 0; j < bones.Count; j++)
-            {
-                if (bones[j].parentIndex > (uint)index)
-                {
-                    Bone tmp = bones[j];
-                    tmp.parentIndex -= 1;
-                    bones[j] = tmp;
-                }
-
-                for (int i = 0; i < bones[j].children.Count; i++)
-                {
-                    if (bones[j].children[i] > index)
-                    {
-                        bones[j].children[i]--;
-                    }
-                }
-            }
-            List<int> temp = bones[index].children;
-            bones.Remove(bones[index]);
-            foreach (int i in temp)
-            {
-                deleteBone(i);
-            }
+            List<Bone> children = bones[index].GetChildren();
+            bones.RemoveAt(index);
+            foreach (Bone b in children)
+                deleteBone(bones.IndexOf(b));
         }
 
         public void deleteBone(string name)
@@ -439,19 +460,42 @@ namespace Smash_Forge
             return bonemat;
         }
 
-
-        public void updateChildren()
+        private static string charsToString(char[] c)
         {
-            for (int i = 0; i < bones.Count; i++)
-            {
-                bones[i].children = new List<int>();
-            }
+            string boneNameRigging = "";
+            foreach (char b in c)
+                if (b != (char)0)
+                    boneNameRigging += b;
+            return boneNameRigging;
+        }
 
-            for (int i = 0; i < bones.Count; i++)
-            {
-                if (bones[i].parentIndex != 0x0FFFFFFF)
-                    bones[(int)bones[i].parentIndex].children.Add(i);
-            }
+        public static string BoneNameFromHash(uint boneHash)
+        {
+            foreach (ModelContainer m in Runtime.ModelContainers)
+                if (m.vbn != null)
+                    foreach (Bone b in m.vbn.bones)
+                        if (b.boneId == boneHash)
+                            return charsToString(b.boneName);
+
+            csvHashes csv = new csvHashes(Path.Combine(MainForm.executableDir, "hashTable.csv"));
+            for (int i = 0; i < csv.ids.Count; i++)
+                if (csv.ids[i] == boneHash)
+                    return csv.names[i]+" (From hashTable.csv)";
+
+            return $"[Bonehash {boneHash.ToString("X")}]";
+        }
+
+        public static Bone GetBone(uint boneHash)
+        {
+            if(boneHash == 3449071621)
+                return null;
+            foreach (ModelContainer m in Runtime.ModelContainers)
+                if (m.vbn != null)
+                    foreach (Bone b in m.vbn.bones)
+                        if (b.boneId == boneHash)
+                            return b;
+            MessageBox.Show("Open the VBN before editing the SB");
+            return null;
         }
     }
 
@@ -465,16 +509,30 @@ namespace Smash_Forge
 
         public class SBEntry
         {
-            public uint hash;
+            public uint hash = 3449071621;
             public float param1_1, param2_1;
             public int param1_2, param1_3, param2_2, param2_3;
             public float rx1, rx2, ry1, ry2, rz1, rz2;
-            public float[] unks1 = new float[12], unks2 = new float[5];
+            public uint[] boneHashes = new uint[8] { 3449071621, 3449071621, 3449071621, 3449071621, 3449071621, 3449071621, 3449071621, 3449071621 };
+            public float[] unks1 = new float[4], unks2 = new float[5];
             public float factor;
             public int[] ints = new int[4];
+
+            public override string ToString()
+            {
+                return VBN.BoneNameFromHash(hash);
+            }
         }
 
-        public Dictionary<uint, SBEntry> bones = new Dictionary<uint, SBEntry>();
+        public List<SBEntry> bones = new List<SBEntry>();
+
+        public void TryGetEntry(uint hash, out SBEntry entry)
+        {
+            entry = null;
+            foreach(SBEntry sb in bones)
+                if (sb.hash == hash)
+                    entry = sb;
+        }
 
         public override void Read(string filename)
         {
@@ -502,7 +560,10 @@ namespace Smash_Forge
                     rz2 = d.readFloat()
                 };
 
-                for (int j = 0; j < 12; j++)
+                for (int j = 0; j < 8; j++)
+                    sb.boneHashes[j] = (uint)d.readInt();
+
+                for (int j = 0; j < 4; j++)
                     sb.unks1[j] = d.readFloat();
 
                 for (int j = 0; j < 5; j++)
@@ -513,7 +574,7 @@ namespace Smash_Forge
                 for (int j = 0; j < 4; j++)
                     sb.ints[j] = d.readInt();
 
-                bones.Add(sb.hash, sb);
+                bones.Add(sb);
 
                 /*Console.WriteLine(sb.hash.ToString("x"));
                 Console.WriteLine(d.readFloat() + " " + d.readInt() + " " + d.readInt());
@@ -541,84 +602,43 @@ namespace Smash_Forge
             FileOutput o = new FileOutput();
             o.Endian = Endianness.Little;
 
-            using (StreamReader sr = new StreamReader("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\model\\body\\hmera\\SweingBone\\swb.txt"))
+            o.writeString(" BWS");
+            o.writeShort(0x05);
+            o.writeShort(0x01);
+            o.writeInt(bones.Count);
+
+            foreach(SBEntry s in bones)
             {
-                String line = sr.ReadLine();
-                int count = int.Parse(line);
+                o.writeInt((int)s.hash);
+                o.writeFloat(s.param1_1);
+                o.writeInt(s.param1_2);
+                o.writeInt(s.param1_3);
+                o.writeFloat(s.param2_1);
+                o.writeInt(s.param2_2);
+                o.writeInt(s.param2_3);
+                o.writeFloat(s.rx1);
+                o.writeFloat(s.rx2);
+                o.writeFloat(s.ry1);
+                o.writeFloat(s.ry2);
+                o.writeFloat(s.rz1);
+                o.writeFloat(s.rz2);
 
-                o.writeString(" BWS");
-                o.writeShort(0x05);
-                o.writeShort(0x01);
-                o.writeInt(count);
+                for (int j = 0; j < 8; j++)
+                    o.writeInt((int)s.boneHashes[j]);
 
-                for (int i = 0; i < count; i++)
-                {
-                    line = sr.ReadLine();
-                    o.writeInt(int.Parse(line, System.Globalization.NumberStyles.HexNumber));
-                    string[] args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeInt(int.Parse(args[1]));
-                    o.writeInt(int.Parse(args[2]));
+                for (int j = 0; j < 4; j++)
+                    o.writeFloat(s.unks1[j]);
 
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeInt(int.Parse(args[1]));
-                    o.writeInt(int.Parse(args[2]));
+                for (int j = 0; j < 5; j++)
+                    o.writeFloat(s.unks2[j]);
 
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeFloat(float.Parse(args[1]));
+                o.writeFloat(s.factor);
 
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeFloat(float.Parse(args[1]));
-
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeFloat(float.Parse(args[1]));
-
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeFloat(float.Parse(args[1]));
-                    o.writeFloat(float.Parse(args[2]));
-                    o.writeFloat(float.Parse(args[3]));
-
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeFloat(float.Parse(args[1]));
-                    o.writeFloat(float.Parse(args[2]));
-                    o.writeFloat(float.Parse(args[3]));
-
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeFloat(float.Parse(args[1]));
-                    o.writeFloat(float.Parse(args[2]));
-                    o.writeFloat(float.Parse(args[3]));
-
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeFloat(float.Parse(args[1]));
-                    o.writeFloat(float.Parse(args[2]));
-                    o.writeFloat(float.Parse(args[3]));
-
-                    args = sr.ReadLine().Split(' ');
-                    o.writeFloat(float.Parse(args[0]));
-                    o.writeFloat(float.Parse(args[1]));
-
-                    args = sr.ReadLine().Split(' ');
-                    o.writeInt(int.Parse(args[0]));
-                    o.writeInt(int.Parse(args[1]));
-
-                    args = sr.ReadLine().Split(' ');
-                    o.writeInt(int.Parse(args[0]));
-                    o.writeInt(int.Parse(args[1]));
-                }
-
+                for (int j = 0; j < 4; j++)
+                    o.writeInt(s.ints[j]);
             }
 
-            o.save("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\model\\body\\hmera\\SweingBone\\model.sb");
-
-            return null;
+            return o.getBytes();
         }
     }
 }

@@ -114,14 +114,14 @@
             this.textBox2.Size = new System.Drawing.Size(336, 20);
             this.textBox2.TabIndex = 5;
             // 
-            // Form3
+            // AddBone
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(375, 310);
             this.Controls.Add(this.groupBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Form3";
+            this.Name = "AddBone";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Add Bone";
             this.groupBox1.ResumeLayout(false);

@@ -377,8 +377,7 @@ namespace Smash_Forge
                                         if (md.frames.Count > 0)
                                         {
                                             if (ma.anims.ContainsKey(md.name))
-                                                if (md.frames.Count > (int)((frame * 60 / m.frameRate) % (m.numFrames)))
-                                                    ma.anims[md.name] = md.frames[(int)((frame * 60 / m.frameRate) % m.numFrames)].values;
+                                                ma.anims[md.name] = md.frames[(int)((frame * 60 / m.frameRate) % (m.numFrames))].values;
                                             else
                                                 if(md.frames.Count > (int)((frame * 60 / m.frameRate) % (m.numFrames)))
                                                     ma.anims.Add(md.name, md.frames[(int)((frame * 60 / m.frameRate) % (m.numFrames))].values);
@@ -507,6 +506,7 @@ namespace Smash_Forge
             foreach (var o in obj)
             {
                 Mesh m = new Mesh();
+                //Console.WriteLine($"{o.name} singlebind: {o.singlebind}");
                 m.Text = o.name;
                 mesh.Add(m);
                 m.boneflag = boneflags[mi];

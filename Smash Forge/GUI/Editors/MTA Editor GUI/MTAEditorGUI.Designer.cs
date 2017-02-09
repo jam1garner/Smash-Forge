@@ -29,8 +29,8 @@
         {
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.colorList1 = new Smash_Forge.ColorList();
             this.matPropList1 = new Smash_Forge.GUI.MatPropList();
+            this.colorList1 = new Smash_Forge.ColorList();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -68,14 +68,6 @@
             this.splitContainer1.SplitterWidth = 6;
             this.splitContainer1.TabIndex = 3;
             // 
-            // colorList1
-            // 
-            this.colorList1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.colorList1.Location = new System.Drawing.Point(0, 0);
-            this.colorList1.Name = "colorList1";
-            this.colorList1.Size = new System.Drawing.Size(245, 391);
-            this.colorList1.TabIndex = 0;
-            // 
             // matPropList1
             // 
             this.matPropList1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -83,6 +75,14 @@
             this.matPropList1.Name = "matPropList1";
             this.matPropList1.Size = new System.Drawing.Size(245, 391);
             this.matPropList1.TabIndex = 1;
+            // 
+            // colorList1
+            // 
+            this.colorList1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.colorList1.Location = new System.Drawing.Point(0, 0);
+            this.colorList1.Name = "colorList1";
+            this.colorList1.Size = new System.Drawing.Size(245, 391);
+            this.colorList1.TabIndex = 0;
             // 
             // MTAEditorGUI
             // 

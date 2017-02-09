@@ -270,7 +270,7 @@ namespace Smash_Forge
                 f.seek(skeletonOffset);
                 for (int index = 0; index < skeletonEntries; index++)
                 {
-                    Bone bone = new Smash_Forge.Bone();
+                    Bone bone = new Smash_Forge.Bone(model.skeleton);
                     int boneFlags = f.readInt();
                     bone.parentIndex = (short)f.readShort();
                     short boneSpace = (short)f.readShort();

@@ -56,7 +56,7 @@ namespace Smash_Forge
                         foreach (ColladaNode child in bo.children)
                             nodes.Enqueue(child);
 
-                        Bone bone = new Smash_Forge.Bone();
+                        Bone bone = new Smash_Forge.Bone(vbn);
                         vbn.bones.Add(bone);
                         bone.boneName = bo.name.ToCharArray();
                         bone.parentIndex = parenttrack.IndexOf(bo.parent);
@@ -72,10 +72,10 @@ namespace Smash_Forge
                         bone.scale[0] = bo.sca.X;
                         bone.scale[1] = bo.sca.X;
                         bone.scale[2] = bo.sca.X;
-                        bone.children = new List<int>();
+                        //bone.children = new List<int>();
 
-                        if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex > -1)
-                            vbn.bones[bone.parentIndex].children.Add(parenttrack.IndexOf(bo));
+                        //if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex > -1)
+                        //    vbn.bones[bone.parentIndex].children.Add(parenttrack.IndexOf(bo));
                     }
 
                     vbn.reset();
@@ -527,8 +527,8 @@ namespace Smash_Forge
             node.pos = b.pos;
             node.sca = b.sca;
             node.rot = ANIM.quattoeul(b.rot);
-            foreach (int bone in b.children)
-                SaveBoneNodes(dae, vbn.bones[bone], vbn, node);
+            foreach (var bone in b.GetChildren())
+                SaveBoneNodes(dae, bone, vbn, node);
         }
 
 

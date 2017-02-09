@@ -28,6 +28,7 @@ namespace Smash_Forge.GUI
             checkBox10.Checked = Runtime.renderItemSpawners;
             checkBox11.Checked = Runtime.renderGeneralPoints;
             checkBox12.Checked = Runtime.renderCollisionNormals;
+            swagViewing.Checked = Runtime.renderSwag;
 
             depthSlider.Value = (int)Runtime.renderDepth;
 
@@ -89,6 +90,11 @@ namespace Smash_Forge.GUI
         {
             Runtime.renderType = (Runtime.RenderTypes)renderMode.SelectedIndex;
             
+        }
+
+        private void swagViewing_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderSwag = swagViewing.Checked;
         }
     }
 }

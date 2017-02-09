@@ -12,13 +12,13 @@ namespace Smash_Forge
 {
     public partial class AddBone : Form
     {
-        public MainForm otherForm;
-
-        public AddBone(MainForm mainForm)
+        public AddBone(Bone parentBone = null)
         {
-            otherForm = mainForm;
             InitializeComponent();
+            this.parent = parentBone;
         }
+
+        private Bone parent = null;
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -34,11 +34,18 @@ namespace Smash_Forge
                 Close();
                 return;
             }
+            else if (textBox1.Text.Equals("THRoW"))
+            {
+                //If you are reading this he kidnapped me and made me do it
+                System.Diagnostics.Process.Start("https://twitter.com/realheroofwinds");
+                Close();
+                return;
+            }
 
             if (textBox1.Text.Equals (""))
 				return;
 
-            Bone temp = new Bone();
+            Bone temp = new Bone(Runtime.TargetVBN);
 			temp.boneName = textBox1.Text.ToCharArray();
 			if(!textBox2.Text.Equals(""))
             	temp.boneId = (uint)int.Parse(textBox2.Text, System.Globalization.NumberStyles.HexNumber);
@@ -50,19 +57,15 @@ namespace Smash_Forge
                 Runtime.TargetVBN = new VBN();
 
             if (Runtime.TargetVBN.bones.Count > 0)
-                temp.parentIndex = 0;
-            else
-                temp.parentIndex = 0x0FFFFFFF;
-            temp.children = new List<int>();
+                temp.ParentBone = parent;
             temp.position = new float[] {0f,0f,0f};
             temp.rotation = new float[] { 0f,0f,0f};
             temp.scale = new float[] { 1f,1f,1f};
             Runtime.TargetVBN.bones.Add(temp);
             Runtime.TargetVBN.totalBoneCount++;
             Runtime.TargetVBN.boneCountPerType[temp.boneType]++;
-            Runtime.TargetVBN.updateChildren();
             Runtime.TargetVBN.reset();
-            otherForm.leftPanel.treeRefresh();
+            MainForm.Instance.leftPanel.treeRefresh();
             Close();
         }
     }

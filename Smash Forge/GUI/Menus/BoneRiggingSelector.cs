@@ -30,9 +30,13 @@ namespace Smash_Forge
             return boneNameRigging;
         }
 
-        LVDEditor.StringWrapper str;
-        char[] initialValue;
-        char[] currentValue;
+        public LVDEditor.StringWrapper str;
+        public char[] initialValue;
+        public char[] currentValue;
+        public short boneIndex = -1;
+        public bool Cancelled = false;
+        public bool SelectedNone = false;
+        public Bone CurrentBone = null;
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
@@ -42,11 +46,14 @@ namespace Smash_Forge
             while (newValue.Count < 0x40)
                 newValue.Add((char)0);
             currentValue = newValue.ToArray();
+            CurrentBone = (Bone) ((object[]) e.Node.Tag)[1];
+            boneIndex = (short)((VBN)((object[]) e.Node.Tag)[0]).bones.IndexOf(CurrentBone);
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             str.data = initialValue;
+            Cancelled = true;
             Close();
         }
 
@@ -61,17 +68,31 @@ namespace Smash_Forge
         private void button1_Click(object sender, EventArgs e)
         {
             str.data = new char[0x40];
+            boneIndex = -1;
+            CurrentBone = null;
+            SelectedNone = true;
             Close();
         }
 
         private void BoneRiggingSelector_Load(object sender, EventArgs e)
         {
+            //List<ModelContainer> m = Runtime.ModelContainers;
+            //Console.WriteLine($"Model Count: {Runtime.ModelContainers.Count}");
             treeView1.Nodes.Clear();
+            List<VBN> alreadyUsedVbns = new List<VBN>();
             foreach(ModelContainer model in Runtime.ModelContainers)
             {
-                foreach(Bone b in model.vbn.bones)
+                if (!alreadyUsedVbns.Contains(model.vbn) && model.vbn != null)
                 {
-                    treeView1.Nodes.Add(new TreeNode(new string(b.boneName)) { Tag = b.boneName });
+                    alreadyUsedVbns.Add(model.vbn);
+                    foreach (Bone b in model.vbn.bones)
+                    {
+                        object[] objs = { model.vbn, b };
+                        TreeNode temp = new TreeNode(new string(b.boneName)) {Tag = objs};
+                        treeView1.Nodes.Add(temp);
+                        if (str.data == b.boneName)
+                            treeView1.SelectedNode = temp;
+                    }
                 }
             }
         }

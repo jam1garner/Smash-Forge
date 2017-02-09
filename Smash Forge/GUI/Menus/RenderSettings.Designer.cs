@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RenderSettings));
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
@@ -44,6 +45,7 @@
             this.depthSlider = new System.Windows.Forms.TrackBar();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.swagViewing = new System.Windows.Forms.CheckBox();
             this.cb_normals = new System.Windows.Forms.CheckBox();
             this.renderMode = new System.Windows.Forms.ComboBox();
             this.cb_vertcolor = new System.Windows.Forms.CheckBox();
@@ -248,6 +250,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.swagViewing);
             this.groupBox1.Controls.Add(this.cb_normals);
             this.groupBox1.Controls.Add(this.renderMode);
             this.groupBox1.Controls.Add(this.cb_vertcolor);
@@ -259,6 +262,17 @@
             this.groupBox1.TabIndex = 15;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model Render Settings";
+            // 
+            // swagViewing
+            // 
+            this.swagViewing.AutoSize = true;
+            this.swagViewing.Location = new System.Drawing.Point(12, 125);
+            this.swagViewing.Name = "swagViewing";
+            this.swagViewing.Size = new System.Drawing.Size(109, 17);
+            this.swagViewing.TabIndex = 18;
+            this.swagViewing.Text = "Show Swag Data";
+            this.swagViewing.UseVisualStyleBackColor = true;
+            this.swagViewing.CheckedChanged += new System.EventHandler(this.swagViewing_CheckedChanged);
             // 
             // cb_normals
             // 
@@ -307,6 +321,7 @@
             this.ClientSize = new System.Drawing.Size(598, 324);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.panel1);
+            this.Icon = Resources.Resources.forge2;
             this.Name = "RenderSettings";
             this.Text = "Render Settings";
             this.Load += new System.EventHandler(this.RenderSettings_Load);
@@ -340,5 +355,6 @@
         private System.Windows.Forms.ComboBox renderMode;
         private System.Windows.Forms.CheckBox cb_vertcolor;
         private System.Windows.Forms.CheckBox cb_normals;
+        private System.Windows.Forms.CheckBox swagViewing;
     }
 }

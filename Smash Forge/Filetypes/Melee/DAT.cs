@@ -335,7 +335,7 @@ main()
                 JOBJ j = (JOBJ)node.Tag;
                 boneTrack.Add(j);
 
-                Bone b = new Bone();
+                Bone b = new Bone(bones);
                 b.boneName = ("Bone_" + boneTrack.IndexOf(j).ToString()).ToCharArray();
                 if (node.Parent.Tag is JOBJ)
                     b.parentIndex = boneTrack.IndexOf((JOBJ)node.Parent.Tag);
@@ -343,7 +343,7 @@ main()
                     b.parentIndex = -1;
                 //Console.WriteLine("Where is this? " + b.parentIndex);
 
-                b.children = new List<int>();
+                //b.children = new List<int>();
                 b.scale = new float[3];
                 b.rotation = new float[3];
                 b.position = new float[3];
@@ -356,8 +356,8 @@ main()
                 b.rotation[0] = j.rot.X;
                 b.rotation[1] = j.rot.Y;
                 b.rotation[2] = j.rot.Z;
-                if (b.parentIndex != -1)
-                    bones.bones[b.parentIndex].children.Add(boneTrack.IndexOf(j));
+                //if (b.parentIndex != -1)
+                //    bones.bones[b.parentIndex].children.Add(boneTrack.IndexOf(j));
                 bones.bones.Add(b);
             }
             bones.reset();

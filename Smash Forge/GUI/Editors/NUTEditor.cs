@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -9,12 +10,18 @@ using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
+using System.IO;
+using System.Threading;
 
 namespace Smash_Forge
 {
     public partial class NUTEditor : Form
     {
         private NUT selected;
+        private FileSystemWatcher fw;
+        private Dictionary<NUT.NUD_Texture,string> fileFromTexture = new Dictionary<NUT.NUD_Texture, string>();
+        private Dictionary<string,NUT.NUD_Texture> textureFromFile = new Dictionary<string, NUT.NUD_Texture>();
+        private bool dontModify;
 
         public NUTEditor()
         {
@@ -22,6 +29,21 @@ namespace Smash_Forge
             FillForm();
             if (Runtime.TextureContainers.Count > 0)
                 listBox1.SelectedIndex = 0;
+
+            fw = new FileSystemWatcher();
+            fw.Path = Path.GetTempPath();
+            fw.NotifyFilter = NotifyFilters.Size | NotifyFilters.LastAccess | NotifyFilters.LastWrite;
+            fw.EnableRaisingEvents = false;
+            fw.Changed += new FileSystemEventHandler(OnChanged);
+            fw.Filter = "";
+        }
+
+        private void OnChanged(object sender, FileSystemEventArgs e)
+        {
+            Console.WriteLine("File modified!");
+            string filename = e.FullPath;
+            //Thread.Sleep(1000);
+            //importBack(filename);
         }
 
         private void FillForm()
@@ -65,7 +87,7 @@ namespace Smash_Forge
 
         private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(listBox2.SelectedIndex >= 0)
+            if (listBox2.SelectedIndex >= 0)
             {
                 NUT.NUD_Texture tex = ((NUT.NUD_Texture)listBox2.SelectedItem);
                 textBox1.Text = tex.ToString();
@@ -230,7 +252,6 @@ namespace Smash_Forge
                     if (!selected.draw.ContainsKey(newid))
                     {
                         ((NUT.NUD_Texture)listBox2.SelectedItem).id = newid;
-
                         selected.draw.Add(newid, selected.draw[oldid]);
                         selected.draw.Remove(oldid);
                     }
@@ -352,6 +373,130 @@ namespace Smash_Forge
                 nut.Destroy();
                 Runtime.TextureContainers.Remove(nut);
             }
+        }
+
+        public static Process ShowOpenWithDialog(string path)
+        {
+            var args = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "shell32.dll");
+            args += ",OpenAs_RunDLL " + path;
+            return Process.Start("rundll32.exe", args);
+        }
+
+        private static void DeleteIfExists(string path)
+        {
+            if(File.Exists(path))
+                File.Delete(path);
+        }
+
+        private void extractAndOpenInDefaultEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string tempFileName;
+            bool setupFileModifying = false;
+            dontModify = true;
+            fw.EnableRaisingEvents = true;
+            if (!fileFromTexture.ContainsKey((NUT.NUD_Texture) (listBox2.SelectedItem)))
+            {
+                tempFileName = Path.GetTempFileName();
+                DeleteIfExists(Path.ChangeExtension(tempFileName, ".dds"));
+                File.Move(tempFileName, Path.ChangeExtension(tempFileName, ".dds"));
+                tempFileName = Path.ChangeExtension(tempFileName, ".dds");
+                fileFromTexture.Add((NUT.NUD_Texture)listBox2.SelectedItem, tempFileName);
+                textureFromFile.Add(tempFileName, (NUT.NUD_Texture)listBox2.SelectedItem);
+                setupFileModifying = true;
+            }
+            else
+            {
+                tempFileName = fileFromTexture[(NUT.NUD_Texture) listBox2.SelectedItem];
+            }
+
+            DDS dds = new DDS();
+            dds.fromNUT_Texture((NUT.NUD_Texture)(listBox2.SelectedItem));
+            dds.Save(tempFileName);
+            System.Diagnostics.Process.Start(tempFileName);
+            if (setupFileModifying)
+            {
+                if (fw.Filter.Equals("*.*"))
+                    fw.Filter = Path.GetFileName(tempFileName);
+                else
+                    fw.Filter += "|" + Path.GetFileName(tempFileName);
+                Console.WriteLine(fw.Filter);
+            }
+            dontModify = false;
+        }
+
+        private void extractAndPickAProgramToEditWithToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string tempFileName;
+            bool setupFileModifying = false;
+            dontModify = true;
+            fw.EnableRaisingEvents = true;
+            if (!fileFromTexture.ContainsKey((NUT.NUD_Texture)(listBox2.SelectedItem)))
+            {
+                tempFileName = Path.GetTempFileName();
+                DeleteIfExists(Path.ChangeExtension(tempFileName, ".dds"));
+                File.Move(tempFileName, Path.ChangeExtension(tempFileName, ".dds"));
+                tempFileName = Path.ChangeExtension(tempFileName, ".dds");
+                fileFromTexture.Add((NUT.NUD_Texture)(listBox2.SelectedItem), tempFileName);
+                textureFromFile.Add(tempFileName, (NUT.NUD_Texture)listBox2.SelectedItem);
+                setupFileModifying = true;
+            }
+            else
+            {
+                tempFileName = fileFromTexture[(NUT.NUD_Texture)listBox2.SelectedItem];
+            }
+
+            DDS dds = new DDS();
+            dds.fromNUT_Texture((NUT.NUD_Texture)(listBox2.SelectedItem));
+            dds.Save(tempFileName);
+            ShowOpenWithDialog(tempFileName);
+            if (setupFileModifying)
+            {
+                if (fw.Filter.Equals("*.*"))
+                    fw.Filter = Path.GetFileName(tempFileName);
+                else
+                    fw.Filter += "|" + Path.GetFileName(tempFileName);
+                Console.WriteLine(fw.Filter);
+            }
+
+            dontModify = false;
+        }
+
+        private void importBack(string filename)
+        {
+            if (dontModify)
+                return;
+            
+            NUT.NUD_Texture tex = textureFromFile[filename];
+
+            try
+            {
+                DDS dds = new DDS(new FileData(filename));
+                NUT.NUD_Texture ntex = dds.toNUT_Texture();
+
+                tex.height = ntex.height;
+                tex.width = ntex.width;
+                tex.type = ntex.type;
+                tex.mipmaps = ntex.mipmaps;
+                tex.utype = ntex.utype;
+
+                GL.DeleteTexture(selected.draw[tex.id]);
+                selected.draw.Remove(tex.id);
+                selected.draw.Add(tex.id, NUT.loadImage(tex));
+
+                FillForm();
+                listBox1.SelectedItem = selected;
+                listBox2.SelectedItem = tex;
+                RenderTexture();
+            }
+            catch
+            {
+                Console.WriteLine("Could not be open for editing");
+            }
+        }
+
+        private void importEditedFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            importBack(fileFromTexture[(NUT.NUD_Texture)listBox2.SelectedItem]);
         }
     }
 }

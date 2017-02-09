@@ -50,7 +50,7 @@ namespace Smash_Forge
             treeView1.Refresh();
         }
 
-        private void openButton(object sender, EventArgs e)
+        private void openButton()
         {
             if (treeView1.SelectedNode != null && ((string)treeView1.SelectedNode.Tag).EndsWith(".nmt"))
             {
@@ -58,7 +58,11 @@ namespace Smash_Forge
                 exitStatus = Opened;
                 Close();
             }
+        }
 
+        private void openButton(object sender, EventArgs e)
+        {
+            openButton();
         }
 
         private void closeButton(object sender, EventArgs e)
@@ -70,6 +74,15 @@ namespace Smash_Forge
         private void MaterialSelector_Load(object sender, EventArgs e)
         {
             populate();
+        }
+
+        private void treeView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                openButton();
+                e.Handled = true;
+            }
         }
     }
 }

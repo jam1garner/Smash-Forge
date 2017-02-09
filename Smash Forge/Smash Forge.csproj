@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>forge.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\forge.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
@@ -105,6 +105,12 @@
     <Compile Include="GUI\Editors\AnimTrack.Designer.cs">
       <DependentUpon>AnimTrack.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\BoneButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BoneButton.Designer.cs">
+      <DependentUpon>BoneButton.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\BoneTree.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -165,10 +171,10 @@
     <Compile Include="GUI\Editors\MTAEditor.Designer.cs">
       <DependentUpon>MTAEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\MTAEditorGUI.cs">
+    <Compile Include="GUI\Editors\MTA Editor GUI\MTAEditorGUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\MTAEditorGUI.Designer.cs">
+    <Compile Include="GUI\Editors\MTA Editor GUI\MTAEditorGUI.Designer.cs">
       <DependentUpon>MTAEditorGUI.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\NUDMaterialEditor.cs">
@@ -201,6 +207,12 @@
     <Compile Include="GUI\Editors\ProjectTree.Designer.cs">
       <DependentUpon>ProjectTree.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\SwagEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\SwagEditor.Designer.cs">
+      <DependentUpon>SwagEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\FolderSelectDialog.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -232,10 +244,10 @@
     <Compile Include="GUI\Editors\VBNViewport.Designer.cs">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\MaterialSelector.cs">
+    <Compile Include="GUI\Menus\MaterialSelector.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\MaterialSelector.Designer.cs">
+    <Compile Include="GUI\Menus\MaterialSelector.Designer.cs">
       <DependentUpon>MaterialSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Menus\BoneRiggingSelector.cs">
@@ -309,7 +321,7 @@
     <EmbeddedResource Include="GUI\Editors\MTAEditor.resx">
       <DependentUpon>MTAEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\MTAEditorGUI.resx">
+    <EmbeddedResource Include="GUI\Editors\MTA Editor GUI\MTAEditorGUI.resx">
       <DependentUpon>MTAEditorGUI.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\NUDMaterialEditor.resx">
@@ -327,6 +339,9 @@
     <EmbeddedResource Include="GUI\Editors\ProjectTree.resx">
       <DependentUpon>ProjectTree.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\SwagEditor.resx">
+      <DependentUpon>SwagEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -340,7 +355,7 @@
     <EmbeddedResource Include="GUI\Editors\VBNViewport.resx">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\MaterialSelector.resx">
+    <EmbeddedResource Include="GUI\Menus\MaterialSelector.resx">
       <DependentUpon>MaterialSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\BoneRiggingSelector.resx">
@@ -429,6 +444,12 @@
     <None Include="materials\Standard\Stg - Stg Mat12 [Magma+3 UV].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="materials\Standard\Stg - Stg Mat13 [Diffuse+Refl+finalColor].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Standard\Stg - Stg Mat14 [Clouds+Norm].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -465,7 +486,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="forge.ico" />
+    <Content Include="Resources\forge.ico" />
     <Content Include="lib\FITC.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -488,6 +509,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\sexy_green_down_arrow.png" />
+    <Content Include="Resources\forge2.ico" />
     <None Include="Resources\DefaultTexture.png" />
   </ItemGroup>
   <ItemGroup />

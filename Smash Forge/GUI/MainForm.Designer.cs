@@ -41,7 +41,6 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.clearWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.edittToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addBoneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hashMatchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.collisionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,6 +55,8 @@
             this.rectangleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteLVDEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mergeModelsMeshListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mergeBonesBoneListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.animationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -177,26 +178,19 @@
             // edittToolStripMenuItem
             // 
             this.edittToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addBoneToolStripMenuItem,
             this.hashMatchToolStripMenuItem,
             this.addToolStripMenuItem,
-            this.deleteLVDEntryToolStripMenuItem});
+            this.deleteLVDEntryToolStripMenuItem,
+            this.mergeModelsMeshListToolStripMenuItem,
+            this.mergeBonesBoneListToolStripMenuItem});
             this.edittToolStripMenuItem.Name = "edittToolStripMenuItem";
             this.edittToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.edittToolStripMenuItem.Text = "Edit";
             // 
-            // addBoneToolStripMenuItem
-            // 
-            this.addBoneToolStripMenuItem.Name = "addBoneToolStripMenuItem";
-            this.addBoneToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.addBoneToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
-            this.addBoneToolStripMenuItem.Text = "Add Bone";
-            this.addBoneToolStripMenuItem.Click += new System.EventHandler(this.addBoneToolStripMenuItem_Click);
-            // 
             // hashMatchToolStripMenuItem
             // 
             this.hashMatchToolStripMenuItem.Name = "hashMatchToolStripMenuItem";
-            this.hashMatchToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.hashMatchToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.hashMatchToolStripMenuItem.Text = "Hash Match";
             this.hashMatchToolStripMenuItem.ToolTipText = "Gives the bones a hash based on their name. Used for animation";
             this.hashMatchToolStripMenuItem.Click += new System.EventHandler(this.hashMatchToolStripMenuItem_Click);
@@ -213,8 +207,8 @@
             this.generalPointToolStripMenuItem,
             this.generalShapeToolStripMenuItem});
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
-            this.addToolStripMenuItem.Text = "Add";
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.addToolStripMenuItem.Text = "Add LVD Entry";
             // 
             // collisionToolStripMenuItem
             // 
@@ -299,9 +293,23 @@
             // deleteLVDEntryToolStripMenuItem
             // 
             this.deleteLVDEntryToolStripMenuItem.Name = "deleteLVDEntryToolStripMenuItem";
-            this.deleteLVDEntryToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.deleteLVDEntryToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.deleteLVDEntryToolStripMenuItem.Text = "Delete Selected LVD Entry";
             this.deleteLVDEntryToolStripMenuItem.Click += new System.EventHandler(this.deleteLVDEntryToolStripMenuItem_Click);
+            // 
+            // mergeModelsMeshListToolStripMenuItem
+            // 
+            this.mergeModelsMeshListToolStripMenuItem.Name = "mergeModelsMeshListToolStripMenuItem";
+            this.mergeModelsMeshListToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.mergeModelsMeshListToolStripMenuItem.Text = "Merge Models (Mesh List)";
+            this.mergeModelsMeshListToolStripMenuItem.Click += new System.EventHandler(this.mergeModelsMeshListToolStripMenuItem_Click);
+            // 
+            // mergeBonesBoneListToolStripMenuItem
+            // 
+            this.mergeBonesBoneListToolStripMenuItem.Name = "mergeBonesBoneListToolStripMenuItem";
+            this.mergeBonesBoneListToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.mergeBonesBoneListToolStripMenuItem.Text = "Merge Bones (Bone List)";
+            this.mergeBonesBoneListToolStripMenuItem.Click += new System.EventHandler(this.mergeBonesBoneListToolStripMenuItem_Click);
             // 
             // animationToolStripMenuItem
             // 
@@ -381,7 +389,7 @@
             this.texturesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openNUTEditorToolStripMenuItem});
             this.texturesToolStripMenuItem.Name = "texturesToolStripMenuItem";
-            this.texturesToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
+            this.texturesToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
             this.texturesToolStripMenuItem.Text = "Textures";
             // 
             // openNUTEditorToolStripMenuItem
@@ -498,7 +506,6 @@
             this.glControl1.Name = "glControl1";
             this.glControl1.Size = new System.Drawing.Size(10, 10);
             this.glControl1.TabIndex = 19;
-            this.glControl1.Visible = false;
             this.glControl1.VSync = false;
             // 
             // checkBox1
@@ -564,7 +571,6 @@
 		private System.Windows.Forms.ToolStripMenuItem openNUDToolStripMenuItem;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
 		private System.Windows.Forms.ToolStripMenuItem edittToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem addBoneToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem animationToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
@@ -612,6 +618,8 @@
         private System.Windows.Forms.ToolStripMenuItem rectangleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pathToolStripMenuItem;
         public System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.ToolStripMenuItem mergeModelsMeshListToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mergeBonesBoneListToolStripMenuItem;
     }
 }
 
