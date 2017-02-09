@@ -355,6 +355,7 @@ uniform vec4 colorSamplerUV;
 uniform vec4 colorOffset;
 uniform vec4 colorGain;
 uniform vec4 minGain;
+uniform int flags;
 
 uniform int renderType;
 
@@ -390,6 +391,10 @@ main()
 
 	    vec4 outputColor = colorOffset + (vec4(texture(tex, texcoord).rgba) * fnormal) * colorGain;
         vec4 fincol = vec4(((fcolor * alpha * outputColor)).xyz, texture2D(tex, texcoord).a * fcolor.w);
+
+        if(flags == 0x65 && fincol.a < 1)
+            fincol = vec4(1,1,1,1);
+
         gl_FragColor = fincol;//vec4(lerp(fresNelR, fincol, vec4(1.75,1.75,1.75,1)).xyz, fincol.w);
     }
 }
@@ -424,6 +429,7 @@ main()
                     shader.addAttribute("vBone", false);
                     shader.addAttribute("vWeight", false);
 
+                    shader.addAttribute("flags", true);
                     shader.addAttribute("tex", true);
                     shader.addAttribute("nrm", true);
                     shader.addAttribute("modelview", true);
