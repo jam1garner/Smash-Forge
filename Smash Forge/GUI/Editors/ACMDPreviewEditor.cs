@@ -26,7 +26,7 @@ namespace Smash_Forge
         {
             this.crc = crc;
             richTextBox1.Clear();
-            richTextBox1.Text = SALT.Scripting.AnimCMD.ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
+            richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
             //HighlightSyntax();
         }
 
