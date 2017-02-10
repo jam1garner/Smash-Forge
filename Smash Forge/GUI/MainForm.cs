@@ -128,6 +128,7 @@ namespace Smash_Forge
         public List<SwagEditor> SwagEditors = new List<SwagEditor>() {};
         public MeshList meshList = new MeshList() {ShowHint = DockState.DockRight};
         public List<VBNViewport> viewports = new List<VBNViewport>() {new VBNViewport()}; // Default viewport
+        public NUTEditor nutEditor = null;
 
         #endregion
 
@@ -663,8 +664,16 @@ namespace Smash_Forge
 
         private void openNUTEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NUTEditor ev = new NUTEditor();
-            ev.Show();
+            if (nutEditor == null || nutEditor.IsDisposed)
+            {
+                nutEditor = new NUTEditor();
+                nutEditor.Show();
+            }
+            else
+            {
+                nutEditor.BringToFront();
+            }
+            nutEditor.FillForm();
         }
 
         private void exportToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -991,8 +1000,16 @@ namespace Smash_Forge
             if (filename.EndsWith(".nut"))
             {
                 Runtime.TextureContainers.Add(new NUT(filename));
-                NUTEditor ev = new NUTEditor();
-                ev.Show();
+                if (nutEditor == null || nutEditor.IsDisposed)
+                {
+                    nutEditor = new NUTEditor();
+                    nutEditor.Show();
+                }
+                else
+                {
+                    nutEditor.BringToFront();
+                }
+                nutEditor.FillForm();
             }
 
             if (filename.EndsWith(".lvd"))
