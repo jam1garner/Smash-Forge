@@ -47,6 +47,7 @@
             this.cb_section.Name = "cb_section";
             this.cb_section.Size = new System.Drawing.Size(342, 21);
             this.cb_section.TabIndex = 0;
+            this.cb_section.SelectedIndexChanged += new System.EventHandler(this.updateSelection);
             this.cb_section.TextUpdate += new System.EventHandler(this.cb_section_TextUpdate);
             // 
             // richTextBox1
