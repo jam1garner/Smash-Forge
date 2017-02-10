@@ -1625,7 +1625,7 @@ namespace Smash_Forge
             public void Read(XmlNode root)
             {
                 id = root.Attributes["id"].Value;
-                name = root.Attributes["name"].Value;
+                //name = root.Attributes["name"].Value;
                 foreach (XmlNode child in root.ChildNodes)
                 {
                     if (child.Name.Equals("init_from"))
