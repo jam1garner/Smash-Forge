@@ -300,17 +300,17 @@ namespace Smash_Forge
             FileOutput file = new FileOutput();
             if (file != null)
             {
-                file.Endian = Endianness.Little;
                 if (Endian == Endianness.Little) {
+                    file.Endian = Endianness.Little;
                     file.writeString(" NBV");
                     file.writeShort(0x02);
                     file.writeShort(0x01);
                 }
                 else if (Endian == Endianness.Big) {
+                    file.Endian = Endianness.Big;
                     file.writeString("VBN ");
                     file.writeShort(0x01);
                     file.writeShort(0x02);
-                    file.Endian = Endianness.Big;
                 }
 
                 
