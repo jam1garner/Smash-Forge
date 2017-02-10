@@ -114,7 +114,7 @@ namespace Smash_Forge
                 MainForm.Instance.meshList.refresh();
                 MainForm.Instance.paramEditors = new List<PARAMEditor>();
                 MainForm.Instance.lvdEditor.Clear();
-                MainForm.Instance.leftPanel.Clear();
+                MainForm.Instance.boneTreePanel.Clear();
                 string acmdpath = Path.Combine(MainForm.executableDir, "workspace/animcmd/");
                 if (Directory.Exists(acmdpath))
                 {

@@ -48,16 +48,11 @@ namespace Smash_Forge
                 boneTreeToolStripMenuItem.Checked = true;
 
             Runtime.acmdEditor = new ACMDPreviewEditor() {ShowHint = DockState.DockRight};
-            AddDockedControl(Runtime.acmdEditor);
-
-            AddDockedControl(leftPanel);
-            AddDockedControl(rightPanel);
-            AddDockedControl(lvdEditor);
-            AddDockedControl(lvdList);
-            AddDockedControl(project);
-            AddDockedControl(meshList);
-            rightPanel.treeView1.Nodes.Add(animNode);
-            rightPanel.treeView1.Nodes.Add(mtaNode);
+            
+            allViewsPreset(new Object(), new EventArgs());
+            
+            animList.treeView1.Nodes.Add(animNode);
+            animList.treeView1.Nodes.Add(mtaNode);
             Runtime.renderBones = true;
             Runtime.renderLVD = true;
             Runtime.renderFloor = true;
@@ -113,10 +108,50 @@ namespace Smash_Forge
                 content.Show(dockPanel1);
         }
 
+        private void RegenPanels()
+        {
+            if (animList.IsDisposed)
+            {
+                animList = new AnimListPanel();
+                animNode = (TreeNode) animNode.Clone();
+                mtaNode = (TreeNode)mtaNode.Clone();
+                animList.treeView1.Nodes.Add(animNode);
+                animList.treeView1.Nodes.Add(mtaNode);
+            }
+            if (boneTreePanel.IsDisposed)
+            {
+                boneTreePanel = new BoneTreePanel();
+                boneTreePanel.treeRefresh();
+            }
+            if (project.IsDisposed)
+            {
+                project = new ProjectTree();
+                project.fillTree();
+            }
+            if (lvdList.IsDisposed)
+            {
+                lvdList = new LVDList();
+                lvdList.fillList();
+            }
+            if (lvdEditor.IsDisposed)
+            {
+                lvdEditor = new LVDEditor();
+            }
+            if (meshList.IsDisposed)
+            {
+                meshList = new MeshList();
+                meshList.refresh();
+            }
+            if (Runtime.acmdEditor != null && Runtime.acmdEditor.IsDisposed)
+            {
+                Runtime.acmdEditor = new ACMDPreviewEditor();
+            }
+        }
+
         #region Members
 
-        public AnimListPanel rightPanel = new AnimListPanel() {ShowHint = DockState.DockRight};
-        public BoneTreePanel leftPanel = new BoneTreePanel() {ShowHint = DockState.DockLeft};
+        public AnimListPanel animList = new AnimListPanel() {ShowHint = DockState.DockRight};
+        public BoneTreePanel boneTreePanel = new BoneTreePanel() {ShowHint = DockState.DockLeft};
         public static TreeNode animNode = new TreeNode("Bone Animations");
         public TreeNode mtaNode = new TreeNode("Material Animations");
         public ProjectTree project = new ProjectTree() {ShowHint = DockState.DockLeft};
@@ -127,7 +162,7 @@ namespace Smash_Forge
         public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() {};
         public List<SwagEditor> SwagEditors = new List<SwagEditor>() {};
         public MeshList meshList = new MeshList() {ShowHint = DockState.DockRight};
-        public List<VBNViewport> viewports = new List<VBNViewport>() {new VBNViewport()}; // Default viewport
+        public List<VBNViewport> viewports = new List<VBNViewport>() {new VBNViewport()}; // Default viewport (may mess up with more or less?)
         public NUTEditor nutEditor = null;
 
         #endregion
@@ -377,7 +412,7 @@ namespace Smash_Forge
         private void hashMatchToolStripMenuItem_Click(object sender, EventArgs e)
         {
             HashMatch();
-            //leftPanel.treeRefresh();
+            //boneTreePanel.treeRefresh();
         }
 
         public static void HashMatch()
@@ -465,7 +500,7 @@ namespace Smash_Forge
 
         private void animationPanelToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            rightPanel.Show(dockPanel1);
+            animList.Show(dockPanel1);
         }
 
         private void viewportWindowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -483,17 +518,17 @@ namespace Smash_Forge
         private void animationsWindowToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (animationsWindowToolStripMenuItem.Checked)
-                rightPanel.Show(dockPanel1);
+                animList.Show(dockPanel1);
             else
-                rightPanel.Hide();
+                animList.Hide();
         }
 
         private void boneTreeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (boneTreeToolStripMenuItem.Checked)
-                leftPanel.Show(dockPanel1);
+                boneTreePanel.Show(dockPanel1);
             else
-                leftPanel.Hide();
+                boneTreePanel.Hide();
         }
 
         #endregion
@@ -790,7 +825,7 @@ namespace Smash_Forge
                 if (Runtime.TargetVBN == null)
                     Runtime.TargetVBN = new VBN();
                 SMD.read(filename, anim, Runtime.TargetVBN);
-                leftPanel.treeRefresh();
+                boneTreePanel.treeRefresh();
                 Runtime.Animations.Add(filename, anim);
                 animNode.Nodes.Add(filename);
             }
@@ -1134,7 +1169,7 @@ namespace Smash_Forge
                     meshList.refresh();
                 }
 
-                leftPanel.treeRefresh();
+                boneTreePanel.treeRefresh();
             }
             else
             {
@@ -1264,6 +1299,88 @@ namespace Smash_Forge
                     }
                 }
             }
+        }
+
+        /*
+        public AnimListPanel animList = new AnimListPanel() {ShowHint = DockState.DockRight};
+        public BoneTreePanel boneTreePanel = new BoneTreePanel() {ShowHint = DockState.DockLeft};
+        public ProjectTree project = new ProjectTree() {ShowHint = DockState.DockLeft};
+        public LVDList lvdList = new LVDList() {ShowHint = DockState.DockLeft};
+        public LVDEditor lvdEditor = new LVDEditor() {ShowHint = DockState.DockRight};
+         */
+
+        private void allViewsPreset(object sender, EventArgs e)
+        {
+            animList.ShowHint = DockState.DockRight;
+            boneTreePanel.ShowHint = DockState.DockLeft;
+            project.ShowHint = DockState.DockLeft;
+            lvdList.ShowHint = DockState.DockLeft;
+            lvdEditor.ShowHint = DockState.DockRight;
+            Runtime.acmdEditor.ShowHint = DockState.DockLeft;
+            meshList.ShowHint = DockState.DockRight;
+            AddDockedControl(Runtime.acmdEditor);
+            AddDockedControl(boneTreePanel);
+            AddDockedControl(animList);
+            AddDockedControl(lvdEditor);
+            AddDockedControl(lvdList);
+            AddDockedControl(project);
+            AddDockedControl(meshList);
+        }
+
+        private void modelViewPreset(object sender, EventArgs e)
+        {
+            animList.Close();
+            boneTreePanel.ShowHint = DockState.DockLeft;
+            project.Close();
+            lvdList.Close();
+            lvdEditor.Close();
+            RegenPanels();
+            meshList.ShowHint = DockState.DockRight;
+            Runtime.acmdEditor.ShowHint = DockState.Hidden;
+            AddDockedControl(boneTreePanel);
+            AddDockedControl(meshList);
+        }
+
+        private void movesetModdingPreset(object sender, EventArgs e)
+        {
+            animList.ShowHint = DockState.DockLeft;
+            boneTreePanel.Close();
+            project.Close();
+            lvdList.Close();
+            lvdEditor.Close();
+            meshList.Close();
+            RegenPanels();
+            Runtime.acmdEditor.ShowHint = DockState.Float;
+            AddDockedControl(Runtime.acmdEditor);
+            AddDockedControl(animList);
+        }
+
+        private void stageWorkPreset(object sender, EventArgs e)
+        {
+            animList.Close();
+            boneTreePanel.ShowHint = DockState.DockLeft;
+            project.Close();
+            lvdList.ShowHint = DockState.DockLeft;
+            lvdEditor.ShowHint = DockState.DockRight;
+            Runtime.acmdEditor.Close();
+            meshList.ShowHint = DockState.DockRight;
+            RegenPanels();
+            AddDockedControl(boneTreePanel);
+            AddDockedControl(meshList);
+            AddDockedControl(lvdEditor);
+            AddDockedControl(lvdList);
+        }
+
+        private void cleanPreset(object sender, EventArgs e)
+        {
+            animList.Close();
+            boneTreePanel.Close();
+            project.Close();
+            lvdList.Close();
+            lvdEditor.Close();
+            Runtime.acmdEditor.Close();
+            meshList.Close();
+            RegenPanels();
         }
     }
 }

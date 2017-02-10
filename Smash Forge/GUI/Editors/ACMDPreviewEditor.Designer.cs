@@ -45,7 +45,7 @@
             "EFFECT"});
             this.cb_section.Location = new System.Drawing.Point(0, 0);
             this.cb_section.Name = "cb_section";
-            this.cb_section.Size = new System.Drawing.Size(342, 21);
+            this.cb_section.Size = new System.Drawing.Size(420, 21);
             this.cb_section.TabIndex = 0;
             this.cb_section.SelectedIndexChanged += new System.EventHandler(this.updateSelection);
             this.cb_section.TextUpdate += new System.EventHandler(this.cb_section_TextUpdate);
@@ -55,7 +55,7 @@
             this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBox1.Location = new System.Drawing.Point(0, 21);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(342, 280);
+            this.richTextBox1.Size = new System.Drawing.Size(420, 586);
             this.richTextBox1.TabIndex = 1;
             this.richTextBox1.Text = "";
             this.richTextBox1.WordWrap = false;
@@ -65,9 +65,9 @@
             // button1
             // 
             this.button1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.button1.Location = new System.Drawing.Point(0, 278);
+            this.button1.Location = new System.Drawing.Point(0, 584);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(342, 23);
+            this.button1.Size = new System.Drawing.Size(420, 23);
             this.button1.TabIndex = 2;
             this.button1.Text = "Compile";
             this.button1.UseVisualStyleBackColor = true;
@@ -77,7 +77,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(342, 301);
+            this.ClientSize = new System.Drawing.Size(420, 607);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.cb_section);
