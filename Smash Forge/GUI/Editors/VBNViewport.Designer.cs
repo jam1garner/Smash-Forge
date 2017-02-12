@@ -270,7 +270,6 @@
         }
 
         #endregion
-        private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.NumericUpDown nupdFrame;
         private System.Windows.Forms.Label label1;
@@ -286,5 +285,6 @@
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.Button button1;
+        public System.Windows.Forms.GroupBox groupBox2;
     }
 }

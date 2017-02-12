@@ -76,8 +76,34 @@ namespace Smash_Forge
             viewportWindowToolStripMenuItem.Checked = true;
             if (filesToOpen != null)
             {
-                foreach (String file in filesToOpen)
-                    openFile(file);
+                for(int i = 0; i < filesToOpen.Length; i++)
+                {
+                    string file = filesToOpen[i];
+                    if (file.Equals("--clean"))
+                    {
+                        clearWorkspaceToolStripMenuItem_Click(new object(), new EventArgs());
+                        cleanPreset(new object(), new EventArgs());
+                    }
+                    else if (file.Equals("--superclean"))
+                    {
+                        clearWorkspaceToolStripMenuItem_Click(new object(), new EventArgs());
+                        superCleanPreset(new object(), new EventArgs());
+                    }
+                    else if (file.Equals("--preview"))
+                    {
+                        string nud = filesToOpen[i + 1];
+                        string chr_00 = filesToOpen[i + 2];
+                        string chr_11 = filesToOpen[i + 3];
+                        string chr_13 = filesToOpen[i + 4];
+                        string stock_90 = filesToOpen[i + 5];
+
+                        i += 5;
+                    }
+                    else
+                    {
+                        openFile(file);
+                    }
+                }
                 filesToOpen = null;
             }
         }
@@ -1381,6 +1407,19 @@ namespace Smash_Forge
             Runtime.acmdEditor.Close();
             meshList.Close();
             RegenPanels();
+        }
+
+        private void superCleanPreset(object sender, EventArgs e)
+        {
+            animList.Close();
+            boneTreePanel.Close();
+            project.Close();
+            lvdList.Close();
+            lvdEditor.Close();
+            Runtime.acmdEditor.Close();
+            meshList.Close();
+            RegenPanels();
+            viewports[0].groupBox2.Visible = false;
         }
     }
 }
