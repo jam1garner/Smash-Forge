@@ -46,7 +46,7 @@ namespace Smash_Forge
             //importBack(filename);
         }
 
-        private void FillForm()
+        public void FillForm()
         {
             listBox1.Items.Clear();
             listBox2.Items.Clear();
@@ -110,30 +110,37 @@ namespace Smash_Forge
         private void RenderTexture()
         {
             glControl1.MakeCurrent();
-            GL.ClearColor(Color.Red);
+            GL.Viewport(glControl1.ClientRectangle);
+            GL.ClearColor(Color.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
 
             GL.Enable(EnableCap.Texture2D);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcColor,BlendingFactorDest.OneMinusSrcAlpha);
 
             if (listBox1.SelectedItem == null || listBox2.SelectedItem == null)
                 return;
 
             int rt = ((NUT)listBox1.SelectedItem).draw[((NUT.NUD_Texture)listBox2.SelectedItem).id];
+            float texureRatioW = ((NUT.NUD_Texture)listBox2.SelectedItem).width / ((NUT.NUD_Texture)listBox2.SelectedItem).height;
+            float widthPre = texureRatioW * glControl1.Height;
+            float w = glControl1.Width / widthPre;
+
 
             GL.BindTexture(TextureTarget.Texture2D, rt);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
             GL.Begin(PrimitiveType.Quads);
-            GL.TexCoord2(1, 1);
+            GL.TexCoord2(w, 1);
             GL.Vertex2(1, -1);
             GL.TexCoord2(0, 1);
             GL.Vertex2(-1, -1);
             GL.TexCoord2(0, 0);
             GL.Vertex2(-1, 1);
-            GL.TexCoord2(1, 0);
+            GL.TexCoord2(w, 0);
             GL.Vertex2(1, 1);
             GL.End();
 
@@ -268,6 +275,7 @@ namespace Smash_Forge
         private void NUTEditor_Resize(object sender, EventArgs e)
         {
             RenderTexture();
+            
         }
 
         private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
@@ -497,6 +505,88 @@ namespace Smash_Forge
         private void importEditedFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             importBack(fileFromTexture[(NUT.NUD_Texture)listBox2.SelectedItem]);
+        }
+
+        private void exportNutToFolder(object sender, EventArgs e)
+        {
+            using (FolderSelectDialog f = new FolderSelectDialog())
+            {
+                if (f.ShowDialog() == DialogResult.OK && listBox1.SelectedItem != null)
+                {
+                    if (!Directory.Exists(f.SelectedPath))
+                        Directory.CreateDirectory(f.SelectedPath);
+                    foreach (var tex in selected.textures)
+                    {
+                        string filename = Path.Combine(f.SelectedPath, $"{tex.id.ToString("X")}.dds");
+                        DDS dds = new DDS();
+                        dds.fromNUT_Texture(tex);
+                        dds.Save(filename);
+                    }
+                    Process.Start("explorer.exe", f.SelectedPath);
+                }
+            }
+        }
+
+        private void importNutFromFolder(object sender, EventArgs e)
+        {
+            using (FolderSelectDialog f = new FolderSelectDialog())
+            {
+                if (f.ShowDialog() == DialogResult.OK)
+                {
+                    if (!Directory.Exists(f.SelectedPath))
+                        Directory.CreateDirectory(f.SelectedPath);
+                    NUT nut;
+                    if (listBox1.SelectedItem == null)
+                        nut = new NUT();
+                    else
+                        nut = selected;
+                        
+                    foreach (var texPath in Directory.GetFiles(f.SelectedPath))
+                    {
+                        int texId;
+                        bool isTex = int.TryParse(Path.GetFileNameWithoutExtension(texPath), NumberStyles.HexNumber,
+                            new CultureInfo("en-US"), out texId);
+                        if (isTex)
+                        {
+                            NUT.NUD_Texture texture = null;
+                            foreach (var tex in nut.textures)
+                                if (tex.id == texId)
+                                    texture = tex;
+
+                            if (texture == null)
+                            {
+                                //new texture
+                                DDS dds = new DDS(new FileData(texPath));
+                                NUT.NUD_Texture tex = dds.toNUT_Texture();
+                                tex.id = 0x40FFFF00 | (nut.textures.Count);
+                                nut.textures.Add(tex);
+                                nut.draw.Add(tex.id, NUT.loadImage(tex));
+                            }
+                            else
+                            {
+                                //old texture
+                                NUT.NUD_Texture tex = texture;
+
+                                DDS dds = new DDS(new FileData(texPath));
+                                NUT.NUD_Texture ntex = dds.toNUT_Texture();
+
+                                tex.height = ntex.height;
+                                tex.width = ntex.width;
+                                tex.type = ntex.type;
+                                tex.mipmaps = ntex.mipmaps;
+                                tex.utype = ntex.utype;
+
+                                GL.DeleteTexture(selected.draw[tex.id]);
+                                selected.draw.Remove(tex.id);
+                                selected.draw.Add(tex.id, NUT.loadImage(tex));
+                            }
+                        }
+                    }
+                    if (!Runtime.TextureContainers.Contains(nut))
+                        Runtime.TextureContainers.Add(nut);
+                    FillForm();
+                }
+            }
         }
     }
 }

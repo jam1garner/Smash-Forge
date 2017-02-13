@@ -16,6 +16,7 @@ namespace Smash_Forge
     public partial class ACMDPreviewEditor : DockContent
     {
         public uint crc;
+        public bool set = false;
 
         public ACMDPreviewEditor()
         {
@@ -24,9 +25,17 @@ namespace Smash_Forge
 
         public void SetAnimation(uint crc)
         {
+            set = true;
             this.crc = crc;
             richTextBox1.Clear();
-            richTextBox1.Text = SALT.Scripting.AnimCMD.ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
+            if(cb_section.Text.Equals("GAME"))
+                richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
+            if (cb_section.Text.Equals("SOUND"))
+                richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Sound.Scripts[crc]);
+            if (cb_section.Text.Equals("EXPRESSION"))
+                richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Expression.Scripts[crc]);
+            if (cb_section.Text.Equals("EFFECT"))
+                richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Effect.Scripts[crc]);
             //HighlightSyntax();
         }
 
@@ -98,10 +107,19 @@ namespace Smash_Forge
 
         private void cb_section_TextUpdate(object sender, EventArgs e)
         {
+            if(set)
+                SetAnimation(crc);
+        }
+
+        private void updateSelection(object sender, EventArgs e)
+        {
+            if(set)
+                SetAnimation(crc);
         }
 
         private void richTextBox1_TextChanged(object sender, EventArgs e)
         {
+
         }
 
         private void richTextBox1_KeyPress(object sender, KeyPressEventArgs e)

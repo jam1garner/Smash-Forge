@@ -37,6 +37,7 @@
             this.openStageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.openCharacterToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.openNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.clearWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,12 +71,18 @@
             this.texturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openNUTEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.propertiesWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.animationsWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.boneTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.viewportWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.meshListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.projectTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.meshListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewportWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dockPresetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allStandardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modelWorkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.movesetModdingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cleanViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renderSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,6 +91,7 @@
             this.glControl1 = new OpenTK.GLControl();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.stageWorkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -109,6 +117,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openVBNToolStripMenuItem,
             this.openNUDToolStripMenuItem,
+            this.exportModelToolStripMenuItem,
             this.saveNUDToolStripMenuItem,
             this.toolStripSeparator4,
             this.clearWorkspaceToolStripMenuItem});
@@ -155,6 +164,14 @@
             this.openNUDToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.openNUDToolStripMenuItem.Text = "Save";
             this.openNUDToolStripMenuItem.Click += new System.EventHandler(this.openNUDToolStripMenuItem_Click);
+            // 
+            // exportModelToolStripMenuItem
+            // 
+            this.exportModelToolStripMenuItem.Name = "exportModelToolStripMenuItem";
+            this.exportModelToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.exportModelToolStripMenuItem.Text = "Export Model";
+            this.exportModelToolStripMenuItem.Visible = false;
+            this.exportModelToolStripMenuItem.Click += new System.EventHandler(this.saveAsDAEToolStripMenuItem_Click);
             // 
             // saveNUDToolStripMenuItem
             // 
@@ -402,18 +419,27 @@
             // viewToolStripMenuItem
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.propertiesWindowToolStripMenuItem,
-            this.animationsWindowToolStripMenuItem,
-            this.boneTreeToolStripMenuItem,
-            this.viewportWindowToolStripMenuItem,
-            this.meshListToolStripMenuItem,
-            this.projectTreeToolStripMenuItem,
+            this.viewsToolStripMenuItem,
+            this.dockPresetsToolStripMenuItem,
             this.renderSettingsToolStripMenuItem,
             this.toolStripSeparator3,
             this.aboutToolStripMenuItem1});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "View";
+            // 
+            // viewsToolStripMenuItem
+            // 
+            this.viewsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.propertiesWindowToolStripMenuItem,
+            this.animationsWindowToolStripMenuItem,
+            this.boneTreeToolStripMenuItem,
+            this.projectTreeToolStripMenuItem,
+            this.meshListToolStripMenuItem,
+            this.viewportWindowToolStripMenuItem});
+            this.viewsToolStripMenuItem.Name = "viewsToolStripMenuItem";
+            this.viewsToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.viewsToolStripMenuItem.Text = "Docks";
             // 
             // propertiesWindowToolStripMenuItem
             // 
@@ -428,52 +454,91 @@
             this.animationsWindowToolStripMenuItem.Name = "animationsWindowToolStripMenuItem";
             this.animationsWindowToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.animationsWindowToolStripMenuItem.Text = "Animations";
-            this.animationsWindowToolStripMenuItem.Click += new System.EventHandler(this.animationsWindowToolStripMenuItem_Click);
             // 
             // boneTreeToolStripMenuItem
             // 
             this.boneTreeToolStripMenuItem.Name = "boneTreeToolStripMenuItem";
             this.boneTreeToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.boneTreeToolStripMenuItem.Text = "Bone Tree";
-            this.boneTreeToolStripMenuItem.Click += new System.EventHandler(this.boneTreeToolStripMenuItem_Click);
-            // 
-            // viewportWindowToolStripMenuItem
-            // 
-            this.viewportWindowToolStripMenuItem.Name = "viewportWindowToolStripMenuItem";
-            this.viewportWindowToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
-            this.viewportWindowToolStripMenuItem.Text = "Viewport";
-            this.viewportWindowToolStripMenuItem.Click += new System.EventHandler(this.viewportWindowToolStripMenuItem_Click);
-            // 
-            // meshListToolStripMenuItem
-            // 
-            this.meshListToolStripMenuItem.Name = "meshListToolStripMenuItem";
-            this.meshListToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
-            this.meshListToolStripMenuItem.Text = "Mesh List";
-            this.meshListToolStripMenuItem.Click += new System.EventHandler(this.meshListToolStripMenuItem_Click);
             // 
             // projectTreeToolStripMenuItem
             // 
             this.projectTreeToolStripMenuItem.Name = "projectTreeToolStripMenuItem";
             this.projectTreeToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.projectTreeToolStripMenuItem.Text = "Project Tree";
-            this.projectTreeToolStripMenuItem.Click += new System.EventHandler(this.projectTreeToolStripMenuItem_Click);
+            // 
+            // meshListToolStripMenuItem
+            // 
+            this.meshListToolStripMenuItem.Name = "meshListToolStripMenuItem";
+            this.meshListToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.meshListToolStripMenuItem.Text = "Mesh List";
+            // 
+            // viewportWindowToolStripMenuItem
+            // 
+            this.viewportWindowToolStripMenuItem.Name = "viewportWindowToolStripMenuItem";
+            this.viewportWindowToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.viewportWindowToolStripMenuItem.Text = "Viewport";
+            // 
+            // dockPresetsToolStripMenuItem
+            // 
+            this.dockPresetsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.allStandardToolStripMenuItem,
+            this.modelWorkToolStripMenuItem,
+            this.movesetModdingToolStripMenuItem,
+            this.stageWorkToolStripMenuItem,
+            this.cleanViewToolStripMenuItem});
+            this.dockPresetsToolStripMenuItem.Name = "dockPresetsToolStripMenuItem";
+            this.dockPresetsToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.dockPresetsToolStripMenuItem.Text = "Docking Presets";
+            // 
+            // allStandardToolStripMenuItem
+            // 
+            this.allStandardToolStripMenuItem.Name = "allStandardToolStripMenuItem";
+            this.allStandardToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
+            this.allStandardToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.allStandardToolStripMenuItem.Text = "All (Standard)";
+            this.allStandardToolStripMenuItem.Click += new System.EventHandler(this.allViewsPreset);
+            // 
+            // modelWorkToolStripMenuItem
+            // 
+            this.modelWorkToolStripMenuItem.Name = "modelWorkToolStripMenuItem";
+            this.modelWorkToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
+            this.modelWorkToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.modelWorkToolStripMenuItem.Text = "Model Work";
+            this.modelWorkToolStripMenuItem.Click += new System.EventHandler(this.modelViewPreset);
+            // 
+            // movesetModdingToolStripMenuItem
+            // 
+            this.movesetModdingToolStripMenuItem.Name = "movesetModdingToolStripMenuItem";
+            this.movesetModdingToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
+            this.movesetModdingToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.movesetModdingToolStripMenuItem.Text = "Moveset Modding";
+            this.movesetModdingToolStripMenuItem.Click += new System.EventHandler(this.movesetModdingPreset);
+            // 
+            // cleanViewToolStripMenuItem
+            // 
+            this.cleanViewToolStripMenuItem.Name = "cleanViewToolStripMenuItem";
+            this.cleanViewToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+            this.cleanViewToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.cleanViewToolStripMenuItem.Text = "Clean/Blank";
+            this.cleanViewToolStripMenuItem.Click += new System.EventHandler(this.cleanPreset);
             // 
             // renderSettingsToolStripMenuItem
             // 
             this.renderSettingsToolStripMenuItem.Name = "renderSettingsToolStripMenuItem";
-            this.renderSettingsToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.renderSettingsToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.renderSettingsToolStripMenuItem.Text = "Render Settings";
             this.renderSettingsToolStripMenuItem.Click += new System.EventHandler(this.renderSettingsToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(171, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(155, 6);
             // 
             // aboutToolStripMenuItem1
             // 
             this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
-            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(174, 22);
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(158, 22);
             this.aboutToolStripMenuItem1.Text = "About";
             this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -533,6 +598,14 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
+            // stageWorkToolStripMenuItem
+            // 
+            this.stageWorkToolStripMenuItem.Name = "stageWorkToolStripMenuItem";
+            this.stageWorkToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
+            this.stageWorkToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.stageWorkToolStripMenuItem.Text = "Stage Work";
+            this.stageWorkToolStripMenuItem.Click += new System.EventHandler(this.stageWorkPreset);
+            // 
             // MainForm
             // 
             this.AllowDrop = true;
@@ -585,16 +658,10 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel1;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem propertiesWindowToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem animationsWindowToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem viewportWindowToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem boneTreeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearWorkspaceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem renderSettingsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem meshListToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem projectTreeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveNUDToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem collisionToolStripMenuItem;
@@ -620,6 +687,20 @@
         public System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem mergeModelsMeshListToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mergeBonesBoneListToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem exportModelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem propertiesWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem animationsWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem boneTreeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem projectTreeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem meshListToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewportWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dockPresetsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem allStandardToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem modelWorkToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem movesetModdingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cleanViewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem stageWorkToolStripMenuItem;
     }
 }
 

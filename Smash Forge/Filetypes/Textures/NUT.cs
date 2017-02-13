@@ -382,6 +382,15 @@ namespace Smash_Forge
             }
         }
 
+        public static bool texIdUsed(int texId)
+        {
+            foreach (var nut in Runtime.TextureContainers)
+                foreach(var tex in nut.textures)
+                    if (tex.id == texId)
+                        return true;
+            return false;
+        }
+
         public void Destroy()
         {
             foreach (var kv in draw)

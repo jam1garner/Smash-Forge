@@ -65,7 +65,7 @@ namespace Smash_Forge
             Runtime.TargetVBN.totalBoneCount++;
             Runtime.TargetVBN.boneCountPerType[temp.boneType]++;
             Runtime.TargetVBN.reset();
-            MainForm.Instance.leftPanel.treeRefresh();
+            MainForm.Instance.boneTreePanel.treeRefresh();
             Close();
         }
     }

@@ -300,18 +300,20 @@ namespace Smash_Forge
             FileOutput file = new FileOutput();
             if (file != null)
             {
-                
                 if (Endian == Endianness.Little) {
                     file.Endian = Endianness.Little;
                     file.writeString(" NBV");
+                    file.writeShort(0x02);
+                    file.writeShort(0x01);
                 }
-                if (Endian == Endianness.Big) {
+                else if (Endian == Endianness.Big) {
                     file.Endian = Endianness.Big;
                     file.writeString("VBN ");
+                    file.writeShort(0x01);
+                    file.writeShort(0x02);
                 }
 
-                file.writeShort(0x01);
-                file.writeShort(0x02);
+                
                 file.writeInt(bones.Count);
                 if (boneCountPerType[0] == 0)
                     boneCountPerType[0] = (uint)bones.Count;

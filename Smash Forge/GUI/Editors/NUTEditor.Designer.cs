@@ -43,6 +43,8 @@
             this.openNUTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newNUTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveNUTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dumpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importNUTFromFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportAsDDSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,10 +63,11 @@
             this.glControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.glControl1.AutoSize = true;
             this.glControl1.BackColor = System.Drawing.Color.Black;
             this.glControl1.Location = new System.Drawing.Point(195, 22);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(236, 240);
+            this.glControl1.Size = new System.Drawing.Size(240, 240);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = false;
             // 
@@ -194,7 +197,9 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openNUTToolStripMenuItem,
             this.newNUTToolStripMenuItem,
-            this.saveNUTToolStripMenuItem});
+            this.saveNUTToolStripMenuItem,
+            this.dumpToolStripMenuItem,
+            this.importNUTFromFolderToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -202,23 +207,37 @@
             // openNUTToolStripMenuItem
             // 
             this.openNUTToolStripMenuItem.Name = "openNUTToolStripMenuItem";
-            this.openNUTToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.openNUTToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.openNUTToolStripMenuItem.Text = "Open NUT";
             this.openNUTToolStripMenuItem.Click += new System.EventHandler(this.openNUTToolStripMenuItem_Click);
             // 
             // newNUTToolStripMenuItem
             // 
             this.newNUTToolStripMenuItem.Name = "newNUTToolStripMenuItem";
-            this.newNUTToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.newNUTToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.newNUTToolStripMenuItem.Text = "New NUT";
             this.newNUTToolStripMenuItem.Click += new System.EventHandler(this.newNUTToolStripMenuItem_Click);
             // 
             // saveNUTToolStripMenuItem
             // 
             this.saveNUTToolStripMenuItem.Name = "saveNUTToolStripMenuItem";
-            this.saveNUTToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.saveNUTToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.saveNUTToolStripMenuItem.Text = "Save NUT";
             this.saveNUTToolStripMenuItem.Click += new System.EventHandler(this.saveNUTToolStripMenuItem_Click);
+            // 
+            // dumpToolStripMenuItem
+            // 
+            this.dumpToolStripMenuItem.Name = "dumpToolStripMenuItem";
+            this.dumpToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.dumpToolStripMenuItem.Text = "Export Entire NUT";
+            this.dumpToolStripMenuItem.Click += new System.EventHandler(this.exportNutToFolder);
+            // 
+            // importNUTFromFolderToolStripMenuItem
+            // 
+            this.importNUTFromFolderToolStripMenuItem.Name = "importNUTFromFolderToolStripMenuItem";
+            this.importNUTFromFolderToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.importNUTFromFolderToolStripMenuItem.Text = "Import Entire NUT";
+            this.importNUTFromFolderToolStripMenuItem.Click += new System.EventHandler(this.importNutFromFolder);
             // 
             // textureToolStripMenuItem
             // 
@@ -342,5 +361,7 @@
         private System.Windows.Forms.ToolStripMenuItem extractAndOpenInDefaultEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractAndPickAProgramToEditWithToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importEditedFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dumpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importNUTFromFolderToolStripMenuItem;
     }
 }

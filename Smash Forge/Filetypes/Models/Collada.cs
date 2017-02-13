@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Globalization;
 using System.Xml;
 using System.Drawing;
+using System.IO;
 using OpenTK;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -32,6 +33,9 @@ namespace Smash_Forge
 
             NUD n = new Smash_Forge.NUD();
             con.nud = n;
+
+            NUT thisNut = new NUT();
+            Runtime.TextureContainers.Add(thisNut);
 
             // next will be nodes then controllers
             // craft vbn :>
@@ -87,6 +91,19 @@ namespace Smash_Forge
 
                 }
             }
+
+            //grab all that material data so we can apply images later
+            Dictionary<string,ColladaImages> images = new Dictionary<string, ColladaImages>();
+            foreach (var image in dae.library_images)
+                images.Add(image.id, image);
+            Dictionary<string,ColladaEffects> effects = new Dictionary<string, ColladaEffects>();
+            foreach (var efc in dae.library_effects)
+                effects.Add(efc.id, efc);
+            Dictionary<string,ColladaMaterials> materials = new Dictionary<string, ColladaMaterials>();
+            foreach (var mat in dae.library_materials)
+                materials.Add(mat.id, mat);
+
+            Dictionary<string, NUT.NUD_Texture> existingTextures = new Dictionary<string, NUT.NUD_Texture>();
 
             // controllers
             Dictionary<string, List<NUD.Vertex>> vertices = new Dictionary<string, List<NUD.Vertex>>();
@@ -170,6 +187,42 @@ namespace Smash_Forge
                 int i = 0;
                 while (i < p.p.Length)
                 {
+                    if (p.type == ColladaPrimitiveType.triangles)
+                    {
+                        NUT.NUD_Texture tempTex = null;
+                        ColladaMaterials mat = null;
+                        ColladaEffects eff = null;
+                        ColladaImages img = null;
+                        string matId = null;
+                        dae.scene.MaterialIds.TryGetValue(p.materialid, out matId);
+                        if(matId != null && matId[0] == '#')
+                            materials.TryGetValue(matId.Substring(1, matId.Length - 1), out mat);
+                        if (mat != null && mat.effecturl[0] == '#')
+                            effects.TryGetValue(mat.effecturl.Substring(1, mat.effecturl.Length - 1), out eff);
+                        if (eff != null && eff.source[0] == '#')
+                            images.TryGetValue(eff.source.Substring(1, eff.source.Length - 1), out img);
+                        if (img != null)
+                            existingTextures.TryGetValue(img.initref, out tempTex);
+                        //Console.WriteLine($"mat {mat != null} | matid = {p.materialid}");
+                        if (tempTex == null && img != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fname), img.initref))))
+                        {
+                            //Console.WriteLine($"Importing texture {img.initref}");
+                            DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fname), img.initref))));
+                            NUT.NUD_Texture tex = dds.toNUT_Texture();
+                            tex.id = 0x40FFFF00;
+                            while (NUT.texIdUsed(tex.id))
+                                tex.id++;
+                            thisNut.textures.Add(tex);
+                            thisNut.draw.Add(tex.id, NUT.loadImage(tex));
+                            existingTextures.Add(img.initref, tex);
+                            tempTex = tex;
+                        }
+                        if (tempTex != null)
+                        {
+                            npoly.materials[0].textures[0].hash = tempTex.id;
+                        }
+                    }
+
                     NUD.Vertex v = new NUD.Vertex();
                     foreach (ColladaInput input in p.inputs)
                     {
@@ -211,8 +264,8 @@ namespace Smash_Forge
 
 
             n.MergePoly();
-            n.Optimize();
-            //n.PreRender();
+            //n.Optimize();
+            n.PreRender();
         }
 
         private static void ReadSemantic(ColladaInput input, NUD.Vertex v, int p, Dictionary<string, ColladaSource> sources)
@@ -823,6 +876,21 @@ namespace Smash_Forge
             if(con.vbn != null)
                 SaveBoneNodes(dae, con.vbn.bones[0], con.vbn, null);
 
+            // images
+            /*int defaultTexture = -1;
+            foreach (int tex in nud.GetTexIds())
+            {
+                ColladaImages image = new ColladaImages();
+                dae.library_images.Add(image);
+                image.id = "Tex_0x" + tex.ToString("X");
+                image.name = image.id;
+                image.initref = image.id + ".dds";
+
+                //dat.texturesLinker[tex].Save(fname.Substring(0, fname.LastIndexOf("\\") + 1) + image.initref);
+                if (defaultTexture == -1)
+                    defaultTexture = tex;
+            }*/
+
             // geometry
 
             int num = 0;
@@ -844,6 +912,38 @@ namespace Smash_Forge
                     colnode.geomid = "#" + geom.id;
                     colnode.type = "NODE";
                     colnode.instance = "instance_controller";
+
+                    // create material
+                    /*ColladaMaterials mat = new ColladaMaterials();
+                    mat.id = "VisualMaterial" + num;
+                    mat.effecturl = "#Effect" + num;
+                    dae.library_materials.Add(mat);
+                    colnode.materialSymbol = "Material" + num;
+                    colnode.materialTarget = "#" + mat.id;
+
+                    ColladaEffects eff = new ColladaEffects();
+                    eff.id = "Effect" + num;
+                    eff.name = geom.name + "-effect";
+                    if (poly.materials[0] != null)
+                        eff.source = $"Tex_0x{poly.materials[0].displayTexId}";
+                    else
+                        eff.source = $"Tex_0x{defaultTexture}";
+                    dae.library_effects.Add(eff);
+
+                    ColladaSampler2D samp = new ColladaSampler2D();
+                    if (poly.materials[0] != null)
+                        samp.url = $"Tex_0x{poly.materials[0].displayTexId}";
+                    else
+                        samp.url = $"Tex_0x{defaultTexture}";
+                    eff.sampler = samp;
+                    Dictionary<int, COLLADA_WRAPMODE> wraptranslate = new Dictionary<int, COLLADA_WRAPMODE>
+                {
+                    {0, COLLADA_WRAPMODE.CLAMP },
+                    {1, COLLADA_WRAPMODE.REPEAT },
+                    {2, COLLADA_WRAPMODE.MIRROR }
+                };
+                    //samp.wrap_t = wraptranslate[poly.materials[0].textures[0].WrapMode1];
+                    //samp.wrap_s = wraptranslate[poly.materials[0].textures[0].WrapMode2];*/
 
                     // create vertex object
                     ColladaVertices vertex = new ColladaVertices();
@@ -1117,6 +1217,8 @@ namespace Smash_Forge
             XmlDocument doc = new XmlDocument();
             doc.Load(fname);
             XmlNode colnode = doc.ChildNodes[1];
+            if(colnode == null)
+                colnode = doc.ChildNodes[0];
 
             string v = (string)colnode.Attributes["version"].Value;
             string[] s = v.Split('.');
@@ -1127,20 +1229,19 @@ namespace Smash_Forge
             foreach (XmlNode node in colnode.ChildNodes)
             {
                 /*if (f.Name.Equals("asset", true))
-                    ParseAsset();
-                else if (f.Name.Equals("library_images", true))
-                    ParseLibImages();
-                else if (f.Name.Equals("library_materials", true))
-                    ParseLibMaterials();
-                else if (f.Name.Equals("library_effects", true))
-                    ParseLibEffects();
-                else*/
+                    ParseAsset();*/
                 Console.WriteLine(node.Name);
-                if (node.Name.Equals("library_geometries"))
+                if (node.Name.Equals("library_images"))
+                    ParseImages(node);
+                else if (node.Name.Equals("library_materials"))
+                    ParseMaterials(node);
+                else if (node.Name.Equals("library_effects"))
+                    ParseEffects(node);
+                else if (node.Name.Equals("library_geometries"))
                     ParseGeometry(node);
-                if (node.Name.Equals("library_visual_scenes"))
+                else if (node.Name.Equals("library_visual_scenes"))
                     scene.Read(node);
-                if (node.Name.Equals("library_controllers"))
+                else if (node.Name.Equals("library_controllers"))
                     ParseControllers(node);
             }
         }
@@ -1485,9 +1586,55 @@ namespace Smash_Forge
 
         #region Materials
         // Images and Materials
+
+        public void ParseMaterials(XmlNode root)
+        {
+            foreach (XmlNode node in root.ChildNodes)
+            {
+                ColladaMaterials m = new ColladaMaterials();
+                m.Read(node);
+                library_materials.Add(m);
+            }
+        }
+
+        public void ParseImages(XmlNode root)
+        {
+            foreach (XmlNode node in root.ChildNodes)
+            {
+                ColladaImages m = new ColladaImages();
+                m.Read(node);
+                library_images.Add(m);
+            }
+        }
+
+        public void ParseEffects(XmlNode root)
+        {
+            foreach (XmlNode node in root.ChildNodes)
+            {
+                ColladaEffects m = new ColladaEffects();
+                m.Read(node);
+                library_effects.Add(m);
+            }
+        }
+
         public class ColladaImages
         {
             public string id, name, initref;
+
+            public void Read(XmlNode root)
+            {
+                id = root.Attributes["id"].Value;
+                //name = root.Attributes["name"].Value;
+                foreach (XmlNode child in root.ChildNodes)
+                {
+                    if (child.Name.Equals("init_from"))
+                    {
+                        initref = child.InnerText;
+                        if (initref.StartsWith("file://"))
+                            initref = initref.Substring(7, initref.Length - 7);
+                    }
+                }
+            }
 
             public void Write(XmlDocument doc, XmlNode parent)
             {
@@ -1505,6 +1652,14 @@ namespace Smash_Forge
         public class ColladaMaterials
         {
             public string id, effecturl;
+
+            public void Read(XmlNode root)
+            {
+                id = root.Attributes["id"].Value;
+                foreach (XmlNode node in root.ChildNodes)
+                    if (node.Name.Equals("instance_effect") && node.Attributes["url"] != null)
+                        effecturl = node.Attributes["url"].Value;
+            }
 
             public void Write(XmlDocument doc, XmlNode parent)
             {
@@ -1524,8 +1679,71 @@ namespace Smash_Forge
             public string source = "#";
             public ColladaSampler2D sampler;
 
-            // for writing
+            public void Read(XmlNode root)
+            {
+                id = root.Attributes["id"].Value;
+                name = root.Attributes["name"].Value;
+                foreach (XmlNode node in root.ChildNodes)
+                {
+                    if (node.Name.Equals("profile_COMMON"))
+                    {
+                        readEffectTechnique(node);
+                    }
+                }
+            }
 
+            private void readEffectTechnique(XmlNode root)
+            {
+                Dictionary<string, XmlNode> surfaces = new Dictionary<string, XmlNode>();
+                Dictionary<string, XmlNode> samplers = new Dictionary<string, XmlNode>();
+                foreach (XmlNode node in root.ChildNodes)
+                {
+                    if (node.Name.Equals("newparam") && node.ChildNodes[0].Name.Equals("surface"))
+                        surfaces.Add(node.Attributes["sid"].Value, node.ChildNodes[0]);
+                    if (node.Name.Equals("newparam") && node.ChildNodes[0].Name.Equals("sampler2D"))
+                        samplers.Add(node.Attributes["sid"].Value, node.ChildNodes[0]);
+                }
+                foreach (XmlNode node in root.ChildNodes)
+                {
+                    if (node.Name.Equals("technique") && node.ChildNodes[0].Name.Equals("phong"))
+                    {
+                        foreach (XmlNode node1 in node.ChildNodes[0].ChildNodes)
+                        {
+                            if (node1.Name.Equals("diffuse"))
+                            {
+                                foreach (XmlNode node2 in node1.ChildNodes)
+                                {
+                                    if (node2.Name.Equals("texture"))
+                                    {
+                                        string texture = node2.Attributes["texture"].Value;
+                                        XmlNode temp = null;
+                                        samplers.TryGetValue(texture, out temp);
+                                        if (temp != null)
+                                        {
+                                            foreach (XmlNode node3 in temp.ChildNodes)
+                                            {
+                                                if (node3.Name.Equals("source"))
+                                                {
+                                                    //if you are reading this I am sorry
+                                                    XmlNode temp2 = null;
+                                                    surfaces.TryGetValue(node3.InnerText, out temp2);
+                                                    if (temp2 != null)
+                                                    {
+                                                        texture = temp2.ChildNodes[0].InnerText;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        source = "#" + texture;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // for writing
             public void Write(XmlDocument doc, XmlNode parent)
             {
                 XmlNode node = doc.CreateElement("effect");
@@ -1827,6 +2045,7 @@ namespace Smash_Forge
         {
             public List<ColladaNode> nodes = new List<ColladaNode>();
             public string id, name;
+            public Dictionary<string, string> MaterialIds = new Dictionary<string, string>();
 
             public void Read(XmlNode root)
             {
@@ -1841,6 +2060,11 @@ namespace Smash_Forge
                         ColladaNode n = new ColladaNode();
                         n.Read(node, null);
                         nodes.Add(n);
+                        foreach (var v in n.materialIds)
+                        {
+                            if(!MaterialIds.ContainsKey(v.Key))
+                                MaterialIds.Add(v.Key, v.Value);
+                        }
                     }
                 }
             }
@@ -1874,6 +2098,7 @@ namespace Smash_Forge
 
             // material
             public string materialSymbol, materialTarget;
+            public Dictionary<string,string> materialIds = new Dictionary<string, string>();
 
             public void Read(XmlNode root, ColladaNode parent)
             {
@@ -1890,8 +2115,8 @@ namespace Smash_Forge
                         ColladaNode n = new ColladaNode();
                         n.Read(node, this);
                         children.Add(n);
-                    }else
-                    if (node.Name.Equals("matrix"))
+                    }
+                    else if (node.Name.Equals("matrix"))
                     {
                         string[] data = node.InnerText.Trim().Replace("\n", " ").Split(' ');
                         Matrix4 mat = new Matrix4();
@@ -1907,8 +2132,28 @@ namespace Smash_Forge
                         mat.ClearTranslation();
                         mat.Invert();
                         rot = ANIM.quattoeul(mat.ExtractRotation()); // TODO: We need a better conversion code for this
-                    }else
-                    if (node.Name.Equals("extra")) { }
+                    }
+                    else if (node.Name.Equals("extra"))
+                    {
+                        
+                    }
+                    else if (node.Name.Equals("instance_controller"))
+                    {
+                        foreach (XmlNode node1 in node.ChildNodes)
+                        {
+                            if (node1.Name.Equals("bind_material"))
+                            {
+                                foreach (XmlNode node2 in node1.ChildNodes)
+                                {
+                                    if (node2.Name.Equals("technique_common"))
+                                    {
+                                        if(node2.ChildNodes[0].Attributes["symbol"] != null && !materialIds.ContainsKey(node2.ChildNodes[0].Attributes["symbol"].Value))
+                                            materialIds.Add(node2.ChildNodes[0].Attributes["symbol"].Value, node2.ChildNodes[0].Attributes["target"].Value);
+                                    }
+                                }
+                            }
+                        }
+                    }
                     else
                     {
                         Console.WriteLine(node.Name);

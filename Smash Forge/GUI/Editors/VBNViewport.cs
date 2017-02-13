@@ -114,7 +114,7 @@ namespace Smash_Forge
                 MainForm.Instance.meshList.refresh();
                 MainForm.Instance.paramEditors = new List<PARAMEditor>();
                 MainForm.Instance.lvdEditor.Clear();
-                MainForm.Instance.leftPanel.Clear();
+                MainForm.Instance.boneTreePanel.Clear();
                 string acmdpath = Path.Combine(MainForm.executableDir, "workspace/animcmd/");
                 if (Directory.Exists(acmdpath))
                 {
@@ -125,6 +125,11 @@ namespace Smash_Forge
 
                 MainForm.Instance.project.fillTree();
             }
+
+            //if (Runtime.ModelContainers.Count > 0)
+            //    MainForm.Instance.exportModelToolStripMenuItem.Visible = true;
+            //else
+            //    MainForm.Instance.exportModelToolStripMenuItem.Visible = false;
 
             if (this.IsDisposed == true)
                 return;
