@@ -189,9 +189,33 @@ namespace Smash_Forge
 
             foreach (var texture in textures)
             {
+                int m = 0;
+                
                 foreach (var mip in texture.mipmaps)
                 {
-                    o.writeBytes(mip);
+                    int off = 0;
+                    if (texture.getNutFormat() == 14)
+                    {
+                        for(int h = 0; h < (texture.height/(Math.Pow(2,m))) * (texture.width / (Math.Pow(2, m))); h++) {
+                            
+                                for(int p = 0; p < 4; p++) {
+                                    if (p == 0)
+                                    {
+                                        o.writeByte(mip[off + 3]);
+                                    }else
+                                    {
+                                        o.writeByte(mip[off + (p - 1)]);
+                                    }
+                                    
+                                }
+                                off += 4;
+                            
+                                }
+                    }
+                    else {
+                        o.writeBytes(mip);
+                    }
+                    m++;
                 }
             }
 
@@ -266,10 +290,27 @@ namespace Smash_Forge
 
                 d.skip(0x18);
                 tex.id = d.readInt();
-
                 for (int miplevel = 0; miplevel < numMips; miplevel++)
                 {
-                    tex.mipmaps.Add(d.getSection(dataOffset, mipSizes[miplevel]));
+                    byte[] texArray = d.getSection(dataOffset, mipSizes[miplevel]);
+
+                    if (tex.getNutFormat() == 14)
+                    {
+                        byte[] oldArray = texArray;
+                        for (int pos = 0; pos < mipSizes[miplevel]; pos+=4)
+                        {
+
+                            for (int p = 0; p < 4; p++)
+                            {
+                                if (p == 0)
+                                    texArray[pos + 3] = oldArray[pos];
+                                else
+                                    texArray[pos + p - 1] = oldArray[pos + p];
+                            }
+
+                        }
+                    }
+                    tex.mipmaps.Add(texArray);
                     dataOffset += mipSizes[miplevel];
                 }
 

@@ -123,20 +123,28 @@ namespace Smash_Forge
 
             if (listBox1.SelectedItem == null || listBox2.SelectedItem == null)
                 return;
-
+            float h = 1f;
             int rt = ((NUT)listBox1.SelectedItem).draw[((NUT.NUD_Texture)listBox2.SelectedItem).id];
-            float texureRatioW = ((NUT.NUD_Texture)listBox2.SelectedItem).width / ((NUT.NUD_Texture)listBox2.SelectedItem).height;
+            float texureRatioW = (float)((NUT.NUD_Texture)listBox2.SelectedItem).width / (float)((NUT.NUD_Texture)listBox2.SelectedItem).height;
             float widthPre = texureRatioW * glControl1.Height;
             float w = glControl1.Width / widthPre;
+            if (texureRatioW > glControl1.AspectRatio)
+            {
+                w = 1f;
+                float texureRatioH = (float)((NUT.NUD_Texture)listBox2.SelectedItem).height / (float)((NUT.NUD_Texture)listBox2.SelectedItem).width;
+                float HeightPre = texureRatioH * glControl1.Width;
+                h = glControl1.Height / HeightPre;
+            }
+
 
 
             GL.BindTexture(TextureTarget.Texture2D, rt);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
             GL.Begin(PrimitiveType.Quads);
-            GL.TexCoord2(w, 1);
+            GL.TexCoord2(w, h);
             GL.Vertex2(1, -1);
-            GL.TexCoord2(0, 1);
+            GL.TexCoord2(0, h);
             GL.Vertex2(-1, -1);
             GL.TexCoord2(0, 0);
             GL.Vertex2(-1, 1);

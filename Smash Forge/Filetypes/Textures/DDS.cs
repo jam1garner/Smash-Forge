@@ -197,9 +197,9 @@ namespace Smash_Forge
             // now for mipmap data...
             FileData d = new FileData(data);
             int off = 0, w = header.width, h = header.height;
-            for(int i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++)
             {
-                int s = (int)((w*h) * size);
+                int s = (int)((w * h) * size);
                 w /= 2;
                 h /= 2;
                 tex.mipmaps.Add(d.getSection(off, s));
@@ -208,7 +208,7 @@ namespace Smash_Forge
 
             return tex;
         }
-
+       
 		public Bitmap toBitmap(){
 
 			byte[] pixels = new byte[header.width * header.height * 4];
