@@ -96,7 +96,33 @@ namespace Smash_Forge
                         string chr_11 = filesToOpen[i + 3];
                         string chr_13 = filesToOpen[i + 4];
                         string stock_90 = filesToOpen[i + 5];
-
+                        if(!nud.Equals("blank"))
+                            openFile(nud);
+                        NUT chr_00_nut = null, chr_11_nut = null, chr_13_nut = null, stock_90_nut = null;
+                        if (!chr_00.Equals("blank"))
+                        {
+                            chr_00_nut = new NUT(chr_00);
+                            Runtime.TextureContainers.Add(chr_00_nut);
+                        }
+                        if (!chr_11.Equals("blank"))
+                        {
+                            chr_11_nut = new NUT(chr_11);
+                            Runtime.TextureContainers.Add(chr_11_nut);
+                        }
+                        if (!chr_13.Equals("blank"))
+                        {
+                            chr_13_nut = new NUT(chr_13);
+                            Runtime.TextureContainers.Add(chr_13_nut);
+                        }
+                        if (!stock_90.Equals("blank"))
+                        {
+                            stock_90_nut = new NUT(stock_90);
+                            Runtime.TextureContainers.Add(stock_90_nut);
+                        }
+                        UIPreview uiPreview = new UIPreview(chr_00_nut, chr_11_nut, chr_13_nut, stock_90_nut);
+                        uiPreview.ShowHint = DockState.DockRight;
+                        dockPanel1.DockRightPortion = 270;
+                        AddDockedControl(uiPreview);
                         i += 5;
                     }
                     else
