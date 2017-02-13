@@ -96,7 +96,7 @@ namespace Smash_Forge
                 }
                 foreach (NUT n in Runtime.TextureContainers)
                 {
-                    n.Destroy();
+                    //n.Destroy();
                 }
                 Runtime.ModelContainers = new List<ModelContainer>();
                 Runtime.TextureContainers = new List<NUT>();

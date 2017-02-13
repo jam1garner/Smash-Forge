@@ -168,6 +168,7 @@ namespace Smash_Forge
             foreach (int i in afunc.Keys)
                 comboBox4.Items.Add(afunc[i]);
 
+            if(comboBox10.Items.Count == 0)
             foreach (int i in wrapmode.Keys)
             {
                 comboBox10.Items.Add(wrapmode[i]);

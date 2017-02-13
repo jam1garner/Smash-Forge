@@ -114,6 +114,7 @@ namespace Smash_Forge
                     if (count > 4)
                     {
                         MessageBox.Show("Error: More than 4 weights detected!");
+                        return;
                     }
 
                     NUD.Vertex vert = new NUD.Vertex();
@@ -205,7 +206,6 @@ namespace Smash_Forge
                     npoly.materials.Add(nd.materials[0]);
                 }
             }
-
 
             // then image materials and effects
 
