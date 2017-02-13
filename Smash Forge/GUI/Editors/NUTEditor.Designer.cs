@@ -63,10 +63,11 @@
             this.glControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.glControl1.AutoSize = true;
             this.glControl1.BackColor = System.Drawing.Color.Black;
             this.glControl1.Location = new System.Drawing.Point(195, 22);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(236, 240);
+            this.glControl1.Size = new System.Drawing.Size(240, 240);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = false;
             // 

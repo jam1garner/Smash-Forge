@@ -110,30 +110,37 @@ namespace Smash_Forge
         private void RenderTexture()
         {
             glControl1.MakeCurrent();
-            GL.ClearColor(Color.Red);
+            GL.Viewport(glControl1.ClientRectangle);
+            GL.ClearColor(Color.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
 
             GL.Enable(EnableCap.Texture2D);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcColor,BlendingFactorDest.OneMinusSrcAlpha);
 
             if (listBox1.SelectedItem == null || listBox2.SelectedItem == null)
                 return;
 
             int rt = ((NUT)listBox1.SelectedItem).draw[((NUT.NUD_Texture)listBox2.SelectedItem).id];
+            float texureRatioW = ((NUT.NUD_Texture)listBox2.SelectedItem).width / ((NUT.NUD_Texture)listBox2.SelectedItem).height;
+            float widthPre = texureRatioW * glControl1.Height;
+            float w = glControl1.Width / widthPre;
+
 
             GL.BindTexture(TextureTarget.Texture2D, rt);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
             GL.Begin(PrimitiveType.Quads);
-            GL.TexCoord2(1, 1);
+            GL.TexCoord2(w, 1);
             GL.Vertex2(1, -1);
             GL.TexCoord2(0, 1);
             GL.Vertex2(-1, -1);
             GL.TexCoord2(0, 0);
             GL.Vertex2(-1, 1);
-            GL.TexCoord2(1, 0);
+            GL.TexCoord2(w, 0);
             GL.Vertex2(1, 1);
             GL.End();
 
@@ -268,6 +275,7 @@ namespace Smash_Forge
         private void NUTEditor_Resize(object sender, EventArgs e)
         {
             RenderTexture();
+            
         }
 
         private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
