@@ -57,8 +57,8 @@ namespace Smash_Forge
             {
                 e.BringToForeground = true;
                 Smash_Forge.MainForm form = MainForm as Smash_Forge.MainForm;
-                foreach (string arg in e.CommandLine)
-                    Smash_Forge.MainForm.Instance.openFile(arg);
+                Smash_Forge.MainForm.Instance.filesToOpen = e.CommandLine.ToArray();
+                Smash_Forge.MainForm.Instance.openFiles();
             }
 
             protected override void OnCreateMainForm()

@@ -74,64 +74,63 @@ namespace Smash_Forge
             //meshList.refresh();
             //ReadChimeraLucas();
             viewportWindowToolStripMenuItem.Checked = true;
-            if (filesToOpen != null)
+            openFiles();
+        }
+
+        public void openFiles()
+        {
+            for (int i = 0; i < filesToOpen.Length; i++)
             {
-                for(int i = 0; i < filesToOpen.Length; i++)
+                string file = filesToOpen[i];
+                if (file.Equals("--clean"))
                 {
-                    string file = filesToOpen[i];
-                    if (file.Equals("--clean"))
-                    {
-                        clearWorkspaceToolStripMenuItem_Click(new object(), new EventArgs());
-                        cleanPreset(new object(), new EventArgs());
-                    }
-                    else if (file.Equals("--superclean"))
-                    {
-                        clearWorkspaceToolStripMenuItem_Click(new object(), new EventArgs());
-                        superCleanPreset(new object(), new EventArgs());
-                    }
-                    else if (file.Equals("--preview"))
-                    {
-                        string nud = filesToOpen[i + 1];
-                        string chr_00 = filesToOpen[i + 2];
-                        string chr_11 = filesToOpen[i + 3];
-                        string chr_13 = filesToOpen[i + 4];
-                        string stock_90 = filesToOpen[i + 5];
-                        if(!nud.Equals("blank"))
-                            openFile(nud);
-                        NUT chr_00_nut = null, chr_11_nut = null, chr_13_nut = null, stock_90_nut = null;
-                        if (!chr_00.Equals("blank"))
-                        {
-                            chr_00_nut = new NUT(chr_00);
-                            Runtime.TextureContainers.Add(chr_00_nut);
-                        }
-                        if (!chr_11.Equals("blank"))
-                        {
-                            chr_11_nut = new NUT(chr_11);
-                            Runtime.TextureContainers.Add(chr_11_nut);
-                        }
-                        if (!chr_13.Equals("blank"))
-                        {
-                            chr_13_nut = new NUT(chr_13);
-                            Runtime.TextureContainers.Add(chr_13_nut);
-                        }
-                        if (!stock_90.Equals("blank"))
-                        {
-                            stock_90_nut = new NUT(stock_90);
-                            Runtime.TextureContainers.Add(stock_90_nut);
-                        }
-                        UIPreview uiPreview = new UIPreview(chr_00_nut, chr_11_nut, chr_13_nut, stock_90_nut);
-                        uiPreview.ShowHint = DockState.DockRight;
-                        dockPanel1.DockRightPortion = 270;
-                        AddDockedControl(uiPreview);
-                        i += 5;
-                    }
-                    else
-                    {
-                        openFile(file);
-                    }
+                    clearWorkspaceToolStripMenuItem_Click(new object(), new EventArgs());
+                    cleanPreset(new object(), new EventArgs());
                 }
-                filesToOpen = null;
+                else if (file.Equals("--superclean"))
+                {
+                    clearWorkspaceToolStripMenuItem_Click(new object(), new EventArgs());
+                    superCleanPreset(new object(), new EventArgs());
+                }
+                else if (file.Equals("--preview"))
+                {
+                    string chr_00 = filesToOpen[i + 1];
+                    string chr_11 = filesToOpen[i + 2];
+                    string chr_13 = filesToOpen[i + 3];
+                    string stock_90 = filesToOpen[i + 4];
+                    NUT chr_00_nut = null, chr_11_nut = null, chr_13_nut = null, stock_90_nut = null;
+                    if (!chr_00.Equals("blank"))
+                    {
+                        chr_00_nut = new NUT(chr_00);
+                        Runtime.TextureContainers.Add(chr_00_nut);
+                    }
+                    if (!chr_11.Equals("blank"))
+                    {
+                        chr_11_nut = new NUT(chr_11);
+                        Runtime.TextureContainers.Add(chr_11_nut);
+                    }
+                    if (!chr_13.Equals("blank"))
+                    {
+                        chr_13_nut = new NUT(chr_13);
+                        Runtime.TextureContainers.Add(chr_13_nut);
+                    }
+                    if (!stock_90.Equals("blank"))
+                    {
+                        stock_90_nut = new NUT(stock_90);
+                        Runtime.TextureContainers.Add(stock_90_nut);
+                    }
+                    UIPreview uiPreview = new UIPreview(chr_00_nut, chr_11_nut, chr_13_nut, stock_90_nut);
+                    uiPreview.ShowHint = DockState.DockRight;
+                    dockPanel1.DockRightPortion = 270;
+                    AddDockedControl(uiPreview);
+                    i += 4;
+                }
+                else
+                {
+                    openFile(file);
+                }
             }
+            filesToOpen = null;
         }
 
         private void MainForm_Close(object sender, EventArgs e)
@@ -1381,11 +1380,11 @@ namespace Smash_Forge
 
         private void modelViewPreset(object sender, EventArgs e)
         {
-            animList.Close();
+            animList.Hide();
             boneTreePanel.ShowHint = DockState.DockLeft;
-            project.Close();
-            lvdList.Close();
-            lvdEditor.Close();
+            project.Hide();
+            lvdList.Hide();
+            lvdEditor.Hide();
             RegenPanels();
             meshList.ShowHint = DockState.DockRight;
             Runtime.acmdEditor.ShowHint = DockState.Hidden;
@@ -1396,11 +1395,11 @@ namespace Smash_Forge
         private void movesetModdingPreset(object sender, EventArgs e)
         {
             animList.ShowHint = DockState.DockLeft;
-            boneTreePanel.Close();
-            project.Close();
-            lvdList.Close();
-            lvdEditor.Close();
-            meshList.Close();
+            boneTreePanel.Hide();
+            project.Hide();
+            lvdList.Hide();
+            lvdEditor.Hide();
+            meshList.Hide();
             RegenPanels();
             Runtime.acmdEditor.ShowHint = DockState.Float;
             AddDockedControl(Runtime.acmdEditor);
@@ -1409,12 +1408,12 @@ namespace Smash_Forge
 
         private void stageWorkPreset(object sender, EventArgs e)
         {
-            animList.Close();
+            animList.Hide();
             boneTreePanel.ShowHint = DockState.DockLeft;
-            project.Close();
+            project.Hide();
             lvdList.ShowHint = DockState.DockLeft;
             lvdEditor.ShowHint = DockState.DockRight;
-            Runtime.acmdEditor.Close();
+            Runtime.acmdEditor.Hide();
             meshList.ShowHint = DockState.DockRight;
             RegenPanels();
             AddDockedControl(boneTreePanel);
@@ -1425,26 +1424,26 @@ namespace Smash_Forge
 
         private void cleanPreset(object sender, EventArgs e)
         {
-            animList.Close();
-            boneTreePanel.Close();
-            project.Close();
-            lvdList.Close();
-            lvdEditor.Close();
-            Runtime.acmdEditor.Close();
-            meshList.Close();
+            animList.Hide();
+            boneTreePanel.Hide();
+            project.Hide();
+            lvdList.Hide();
+            lvdEditor.Hide();
+            Runtime.acmdEditor.Hide();
+            meshList.Hide();
             RegenPanels();
         }
 
         private void superCleanPreset(object sender, EventArgs e)
         {
-            animList.Close();
-            boneTreePanel.Close();
-            project.Close();
-            lvdList.Close();
-            lvdEditor.Close();
-            Runtime.acmdEditor.Close();
+            animList.Hide();
+            boneTreePanel.Hide();
+            project.Hide();
+            lvdList.Hide();
+            lvdEditor.Hide();
+            Runtime.acmdEditor.Hide();
             meshList.Close();
-            RegenPanels();
+            //RegenPanels();
             viewports[0].groupBox2.Visible = false;
         }
     }

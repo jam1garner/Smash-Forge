@@ -48,7 +48,7 @@ namespace Smash_Forge
         private void RenderTexture(GLControl glControl1, NUT nut)
         {
             glControl1.MakeCurrent();
-            GL.ClearColor(Color.Red);
+            GL.ClearColor(Color.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.MatrixMode(MatrixMode.Modelview);
@@ -57,10 +57,12 @@ namespace Smash_Forge
             GL.LoadIdentity();
 
             GL.Enable(EnableCap.Texture2D);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcColor, BlendingFactorDest.OneMinusSrcAlpha);
 
             NUT.NUD_Texture tex = nut.textures[0];
 
-            if (nut == null || tex == null)
+            if (tex == null)
                 return;
 
             int rt = nut.draw[tex.id];
