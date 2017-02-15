@@ -663,6 +663,13 @@ namespace Smash_Forge
                             m.nud.Save(filename);
                             m.vbn.Save(filename.Replace(".nud", ".vbn"));
                         }
+                        else if(Runtime.ModelContainers[0].bch != null)
+                        {
+                            NUD m = Runtime.ModelContainers[0].bch.mbn.toNUD();
+                            VBN v = Runtime.ModelContainers[0].bch.models[0].skeleton;
+                            m.Save(filename);
+                            v.Save(filename.Replace(".nud", ".vbn"));
+                        }
                         else
                             Runtime.ModelContainers[0].nud.Save(filename);
                 }
@@ -1178,7 +1185,7 @@ namespace Smash_Forge
                 BCH b = new BCH();
                 con.bch = b;
                 b.mbn = m;
-                b.Read("C:\\s\\Smash\\extract\\data\\fighter\\lucas\\Ness3DS - h00\\normal.bch");
+                b.Read(filename.Replace(".mbn",".bch"));
                 Runtime.ModelContainers.Add(con);
             }
 
@@ -1244,7 +1251,7 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.dat;*.mta;*.wrkspc;*.nut;*.sb|" +
+                    "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc, .mbn)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.dat;*.mta;*.wrkspc;*.nut;*.sb;*.mbn|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +

@@ -577,7 +577,15 @@ namespace Smash_Forge
                             vert.nrm = v.nrm;
                             vert.col = v.col;
                             vert.tx = v.tx;
+                            if(vert.weight.Count < 4) {
+                                v.weight.Add(0f);
+                                v.weight.Add(0f);
+                            }
                             vert.weight = v.weight;
+                            if(v.node.Count < 4) {
+                                v.node.Add(0);
+                                v.node.Add(0);
+                            }
                             vert.node = v.node;
                             poly.AddVertex(vert);
                         }

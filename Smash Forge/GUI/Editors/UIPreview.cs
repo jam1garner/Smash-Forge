@@ -43,18 +43,35 @@ namespace Smash_Forge
             RenderTexture(chr_13_renderer, chr_13);
             RenderTexture(stock_90_renderer, stock_90);
         }
+        private void chr00Load(object sender, EventArgs e)
+        {
+            RenderTexture(chr_00_renderer, chr_00);
+        }
+        private void chr11Load(object sender, EventArgs e)
+        {
+            RenderTexture(chr_11_renderer, chr_11);
+        }
+        private void chr13Load(object sender, EventArgs e)
+        {
+            RenderTexture(chr_13_renderer, chr_13);
+
+        }
+        private void stk90Load(object sender, EventArgs e)
+        {
+            RenderTexture(stock_90_renderer, stock_90);
+        }
 
         //TODO fix?
         private void RenderTexture(GLControl glControl1, NUT nut)
         {
             glControl1.MakeCurrent();
-            GL.ClearColor(Color.White);
+            GL.Viewport(glControl1.ClientRectangle);
+            GL.ClearColor(Color.Red);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
 
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
@@ -66,9 +83,9 @@ namespace Smash_Forge
                 return;
 
             int rt = nut.draw[tex.id];
-
-            GL.BindTexture(TextureTarget.Texture2D, rt);
             GL.Begin(PrimitiveType.Quads);
+            GL.BindTexture(TextureTarget.Texture2D, rt);
+            
             GL.TexCoord2(1, 1);
             GL.Vertex2(1, -1);
             GL.TexCoord2(0, 1);
