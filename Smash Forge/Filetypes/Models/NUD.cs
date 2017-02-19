@@ -1224,7 +1224,7 @@ namespace Smash_Forge
         #endregion
 
         #region ClassStructure
-        public class Vertex : IEquatable<Vertex>
+        public class Vertex
         {
             public Vector3 pos = new Vector3(0, 0, 0), nrm = new Vector3(0, 0, 0);
             public Vector4 bitan = new Vector4(0, 0, 0, 1), tan = new Vector4(0, 0, 0, 1);
@@ -1242,18 +1242,10 @@ namespace Smash_Forge
                 pos = new Vector3(x, y, z);
             }
 
-            public override bool Equals(object o)
-            {
-                if (o == null || GetType() != o.GetType())
-                    return false;
-
-                Vertex p = (Vertex)o;
-                return pos.Equals(p.pos) && tx.Equals(p.tx) && nrm.Equals(p.nrm) && node.Equals(p.node) && weight.Equals(p.weight);
-            }
-
             public bool Equals(Vertex p)
             {
-                return pos.Equals(p.pos) && tx.Equals(p.tx) && nrm.Equals(p.nrm) && node.Equals(p.node) && weight.Equals(p.weight);
+                return pos.Equals(p.pos) && nrm.Equals(p.nrm) && new HashSet<Vector2>(tx).SetEquals(p.tx) && col.Equals(p.col)
+                    && new HashSet<int>(node).SetEquals(p.node) && new HashSet<float>(weight).SetEquals(p.weight);
             }
         }
 
@@ -1506,11 +1498,25 @@ namespace Smash_Forge
                 {
                     List<Vertex> nVert = new List<Vertex>();
                     List<int> nFace = new List<int>();
+                    //Console.WriteLine("Optimizing " + m.Text);
                     foreach(int f in p.faces)
                     {
-                        int pos = nVert.IndexOf(p.vertices[f]);
+                        int pos = -1; // nVert.IndexOf(p.vertices[f]);
+                        int i = 0;
+                        foreach(Vertex v in nVert)
+                        {
+                            if (v.Equals(p.vertices[f]))
+                            {
+                                pos = i;
+                                break;
+                            }
+                            else
+                                i++;
+                        }
+
                         if (pos != -1)
                         {
+                            //Console.WriteLine("optimizd cert");
                             nFace.Add(pos);
                         }else
                         {

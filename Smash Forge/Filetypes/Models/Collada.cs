@@ -265,7 +265,7 @@ namespace Smash_Forge
 
 
             n.MergePoly();
-            //n.Optimize();
+            n.Optimize();
             n.PreRender();
         }
 
