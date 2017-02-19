@@ -132,7 +132,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(53, 13);
             this.label3.TabIndex = 5;
-            this.label3.Text = "SrcFactor";
+            this.label3.Text = "DstFactor";
             // 
             // label4
             // 
@@ -159,7 +159,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(53, 13);
             this.label2.TabIndex = 4;
-            this.label2.Text = "DstFactor";
+            this.label2.Text = "SrcFactor";
             // 
             // tableLayoutPanel1
             // 

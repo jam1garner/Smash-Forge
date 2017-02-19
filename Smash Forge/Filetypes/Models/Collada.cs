@@ -26,7 +26,7 @@ namespace Smash_Forge
 
         }
 
-        public static void DAEtoNUD(string fname, ModelContainer con)
+        public static void DAEtoNUD(string fname, ModelContainer con, bool importTexture = false)
         {
             Collada dae = new Collada();
             dae.Read(fname);
@@ -187,6 +187,7 @@ namespace Smash_Forge
                 int i = 0;
                 while (i < p.p.Length)
                 {
+                    if(importTexture)
                     if (p.type == ColladaPrimitiveType.triangles)
                     {
                         NUT.NUD_Texture tempTex = null;

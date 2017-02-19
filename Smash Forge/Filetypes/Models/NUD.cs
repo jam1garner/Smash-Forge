@@ -277,6 +277,12 @@ namespace Smash_Forge
                         Vector4 cgo = new Vector4(cg[0], cg[1], cg[2], cg[3]);
                         GL.Uniform4(shader.getAttribute("colorGain"), cgo);
 
+                        GL.Enable(EnableCap.Blend);
+                        if(mat.srcFactor == 5)
+                        {
+                            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+                        }
+
                         /*GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
                             dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
 
@@ -1218,7 +1224,7 @@ namespace Smash_Forge
         #endregion
 
         #region ClassStructure
-        public class Vertex
+        public class Vertex : IEquatable<Vertex>
         {
             public Vector3 pos = new Vector3(0, 0, 0), nrm = new Vector3(0, 0, 0);
             public Vector4 bitan = new Vector4(0, 0, 0, 1), tan = new Vector4(0, 0, 0, 1);
@@ -1242,7 +1248,12 @@ namespace Smash_Forge
                     return false;
 
                 Vertex p = (Vertex)o;
-                return pos.Equals(p.pos) && tx.Equals(p.tx) && nrm.Equals(p.nrm);
+                return pos.Equals(p.pos) && tx.Equals(p.tx) && nrm.Equals(p.nrm) && node.Equals(p.node) && weight.Equals(p.weight);
+            }
+
+            public bool Equals(Vertex p)
+            {
+                return pos.Equals(p.pos) && tx.Equals(p.tx) && nrm.Equals(p.nrm) && node.Equals(p.node) && weight.Equals(p.weight);
             }
         }
 

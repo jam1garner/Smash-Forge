@@ -17,7 +17,7 @@ namespace Smash_Forge
         {
             set
             {
-                if (value == 268435455 || value == -1)
+                if (value == 0xFFFFFFF || value == -1 || vbnParent.bones.Count < value)
                 {
                     ParentBone = null;
                     return;
@@ -260,13 +260,14 @@ namespace Smash_Forge
                 boneCountPerType[2] = (UInt32)file.readInt();
                 boneCountPerType[3] = (UInt32)file.readInt();
 
+                int[] pi = new int[totalBoneCount];
                 for (int i = 0; i < totalBoneCount; i++)
                 {
                     Bone temp = new Bone(this);
                     temp.boneName = file.readString(file.pos(), -1).ToCharArray();
                     file.skip(64);
                     temp.boneType = (UInt32)file.readInt();
-                    temp.parentIndex = file.readInt();
+                    pi[i] = file.readInt();
                     temp.boneId = (UInt32)file.readInt();
                     temp.position = new float[3];
                     temp.rotation = new float[3];
@@ -286,6 +287,7 @@ namespace Smash_Forge
                     bones[i].scale[1] = file.readFloat();
                     bones[i].scale[2] = file.readFloat();
                     Bone temp = bones[i];
+                    temp.parentIndex = pi[i];
                     //Debug.Write(temp.parentIndex);
                     //if (temp.parentIndex != 0x0FFFFFFF && temp.parentIndex > -1)
                     //    bones[temp.parentIndex].children.Add(i);

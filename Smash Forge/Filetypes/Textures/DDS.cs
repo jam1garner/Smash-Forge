@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using OpenTK.Graphics.OpenGL;
 
@@ -174,7 +175,7 @@ namespace Smash_Forge
             if (mips > header.mipmapCount)
             {
                 mips = header.mipmapCount;
-                throw new Exception("No mipmaps");
+                MessageBox.Show("Possible texture error: Only one mipmap");
             }
 
             switch (header.dwFourCC)

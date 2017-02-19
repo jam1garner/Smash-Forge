@@ -25,19 +25,19 @@ namespace Smash_Forge
                     { 0x00, "Nothing"},
                     { 0x01, "SourceAlpha"},
                     { 0x02, "One"},
-                    { 0x03, "InverseSourceColor"},
-                    { 0x04, "InverseDestinationAlpha"},
-                    { 0x05, "InverseSourceAlpha"},
-                    { 0x07, "DestinationAlpha(?)"}
+                    { 0x03, "InverseSourceAlpha + SubtractTrue"},
+                    { 0x04, "Dummy"},
                 };//{ 0x101f, "Invisible"}
 
         Dictionary<int, string> srcFactor = new Dictionary<int, string>(){
                     { 0x00, "Nothing"},
-                    { 0x01, "SourceAlpha"},
-                    { 0x02, "One"},
-                    { 0x03, "InverseSourceColor"},
-                    { 0x04, "SourceColor"},
-                    { 0x0a, "Zero"}
+                    { 0x01, "SourceAlpha + CompareBeforeTextureFalse + DepthTestTrue + EnableDepthUpdateTrue"},
+                    { 0x03, "SourceAlpha + CompareBeforeTextureTrue + DepthTestTrue + EnableDepthUpdateFalse + MultiplyBy1"},
+                    { 0x04, "RasterAlpha + CompareBeforeTextureTrue + DepthTestTrue + EnableDepthUpdateFalse"},
+                    { 0x05, "SourceAlpha + CompareBeforeTextureTrue + DepthTestTrue (can also be False) + EnableDepthUpdateFalse + MultiplyBy2"},
+                    { 0x07, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + ObjectDraw"},
+                    { 0x32, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + MultiplyBy2"},
+                    { 0x33, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + MultiplyBy1"}
                 };//{ 0x101f, "Invisible"}
 
         Dictionary<int, string> cullmode = new Dictionary<int, string>(){
@@ -98,6 +98,7 @@ namespace Smash_Forge
             { "NU_specularColor", new string[] { "Red", "Green", "Blue", "Intensity"} },
             { "NU_diffuseColor", new string[] { "Red", "Green", "Blue", "Alpha"} },
             { "NU_colorGain", new string[] { "Red", "Green", "Blue", "Intensity" } },
+            { "NU_colorStepUV", new string[] { "Per Row", "Per Column", "FPT", "Frame Count" } },
             { "NU_finalColorGain", new string[] { "Red", "Green", "Blue", "Intensity" } },
             { "NU_reflectionColor", new string[] { "Red", "Green", "Blue", "Intensity" } },
             { "NU_aoMinGain", new string[] { "Red", "Green", "Blue", "Alpha"} },
@@ -106,7 +107,7 @@ namespace Smash_Forge
             { "NU_specularParams", new string[] { "", "Intensity", "", ""} },
             { "NU_fresnelParams", new string[] { "", "", "", ""} },
             { "NU_alphaBlendParams", new string[] { "", "", "", "" } },
-            { "NU_fogParams", new string[] { "", "Distance", "", "Intensity" } },
+            { "NU_fogParams", new string[] { "Distance", "", "", "Intensity" } },
             { "NU_fogColor", new string[] { "Red", "Green", "Blue", "Alpha"} },
             { "NU_effRotUV", new string[] { "", "", "", "" } },
             { "NU_effScaleUV", new string[] { "X Scale", "Y Scale", "X Trans", "Y Trans" } },
@@ -159,29 +160,32 @@ namespace Smash_Forge
             foreach(string s in propList.Keys)
                 comboBox7.Items.Add(s);
 
-            foreach (int i in dstFactor.Keys)
-                comboBox2.Items.Add(dstFactor[i]);
-            foreach (int i in srcFactor.Keys)
-                comboBox3.Items.Add(srcFactor[i]);
-            foreach (int i in cullmode.Keys)
-                comboBox6.Items.Add(cullmode[i]);
-            foreach (int i in afunc.Keys)
-                comboBox4.Items.Add(afunc[i]);
 
-            if(comboBox10.Items.Count == 0)
-            foreach (int i in wrapmode.Keys)
+            if (comboBox10.Items.Count == 0)
             {
-                comboBox10.Items.Add(wrapmode[i]);
-                comboBox8.Items.Add(wrapmode[i]);
+                foreach (int i in srcFactor.Keys)
+                    comboBox2.Items.Add(srcFactor[i]);
+                foreach (int i in dstFactor.Keys)
+                    comboBox3.Items.Add(dstFactor[i]);
+                foreach (int i in cullmode.Keys)
+                    comboBox6.Items.Add(cullmode[i]);
+                foreach (int i in afunc.Keys)
+                    comboBox4.Items.Add(afunc[i]);
+
+                foreach (int i in wrapmode.Keys)
+                {
+                    comboBox10.Items.Add(wrapmode[i]);
+                    comboBox8.Items.Add(wrapmode[i]);
+                }
+                foreach (int i in mapmode.Keys)
+                    comboBox9.Items.Add(mapmode[i]);
+                foreach (int i in minfilter.Keys)
+                    comboBox11.Items.Add(minfilter[i]);
+                foreach (int i in magfilter.Keys)
+                    comboBox12.Items.Add(magfilter[i]);
+                foreach (int i in mip.Keys)
+                    comboBox13.Items.Add(mip[i]);
             }
-            foreach (int i in mapmode.Keys)
-                comboBox9.Items.Add(mapmode[i]);
-            foreach (int i in minfilter.Keys)
-                comboBox11.Items.Add(minfilter[i]);
-            foreach (int i in magfilter.Keys)
-                comboBox12.Items.Add(magfilter[i]);
-            foreach (int i in mip.Keys)
-                comboBox13.Items.Add(mip[i]);
         }
 
         public void FillForm()
@@ -236,8 +240,8 @@ namespace Smash_Forge
         #region DST
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (int i in dstFactor.Keys)
-                if (dstFactor[i].Equals(comboBox2.SelectedItem))
+            foreach (int i in srcFactor.Keys)
+                if (srcFactor[i].Equals(comboBox2.SelectedItem))
                 {
                     textBox3.Text = i + "";
                     break;
@@ -246,15 +250,15 @@ namespace Smash_Forge
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            setValue(textBox3, comboBox2, dstFactor, out material[current].dstFactor);
+            setValue(textBox3, comboBox2, srcFactor, out material[current].srcFactor);
         }
         #endregion
 
         #region SRC
         private void comboBox3_SelectedIndexChanged_1(object sender, EventArgs e)
         {
-            foreach (int i in srcFactor.Keys)
-                if (srcFactor[i].Equals(comboBox3.SelectedItem))
+            foreach (int i in dstFactor.Keys)
+                if (dstFactor[i].Equals(comboBox3.SelectedItem))
                 {
                     textBox4.Text = i + "";
                     break;
@@ -263,7 +267,7 @@ namespace Smash_Forge
 
         private void textBox4_TextChanged_1(object sender, EventArgs e)
         {
-            setValue(textBox4, comboBox3, srcFactor, out material[current].srcFactor);
+            setValue(textBox4, comboBox3, dstFactor, out material[current].dstFactor);
         }
         #endregion
 

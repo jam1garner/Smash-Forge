@@ -1160,7 +1160,7 @@ namespace Smash_Forge
                     if (Runtime.ModelContainers.Count < 1)
                         Runtime.ModelContainers.Add(new ModelContainer());
 
-                    Collada.DAEtoNUD(filename, Runtime.ModelContainers[0]);
+                    Collada.DAEtoNUD(filename, Runtime.ModelContainers[0], m.checkBox5.Checked);
 
                     // apply settings
                     m.Apply(Runtime.ModelContainers[0].nud);

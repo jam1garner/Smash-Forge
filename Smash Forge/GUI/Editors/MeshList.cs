@@ -126,6 +126,25 @@ namespace Smash_Forge
 
         private void treeView1_KeyPress(object sender, KeyPressEventArgs e)
         {
+            if (e.KeyChar == 'f')
+            {
+                if (treeView1.SelectedNode is NUD.Polygon)
+                {
+
+                    NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+
+                    foreach(NUD.Vertex v in p.vertices)
+                    {
+                        v.tx[0] = new OpenTK.Vector2(v.tx[0].X, 1 - v.tx[0].Y);
+                    }
+                    
+                    foreach(ModelContainer con in Runtime.ModelContainers)
+                    {
+                        if(con.nud != null)
+                            con.nud.PreRender();
+                    }
+                }
+            }
             if (e.KeyChar == '=')
             {
                 if (treeView1.SelectedNode.Tag is NUD.Mesh)
