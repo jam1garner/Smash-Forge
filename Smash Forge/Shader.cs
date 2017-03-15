@@ -55,12 +55,14 @@ namespace Smash_Forge
             //MessageBox.Show("GL minor: " + GL.GetInteger(GetPName.MinorVersion));
             loadShader(filename, ShaderType.VertexShader, programID, out vsID);
 			GL.LinkProgram (programID);
-		}
+            Console.WriteLine(GL.GetProgramInfoLog(programID));
+        }
 
 		public void fragmentShader(string filename){
 			loadShader(filename, ShaderType.FragmentShader, programID, out fsID);
 			GL.LinkProgram (programID);
-		}
+            Console.WriteLine(GL.GetProgramInfoLog(programID));
+        }
 
         void loadShader(string shader, ShaderType type, int program, out int address)
 		{
