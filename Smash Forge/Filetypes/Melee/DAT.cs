@@ -922,13 +922,13 @@ main()
                             (d.readInt()).ToString("x") + " " +
                             (d.readInt()).ToString("x") + " ");
 
-                        if (jPointer == 0)
+                        if (jPointer == 0 || jPointer == -1)
                             return;
 
                         int temp = d.pos();
-                        d.seek(jPointer);
                         if (!dat.jobjOffsetLinker.ContainsKey(jPointer))
                         {
+							d.seek(jPointer);
                             JOBJ j = new JOBJ();
                             j.Read(d, dat, node);
                         }
