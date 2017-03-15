@@ -226,6 +226,34 @@ namespace Smash_Forge
             while (p % i != 0)
                 p++;
         }
-	}
+
+        public void writeInt(int value)
+        {
+            byte[] v = BitConverter.GetBytes(value);
+
+            if (Endian == Endianness.Little)
+            {
+                b[p++] = v[0]; b[p++] = v[1]; b[p++] = v[2]; b[p++] = v[3];
+            }
+            else
+            {
+                b[p++] = v[3]; b[p++] = v[2]; b[p++] = v[1]; b[p++] = v[0];
+            }
+        }
+
+        public void writeInt(int pos, int value)
+        {
+            byte[] v = BitConverter.GetBytes(value);
+
+            if (Endian == Endianness.Little)
+            {
+                b[pos++] = v[0]; b[pos++] = v[1]; b[pos++] = v[2]; b[pos++] = v[3];
+            }
+            else
+            {
+                b[pos++] = v[3]; b[pos++] = v[2]; b[pos++] = v[1]; b[pos++] = v[0];
+            }
+        }
+    }
 }
 

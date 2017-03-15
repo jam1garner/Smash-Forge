@@ -146,8 +146,29 @@ main()
             d.seek(0);
 
             header.Read(d);
+
+            int dataBlockOffset = d.pos();
             d.skip(header.dataBlockSize); // skip to relocation table
-            d.skip(header.relocationTableCount * 4); // skip relocation table
+
+            int relocationTableOffset = d.pos();
+
+            // update relocation table and data offset
+            for (int i = 0; i < header.relocationTableCount; ++i)
+            {
+                int relocationOffset = relocationTableOffset + i * 4;
+
+                d.seek(relocationOffset);
+
+                int dataOffset = d.readInt() + headerSize;
+
+                d.writeInt(relocationOffset, dataOffset);
+
+                d.seek(dataOffset);
+
+                d.writeInt(dataOffset, d.readInt() + headerSize);
+            }
+
+            d.seek(relocationTableOffset + header.relocationTableCount * 4); // skip relocation table
             
             int strOffset = d.pos() + header.rootCount * 8 + header.referenceNodeCount * 8;
             int[] sectionOffset = new int[header.rootCount];
@@ -156,7 +177,7 @@ main()
             for (int i = 0; i < header.rootCount; i++)
             {
                 // data then string
-                int data = d.readInt() + 0x20;
+                int data = d.readInt() + headerSize;
                 string s = d.readString(d.readInt() + strOffset, -1);
                 sectionOffset[i] = data;
                 sectionNames[i] = s;
@@ -799,12 +820,12 @@ main()
 
             public void Read(FileData f)
             {
-                int vertOff = f.readInt() + 0x20;
+                int vertOff = f.readInt();
                 int vertCount = f.readInt();
-                int linkOff = f.readInt() + 0x20;
+                int linkOff = f.readInt();
                 int linkCount = f.readInt();
                 f.skip(0x14);
-                int polyOff = f.readInt() + 0x20;
+                int polyOff = f.readInt();
                 int polyCount = f.readInt();
                 int returnOffset = f.pos();
                 f.seek(vertOff);
@@ -886,22 +907,22 @@ main()
                         node.Text = "NodeObject";
                         
                         // WTF ARE THESE OFFSETS OMG
-                        int jPointer = d.readInt() + headerSize;
-                        Console.WriteLine((d.readInt() + headerSize).ToString("x") + " " + 
-                            (d.readInt() + headerSize).ToString("x") + " " +
-                            (d.readInt() + headerSize).ToString("x") + " " +
-                            (d.readInt() + headerSize).ToString("x") + " " +
-                            (d.readInt() + headerSize).ToString("x") + " " +
-                            (d.readInt() + headerSize).ToString("x") + " " +
-                            (d.readInt() + headerSize).ToString("x") + " " +
+                        int jPointer = d.readInt();
+                        Console.WriteLine((d.readInt()).ToString("x") + " " + 
+                            (d.readInt()).ToString("x") + " " +
+                            (d.readInt()).ToString("x") + " " +
+                            (d.readInt()).ToString("x") + " " +
+                            (d.readInt()).ToString("x") + " " +
+                            (d.readInt()).ToString("x") + " " +
+                            (d.readInt()).ToString("x") + " " +
 
-                            (d.readInt() + headerSize).ToString("x") + " " +
-                            (d.readInt() + headerSize).ToString("x") + " " +
-                            (d.readInt() + headerSize).ToString("x") + " " +
-                            (d.readInt() + headerSize).ToString("x") + " " +
-                            (d.readInt() + headerSize).ToString("x") + " ");
+                            (d.readInt()).ToString("x") + " " +
+                            (d.readInt()).ToString("x") + " " +
+                            (d.readInt()).ToString("x") + " " +
+                            (d.readInt()).ToString("x") + " " +
+                            (d.readInt()).ToString("x") + " ");
 
-                        if (jPointer == headerSize)
+                        if (jPointer == 0)
                             return;
 
                         int temp = d.pos();
@@ -921,17 +942,17 @@ main()
             {
                 int start = d.pos();
                 Console.WriteLine($"Map_Head Start {start}");
-                int spawnyOffset = d.readInt() + 0x20;
+                int spawnyOffset = d.readInt();
                 int spawnyCount = d.readInt(); // ?? jammy-senpai assist ploaj-chan pls
 
-                int mappymodelOffset = d.readInt() + headerSize;
+                int mappymodelOffset = d.readInt();
                 int mappymodelCount = d.readInt();
 
                 // and some other nonsense
 
                 d.seek(spawnyOffset);
-                int stageBonesRoot = d.readInt() + 0x20;
-                int boneIdTableOffset = d.readInt() + 0x20;
+                int stageBonesRoot = d.readInt();
+                int boneIdTableOffset = d.readInt();
                 int idEntryCount = d.readInt();
 
                 d.seek(boneIdTableOffset);
@@ -1016,6 +1037,7 @@ main()
             public int nextOffset = 0;
 
             public int dobjOffset = 0;
+            public int inverseTransformOffset = 0;
             public Vector3 rot = new Vector3(), sca = new Vector3(), pos = new Vector3();
             public Matrix4 inverseTransform;
             public int unk2; //?? padding again??
@@ -1034,9 +1056,9 @@ main()
                 dat.jobjOffsetLinker.Add(d.pos(), this);
                 unk1 = d.readInt();
                 flags = d.readInt();
-                childOffset = d.readInt() + headerSize;
-                nextOffset = d.readInt() + headerSize;
-                dobjOffset = d.readInt() + headerSize;
+                childOffset = d.readInt();
+                nextOffset = d.readInt();
+                dobjOffset = d.readInt();
                 rot.X = d.readFloat();
                 rot.Y = d.readFloat();
                 rot.Z = d.readFloat();
@@ -1046,46 +1068,57 @@ main()
                 pos.X = d.readFloat();
                 pos.Y = d.readFloat();
                 pos.Z = d.readFloat();
-                d.skip(8); // matrix offset?
-                inverseTransform.M11 = d.readFloat();
-                inverseTransform.M12 = d.readFloat();
-                inverseTransform.M13 = d.readFloat();
-                inverseTransform.M14 = d.readFloat();
-                inverseTransform.M21 = d.readFloat();
-                inverseTransform.M22 = d.readFloat();
-                inverseTransform.M23 = d.readFloat();
-                inverseTransform.M24 = d.readFloat();
-                inverseTransform.M31 = d.readFloat();
-                inverseTransform.M32 = d.readFloat();
-                inverseTransform.M33 = d.readFloat();
-                inverseTransform.M34 = d.readFloat();
-                inverseTransform.M44 = 1;
-                unk2 = d.readInt();
+                inverseTransformOffset = d.readInt();
+                d.skip(4); // offset?
 
                 transform = Matrix4.CreateScale(sca)
                                     * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(rot.Z, rot.Y, rot.X))
                                     * Matrix4.CreateTranslation(pos) * (parentNode.Tag is JOBJ ? ((JOBJ)parentNode.Tag).transform : Matrix4.CreateScale(1, 1, 1));
-                inverseTransform = transform.Inverted(); // screw the given transform
+
+                if (inverseTransformOffset != 0)
+                {
+                    d.seek(inverseTransformOffset);
+
+                    inverseTransform.M11 = d.readFloat();
+                    inverseTransform.M12 = d.readFloat();
+                    inverseTransform.M13 = d.readFloat();
+                    inverseTransform.M14 = d.readFloat();
+                    inverseTransform.M21 = d.readFloat();
+                    inverseTransform.M22 = d.readFloat();
+                    inverseTransform.M23 = d.readFloat();
+                    inverseTransform.M24 = d.readFloat();
+                    inverseTransform.M31 = d.readFloat();
+                    inverseTransform.M32 = d.readFloat();
+                    inverseTransform.M33 = d.readFloat();
+                    inverseTransform.M34 = d.readFloat();
+                    inverseTransform.M44 = 1;
+
+                    inverseTransform.Transpose();
+                }
+                else
+                {
+                    inverseTransform = transform.Inverted();
+                }
 
                 //dat.jobjs.Add(this);
                 node.Text = "Bone_" + dat.jobjOffsetLinker.Count;
                 node.Tag = this;
                 parentNode.Nodes.Add(node);
 
-                if (nextOffset != headerSize)
+                if (nextOffset != 0)
                 {
                     d.seek(nextOffset);
                     JOBJ j = new JOBJ();
                     j.Read(d, dat, parentNode);
                 }
-                if (childOffset != headerSize)
+                if (childOffset != 0)
                 {
                     d.seek(childOffset);
                     JOBJ j = new JOBJ();
                     j.Read(d, dat, node);
                 }
 
-                if (dobjOffset != headerSize)
+                if (dobjOffset != 0)
                 {
                     //Console.WriteLine("DOBJ" + dobjOffset.ToString("X"));
                     d.seek(dobjOffset);
@@ -1112,9 +1145,9 @@ main()
                 //if (dat.dobjs.Count > 0) return;
                 //dat.dobjs.Add(this);
                 unk1 = d.readInt();
-                nextOffset = d.readInt() + headerSize;
-                mobjOffset = d.readInt() + headerSize;
-                pobjOffset = d.readInt() + headerSize;
+                nextOffset = d.readInt();
+                mobjOffset = d.readInt();
+                pobjOffset = d.readInt();
 
                 node.Text = "Mesh_" + unk1;
                 node.Tag = this;
@@ -1129,7 +1162,7 @@ main()
                 d.seek(mobjOffset);
                 material.Read(d, dat);
 
-                if (nextOffset != headerSize)
+                if (nextOffset != 0)
                 {
                     d.seek(nextOffset);
                     DOBJ de = new Smash_Forge.DAT.DOBJ();
@@ -1149,14 +1182,16 @@ main()
                 {
                     unk1 = d.readInt();
                     unk2 = d.readInt();
-                    tobjOffset = d.readInt() + headerSize;
-                    materialOffset = d.readInt() + headerSize;
+                    tobjOffset = d.readInt();
+                    materialOffset = d.readInt();
                     unk3 = d.readInt();
                     unk4 = d.readInt();
                     
-                    d.seek(tobjOffset);
-                    if (d.pos() > headerSize)
+                    if (tobjOffset != 0)
+                    {
+                        d.seek(tobjOffset);
                         texture.Read(d, dat);
+                    }
                 }
             }
 
@@ -1191,18 +1226,18 @@ main()
                     scale_h = d.readByte();
                     d.skip(2);
                     d.skip(12);
-                    imageOffset = d.readInt() + headerSize;
-                    paletteOffset = d.readInt() + headerSize;
-                    unkOffset = d.readInt() + headerSize;
+                    imageOffset = d.readInt();
+                    paletteOffset = d.readInt();
+                    unkOffset = d.readInt();
 
                     d.seek(imageOffset);
-                    imageDataOffset = d.readInt() + headerSize;
+                    imageDataOffset = d.readInt();
                     width = d.readShort();
                     height = d.readShort();
                     format = d.readInt();
 
                     d.seek(paletteOffset);
-                    paletteDataOffset = d.readInt() + headerSize;
+                    paletteDataOffset = d.readInt();
                     paletteFormat = d.readInt();
                     unk = d.readInt();
                     count = d.readShort();
@@ -1215,7 +1250,7 @@ main()
                     {
                         image = TPL.ConvertFromTextureMelee(d.getSection(imageDataOffset, TPL.textureByteSize((TPL_TextureFormat)format, width, height)),
                             width, height, format,
-                            paletteOffset == headerSize ? null : d.getSection(paletteDataOffset, 4 * count), count, paletteFormat);
+                            paletteOffset == 0 ? null : d.getSection(paletteDataOffset, 4 * count), count, paletteFormat);
 
                         dat.texturesLinker.Add(imageDataOffset, image);
                     }
@@ -1273,7 +1308,7 @@ main()
                 scale = (byte)d.readByte();
                 unknown = (byte)d.readByte();
                 vtxStride = (short)d.readShort();
-                dataOffset = d.readInt() + headerSize;
+                dataOffset = d.readInt();
 
                 //Console.WriteLine((GXAttr)vtxAttr + " " + vtxAttrType + " comp type " + compType + " Data Offset: " + dataOffset.ToString("x") + " Scale: " + scale);
 
@@ -1363,12 +1398,12 @@ main()
                 parent.Nodes.Add(node);
 
                 unk1 = d.readInt();
-                nextOffset = d.readInt() + headerSize;
-                vertexAttrArray = d.readInt() + headerSize;
+                nextOffset = d.readInt();
+                vertexAttrArray = d.readInt();
                 flags = (short)d.readShort();
                 displayListSize = (short)d.readShort();
-                displayListOffset = d.readInt() + headerSize;
-                weightListOffset = d.readInt() + headerSize;
+                displayListOffset = d.readInt();
+                weightListOffset = d.readInt();
                 node.Text = "Polygon_" + flags.ToString("x");
 
                 // vertex attributes
@@ -1389,7 +1424,7 @@ main()
                 //Console.WriteLine("Display 0x" + displayListOffset + " " + displayListSize);
                 int bid = 0;
                 List<Vertex> used = new List<Vertex>();
-                if (displayListOffset != headerSize)
+                if (displayListOffset != 0)
                     for (int i = 0; i < displayListSize; i++)
                     {
                         byte prim = (byte)d.readByte();
@@ -1455,20 +1490,22 @@ main()
                                         // sometimes we need to transform the default vertex by
                                         // the normal transform; I plan on storing it in a normal way
 
-                                        if (weightListOffset > headerSize && bid > -1)
+                                        if (weightListOffset != 0 && bid > -1)
                                         {
                                             temp = d.pos();
                                             d.seek(weightListOffset + (bid / 3) * 4);
-                                            d.seek(d.readInt() + headerSize);
-                                            if (d.pos() > headerSize)
+                                            int offset = d.readInt();
+                                            if (offset != 0)
                                             {
-                                                int off1 = d.readInt() + headerSize;
+                                                d.seek(offset);
+
+                                                int off1 = d.readInt();
                                                 float wei1 = d.readFloat();
-                                                while (off1 > headerSize)
+                                                while (off1 != 0)
                                                 {
                                                     v.Tags.Add(off1);
                                                     v.weights.Add(wei1);
-                                                    off1 = d.readInt() + headerSize;
+                                                    off1 = d.readInt();
                                                     wei1 = d.readFloat();
 
                                                     if (v.weights.Count > 4)
@@ -1484,12 +1521,12 @@ main()
 
                                         if (parent.Parent.Tag is JOBJ)
                                         {
-                                            if(v.weights.Count == 0)
+                                            if (v.weights.Count == 0)
                                             {
                                                 v.Tags.Add(parent.Parent.Tag);
                                                 v.weights.Add(1);
+                                                v.pos = Vector3.Transform(v.pos, ((JOBJ)parent.Parent.Tag).transform);
                                             }
-                                            v.pos = Vector3.Transform(v.pos, ((JOBJ)parent.Parent.Tag).transform);
                                         }
                                         break;
 
@@ -1531,7 +1568,7 @@ main()
                     }
                 
 
-                if (nextOffset != headerSize)
+                if (nextOffset != 0)
                 {
                     d.seek(nextOffset);
                     POBJ pol = new POBJ();
