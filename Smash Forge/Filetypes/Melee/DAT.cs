@@ -32,6 +32,7 @@ namespace Smash_Forge
         public VBN bones = new VBN();
 
         // gl buffer objects
+        int ubo_bones;
         int vbo_position;
         int vbo_color;
         int vbo_nrm;
@@ -60,27 +61,31 @@ out vec4 color;
 out float normal;
 
 uniform mat4 modelview;
-uniform mat4 bones[300];
+uniform bones
+{{
+    mat4 transforms[{0}];
+}} bones_;
  
 void
 main()
-{
+{{
     ivec4 index = ivec4(vBone); 
     vec4 objPos = vec4(vPosition.xyz, 1.0);
 
-    if(vBone.x != -1){
-        objPos = bones[index.x] * vec4(vPosition, 1.0) * vWeight.x;
-        objPos += bones[index.y] * vec4(vPosition, 1.0) * vWeight.y;
-        objPos += bones[index.z] * vec4(vPosition, 1.0) * vWeight.z;
-        objPos += bones[index.w] * vec4(vPosition, 1.0) * vWeight.w;
-    }
+    if(vBone.x != -1)
+    {{
+        objPos = bones_.transforms[index.x] * vec4(vPosition, 1.0) * vWeight.x;
+        objPos += bones_.transforms[index.y] * vec4(vPosition, 1.0) * vWeight.y;
+        objPos += bones_.transforms[index.z] * vec4(vPosition, 1.0) * vWeight.z;
+        objPos += bones_.transforms[index.w] * vec4(vPosition, 1.0) * vWeight.w;
+    }}
 
     gl_Position = modelview * vec4(objPos.xyz, 1.0);
 
     f_texcoord = vUV;
     color = vColor;
     normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.3,0.3,0.3,1.0)) ;
-}";
+}}";
 
         static string fs = @"#version 330
 
@@ -93,34 +98,15 @@ uniform vec2 uvscale;
 
 void
 main()
-{
+{{
     vec4 alpha = texture(tex, f_texcoord*uvscale).aaaa;
     gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale) * normal).xyz, alpha.a * color.w);
-}
+}}
 ";
 
         public DAT()
         {
-            if (shader == null)
-            {
-                shader = new Shader();
-
-                shader.vertexShader(vs);
-                shader.fragmentShader(fs);
-
-                shader.addAttribute("vPosition", false);
-                shader.addAttribute("vColor", false);
-                shader.addAttribute("vNormal", false);
-                shader.addAttribute("vUV", false);
-                shader.addAttribute("vBone", false);
-                shader.addAttribute("vWeight", false);
-
-                shader.addAttribute("tex", true);
-                shader.addAttribute("modelview", true);
-                shader.addAttribute("bones", true);
-                shader.addAttribute("uvscale", true);
-            }
-
+            GL.GenBuffers(1, out ubo_bones);
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out vbo_color);
             GL.GenBuffers(1, out vbo_nrm);
@@ -398,10 +384,49 @@ main()
             weightdata = weight.ToArray();
 
             facedata = face.ToArray();
+
+            SetupShader();
+        }
+
+        private void SetupShader()
+        {
+            int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
+            int boneCount = bones.bones.Count;
+            int dataSize = boneCount * Vector4.SizeInBytes * 4;
+
+            if (shader == null)
+            {
+                shader = new Shader();
+
+                shader.vertexShader(string.Format(vs, boneCount));
+                shader.fragmentShader(string.Format(fs));
+
+                shader.addAttribute("vPosition", false);
+                shader.addAttribute("vColor", false);
+                shader.addAttribute("vNormal", false);
+                shader.addAttribute("vUV", false);
+                shader.addAttribute("vBone", false);
+                shader.addAttribute("vWeight", false);
+
+                shader.addAttribute("tex", true);
+                shader.addAttribute("modelview", true);
+                shader.addAttribute("bones", true);
+                shader.addAttribute("uvscale", true);
+            }
+
+            GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
+            GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
+            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+
+            var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
+            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
         }
 
         public void Render(Matrix4 modelview)
         {
+            if (null == shader)
+                return;
+
             GL.UseProgram(shader.programID);
 
             GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref modelview);
@@ -409,9 +434,12 @@ main()
             if (bones != null)
             {
                 Matrix4[] f = bones.getShaderMatrix();
-                int shad = shader.getAttribute("bones");
+
                 if(f.Length > 0)
-                    GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
+                {
+                    GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
+                    GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
+                }
             }
 
             shader.enableAttrib();
