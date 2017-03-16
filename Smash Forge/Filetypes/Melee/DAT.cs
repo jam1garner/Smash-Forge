@@ -1471,8 +1471,8 @@ main()
                             float[] f;
                             int temp;
                             Vertex v = new Vertex();
+                            ob.faces.Add(dat.vertBank.Count);
                             dat.vertBank.Add(v);
-                            ob.faces.Add(dat.vertBank.IndexOf(v));
 
                             foreach (VertexAttr att in vertexAttributes)
                             {
