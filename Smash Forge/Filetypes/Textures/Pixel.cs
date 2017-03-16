@@ -30,6 +30,7 @@ namespace Smash_Forge
 
             return bmp;
         }
+
         public static Bitmap fromRGBA(FileData d, int width, int height)
         {
             Bitmap bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
@@ -50,6 +51,11 @@ namespace Smash_Forge
         }
 
 
+
+
+        // 3ds stuff
+
+        
 
         public static Bitmap decodeETC(byte[] bytes, int width, int height)
         {

@@ -663,13 +663,14 @@ namespace Smash_Forge
                             m.nud.Save(filename);
                             m.vbn.Save(filename.Replace(".nud", ".vbn"));
                         }
-                        else if(Runtime.ModelContainers[0].bch != null)
+                        /*else 
+                        if(Runtime.ModelContainers[0].bch != null)
                         {
                             NUD m = Runtime.ModelContainers[0].bch.mbn.toNUD();
                             VBN v = Runtime.ModelContainers[0].bch.models[0].skeleton;
                             m.Save(filename);
                             v.Save(filename.Replace(".nud", ".vbn"));
-                        }
+                        }*/
                         else
                             Runtime.ModelContainers[0].nud.Save(filename);
                 }

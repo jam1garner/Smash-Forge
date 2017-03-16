@@ -119,7 +119,7 @@ namespace Smash_Forge
 
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcColor,BlendingFactorDest.OneMinusSrcAlpha);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha,BlendingFactorDest.OneMinusSrcAlpha);
 
             if (listBox1.SelectedItem == null || listBox2.SelectedItem == null)
                 return;
@@ -135,12 +135,26 @@ namespace Smash_Forge
                 float HeightPre = texureRatioH * glControl1.Width;
                 h = glControl1.Height / HeightPre;
             }
-
-
+            
+            /*GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
+            GL.Color3(Color.White);
+            GL.Begin(PrimitiveType.Quads);
+            GL.TexCoord2(w, h);
+            GL.Vertex2(1, -1);
+            GL.TexCoord2(0, h);
+            GL.Vertex2(-1, -1);
+            GL.TexCoord2(0, 0);
+            GL.Vertex2(-1, 1);
+            GL.TexCoord2(w, 0);
+            GL.Vertex2(1, 1);
+            GL.End();*/
 
             GL.BindTexture(TextureTarget.Texture2D, rt);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
+            GL.Color3(Color.White);
             GL.Begin(PrimitiveType.Quads);
             GL.TexCoord2(w, h);
             GL.Vertex2(1, -1);

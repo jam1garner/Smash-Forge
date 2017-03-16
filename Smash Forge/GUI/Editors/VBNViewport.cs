@@ -652,20 +652,10 @@ main()
                 {
                     if (m.bch.mbn != null)
                     {
-                        GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref v);
-
-                        // Bone
-                        if (m.bch.models.Count > 0)
-                        {
-                            Matrix4[] f = m.bch.models[0].skeleton.getShaderMatrix();
-                            int shad = shader.getAttribute("bone");
-                            GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
-                        }
-
-                        shader.enableAttrib();
                         m.bch.mbn.Render(shader);
-                        shader.disableAttrib();
                     }
+                    GL.UseProgram(shader.programID);
+                    GL.Uniform1(shader.getAttribute("renderType"), rt);
                 }
 
                 if (m.dat_melee != null)

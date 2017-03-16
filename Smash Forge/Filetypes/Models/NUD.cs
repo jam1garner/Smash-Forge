@@ -1432,7 +1432,7 @@ namespace Smash_Forge
 
         #region Converters
 
-        public MBN toMBN()
+        /*public MBN toMBN()
         {
             MBN m = new Smash_Forge.MBN();
 
@@ -1487,7 +1487,7 @@ namespace Smash_Forge
             return m;
         }
 
-
+    */
         public void Optimize()
         {
             // to help with duplicates

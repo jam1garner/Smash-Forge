@@ -126,6 +126,24 @@ namespace Smash_Forge
 
         private void treeView1_KeyPress(object sender, KeyPressEventArgs e)
         {
+            if (e.KeyChar == 'c')
+            {
+                if (treeView1.SelectedNode is NUD.Polygon)
+                {
+                    NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+
+                    foreach (NUD.Vertex v in p.vertices)
+                    {
+                        v.col /= 2;
+                    }
+
+                    foreach (ModelContainer con in Runtime.ModelContainers)
+                    {
+                        if (con.nud != null)
+                            con.nud.PreRender();
+                    }
+                }
+            }
             if (e.KeyChar == 'f')
             {
                 if (treeView1.SelectedNode is NUD.Polygon)

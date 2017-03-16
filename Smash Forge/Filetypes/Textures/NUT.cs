@@ -59,6 +59,9 @@ namespace Smash_Forge
                         if (utype == OpenTK.Graphics.OpenGL.PixelFormat.Rgba)
                             return 14;
                         else
+                        if (utype == OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt)
+                            return 16;
+                        else
                             return 17;
                     case PixelInternalFormat.CompressedRedRgtc1:
                         return 21;
@@ -85,6 +88,10 @@ namespace Smash_Forge
                     case 14:
                         type = PixelInternalFormat.Rgba;
                         utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                        break;
+                    case 16:
+                        type = PixelInternalFormat.Rgba;
+                        utype = OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt;
                         break;
                     case 17:
                         type = PixelInternalFormat.Rgba;
@@ -323,7 +330,7 @@ namespace Smash_Forge
             {
                 if (!draw.ContainsKey(tex.id))
                 {
-                    draw.Add(tex.id, loadImage(tex));
+                    draw.Add(tex.id, loadImage(tex, 0));
                 }
             }
         }
@@ -394,21 +401,42 @@ namespace Smash_Forge
                 {
                     // Maybe this is the problem?
                     int mipSize = imageSize >> (mipLevel * 2);
+                    int p = pitch >> mipLevel;
 
-                    //if (mipLevel == 0)
+                    //Console.WriteLine(tex.id.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + swizzle);
+                    //Console.WriteLine((tex.width >> mipLevel) + " " + (tex.height >> mipLevel));
+
+                    int w = (tex.width >> mipLevel);
+                    int h = (tex.height >> mipLevel);
+
+                    // NOTES:
+                    // There's a padding, but I don't know how it works
+                    // Mips with pitch 32 and below don't work for some reason....
+                    /*if (mipSize == 0x1000)
+                    {
+                        //dataOffset += 0x400;
+                        mipSize = 0x2000;
+                        p = 8;
+                        w = 128;
+                        h = 128;
+                    }*/
+
+                    //if (p <= 16) p = 64;
                     {
                         tex.mipmaps.Add(GTX.swizzleBC(
                             d.getSection(dataOffset, mipSize),
-                            (tex.width >> mipLevel),
-                            (tex.height >> mipLevel),
+                            w,
+                            h,
                             format,
                             tileMode,
-                            pitch,
+                            p,
                             swizzle
                         ));
                     }
 
                     dataOffset += mipSize;
+                    //while (dataOffset % 1024 != 0) dataOffset++;
+                    //if (mipSize == 0x4000) dataOffset += 0x400;
                 }
 
                 textures.Add(tex);
@@ -468,6 +496,14 @@ namespace Smash_Forge
 
         public static int loadImage(NUD_Texture t)
         {
+            return loadImage(t, 0);
+        }
+
+        public static int loadImage(NUD_Texture t, int level)
+        {
+            if (level >= t.mipmaps.Count)
+                level = 0;
+
             int texID = GL.GenTexture();
 
             GL.BindTexture(TextureTarget.Texture2D, texID);
@@ -476,23 +512,33 @@ namespace Smash_Forge
                 || t.type == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
                 || t.type == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext)
             {
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type,
-                    t.width, t.height, 0, t.Size, t.mipmaps[0]);
-
-                if (t.mipmaps.Count > 1)
+                //if(t.mipmaps.Count > 3)
+                //GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type,
+                //    t.width/8, t.height/8, 0, t.Size / 64, t.mipmaps[3]);
+                //else
+                    GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type,
+                        t.width, t.height, 0, t.Size, t.mipmaps[0]);
+                //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                
+                if (t.mipmaps.Count > 1 && 1==2)
                 {
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 1);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.mipmaps.Count);
                     GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-                   // GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 1, t.type,
-                    //    t.width / 2, t.height / 2, 0, t.Size, t.mipmaps[1]);
+                    for(int i = 0; i <t.mipmaps.Count; i++)
+                        GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, i, t.type,
+                        t.width / (int)Math.Pow(2,i), t.height / (int)Math.Pow(2, i), 0, t.Size / (int)Math.Pow(4, i), t.mipmaps[i]);
 
-                    //GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 2, t.type,
-                     //   t.width / 4, t.height / 4, 0, t.Size, t.mipmaps[2]);
+                        // GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 1, t.type,
+                        //    t.width / 2, t.height / 2, 0, t.Size, t.mipmaps[1]);
 
-                    //GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 3, t.type,
-                    //    t.width / 8, t.height / 8, 0, t.Size, t.mipmaps[3]);
-                } else
+                        //GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 2, t.type,
+                        //   t.width / 4, t.height / 4, 0, t.Size, t.mipmaps[2]);
+
+                        //GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 3, t.type,
+                        //    t.width / 8, t.height / 8, 0, t.Size, t.mipmaps[3]);
+                }
+                else
                 {
                     GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
                 }

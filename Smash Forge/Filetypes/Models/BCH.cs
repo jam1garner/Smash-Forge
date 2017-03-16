@@ -141,6 +141,7 @@ namespace Smash_Forge
                 f.skip(4);
                 tex.type = f.readInt();
                 tex.data = f.getSection(doffset, f.size() - doffset);
+
                 if(tex.type == 12)
                     tex.display = NUT.loadImage(Pixel.decodeETC(tex.data, tex.width, tex.height));
             }
@@ -231,7 +232,7 @@ namespace Smash_Forge
                     mbn = new Smash_Forge.MBN();
                     for (int index = 0; index < verticesTableEntries; index++)
                         mbn.mesh.Add(new MBN.Mesh());
-                    mbn.PreRender();
+                    //mbn.PreRender();
                 }
                 for (int index = 0; index < mbn.mesh.Count; index++)
                 {
@@ -239,6 +240,7 @@ namespace Smash_Forge
                     if (index > mbn.mesh.Count) break;
                     if (i > materialNames.Length) break;
                     mbn.mesh[index].texId = textures[materialNames[i]].display;
+                    Console.WriteLine("Tex index" + mbn.mesh[index].texId);
                     f.skip(2); // flags
                     int nameId = f.readShort();
                     mbn.mesh[index].name = objectName[nameId];

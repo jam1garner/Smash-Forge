@@ -122,7 +122,7 @@ namespace Smash_Forge
             header = new Header();
             header.width = tex.width;
             header.height = tex.height;
-            header.mipmapCount = tex.mipmaps.Count <= 2 ? 1 : tex.mipmaps.Count - 2;
+            header.mipmapCount = tex.mipmaps.Count;
             switch (tex.type)
             {
                 case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
@@ -171,12 +171,12 @@ namespace Smash_Forge
             tex.height = header.height;
             tex.width = header.width;
             float size = 1;
-            int mips = 4;
-            if (mips > header.mipmapCount)
+            int mips = header.mipmapCount;
+            /*if (mips > header.mipmapCount)
             {
                 mips = header.mipmapCount;
                 MessageBox.Show("Possible texture error: Only one mipmap");
-            }
+            }*/
 
             switch (header.dwFourCC)
             {
@@ -193,12 +193,15 @@ namespace Smash_Forge
                     size = 1f;
                     tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
                     break;
+                default:
+                    MessageBox.Show("Unsupported DDS format - 0x" + header.dwFourCC.ToString("x"));
+                    break;
             }
 
             // now for mipmap data...
             FileData d = new FileData(data);
             int off = 0, w = header.width, h = header.height;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < header.mipmapCount; i++)
             {
                 int s = (int)((w * h) * size);
                 w /= 2;
