@@ -201,6 +201,8 @@ namespace Smash_Forge
             // now for mipmap data...
             FileData d = new FileData(data);
             int off = 0, w = header.width, h = header.height;
+
+            if (header.mipmapCount == 0) header.mipmapCount = 1;
             for (int i = 0; i < header.mipmapCount; i++)
             {
                 int s = (int)((w * h) * size);
