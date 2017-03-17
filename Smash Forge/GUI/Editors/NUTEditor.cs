@@ -623,5 +623,24 @@ namespace Smash_Forge
                 }
             }
         }
+
+        private void saveNUTZLIBToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Namco Universal Texture (.nut)|*.nut|" +
+                             "All Files (*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    if (sfd.FileName.EndsWith(".nut") && selected != null)
+                    {
+                        FileOutput o = new FileOutput();
+                        o.writeBytes(FileData.DeflateZLIB(selected.Rebuild()));
+                        o.save(sfd.FileName);
+                    }
+                }
+            }
+        }
     }
 }

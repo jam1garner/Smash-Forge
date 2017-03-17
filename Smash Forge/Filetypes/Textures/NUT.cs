@@ -123,6 +123,11 @@ namespace Smash_Forge
             Read(filename);
         }
 
+        public NUT(FileData d)
+        {
+            Read(d);
+        }
+
         public override byte[] Rebuild()
         {
             FileOutput o = new FileOutput();
@@ -213,8 +218,11 @@ namespace Smash_Forge
 
         public override void Read(string filename)
         {
-            FileData d = new FileData(filename);
+            Read(new FileData(filename));
+        }
 
+        public void Read(FileData d)
+        {
             Endian = Endianness.Big;
             d.Endian = Endian;
             int magic = d.readInt();

@@ -494,6 +494,7 @@ namespace Smash_Forge
                 if (f != -1 && listView2.SelectedItems.Count > 0)
                     material[current].entries[listView2.SelectedItems[0].Text][0] = f;
             }
+            updateButton();
         }
 
         private void textBox13_TextChanged(object sender, EventArgs e)
@@ -502,6 +503,7 @@ namespace Smash_Forge
             float.TryParse(textBox13.Text, out f);
             if (f != -1 && listView2.SelectedItems.Count > 0)
                 material[current].entries[listView2.SelectedItems[0].Text][1] = f;
+            updateButton();
         }
 
         private void textBox14_TextChanged(object sender, EventArgs e)
@@ -510,6 +512,7 @@ namespace Smash_Forge
             float.TryParse(textBox14.Text, out f);
             if (f != -1 && listView2.SelectedItems.Count > 0)
                 material[current].entries[listView2.SelectedItems[0].Text][2] = f;
+            updateButton();
         }
 
         private void textBox15_TextChanged(object sender, EventArgs e)
@@ -790,6 +793,35 @@ namespace Smash_Forge
         private void tableLayoutPanel2_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void updateButton()
+        {
+            colorSelect.BackColor = Color.FromArgb(255,
+                Clamp(material[current].entries[listView2.SelectedItems[0].Text][0] * 255),
+                Clamp(material[current].entries[listView2.SelectedItems[0].Text][1] * 255),
+                Clamp(material[current].entries[listView2.SelectedItems[0].Text][2] * 255));
+        }
+
+        public int Clamp(float i)
+        {
+            if (i > 255)
+                return 255;
+            if (i < 0)
+                return 0;
+            return (int)i;
+        }
+
+        private void colorSelect_Click(object sender, EventArgs e)
+        {
+            colorDialog1.Color = colorSelect.BackColor;
+            if (colorDialog1.ShowDialog() == DialogResult.OK)
+            {
+                textBox12.Text = colorDialog1.Color.R / 255f + "";
+                textBox13.Text = colorDialog1.Color.G / 255f + "";
+                textBox14.Text = colorDialog1.Color.B / 255f + "";
+                
+            }
         }
     }
 }

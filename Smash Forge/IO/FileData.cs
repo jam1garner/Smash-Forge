@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
 
 namespace Smash_Forge
 {
@@ -12,6 +13,13 @@ namespace Smash_Forge
 		public FileData(String f)
 		{
 			b = File.ReadAllBytes(f);
+
+            // auto decompress
+            if(b.Length > 2)
+            {
+                if (b[0] == 0x78 && b[1] == 0x9C)
+                    b = InflateZLIB(b);
+            }
 		}
 
 		public FileData(byte[] b)
@@ -253,6 +261,54 @@ namespace Smash_Forge
             {
                 b[pos++] = v[3]; b[pos++] = v[2]; b[pos++] = v[1]; b[pos++] = v[0];
             }
+        }
+
+        public String Magic()
+        {
+            if (size() < 4)
+                return "";
+            else
+            {
+                string m = "";
+                if (Char.IsLetterOrDigit((char)b[0])) m += (char)b[0];
+                if (Char.IsLetterOrDigit((char)b[1])) m += (char)b[1];
+                if (Char.IsLetterOrDigit((char)b[2])) m += (char)b[2];
+                if (Char.IsLetterOrDigit((char)b[3])) m += (char)b[3];
+
+                return m;
+            }
+        }
+
+        public static byte[] DeflateZLIB(byte[] i)
+        {
+            MemoryStream output = new MemoryStream();
+            output.WriteByte(0x78);
+            output.WriteByte(0x9C);
+            using (DeflateStream dstream = new DeflateStream(output, CompressionLevel.Optimal))
+            {
+                dstream.Write(i, 0, i.Length);
+            }
+            return output.ToArray();
+        }
+
+        public static byte[] InflateZLIB(byte[] i)
+        {
+            var stream = new MemoryStream();
+            var ms = new MemoryStream(i);
+            ms.ReadByte();
+            ms.ReadByte();
+            var zlibStream = new DeflateStream(ms, CompressionMode.Decompress);
+            byte[] buffer = new byte[4095];
+            while (true)
+            {
+                int size = zlibStream.Read(buffer, 0, buffer.Length);
+                if (size > 0)
+                    stream.Write(buffer, 0, buffer.Length);
+                else
+                    break;
+            }
+            zlibStream.Close();
+            return stream.ToArray();
         }
     }
 }

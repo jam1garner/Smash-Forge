@@ -54,6 +54,7 @@
             this.extractAndOpenInDefaultEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractAndPickAProgramToEditWithToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importEditedFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveNUTZLIBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -198,6 +199,7 @@
             this.openNUTToolStripMenuItem,
             this.newNUTToolStripMenuItem,
             this.saveNUTToolStripMenuItem,
+            this.saveNUTZLIBToolStripMenuItem,
             this.dumpToolStripMenuItem,
             this.importNUTFromFolderToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -216,6 +218,7 @@
             this.newNUTToolStripMenuItem.Name = "newNUTToolStripMenuItem";
             this.newNUTToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.newNUTToolStripMenuItem.Text = "New NUT";
+            this.newNUTToolStripMenuItem.ToolTipText = "Creates a new NUT";
             this.newNUTToolStripMenuItem.Click += new System.EventHandler(this.newNUTToolStripMenuItem_Click);
             // 
             // saveNUTToolStripMenuItem
@@ -230,6 +233,7 @@
             this.dumpToolStripMenuItem.Name = "dumpToolStripMenuItem";
             this.dumpToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.dumpToolStripMenuItem.Text = "Export Entire NUT";
+            this.dumpToolStripMenuItem.ToolTipText = "Exports all selected NUT\'s textures as DDS";
             this.dumpToolStripMenuItem.Click += new System.EventHandler(this.exportNutToFolder);
             // 
             // importNUTFromFolderToolStripMenuItem
@@ -237,6 +241,7 @@
             this.importNUTFromFolderToolStripMenuItem.Name = "importNUTFromFolderToolStripMenuItem";
             this.importNUTFromFolderToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.importNUTFromFolderToolStripMenuItem.Text = "Import Entire NUT";
+            this.importNUTFromFolderToolStripMenuItem.ToolTipText = "Imports a folder of DDS files into a NUT";
             this.importNUTFromFolderToolStripMenuItem.Click += new System.EventHandler(this.importNutFromFolder);
             // 
             // textureToolStripMenuItem
@@ -247,7 +252,7 @@
             this.exportAsDDSToolStripMenuItem1,
             this.replaceToolStripMenuItem});
             this.textureToolStripMenuItem.Name = "textureToolStripMenuItem";
-            this.textureToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.textureToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
             this.textureToolStripMenuItem.Text = "Texture";
             // 
             // importToolStripMenuItem
@@ -309,6 +314,15 @@
             this.importEditedFileToolStripMenuItem.Text = "Import Edited File";
             this.importEditedFileToolStripMenuItem.Click += new System.EventHandler(this.importEditedFileToolStripMenuItem_Click);
             // 
+            // saveNUTZLIBToolStripMenuItem
+            // 
+            this.saveNUTZLIBToolStripMenuItem.Name = "saveNUTZLIBToolStripMenuItem";
+            this.saveNUTZLIBToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.saveNUTZLIBToolStripMenuItem.Text = "Save NUT (ZLIB)";
+            this.saveNUTZLIBToolStripMenuItem.ToolTipText = "Compresses the NUT with ZLIB when saving. Don\'t use if you don\'t know what that m" +
+    "eans.";
+            this.saveNUTZLIBToolStripMenuItem.Click += new System.EventHandler(this.saveNUTZLIBToolStripMenuItem_Click);
+            // 
             // NUTEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -363,5 +377,6 @@
         private System.Windows.Forms.ToolStripMenuItem importEditedFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dumpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importNUTFromFolderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveNUTZLIBToolStripMenuItem;
     }
 }

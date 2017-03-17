@@ -91,6 +91,8 @@
             this.comboBox7 = new System.Windows.Forms.ComboBox();
             this.label25 = new System.Windows.Forms.Label();
             this.glControl1 = new OpenTK.GLControl();
+            this.colorSelect = new System.Windows.Forms.Button();
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -736,12 +738,24 @@
             this.glControl1.VSync = false;
             this.glControl1.Click += new System.EventHandler(this.glControl1_Click);
             // 
+            // colorSelect
+            // 
+            this.colorSelect.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
+            this.colorSelect.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.colorSelect.Location = new System.Drawing.Point(90, 671);
+            this.colorSelect.Name = "colorSelect";
+            this.colorSelect.Size = new System.Drawing.Size(26, 23);
+            this.colorSelect.TabIndex = 24;
+            this.colorSelect.UseVisualStyleBackColor = false;
+            this.colorSelect.Click += new System.EventHandler(this.colorSelect_Click);
+            // 
             // NUDMaterialEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(284, 858);
+            this.Controls.Add(this.colorSelect);
             this.Controls.Add(this.glControl1);
             this.Controls.Add(this.label25);
             this.Controls.Add(this.comboBox7);
@@ -841,5 +855,7 @@
         private System.Windows.Forms.ComboBox comboBox7;
         private System.Windows.Forms.Label label25;
         private OpenTK.GLControl glControl1;
+        private System.Windows.Forms.Button colorSelect;
+        private System.Windows.Forms.ColorDialog colorDialog1;
     }
 }

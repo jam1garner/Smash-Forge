@@ -68,6 +68,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Filetypes\DRP.cs" />
     <Compile Include="Filetypes\Melee\DAT.cs" />
     <Compile Include="Filetypes\Melee\DAT_Animation.cs" />
     <Compile Include="Filetypes\LVD.cs" />
@@ -207,6 +208,12 @@
     </Compile>
     <Compile Include="GUI\Editors\PathBinEditor.Designer.cs">
       <DependentUpon>PathBinEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\Pokken\DRPViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\Pokken\DRPViewer.Designer.cs">
+      <DependentUpon>DRPViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\ProjectTree.cs">
       <SubType>Form</SubType>
@@ -351,6 +358,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\PathBinEditor.resx">
       <DependentUpon>PathBinEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\Pokken\DRPViewer.resx">
+      <DependentUpon>DRPViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\ProjectTree.resx">
       <DependentUpon>ProjectTree.cs</DependentUpon>

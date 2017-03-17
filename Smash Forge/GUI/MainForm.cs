@@ -1225,6 +1225,17 @@ namespace Smash_Forge
                 AddDockedControl(new MOIEditor(moi) {ShowHint = DockState.DockRight});
             }
 
+            if (filename.EndsWith(".drp"))
+            {
+                DRP drp = new DRP(filename);
+                DRPViewer v = new DRPViewer();
+                v.treeView1.Nodes.Add(drp);
+                v.Show();
+                //project.treeView1.Nodes.Add(drp);
+                //project.treeView1.Invalidate();
+                //project.treeView1.Refresh();
+            }
+
             if (filename.EndsWith(".wrkspc"))
             {
                 Workspace = new WorkspaceManager(project);
@@ -1267,7 +1278,7 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc, .mbn)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.dat;*.mta;*.wrkspc;*.nut;*.sb;*.mbn;*.tex|" +
+                    "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc, .mbn)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.dat;*.mta;*.wrkspc;*.nut;*.sb;*.mbn;*.tex;*.drp|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +
