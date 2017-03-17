@@ -227,6 +227,7 @@ namespace Smash_Forge
 
         private void importToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if(selected != null)
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter = "Direct Draw Surface (.dds)|*.dds|" +
@@ -234,11 +235,23 @@ namespace Smash_Forge
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
+                    int texId;
+                    bool isTex = int.TryParse(Path.GetFileNameWithoutExtension(ofd.FileName), NumberStyles.HexNumber,
+                        new CultureInfo("en-US"), out texId);
+
+                    if(isTex)
+                    foreach (NUT.NUD_Texture tex in selected.textures)
+                        if (texId == tex.id)
+                            isTex = false;
+
                     if (ofd.FileName.EndsWith(".dds") && selected != null)
                     {
                         DDS dds = new DDS(new FileData(ofd.FileName));
                         NUT.NUD_Texture tex = dds.toNUT_Texture();
-                        tex.id = 0x40FFFF00 | (selected.textures.Count);
+                        if(isTex)
+                            tex.id = texId;
+                        else
+                            tex.id = 0x40FFFF00 | (selected.textures.Count);
                         selected.textures.Add(tex);
                         selected.draw.Add(tex.id, NUT.loadImage(tex));
                         FillForm();
@@ -580,7 +593,7 @@ namespace Smash_Forge
                                 //new texture
                                 DDS dds = new DDS(new FileData(texPath));
                                 NUT.NUD_Texture tex = dds.toNUT_Texture();
-                                tex.id = 0x40FFFF00 | (nut.textures.Count);
+                                tex.id = texId;
                                 nut.textures.Add(tex);
                                 nut.draw.Add(tex.id, NUT.loadImage(tex));
                             }
