@@ -126,6 +126,7 @@ namespace Smash_Forge
         public override byte[] Rebuild()
         {
             FileOutput o = new FileOutput();
+            FileOutput data = new FileOutput();
 
             o.writeInt(0x4E545033); // "NTP3"
             o.writeShort(0x0200);
@@ -133,28 +134,47 @@ namespace Smash_Forge
             o.writeInt(0);
             o.writeInt(0);
 
-            int offset = textures.Count * 0x60;
+            //calculate total header size
+            int headerLength = 0;
 
             foreach (var texture in textures)
             {
-                int size = 0;
-                int headerSize = 0x60;
+                int headerSize = 0x50;
+                
+                if (texture.mipmaps.Count > 1)
+                {
+                    headerSize += texture.mipmaps.Count * 4;
+                    while (headerSize % 16 != 0)
+                        headerSize += 4;
+                }
+                headerLength += headerSize;
+            }
 
+            // write headers+data
+            foreach (var texture in textures)
+            {
+                int size = 0;
+                
                 foreach (var mip in texture.mipmaps)
                 {
                     size += mip.Length;
                 }
 
-                // // headerSize 0x50 seems to crash with models
-                //if (texture.mipmaps.Count == 1)
-                //{
-                //    headerSize = 0x50;
-                //}
+                int headerSize = 0x50;
+
+                // calculate header size
+                if(texture.mipmaps.Count > 1)
+                {
+                    headerSize += texture.mipmaps.Count * 4;
+                    //align to 16
+                    while (headerSize % 16 != 0)
+                        headerSize += 4;
+                }
 
                 o.writeInt(size + headerSize);
-                o.writeInt(0x00);
+                o.writeInt(0x00);//padding
                 o.writeInt(size);
-                o.writeShort(headerSize);
+                o.writeShort(headerSize); //+ (texture.mipmaps.Count - 4 > 0 ? texture.mipmaps.Count - 4 : 0) * 4
                 o.writeShort(0);
                 o.writeShort(texture.mipmaps.Count);
                 o.writeShort(texture.getNutFormat());
@@ -162,24 +182,19 @@ namespace Smash_Forge
                 o.writeShort(texture.height);
                 o.writeInt(0);
                 o.writeInt(0);
-                o.writeInt(offset);
+                o.writeInt(headerLength + data.size());
+                headerLength -= headerSize;
                 o.writeInt(0);
                 o.writeInt(0);
                 o.writeInt(0);
 
-                if (headerSize > 0x50)
+                foreach (var mip in texture.mipmaps)
                 {
-                    foreach (var mip in texture.mipmaps)
-                    {
+                    if(texture.mipmaps.Count > 1)
                         o.writeInt(mip.Length);
-                    }
-
-                    // Sizes for missing mips.
-                    for (int j = 0; j < 4 - texture.mipmaps.Count; j++)
-                    {
-                        o.writeInt(0);
-                    }
+                    data.writeBytes(mip);
                 }
+                o.align(16);
 
                 o.writeInt(0x65587400); // "eXt\0"
                 o.writeInt(0x20);
@@ -190,41 +205,8 @@ namespace Smash_Forge
 
                 o.writeInt(texture.id);
                 o.writeInt(0);
-
-                offset += (size - headerSize);
             }
-
-            foreach (var texture in textures)
-            {
-                int m = 0;
-                
-                foreach (var mip in texture.mipmaps)
-                {
-                    int off = 0;
-                    if (texture.getNutFormat() == 14)
-                    {
-                        for(int h = 0; h < (texture.height/(Math.Pow(2,m))) * (texture.width / (Math.Pow(2, m))); h++) {
-                            
-                                for(int p = 0; p < 4; p++) {
-                                    if (p == 0)
-                                    {
-                                        o.writeByte(mip[off + 3]);
-                                    }else
-                                    {
-                                        o.writeByte(mip[off + (p - 1)]);
-                                    }
-                                    
-                                }
-                                off += 4;
-                            
-                                }
-                    }
-                    else {
-                        o.writeBytes(mip);
-                    }
-                    m++;
-                }
-            }
+            o.writeOutput(data);
 
             return o.getBytes();
         }
@@ -250,54 +232,58 @@ namespace Smash_Forge
         {
             d.skip(0x2);
             int count = d.readShort();
-            d.skip(0x10);
+            d.skip(0x8);
 
-            int headerPtr = d.pos();
             int dataPtr = 0;
 
             for (int i = 0; i < count; i++)
             {
+                Debug.WriteLine(d.pos().ToString("x"));
                 NUD_Texture tex = new NUD_Texture();
                 tex.type = PixelInternalFormat.Rgba32ui;
 
-                d.seek(headerPtr);
                 int totalSize = d.readInt();
-                int headerSize = d.readShort();
-                headerPtr += headerSize;
+                d.skip(4); // padding
 
+                int dataSize = d.readInt();
+                int headerSize = d.readShort();
                 int numMips = d.readInt();
                 tex.setPixelFormatFromNutFormat(d.readShort());
                 tex.width = d.readShort();
                 tex.height = d.readShort();
 
-                d.skip(8); // mipmaps and padding
+                d.skip(8); // padding?
+
                 int dataOffset = d.readInt() + dataPtr + 0x10;
                 d.skip(0x0C);
 
                 int[] mipSizes = new int[numMips];
 
-                if (headerSize == 0x50)
-                {
-                    mipSizes[0] = totalSize;
-                }
+                if (numMips == 1) mipSizes[0] = dataSize;
                 else
+                for (int j = 0; j < numMips; j++)
                 {
-                    for (int j = 0; j < numMips; j++)
-                    {
-                        mipSizes[j] = d.readInt();
-                    }
+                    mipSizes[j] = d.readInt();
                 }
-
-                // NOTE: I have no clue what these other header sizes are.
-                // pls send help.
-                if (headerSize > 0x60)
-                {
-                    d.skip(headerSize - 0x60);
-                }
+                d.align(16);
 
                 d.skip(0x18);
                 tex.id = d.readInt();
+                d.skip(4); // padding align 8
+
+                // add mipmap data
                 for (int miplevel = 0; miplevel < numMips; miplevel++)
+                {
+                    byte[] texArray = d.getSection(dataOffset, mipSizes[miplevel]);
+                    tex.mipmaps.Add(texArray);
+                    dataOffset += mipSizes[miplevel];
+                }
+
+                dataPtr += headerSize;
+
+                textures.Add(tex);
+
+                /*for (int miplevel = 0; miplevel < numMips; miplevel++)
                 {
                     byte[] texArray = d.getSection(dataOffset, mipSizes[miplevel]);
 
@@ -319,11 +305,7 @@ namespace Smash_Forge
                     }
                     tex.mipmaps.Add(texArray);
                     dataOffset += mipSizes[miplevel];
-                }
-
-                dataPtr += headerSize;
-
-                textures.Add(tex);
+                }*/
             }
 
             foreach (var tex in textures)

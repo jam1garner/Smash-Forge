@@ -52,10 +52,12 @@ namespace Smash_Forge
 
 
 
+        // transformations
+
+
+
 
         // 3ds stuff
-
-        
 
         public static Bitmap decodeETC(byte[] bytes, int width, int height)
         {
@@ -247,6 +249,18 @@ namespace Smash_Forge
             return result;
         }
 
+        public static Color[] DecodeETC1(ulong bl)
+        {
+            int[] b = decodeETCBlock((long)bl, null);
+
+            Color[] c = new Color[b.Length];
+
+            for (int i = 0; i < b.Length; i++)
+                c[i] = Color.FromArgb((b[i] >> 24)&0xFF, (b[i] >> 16) & 0xFF, (b[i] >> 8) & 0xFF, (b[i]) & 0xFF);
+
+            return c;
+        }
+
         private static int[] decodeETCBlock(long block, byte[] alpha)
         {
 
@@ -431,6 +445,460 @@ namespace Smash_Forge
             }
 
         }
+
+
+        // to etc
+
+        public static byte[] encodeETC(Bitmap b)
+        {
+            int width = b.Width;
+            int height = b.Height;
+            int[] pixels = new int[width * height];
+            
+            int i, j;
+
+            FileOutput o = new FileOutput();
+            o.Endian = System.IO.Endianness.Little;
+
+            for (i = 0; i < height; i += 8)
+            {
+                for (j = 0; j < width; j += 8)
+                {
+                    int x, y;
+
+                    Color[] temp = new Color[16];
+                    int pi = 0;
+                    for (x = i; x < i + 4; x++)
+                        for (y = j; y < j + 4; y++)
+                            temp[pi++] = b.GetPixel(y, x);
+
+                    ulong g = GenETC1(temp);
+                    o.writeInt((int)(g & 0xFFFFFFFF));
+                    o.writeInt((int)((g>>32)&0xFFFFFFFF));
+
+
+                    temp = new Color[16];
+                    pi = 0;
+                    for (x = i; x < i + 4; x++)
+                        for (y = j + 4; y < j + 8; y++)
+                            temp[pi++] = b.GetPixel(y, x);
+
+                    g = GenETC1(temp);
+                    o.writeInt((int)(g & 0xFFFFFFFF));
+                    o.writeInt((int)((g >> 32) & 0xFFFFFFFF));
+
+
+                    temp = new Color[16];
+                    pi = 0;
+                    for (x = i + 4; x < i + 8; x++)
+                        for (y = j; y < j + 4; y++)
+                            temp[pi++] = b.GetPixel(y, x);
+
+                    g = GenETC1(temp);
+                    o.writeInt((int)(g & 0xFFFFFFFF));
+                    o.writeInt((int)((g >> 32) & 0xFFFFFFFF));
+
+
+                    temp = new Color[16];
+                    pi = 0;
+                    for (x = i + 4; x < i + 8; x++)
+                        for (y = j + 4; y < j + 8; y++)
+                            temp[pi++] = b.GetPixel(y, x);
+
+                    g = GenETC1(temp);
+                    o.writeInt((int)(g & 0xFFFFFFFF));
+                    o.writeInt((int)((g >> 32) & 0xFFFFFFFF));
+                }
+            }
+            
+            return o.getBytes();
+        }
+
+
+        public static byte[] encodeETCa4(Bitmap b)
+        {
+            int width = b.Width;
+            int height = b.Height;
+            int[] pixels = new int[width * height];
+
+            int i, j;
+
+            FileOutput o = new FileOutput();
+            o.Endian = System.IO.Endianness.Little;
+
+            for (i = 0; i < height; i += 8)
+            {
+                for (j = 0; j < width; j += 8)
+                {
+                    int x, y;
+
+                    Color[] temp = new Color[16];
+                    int pi = 0;
+                    for (x = i; x < i + 4; x++)
+                        for (y = j; y < j + 4; y++)
+                            temp[pi++] = b.GetPixel(y, x);
+
+                    for (int ax = 0; ax < 4; ax++)
+                        for (int ay = 0; ay < 4; ay++)
+                        {
+                            int a = (temp[ax + ay * 4].A >> 4);
+                            ay++;
+                            a |= (temp[ax + ay * 4].A >> 4) << 4;
+                            o.writeByte(a);
+                        }
+
+                    ulong g = GenETC1(temp);
+                    o.writeInt((int)(g & 0xFFFFFFFF));
+                    o.writeInt((int)((g >> 32) & 0xFFFFFFFF));
+
+
+                    temp = new Color[16];
+                    pi = 0;
+                    for (x = i; x < i + 4; x++)
+                        for (y = j + 4; y < j + 8; y++)
+                            temp[pi++] = b.GetPixel(y, x);
+
+                    for (int ax = 0; ax < 4; ax++)
+                        for (int ay = 0; ay < 4; ay++)
+                        {
+                            int a = (temp[ax + ay * 4].A >> 4);
+                            ay++;
+                            a |= (temp[ax + ay * 4].A >> 4) << 4;
+                            o.writeByte(a);
+                        }
+
+                    g = GenETC1(temp);
+                    o.writeInt((int)(g & 0xFFFFFFFF));
+                    o.writeInt((int)((g >> 32) & 0xFFFFFFFF));
+
+
+                    temp = new Color[16];
+                    pi = 0;
+                    for (x = i + 4; x < i + 8; x++)
+                        for (y = j; y < j + 4; y++)
+                            temp[pi++] = b.GetPixel(y, x);
+
+                    for (int ax = 0; ax < 4; ax++)
+                        for (int ay = 0; ay < 4; ay++)
+                        {
+                            int a = (temp[ax + ay * 4].A >> 4);
+                            ay++;
+                            a |= (temp[ax + ay * 4].A >> 4) << 4;
+                            o.writeByte(a);
+                        }
+
+                    g = GenETC1(temp);
+                    o.writeInt((int)(g & 0xFFFFFFFF));
+                    o.writeInt((int)((g >> 32) & 0xFFFFFFFF));
+
+
+                    temp = new Color[16];
+                    pi = 0;
+                    for (x = i + 4; x < i + 8; x++)
+                        for (y = j + 4; y < j + 8; y++)
+                            temp[pi++] = b.GetPixel(y, x);
+
+                    for (int ax = 0; ax < 4; ax++)
+                        for (int ay = 0; ay < 4; ay++)
+                        {
+                            int a = (temp[ax + ay * 4].A >> 4);
+                            ay++;
+                            a |= (temp[ax + ay * 4].A >> 4) << 4;
+                            o.writeByte(a);
+                        }
+
+                    g = GenETC1(temp);
+                    o.writeInt((int)(g & 0xFFFFFFFF));
+                    o.writeInt((int)((g >> 32) & 0xFFFFFFFF));
+                }
+            }
+
+            return o.getBytes();
+        }
+
+
+        // Copied from EveryFileExplorer by Gericom
+        // https://github.com/Gericom/EveryFileExplorer/blob/master/LibEveryFileExplorer/GFX/ETC1.cs
+
+        public static ulong GenETC1(Color[] Colors)
+        {
+            ulong Horizontal = GenHorizontal(Colors);
+            ulong Vertical = GenVertical(Colors);
+            int HorizontalScore = GetScore(Colors, DecodeETC1(Horizontal));
+            int VerticalScore = GetScore(Colors, DecodeETC1(Vertical));
+            return (HorizontalScore < VerticalScore) ? Horizontal : Vertical;
+        }
+
+        private static ulong GenHorizontal(Color[] Colors)
+        {
+            ulong data = 0;
+            SetFlipMode(ref data, false);
+            //Left
+            Color[] Left = GetLeftColors(Colors);
+            Color basec1;
+            int mod = GenModifier(out basec1, Left);
+            SetTable1(ref data, mod);
+            GenPixDiff(ref data, Left, basec1, mod, 0, 2, 0, 4);
+            //Right
+            Color[] Right = GetRightColors(Colors);
+            Color basec2;
+            mod = GenModifier(out basec2, Right);
+            SetTable2(ref data, mod);
+            GenPixDiff(ref data, Right, basec2, mod, 2, 4, 0, 4);
+            SetBaseColors(ref data, basec1, basec2);
+            return data;
+        }
+
+        private static ulong GenVertical(Color[] Colors)
+        {
+            ulong data = 0;
+            SetFlipMode(ref data, true);
+            //Top
+            Color[] Top = GetTopColors(Colors);
+            Color basec1;
+            int mod = GenModifier(out basec1, Top);
+            SetTable1(ref data, mod);
+            GenPixDiff(ref data, Top, basec1, mod, 0, 4, 0, 2);
+            //Bottom
+            Color[] Bottom = GetBottomColors(Colors);
+            Color basec2;
+            mod = GenModifier(out basec2, Bottom);
+            SetTable2(ref data, mod);
+            GenPixDiff(ref data, Bottom, basec2, mod, 0, 4, 2, 4);
+            SetBaseColors(ref data, basec1, basec2);
+            return data;
+        }
+
+
+        private static int GenModifier(out Color BaseColor, Color[] Pixels)
+        {
+            Color Max = Color.White;
+            Color Min = Color.Black;
+            int MinY = int.MaxValue;
+            int MaxY = int.MinValue;
+            for (int i = 0; i < 8; i++)
+            {
+                if (Pixels[i].A == 0) continue;
+                int Y = (Pixels[i].R + Pixels[i].G + Pixels[i].B) / 3;
+                if (Y > MaxY)
+                {
+                    MaxY = Y;
+                    Max = Pixels[i];
+                }
+                if (Y < MinY)
+                {
+                    MinY = Y;
+                    Min = Pixels[i];
+                }
+            }
+
+            int DiffMean = ((Max.R - Min.R) + (Max.G - Min.G) + (Max.B - Min.B)) / 3;
+            
+            int ModDiff = int.MaxValue;
+            int Modifier = -1;
+            int Mode = -1;
+
+            for (int i = 0; i < 8; i++)
+            {
+                int SS = ETC1Modifiers[i, 0] * 2;
+                int SB = ETC1Modifiers[i, 0] + ETC1Modifiers[i, 1];
+                int BB = ETC1Modifiers[i, 1] * 2;
+                if (SS > 255) SS = 255;
+                if (SB > 255) SB = 255;
+                if (BB > 255) BB = 255;
+                if (System.Math.Abs(DiffMean - SS) < ModDiff)
+                {
+                    ModDiff = System.Math.Abs(DiffMean - SS);
+                    Modifier = i;
+                    Mode = 0;
+                }
+                if (System.Math.Abs(DiffMean - SB) < ModDiff)
+                {
+                    ModDiff = System.Math.Abs(DiffMean - SB);
+                    Modifier = i;
+                    Mode = 1;
+                }
+                if (System.Math.Abs(DiffMean - BB) < ModDiff)
+                {
+                    ModDiff = System.Math.Abs(DiffMean - BB);
+                    Modifier = i;
+                    Mode = 2;
+                }
+            }
+
+            if (Mode == 1)
+            {
+                float div1 = (float)ETC1Modifiers[Modifier, 0] / (float)ETC1Modifiers[Modifier, 1];
+                float div2 = 1f - div1;
+                BaseColor = Color.FromArgb((int)(Min.R * div1 + Max.R * div2), (int)(Min.G * div1 + Max.G * div2), (int)(Min.B * div1 + Max.B * div2));
+            }
+            else
+            {
+                BaseColor = Color.FromArgb((Min.R + Max.R) / 2, (Min.G + Max.G) / 2, (Min.B + Max.B) / 2);
+            }
+            return Modifier;
+        }
+
+
+        private static int GetScore(Color[] Original, Color[] Encode)
+        {
+            int Diff = 0;
+            for (int i = 0; i < 4 * 4; i++)
+            {
+                Diff += System.Math.Abs(Encode[i].R - Original[i].R);
+                Diff += System.Math.Abs(Encode[i].G - Original[i].G);
+                Diff += System.Math.Abs(Encode[i].B - Original[i].B);
+            }
+            return Diff;
+        }
+        
+
+        private static void SetFlipMode(ref ulong Data, bool Mode)
+        {
+            Data &= ~(1ul << 32);
+            Data |= (Mode ? 1ul : 0ul) << 32;
+        }
+
+        private static void SetDiffMode(ref ulong Data, bool Mode)
+        {
+            Data &= ~(1ul << 33);
+            Data |= (Mode ? 1ul : 0ul) << 33;
+        }
+
+        private static void SetTable1(ref ulong Data, int Table)
+        {
+            Data &= ~(7ul << 37);
+            Data |= (ulong)(Table & 0x7) << 37;
+        }
+
+        private static void SetTable2(ref ulong Data, int Table)
+        {
+            Data &= ~(7ul << 34);
+            Data |= (ulong)(Table & 0x7) << 34;
+        }
+
+
+        private static Color[] GetLeftColors(Color[] Pixels)
+        {
+            Color[] Left = new Color[4 * 2];
+            for (int y = 0; y < 4; y++)
+            {
+                for (int x = 0; x < 2; x++)
+                {
+                    Left[y * 2 + x] = Pixels[y * 4 + x];
+                }
+            }
+            return Left;
+        }
+
+        private static Color[] GetRightColors(Color[] Pixels)
+        {
+            Color[] Right = new Color[4 * 2];
+            for (int y = 0; y < 4; y++)
+            {
+                for (int x = 2; x < 4; x++)
+                {
+                    Right[y * 2 + x - 2] = Pixels[y * 4 + x];
+                }
+            }
+            return Right;
+        }
+
+        private static Color[] GetTopColors(Color[] Pixels)
+        {
+            Color[] Top = new Color[4 * 2];
+            for (int y = 0; y < 2; y++)
+            {
+                for (int x = 0; x < 4; x++)
+                {
+                    Top[y * 4 + x] = Pixels[y * 4 + x];
+                }
+            }
+            return Top;
+        }
+
+        private static Color[] GetBottomColors(Color[] Pixels)
+        {
+            Color[] Bottom = new Color[4 * 2];
+            for (int y = 2; y < 4; y++)
+            {
+                for (int x = 0; x < 4; x++)
+                {
+                    Bottom[(y - 2) * 4 + x] = Pixels[y * 4 + x];
+                }
+            }
+            return Bottom;
+        }
+        
+        private static readonly int[,] ETC1Modifiers =
+        {
+            { 2, 8 },
+            { 5, 17 },
+            { 9, 29 },
+            { 13, 42 },
+            { 18, 60 },
+            { 24, 80 },
+            { 33, 106 },
+            { 47, 183 }
+        };
+
+        private static void GenPixDiff(ref ulong Data, Color[] Pixels, Color BaseColor, int Modifier, int XOffs, int XEnd, int YOffs, int YEnd)
+        {
+            int BaseMean = (BaseColor.R + BaseColor.G + BaseColor.B) / 3;
+            int i = 0;
+            for (int yy = YOffs; yy < YEnd; yy++)
+            {
+                for (int xx = XOffs; xx < XEnd; xx++)
+                {
+                    int Diff = ((Pixels[i].R + Pixels[i].G + Pixels[i].B) / 3) - BaseMean;
+
+                    if (Diff < 0) Data |= 1ul << (xx * 4 + yy + 16);
+                    int tbldiff1 = System.Math.Abs(Diff) - ETC1Modifiers[Modifier, 0];
+                    int tbldiff2 = System.Math.Abs(Diff) - ETC1Modifiers[Modifier, 1];
+
+                    if (System.Math.Abs(tbldiff2) < System.Math.Abs(tbldiff1)) Data |= 1ul << (xx * 4 + yy);
+                    i++;
+                }
+            }
+        }
+
+        private static void SetBaseColors(ref ulong Data, Color Color1, Color Color2)
+        {
+            int R1 = Color1.R;
+            int G1 = Color1.G;
+            int B1 = Color1.B;
+            int R2 = Color2.R;
+            int G2 = Color2.G;
+            int B2 = Color2.B;
+            //First look if differencial is possible.
+            int RDiff = (R2 - R1) / 8;
+            int GDiff = (G2 - G1) / 8;
+            int BDiff = (B2 - B1) / 8;
+            if (RDiff > -4 && RDiff < 3 && GDiff > -4 && GDiff < 3 && BDiff > -4 && BDiff < 3)
+            {
+                SetDiffMode(ref Data, true);
+                R1 /= 8;
+                G1 /= 8;
+                B1 /= 8;
+                Data |= (ulong)R1 << 59;
+                Data |= (ulong)G1 << 51;
+                Data |= (ulong)B1 << 43;
+                Data |= (ulong)(RDiff & 0x7) << 56;
+                Data |= (ulong)(GDiff & 0x7) << 48;
+                Data |= (ulong)(BDiff & 0x7) << 40;
+            }
+            else
+            {
+                Data |= (ulong)(R1 / 0x11) << 60;
+                Data |= (ulong)(G1 / 0x11) << 52;
+                Data |= (ulong)(B1 / 0x11) << 44;
+
+                Data |= (ulong)(R2 / 0x11) << 56;
+                Data |= (ulong)(G2 / 0x11) << 48;
+                Data |= (ulong)(B2 / 0x11) << 40;
+            }
+        }
+
 
     }
 }

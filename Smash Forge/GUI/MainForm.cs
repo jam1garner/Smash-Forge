@@ -215,6 +215,7 @@ namespace Smash_Forge
         public MeshList meshList = new MeshList() {ShowHint = DockState.DockRight};
         public List<VBNViewport> viewports = new List<VBNViewport>() {new VBNViewport()}; // Default viewport (may mess up with more or less?)
         public NUTEditor nutEditor = null;
+        public _3DSTexEditor texEditor = null;
 
         #endregion
 
@@ -1107,6 +1108,20 @@ namespace Smash_Forge
                 nutEditor.FillForm();
             }
 
+            if (filename.EndsWith(".tex"))
+            {
+                if (texEditor == null || texEditor.IsDisposed)
+                {
+                    texEditor = new _3DSTexEditor();
+                    texEditor.Show();
+                }
+                else
+                {
+                    texEditor.BringToFront();
+                }
+                texEditor.OpenTEX(filename);
+            }
+
             if (filename.EndsWith(".lvd"))
             {
                 Runtime.TargetLVD = new LVD(filename);
@@ -1252,7 +1267,7 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc, .mbn)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.dat;*.mta;*.wrkspc;*.nut;*.sb;*.mbn|" +
+                    "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc, .mbn)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.dat;*.mta;*.wrkspc;*.nut;*.sb;*.mbn;*.tex|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +
@@ -1453,6 +1468,19 @@ namespace Smash_Forge
             meshList.Close();
             //RegenPanels();
             viewports[0].groupBox2.Visible = false;
+        }
+
+        private void open3DSTEXEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (texEditor == null || texEditor.IsDisposed)
+            {
+                texEditor = new _3DSTexEditor();
+                texEditor.Show();
+            }
+            else
+            {
+                texEditor.BringToFront();
+            }
         }
     }
 }

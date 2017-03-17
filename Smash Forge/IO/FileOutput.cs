@@ -60,11 +60,9 @@ namespace Smash_Forge
 				data.Add((byte)((i>>8)&0xFF));
 				data.Add((byte)((i)&0xFF));
 			}
-		}
-
-
-
-		public void writeIntAt(int i, int p){
+        }
+        
+        public void writeIntAt(int i, int p){
             if(Endian == Endianness.Little){
 				data[p++] = (byte)((i)&0xFF);
 				data[p++] = (byte)((i>>8)&0xFF);
