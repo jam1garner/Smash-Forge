@@ -222,9 +222,15 @@ namespace Smash_Forge
             if (magic == 0x4E545033)
             {
                 ReadNTP3(d);
-            } else if (magic == 0x4E545755)
+            }
+            else if (magic == 0x4E545755)
             {
                 ReadNTWU(d);
+            }
+            else if (magic == 0x4E545744)
+            {
+                d.Endian = Endianness.Little;
+                ReadNTP3(d);
             }
         }
 
@@ -247,8 +253,10 @@ namespace Smash_Forge
 
                 int dataSize = d.readInt();
                 int headerSize = d.readShort();
-                int numMips = d.readInt();
-                tex.setPixelFormatFromNutFormat(d.readShort());
+                d.skip(3);
+                int numMips = d.readByte();
+                d.skip(1);
+                tex.setPixelFormatFromNutFormat(d.readByte());
                 tex.width = d.readShort();
                 tex.height = d.readShort();
 

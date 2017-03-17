@@ -227,7 +227,8 @@ namespace Smash_Forge
             {
                 listView2.Items.Add(s);
             }
-            listView2.SelectedIndices.Add(0);
+            if(listView2.Items.Count > 0)
+                listView2.SelectedIndices.Add(0);
         }
         
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)

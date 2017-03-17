@@ -90,7 +90,10 @@ namespace Smash_Forge
                     foreach (Vertex v in p.vertices)
                     {
                         vert.Add(v.pos);
-                        col.Add(v.col/0x7F);
+                        if(Endian == Endianness.Little)
+                            col.Add(new Vector4(1f, 1f, 1f, 1));
+                        else
+                            col.Add(v.col/0x7F);
                         nrm.Add(v.nrm);
 
                         uv.Add(v.tx[0]);
@@ -309,6 +312,9 @@ namespace Smash_Forge
                             case 0:
                                 GL.Disable(EnableCap.CullFace);
                                 break;
+                            case 2:
+                                GL.Disable(EnableCap.CullFace);
+                                break;
                             case 4:
                                 GL.CullFace(CullFaceMode.Back);
                                 break;
@@ -479,6 +485,13 @@ namespace Smash_Forge
             d.seek(0);
 
             // read header
+            string magic = d.readString(0, 4);
+
+            if (magic.Equals("NDWD"))
+                d.Endian = Endianness.Little;
+
+            Endian = d.Endian;
+
             d.seek(0xA);
             int polysets = d.readShort();
             boneCount = d.readShort();
@@ -616,6 +629,7 @@ namespace Smash_Forge
 
                 int head = 0x20;
 
+                if(d.Endian != Endianness.Little)
                 while (head != 0)
                 {
                     head = d.readInt();
@@ -714,8 +728,6 @@ namespace Smash_Forge
             int weight = p.vertSize >> 4;
             int nrm = p.vertSize & 0xF;
 
-            //Console.WriteLine(weight +  " " +  nrm);
-
             Vertex[] v = new Vertex[p.vertamt];
 
             d.seek(p.vertStart);
@@ -732,6 +744,8 @@ namespace Smash_Forge
                     v[i] = new Vertex();
                 }
             }
+
+            Debug.WriteLine(p.UVSize.ToString("x") + " " + p.vertSize.ToString("x") + " " + d.pos().ToString("x"));
 
             for (int i = 0; i < p.vertamt; i++)
             {
@@ -758,7 +772,16 @@ namespace Smash_Forge
                     d.skip(12); // r1?
                     d.skip(12); // r1?
                     d.skip(12); // r1?
-                } else if (nrm == 6)
+                } else if (nrm == 3)
+                {
+                    d.skip(4); 
+                    v[i].nrm.X = d.readFloat();
+                    v[i].nrm.Y = d.readFloat();
+                    v[i].nrm.Z = d.readFloat();
+                    d.skip(4); 
+                    d.skip(32); 
+                }
+                else if (nrm == 6)
                 {
                     v[i].nrm.X = d.readHalfFloat();
                     v[i].nrm.Y = d.readHalfFloat();
