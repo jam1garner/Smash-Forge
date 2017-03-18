@@ -1128,6 +1128,19 @@ namespace Smash_Forge
                 LVD test = Runtime.TargetLVD;
                 lvdList.fillList();
             }
+            
+            if (filename.EndsWith(".nus3bank"))
+            {
+                //NUS3BANK nus = new NUS3BANK();
+                //nus.Read(filename);
+                //nus.Save(filename + "_out");
+            }
+
+            if (filename.EndsWith(".wav"))
+            {
+                WAVE wav = new WAVE();
+                wav.Read(filename);
+            }
 
             if (filename.EndsWith(".mta"))
             {
@@ -1278,7 +1291,7 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc, .mbn)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.dat;*.mta;*.wrkspc;*.nut;*.sb;*.mbn;*.tex;*.drp|" +
+                    "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc, .mbn)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.dat;*.mta;*.wrkspc;*.nut;*.sb;*.mbn;*.tex;*.drp;*.nus3bank;*.wav|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +

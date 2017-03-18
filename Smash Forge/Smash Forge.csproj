@@ -82,6 +82,8 @@
     <Compile Include="Filetypes\Models\Skapon.cs" />
     <Compile Include="Filetypes\PAC.cs" />
     <Compile Include="Filetypes\Animation\PATH.cs" />
+    <Compile Include="Filetypes\Sounds\NUS3BANK.cs" />
+    <Compile Include="Filetypes\Sounds\WAVE.cs" />
     <Compile Include="Filetypes\Textures\3DSTex.cs" />
     <Compile Include="GUI\Editors\3DS\3DSTexEditor.cs">
       <SubType>Form</SubType>
