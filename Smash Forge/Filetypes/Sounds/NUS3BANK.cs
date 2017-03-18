@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Smash_Forge
 {
-    class NUS3BANK : FileBase
+    public class NUS3BANK : FileBase
     {
         public override Endianness Endian
         {
@@ -27,6 +27,11 @@ namespace Smash_Forge
         public NUS_GRP grp;
         public NUS_DTON dton;
         public NUS_TONE tone;
+
+        public override string ToString()
+        {
+            return binf.name;
+        }
 
         public NUS3BANK()
         {
@@ -71,6 +76,8 @@ namespace Smash_Forge
                     dton.Read(d);
                 if (magic.Equals("TONE"))
                     tone.Read(d);
+                if (magic.Equals("PACK"))
+                    tone.ReadPACK(d);
                 headerSize += size + 8;
                 d.seek(temp);
             }
@@ -426,7 +433,7 @@ namespace Smash_Forge
                 public int id;
 
                 public int offset, size;
-                public FileData idsp;
+                public byte[] idsp;
                 
                 public float[] param = new float[12];
                 public int[] offsets;
@@ -438,7 +445,44 @@ namespace Smash_Forge
                 {
 
                 }
+
+                public override string ToString()
+                {
+                    return name;
+                }
+
+                public void Play()
+                {
+                    // this cannot be very fast .-.
+                    // if anyone know how to pass the file via a byte array then that would be great...
+                    File.WriteAllBytes("temp.idsp", idsp);
+                    IntPtr vgm = VGMStreamNative.InitVGMStream("temp.idsp");
+                    if (vgm == IntPtr.Zero) throw new Exception("Error loading idsp");
+
+                    int channelCount = VGMStreamNative.GetVGMStreamChannelCount(vgm);
+                    int bitsPerFrame = VGMStreamNative.GetVGMStreamFrameSize(vgm);
+                    int size = VGMStreamNative.GetVGMStreamTotalSamples(vgm);
+                    int samplerate = VGMStreamNative.GetVGMStreamSampleRate(vgm);
+                    
+                    int total = (int)((samplerate * bitsPerFrame * channelCount * (size / 24576000f)) / 8 * 1024);
+                    
+                    //Console.WriteLine(channelCount + " " + bitsPerFrame + " " + size + " " + samplerate + " " + total.ToString("x"));
                 
+                    short[] buffer = new short[total];
+                    
+                    VGMStreamNative.RenderVGMStream(buffer, buffer.Length / 2, vgm);
+
+                    FileOutput o = new FileOutput();
+                    o.Endian = Endianness.Little;
+                    for(int i = 0; i < buffer.Length / 2; i++)
+                        o.writeShort(buffer[i]);
+
+                    WAVE.Play(o.getBytes(), VGMStreamNative.GetVGMStreamChannelCount(vgm), VGMStreamNative.GetVGMStreamSamplesPerFrame(vgm), VGMStreamNative.GetVGMStreamSampleRate(vgm));
+
+                    VGMStreamNative.CloseVGMStream(vgm);
+                    File.Delete("temp.idsp");
+                }
+
                 public void Read(FileData d)
                 {
                     hash = d.readInt();
@@ -531,7 +575,7 @@ namespace Smash_Forge
                 }
             }
 
-            List<TONE_META> tones = new List<TONE_META>();
+            public List<TONE_META> tones = new List<TONE_META>();
 
             public void Read(FileData d)
             {
@@ -581,6 +625,22 @@ namespace Smash_Forge
                 size = o.size() - size - 4;
                 o.writeIntAt(size, sizeoff);
                 return size;
+            }
+
+
+            public void ReadPACK(FileData d)
+            {
+                int start = d.pos();
+
+                foreach (TONE_META meta in tones)
+                {
+                    meta.idsp = d.getSection(start + meta.offset + 8, meta.size);
+                }
+            }
+
+            public int RebuildPACK(FileOutput o)
+            {
+                return 0;
             }
         }
 

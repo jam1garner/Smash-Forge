@@ -215,6 +215,7 @@ namespace Smash_Forge
         public MeshList meshList = new MeshList() {ShowHint = DockState.DockRight};
         public List<VBNViewport> viewports = new List<VBNViewport>() {new VBNViewport()}; // Default viewport (may mess up with more or less?)
         public NUTEditor nutEditor = null;
+        public NUS3BANKEditor nusEditor = null;
         public _3DSTexEditor texEditor = null;
 
         #endregion
@@ -534,6 +535,7 @@ namespace Smash_Forge
         {
             animNode.Nodes.Clear();
             mtaNode.Nodes.Clear();
+            Runtime.SoundContainers.Clear();
             Runtime.Animations.Clear();
             Runtime.MaterialAnimations.Clear();
             Runtime.TargetVBN.reset();
@@ -1131,9 +1133,19 @@ namespace Smash_Forge
             
             if (filename.EndsWith(".nus3bank"))
             {
-                //NUS3BANK nus = new NUS3BANK();
-                //nus.Read(filename);
-                //nus.Save(filename + "_out");
+                NUS3BANK nus = new NUS3BANK();
+                nus.Read(filename);
+                Runtime.SoundContainers.Add(nus);
+                if (nusEditor == null || nusEditor.IsDisposed)
+                {
+                    nusEditor = new NUS3BANKEditor();
+                    nusEditor.Show();
+                }
+                else
+                {
+                    nusEditor.BringToFront();
+                }
+                nusEditor.FillForm();
             }
 
             if (filename.EndsWith(".wav"))
