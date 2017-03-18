@@ -15,8 +15,8 @@ namespace Smash_Forge
 {
     public class DAT
     {
-
-        public static int headerSize = 0x20;
+        public const int MaxWeightCount = 4;
+        public const int headerSize = 0x20;
         Header header = new Header();
 
         public List<TreeNode> tree = new List<TreeNode>();
@@ -307,7 +307,7 @@ main()
                     v.bones.Add (-1);
                     v.weights.Add(0);
                 }
-                while (v.bones.Count < 4)
+                while (v.bones.Count < MaxWeightCount)
                 {
                     v.bones.Add(0);
                     v.weights.Add(0);
@@ -1009,6 +1009,9 @@ main()
                 dat.respawns = new List<Vector3>();
                 foreach(TreeNode t in j.node.Nodes)
                 {
+                    if (!(t.Tag is JOBJ))
+                        continue;
+
                     Vector3 pos = Vector3.Multiply(((JOBJ)t.Tag).pos, dat.stageScale);
                     int type = -1;
                     try
@@ -1139,19 +1142,34 @@ main()
                     JOBJ j = new JOBJ();
                     j.Read(d, dat, parentNode);
                 }
+
                 if (childOffset != 0)
                 {
-                    d.seek(childOffset);
-                    JOBJ j = new JOBJ();
-                    j.Read(d, dat, node);
+                    if ((flags & 0x1000) == 0)
+                    {
+                        d.seek(childOffset);
+                        JOBJ j = new JOBJ();
+                        j.Read(d, dat, node);
+                    }
                 }
 
                 if (dobjOffset != 0)
                 {
-                    //Console.WriteLine("DOBJ" + dobjOffset.ToString("X"));
-                    d.seek(dobjOffset);
-                    DOBJ dobj = new DOBJ();
-                    dobj.Read(d, dat, node);
+                    if ((flags & 0x4000) != 0)
+                    {
+
+                    }
+                    else if ((flags & 0x20) != 0)
+                    {
+
+                    }
+                    else
+                    {
+                        //Console.WriteLine("DOBJ" + dobjOffset.ToString("X"));
+                        d.seek(dobjOffset);
+                        DOBJ dobj = new DOBJ();
+                        dobj.Read(d, dat, node);
+                    }
                 }
             }
         }
@@ -1172,15 +1190,16 @@ main()
             {
                 //if (dat.dobjs.Count > 0) return;
                 //dat.dobjs.Add(this);
+
+                node.Text = "Mesh_" + d.pos().ToString("X8");
+                node.Tag = this;
+                node.Checked = true;
+                parent.Nodes.Add(node);
+
                 unk1 = d.readInt();
                 nextOffset = d.readInt();
                 mobjOffset = d.readInt();
                 pobjOffset = d.readInt();
-
-                node.Text = "Mesh_" + unk1;
-                node.Tag = this;
-                node.Checked = true;
-                parent.Nodes.Add(node);
 
                 d.seek(pobjOffset);
                 //Console.WriteLine("POBJ" + pobjOffset.ToString("x"));
@@ -1432,7 +1451,7 @@ main()
                 displayListSize = (short)d.readShort();
                 displayListOffset = d.readInt();
                 weightListOffset = d.readInt();
-                node.Text = "Polygon_" + flags.ToString("x");
+                node.Text = "Polygon_" + flags.ToString("X4");
 
                 // vertex attributes
                 d.seek(vertexAttrArray);
@@ -1446,6 +1465,71 @@ main()
                 }
 
                 //Console.WriteLine(weightListOffset.ToString("x"));
+
+                var boneList = new List<List<object>>();
+                var weightList = new List<List<float>>();
+
+                if (weightListOffset != 0)
+                {
+                    switch (flags & 0x3000)
+                    {
+                        case 0x0000:
+                            {
+                                int offset = weightListOffset;
+                                var jobjs = new List<object>();
+                                while (offset != 0)
+                                {
+                                    jobjs.Add(offset);
+
+                                    var jobj = dat.jobjOffsetLinker[offset];
+                                    offset = jobj.childOffset;
+                                }
+
+                                boneList.Add(jobjs);
+                            }
+                            break;
+                        case 0x1000:
+                            {
+
+                            }
+                            break;
+                        case 0x2000:
+                            {
+                                d.seek(weightListOffset);
+                                int offset = 0;
+                                while ((offset = d.readInt()) != 0)
+                                {
+                                    var temp = d.pos();
+                                    var jobjs = new List<object>();
+                                    var weights = new List<float>();
+
+                                    d.seek(offset);
+
+                                    int off1 = d.readInt();
+                                    float wei1 = d.readFloat();
+                                    while (off1 != 0)
+                                    {
+                                        jobjs.Add(off1);
+                                        weights.Add(wei1);
+
+                                        off1 = d.readInt();
+                                        wei1 = d.readFloat();
+                                    }
+
+                                    boneList.Add(jobjs);
+                                    weightList.Add(weights);
+
+                                    if (weights.Count > MaxWeightCount)
+                                    {
+                                        Console.WriteLine(string.Format("Error: Weight count ({0}) > {1}.", weights.Count, MaxWeightCount));
+                                    }
+
+                                    d.seek(temp);
+                                }
+                            }
+                            break;
+                    }
+                }
 
                 // display list
                 d.seek(displayListOffset);
@@ -1520,31 +1604,39 @@ main()
 
                                         if (weightListOffset != 0 && bid > -1)
                                         {
-                                            temp = d.pos();
-                                            d.seek(weightListOffset + (bid / 3) * 4);
-                                            int offset = d.readInt();
-                                            if (offset != 0)
+                                            switch (flags & 0x3000)
                                             {
-                                                d.seek(offset);
-
-                                                int off1 = d.readInt();
-                                                float wei1 = d.readFloat();
-                                                while (off1 != 0)
-                                                {
-                                                    v.Tags.Add(off1);
-                                                    v.weights.Add(wei1);
-                                                    off1 = d.readInt();
-                                                    wei1 = d.readFloat();
-
-                                                    if (v.weights.Count > 4)
+                                                case 0x0000:
                                                     {
-                                                        MessageBox.Show("Weight>4error");
-                                                        break;
-                                                    }
-                                                }
-                                            }
+                                                        // TODO:  Still need more testing and verification on this,
+                                                        // but this fixed the flowers in GrOp.dat.  Probably actually needs
+                                                        // to be implements as a transormation by the inverse transform
+                                                        // but the current bone structure would not allow specifying this
+                                                        int offset = (int)boneList[0][bid / 3];
+                                                        JOBJ jobj = dat.jobjOffsetLinker[offset];
 
-                                            d.seek(temp);
+                                                        var transform = Matrix4.CreateScale(jobj.sca)
+                                                                            * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(jobj.rot.Z, jobj.rot.Y, jobj.rot.X))
+                                                                            * Matrix4.CreateTranslation(jobj.pos);
+                                                        Matrix4 mt = jobj.inverseTransform * transform.Inverted() * ((JOBJ)parent.Parent.Tag).transform;
+                                                        v.pos = Vector3.Transform(v.pos, mt);
+
+                                                        v.Tags.Add(offset);
+                                                        v.weights.Add(1);
+                                                    }
+                                                    break;
+                                                case 0x1000:
+                                                    {
+
+                                                    }
+                                                    break;
+                                                case 0x2000:
+                                                    {
+                                                        v.Tags.AddRange(boneList[bid / 3]);
+                                                        v.weights.AddRange(weightList[bid / 3]);
+                                                    }
+                                                    break;
+                                            }
                                         }
 
                                         if (parent.Parent.Tag is JOBJ)
