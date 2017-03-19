@@ -98,7 +98,7 @@ namespace Smash_Forge
             else if (words / 8 <= 0)
                 goto Word_Loop;
             else
-                for (int i = 0; i < words >> 3; i++)
+                for (int i = 0; i < (words >> 3); i++)
                 {
                     for (int x = 0; x < 8; x++)
                     {

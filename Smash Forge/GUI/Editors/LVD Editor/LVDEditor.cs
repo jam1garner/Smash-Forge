@@ -165,6 +165,7 @@ namespace Smash_Forge
         {
             currentVert = (Vector2D)e.Node.Tag;
             Runtime.LVDSelection = currentVert;
+            MainForm.Instance.viewports[0].timeSinceSelected.Restart();
             xVert.Value = (decimal)currentVert.x;
             yVert.Value = (decimal)currentVert.y;
         }
@@ -173,6 +174,7 @@ namespace Smash_Forge
         {
             currentNormal = (Vector2D)((object[])e.Node.Tag)[0];
             Runtime.LVDSelection = currentNormal;
+            MainForm.Instance.viewports[0].timeSinceSelected.Restart();
             currentMat = (CollisionMat)((object[])e.Node.Tag)[1];
             leftLedge.Checked = currentMat.getFlag(6);
             rightLedge.Checked = currentMat.getFlag(7);
