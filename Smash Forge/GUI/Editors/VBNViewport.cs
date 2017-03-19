@@ -243,7 +243,7 @@ namespace Smash_Forge
 
             Frame = (int)this.nupdFrame.Value;
 
-            if (script != null)
+            if (scr_game != null)
                 ProcessFrame();
         }
         private void nupdSpeed_ValueChanged(object sender, EventArgs e)
@@ -1399,7 +1399,8 @@ main()
             }
         }
 
-        ACMDScript script;
+        ACMDScript scr_game;
+        ACMDScript scr_sound;
 
         public void ProcessFrame()
         {
@@ -1408,7 +1409,8 @@ main()
             int e = 0;
             int setLoop = 0;
             int iterations = 0;
-            var cmd = script[e];
+            var cmd = scr_game[e];
+            //ProcessANMCMD_SOUND();
 
             while (halt < Frame)
             {
@@ -1579,14 +1581,76 @@ main()
                 }
 
                 e++;
-                if (e >= script.Count)
+                if (e >= scr_game.Count)
                     break;
                 else
-                    cmd = script[e];
+                    cmd = scr_game[e];
 
                 if (halt > Frame)
                     break;
             }
+        }
+
+        int lastFrame = 0;
+        bool enterFrame = false;
+        public void ProcessANMCMD_SOUND()
+        {
+            enterFrame = Frame != lastFrame;
+
+            if (enterFrame)
+            {
+                int halt = 0;
+                int e = 0;
+                var cmd = scr_sound[e];
+
+                List<int> soundtoplay = new List<int>();
+
+                while (halt < Frame)
+                {
+                    switch (cmd.Ident)
+                    {
+                        case 0x42ACFE7D: // Asynchronous Timer
+                            {
+                                soundtoplay.Clear();
+                                halt = (int)(float)cmd.Parameters[0] - 2;
+                                break;
+                            }
+                        case 0x4B7B6E51: // Synchronous Timer
+                            {
+                                soundtoplay.Clear();
+                                halt += (int)(float)cmd.Parameters[0];
+                                break;
+                            }
+                        case 0xE5751F0A: // play sound 
+                            {
+                                if (Runtime.SoundContainers.Count > 0)
+                                {
+                                    soundtoplay.Add((int)cmd.Parameters[0] & 0xFF);
+                                }
+                                break;
+                            }
+
+                    }
+
+                    e++;
+                    if (e >= scr_sound.Count)
+                        break;
+                    else
+                        cmd = scr_sound[e];
+
+                    if (halt > Frame)
+                        break;
+                }
+
+                foreach (int s in soundtoplay)
+                {
+                    //Runtime.SoundContainers[0].tone.tones[s].Play();
+                }
+            }
+
+            lastFrame = Frame;
+
+            
         }
 
         public void HandleACMD(string animname)
@@ -1596,19 +1660,20 @@ main()
 
             if (Runtime.Moveset == null)
             {
-                script = null;
+                scr_game = null;
                 return;
             }
 
             if (!Runtime.Moveset.Game.Scripts.ContainsKey(crc))
             {
-                script = null;
+                scr_game = null;
                 return;
             }
 
             //Console.WriteLine("Handling " + animname);
-            script = (ACMDScript)Runtime.Moveset.Game.Scripts[crc];
-            if(Runtime.acmdEditor.crc != crc)
+            scr_game = (ACMDScript)Runtime.Moveset.Game.Scripts[crc];
+            //scr_sound = (ACMDScript)Runtime.Moveset.Sound.Scripts[crc];
+            if (Runtime.acmdEditor.crc != crc)
                 Runtime.acmdEditor.SetAnimation(crc);
         }
 

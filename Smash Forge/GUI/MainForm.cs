@@ -641,8 +641,33 @@ namespace Smash_Forge
                 ofd.Title = "Character Folder";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    project.openACMD($"{ofd.SelectedPath}\\script\\animcmd\\body\\motion.mtable",
-                        $"{ofd.SelectedPath}\\motion");
+                    //project.openACMD($"{ofd.SelectedPath}\\script\\animcmd\\body\\motion.mtable",
+                    //    $"{ofd.SelectedPath}\\motion");
+
+                    string[] dirs = Directory.GetDirectories(ofd.SelectedPath);
+
+                    foreach(string s in dirs)
+                    {
+                        if (s.EndsWith("model"))
+                        {
+                            // load default model
+                            openNud(s + "\\body\\c00\\model.nud");
+                        }
+                        if (s.EndsWith("motion"))
+                        {
+                            string[] anims = Directory.GetFiles(s + "\\body\\");
+                            foreach(string a in anims)
+                                openAnimation(a);
+                        }
+                        if (s.EndsWith("script"))
+                        {
+                            if(File.Exists(s + "\\animcmd\\body\\motion.mtable"))
+                            {
+                                //openFile(s + "\\animcmd\\body\\motion.mtable");
+                                Runtime.Moveset = new MovesetManager(s + "\\animcmd\\body\\motion.mtable");
+                            }
+                        }
+                    }
                 }
             }
         }

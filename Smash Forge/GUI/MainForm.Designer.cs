@@ -153,11 +153,10 @@
             // 
             // openCharacterToolStripMenuItem1
             // 
-            this.openCharacterToolStripMenuItem1.Enabled = false;
             this.openCharacterToolStripMenuItem1.Name = "openCharacterToolStripMenuItem1";
             this.openCharacterToolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
             this.openCharacterToolStripMenuItem1.Text = "Open Character";
-            this.openCharacterToolStripMenuItem1.Visible = false;
+            this.openCharacterToolStripMenuItem1.ToolTipText = "Opens supported file in a characters folder";
             this.openCharacterToolStripMenuItem1.Click += new System.EventHandler(this.openCharacterToolStripMenuItem_Click);
             // 
             // openNUDToolStripMenuItem

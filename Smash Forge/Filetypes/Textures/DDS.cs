@@ -208,6 +208,8 @@ namespace Smash_Forge
                 int s = (int)((w * h) * size);
                 w /= 2;
                 h /= 2;
+                if (s < 0x10)
+                    s = 0x10;
                 tex.mipmaps.Add(d.getSection(off, s));
                 off += s;
             }
