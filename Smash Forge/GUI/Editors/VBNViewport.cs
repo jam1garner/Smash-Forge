@@ -30,6 +30,7 @@ namespace Smash_Forge
             Hitboxes = new SortedList<int, Hitbox>();
             Application.Idle += Application_Idle;
             Runtime.AnimationChanged += Runtime_AnimationChanged;
+            timeSinceSelected.Start();
         }
 
         // Explicitly unsubscribe from the static event to 
@@ -80,6 +81,7 @@ namespace Smash_Forge
         bool render = false;
         bool isPlaying = false;
         bool fpsView = false;
+        public Stopwatch timeSinceSelected = new Stopwatch();
         Shader shader;
         #endregion
 
@@ -1087,7 +1089,7 @@ main()
                                 else
 				                    color = Color.FromArgb(128, Color.Cyan);
 
-                                if ((colSelected || Runtime.LVDSelection == c.normals[i]) && ((int)(DateTime.Now.Millisecond / 500) == 0))
+                                if ((colSelected || Runtime.LVDSelection == c.normals[i]) && ((int)((timeSinceSelected.ElapsedMilliseconds % 1000) / 500) == 0))
                                     color = invertColor(color);
 
                                 GL.Color4(color);
@@ -1110,7 +1112,7 @@ main()
                                 else
                                     color = Color.Orange;
 
-                                if ((colSelected || Runtime.LVDSelection == c.verts[i]) && ((int)(DateTime.Now.Millisecond / 500) == 0))
+                                if ((colSelected || Runtime.LVDSelection == c.verts[i]) && ((int)((timeSinceSelected.ElapsedMilliseconds % 1000) / 500) == 0))
                                     color = invertColor(color);
                                 GL.Color4(color);
                             }
@@ -1130,7 +1132,7 @@ main()
                                     else
                                         color = Color.Orange;
 
-                                    if (Runtime.LVDSelection == c.verts[i+1] && ((int)(DateTime.Now.Millisecond / 500) == 0))
+                                    if (Runtime.LVDSelection == c.verts[i+1] && ((int)((timeSinceSelected.ElapsedMilliseconds % 1000) / 500) == 0))
                                         color = invertColor(color);
                                     GL.Color4(color);
                                 }

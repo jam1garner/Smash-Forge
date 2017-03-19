@@ -701,7 +701,7 @@ namespace Smash_Forge
         {
             if (Runtime.TargetLVD == null)
                 Runtime.TargetLVD = new LVD();
-            Runtime.TargetLVD.respawns.Add(new Point() {name = "RESPAWN_00_NEW", subname = "00_NEW"});
+            Runtime.TargetLVD.respawns.Add(new Point() {name = "RESTART_00_NEW", subname = "00_NEW"});
             lvdList.fillList();
         }
 
