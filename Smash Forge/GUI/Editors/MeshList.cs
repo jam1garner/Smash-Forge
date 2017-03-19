@@ -275,10 +275,17 @@ namespace Smash_Forge
             if (e.KeyCode == Keys.Delete)
             {
                 e.Handled = true;
-                if (treeView1.SelectedNode is NUD.Mesh)
+                if (treeView1.SelectedNode is NUD.Polygon)
+                {
+                    NUD.Mesh parent = ((NUD.Mesh)treeView1.SelectedNode.Parent);
+                    parent.polygons.Remove((NUD.Polygon)treeView1.SelectedNode);
+                    parent.Nodes.Remove((NUD.Polygon)treeView1.SelectedNode);
+                }
+                else if (treeView1.SelectedNode is NUD.Mesh)
                 {
                     NUD parent = ((NUD) treeView1.SelectedNode.Parent.Tag);
                     parent.mesh.Remove((NUD.Mesh)treeView1.SelectedNode);
+                    treeView1.SelectedNode.Parent.Nodes.Remove(treeView1.SelectedNode);
                     parent.PreRender();
                     
                 }
@@ -299,8 +306,9 @@ namespace Smash_Forge
                         Runtime.TargetMTA = null;
                     if (Runtime.TargetNUD == m.nud)
                         Runtime.TargetNUD = null;
+
+                    treeView1.Nodes.Remove(treeView1.SelectedNode);
                 }
-                refresh();
             }
         }
 
