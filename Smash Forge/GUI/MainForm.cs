@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using WeifenLuo.WinFormsUI.Docking;
+using GraphicsMagick;
 
 namespace Smash_Forge
 {
@@ -26,6 +27,7 @@ namespace Smash_Forge
             animationsWindowToolStripMenuItem.Checked =
             boneTreeToolStripMenuItem.Checked = true;
 
+            AddDockedControl(heightMapEditor);
             AddDockedControl(meshList);
             AddDockedControl(leftPanel);
             AddDockedControl(rightPanel);
@@ -89,6 +91,7 @@ namespace Smash_Forge
         public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() { };
         public MeshList meshList = new MeshList() { ShowHint = DockState.DockRight };
         public List<VBNViewport> viewports = new List<VBNViewport>() { new VBNViewport() }; // Default viewport
+        public HeightMapEditor heightMapEditor = new HeightMapEditor() { ShowHint = DockState.DockRight };
         #endregion
 
         #region ToolStripMenu
@@ -531,12 +534,21 @@ namespace Smash_Forge
                              "Nintendo BFRES (.BFRES)|*.bfres|" +
                              "Smash 4 Parameters (.bin)|*.bin|" +
                              "Collada Model Format (.dae)|*.dae|" +
+                             "BotW Heightmap (.hght)|*.hght|"+
                              "All files(*.*)|*.*";
 
                 // "Namco Universal Data Folder (.NUD)|*.nud|" +
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
+                    if (ofd.FileName.EndsWith(".hght"))
+                    {
+                        HGHT heightMap = new HGHT(ofd.FileName);
+                        heightMap.generateBitmap();
+                        heightMap.name = Path.GetFileNameWithoutExtension(ofd.FileName);
+                        heightMapEditor.listBox1.Items.Add(heightMap);
+                    }
+
                     if (ofd.FileName.EndsWith(".vbn"))
                         Runtime.TargetVBN = new VBN(ofd.FileName);
 

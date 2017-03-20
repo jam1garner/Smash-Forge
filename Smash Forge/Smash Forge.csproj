@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GraphicsMagick.NET-AnyCPU, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ee2094eb40f5ea47, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\GraphicsMagick.NET-AnyCPU.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
@@ -59,6 +63,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Filetypes\Textures\HGHT.cs" />
     <Compile Include="Filetypes\LVD.cs" />
     <Compile Include="Filetypes\Animation\MTA.cs" />
     <Compile Include="Filetypes\Models\BCH.cs" />
@@ -87,6 +92,12 @@
     </Compile>
     <Compile Include="GUI\Editors\BoneTree.Designer.cs">
       <DependentUpon>BoneTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\HeightMapEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\HeightMapEditor.Designer.cs">
+      <DependentUpon>HeightMapEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\LVD Editor\LVDEditor.cs">
       <SubType>Form</SubType>
@@ -195,6 +206,9 @@
     <EmbeddedResource Include="GUI\Editors\BoneTree.resx">
       <DependentUpon>BoneTree.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\HeightMapEditor.resx">
+      <DependentUpon>HeightMapEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\LVD Editor\LVDEditor.resx">
       <DependentUpon>LVDEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -289,6 +303,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="lib\FITD.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\GraphicsMagick.NET-AnyCPU.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="lib\OpenTK.dll">
