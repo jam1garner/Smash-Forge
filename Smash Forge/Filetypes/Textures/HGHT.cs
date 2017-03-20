@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using GraphicsMagick;
+using System.IO;
 
 namespace Smash_Forge
 {
@@ -20,6 +21,11 @@ namespace Smash_Forge
         public HGHT(FileData f)
         {
             Read(f);
+        }
+
+        public HGHT(MagickImage image)
+        {
+            fromMagickImage(image);
         }
 
         public int width;
@@ -36,6 +42,20 @@ namespace Smash_Forge
             for(int i = 0; i < width; i++)
                 for(int j = 0; j < height; j++)
                     map[i, j] = (ushort)f.readShort();
+        }
+
+        public void Write(string filename)
+        {
+            File.WriteAllBytes(filename, Rebuild());
+        }
+
+        public byte[] Rebuild()
+        {
+            FileOutput f = new FileOutput();
+            for (int i = 0; i < width; i++)
+                for (int j = 0; j < height; j++)
+                    f.writeShort(map[i, j]);
+            return f.getBytes();
         }
 
         public MagickImage toMagickImage()
@@ -57,16 +77,28 @@ namespace Smash_Forge
             return image;
         }
 
+        public void fromMagickImage(MagickImage image)
+        {
+            MagickFormat format = image.Format;
+            bool notFull16Bit = format != MagickFormat.Png48;
+            height = image.Height;
+            width = image.Width;
+            map = new ushort[width, height];
+            foreach(var pixel in image.GetWritablePixels())
+            {
+                map[pixel.X, pixel.Y] = pixel.GetChannel(0);
+                if (notFull16Bit)//if 8 bit per channel remap to 16 bit space (hopefully this never has to be used... not high enough precision)
+                    map[pixel.X, pixel.Y] = (ushort)(map[pixel.X, pixel.Y] * (32678f / 256));
+            }
+        }
+
         public void generateBitmap()
         {
             Bitmap b = new Bitmap(width, height);
-            for(int i = 0; i < width; i++)
-            {
+            //Convert to bitmap while remapping 16 bit per channel to 8 bit space so it can be displayed
+            for (int i = 0; i < width; i++)
                 for(int j = 0; j < height; j++)
-                {
                     b.SetPixel(i, j, Color.FromArgb(255, (byte)((map[i, j] / 32678f) * 256), (byte)((map[i, j] / 32678f) * 256), (byte)((map[i, j] / 32678f) * 256)));
-                }
-            }
             bitmap = b;
         }
 
