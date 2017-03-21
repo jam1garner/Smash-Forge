@@ -41,7 +41,7 @@ namespace Smash_Forge
             map = new ushort[width,height];
             for(int i = 0; i < width; i++)
                 for(int j = 0; j < height; j++)
-                    map[i, j] = (ushort)f.readShort();
+                    map[i, j] = (ushort)(f.readSignedShort() + 32767);
         }
 
         public void Write(string filename)
@@ -54,7 +54,7 @@ namespace Smash_Forge
             FileOutput f = new FileOutput();
             for (int i = 0; i < width; i++)
                 for (int j = 0; j < height; j++)
-                    f.writeShort(map[i, j]);
+                    f.writeSignedShort((short)(map[i, j] - 32767));
             return f.getBytes();
         }
 

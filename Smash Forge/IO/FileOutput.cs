@@ -137,6 +137,26 @@ namespace Smash_Forge
 			}
 		}
 
+        public void writeSignedShort(short i)
+        {
+            int signBit = 0;
+            if(i < 0)
+            {
+                signBit = 8;
+                i = (short)(~(-i));
+            }
+            if (Endian == Endianness.Little)
+            {
+                data.Add((byte)((i) & 0xFF));
+                data.Add((byte)(((i >> 8) & 0x7F) | signBit));
+            }
+            else
+            {
+                data.Add((byte)(((i >> 8) & 0x7F) | signBit));
+                data.Add((byte)((i) & 0xFF));
+            }
+        }
+
 		public void writeByte(int i){
 			data.Add((byte)((i)&0xFF));
 		}
