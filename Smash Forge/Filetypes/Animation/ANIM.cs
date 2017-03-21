@@ -202,8 +202,13 @@ namespace Smash_Forge
 				file.WriteLine ("animVersion 1.1;");
 				file.WriteLine ("mayaVersion 2014 x64;\ntimeUnit ntscf;\nlinearUnit cm;\nangularUnit deg;\nstartTime 1;\nendTime "+(a.size())+";");
 
+                a.setFrame(a.size() - 1); //from last frame
+                for (int li = 0; li < a.size(); ++li) //go through each frame with nextFrame
+                    a.nextFrame(vbn);
+                a.nextFrame(vbn);  //go on first frame
 
-				List<int> nodes = a.getNodes (true, vbn);
+                List<int> nodes = a.getNodes(true, vbn); //getting node indexes
+                
 				int i = 0;
 
 				// writing node attributes
