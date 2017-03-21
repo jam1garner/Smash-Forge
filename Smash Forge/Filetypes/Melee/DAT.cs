@@ -421,18 +421,6 @@ main()
 
                 shader.vertexShader(string.Format(vs, boneCount));
                 shader.fragmentShader(string.Format(fs));
-
-                shader.addAttribute("vPosition", false);
-                shader.addAttribute("vColor", false);
-                shader.addAttribute("vNormal", false);
-                shader.addAttribute("vUV", false);
-                shader.addAttribute("vBone", false);
-                shader.addAttribute("vWeight", false);
-
-                shader.addAttribute("tex", true);
-                shader.addAttribute("modelview", true);
-                shader.addAttribute("bones", true);
-                shader.addAttribute("uvscale", true);
             }
 
             GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);

@@ -295,7 +295,7 @@ namespace Smash_Forge
         #region Rendering
 
         string vs = @"#version 330
- 
+
 in vec3 vPosition;
 in vec4 vColor;
 in vec3 vNormal;
@@ -303,106 +303,217 @@ in vec2 vUV;
 in vec4 vBone;
 in vec4 vWeight;
 
-out vec2 f_texcoord;
-out float normal;
+out vec3 pos;
 out vec4 color;
-out float fresNelR;
+out vec2 f_texcoord;
+out vec3 normal;
+out vec3 fragpos;
 
-uniform mat4 modelview;
+uniform mat4 eyeview;
 uniform mat4 bones[200];
 
 uniform int renderType;
  
-void
-main()
+vec4 skin(vec3 pos)
 {
+    vec4 objPos = vec4(pos.xyz, 1.0);
     ivec4 index = ivec4(vBone); 
 
+    objPos = bones[index.x] * vec4(pos, 1.0) * vWeight.x;
+    objPos += bones[index.y] * vec4(pos, 1.0) * vWeight.y;
+    objPos += bones[index.z] * vec4(pos, 1.0) * vWeight.z;
+    objPos += bones[index.w] * vec4(pos, 1.0) * vWeight.w;
+
+	return objPos;
+}
+
+//todo: this is NOT efficient
+vec4 skinNRM(vec3 pos)
+{
+    vec4 objPos = vec4(pos.xyz, 1.0);
+    ivec4 index = ivec4(vBone); 
+
+    objPos = transpose(inverse(bones[index.x])) * vec4(pos, 1.0) * vWeight.x;
+    objPos += transpose(inverse(bones[index.y])) * vec4(pos, 1.0) * vWeight.y;
+    objPos += transpose(inverse(bones[index.z])) * vec4(pos, 1.0) * vWeight.z;
+    objPos += transpose(inverse(bones[index.w])) * vec4(pos, 1.0) * vWeight.w;
+
+	return objPos;
+}
+
+void main()
+{
     vec4 objPos = vec4(vPosition.xyz, 1.0);
 
-    if(vBone.x != -1){
-        objPos = bones[index.x] * vec4(vPosition, 1.0) * vWeight.x;
-        objPos += bones[index.y] * vec4(vPosition, 1.0) * vWeight.y;
-        objPos += bones[index.z] * vec4(vPosition, 1.0) * vWeight.z;
-        objPos += bones[index.w] * vec4(vPosition, 1.0) * vWeight.w;
-    } 
+    if(vBone.x != -1) objPos = skin(vPosition);
 
-    gl_Position = modelview * vec4(objPos.xyz, 1.0);
+    gl_Position = eyeview * vec4(objPos.xyz, 1.0);
 
-    if(renderType == 1){
-        f_texcoord = vUV;
-        normal = 0;
-        color = vec4(vNormal, 1);
-    }else{
-        vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;
+    f_texcoord = vUV;
+    normal = vec3(0,0,0);
+    color = vec4(vNormal, 1);
 
-        f_texcoord = vUV;
-        normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;// vec4(distance, 1.0)
-        if(renderType == 2)
-            color = vec4(normal, normal, normal, 1);
+	pos = vec3(vPosition * mat3(eyeview));
+
+    if(renderType != 1){
+
+	if(renderType == 2){
+        float normal = dot(vec4(vNormal * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
+        color = vec4(normal, normal, normal, 1);
+	}
         else
             color = vColor;
 
-        vec4 normWorld = normalize(vec4(vNormal, 1.0));
-	    vec4 I = normalize(vec4(vPosition, 1.0));
-        fresNelR = 0.2 + 0.2 * pow(1.0 + dot(I, normWorld), 1);
+	fragpos = mat3(eyeview) * objPos.xyz;
+	if(vBone.x != -1) 
+		normal = skinNRM(vNormal).xyz ;//* transpose(inverse(mat3(eyeview)));
+	else
+		normal =vNormal ;//* transpose(inverse(mat3(eyeview)));
     }
 }";
 
         string fs = @"#version 330
 
+in vec3 pos;
 in vec2 f_texcoord;
 in vec4 color;
-in float normal;
-in float fresNelR;
+in vec3 normal;
+in vec3 fragpos;
 
+// Textures (can have 4)
 uniform sampler2D tex;
 uniform sampler2D nrm;
-uniform vec4 colorSamplerUV;
-uniform vec4 colorOffset;
-uniform vec4 colorGain;
-uniform vec4 minGain;
+
+// Da Flags
 uniform int flags;
 
-uniform int renderType;
+// Properties
+uniform vec4 colorSamplerUV;
+uniform vec4 colorOffset;
+uniform vec4 minGain;
 
-vec4 lerp(float v, vec4 from, vec4 to)
+uniform vec4 fresnelColor;
+uniform vec4 specularColor;
+uniform vec4 specularColorGain;
+uniform vec4 diffuseColor;
+uniform vec4 colorGain;
+
+// params
+uniform vec4 fresnelParams;
+uniform vec4 specularParams;
+
+uniform int renderType;
+uniform int renderLighting;
+uniform int renderVertColor;
+uniform mat4 eyeview;
+
+const vec3 lightPos = vec3(0,10,-30);
+const vec3 specPos = vec3(0,-15,-70);
+
+vec3 lerp(float v, vec3 from, vec3 to)
 {
     return from + (to - from) * v;
+}
+
+vec4 CalculateReflect()
+{
+	vec3 I = normalize(fragpos - lightPos * mat3(eyeview));
+	vec3 R = reflect(I, normalize(normal));
+	vec3 col = vec3(1,1,1) * R;
+
+	return vec4(col.xyz, 1);
+}
+
+vec3 CalculateDiffuse()
+{
+	//vec3 norm = normalize(texture2D(nrm, f_texcoord).xyz);
+	vec3 norm = normal;
+
+	vec3 cameraPosition = (-transpose(mat3(eyeview)) * eyeview[3].xyz);
+	//cameraPosition.y -= 10;
+	vec3 lightDir = normalize(lightPos * mat3(eyeview) - fragpos);  
+	
+	vec3 specDir = normalize(cameraPosition-fragpos);  
+	
+	float diff = max(dot(norm, lightDir), 0.0);
+	vec3 diffuse = diff * diffuseColor.xyz;
+	if(diffuse == vec3(0,0,0)) diffuse = vec3(1);
+
+// specular
+	vec3 viewDir = normalize(fragpos); //pos - 
+	vec3 reflectDir = reflect(-specDir, norm); 
+	
+	float specDrop = specularParams.x * specularParams.y;
+	if(specDrop == 0) specDrop = 3;
+
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), specDrop);
+	vec3 specular = vec3(spec) * (specularColor.xyz * specularColorGain.xyz);
+
+// fresnel
+	vec3 F0 = vec3(0.2); //fresnelParams.w
+	F0      = mix(F0, vec3(0), 0);
+	float cosTheta = dot(lightDir, norm);
+	vec3 fresnel = F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); // 5.0
+
+// combine
+	vec3 fin = 0.3 + diffuse * 0.3;
+
+	fin += max(fresnel * fresnelColor.xyz, 0);
+
+	fin += specular * specularColor.www / 2;
+
+	return fin;
 }
 
 void
 main()
 {
+	// if the renderer wants to show something other than textures
     if(renderType == 1 || renderType == 2 || renderType == 3){
         gl_FragColor = color;
     } else {
-        vec2 texcoord = vec2((f_texcoord * colorSamplerUV.xy) + colorSamplerUV.zw) ;
-
-        vec3 norm = 2.0 * texture2D (nrm, texcoord).rgb - 1.0;
-        norm = normalize (norm);
-        float lamberFactor= max (dot (vec3(0.85, 0.85, 0.85), norm), 0.75) * 1.5;
-
-        //vec4 ambiant = vec4(0.1,0.1,0.1,1.0) * texture(tex, texcoord).rgba;
-
-        vec4 alpha = (1-minGain) + texture2D(nrm, texcoord).aaaa;
-        //if(alpha.a < 0.5) discard;
-
-        vec4 fcolor = color;
-        float fnormal = normal;
-
+/*
         if(renderType == 0x20 || renderType == 0x60)
             fnormal = 1;
         if(renderType == 0x40 || renderType == 0x60)
             fcolor = vec4(1,1,1,1);
 
-	    vec4 outputColor = colorOffset + (vec4(texture(tex, texcoord).rgba) * fnormal) * colorGain;
-        vec4 fincol = vec4(((fcolor * alpha * outputColor)).xyz, texture2D(tex, texcoord).a * fcolor.w);
-
         if(flags == 0x65 && fincol.a < 1)
             fincol = vec4(1,1,1,1);
+*/
+	// final texture coordinate
+        vec2 texcoord = vec2((f_texcoord * colorSamplerUV.xy) + colorSamplerUV.zw);
 
-        gl_FragColor = fincol;//vec4(lerp(fresNelR, fincol, vec4(1.75,1.75,1.75,1)).xyz, fincol.w);
+	// calcuate final color by mixing with vertex color
+	vec4 fincol = texture2D(tex, texcoord);
+
+	if(renderVertColor == 1)
+		fincol = fincol * color;
+
+	// diffuse specular and fresnel
+	if(renderLighting == 1)
+		fincol *= vec4(CalculateDiffuse(),1.0);
+    else
+    {
+        // old lighting
+        float normal = dot(vec4(normal * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
+        fincol *= normal;
+    }
+
+	// ambient occlusion
+	fincol *= (minGain + texture2D(nrm, texcoord).aaaa);
+
+	// color gains
+	fincol = (colorOffset + fincol * colorGain);
+
+	// correct alpha
+	fincol = vec4(fincol.xyz, texture2D(tex, texcoord).a * color.a);
+
+        if(flags == 0x65 && fincol.a < 1)
+            fincol = vec4(1,1,1,1) * 
+	vec4(CalculateDiffuse(),1.0);;
+
+        gl_FragColor = fincol;
     }
 }
 ";
@@ -428,25 +539,6 @@ main()
                         shader.vertexShader(vs);
                         shader.fragmentShader(fs);
                     }
-
-                    shader.addAttribute("vPosition", false);
-                    shader.addAttribute("vColor", false);
-                    shader.addAttribute("vNormal", false);
-                    shader.addAttribute("vUV", false);
-                    shader.addAttribute("vBone", false);
-                    shader.addAttribute("vWeight", false);
-
-                    shader.addAttribute("flags", true);
-                    shader.addAttribute("tex", true);
-                    shader.addAttribute("nrm", true);
-                    shader.addAttribute("modelview", true);
-                    shader.addAttribute("bones", true);
-                    shader.addAttribute("colorSamplerUV", true);
-                    shader.addAttribute("colorOffset", true);
-                    shader.addAttribute("colorGain", true);
-                    shader.addAttribute("minGain", true);
-
-                    shader.addAttribute("renderType", true);
                 }
             }
 
@@ -456,12 +548,15 @@ main()
             GL.Viewport(glControl1.ClientRectangle);
             v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
                 * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, Runtime.renderDepth);
+            //v2 = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
 
         }
+
 
         int cf = 0;
         Color back1 = Color.FromArgb((255 << 24) | (26 << 16) | (26 << 8) | (26));
         Color back2 = Color.FromArgb((255 << 24) | (77 << 16) | (77 << 8) | (77));
+        //Matrix4 v2;
 
         public void Render()
         {
@@ -592,6 +687,7 @@ main()
 
             v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
                 * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, Runtime.renderDepth);
+            //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
         public bool IsMouseOverViewport()
         {
@@ -648,6 +744,9 @@ main()
                     rt = rt | (0x20);
             }
             GL.Uniform1(shader.getAttribute("renderType"), rt);
+            GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
+
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
                 if (m.bch != null)
@@ -667,7 +766,8 @@ main()
 
                 if (m.nud != null)
                 {
-                    GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref v);
+                    GL.UniformMatrix4(shader.getAttribute("eyeview"), false, ref v);
+                    //GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref v2);
 
                     if (m.vbn != null)
                     {
@@ -1734,6 +1834,12 @@ main()
 
         private void VBNViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
+            if (e.KeyChar == 'i')
+            {
+                //shader = new Shader();
+                //shader.vertexShader(File.ReadAllText("C:\\s\\Smash\\extract\\vert.txt"));
+                //shader.fragmentShader(File.ReadAllText("C:\\s\\Smash\\extract\\frag.txt"));
+            }
             if (e.KeyChar == 'f')
             {
                 fpsView = !fpsView;
@@ -1800,6 +1906,7 @@ main()
 
             v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) 
                 * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, Runtime.renderDepth);
+            //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
     }
 }

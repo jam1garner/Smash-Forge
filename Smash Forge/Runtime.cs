@@ -51,6 +51,7 @@ namespace Smash_Forge
         public static float renderDepth { get; set; }
         public static bool renderNormals { get; set; }
         public static bool renderVertColor { get; set; }
+        public static bool renderLighting { get; set; }
         public static RenderTypes renderType { get; set; }
 
         public enum RenderTypes

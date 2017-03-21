@@ -249,22 +249,11 @@ namespace Smash_Forge
                                 colorSamplerUV = new Vector4(colorSamplerUVFloats[0], colorSamplerUVFloats[1], colorSamplerUVFloats[2], colorSamplerUVFloats[3]);
                             }
                         }
-
-                        {
-                            float[] colorSamplerUVFloats;
-                            mat.anims.TryGetValue("NU_colorSamplerUV", out colorSamplerUVFloats);
-                            if (colorSamplerUVFloats != null && colorSamplerUVFloats.Length >= 4)
-                            {
-                                //Console.WriteLine("Anim of NU_ColorSamplerUV from MTA");
-                                colorSamplerUV = new Vector4(colorSamplerUVFloats[0], colorSamplerUVFloats[1], colorSamplerUVFloats[2], colorSamplerUVFloats[3]);
-                            }
-                        }
-
                         GL.Uniform4(shader.getAttribute("colorSamplerUV"), colorSamplerUV);
 
                         float[] ao;
                         mat.entries.TryGetValue("NU_aoMinGain", out ao);
-                        if (ao == null) ao = new float[] { 1, 1, 1, 1 };
+                        if (ao == null) ao = new float[] { 0, 0, 0, 0 };
                         Vector4 aoo = new Vector4(ao[0], ao[1], ao[2], ao[3]);
                         GL.Uniform4(shader.getAttribute("minGain"), aoo);
 
@@ -276,9 +265,46 @@ namespace Smash_Forge
 
                         float[] cg;
                         mat.entries.TryGetValue("NU_colorGain", out cg);
-                        if (cg == null) cg = new float[] { 1, 1, 1, 1 };
+                        if (cg == null) cg = new float[] { 1,1,1,1 };
                         Vector4 cgo = new Vector4(cg[0], cg[1], cg[2], cg[3]);
                         GL.Uniform4(shader.getAttribute("colorGain"), cgo);
+
+                        {
+                            float[] pa;
+                            mat.entries.TryGetValue("NU_diffuseColor", out pa);
+                            if (pa == null) pa = new float[] { 1, 1, 1, 1 };
+                            GL.Uniform4(shader.getAttribute("diffuseColor"), pa[0], pa[1], pa[2], pa[3]);
+                        }
+                        {
+                            float[] pa;
+                            mat.entries.TryGetValue("NU_specularColor", out pa);
+                            if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                            GL.Uniform4(shader.getAttribute("specularColor"), pa[0], pa[1], pa[2], pa[3]);
+                        }
+                        {
+                            float[] pa;
+                            mat.entries.TryGetValue("NU_specularColorGain", out pa);
+                            if (pa == null) pa = new float[] { 1, 1, 1, 1 };
+                            GL.Uniform4(shader.getAttribute("specularColorGain"), pa[0], pa[1], pa[2], pa[3]);
+                        }
+                        {
+                            float[] pa;
+                            mat.entries.TryGetValue("NU_specularParams", out pa);
+                            if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                            GL.Uniform4(shader.getAttribute("specularParams"), pa[0], pa[1], pa[2], pa[3]);
+                        }
+                        {
+                            float[] pa;
+                            mat.entries.TryGetValue("NU_fresnelColor", out pa);
+                            if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                            GL.Uniform4(shader.getAttribute("fresnelColor"), pa[0], pa[1], pa[2], pa[3]);
+                        }
+                        {
+                            float[] pa;
+                            mat.entries.TryGetValue("NU_fresnelParams", out pa);
+                            if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                            GL.Uniform4(shader.getAttribute("fresnelParams"), pa[0], pa[1], pa[2], pa[3]);
+                        }
 
                         GL.Enable(EnableCap.Blend);
                         if(mat.srcFactor == 5)

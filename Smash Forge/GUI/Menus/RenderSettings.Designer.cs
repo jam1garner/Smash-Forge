@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RenderSettings));
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
@@ -49,6 +48,7 @@
             this.cb_normals = new System.Windows.Forms.CheckBox();
             this.renderMode = new System.Windows.Forms.ComboBox();
             this.cb_vertcolor = new System.Windows.Forms.CheckBox();
+            this.lightCheckBox = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -250,6 +250,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.lightCheckBox);
             this.groupBox1.Controls.Add(this.swagViewing);
             this.groupBox1.Controls.Add(this.cb_normals);
             this.groupBox1.Controls.Add(this.renderMode);
@@ -266,7 +267,7 @@
             // swagViewing
             // 
             this.swagViewing.AutoSize = true;
-            this.swagViewing.Location = new System.Drawing.Point(12, 125);
+            this.swagViewing.Location = new System.Drawing.Point(12, 148);
             this.swagViewing.Name = "swagViewing";
             this.swagViewing.Size = new System.Drawing.Size(109, 17);
             this.swagViewing.TabIndex = 18;
@@ -314,6 +315,17 @@
             this.cb_vertcolor.Text = "Show Vertex Colors";
             this.cb_vertcolor.UseVisualStyleBackColor = true;
             // 
+            // lightCheckBox
+            // 
+            this.lightCheckBox.AutoSize = true;
+            this.lightCheckBox.Location = new System.Drawing.Point(12, 125);
+            this.lightCheckBox.Name = "lightCheckBox";
+            this.lightCheckBox.Size = new System.Drawing.Size(172, 17);
+            this.lightCheckBox.TabIndex = 19;
+            this.lightCheckBox.Text = "Material Lighting (Experimental)";
+            this.lightCheckBox.UseVisualStyleBackColor = true;
+            this.lightCheckBox.CheckedChanged += new System.EventHandler(this.lightCheckBox_CheckedChanged);
+            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -321,7 +333,7 @@
             this.ClientSize = new System.Drawing.Size(598, 324);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.panel1);
-            this.Icon = Resources.Resources.forge2;
+            this.Icon = global::Smash_Forge.Resources.Resources.forge2;
             this.Name = "RenderSettings";
             this.Text = "Render Settings";
             this.Load += new System.EventHandler(this.RenderSettings_Load);
@@ -356,5 +368,6 @@
         private System.Windows.Forms.CheckBox cb_vertcolor;
         private System.Windows.Forms.CheckBox cb_normals;
         private System.Windows.Forms.CheckBox swagViewing;
+        private System.Windows.Forms.CheckBox lightCheckBox;
     }
 }

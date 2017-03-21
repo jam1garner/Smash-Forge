@@ -20,6 +20,11 @@ namespace Smash_Forge
 			programID = GL.CreateProgram();
 		}
 
+        /*~Shader()
+        {
+            GL.DeleteProgram(programID);
+        }*/
+
 		public int getAttribute(string s){
 			int v;
 			attributes.TryGetValue (s, out v);
@@ -41,7 +46,8 @@ namespace Smash_Forge
 			}
 		}
 
-		public void addAttribute(string name, bool uniform){
+		private void addAttribute(string name, bool uniform){
+            if (attributes.ContainsKey(name)) attributes.Remove(name);
 			int pos;
 			if(uniform)
 				pos = GL.GetUniformLocation(programID, name);
@@ -49,18 +55,39 @@ namespace Smash_Forge
 				pos = GL.GetAttribLocation(programID, name);
 			attributes.Add (name, pos);
 		}
+        
+        public void LoadAttributes(string src, bool fragment = false)
+        {
+            string[] lines = src.Split('\n');
 
-		public void vertexShader(string filename){
+            foreach (string line in lines)
+            {
+                string[] args = line.Split(' ');
+                if (args[0].Equals("in") && !fragment)
+                    addAttribute(args[2].Remove(args[2].Length - 2), false);
+                if (args[0].Equals("uniform"))
+                {
+                    string arg = args[2].Remove(args[2].Length - 2);
+                    if (arg.Contains("["))
+                        arg = arg.Substring(0, arg.IndexOf('['));
+                    addAttribute(arg, true);
+                }
+            }
+        }
+
+        public void vertexShader(string filename){
             //MessageBox.Show("GL major: " + GL.GetInteger(GetPName.MajorVersion) );
             //MessageBox.Show("GL minor: " + GL.GetInteger(GetPName.MinorVersion));
             loadShader(filename, ShaderType.VertexShader, programID, out vsID);
 			GL.LinkProgram (programID);
+            LoadAttributes(filename);
             Console.WriteLine(GL.GetProgramInfoLog(programID));
         }
 
 		public void fragmentShader(string filename){
 			loadShader(filename, ShaderType.FragmentShader, programID, out fsID);
 			GL.LinkProgram (programID);
+            LoadAttributes(filename, true);
             Console.WriteLine(GL.GetProgramInfoLog(programID));
         }
 

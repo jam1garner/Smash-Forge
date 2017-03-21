@@ -96,5 +96,10 @@ namespace Smash_Forge.GUI
         {
             Runtime.renderSwag = swagViewing.Checked;
         }
+
+        private void lightCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderLighting = lightCheckBox.Checked;
+        }
     }
 }
