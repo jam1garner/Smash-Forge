@@ -49,7 +49,7 @@ namespace Smash_Forge
 		private void addAttribute(string name, bool uniform){
             if (attributes.ContainsKey(name)) attributes.Remove(name);
 			int pos;
-            MessageBox.Show(name);
+            //MessageBox.Show(name);
 			if(uniform)
 				pos = GL.GetUniformLocation(programID, name);
 			else
@@ -65,10 +65,10 @@ namespace Smash_Forge
             {
                 string[] args = line.Split(' ');
                 if (args[0].Equals("in") && !fragment)
-                    addAttribute(args[2].Remove(args[2].Length - 2), false);
+                    addAttribute(args[2].Replace(";", ""), false);
                 if (args[0].Equals("uniform"))
                 {
-                    string arg = args[2].Remove(args[2].Length - 2);
+                    string arg = args[2].Replace(";", "");
                     if (arg.Contains("["))
                         arg = arg.Substring(0, arg.IndexOf('['));
                     addAttribute(arg, true);
@@ -83,8 +83,6 @@ namespace Smash_Forge
 			GL.LinkProgram (programID);
             LoadAttributes(filename);
             string error = GL.GetProgramInfoLog(programID);
-            if (!error.Equals(""))
-                MessageBox.Show(error);
             Console.WriteLine(error);
             
         }
@@ -94,8 +92,6 @@ namespace Smash_Forge
 			GL.LinkProgram (programID);
             LoadAttributes(filename, true);
             string error = GL.GetProgramInfoLog(programID);
-            if (!error.Equals(""))
-                MessageBox.Show(error);
             Console.WriteLine(error);
         }
 
