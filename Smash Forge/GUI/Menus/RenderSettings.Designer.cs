@@ -44,11 +44,11 @@
             this.depthSlider = new System.Windows.Forms.TrackBar();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.lightCheckBox = new System.Windows.Forms.CheckBox();
             this.swagViewing = new System.Windows.Forms.CheckBox();
             this.cb_normals = new System.Windows.Forms.CheckBox();
             this.renderMode = new System.Windows.Forms.ComboBox();
             this.cb_vertcolor = new System.Windows.Forms.CheckBox();
-            this.lightCheckBox = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -264,6 +264,17 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model Render Settings";
             // 
+            // lightCheckBox
+            // 
+            this.lightCheckBox.AutoSize = true;
+            this.lightCheckBox.Location = new System.Drawing.Point(12, 125);
+            this.lightCheckBox.Name = "lightCheckBox";
+            this.lightCheckBox.Size = new System.Drawing.Size(172, 17);
+            this.lightCheckBox.TabIndex = 19;
+            this.lightCheckBox.Text = "Material Lighting (Experimental)";
+            this.lightCheckBox.UseVisualStyleBackColor = true;
+            this.lightCheckBox.CheckedChanged += new System.EventHandler(this.lightCheckBox_CheckedChanged);
+            // 
             // swagViewing
             // 
             this.swagViewing.AutoSize = true;
@@ -286,6 +297,7 @@
             this.cb_normals.TabIndex = 17;
             this.cb_normals.Text = "Show Normals";
             this.cb_normals.UseVisualStyleBackColor = true;
+            this.cb_normals.CheckedChanged += new System.EventHandler(this.cb_normals_CheckedChanged);
             // 
             // renderMode
             // 
@@ -314,17 +326,7 @@
             this.cb_vertcolor.TabIndex = 15;
             this.cb_vertcolor.Text = "Show Vertex Colors";
             this.cb_vertcolor.UseVisualStyleBackColor = true;
-            // 
-            // lightCheckBox
-            // 
-            this.lightCheckBox.AutoSize = true;
-            this.lightCheckBox.Location = new System.Drawing.Point(12, 125);
-            this.lightCheckBox.Name = "lightCheckBox";
-            this.lightCheckBox.Size = new System.Drawing.Size(172, 17);
-            this.lightCheckBox.TabIndex = 19;
-            this.lightCheckBox.Text = "Material Lighting (Experimental)";
-            this.lightCheckBox.UseVisualStyleBackColor = true;
-            this.lightCheckBox.CheckedChanged += new System.EventHandler(this.lightCheckBox_CheckedChanged);
+            this.cb_vertcolor.CheckedChanged += new System.EventHandler(this.cb_vertcolor_CheckedChanged);
             // 
             // RenderSettings
             // 

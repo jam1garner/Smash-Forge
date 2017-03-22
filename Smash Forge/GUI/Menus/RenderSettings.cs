@@ -102,5 +102,15 @@ namespace Smash_Forge.GUI
         {
             Runtime.renderLighting = lightCheckBox.Checked;
         }
+
+        private void cb_normals_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderNormals= cb_normals.Checked;
+        }
+
+        private void cb_vertcolor_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderVertColor = cb_vertcolor.Checked;
+        }
     }
 }

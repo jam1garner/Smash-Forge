@@ -405,6 +405,7 @@ uniform vec4 specularParams;
 uniform int renderType;
 uniform int renderLighting;
 uniform int renderVertColor;
+uniform int renderNormal;
 uniform mat4 eyeview;
 
 const vec3 lightPos = vec3(0,10,-30);
@@ -496,8 +497,10 @@ main()
     else
     {
         // old lighting
-        float normal = dot(vec4(normal * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
-        fincol *= normal;
+        if(renderNormal == 1){
+            float normal = dot(vec4(normal * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
+            fincol *= normal;
+        }
     }
 
 	// ambient occlusion
@@ -746,6 +749,7 @@ main()
             GL.Uniform1(shader.getAttribute("renderType"), rt);
             GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderNormal"), Runtime.renderNormals ? 1 : 0);
 
             foreach (ModelContainer m in Runtime.ModelContainers)
             {

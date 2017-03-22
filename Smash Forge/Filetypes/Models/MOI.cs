@@ -27,6 +27,7 @@ namespace Smash_Forge
         public void Read(FileData f)
         {
             f.Endian = endianess;
+            if (f.size() < 4) return;
             int entryCount = f.readInt();
             int otherCount = f.readInt();
             int startOffset = f.readInt();
