@@ -606,6 +606,7 @@ main()
             GL.LoadMatrix(ref v);
             // ready to start drawing model stuff
             GL.MatrixMode(MatrixMode.Modelview);
+            RenderHeightMap();
 
             GL.UseProgram(0);
             // drawing floor---------------------------
