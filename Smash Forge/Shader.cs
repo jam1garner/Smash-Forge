@@ -49,6 +49,7 @@ namespace Smash_Forge
 		private void addAttribute(string name, bool uniform){
             if (attributes.ContainsKey(name)) attributes.Remove(name);
 			int pos;
+            MessageBox.Show(name);
 			if(uniform)
 				pos = GL.GetUniformLocation(programID, name);
 			else
