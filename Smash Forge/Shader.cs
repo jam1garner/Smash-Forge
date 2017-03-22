@@ -81,14 +81,21 @@ namespace Smash_Forge
             loadShader(filename, ShaderType.VertexShader, programID, out vsID);
 			GL.LinkProgram (programID);
             LoadAttributes(filename);
-            Console.WriteLine(GL.GetProgramInfoLog(programID));
+            string error = GL.GetProgramInfoLog(programID);
+            if (!error.Equals(""))
+                MessageBox.Show(error);
+            Console.WriteLine(error);
+            
         }
 
 		public void fragmentShader(string filename){
 			loadShader(filename, ShaderType.FragmentShader, programID, out fsID);
 			GL.LinkProgram (programID);
             LoadAttributes(filename, true);
-            Console.WriteLine(GL.GetProgramInfoLog(programID));
+            string error = GL.GetProgramInfoLog(programID);
+            if (!error.Equals(""))
+                MessageBox.Show(error);
+            Console.WriteLine(error);
         }
 
         void loadShader(string shader, ShaderType type, int program, out int address)

@@ -29,6 +29,7 @@ namespace Smash_Forge.GUI
             checkBox11.Checked = Runtime.renderGeneralPoints;
             checkBox12.Checked = Runtime.renderCollisionNormals;
             swagViewing.Checked = Runtime.renderSwag;
+            lightCheckBox.Checked = Runtime.renderLighting;
 
             depthSlider.Value = (int)Runtime.renderDepth;
 
