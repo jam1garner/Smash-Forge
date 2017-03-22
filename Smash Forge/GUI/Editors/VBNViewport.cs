@@ -408,8 +408,8 @@ uniform int renderVertColor;
 uniform int renderNormal;
 uniform mat4 eyeview;
 
-const vec3 lightPos = vec3(0,10,-30);
-const vec3 specPos = vec3(0,-15,-70);
+const vec3 lightPos = vec3(0,10,-80);
+const vec3 specPos = vec3(0,-10,-40);
 
 vec3 lerp(float v, vec3 from, vec3 to)
 {
@@ -430,13 +430,20 @@ vec3 CalculateDiffuse()
 	//vec3 norm = normalize(texture2D(nrm, f_texcoord).xyz);
 	vec3 norm = normal;
 
-	vec3 cameraPosition = (-transpose(mat3(eyeview)) * eyeview[3].xyz);
-	//cameraPosition.y -= 10;
-	vec3 lightDir = normalize(lightPos * mat3(eyeview) - fragpos);  
+	vec3 cameraPosition = (-transpose(mat3(eyeview)) * eyeview[3].xyz)*-1;
+	//cameraPosition.y -= 20;
+	//cameraPosition.z -= 20;
+
+	vec3 lightDir = vec3(0,-0.3,-0.7) * mat3(eyeview);  
+
+	vec3 difDir = normalize(lightPos * mat3(eyeview) - fragpos);  
 	
 	vec3 specDir = normalize(cameraPosition-fragpos);  
+	//vec3 specDir = vec3(0,0,1) * mat3(eyeview);  
 	
-	float diff = max(dot(norm, lightDir), 0.0);
+	float diff = max(dot(norm, difDir), 0.0);
+	if(diff > 1) diff = 1;
+	if(diff < 0) diff = 0;
 	vec3 diffuse = diff * diffuseColor.xyz;
 	if(diffuse == vec3(0,0,0)) diffuse = vec3(1);
 
@@ -444,24 +451,24 @@ vec3 CalculateDiffuse()
 	vec3 viewDir = normalize(fragpos); //pos - 
 	vec3 reflectDir = reflect(-specDir, norm); 
 	
-	float specDrop = specularParams.x * specularParams.y;
+	float specDrop = specularParams.x;
 	if(specDrop == 0) specDrop = 3;
 
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), specDrop);
-	vec3 specular = vec3(spec) * (specularColor.xyz * specularColorGain.xyz);
+	float spec = pow(max(dot(specDir, reflectDir), 0.0), 3);
+	vec3 specular = vec3(spec) * (specularColor.xyz * specularColorGain.xyz) ;
 
 // fresnel
-	vec3 F0 = vec3(0.2); //fresnelParams.w
+	vec3 F0 = vec3(0.3); //fresnelParams.w
 	F0      = mix(F0, vec3(0), 0);
 	float cosTheta = dot(lightDir, norm);
 	vec3 fresnel = F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); // 5.0
 
 // combine
-	vec3 fin = 0.3 + diffuse * 0.3;
+	vec3 fin = diffuse * diffuseColor.www;
 
 	fin += max(fresnel * fresnelColor.xyz, 0);
 
-	fin += specular * specularColor.www / 2;
+	fin += specular * specularColor.www;
 
 	return fin;
 }
@@ -492,16 +499,15 @@ main()
 		fincol = fincol * color;
 
 	// diffuse specular and fresnel
-	if(renderLighting == 1)
-		fincol *= vec4(CalculateDiffuse(),1.0);
-    else
-    {
-        // old lighting
         if(renderNormal == 1){
-            float normal = dot(vec4(normal * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
-            fincol *= normal;
-        }
-    }
+		if(renderLighting == 1) fincol *= vec4(CalculateDiffuse(),1.0);
+    	else
+    		{
+        	// old lighting
+            	float normal = dot(vec4(normal * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
+            	fincol *= normal;
+        	}
+    	}
 
 	// ambient occlusion
 	fincol *= (minGain + texture2D(nrm, texcoord).aaaa);
@@ -518,8 +524,7 @@ main()
 
         gl_FragColor = fincol;
     }
-}
-";
+}";
 
         private void SetupViewPort()
         {
@@ -1840,6 +1845,7 @@ main()
         {
             if (e.KeyChar == 'i')
             {
+                //GL.DeleteProgram(shader.programID);
                 //shader = new Shader();
                 //shader.vertexShader(File.ReadAllText("C:\\s\\Smash\\extract\\vert.txt"));
                 //shader.fragmentShader(File.ReadAllText("C:\\s\\Smash\\extract\\frag.txt"));

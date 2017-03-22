@@ -65,10 +65,10 @@ namespace Smash_Forge
             {
                 string[] args = line.Split(' ');
                 if (args[0].Equals("in") && !fragment)
-                    addAttribute(args[2].Replace(";", "").Trim(), false);
+                    addAttribute(args[args.Length - 1].Replace(";", "").Trim(), false);
                 if (args[0].Equals("uniform"))
                 {
-                    string arg = args[2].Replace(";", "").Trim();
+                    string arg = args[args.Length - 1].Replace(";", "").Trim();
                     if (arg.Contains("["))
                         arg = arg.Substring(0, arg.IndexOf('['));
                     addAttribute(arg, true);
