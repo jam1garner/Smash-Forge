@@ -77,7 +77,7 @@ namespace Smash_Forge
 
             int uniformCount;
             GL.GetProgram(programID, GetProgramParameterName.ActiveUniforms, out uniformCount);
-
+            
             for (int i = 0; i < uniformCount; i++)
             {
                 int uniformSize;

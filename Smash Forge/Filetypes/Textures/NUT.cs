@@ -128,6 +128,11 @@ namespace Smash_Forge
             Read(d);
         }
 
+        ~NUT()
+        {
+            //Destroy();
+        }
+
         public override byte[] Rebuild()
         {
             FileOutput o = new FileOutput();
@@ -467,7 +472,8 @@ namespace Smash_Forge
         {
             foreach (var kv in draw)
             {
-                GL.DeleteTexture(kv.Value);
+                if (GL.IsTexture(kv.Value))
+                    GL.DeleteTexture(kv.Value);
             }
         }
 

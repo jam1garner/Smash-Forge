@@ -62,6 +62,15 @@ namespace Smash_Forge
             GL.DeleteBuffer(vbo_uv);
             GL.DeleteBuffer(vbo_weight);
             GL.DeleteBuffer(vbo_bone);
+
+            uvdata = null;
+            vertdata = null;
+            nrmdata = null;
+            facedata = null;
+            bonedata = null;
+            coldata = null;
+            weightdata = null;
+            mesh.Clear();
         }
 
         /*

@@ -126,6 +126,8 @@ namespace Smash_Forge
                 }
 
                 MainForm.Instance.project.fillTree();
+
+                GC.Collect();
             }
 
             //if (Runtime.ModelContainers.Count > 0)
@@ -311,6 +313,7 @@ out vec3 fragpos;
 
 uniform mat4 eyeview;
 uniform mat4 bones[200];
+uniform mat4 boneIT[200];
 
 uniform int renderType;
  
@@ -324,21 +327,20 @@ vec4 skin(vec3 pos)
     objPos += bones[index.z] * vec4(pos, 1.0) * vWeight.z;
     objPos += bones[index.w] * vec4(pos, 1.0) * vWeight.w;
 
-	return objPos;
+    return objPos;
 }
 
-//todo: this is NOT efficient
 vec4 skinNRM(vec3 pos)
 {
     vec4 objPos = vec4(pos.xyz, 1.0);
     ivec4 index = ivec4(vBone); 
 
-    objPos = bones[index.x] * vec4(pos, 1.0) * vWeight.x;
-    objPos += bones[index.y] * vec4(pos, 1.0) * vWeight.y;
-    objPos += bones[index.z] * vec4(pos, 1.0) * vWeight.z;
-    objPos += bones[index.w] * vec4(pos, 1.0) * vWeight.w;
+    objPos = boneIT[index.x] * vec4(pos, 1.0) * vWeight.x;
+    objPos += boneIT[index.y] * vec4(pos, 1.0) * vWeight.y;
+    objPos += boneIT[index.z] * vec4(pos, 1.0) * vWeight.z;
+    objPos += boneIT[index.w] * vec4(pos, 1.0) * vWeight.w;
 
-	return objPos;
+    return objPos;
 }
 
 void main()
@@ -347,28 +349,30 @@ void main()
 
     if(vBone.x != -1) objPos = skin(vPosition);
 
-    gl_Position = eyeview * vec4(objPos.xyz, 1.0);
+    objPos = eyeview * vec4(objPos.xyz, 1.0);
+
+    gl_Position = objPos;
 
     f_texcoord = vUV;
     normal = vec3(0,0,0);
     color = vec4(vNormal, 1);
-
-	pos = vec3(vPosition * mat3(eyeview));
+    pos = vec3(vPosition * mat3(eyeview));
 
     if(renderType != 1){
 
 	if(renderType == 2){
-        float normal = dot(vec4(vNormal * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
-        color = vec4(normal, normal, normal, 1);
+        	float normal = dot(vec4(vNormal * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
+        	color = vec4(normal, normal, normal, 1);
 	}
         else
             color = vColor;
 
-	fragpos = mat3(eyeview) * objPos.xyz;
+	fragpos = objPos.xyz;
+
 	if(vBone.x != -1) 
-		normal = skinNRM(vNormal).xyz ;//* transpose(inverse(mat3(eyeview)));
+		normal = skinNRM(vNormal.xyz).xyz ;
 	else
-		normal = vNormal ;//* transpose(inverse(mat3(eyeview)));
+		normal = vNormal ;
     }
 }";
 
@@ -408,8 +412,10 @@ uniform int renderVertColor;
 uniform int renderNormal;
 uniform mat4 eyeview;
 
-const vec3 lightPos = vec3(0,10,-80);
+const vec3 lightPos = vec3(0,0,-50);
 const vec3 specPos = vec3(0,-10,-40);
+
+float edgefalloff = -1.0;  
 
 vec3 lerp(float v, vec3 from, vec3 to)
 {
@@ -430,45 +436,50 @@ vec3 CalculateDiffuse()
 	//vec3 norm = normalize(texture2D(nrm, f_texcoord).xyz);
 	vec3 norm = normal;
 
-	vec3 cameraPosition = (-transpose(mat3(eyeview)) * eyeview[3].xyz)*-1;
-	//cameraPosition.y -= 20;
+	vec3 cameraPosition = (-transpose(mat3(eyeview)) * eyeview[3].xyz);
+	cameraPosition.y += 20;
 	//cameraPosition.z -= 20;
-
-	vec3 lightDir = vec3(0,-0.3,-0.7) * mat3(eyeview);  
-
+	
+	// diffuse
+	
 	vec3 difDir = normalize(lightPos * mat3(eyeview) - fragpos);  
-	
-	vec3 specDir = normalize(cameraPosition-fragpos);  
-	//vec3 specDir = vec3(0,0,1) * mat3(eyeview);  
-	
-	float diff = max(dot(norm, difDir), 0.0);
-	if(diff > 1) diff = 1;
-	if(diff < 0) diff = 0;
-	vec3 diffuse = diff * diffuseColor.xyz;
+	float diff = clamp(dot(norm, difDir), 0.3, 0.8);
+	vec3 diffuse = vec3(diff) * diffuseColor.xyz;
 	if(diffuse == vec3(0,0,0)) diffuse = vec3(1);
 
 // specular
-	vec3 viewDir = normalize(fragpos); //pos - 
+	vec3 specDir = vec3(0,0,1) * mat3(eyeview);  
+	//specDir = normalize(vec3(0,0,1) * mat3(eyeview));  
+
+	vec3 viewDir = normalize(-fragpos); //pos - 
+	//vec3 halfDir = normalize(normalize(cameraPosition) + viewDir);
+	//float sp = pow(max(dot(halfDir, normalize(norm)), 0.0), 16.0);
+
 	vec3 reflectDir = reflect(-specDir, norm); 
 	
 	float specDrop = specularParams.x;
 	if(specDrop == 0) specDrop = 3;
 
+	float lambertian = max(dot(specDir,norm), 0.0);
+
 	float spec = pow(max(dot(specDir, reflectDir), 0.0), 3);
-	vec3 specular = vec3(spec) * (specularColor.xyz * specularColorGain.xyz) ;
+	vec3 specular = vec3(spec) * (specularColor.xyz * specularColorGain.xyz) * diff;
 
 // fresnel
+	vec3 lightDir = vec3(0,-0.3,-0.7) * mat3(eyeview);  
 	vec3 F0 = vec3(0.3); //fresnelParams.w
 	F0      = mix(F0, vec3(0), 0);
 	float cosTheta = dot(lightDir, norm);
-	vec3 fresnel = F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); // 5.0
+	vec3 fresnel = F0 + (1.0 - F0) * pow(1.0 - cosTheta, 8.0); // 5.0
 
 // combine
 	vec3 fin = diffuse * diffuseColor.www;
 
-	fin += max(fresnel * fresnelColor.xyz, 0);
+    	float gamma = 2.2; fresnel.rgb = pow(fresnel.rgb*fresnelColor.rgb, vec3(1.0/gamma));
+	fin += max(fresnel.xyz, 0); //lerp(fresnelParams.x, fin, fresnelColor.xyz * fresnel);//
 
-	fin += specular * specularColor.www;
+    	specular.rgb = pow(specular.rgb * specularColor.www, vec3(1.0/gamma));
+	fin += specular / 2;
 
 	return fin;
 }
@@ -500,7 +511,7 @@ main()
 
 	// diffuse specular and fresnel
         if(renderNormal == 1){
-		if(renderLighting == 1) fincol *= vec4(CalculateDiffuse(),1.0);
+		if(renderLighting == 1) fincol.xyz *= CalculateDiffuse();
     	else
     		{
         	// old lighting
@@ -524,7 +535,8 @@ main()
 
         gl_FragColor = fincol;
     }
-}";
+}
+";
 
         private void SetupViewPort()
         {
@@ -781,10 +793,10 @@ main()
                     if (m.vbn != null)
                     {
                         Matrix4[] f = m.vbn.getShaderMatrix();
-                        int shad = shader.getAttribute("bone");
+                        int shad = shader.getAttribute("bones");
                         GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
-                        //int shadi = shader.getAttribute("boneIT");
-                        //GL.UniformMatrix4(shadi, f.Length, false, ref m.vbn.bonematIT[0].Row0.X);
+                        int shadi = shader.getAttribute("boneIT");
+                        GL.UniformMatrix4(shadi, f.Length, false, ref m.vbn.bonematIT[0].Row0.X);
                     }
 
                     shader.enableAttrib();
