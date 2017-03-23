@@ -311,6 +311,7 @@ out vec3 fragpos;
 
 uniform mat4 eyeview;
 uniform mat4 bones[200];
+uniform mat4 bonesIT[200];
 
 uniform int renderType;
  
@@ -333,10 +334,10 @@ vec4 skinNRM(vec3 pos)
     vec4 objPos = vec4(pos.xyz, 1.0);
     ivec4 index = ivec4(vBone); 
 
-    objPos = transpose(inverse(bones[index.x])) * vec4(pos, 1.0) * vWeight.x;
-    objPos += transpose(inverse(bones[index.y])) * vec4(pos, 1.0) * vWeight.y;
-    objPos += transpose(inverse(bones[index.z])) * vec4(pos, 1.0) * vWeight.z;
-    objPos += transpose(inverse(bones[index.w])) * vec4(pos, 1.0) * vWeight.w;
+    objPos = bonesIT[index.x] * vec4(pos, 1.0) * vWeight.x;
+    objPos += bonesIT[index.y] * vec4(pos, 1.0) * vWeight.y;
+    objPos += bonesIT[index.z] * vec4(pos, 1.0) * vWeight.z;
+    objPos += bonesIT[index.w] * vec4(pos, 1.0) * vWeight.w;
 
 	return objPos;
 }
@@ -368,7 +369,7 @@ void main()
 	if(vBone.x != -1) 
 		normal = skinNRM(vNormal).xyz ;//* transpose(inverse(mat3(eyeview)));
 	else
-		normal =vNormal ;//* transpose(inverse(mat3(eyeview)));
+		normal = vNormal ;//* transpose(inverse(mat3(eyeview)));
     }
 }";
 
@@ -783,6 +784,8 @@ main()
                         Matrix4[] f = m.vbn.getShaderMatrix();
                         int shad = shader.getAttribute("bone");
                         GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
+                        int shadi = shader.getAttribute("boneIT");
+                        GL.UniformMatrix4(shadi, f.Length, false, ref m.vbn.bonematIT[0].Row0.X);
                     }
 
                     shader.enableAttrib();
