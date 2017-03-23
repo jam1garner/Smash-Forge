@@ -59,20 +59,36 @@ namespace Smash_Forge
         
         public void LoadAttributes(string src, bool fragment = false)
         {
-            string[] lines = src.Split('\n');
+            int attributeCount;
+            GL.GetProgram(programID, GetProgramParameterName.ActiveAttributes, out attributeCount);
 
-            foreach (string line in lines)
+            for (int i = 0; i < attributeCount; i++)
             {
-                string[] args = line.Split(' ');
-                if (args[0].Equals("in") && !fragment)
-                    addAttribute(args[args.Length - 1].Replace(";", "").Trim(), false);
-                if (args[0].Equals("uniform"))
-                {
-                    string arg = args[args.Length - 1].Replace(";", "").Trim();
-                    if (arg.Contains("["))
-                        arg = arg.Substring(0, arg.IndexOf('['));
-                    addAttribute(arg, true);
-                }
+                int attributeSize;
+                ActiveAttribType attributeType;
+                string attribute = GL.GetActiveAttrib(programID, i, out attributeSize, out attributeType);
+
+                int index = attribute.IndexOf('[');
+                if (index > 0)
+                    attribute = attribute.Substring(0, index);
+
+                addAttribute(attribute, false);
+            }
+
+            int uniformCount;
+            GL.GetProgram(programID, GetProgramParameterName.ActiveUniforms, out uniformCount);
+
+            for (int i = 0; i < uniformCount; i++)
+            {
+                int uniformSize;
+                ActiveUniformType uniformType;
+                string uniform = GL.GetActiveUniform(programID, i, out uniformSize, out uniformType);
+
+                int index = uniform.IndexOf('[');
+                if (index > 0)
+                    uniform = uniform.Substring(0, index);
+
+                addAttribute(uniform, true);
             }
         }
 
