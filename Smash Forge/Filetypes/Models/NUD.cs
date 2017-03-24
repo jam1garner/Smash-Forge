@@ -19,7 +19,7 @@ namespace Smash_Forge
             GL.GenBuffers(1, out vbo_color);
             GL.GenBuffers(1, out vbo_nrm);
             GL.GenBuffers(1, out vbo_uv);
-            GL.GenBuffers(1, out vbo_bone);
+            GL.GenBuffers(1, out ubo_bones);
             GL.GenBuffers(1, out vbo_weight);
             GL.GenBuffers(1, out ibo_elements);
         }
@@ -35,7 +35,7 @@ namespace Smash_Forge
         int vbo_nrm;
         int vbo_uv;
         int vbo_weight;
-        int vbo_bone;
+        int ubo_bones;
         int ibo_elements;
 
         Vector2[] uvdata;
@@ -61,7 +61,7 @@ namespace Smash_Forge
             GL.DeleteBuffer(vbo_nrm);
             GL.DeleteBuffer(vbo_uv);
             GL.DeleteBuffer(vbo_weight);
-            GL.DeleteBuffer(vbo_bone);
+            GL.DeleteBuffer(ubo_bones);
 
             uvdata = null;
             vertdata = null;
@@ -163,7 +163,7 @@ namespace Smash_Forge
             GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, (IntPtr)(uvdata.Length * Vector2.SizeInBytes), uvdata, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, 0, 0);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_bone);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ubo_bones);
             GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(bonedata.Length * Vector4.SizeInBytes), bonedata, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, 0, 0);
 

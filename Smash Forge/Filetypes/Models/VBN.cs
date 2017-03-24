@@ -461,9 +461,9 @@ namespace Smash_Forge
             for (int i = 0; i < bones.Count; i++)
             {
                 bonemat[i] = bones[i].invert * bones[i].transform;
-                bonematIT[i] = bones[i].invert * bones[i].transform;
-                bonematIT[i].Invert();
-                bonematIT[i].Transpose();
+                //bonematIT[i] = bones[i].invert * bones[i].transform;
+                //bonematIT[i].Invert();
+                //bonematIT[i].Transpose();
             }
 
             return bonemat;

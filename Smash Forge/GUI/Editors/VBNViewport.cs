@@ -312,42 +312,49 @@ out vec3 normal;
 out vec3 fragpos;
 
 uniform mat4 eyeview;
-uniform mat4 bones[200];
-uniform mat4 boneIT[200];
+
+uniform bones
+{
+    mat4 transforms[200];
+    mat4 transformsIT[200];
+} bones_;
 
 uniform int renderType;
+
+
+vec4 skin(vec3 po, ivec4 index);
+vec4 skinNRM(vec3 po, ivec4 index);
  
-vec4 skin(vec3 pos)
+vec4 skin(vec3 po, ivec4 index)
 {
-    vec4 objPos = vec4(pos.xyz, 1.0);
-    ivec4 index = ivec4(vBone); 
+    vec4 oPos = vec4(po.xyz, 1.0);
 
-    objPos = bones[index.x] * vec4(pos, 1.0) * vWeight.x;
-    objPos += bones[index.y] * vec4(pos, 1.0) * vWeight.y;
-    objPos += bones[index.z] * vec4(pos, 1.0) * vWeight.z;
-    objPos += bones[index.w] * vec4(pos, 1.0) * vWeight.w;
+    oPos = bones_.transforms[index.x] * vec4(po, 1.0) * vWeight.x;
+    oPos += bones_.transforms[index.y] * vec4(po, 1.0) * vWeight.y;
+    oPos += bones_.transforms[index.z] * vec4(po, 1.0) * vWeight.z;
+    oPos += bones_.transforms[index.w] * vec4(po, 1.0) * vWeight.w;
 
-    return objPos;
+    return oPos;
 }
 
-vec4 skinNRM(vec3 pos)
+vec4 skinNRM(vec3 nr, ivec4 index)
 {
-    vec4 objPos = vec4(pos.xyz, 1.0);
-    ivec4 index = ivec4(vBone); 
+    vec4 nrmPos = vec4(nr, 1.0);
+	
+    nrmPos = transpose(inverse(bones_.transforms[index.x])) * vec4(nr, 1.0) * vWeight.x;
+    nrmPos += transpose(inverse(bones_.transforms[index.y])) * vec4(nr, 1.0) * vWeight.y;
+    nrmPos += transpose(inverse(bones_.transforms[index.z])) * vec4(nr, 1.0) * vWeight.z;
+    nrmPos += transpose(inverse(bones_.transforms[index.w])) * vec4(nr, 1.0) * vWeight.w;
 
-    objPos = boneIT[index.x] * vec4(pos, 1.0) * vWeight.x;
-    objPos += boneIT[index.y] * vec4(pos, 1.0) * vWeight.y;
-    objPos += boneIT[index.z] * vec4(pos, 1.0) * vWeight.z;
-    objPos += boneIT[index.w] * vec4(pos, 1.0) * vWeight.w;
-
-    return objPos;
+    return nrmPos;
 }
 
 void main()
 {
     vec4 objPos = vec4(vPosition.xyz, 1.0);
+    ivec4 bi = ivec4(vBone); 
 
-    if(vBone.x != -1) objPos = skin(vPosition);
+    if(vBone.x != -1) objPos = skin(vPosition, bi);
 
     objPos = eyeview * vec4(objPos.xyz, 1.0);
 
@@ -370,7 +377,7 @@ void main()
 	fragpos = objPos.xyz;
 
 	if(vBone.x != -1) 
-		normal = skinNRM(vNormal.xyz).xyz ;
+		normal = (skinNRM(vNormal.xyz, bi)).xyz ;
 	else
 		normal = vNormal ;
     }
@@ -416,6 +423,7 @@ const vec3 lightPos = vec3(0,0,-50);
 const vec3 specPos = vec3(0,-10,-40);
 
 float edgefalloff = -1.0;  
+const float gamma = 1.5; 
 
 vec3 lerp(float v, vec3 from, vec3 to)
 {
@@ -444,7 +452,7 @@ vec3 CalculateDiffuse()
 	
 	vec3 difDir = normalize(lightPos * mat3(eyeview) - fragpos);  
 	float diff = clamp(dot(norm, difDir), 0.3, 0.8);
-	vec3 diffuse = vec3(diff) * diffuseColor.xyz;
+	vec3 diffuse = vec3(diff) * diffuseColor.xyz * diff;
 	if(diffuse == vec3(0,0,0)) diffuse = vec3(1);
 
 // specular
@@ -457,30 +465,29 @@ vec3 CalculateDiffuse()
 
 	vec3 reflectDir = reflect(-specDir, norm); 
 	
-	float specDrop = specularParams.x;
-	if(specDrop == 0) specDrop = 3;
-
-	float lambertian = max(dot(specDir,norm), 0.0);
-
-	float spec = pow(max(dot(specDir, reflectDir), 0.0), 3);
-	vec3 specular = vec3(spec) * (specularColor.xyz * specularColorGain.xyz) * diff;
+	float specDrop = max(specularParams.y / 10, 0.1);
+	float spec = pow(max(dot(specDir, reflectDir), 0.0), 5 + specularParams.z*2) * specDrop;
+	float div = max(specularParams.x/10, 1.0);
+	vec3 specular = vec3(spec) * (specularColor.xyz * specularColorGain.xyz) / div;
 
 // fresnel
 	vec3 lightDir = vec3(0,-0.3,-0.7) * mat3(eyeview);  
-	vec3 F0 = vec3(0.3); //fresnelParams.w
+	vec3 F0 = vec3(0.2); //fresnelParams.w
 	F0      = mix(F0, vec3(0), 0);
 	float cosTheta = dot(lightDir, norm);
-	vec3 fresnel = F0 + (1.0 - F0) * pow(1.0 - cosTheta, 8.0); // 5.0
+	vec3 fresnel = F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); // 5.0
 
 // combine
 	vec3 fin = diffuse * diffuseColor.www;
 
-    	float gamma = 2.2; fresnel.rgb = pow(fresnel.rgb*fresnelColor.rgb, vec3(1.0/gamma));
-	fin += max(fresnel.xyz, 0); //lerp(fresnelParams.x, fin, fresnelColor.xyz * fresnel);//
+    	//float gamma = 2.2; fresnel.rgb = pow(fresnel.rgb*fresnelColor.rgb, vec3(1.0/gamma));
+	float fdiv = max(fresnelParams.x/10, 1.0);
+	fin += max(fresnel.xyz*fresnelColor.rgb / fdiv, 0); //lerp(fresnelParams.x, fin, fresnelColor.xyz * fresnel);//
 
-    	specular.rgb = pow(specular.rgb * specularColor.www, vec3(1.0/gamma));
-	fin += specular / 2;
+    	//specular.rgb = pow(specular.rgb * specularColor.www, vec3(1.0/gamma));
+	fin += specular;
 
+    	//fin.rgb = pow(fin.rgb, vec3(1.0/gamma));
 	return fin;
 }
 
@@ -511,17 +518,26 @@ main()
 
 	// diffuse specular and fresnel
         if(renderNormal == 1){
-		if(renderLighting == 1) fincol.xyz *= CalculateDiffuse();
-    	else
+		if(renderLighting == 1){
+
+			// ambient occlusion
+			//fincol *= ((minGain + texture2D(nrm, texcoord).aaaa));
+			
+			vec4 ao = ((minGain + texture2D(nrm, texcoord).aaaa * vec4(CalculateDiffuse(), 1.0)));;
+			//ao.rgb = pow(ao.rgb, vec3(1.0/gamma));
+			//fincol.rgb = pow(fincol.rgb, vec3(1.0/gamma));
+			fincol *= ao;
+			fincol.rgb = pow(fincol.rgb, vec3(1.0/gamma));
+			//fincol *= ;
+		 	//fincol.xyz *= CalculateDiffuse();
+		}
+    		else
     		{
-        	// old lighting
-            	float normal = dot(vec4(normal * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
-            	fincol *= normal;
+        		// old lighting
+            		float normal = dot(vec4(normal * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
+            		fincol *= normal;
         	}
     	}
-
-	// ambient occlusion
-	fincol *= (minGain + texture2D(nrm, texcoord).aaaa);
 
 	// color gains
 	fincol = (colorOffset + fincol * colorGain);
@@ -532,12 +548,17 @@ main()
         if(flags == 0x65 && fincol.a < 1)
             fincol = vec4(1,1,1,1) * 
 	vec4(CalculateDiffuse(),1.0);;
+	
+	
+	//fincol.rgb = pow(fincol.rgb, vec3(1.0/gamma));
 
         gl_FragColor = fincol;
     }
 }
 ";
 
+
+        public int ubo_bones, ubo_bonesIT;
         private void SetupViewPort()
         {
 
@@ -546,6 +567,9 @@ main()
 
             if (shader == null)
             {
+                GL.GenBuffers(1, out ubo_bones);
+                GL.GenBuffers(1, out ubo_bonesIT);
+
                 shader = new Shader();
 
                 {
@@ -793,10 +817,36 @@ main()
                     if (m.vbn != null)
                     {
                         Matrix4[] f = m.vbn.getShaderMatrix();
-                        int shad = shader.getAttribute("bones");
-                        GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
-                        int shadi = shader.getAttribute("boneIT");
-                        GL.UniformMatrix4(shadi, f.Length, false, ref m.vbn.bonematIT[0].Row0.X);
+                        /*int shad = shader.getAttribute("bones");
+                        GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);*/
+                        //int shadi = shader.getAttribute("boneIT");
+                        //GL.UniformMatrix4(shadi, f.Length, false, ref m.vbn.bonematIT[0].Row0.X);
+
+                        int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
+                        int boneCount = m.vbn.bones.Count;
+                        int dataSize = boneCount * Vector4.SizeInBytes * 4;
+
+                        GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
+                        GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
+                        GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+
+                        var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
+                        GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
+
+                        //GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bonesIT);
+                        //GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
+                        //GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+                        //blockIndex = GL.GetUniformBlockIndex(shader.programID, "bonesIT");
+                        //GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bonesIT);
+
+                        if (f.Length > 0)
+                        {
+                            GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
+                            GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
+
+                            //GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bonesIT);
+                            //GL.BufferSubData(BufferTarget.UniformBuffer, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), (IntPtr)(f.Length * Vector4.SizeInBytes * 4), m.vbn.bonematIT);
+                        }
                     }
 
                     shader.enableAttrib();
