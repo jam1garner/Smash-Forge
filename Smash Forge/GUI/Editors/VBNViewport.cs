@@ -417,6 +417,7 @@ uniform vec4 reflectionColor;
 // params
 uniform vec4 fresnelParams;
 uniform vec4 specularParams;
+uniform vec4 reflectionParams;
 
 uniform int renderType;
 uniform int renderLighting;
@@ -456,7 +457,7 @@ vec4 CalculateDiffuse()
 	// diffuse
 	
 	vec3 difDir = normalize(lightPos * mat3(eyeview) - fragpos);  
-	float diff = clamp(dot(norm, difDir), 0.3, 0.9);
+	float diff = clamp(dot(norm, difDir), 0.4, 0.9);
 	vec3 diffuse = vec3(diff) * diffuseColor.www * diffuseColor.xyz;
 	//diffuse = diffuseColor.rgb * (1 / (1.0 + (0.25 * difDir * difDir)));
 	if(diffuse == vec3(0,0,0)) diffuse = vec3(1);
@@ -471,14 +472,13 @@ vec4 CalculateDiffuse()
 
 	vec3 reflectDir = reflect(-specDir, norm);
 	float specDrop = max(specularParams.y / 30, 0.1);
-	if(specularParams.y == 0) specDrop = 1;
-	float spec = pow(max(dot(specDir, reflectDir), 0.0), 6 + specularParams.z) * specDrop;
+	float spec = pow(max(dot(specDir, reflectDir), 0.0), 5 + specularParams.z) * specDrop;
 	float div = max(specularParams.x/10, 1.0);
 	vec3 specular = vec3(spec) * specularColor.www * (specularColor.xyz) / div;
 
 // fresnel
 	vec3 lightDir = normalize(vec3(0,-0.5,-0.7) * mat3(eyeview));  // vec3(0,-0.3,-0.7)
-	vec3 F0 = vec3(0.4); //fresnelParams.w 
+	vec3 F0 = vec3(0); //fresnelParams.w 
 	F0      = mix(F0, vec3(0), 0);
 	float cosTheta = dot(lightDir, norm);
 	vec3 fresnel = F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); // 5.0
@@ -496,13 +496,13 @@ vec4 CalculateDiffuse()
 	if(renderDiffuse == 1)
 		fin += diffuse;
 
-	float fdiv = min(0.5 + fresnelParams.x / 5, 1);
+	float fdiv = min(1 + fresnelParams.x / 5, 1);
 	if(renderFresnel == 1)
 		fin += max(fresnel.xyz*fresnelColor.rgb / fdiv, 0); //lerp(fresnelParams.x, fin, fresnelColor.xyz * fresnel);//
 
     	specular.rgb = pow(specular.rgb, vec3(1.0/gamma));
 	if(renderSpecular == 1)
-		fin += specular * specularColorGain.xyz;
+		fin += specular / specularColorGain.xyz;
 
 	if(renderReflection == 1)
 		fin += refColor.rgb * reflectionColor.aaa;
@@ -534,6 +534,9 @@ main()
 	if(renderVertColor == 1)
 		fincol = fincol * color;
 
+	// color gains
+	fincol = (colorOffset + fincol * colorGain);
+
 	// diffuse specular and fresnel
         if(renderNormal == 1){
 		if(renderLighting == 1){
@@ -554,9 +557,6 @@ main()
         	}
     	}
 
-	// color gains
-	fincol = (colorOffset + fincol * colorGain);
-
 	// correct alpha
 	fincol = vec4(fincol.xyz, texture2D(tex, texcoord).a * color.a);
 
@@ -570,7 +570,6 @@ main()
         gl_FragColor = fincol;
     }
 }
-
 ";
         
         public int ubo_bones, ubo_bonesIT;
