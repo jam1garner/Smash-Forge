@@ -32,6 +32,13 @@ namespace Smash_Forge.GUI
             lightCheckBox.Checked = Runtime.renderLighting;
 
             depthSlider.Value = (int)Runtime.renderDepth;
+            
+            gammaSlider.Value = (int)Runtime.gamma * 10;
+
+            diffuseCB.Checked = Runtime.renderDiffuse;
+            specularCB.Checked = Runtime.renderSpecular;
+            fresnelCB.Checked = Runtime.renderFresnel;
+            reflectionCB.Checked = Runtime.renderReflection;
 
             cb_normals.Checked = Runtime.renderNormals;
             cb_vertcolor.Checked = Runtime.renderVertColor;
@@ -101,6 +108,11 @@ namespace Smash_Forge.GUI
         private void lightCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderLighting = lightCheckBox.Checked;
+            
+            diffuseCB.Enabled = lightCheckBox.Checked;
+            fresnelCB.Enabled = lightCheckBox.Checked;
+            specularCB.Enabled = lightCheckBox.Checked;
+            reflectionCB.Enabled = lightCheckBox.Checked;
         }
 
         private void cb_normals_CheckedChanged(object sender, EventArgs e)
@@ -111,6 +123,36 @@ namespace Smash_Forge.GUI
         private void cb_vertcolor_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderVertColor = cb_vertcolor.Checked;
+        }
+
+        private void diffuseCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderDiffuse = diffuseCB.Checked;
+        }
+
+        private void fresnelCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderFresnel = fresnelCB.Checked;
+        }
+
+        private void specularCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderSpecular = specularCB.Checked;
+        }
+
+        private void reflectionCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderReflection = reflectionCB.Checked;
+        }
+
+        private void gammaSlider_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void gammaSlider_Scroll(object sender, EventArgs e)
+        {
+            Runtime.gamma = gammaSlider.Value / 10f;
         }
     }
 }

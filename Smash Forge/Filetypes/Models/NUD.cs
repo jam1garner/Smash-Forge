@@ -351,10 +351,10 @@ namespace Smash_Forge
                         switch (mat.cullMode)
                         {
                             case 0:
-                                GL.Disable(EnableCap.CullFace);
+                                //GL.Disable(EnableCap.CullFace);
                                 break;
                             case 2:
-                                GL.Disable(EnableCap.CullFace);
+                                //GL.Disable(EnableCap.CullFace);
                                 break;
                             case 4:
                                 GL.CullFace(CullFaceMode.Back);
@@ -366,7 +366,6 @@ namespace Smash_Forge
                             //(p.strip >> 4) == 4 ? PrimitiveType.Triangles : PrimitiveType.TriangleStrip
                             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
                         }
-                        GL.Enable(EnableCap.CullFace);
                         indiceat += p.displayFaceSize;
                     }
                 }

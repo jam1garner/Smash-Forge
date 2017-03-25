@@ -378,7 +378,7 @@ void main()
 	fragpos = objPos.xyz;
 
 	if(vBone.x != -1) 
-		normal = (skinNRM(vNormal.xyz, bi)).xyz ;
+		normal = (skinNRM(vNormal.xyz, bi)).xyz; //  * -1 * mat3(eyeview)
 	else
 		normal = vNormal ;
     }
@@ -422,25 +422,32 @@ uniform int renderType;
 uniform int renderLighting;
 uniform int renderVertColor;
 uniform int renderNormal;
+
+uniform int renderDiffuse;
+uniform int renderSpecular;
+uniform int renderFresnel;
+uniform int renderReflection;
+
+uniform float gamma = 1.2; 
+
 uniform mat4 eyeview;
 
 const vec3 lightPos = vec3(0,0,-50);
 const vec3 specPos = vec3(0,-10,-40);
 
 float edgefalloff = -1.0;  
-const float gamma = 1.4; 
 
 vec3 lerp(float v, vec3 from, vec3 to)
 {
     return from + (to - from) * v;
 }
 
-vec3 CalculateDiffuse()
+vec4 CalculateDiffuse()
 {
-	vec3 norm = texture2D(nrm, texcoord).rgb*2.0-1.0;
-	norm *= transpose(inverse(mat3(eyeview)));
-	norm = normal;
-	//norm = normalize(norm);
+	// normal maps come later with flags
+	//vec3 norm = normalize(texture2D(nrm, texcoord).rgb);
+	vec3 norm = normal;
+	norm = normalize(norm);
 
 	vec3 cameraPosition = (transpose(mat3(eyeview)) * eyeview[3].xyz);
 	cameraPosition.y += 20;
@@ -450,7 +457,8 @@ vec3 CalculateDiffuse()
 	
 	vec3 difDir = normalize(lightPos * mat3(eyeview) - fragpos);  
 	float diff = clamp(dot(norm, difDir), 0.3, 0.9);
-	vec3 diffuse = vec3(diff) * diffuseColor.www * diffuseColor.xyz * diff;
+	vec3 diffuse = vec3(diff) * diffuseColor.www * diffuseColor.xyz;
+	//diffuse = diffuseColor.rgb * (1 / (1.0 + (0.25 * difDir * difDir)));
 	if(diffuse == vec3(0,0,0)) diffuse = vec3(1);
 
 // specular
@@ -461,16 +469,16 @@ vec3 CalculateDiffuse()
 	//vec3 halfDir = normalize(normalize(cameraPosition) + viewDir);
 	//float sp = pow(max(dot(halfDir, normalize(norm)), 0.0), 16.0);
 
-	vec3 reflectDir = reflect(-specDir, norm); 
-	
-	float specDrop = max(specularParams.y / 25, 0.1);
-	float spec = pow(max(dot(specDir, reflectDir), 0.0), 5 + specularParams.z) * specDrop;
+	vec3 reflectDir = reflect(-specDir, norm);
+	float specDrop = max(specularParams.y / 30, 0.1);
+	if(specularParams.y == 0) specDrop = 1;
+	float spec = pow(max(dot(specDir, reflectDir), 0.0), 6 + specularParams.z) * specDrop;
 	float div = max(specularParams.x/10, 1.0);
-	vec3 specular = vec3(spec) * specularColor.www * (specularColor.xyz * specularColorGain.xyz) / div;
+	vec3 specular = vec3(spec) * specularColor.www * (specularColor.xyz) / div;
 
 // fresnel
-	vec3 lightDir = vec3(0,-0.3,-0.7) * mat3(eyeview);  
-	vec3 F0 = vec3(0.3); //fresnelParams.w
+	vec3 lightDir = normalize(vec3(0,-0.5,-0.7) * mat3(eyeview));  // vec3(0,-0.3,-0.7)
+	vec3 F0 = vec3(0.4); //fresnelParams.w 
 	F0      = mix(F0, vec3(0), 0);
 	float cosTheta = dot(lightDir, norm);
 	vec3 fresnel = F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); // 5.0
@@ -484,18 +492,23 @@ vec3 CalculateDiffuse()
     	vec3 refColor = texture(cmap, R).rgb * reflectionColor.rgb;
 
 // combine
-	vec3 fin = diffuse;
+	vec3 fin = vec3(0);
+	if(renderDiffuse == 1)
+		fin += diffuse;
 
-	float fdiv = max(fresnelParams.x / 25, 1.0);
-	fin += max(fresnel.xyz*fresnelColor.rgb / fdiv, 0); //lerp(fresnelParams.x, fin, fresnelColor.xyz * fresnel);//
+	float fdiv = min(0.5 + fresnelParams.x / 5, 1);
+	if(renderFresnel == 1)
+		fin += max(fresnel.xyz*fresnelColor.rgb / fdiv, 0); //lerp(fresnelParams.x, fin, fresnelColor.xyz * fresnel);//
 
     	specular.rgb = pow(specular.rgb, vec3(1.0/gamma));
-	fin += specular;
+	if(renderSpecular == 1)
+		fin += specular * specularColorGain.xyz;
 
-	fin += refColor.rgb / reflectionColor.aaa;
+	if(renderReflection == 1)
+		fin += refColor.rgb * reflectionColor.aaa;
 
-    	//fin.rgb = pow(fin.rgb, vec3(1.0/gamma));
-	return fin;
+    	fin.rgb = pow(fin.rgb, vec3(1.0/gamma));
+	return vec4(fin.xyz, fresnelColor.a);
 }
 
 void
@@ -526,18 +539,18 @@ main()
 		if(renderLighting == 1){
 
 			// ambient occlusion
-			//fincol *= ((minGain + texture2D(nrm, texcoord).aaaa));
-			
-			vec4 ao = ((minGain + texture2D(nrm, texcoord).aaaa * vec4(CalculateDiffuse(), 1.0)));;
-			//ao.rgb = pow(ao.rgb, vec3(1.0/gamma));
-			//fincol.rgb = pow(fincol.rgb, vec3(1.0/gamma));
+			vec4 dif = CalculateDiffuse();
+			vec4 ao = ((minGain + texture2D(nrm, texcoord).aaaa) * dif.rgba);
 			fincol *= ao;
+			//fincol *=  dif.rgba;
 		}
     		else
     		{
         		// old lighting
             		float normal = dot(vec4(normal * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
             		fincol *= normal;
+			vec4 ao = ((minGain + texture2D(nrm, texcoord).aaaa));
+			fincol *= ao;
         	}
     	}
 
@@ -549,7 +562,7 @@ main()
 
         if(flags == 0x65 && fincol.a < 1)
             fincol = vec4(1,1,1,1) * 
-	vec4(CalculateDiffuse(),1.0);;
+		vec4(CalculateDiffuse().xyz, 1.0);
 	
 	// gamma correction
 	fincol.rgb = pow(fincol.rgb, vec3(1.0/gamma));
@@ -559,8 +572,7 @@ main()
 }
 
 ";
-
-
+        
         public int ubo_bones, ubo_bonesIT;
         public int cubeTex;
 
@@ -800,6 +812,12 @@ main()
             GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderNormal"), Runtime.renderNormals ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderDiffuse"), Runtime.renderDiffuse ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
+
+            GL.Uniform1(shader.getAttribute("gamma"), Runtime.gamma);
 
             foreach (ModelContainer m in Runtime.ModelContainers)
             {

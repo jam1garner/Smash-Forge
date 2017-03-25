@@ -48,6 +48,12 @@ namespace Smash_Forge
         public static bool renderOtherLVDEntries { get; set; }
         public static bool renderSwag { get; set; }
 
+        public static float gamma = 1.2f;
+        public static bool renderDiffuse = true;
+        public static bool renderFresnel = true;
+        public static bool renderSpecular = true;
+        public static bool renderReflection = true;
+
         public static float renderDepth { get; set; }
         public static bool renderNormals { get; set; }
         public static bool renderVertColor { get; set; }
