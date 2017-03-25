@@ -314,6 +314,12 @@ namespace Smash_Forge
                             if (pa == null) pa = new float[] { 0, 0, 0, 0 };
                             GL.Uniform4(shader.getAttribute("fresnelParams"), pa[0], pa[1], pa[2], pa[3]);
                         }
+                        {
+                            float[] pa;
+                            mat.entries.TryGetValue("NU_reflectionColor", out pa);
+                            if (pa == null) pa = new float[] { 0, 0, 0, 1 };
+                            GL.Uniform4(shader.getAttribute("reflectionColor"), pa[0], pa[1], pa[2], pa[3]);
+                        }
 
                         GL.Enable(EnableCap.Blend);
                         if(mat.srcFactor == 5)
