@@ -128,7 +128,7 @@ namespace Smash_Forge
         {
             if (e.KeyChar == 'c')
             {
-                if (treeView1.SelectedNode is NUD.Polygon)
+                /*if (treeView1.SelectedNode is NUD.Polygon)
                 {
                     NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
 
@@ -142,26 +142,7 @@ namespace Smash_Forge
                         if (con.nud != null)
                             con.nud.PreRender();
                     }
-                }
-            }
-            if (e.KeyChar == 'f')
-            {
-                if (treeView1.SelectedNode is NUD.Polygon)
-                {
-
-                    NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
-
-                    foreach(NUD.Vertex v in p.vertices)
-                    {
-                        v.tx[0] = new OpenTK.Vector2(v.tx[0].X, 1 - v.tx[0].Y);
-                    }
-                    
-                    foreach(ModelContainer con in Runtime.ModelContainers)
-                    {
-                        if(con.nud != null)
-                            con.nud.PreRender();
-                    }
-                }
+                }*/
             }
             if (e.KeyChar == '=')
             {
@@ -224,7 +205,7 @@ namespace Smash_Forge
                     {
                         foreach (NUD.Mesh m2 in unorderedNud.mesh)
                         {
-                            if (m2.Name == m.Name)
+                            if (m2.Text.Equals(m.Text))
                             {
                                 meshes[nud.mesh.IndexOf((m))] = m2;
                                 break;
@@ -252,7 +233,7 @@ namespace Smash_Forge
                         if (meshes[i] == null)
                         {
                             meshes[i] = new NUD.Mesh();
-                            meshes[i].Name = "dummy";  
+                            meshes[i].Text = "dummy";  
                             break;
                         }
                     }
@@ -265,7 +246,7 @@ namespace Smash_Forge
         private void treeView1_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
         {
             if (e.Node is NUD.Mesh)
-                ((NUD.Mesh) e.Node).Name = e.Label;
+                ((NUD.Mesh) e.Node).Text = e.Label;
             
         }
 
@@ -275,19 +256,29 @@ namespace Smash_Forge
             if (e.KeyCode == Keys.Delete)
             {
                 e.Handled = true;
+                DeleteNode();
+            }
+        }
+
+        public void DeleteNode()
+        {
+            DialogResult dialogResult = MessageBox.Show("Are you sure? (This cannot be undone)", "Delete Polygon/Mesh", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
                 if (treeView1.SelectedNode is NUD.Polygon)
                 {
                     NUD.Mesh parent = ((NUD.Mesh)treeView1.SelectedNode.Parent);
                     parent.polygons.Remove((NUD.Polygon)treeView1.SelectedNode);
                     parent.Nodes.Remove((NUD.Polygon)treeView1.SelectedNode);
+                    NUD parentn = ((NUD)parent.Parent.Tag);
+                    parentn.PreRender();
                 }
                 else if (treeView1.SelectedNode is NUD.Mesh)
                 {
-                    NUD parent = ((NUD) treeView1.SelectedNode.Parent.Tag);
+                    NUD parent = ((NUD)treeView1.SelectedNode.Parent.Tag);
                     parent.mesh.Remove((NUD.Mesh)treeView1.SelectedNode);
                     treeView1.SelectedNode.Parent.Nodes.Remove(treeView1.SelectedNode);
                     parent.PreRender();
-                    
                 }
                 else if (treeView1.SelectedNode.Tag is NUD)
                 {
@@ -298,7 +289,7 @@ namespace Smash_Forge
                         if (modelContainer.nud == model)
                             m = modelContainer;
                     }
-                    if(m != null)
+                    if (m != null)
                         Runtime.ModelContainers.Remove(m);
                     if (Runtime.TargetVBN == m.vbn)
                         Runtime.TargetVBN = null;
@@ -332,45 +323,89 @@ namespace Smash_Forge
             }
         }
 
-        private void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-            if (treeView1.SelectedNode is NUD.Mesh)
-            {
-                NUD.Mesh mesh = (NUD.Mesh) treeView1.SelectedNode;
-                char[] d = "None".ToCharArray();
-                LVDEditor.StringWrapper str = new LVDEditor.StringWrapper() { data = d };
-                foreach (ModelContainer mc in Runtime.ModelContainers)
-                    if (treeView1.SelectedNode.Parent.Tag == mc.nud)
-                        if (mc.vbn.bones.Count > mesh.singlebind && mesh.singlebind != -1)
-                            str = new LVDEditor.StringWrapper() {data = mc.vbn.bones[mesh.singlebind].boneName};
-                        
-                BoneRiggingSelector brs = new BoneRiggingSelector(str);
-                brs.ShowDialog();
-                if (!brs.Cancelled)
-                {
-                    mesh.singlebind = brs.boneIndex;
-                    foreach(NUD.Polygon poly in mesh.polygons)
-                    {
-                        foreach (NUD.Vertex vi in poly.vertices)
-                        {
-                            vi.node.Clear();
-                            vi.node.Add(mesh.singlebind);
-                            vi.weight.Clear();
-                            vi.weight.Add(1);
-                        }
-                    }
-                    ((NUD)treeView1.SelectedNode.Parent.Tag).PreRender();
-                }
-            }
-            else if (treeView1.SelectedNode is NUD.Polygon)
-            {
-                polySelected((NUD.Polygon) treeView1.SelectedNode, $"{treeView1.SelectedNode.Parent.Text} {treeView1.SelectedNode.Text}");
-            }
-        }
-
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
 
+        }
+
+        private void treeView1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                treeView1.SelectedNode = treeView1.GetNodeAt(e.Location);
+                if (treeView1.SelectedNode is NUD.Mesh)
+                {
+                    meshContextMenu.Show(this, e.X, e.Y);
+                }
+                if (treeView1.SelectedNode is NUD.Polygon)
+                {
+                    polyContextMenu.Show(this, e.X, e.Y);
+                }
+            }
+        }
+
+        private void flipUVsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Polygon)
+            {
+                NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+
+                foreach (NUD.Vertex v in p.vertices)
+                {
+                    for(int i = 0; i < v.tx.Count; i++)
+                        v.tx[i] = new OpenTK.Vector2(v.tx[i].X, 1 - v.tx[i].Y);
+                }
+
+                foreach (ModelContainer con in Runtime.ModelContainers)
+                {
+                    if (con.nud != null)
+                        con.nud.PreRender();
+                }
+            }
+        }
+
+        private void editMaterialToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            polySelected((NUD.Polygon)treeView1.SelectedNode, $"{treeView1.SelectedNode.Parent.Text} {treeView1.SelectedNode.Text}");
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DeleteNode();
+        }
+
+        private void deleteToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            DeleteNode();
+        }
+
+        private void singleBindToBoneToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NUD.Mesh mesh = (NUD.Mesh)treeView1.SelectedNode;
+            char[] d = "None".ToCharArray();
+            LVDEditor.StringWrapper str = new LVDEditor.StringWrapper() { data = d };
+            foreach (ModelContainer mc in Runtime.ModelContainers)
+                if (treeView1.SelectedNode.Parent.Tag == mc.nud)
+                    if (mc.vbn.bones.Count > mesh.singlebind && mesh.singlebind != -1)
+                        str = new LVDEditor.StringWrapper() { data = mc.vbn.bones[mesh.singlebind].boneName };
+
+            BoneRiggingSelector brs = new BoneRiggingSelector(str);
+            brs.ShowDialog();
+            if (!brs.Cancelled)
+            {
+                mesh.singlebind = brs.boneIndex;
+                foreach (NUD.Polygon poly in mesh.polygons)
+                {
+                    foreach (NUD.Vertex vi in poly.vertices)
+                    {
+                        vi.node.Clear();
+                        vi.node.Add(mesh.singlebind);
+                        vi.weight.Clear();
+                        vi.weight.Add(1);
+                    }
+                }
+                ((NUD)treeView1.SelectedNode.Parent.Tag).PreRender();
+            }
         }
     }
 }

@@ -84,8 +84,6 @@
             this.label18 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.comboBox5 = new System.Windows.Forms.ComboBox();
-            this.label24 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.comboBox7 = new System.Windows.Forms.ComboBox();
@@ -101,7 +99,7 @@
             // comboBox1
             // 
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(59, 78);
+            this.comboBox1.Location = new System.Drawing.Point(62, 45);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(121, 21);
             this.comboBox1.TabIndex = 1;
@@ -110,7 +108,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 81);
+            this.label1.Location = new System.Drawing.Point(12, 48);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(44, 13);
             this.label1.TabIndex = 2;
@@ -119,9 +117,9 @@
             // listView1
             // 
             this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(9, 343);
+            this.listView1.Location = new System.Drawing.Point(12, 310);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(78, 77);
+            this.listView1.Size = new System.Drawing.Size(78, 91);
             this.listView1.TabIndex = 3;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
@@ -188,7 +186,7 @@
             this.tableLayoutPanel1.Controls.Add(this.comboBox6, 2, 5);
             this.tableLayoutPanel1.Controls.Add(this.textBox6, 2, 4);
             this.tableLayoutPanel1.Controls.Add(this.textBox8, 2, 6);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 105);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(15, 72);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 7;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -324,7 +322,7 @@
             // 
             this.checkBox1.AutoSize = true;
             this.checkBox1.Enabled = false;
-            this.checkBox1.Location = new System.Drawing.Point(12, 303);
+            this.checkBox1.Location = new System.Drawing.Point(15, 270);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(55, 17);
             this.checkBox1.TabIndex = 9;
@@ -335,7 +333,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(9, 327);
+            this.label9.Location = new System.Drawing.Point(12, 294);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(48, 13);
             this.label9.TabIndex = 10;
@@ -362,7 +360,7 @@
             this.tableLayoutPanel2.Controls.Add(this.comboBox8, 1, 3);
             this.tableLayoutPanel2.Controls.Add(this.textBox9, 1, 7);
             this.tableLayoutPanel2.Controls.Add(this.textBox10, 1, 0);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(97, 327);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(100, 294);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 8;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -522,7 +520,7 @@
             // 
             this.listView2.HideSelection = false;
             this.listView2.LabelWrap = false;
-            this.listView2.Location = new System.Drawing.Point(9, 567);
+            this.listView2.Location = new System.Drawing.Point(12, 534);
             this.listView2.Name = "listView2";
             this.listView2.ShowGroups = false;
             this.listView2.Size = new System.Drawing.Size(260, 100);
@@ -547,7 +545,7 @@
             this.tableLayoutPanel3.Controls.Add(this.textBox14, 1, 3);
             this.tableLayoutPanel3.Controls.Add(this.textBox15, 1, 4);
             this.tableLayoutPanel3.Controls.Add(this.textBox11, 2, 0);
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(9, 700);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(12, 667);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 5;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -647,7 +645,7 @@
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(6, 551);
+            this.label18.Location = new System.Drawing.Point(9, 518);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(54, 13);
             this.label18.TabIndex = 14;
@@ -673,26 +671,9 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // comboBox5
-            // 
-            this.comboBox5.FormattingEnabled = true;
-            this.comboBox5.Location = new System.Drawing.Point(148, 44);
-            this.comboBox5.Name = "comboBox5";
-            this.comboBox5.Size = new System.Drawing.Size(121, 21);
-            this.comboBox5.TabIndex = 17;
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(63, 47);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(79, 13);
-            this.label24.TabIndex = 18;
-            this.label24.Text = "Default Presets";
-            // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(9, 424);
+            this.button3.Location = new System.Drawing.Point(12, 407);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 19;
@@ -702,7 +683,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(9, 671);
+            this.button4.Location = new System.Drawing.Point(12, 638);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 20;
@@ -713,7 +694,7 @@
             // comboBox7
             // 
             this.comboBox7.FormattingEnabled = true;
-            this.comboBox7.Location = new System.Drawing.Point(148, 673);
+            this.comboBox7.Location = new System.Drawing.Point(151, 640);
             this.comboBox7.Name = "comboBox7";
             this.comboBox7.Size = new System.Drawing.Size(121, 21);
             this.comboBox7.TabIndex = 21;
@@ -722,7 +703,7 @@
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(119, 676);
+            this.label25.Location = new System.Drawing.Point(122, 643);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(23, 13);
             this.label25.TabIndex = 22;
@@ -731,7 +712,7 @@
             // glControl1
             // 
             this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(9, 453);
+            this.glControl1.Location = new System.Drawing.Point(12, 436);
             this.glControl1.Name = "glControl1";
             this.glControl1.Size = new System.Drawing.Size(78, 75);
             this.glControl1.TabIndex = 23;
@@ -742,7 +723,7 @@
             // 
             this.colorSelect.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.colorSelect.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.colorSelect.Location = new System.Drawing.Point(90, 671);
+            this.colorSelect.Location = new System.Drawing.Point(93, 638);
             this.colorSelect.Name = "colorSelect";
             this.colorSelect.Size = new System.Drawing.Size(26, 23);
             this.colorSelect.TabIndex = 24;
@@ -754,15 +735,13 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(284, 858);
+            this.ClientSize = new System.Drawing.Size(284, 813);
             this.Controls.Add(this.colorSelect);
             this.Controls.Add(this.glControl1);
             this.Controls.Add(this.label25);
             this.Controls.Add(this.comboBox7);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
-            this.Controls.Add(this.label24);
-            this.Controls.Add(this.comboBox5);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label18);
@@ -777,6 +756,7 @@
             this.Controls.Add(this.comboBox1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "NUDMaterialEditor";
+            this.TabText = "Material";
             this.Text = "NUDMaterialEditor";
             this.Load += new System.EventHandler(this.NUDMaterialEditor_Load);
             this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.NUDMaterialEditor_Scroll);
@@ -848,8 +828,6 @@
         private System.Windows.Forms.TextBox textBox15;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.ComboBox comboBox5;
-        private System.Windows.Forms.Label label24;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.ComboBox comboBox7;

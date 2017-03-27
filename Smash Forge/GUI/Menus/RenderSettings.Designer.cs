@@ -44,17 +44,18 @@
             this.depthSlider = new System.Windows.Forms.TrackBar();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.gammaSlider = new System.Windows.Forms.TrackBar();
+            this.reflectionCB = new System.Windows.Forms.CheckBox();
+            this.specularCB = new System.Windows.Forms.CheckBox();
+            this.fresnelCB = new System.Windows.Forms.CheckBox();
+            this.diffuseCB = new System.Windows.Forms.CheckBox();
             this.lightCheckBox = new System.Windows.Forms.CheckBox();
             this.swagViewing = new System.Windows.Forms.CheckBox();
             this.cb_normals = new System.Windows.Forms.CheckBox();
             this.renderMode = new System.Windows.Forms.ComboBox();
             this.cb_vertcolor = new System.Windows.Forms.CheckBox();
-            this.diffuseCB = new System.Windows.Forms.CheckBox();
-            this.fresnelCB = new System.Windows.Forms.CheckBox();
-            this.specularCB = new System.Windows.Forms.CheckBox();
-            this.reflectionCB = new System.Windows.Forms.CheckBox();
-            this.gammaSlider = new System.Windows.Forms.TrackBar();
-            this.label2 = new System.Windows.Forms.Label();
+            this.useNormCB = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -253,10 +254,10 @@
             this.label1.Size = new System.Drawing.Size(36, 13);
             this.label1.TabIndex = 14;
             this.label1.Text = "Depth";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.useNormCB);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.gammaSlider);
             this.groupBox1.Controls.Add(this.reflectionCB);
@@ -277,6 +278,72 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model Render Settings";
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(162, 150);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(72, 13);
+            this.label2.TabIndex = 25;
+            this.label2.Text = "Gamma Slider";
+            // 
+            // gammaSlider
+            // 
+            this.gammaSlider.Location = new System.Drawing.Point(120, 166);
+            this.gammaSlider.Maximum = 30;
+            this.gammaSlider.Name = "gammaSlider";
+            this.gammaSlider.Size = new System.Drawing.Size(157, 45);
+            this.gammaSlider.TabIndex = 24;
+            this.gammaSlider.Scroll += new System.EventHandler(this.gammaSlider_Scroll);
+            // 
+            // reflectionCB
+            // 
+            this.reflectionCB.AutoSize = true;
+            this.reflectionCB.Enabled = false;
+            this.reflectionCB.Location = new System.Drawing.Point(29, 217);
+            this.reflectionCB.Name = "reflectionCB";
+            this.reflectionCB.Size = new System.Drawing.Size(74, 17);
+            this.reflectionCB.TabIndex = 23;
+            this.reflectionCB.Text = "Reflection";
+            this.reflectionCB.UseVisualStyleBackColor = true;
+            this.reflectionCB.CheckedChanged += new System.EventHandler(this.reflectionCB_CheckedChanged);
+            // 
+            // specularCB
+            // 
+            this.specularCB.AutoSize = true;
+            this.specularCB.Enabled = false;
+            this.specularCB.Location = new System.Drawing.Point(29, 194);
+            this.specularCB.Name = "specularCB";
+            this.specularCB.Size = new System.Drawing.Size(68, 17);
+            this.specularCB.TabIndex = 22;
+            this.specularCB.Text = "Specular";
+            this.specularCB.UseVisualStyleBackColor = true;
+            this.specularCB.CheckedChanged += new System.EventHandler(this.specularCB_CheckedChanged);
+            // 
+            // fresnelCB
+            // 
+            this.fresnelCB.AutoSize = true;
+            this.fresnelCB.Enabled = false;
+            this.fresnelCB.Location = new System.Drawing.Point(29, 171);
+            this.fresnelCB.Name = "fresnelCB";
+            this.fresnelCB.Size = new System.Drawing.Size(60, 17);
+            this.fresnelCB.TabIndex = 21;
+            this.fresnelCB.Text = "Fresnel";
+            this.fresnelCB.UseVisualStyleBackColor = true;
+            this.fresnelCB.CheckedChanged += new System.EventHandler(this.fresnelCB_CheckedChanged);
+            // 
+            // diffuseCB
+            // 
+            this.diffuseCB.AutoSize = true;
+            this.diffuseCB.Enabled = false;
+            this.diffuseCB.Location = new System.Drawing.Point(29, 148);
+            this.diffuseCB.Name = "diffuseCB";
+            this.diffuseCB.Size = new System.Drawing.Size(59, 17);
+            this.diffuseCB.TabIndex = 20;
+            this.diffuseCB.Text = "Diffuse";
+            this.diffuseCB.UseVisualStyleBackColor = true;
+            this.diffuseCB.CheckedChanged += new System.EventHandler(this.diffuseCB_CheckedChanged);
+            // 
             // lightCheckBox
             // 
             this.lightCheckBox.AutoSize = true;
@@ -291,7 +358,7 @@
             // swagViewing
             // 
             this.swagViewing.AutoSize = true;
-            this.swagViewing.Location = new System.Drawing.Point(6, 240);
+            this.swagViewing.Location = new System.Drawing.Point(6, 263);
             this.swagViewing.Name = "swagViewing";
             this.swagViewing.Size = new System.Drawing.Size(109, 17);
             this.swagViewing.TabIndex = 18;
@@ -341,72 +408,16 @@
             this.cb_vertcolor.UseVisualStyleBackColor = true;
             this.cb_vertcolor.CheckedChanged += new System.EventHandler(this.cb_vertcolor_CheckedChanged);
             // 
-            // diffuseCB
+            // useNormCB
             // 
-            this.diffuseCB.AutoSize = true;
-            this.diffuseCB.Enabled = false;
-            this.diffuseCB.Location = new System.Drawing.Point(29, 148);
-            this.diffuseCB.Name = "diffuseCB";
-            this.diffuseCB.Size = new System.Drawing.Size(59, 17);
-            this.diffuseCB.TabIndex = 20;
-            this.diffuseCB.Text = "Diffuse";
-            this.diffuseCB.UseVisualStyleBackColor = true;
-            this.diffuseCB.CheckedChanged += new System.EventHandler(this.diffuseCB_CheckedChanged);
-            // 
-            // fresnelCB
-            // 
-            this.fresnelCB.AutoSize = true;
-            this.fresnelCB.Enabled = false;
-            this.fresnelCB.Location = new System.Drawing.Point(29, 171);
-            this.fresnelCB.Name = "fresnelCB";
-            this.fresnelCB.Size = new System.Drawing.Size(60, 17);
-            this.fresnelCB.TabIndex = 21;
-            this.fresnelCB.Text = "Fresnel";
-            this.fresnelCB.UseVisualStyleBackColor = true;
-            this.fresnelCB.CheckedChanged += new System.EventHandler(this.fresnelCB_CheckedChanged);
-            // 
-            // specularCB
-            // 
-            this.specularCB.AutoSize = true;
-            this.specularCB.Enabled = false;
-            this.specularCB.Location = new System.Drawing.Point(29, 194);
-            this.specularCB.Name = "specularCB";
-            this.specularCB.Size = new System.Drawing.Size(68, 17);
-            this.specularCB.TabIndex = 22;
-            this.specularCB.Text = "Specular";
-            this.specularCB.UseVisualStyleBackColor = true;
-            this.specularCB.CheckedChanged += new System.EventHandler(this.specularCB_CheckedChanged);
-            // 
-            // reflectionCB
-            // 
-            this.reflectionCB.AutoSize = true;
-            this.reflectionCB.Enabled = false;
-            this.reflectionCB.Location = new System.Drawing.Point(29, 217);
-            this.reflectionCB.Name = "reflectionCB";
-            this.reflectionCB.Size = new System.Drawing.Size(74, 17);
-            this.reflectionCB.TabIndex = 23;
-            this.reflectionCB.Text = "Reflection";
-            this.reflectionCB.UseVisualStyleBackColor = true;
-            this.reflectionCB.CheckedChanged += new System.EventHandler(this.reflectionCB_CheckedChanged);
-            // 
-            // gammaSlider
-            // 
-            this.gammaSlider.Location = new System.Drawing.Point(120, 166);
-            this.gammaSlider.Maximum = 30;
-            this.gammaSlider.Name = "gammaSlider";
-            this.gammaSlider.Size = new System.Drawing.Size(157, 45);
-            this.gammaSlider.TabIndex = 24;
-            this.gammaSlider.Scroll += new System.EventHandler(this.gammaSlider_Scroll);
-            this.gammaSlider.ValueChanged += new System.EventHandler(this.gammaSlider_ValueChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(162, 150);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(72, 13);
-            this.label2.TabIndex = 25;
-            this.label2.Text = "Gamma Slider";
+            this.useNormCB.AutoSize = true;
+            this.useNormCB.Location = new System.Drawing.Point(29, 240);
+            this.useNormCB.Name = "useNormCB";
+            this.useNormCB.Size = new System.Drawing.Size(110, 17);
+            this.useNormCB.TabIndex = 26;
+            this.useNormCB.Text = "Use Normal Maps";
+            this.useNormCB.UseVisualStyleBackColor = true;
+            this.useNormCB.CheckedChanged += new System.EventHandler(this.useNormCB_CheckedChanged);
             // 
             // RenderSettings
             // 
@@ -458,5 +469,6 @@
         private System.Windows.Forms.CheckBox fresnelCB;
         private System.Windows.Forms.CheckBox diffuseCB;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox useNormCB;
     }
 }

@@ -30,6 +30,7 @@ namespace Smash_Forge.GUI
             checkBox12.Checked = Runtime.renderCollisionNormals;
             swagViewing.Checked = Runtime.renderSwag;
             lightCheckBox.Checked = Runtime.renderLighting;
+            useNormCB.Checked = Runtime.useNormalMap;
 
             depthSlider.Value = (int)Runtime.renderDepth;
             
@@ -84,11 +85,6 @@ namespace Smash_Forge.GUI
 
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void depthSlider_ValueChanged(object sender, EventArgs e)
         {
             Runtime.renderDepth = depthSlider.Value;
@@ -97,7 +93,6 @@ namespace Smash_Forge.GUI
         private void renderMode_SelectionChangeCommitted(object sender, EventArgs e)
         {
             Runtime.renderType = (Runtime.RenderTypes)renderMode.SelectedIndex;
-            
         }
 
         private void swagViewing_CheckedChanged(object sender, EventArgs e)
@@ -145,14 +140,14 @@ namespace Smash_Forge.GUI
             Runtime.renderReflection = reflectionCB.Checked;
         }
 
-        private void gammaSlider_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void gammaSlider_Scroll(object sender, EventArgs e)
         {
             Runtime.gamma = gammaSlider.Value / 10f;
+        }
+
+        private void useNormCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.useNormalMap = useNormCB.Checked;
         }
     }
 }

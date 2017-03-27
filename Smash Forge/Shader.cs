@@ -27,9 +27,12 @@ namespace Smash_Forge
 
 		public int getAttribute(string s){
 			int v;
-			attributes.TryGetValue (s, out v);
+			bool success = attributes.TryGetValue (s, out v);
 
-			return v;
+            if (success)
+                return v;
+            else
+                return -1;
 		}
 
 		public void enableAttrib(){
@@ -48,12 +51,12 @@ namespace Smash_Forge
 
 		private void addAttribute(string name, bool uniform){
             if (attributes.ContainsKey(name)) attributes.Remove(name);
-			int pos;
-            //MessageBox.Show(name);
+			int pos = -1;
 			if(uniform)
 				pos = GL.GetUniformLocation(programID, name);
 			else
 				pos = GL.GetAttribLocation(programID, name);
+
 			attributes.Add (name, pos);
 		}
         
@@ -100,7 +103,6 @@ namespace Smash_Forge
             LoadAttributes(filename);
             string error = GL.GetProgramInfoLog(programID);
             Console.WriteLine(error);
-            
         }
 
 		public void fragmentShader(string filename){

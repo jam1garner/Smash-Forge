@@ -36,9 +36,13 @@
             this.polyContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editMaterialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.flipUVsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.meshContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.deleteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.singleBindToBoneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
+            this.meshContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeView1
@@ -56,9 +60,9 @@
             this.treeView1.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
             this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
-            this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
             this.treeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
             this.treeView1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.treeView1_KeyPress);
+            this.treeView1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeView1_MouseDown);
             // 
             // numericUpDown1
             // 
@@ -96,30 +100,55 @@
             // polyContextMenu
             // 
             this.polyContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.renameToolStripMenuItem,
             this.editMaterialToolStripMenuItem,
-            this.flipUVsToolStripMenuItem});
+            this.flipUVsToolStripMenuItem,
+            this.deleteToolStripMenuItem});
             this.polyContextMenu.Name = "polyContextMenu";
-            this.polyContextMenu.Size = new System.Drawing.Size(153, 92);
+            this.polyContextMenu.Size = new System.Drawing.Size(141, 70);
             this.polyContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // editMaterialToolStripMenuItem
             // 
             this.editMaterialToolStripMenuItem.Name = "editMaterialToolStripMenuItem";
-            this.editMaterialToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.editMaterialToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.editMaterialToolStripMenuItem.Text = "Edit Material";
+            this.editMaterialToolStripMenuItem.Click += new System.EventHandler(this.editMaterialToolStripMenuItem_Click);
             // 
             // flipUVsToolStripMenuItem
             // 
             this.flipUVsToolStripMenuItem.Name = "flipUVsToolStripMenuItem";
-            this.flipUVsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.flipUVsToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.flipUVsToolStripMenuItem.Text = "Flip UVs";
+            this.flipUVsToolStripMenuItem.Click += new System.EventHandler(this.flipUVsToolStripMenuItem_Click);
             // 
-            // renameToolStripMenuItem
+            // deleteToolStripMenuItem
             // 
-            this.renameToolStripMenuItem.Name = "renameToolStripMenuItem";
-            this.renameToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.renameToolStripMenuItem.Text = "Rename";
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.deleteToolStripMenuItem.Text = "Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            // 
+            // meshContextMenu
+            // 
+            this.meshContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteToolStripMenuItem1,
+            this.singleBindToBoneToolStripMenuItem});
+            this.meshContextMenu.Name = "meshContextMenu";
+            this.meshContextMenu.Size = new System.Drawing.Size(178, 48);
+            // 
+            // deleteToolStripMenuItem1
+            // 
+            this.deleteToolStripMenuItem1.Name = "deleteToolStripMenuItem1";
+            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(177, 22);
+            this.deleteToolStripMenuItem1.Text = "Delete";
+            this.deleteToolStripMenuItem1.Click += new System.EventHandler(this.deleteToolStripMenuItem1_Click);
+            // 
+            // singleBindToBoneToolStripMenuItem
+            // 
+            this.singleBindToBoneToolStripMenuItem.Name = "singleBindToBoneToolStripMenuItem";
+            this.singleBindToBoneToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.singleBindToBoneToolStripMenuItem.Text = "Single Bind to Bone";
+            this.singleBindToBoneToolStripMenuItem.Click += new System.EventHandler(this.singleBindToBoneToolStripMenuItem_Click);
             // 
             // MeshList
             // 
@@ -135,6 +164,7 @@
             this.Text = "MeshList";
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.polyContextMenu.ResumeLayout(false);
+            this.meshContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -147,8 +177,11 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ContextMenuStrip polyContextMenu;
-        private System.Windows.Forms.ToolStripMenuItem renameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editMaterialToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem flipUVsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip meshContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem singleBindToBoneToolStripMenuItem;
     }
 }

@@ -73,6 +73,18 @@ namespace Smash_Forge
             mesh.Clear();
         }
 
+        public enum TextureFlags
+        {
+            Glow = 0x00000080,
+            Shadow = 0x00000040,
+            RIM = 0x00000020,
+            UnknownTex = 0x00000010,
+            AOMap = 0x00000008,
+            CubeMap = 0x00000004,
+            NormalMap = 0x00000002,
+            DiffuseMap = 0x00000001
+        }
+
         /*
          * Not sure if update is needed here
         */
@@ -191,74 +203,82 @@ namespace Smash_Forge
                     //foreach (Material mat in p.materials)
                     {
                         Material mat = p.materials[0];
-                        int fl = ((int)mat.flags & 0xFF);
-                        GL.Uniform1(shader.getAttribute("flags"), fl);
-                        int texHash = mat.displayTexId == -1 ? mat.textures[0].hash : mat.displayTexId;
-                        int nrmHash = -1;
-                        if (mat.textures.Count > 1)
-                            nrmHash = mat.textures[1].hash;
-
-                        int tex = -1, finalTex = -1, finalNrm = -1;
-                        bool success;
+                        GL.Uniform1(shader.getAttribute("flags"), mat.flags);
+                        
                         GL.ActiveTexture(TextureUnit.Texture0);
                         GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
                         GL.Uniform1(shader.getAttribute("tex"), 0);
-                        GL.ActiveTexture(TextureUnit.Texture1);
-                        GL.BindTexture(TextureTarget.Texture2D, 0);
+
+                        GL.ActiveTexture(TextureUnit.Texture0+1);
+                        GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
                         GL.Uniform1(shader.getAttribute("nrm"), 1);
-                        foreach (NUT nut in Runtime.TextureContainers)
-                        {
-                            success = nut.draw.TryGetValue(texHash, out tex);
-                            if (success)
-                                finalTex = tex;
-                            success = nut.draw.TryGetValue(nrmHash, out tex);
-                            if (success)
-                                finalNrm = tex;
-                        }
 
-                        if (finalTex != 0)
+                        GL.ActiveTexture(TextureUnit.Texture0+2);
+                        GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
+                        GL.Uniform1(shader.getAttribute("rim"), 2);
+
+                        GL.ActiveTexture(TextureUnit.Texture0+3);
+                        GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
+                        GL.Uniform1(shader.getAttribute("cube"), 3);
+
+                        int[] locs = new int[4] { 3,3,3,3};
+                        int li = 0;                        
+                        if ((mat.flags & (uint)TextureFlags.DiffuseMap) > 0)
+                            locs[li++] = 0;
+
+                        if ((mat.flags & (uint)TextureFlags.RIM) > 0)
                         {
-                            tex = finalTex;
-                            GL.ActiveTexture(TextureUnit.Texture0);
-                            GL.BindTexture(TextureTarget.Texture2D, tex);
-                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[0].WrapMode1]);
-                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[0].WrapMode2]);
-                            GL.Uniform1(shader.getAttribute("tex"), 0);
+                            // as a stage map...
+                            if ((mat.flags & (uint)TextureFlags.AOMap) > 0)
+                                locs[li++] = 2;
                         }
                         else
+                            if ((mat.flags & (uint)TextureFlags.CubeMap) > 0)
+                                locs[li++] = 3;
+                        
+                        // TODO: This is a specular shine map thing, I'm putting it as rim for now
+                        if ((mat.flags & (uint)NUD.TextureFlags.UnknownTex) > 0)
+                            locs[li++] = 2;
+
+                        if ((mat.flags & (uint)TextureFlags.NormalMap) > 0)
+                            locs[li++] = 1;
+                        else if ((mat.flags & (uint)TextureFlags.RIM) > 0)
                         {
-                            GL.ActiveTexture(TextureUnit.Texture0);
-                            GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
-                            GL.Uniform1(shader.getAttribute("tex"), 0);
+                            locs[li++] = 1; // second diffuse
                         }
 
-                        if (finalNrm != 0 && mat.textures.Count > 1)
+                        if ((mat.flags & (uint)TextureFlags.RIM) > 0)
                         {
-                            tex = finalNrm;
-                            GL.ActiveTexture(TextureUnit.Texture1);
-                            GL.BindTexture(TextureTarget.Texture2D, tex);
-                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[1].WrapMode1]);
-                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[1].WrapMode2]);
-                            GL.Uniform1(shader.getAttribute("nrm"), 1);
+                            // as rim lighting
+                            if ((mat.flags & (uint)TextureFlags.CubeMap) > 0)
+                                locs[li++] = 3;
                         }
                         else
-                        {
-                            GL.ActiveTexture(TextureUnit.Texture1);
-                            GL.BindTexture(TextureTarget.Texture2D, 0);
-                            GL.Uniform1(shader.getAttribute("nrm"), 1);
-                        }
+                            if ((mat.flags & (uint)TextureFlags.AOMap) > 0)
+                                locs[li++] = 2;
 
-                        Vector4 colorSamplerUV = new Vector4(1, 1, 0, 0);
+                        int texid;
+                        bool success;
+                        for (int i = 0; i < mat.textures.Count; i++)
                         {
-                            float[] colorSamplerUVFloats;
-                            mat.entries.TryGetValue("NU_colorSamplerUV", out colorSamplerUVFloats);
-                            if (colorSamplerUVFloats != null && colorSamplerUVFloats.Length >= 4)
+                            if (i > locs.Length) break;
+                            foreach (NUT nut in Runtime.TextureContainers)
                             {
-                                //Console.WriteLine("Anim of NU_ColorSamplerUV from NUD");
-                                colorSamplerUV = new Vector4(colorSamplerUVFloats[0], colorSamplerUVFloats[1], colorSamplerUVFloats[2], colorSamplerUVFloats[3]);
+                                success = nut.draw.TryGetValue(mat.textures[i].hash, out texid);
+                                if (success)
+                                {
+                                    GL.ActiveTexture(TextureUnit.Texture0 + locs[i]);
+                                    GL.BindTexture(TextureTarget.Texture2D, texid);
+                                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[i].WrapMode1]);
+                                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[i].WrapMode2]);
+                                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)wrapmode[mat.textures[i].minFilter]);
+                                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)wrapmode[mat.textures[i].magFilter]);
+                                    //GL.BindTexture(TextureTarget.Texture2D, 0);
+                                    break;
+                                }
                             }
                         }
-                        GL.Uniform4(shader.getAttribute("colorSamplerUV"), colorSamplerUV);
+                        
 
                         float[] ao;
                         mat.entries.TryGetValue("NU_aoMinGain", out ao);
@@ -266,18 +286,24 @@ namespace Smash_Forge
                         Vector4 aoo = new Vector4(ao[0], ao[1], ao[2], ao[3]);
                         GL.Uniform4(shader.getAttribute("minGain"), aoo);
 
-                        float[] co;
-                        mat.entries.TryGetValue("NU_colorOffset", out co);
-                        if (co == null) co = new float[] { 0, 0, 0, 0 };
-                        Vector4 coo = new Vector4(co[0], co[1], co[2], co[3]);
-                        GL.Uniform4(shader.getAttribute("colorOffset"), coo);
-
-                        float[] cg;
-                        mat.entries.TryGetValue("NU_colorGain", out cg);
-                        if (cg == null) cg = new float[] { 1,1,1,1 };
-                        Vector4 cgo = new Vector4(cg[0], cg[1], cg[2], cg[3]);
-                        GL.Uniform4(shader.getAttribute("colorGain"), cgo);
-
+                        {
+                            float[] pa;
+                            mat.entries.TryGetValue("NU_colorSamplerUV", out pa);
+                            if (pa == null) pa = new float[] { 1, 1, 0, 0 };
+                            GL.Uniform4(shader.getAttribute("colorSamplerUV"), pa[0], pa[1], pa[2], pa[3]);
+                        }
+                        {
+                            float[] pa;
+                            mat.entries.TryGetValue("NU_colorGain", out pa);
+                            if (pa == null) pa = new float[] { 1, 1, 1, 1 };
+                            GL.Uniform4(shader.getAttribute("colorGain"), pa[0], pa[1], pa[2], pa[3]);
+                        }
+                        {
+                            float[] pa;
+                            mat.entries.TryGetValue("NU_colorOffset", out pa);
+                            if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                            GL.Uniform4(shader.getAttribute("colorOffset"), pa[0], pa[1], pa[2], pa[3]);
+                        }
                         {
                             float[] pa;
                             mat.entries.TryGetValue("NU_diffuseColor", out pa);
@@ -328,7 +354,7 @@ namespace Smash_Forge
                         }
 
                         GL.Enable(EnableCap.Blend);
-                        if(mat.srcFactor == 5)
+                        if (mat.srcFactor == 5)
                         {
                             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
                         }
@@ -399,7 +425,7 @@ namespace Smash_Forge
                     { 0x01, TextureWrapMode.Repeat},
                     { 0x02, TextureWrapMode.MirroredRepeat},
                     { 0x03, TextureWrapMode.Clamp}
-                };
+        };
         #endregion
 
         #region MTA

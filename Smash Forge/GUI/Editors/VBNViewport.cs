@@ -313,6 +313,7 @@ out vec3 fragpos;
 
 uniform vec4 colorSamplerUV;
 uniform mat4 eyeview;
+uniform uint flags;
 
 uniform bones
 {
@@ -381,6 +382,8 @@ void main()
 		normal = (skinNRM(vNormal.xyz, bi)).xyz; //  * -1 * mat3(eyeview)
 	else
 		normal = vNormal ;
+    //if(flags & 2)
+	//color = vColor * 2;
     }
 }";
 
@@ -392,15 +395,17 @@ in vec4 color;
 in vec3 normal;
 in vec3 fragpos;
 
-// Textures (can have 4)
+// Textures 
 uniform sampler2D tex;
 uniform sampler2D nrm;
+uniform sampler2D rim;
+uniform sampler2D cube;
 
 // other textures
 uniform samplerCube cmap;
 
 // Da Flags
-uniform int flags;
+uniform uint flags;
 
 // Properties
 uniform vec4 colorSamplerUV;
@@ -429,6 +434,8 @@ uniform int renderSpecular;
 uniform int renderFresnel;
 uniform int renderReflection;
 
+uniform int useNormalMap;
+
 uniform float gamma = 1.2; 
 
 uniform mat4 eyeview;
@@ -438,26 +445,52 @@ const vec3 specPos = vec3(0,-10,-40);
 
 float edgefalloff = -1.0;  
 
+const uint Glow         = 0x00000080u;
+const uint Shadow       = 0x00000040u;
+const uint RIM          = 0x00000020u;
+const uint UnknownTex   = 0x00000010u;
+
+const uint AOMap        = 0x00000008u;
+const uint CubeMap      = 0x00000004u;
+const uint NormalMap    = 0x00000002u;
+const uint DiffuseMap   = 0x00000001u;
+
 vec3 lerp(float v, vec3 from, vec3 to)
 {
     return from + (to - from) * v;
 }
 
-vec4 CalculateDiffuse()
+vec3 CalcBumpedNormal()
 {
-	// normal maps come later with flags
-	//vec3 norm = normalize(texture2D(nrm, texcoord).rgb);
-	vec3 norm = normal;
-	norm = normalize(norm);
+    // if no normal map, then return just the normal
+    if((flags & NormalMap) > 0 && useNormalMap == 1) {} else
+	{
+		return normal;
+	}
 
+    vec3 Normal = normalize(normal);
+    vec3 Tangent = normalize(texture2D(nrm, texcoord).xyz);
+    Tangent = normalize(Tangent - dot(Tangent, Normal) * Normal);
+    vec3 Bitangent = cross(Tangent, Normal);
+    vec3 BumpMapNormal = texture2D(nrm, texcoord).xyz;
+    BumpMapNormal = 2.0 * BumpMapNormal - vec3(1.0, 1.0, 1.0);
+    vec3 NewNormal;
+    mat3 TBN = mat3(Tangent, Bitangent, Normal);
+    NewNormal = TBN * BumpMapNormal;
+    NewNormal = normalize(NewNormal);
+    return NewNormal;
+}
+
+vec4 CalculateDiffuse(vec3 norm)
+{
 	vec3 cameraPosition = (transpose(mat3(eyeview)) * eyeview[3].xyz);
 	cameraPosition.y += 20;
 	//cameraPosition.z -= 20;
 	
 	// diffuse
 	
-	vec3 difDir = normalize(lightPos * mat3(eyeview) - fragpos);  
-	float diff = clamp(dot(norm, difDir), 0.4, 0.9);
+	vec3 difDir = normalize(-fragpos * mat3(eyeview));  
+	float diff = clamp(pow(dot(norm, difDir), 0.3f), 0.4, 1.5);
 	vec3 diffuse = vec3(diff) * diffuseColor.www * diffuseColor.xyz;
 	//diffuse = diffuseColor.rgb * (1 / (1.0 + (0.25 * difDir * difDir)));
 	if(diffuse == vec3(0,0,0)) diffuse = vec3(1);
@@ -471,23 +504,15 @@ vec4 CalculateDiffuse()
 	//float sp = pow(max(dot(halfDir, normalize(norm)), 0.0), 16.0);
 
 	vec3 reflectDir = reflect(-specDir, norm);
-	float specDrop = max(specularParams.y / 30, 0.1);
-	float spec = pow(max(dot(specDir, reflectDir), 0.0), 5 + specularParams.z) * specDrop;
+	float specDrop = max(specularParams.y / 50, 0.1);
+	float spec = pow(max(dot(specDir, reflectDir), 0.0), 2 + specularParams.z) * specDrop;
 	float div = max(specularParams.x/10, 1.0);
 	vec3 specular = vec3(spec) * specularColor.www * (specularColor.xyz) / div;
-
-// fresnel
-	vec3 lightDir = normalize(vec3(0,-0.5,-0.7) * mat3(eyeview));  // vec3(0,-0.3,-0.7)
-	vec3 F0 = vec3(0); //fresnelParams.w 
-	F0      = mix(F0, vec3(0), 0);
-	float cosTheta = dot(lightDir, norm);
-	vec3 fresnel = F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); // 5.0
-
 
 // reflection
 	float ratio = 1.0 / 1.0;
 	vec3 I = normalize(fragpos - cameraPosition);
-    	vec3 R = refract(I, norm, ratio);
+    	vec3 R = refract(I, normal, ratio);
 	R.y *= -1;
     	vec3 refColor = texture(cmap, R).rgb * reflectionColor.rgb;
 
@@ -496,19 +521,37 @@ vec4 CalculateDiffuse()
 	if(renderDiffuse == 1)
 		fin += diffuse;
 
-	float fdiv = min(1 + fresnelParams.x / 5, 1);
-	if(renderFresnel == 1)
-		fin += max(fresnel.xyz*fresnelColor.rgb / fdiv, 0); //lerp(fresnelParams.x, fin, fresnelColor.xyz * fresnel);//
-
-    	specular.rgb = pow(specular.rgb, vec3(1.0/gamma));
 	if(renderSpecular == 1)
-		fin += specular / specularColorGain.xyz;
+		fin += specular + specular * specularColorGain.xyz;
 
 	if(renderReflection == 1)
-		fin += refColor.rgb * reflectionColor.aaa;
+		fin += refColor.rgb;
 
     	fin.rgb = pow(fin.rgb, vec3(1.0/gamma));
+
+	
+	if(flags & UnknownTex)
+	{
+		return vec4(spec);
+	}
+
 	return vec4(fin.xyz, fresnelColor.a);
+}
+
+vec3 CalculateFresnel(vec3 norm){
+	vec3 difDir = normalize(-fragpos * mat3(eyeview));  
+	float diff = clamp(pow(dot(norm, difDir), 0.5f), 0.4, 1.0);
+	vec3 f = (normalize(-fragpos));
+	f.z -= 0.8;
+	f.y -= 0.2;
+	vec3 lightDir = normalize(f * mat3(eyeview));  // vec3(0,-0.3,-0.7)
+	vec3 F0 = vec3(0); //fresnelParams.w 
+	F0 = mix(F0, vec3(0), 0);
+	float cosTheta = dot(lightDir, normal);
+	vec3 fresnel = F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); // 5.0
+
+	float fdiv = min(1 + fresnelParams.x / 5, 1);
+	return max(fresnel.xyz*fresnelColor.rgb / fdiv, 0); 
 }
 
 void
@@ -518,34 +561,39 @@ main()
     if(renderType == 1 || renderType == 2 || renderType == 3){
         gl_FragColor = color;
     } else {
-/*
-        if(renderType == 0x20 || renderType == 0x60)
-            fnormal = 1;
-        if(renderType == 0x40 || renderType == 0x60)
-            fcolor = vec4(1,1,1,1);
-
-        if(flags == 0x65 && fincol.a < 1)
-            fincol = vec4(1,1,1,1);
-*/
 
 	// calcuate final color by mixing with vertex color
-	vec4 fincol = texture2D(tex, texcoord);
+	vec4 fincol = vec4(0);
 
-	if(renderVertColor == 1)
-		fincol = fincol * color;
+	if(flags & DiffuseMap){
+		fincol = texture2D(tex, texcoord);
+
+		if((flags & NormalMap)==0 && (flags & RIM) > 0 && (flags & CubeMap) > 0){
+			fincol = texture2D(cube, texcoord);
+			//fincol = mix(fincol, texture2D(nrm, texcoord), texture2D(nrm, texcoord).a);
+			fincol = mix(fincol, texture2D(tex, texcoord), texture2D(tex, texcoord).a);
+			fincol.a = 1;
+		}
+	}
+
+	float a = fincol.a;
+
+	if(renderVertColor == 1) fincol = fincol * color;
 
 	// color gains
 	fincol = (colorOffset + fincol * colorGain);
 
 	// diffuse specular and fresnel
+	vec3 norm = CalcBumpedNormal();
         if(renderNormal == 1){
 		if(renderLighting == 1){
-
 			// ambient occlusion
-			vec4 dif = CalculateDiffuse();
-			vec4 ao = ((minGain + texture2D(nrm, texcoord).aaaa) * dif.rgba);
+			vec4 dif = CalculateDiffuse(norm);
+			vec4 ao = ((minGain + texture2D(nrm, texcoord).aaaa));
 			fincol *= ao;
-			//fincol *=  dif.rgba;
+			fincol *= dif.rgba;
+			//if(flags & UnknownTex) a = dif.a;
+			if(renderFresnel == 1) fincol.xyz += CalculateFresnel(norm) * texture2D(tex, texcoord).rgb;
 		}
     		else
     		{
@@ -558,14 +606,15 @@ main()
     	}
 
 	// correct alpha
-	fincol = vec4(fincol.xyz, texture2D(tex, texcoord).a * color.a);
-
-        if(flags == 0x65 && fincol.a < 1)
-            fincol = vec4(1,1,1,1) * 
-		vec4(CalculateDiffuse().xyz, 1.0);
+	fincol = vec4(fincol.xyz, a * color.a);
 	
 	// gamma correction
 	fincol.rgb = pow(fincol.rgb, vec3(1.0/gamma));
+
+	//vec3 norm = ((texture2D(nrm, texcoord).rgb+1)/2);
+	//fincol = vec4(texture2D(nrm, texcoord).xyz, 1.0);
+	//fincol = vec4(CalculateFresnel(norm), 1.0);
+	//fincol = vec4(norm, 1.0);
 
         gl_FragColor = fincol;
     }
@@ -815,6 +864,7 @@ main()
             GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
 
             GL.Uniform1(shader.getAttribute("gamma"), Runtime.gamma);
 
@@ -1940,8 +1990,8 @@ main()
             {
                 //GL.DeleteProgram(shader.programID);
                 //shader = new Shader();
-                //shader.vertexShader(File.ReadAllText("C:\\s\\Smash\\extract\\vert.txt"));
-                //shader.fragmentShader(File.ReadAllText("C:\\s\\Smash\\extract\\frag.txt"));
+                //shader.vertexShader(File.ReadAllText("vert.txt"));
+                //shader.fragmentShader(File.ReadAllText("frag.txt"));
             }
             if (e.KeyChar == 'f')
             {
