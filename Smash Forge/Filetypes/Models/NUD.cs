@@ -16,11 +16,6 @@ namespace Smash_Forge
         public NUD()
         {
             GL.GenBuffers(1, out vbo_position);
-            GL.GenBuffers(1, out vbo_color);
-            GL.GenBuffers(1, out vbo_nrm);
-            GL.GenBuffers(1, out vbo_uv);
-            GL.GenBuffers(1, out ubo_bones);
-            GL.GenBuffers(1, out vbo_weight);
             GL.GenBuffers(1, out ibo_elements);
         }
         public NUD(string fname) : this()
@@ -31,17 +26,10 @@ namespace Smash_Forge
 
         // gl buffer objects
         int vbo_position;
-        int vbo_color;
-        int vbo_nrm;
-        int vbo_uv;
-        int vbo_weight;
-        int ubo_bones;
         int ibo_elements;
-
-        Vector2[] uvdata;
-        Vector3[] vertdata, nrmdata;
+        
         int[] facedata;
-        Vector4[] bonedata, coldata, weightdata;
+        dVertex[] vertdata;
 
         public const int SMASH = 0;
         public const int POKKEN = 1;
@@ -57,19 +45,10 @@ namespace Smash_Forge
         public void Destroy()
         {
             GL.DeleteBuffer(vbo_position);
-            GL.DeleteBuffer(vbo_color);
-            GL.DeleteBuffer(vbo_nrm);
-            GL.DeleteBuffer(vbo_uv);
-            GL.DeleteBuffer(vbo_weight);
-            GL.DeleteBuffer(ubo_bones);
+            GL.DeleteBuffer(ibo_elements);
 
-            uvdata = null;
             vertdata = null;
-            nrmdata = null;
             facedata = null;
-            bonedata = null;
-            coldata = null;
-            weightdata = null;
             mesh.Clear();
         }
 
@@ -90,12 +69,7 @@ namespace Smash_Forge
         */
         public void PreRender()
         {
-            List<Vector3> vert = new List<Vector3>();
-            List<Vector2> uv = new List<Vector2>();
-            List<Vector4> col = new List<Vector4>();
-            List<Vector3> nrm = new List<Vector3>();
-            List<Vector4> bone = new List<Vector4>();
-            List<Vector4> weight = new List<Vector4>();
+            List<dVertex> vert = new List<dVertex>();
             List<int> face = new List<int>();
 
             int i = 0;
@@ -105,34 +79,28 @@ namespace Smash_Forge
                 Mesh m = mesh[mes];
                 foreach (Polygon p in m.polygons)
                 {
-                    
                     if (p.faces.Count <= 3)
                         continue;
                     foreach (Vertex v in p.vertices)
                     {
-                        vert.Add(v.pos);
-                        if(Endian == Endianness.Little)
-                            col.Add(new Vector4(1f, 1f, 1f, 1));
-                        else
-                            col.Add(v.col/0x7F);
-                        nrm.Add(v.nrm);
-
-                        uv.Add(v.tx[0]);
-
-                        if(v.node.Count == 0)
+                        dVertex nv = new dVertex()
                         {
-                            v.node.Add(-1);
-                            v.weight.Add(1);
-                        }
-                        while (v.node.Count < 4)
-                        {
-                            v.node.Add(0);
-                            v.weight.Add(0);
-                        }
-                        //bone.Add(new Vector4(-1, 0, 0, 0));
-                        //weight.Add(new Vector4(-1, 0, 0, 0));
-                        bone.Add(new Vector4(v.node[0], v.node[1], v.node[2], v.node[3]));
-                        weight.Add(new Vector4(v.weight[0], v.weight[1], v.weight[2], v.weight[3]));
+                            pos = v.pos,
+                            nrm = v.nrm,
+                            col = Endian == Endianness.Little ? new Vector4(1f, 1f, 1f, 1f) : v.col / 0x7F,
+                            tx0 = v.tx.Count > 0 ? v.tx[0] : new Vector2(0, 0),
+                            node = new Vector4(v.node.Count > 0 ? v.node[0] : -1,
+                            v.node.Count > 1 ? v.node[1] : -1, 
+                            v.node.Count > 2 ? v.node[2] : -1, 
+                            v.node.Count > 3 ? v.node[3] : -1),
+                            weight = new Vector4(v.weight.Count > 0 ? v.weight[0] : 0,
+                            v.weight.Count > 1 ? v.weight[1] : 0,
+                            v.weight.Count > 2 ? v.weight[2] : 0,
+                            v.weight.Count > 3 ? v.weight[3] : 0),
+
+                        };
+
+                        vert.Add(nv);
                     }
 
                     // rearrange faces
@@ -145,46 +113,25 @@ namespace Smash_Forge
                     i += p.vertices.Count;
                 }
             }
-
-            vertdata = vert.ToArray();
-            coldata = col.ToArray();
-            nrmdata = nrm.ToArray();
-            uvdata = uv.ToArray();
+            
             facedata = face.ToArray();
-            bonedata = bone.ToArray();
-            weightdata = weight.ToArray();
-
+            vertdata = vert.ToArray();
         }
 
         public void Render(Shader shader)
         {
-
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(vertdata.Length * Vector3.SizeInBytes), vertdata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_color);
-            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(coldata.Length * Vector4.SizeInBytes), coldata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_nrm);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(nrmdata.Length * Vector3.SizeInBytes), nrmdata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_uv);
-            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, (IntPtr)(uvdata.Length * Vector2.SizeInBytes), uvdata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, ubo_bones);
-            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(bonedata.Length * Vector4.SizeInBytes), bonedata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_weight);
-            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(weightdata.Length * Vector4.SizeInBytes), weightdata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, 0, 0);
-
+            GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(vertdata.Length * dVertex.Size), vertdata, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
+            GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 12);
+            GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 24);
+            GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 32);
+            GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 48);
+            GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 64);
+            
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(facedata.Length * sizeof(int)), facedata, BufferUsageHint.StaticDraw);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
             //GL.Enable(EnableCap.PrimitiveRestartFixedIndex);
 
@@ -1319,6 +1266,34 @@ namespace Smash_Forge
         #endregion
 
         #region ClassStructure
+
+        public struct Vector4i
+        {
+            int x, y, z, w;
+
+            public Vector4i(int x, int y, int z, int w)
+            {
+                this.x = x;
+                this.y = y;
+                this.z = z;
+                this.w = w;
+            }
+
+            public static int Size = 4 * sizeof(int);
+        }
+
+        public struct dVertex
+        {
+            public Vector3 pos;
+            public Vector3 nrm;
+            public Vector2 tx0;
+            public Vector4 col;
+            public Vector4 node;
+            public Vector4 weight;
+
+            public static int Size = 4 * (3 + 3 + 2 + 4 + 4 + 4);
+        }
+
         public class Vertex
         {
             public Vector3 pos = new Vector3(0, 0, 0), nrm = new Vector3(0, 0, 0);

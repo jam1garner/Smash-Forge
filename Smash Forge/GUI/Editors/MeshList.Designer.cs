@@ -40,6 +40,7 @@
             this.meshContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.singleBindToBoneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.duplicateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
             this.meshContextMenu.SuspendLayout();
@@ -101,30 +102,31 @@
             // 
             this.polyContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.editMaterialToolStripMenuItem,
+            this.duplicateToolStripMenuItem,
             this.flipUVsToolStripMenuItem,
             this.deleteToolStripMenuItem});
             this.polyContextMenu.Name = "polyContextMenu";
-            this.polyContextMenu.Size = new System.Drawing.Size(141, 70);
+            this.polyContextMenu.Size = new System.Drawing.Size(153, 114);
             this.polyContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // editMaterialToolStripMenuItem
             // 
             this.editMaterialToolStripMenuItem.Name = "editMaterialToolStripMenuItem";
-            this.editMaterialToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.editMaterialToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.editMaterialToolStripMenuItem.Text = "Edit Material";
             this.editMaterialToolStripMenuItem.Click += new System.EventHandler(this.editMaterialToolStripMenuItem_Click);
             // 
             // flipUVsToolStripMenuItem
             // 
             this.flipUVsToolStripMenuItem.Name = "flipUVsToolStripMenuItem";
-            this.flipUVsToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.flipUVsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.flipUVsToolStripMenuItem.Text = "Flip UVs";
             this.flipUVsToolStripMenuItem.Click += new System.EventHandler(this.flipUVsToolStripMenuItem_Click);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
@@ -149,6 +151,14 @@
             this.singleBindToBoneToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
             this.singleBindToBoneToolStripMenuItem.Text = "Single Bind to Bone";
             this.singleBindToBoneToolStripMenuItem.Click += new System.EventHandler(this.singleBindToBoneToolStripMenuItem_Click);
+            // 
+            // duplicateToolStripMenuItem
+            // 
+            this.duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
+            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.duplicateToolStripMenuItem.Text = "Duplicate";
+            this.duplicateToolStripMenuItem.Visible = false;
+            this.duplicateToolStripMenuItem.Click += new System.EventHandler(this.duplicateToolStripMenuItem_Click);
             // 
             // MeshList
             // 
@@ -183,5 +193,6 @@
         private System.Windows.Forms.ContextMenuStrip meshContextMenu;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem singleBindToBoneToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem duplicateToolStripMenuItem;
     }
 }

@@ -205,7 +205,7 @@ namespace Smash_Forge
             listView1.Items.Clear();
             listView1.View = View.List;
 
-            int[] locs = new int[4];
+            int[] locs = new int[mat.textures.Count];
             int li = 0;
             if ((mat.flags & (uint)NUD.TextureFlags.DiffuseMap) > 0)
                 locs[li++] = 0;

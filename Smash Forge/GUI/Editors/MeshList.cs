@@ -407,5 +407,18 @@ namespace Smash_Forge
                 ((NUD)treeView1.SelectedNode.Parent.Tag).PreRender();
             }
         }
+
+        private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            /*NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+
+            NUD.Polygon np = new NUD.Polygon();
+            np.faces.AddRange(p.faces);
+            np.displayFaceSize = p.displayFaceSize;
+            np.polflag = p.polflag;
+            np.strip = p.strip;
+            np.UVSize = p.UVSize;
+            np.vertSize = p.vertSize;*/
+        }
     }
 }

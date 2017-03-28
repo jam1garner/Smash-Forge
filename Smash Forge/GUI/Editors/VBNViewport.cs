@@ -63,7 +63,7 @@ namespace Smash_Forge
                 GL.Viewport(glControl1.ClientRectangle);
 
 
-                v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 500.0f);
+                v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, glControl1.Width / (float)glControl1.Height, 1.0f, 500.0f);
             }
         }
 
@@ -443,8 +443,6 @@ uniform mat4 eyeview;
 const vec3 lightPos = vec3(0,0,-50);
 const vec3 specPos = vec3(0,-10,-40);
 
-float edgefalloff = -1.0;  
-
 const uint Glow         = 0x00000080u;
 const uint Shadow       = 0x00000040u;
 const uint RIM          = 0x00000020u;
@@ -463,7 +461,7 @@ vec3 lerp(float v, vec3 from, vec3 to)
 vec3 CalcBumpedNormal()
 {
     // if no normal map, then return just the normal
-    if((flags & NormalMap) > 0 && useNormalMap == 1) {} else
+    if((flags & NormalMap) > 0u && useNormalMap == 1) {} else
 	{
 		return normal;
 	}
@@ -483,57 +481,18 @@ vec3 CalcBumpedNormal()
 
 vec4 CalculateDiffuse(vec3 norm)
 {
-	vec3 cameraPosition = (transpose(mat3(eyeview)) * eyeview[3].xyz);
-	cameraPosition.y += 20;
-	//cameraPosition.z -= 20;
-	
 	// diffuse
-	
 	vec3 difDir = normalize(-fragpos * mat3(eyeview));  
-	float diff = clamp(pow(dot(norm, difDir), 0.3f), 0.4, 1.5);
+	float diff = clamp(pow(dot(norm, difDir), 0.2f), 0.5, 2.0);
 	vec3 diffuse = vec3(diff) * diffuseColor.www * diffuseColor.xyz;
 	//diffuse = diffuseColor.rgb * (1 / (1.0 + (0.25 * difDir * difDir)));
 	if(diffuse == vec3(0,0,0)) diffuse = vec3(1);
 
-// specular
-	vec3 specDir = vec3(0,0,1) * mat3(eyeview);  
-	//specDir = normalize(vec3(0,0,1) * mat3(eyeview));  
-
-	vec3 viewDir = normalize(-fragpos); //pos - 
-	//vec3 halfDir = normalize(normalize(cameraPosition) + viewDir);
-	//float sp = pow(max(dot(halfDir, normalize(norm)), 0.0), 16.0);
-
-	vec3 reflectDir = reflect(-specDir, norm);
-	float specDrop = max(specularParams.y / 50, 0.1);
-	float spec = pow(max(dot(specDir, reflectDir), 0.0), 2 + specularParams.z) * specDrop;
-	float div = max(specularParams.x/10, 1.0);
-	vec3 specular = vec3(spec) * specularColor.www * (specularColor.xyz) / div;
-
-// reflection
-	float ratio = 1.0 / 1.0;
-	vec3 I = normalize(fragpos - cameraPosition);
-    	vec3 R = refract(I, normal, ratio);
-	R.y *= -1;
-    	vec3 refColor = texture(cmap, R).rgb * reflectionColor.rgb;
-
-// combine
 	vec3 fin = vec3(0);
 	if(renderDiffuse == 1)
 		fin += diffuse;
 
-	if(renderSpecular == 1)
-		fin += specular + specular * specularColorGain.xyz;
-
-	if(renderReflection == 1)
-		fin += refColor.rgb;
-
-    	fin.rgb = pow(fin.rgb, vec3(1.0/gamma));
-
-	
-	if(flags & UnknownTex)
-	{
-		return vec4(spec);
-	}
+    	//fin.rgb = pow(fin.rgb, vec3(1.0/gamma));
 
 	return vec4(fin.xyz, fresnelColor.a);
 }
@@ -554,6 +513,45 @@ vec3 CalculateFresnel(vec3 norm){
 	return max(fresnel.xyz*fresnelColor.rgb / fdiv, 0); 
 }
 
+vec3 CalculateReflection(vec3 norm){
+// reflection
+	vec3 cameraPosition = (transpose(mat3(eyeview)) * eyeview[3].xyz);
+	cameraPosition.y += 20;
+	float ratio = 1.0 / 1.0;
+	vec3 I = normalize(fragpos - cameraPosition);
+    	vec3 R = refract(I, norm, ratio);
+	R.y *= -1;
+    	vec3 refColor = texture(cmap, R).rgb * reflectionColor.rgb;
+
+	return refColor / reflectionColor.aaa;
+}
+
+vec3 CalculateSpecular(vec3 norm){
+
+// specular
+	vec3 cameraPosition = (transpose(mat3(eyeview)) * eyeview[3].xyz);
+	cameraPosition.y += 20;
+	vec3 specDir = vec3(0,0,1) * mat3(eyeview);  
+	//specDir = normalize(vec3(0,0,1) * mat3(eyeview));  
+
+	vec3 viewDir = normalize(-fragpos); //pos - 
+	//vec3 halfDir = normalize(normalize(cameraPosition) + viewDir);
+	//float sp = pow(max(dot(halfDir, normalize(norm)), 0.0), 16.0);
+
+	vec3 reflectDir = reflect(-specDir, norm);
+	float specDrop = max(specularParams.y / 50, 0.1);
+	float spec = pow(max(dot(specDir, reflectDir), 0.0), 2 + specularParams.z) * specDrop;
+	float div = max(specularParams.x/10, 1.0);
+	vec3 specular = vec3(spec) * specularColor.www * (specularColor.xyz) / div;
+
+	if((flags & UnknownTex) > 0u)
+	{
+		return vec3(spec);
+	}
+	
+	return specular + specular * specularColorGain.xyz;
+}
+
 void
 main()
 {
@@ -565,10 +563,10 @@ main()
 	// calcuate final color by mixing with vertex color
 	vec4 fincol = vec4(0);
 
-	if(flags & DiffuseMap){
+	if((flags & DiffuseMap) > 0u){
 		fincol = texture2D(tex, texcoord);
 
-		if((flags & NormalMap)==0 && (flags & RIM) > 0 && (flags & CubeMap) > 0){
+		if((flags & NormalMap) == 0u && (flags & RIM) > 0u && (flags & CubeMap) > 0u){
 			fincol = texture2D(cube, texcoord);
 			//fincol = mix(fincol, texture2D(nrm, texcoord), texture2D(nrm, texcoord).a);
 			fincol = mix(fincol, texture2D(tex, texcoord), texture2D(tex, texcoord).a);
@@ -589,6 +587,8 @@ main()
 		if(renderLighting == 1){
 			// ambient occlusion
 			vec4 dif = CalculateDiffuse(norm);
+			if(renderSpecular == 1) dif.xyz += CalculateSpecular(norm);
+			if(renderReflection == 1) dif.xyz += CalculateReflection(norm);
 			vec4 ao = ((minGain + texture2D(nrm, texcoord).aaaa));
 			fincol *= ao;
 			fincol *= dif.rgba;
@@ -606,13 +606,13 @@ main()
     	}
 
 	// correct alpha
-	fincol = vec4(fincol.xyz, a * color.a);
+	fincol.a = a * color.a;
 	
 	// gamma correction
 	fincol.rgb = pow(fincol.rgb, vec3(1.0/gamma));
 
 	//vec3 norm = ((texture2D(nrm, texcoord).rgb+1)/2);
-	//fincol = vec4(texture2D(nrm, texcoord).xyz, 1.0);
+	//fincol = vec4(texture2D(tex, texcoord).xyz, 1.0);
 	//fincol = vec4(CalculateFresnel(norm), 1.0);
 	//fincol = vec4(norm, 1.0);
 
@@ -657,7 +657,7 @@ main()
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
             v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
-                * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, Runtime.renderDepth);
+                * Matrix4.CreatePerspectiveFieldOfView(1.3f, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
 
         }
@@ -799,7 +799,7 @@ main()
             zoom += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale;
 
             v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
-                * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, Runtime.renderDepth);
+                * Matrix4.CreatePerspectiveFieldOfView(1.3f, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
         public bool IsMouseOverViewport()
@@ -818,7 +818,7 @@ main()
                     cf = 0;
                 pathFrame f = Runtime.TargetPath.Frames[cf];
                 v = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() 
-                    * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
+                    * Matrix4.CreatePerspectiveFieldOfView(1.3f, glControl1.Width / (float)glControl1.Height, 1.0f, 90000.0f);
                 cf++;
             }
             else if (Runtime.TargetCMR0 != null && checkBox1.Checked)
@@ -827,7 +827,7 @@ main()
                     cf = 0;
                 Matrix4 m = Runtime.TargetCMR0.frames[cf].Inverted();
                 v = Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) 
-                    * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
+                    * Matrix4.CreatePerspectiveFieldOfView(1.3f, glControl1.Width / (float)glControl1.Height, 1.0f, 90000.0f);
                 cf++;
             }
         }
@@ -2058,7 +2058,7 @@ main()
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
             v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) 
-                * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, Runtime.renderDepth);
+                * Matrix4.CreatePerspectiveFieldOfView(1.3f, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
     }
