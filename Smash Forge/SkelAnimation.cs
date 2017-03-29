@@ -211,6 +211,9 @@ namespace Smash_Forge
                 }
                 if (n.r_type != -1)
                 {
+                    //if(new string(b.boneName).Equals("HeadN"))
+                    //    Console.WriteLine(n.r.ToString() + (n.r.X + n.r.Y + n.r.X + n.r.W));
+                    //Console.WriteLine(new string(b.boneName) + " " + b.rot.ToString() + " " + n.r.ToString() + "\n" + (n.r.X + n.r.Y + n.r.X + n.r.W));
                     b.rot = n.r;
                 }
                 if (n.s_type != -1)

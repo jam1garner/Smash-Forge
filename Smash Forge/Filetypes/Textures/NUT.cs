@@ -133,6 +133,19 @@ namespace Smash_Forge
             //Destroy();
         }
 
+        public bool getTextureByID(int hash, out NUD_Texture suc)
+        {
+            suc = null;
+            foreach (NUD_Texture t in textures)
+                if (t.id == hash)
+                {
+                    suc = t;
+                    return true;
+                }
+
+            return false;
+        }
+
         public override byte[] Rebuild()
         {
             FileOutput o = new FileOutput();
@@ -338,7 +351,7 @@ namespace Smash_Forge
             {
                 if (!draw.ContainsKey(tex.id))
                 {
-                    draw.Add(tex.id, loadImage(tex, 0));
+                    draw.Add(tex.id, loadImage(tex, true));
                 }
             }
         }
@@ -503,16 +516,8 @@ namespace Smash_Forge
             return texID;
         }
 
-        public static int loadImage(NUD_Texture t)
+        public static int loadImage(NUD_Texture t, bool DDS = false)
         {
-            return loadImage(t, 0);
-        }
-
-        public static int loadImage(NUD_Texture t, int level)
-        {
-            if (level >= t.mipmaps.Count)
-                level = 0;
-
             int texID = GL.GenTexture();
 
             GL.BindTexture(TextureTarget.Texture2D, texID);
@@ -529,7 +534,7 @@ namespace Smash_Forge
                         t.width, t.height, 0, t.Size, t.mipmaps[0]);
                 //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
                 
-                if (t.mipmaps.Count > 1 && 1==2)
+                if (t.mipmaps.Count > 1 && DDS)
                 {
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.mipmaps.Count);
                     GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);

@@ -16,6 +16,8 @@ using OpenTK.Graphics;
 using System.Diagnostics;
 using WeifenLuo.WinFormsUI.Docking;
 using System.IO;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 namespace Smash_Forge
 {
@@ -63,7 +65,7 @@ namespace Smash_Forge
                 GL.Viewport(glControl1.ClientRectangle);
 
 
-                v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, glControl1.Width / (float)glControl1.Height, 1.0f, 500.0f);
+                v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 500.0f);
             }
         }
 
@@ -325,7 +327,7 @@ uniform int renderType;
 
 
 vec4 skin(vec3 po, ivec4 index);
-vec4 skinNRM(vec3 po, ivec4 index);
+vec3 skinNRM(vec3 po, ivec4 index);
  
 vec4 skin(vec3 po, ivec4 index)
 {
@@ -339,14 +341,14 @@ vec4 skin(vec3 po, ivec4 index)
     return oPos;
 }
 
-vec4 skinNRM(vec3 nr, ivec4 index)
+vec3 skinNRM(vec3 nr, ivec4 index)
 {
-    vec4 nrmPos = vec4(nr, 1.0);
+    vec3 nrmPos = vec3(0);
 	
-    nrmPos = transpose(inverse(bones_.transforms[index.x])) * vec4(nr, 1.0) * vWeight.x;
-    nrmPos += transpose(inverse(bones_.transforms[index.y])) * vec4(nr, 1.0) * vWeight.y;
-    nrmPos += transpose(inverse(bones_.transforms[index.z])) * vec4(nr, 1.0) * vWeight.z;
-    nrmPos += transpose(inverse(bones_.transforms[index.w])) * vec4(nr, 1.0) * vWeight.w;
+    if(vWeight.x != 0) nrmPos = mat3(bones_.transforms[index.x]) * nr * vWeight.x;
+    if(vWeight.y != 0) nrmPos += mat3(bones_.transforms[index.y]) * nr * vWeight.y;
+    if(vWeight.z != 0) nrmPos += mat3(bones_.transforms[index.z]) * nr * vWeight.z;
+    if(vWeight.w != 0) nrmPos += mat3(bones_.transforms[index.w]) * nr * vWeight.w;
 
     return nrmPos;
 }
@@ -379,11 +381,9 @@ void main()
 	fragpos = objPos.xyz;
 
 	if(vBone.x != -1) 
-		normal = (skinNRM(vNormal.xyz, bi)).xyz; //  * -1 * mat3(eyeview)
+		normal = normalize((skinNRM(vNormal.xyz, bi)).xyz) ; //  * -1 * mat3(eyeview)
 	else
 		normal = vNormal ;
-    //if(flags & 2)
-	//color = vColor * 2;
     }
 }";
 
@@ -657,7 +657,7 @@ main()
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
             v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
-                * Matrix4.CreatePerspectiveFieldOfView(1.3f, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
+                * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
 
         }
@@ -675,6 +675,8 @@ main()
 
             glControl1.MakeCurrent();
 
+            GL.Viewport(glControl1.ClientRectangle);
+
             //GL.ClearColor(back1);
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
@@ -686,14 +688,14 @@ main()
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
 
-            GL.Begin(PrimitiveType.Quads);
+            /*GL.Begin(PrimitiveType.Quads);
             GL.Color3(back1);
             GL.Vertex2(1.0, 1.0);
             GL.Vertex2(-1.0, 1.0);
             GL.Color3(back2);
             GL.Vertex2(-1.0, -1.0);
             GL.Vertex2(1.0, -1.0);
-            GL.End();
+            GL.End();*/
 
             //GL.DepthFunc(DepthFunction.Never);
             GL.Enable(EnableCap.DepthTest);
@@ -732,7 +734,7 @@ main()
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 
             GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Less);
+            GL.DepthFunc(DepthFunction.Lequal);
 
             GL.Enable(EnableCap.AlphaTest);
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
@@ -799,7 +801,7 @@ main()
             zoom += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale;
 
             v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
-                * Matrix4.CreatePerspectiveFieldOfView(1.3f, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
+                * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
         public bool IsMouseOverViewport()
@@ -818,7 +820,7 @@ main()
                     cf = 0;
                 pathFrame f = Runtime.TargetPath.Frames[cf];
                 v = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() 
-                    * Matrix4.CreatePerspectiveFieldOfView(1.3f, glControl1.Width / (float)glControl1.Height, 1.0f, 90000.0f);
+                    * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 90000.0f);
                 cf++;
             }
             else if (Runtime.TargetCMR0 != null && checkBox1.Checked)
@@ -827,7 +829,7 @@ main()
                     cf = 0;
                 Matrix4 m = Runtime.TargetCMR0.frames[cf].Inverted();
                 v = Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) 
-                    * Matrix4.CreatePerspectiveFieldOfView(1.3f, glControl1.Width / (float)glControl1.Height, 1.0f, 90000.0f);
+                    * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 90000.0f);
                 cf++;
             }
         }
@@ -1993,6 +1995,117 @@ main()
                 //shader.vertexShader(File.ReadAllText("vert.txt"));
                 //shader.fragmentShader(File.ReadAllText("frag.txt"));
             }
+            if (e.KeyChar == 'r')
+            {
+                /*int fb;
+                GL.GenFramebuffers(1, out fb);
+
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, fb);
+
+                int rt;
+                GL.GenTextures(1, out rt);
+                GL.BindTexture(TextureTarget.Texture2D, rt);
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, 1024, 768, 0, PixelFormat.Rgb, PixelType.UnsignedByte, (IntPtr)0);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                GL.BindTexture(TextureTarget.Texture2D, 0);
+
+                int dep;
+                GL.GenRenderbuffers(1, out dep);
+                GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, dep);
+                GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, 1024, 768);
+                GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, dep);
+
+                GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, rt, 0);
+
+                DrawBuffersEnum[] drawBuffers = new DrawBuffersEnum[] { DrawBuffersEnum .ColorAttachment0};
+                GL.DrawBuffers(1, drawBuffers);
+
+                if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+                    MessageBox.Show("Error Rendering");*/
+
+                //GL.BindFramebuffer(FramebufferTarget.Framebuffer, fb);
+                //GL.Viewport(0, 0, 1024, 768);
+
+
+                // GL.MatrixMode(MatrixMode.Projection);
+                //GL.LoadIdentity();
+                /*GL.Begin(PrimitiveType.Quads);
+                GL.Color3(back1);
+                GL.Vertex2(1.0, 1.0);
+                GL.Vertex2(-1.0, 1.0);
+                GL.Color3(back2);
+                GL.Vertex2(-1.0, -1.0);
+                GL.Vertex2(1.0, -1.0);
+                GL.End();*/
+
+                /*GL.Enable(EnableCap.Normalize);  
+                GL.Enable(EnableCap.RescaleNormal);
+
+                GL.Enable(EnableCap.Blend);
+                GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+
+                GL.Enable(EnableCap.DepthTest);
+                GL.DepthFunc(DepthFunction.Less);
+
+                GL.Enable(EnableCap.AlphaTest);
+                GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
+
+                GL.Enable(EnableCap.CullFace);
+                GL.CullFace(CullFaceMode.Front);
+
+                GL.Enable(EnableCap.LineSmooth);*/
+
+                //GL.LoadMatrix(ref v);
+                // set up the viewport projection and send it to GPU
+                //GL.PushAttrib(AttribMask.AllAttribBits);
+                //GL.Enable(EnableCap.DepthTest);
+                //GL.DepthFunc(DepthFunction.Less);
+                //GL.MatrixMode(MatrixMode.Modelview);
+
+                //GL.UseProgram(0);
+                // drawing floor---------------------------
+                //if (Runtime.renderFloor)RenderTools.drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
+
+                // draw models
+                //if (Runtime.renderModel)
+                //    DrawModels();
+
+                int width = glControl1.Width;
+                int height = glControl1.Height;
+
+                byte[] pixels = new byte[width*height*4];
+                GL.ReadPixels(0,0,width, height, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
+                File.WriteAllBytes("test.bin", pixels);
+                
+                Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
+
+                byte[] np = new byte[width*height * 4];
+                // need to flip and rearrange the data
+                for(int h = 0; h < height; h++)
+                    for(int w = 0;  w < width; w++)
+                    {
+                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 2] = pixels[(w + h * bmp.Width) * 4 + 0];
+                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 1] = pixels[(w + h * bmp.Width) * 4 + 1];
+                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 0] = pixels[(w + h * bmp.Width) * 4 + 2];
+                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 3] = pixels[(w + h * bmp.Width) * 4 + 3];
+                    }
+
+                Marshal.Copy(np, 0, bmpData.Scan0, np.Length);
+                bmp.UnlockBits(bmpData);
+
+                Console.WriteLine("Saving");
+                bmp.Save("Render.png");
+                //GL.DeleteFramebuffer(fb);
+                //GL.DeleteTexture(rt);
+                //GL.DeleteTexture(dep);
+
+                //GL.PopAttrib();
+
+                //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            }
             if (e.KeyChar == 'f')
             {
                 fpsView = !fpsView;
@@ -2006,8 +2119,8 @@ main()
                     width = tr.X / 5f;
                     height = (tr.Y+5f) / -5f;
                     zoom = -(tr.Z + 15f);*/
-                }
-                else
+            }
+            else
                 {
                 }
             }
@@ -2058,7 +2171,7 @@ main()
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
             v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) 
-                * Matrix4.CreatePerspectiveFieldOfView(1.3f, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
+                * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
     }

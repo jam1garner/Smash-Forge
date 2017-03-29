@@ -214,7 +214,7 @@ namespace Smash_Forge
                             while (NUT.texIdUsed(tex.id))
                                 tex.id++;
                             thisNut.textures.Add(tex);
-                            thisNut.draw.Add(tex.id, NUT.loadImage(tex, 0));
+                            thisNut.draw.Add(tex.id, NUT.loadImage(tex));
                             existingTextures.Add(img.initref, tex);
                             tempTex = tex;
                         }

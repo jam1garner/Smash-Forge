@@ -33,8 +33,8 @@ namespace Smash_Forge.GUI
             useNormCB.Checked = Runtime.useNormalMap;
 
             depthSlider.Value = (int)Runtime.renderDepth;
-            
-            gammaSlider.Value = (int)Runtime.gamma * 10;
+            fovSlider.Value = (int)(Runtime.fov * 10);
+            gammaSlider.Value = (int)(Runtime.gamma * 10);
 
             diffuseCB.Checked = Runtime.renderDiffuse;
             specularCB.Checked = Runtime.renderSpecular;
@@ -148,6 +148,11 @@ namespace Smash_Forge.GUI
         private void useNormCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.useNormalMap = useNormCB.Checked;
+        }
+
+        private void fovSlider_Scroll(object sender, EventArgs e)
+        {
+            Runtime.fov = fovSlider.Value / 10f;
         }
     }
 }

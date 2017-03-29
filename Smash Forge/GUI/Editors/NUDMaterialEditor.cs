@@ -56,7 +56,10 @@ namespace Smash_Forge
                     { 0x06, "LessOrEqual + 255"}
                 };
 
-
+        Dictionary<int, string> ref0 = new Dictionary<int, string>(){
+                    { 0x00, "Nothing"},
+                    { 0x02, "GreaterOrEqual + 128"}
+                };
 
         Dictionary<int, string> mapmode = new Dictionary<int, string>(){
                     { 0x00, "TexCoord"},
@@ -195,7 +198,7 @@ namespace Smash_Forge
             textBox1.Text = mat.flags.ToString("X") + "";
             textBox3.Text = mat.dstFactor + "";
             textBox4.Text = mat.srcFactor + "";
-            textBox5.Text = mat.alphaFunc + "";
+            //textBox5.Text = mat.alphaFunc + "";
             textBox6.Text = mat.drawPriority + "";
             textBox7.Text = mat.cullMode + "";
             textBox8.Text = mat.zBufferOffset + "";
@@ -205,7 +208,7 @@ namespace Smash_Forge
             listView1.Items.Clear();
             listView1.View = View.List;
 
-            int[] locs = new int[mat.textures.Count];
+            int[] locs = new int[mat.textures.Count + 4];
             int li = 0;
             if ((mat.flags & (uint)NUD.TextureFlags.DiffuseMap) > 0)
                 locs[li++] = 0;
@@ -354,7 +357,7 @@ namespace Smash_Forge
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            setValue(textBox5, comboBox4, afunc, out material[current].alphaFunc);
+            //setValue(textBox5, comboBox4, afunc, out material[current].alphaFunc);
         }
         #endregion
 

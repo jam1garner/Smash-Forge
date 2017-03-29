@@ -396,6 +396,7 @@ namespace Smash_Forge
                 mesh.singlebind = brs.boneIndex;
                 foreach (NUD.Polygon poly in mesh.polygons)
                 {
+                    poly.vertSize = poly.vertSize & 0x0F;
                     foreach (NUD.Vertex vi in poly.vertices)
                     {
                         vi.node.Clear();

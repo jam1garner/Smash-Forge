@@ -49,6 +49,7 @@ namespace Smash_Forge
         public static bool renderSwag { get; set; }
 
         public static float gamma = 1.2f;
+        public static float fov = 1.0f;
         public static bool renderDiffuse = true;
         public static bool renderFresnel = true;
         public static bool renderSpecular = true;
