@@ -41,9 +41,13 @@
             this.checkBox11 = new System.Windows.Forms.CheckBox();
             this.checkBox12 = new System.Windows.Forms.CheckBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.swagViewing = new System.Windows.Forms.CheckBox();
             this.depthSlider = new System.Windows.Forms.TrackBar();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.fovSlider = new System.Windows.Forms.TrackBar();
             this.useNormCB = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
             this.gammaSlider = new System.Windows.Forms.TrackBar();
@@ -52,18 +56,16 @@
             this.fresnelCB = new System.Windows.Forms.CheckBox();
             this.diffuseCB = new System.Windows.Forms.CheckBox();
             this.lightCheckBox = new System.Windows.Forms.CheckBox();
-            this.swagViewing = new System.Windows.Forms.CheckBox();
             this.cb_normals = new System.Windows.Forms.CheckBox();
             this.renderMode = new System.Windows.Forms.ComboBox();
             this.cb_vertcolor = new System.Windows.Forms.CheckBox();
-            this.fovSlider = new System.Windows.Forms.TrackBar();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.backgroundCB = new System.Windows.Forms.CheckBox();
+            this.boundingCB = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).BeginInit();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.gammaSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fovSlider)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gammaSlider)).BeginInit();
             this.SuspendLayout();
             // 
             // checkBox1
@@ -136,7 +138,7 @@
             this.checkBox6.AutoSize = true;
             this.checkBox6.Checked = true;
             this.checkBox6.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox6.Location = new System.Drawing.Point(12, 146);
+            this.checkBox6.Location = new System.Drawing.Point(12, 196);
             this.checkBox6.Name = "checkBox6";
             this.checkBox6.Size = new System.Drawing.Size(85, 17);
             this.checkBox6.TabIndex = 5;
@@ -149,7 +151,7 @@
             this.checkBox7.AutoSize = true;
             this.checkBox7.Checked = true;
             this.checkBox7.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox7.Location = new System.Drawing.Point(44, 169);
+            this.checkBox7.Location = new System.Drawing.Point(44, 219);
             this.checkBox7.Name = "checkBox7";
             this.checkBox7.Size = new System.Drawing.Size(107, 17);
             this.checkBox7.TabIndex = 6;
@@ -162,7 +164,7 @@
             this.checkBox8.AutoSize = true;
             this.checkBox8.Checked = true;
             this.checkBox8.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox8.Location = new System.Drawing.Point(44, 215);
+            this.checkBox8.Location = new System.Drawing.Point(44, 265);
             this.checkBox8.Name = "checkBox8";
             this.checkBox8.Size = new System.Drawing.Size(102, 17);
             this.checkBox8.TabIndex = 7;
@@ -175,7 +177,7 @@
             this.checkBox9.AutoSize = true;
             this.checkBox9.Checked = true;
             this.checkBox9.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox9.Location = new System.Drawing.Point(44, 238);
+            this.checkBox9.Location = new System.Drawing.Point(44, 288);
             this.checkBox9.Name = "checkBox9";
             this.checkBox9.Size = new System.Drawing.Size(114, 17);
             this.checkBox9.TabIndex = 8;
@@ -188,7 +190,7 @@
             this.checkBox10.AutoSize = true;
             this.checkBox10.Checked = true;
             this.checkBox10.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox10.Location = new System.Drawing.Point(44, 261);
+            this.checkBox10.Location = new System.Drawing.Point(44, 311);
             this.checkBox10.Name = "checkBox10";
             this.checkBox10.Size = new System.Drawing.Size(134, 17);
             this.checkBox10.TabIndex = 9;
@@ -201,7 +203,7 @@
             this.checkBox11.AutoSize = true;
             this.checkBox11.Checked = true;
             this.checkBox11.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox11.Location = new System.Drawing.Point(44, 284);
+            this.checkBox11.Location = new System.Drawing.Point(44, 334);
             this.checkBox11.Name = "checkBox11";
             this.checkBox11.Size = new System.Drawing.Size(133, 17);
             this.checkBox11.TabIndex = 10;
@@ -212,7 +214,7 @@
             // checkBox12
             // 
             this.checkBox12.AutoSize = true;
-            this.checkBox12.Location = new System.Drawing.Point(73, 192);
+            this.checkBox12.Location = new System.Drawing.Point(73, 242);
             this.checkBox12.Name = "checkBox12";
             this.checkBox12.Size = new System.Drawing.Size(158, 17);
             this.checkBox12.TabIndex = 11;
@@ -222,6 +224,8 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.boundingCB);
+            this.panel1.Controls.Add(this.backgroundCB);
             this.panel1.Controls.Add(this.checkBox1);
             this.panel1.Controls.Add(this.checkBox12);
             this.panel1.Controls.Add(this.checkBox2);
@@ -239,6 +243,17 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(283, 372);
             this.panel1.TabIndex = 12;
+            // 
+            // swagViewing
+            // 
+            this.swagViewing.AutoSize = true;
+            this.swagViewing.Location = new System.Drawing.Point(44, 54);
+            this.swagViewing.Name = "swagViewing";
+            this.swagViewing.Size = new System.Drawing.Size(109, 17);
+            this.swagViewing.TabIndex = 18;
+            this.swagViewing.Text = "Show Swag Data";
+            this.swagViewing.UseVisualStyleBackColor = true;
+            this.swagViewing.CheckedChanged += new System.EventHandler(this.swagViewing_CheckedChanged);
             // 
             // depthSlider
             // 
@@ -284,6 +299,33 @@
             this.groupBox1.TabIndex = 15;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model Render Settings";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(117, 67);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(57, 13);
+            this.label4.TabIndex = 29;
+            this.label4.Text = "FOV Slider";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(9, 127);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(72, 13);
+            this.label3.TabIndex = 28;
+            this.label3.Text = "Render Mode";
+            // 
+            // fovSlider
+            // 
+            this.fovSlider.Location = new System.Drawing.Point(12, 83);
+            this.fovSlider.Maximum = 30;
+            this.fovSlider.Name = "fovSlider";
+            this.fovSlider.Size = new System.Drawing.Size(265, 45);
+            this.fovSlider.TabIndex = 27;
+            this.fovSlider.Scroll += new System.EventHandler(this.fovSlider_Scroll);
             // 
             // useNormCB
             // 
@@ -373,17 +415,6 @@
             this.lightCheckBox.UseVisualStyleBackColor = true;
             this.lightCheckBox.CheckedChanged += new System.EventHandler(this.lightCheckBox_CheckedChanged);
             // 
-            // swagViewing
-            // 
-            this.swagViewing.AutoSize = true;
-            this.swagViewing.Location = new System.Drawing.Point(44, 54);
-            this.swagViewing.Name = "swagViewing";
-            this.swagViewing.Size = new System.Drawing.Size(109, 17);
-            this.swagViewing.TabIndex = 18;
-            this.swagViewing.Text = "Show Swag Data";
-            this.swagViewing.UseVisualStyleBackColor = true;
-            this.swagViewing.CheckedChanged += new System.EventHandler(this.swagViewing_CheckedChanged);
-            // 
             // cb_normals
             // 
             this.cb_normals.AutoSize = true;
@@ -426,32 +457,27 @@
             this.cb_vertcolor.UseVisualStyleBackColor = true;
             this.cb_vertcolor.CheckedChanged += new System.EventHandler(this.cb_vertcolor_CheckedChanged);
             // 
-            // fovSlider
+            // backgroundCB
             // 
-            this.fovSlider.Location = new System.Drawing.Point(12, 83);
-            this.fovSlider.Maximum = 30;
-            this.fovSlider.Name = "fovSlider";
-            this.fovSlider.Size = new System.Drawing.Size(265, 45);
-            this.fovSlider.TabIndex = 27;
-            this.fovSlider.Scroll += new System.EventHandler(this.fovSlider_Scroll);
+            this.backgroundCB.AutoSize = true;
+            this.backgroundCB.Location = new System.Drawing.Point(12, 146);
+            this.backgroundCB.Name = "backgroundCB";
+            this.backgroundCB.Size = new System.Drawing.Size(122, 17);
+            this.backgroundCB.TabIndex = 19;
+            this.backgroundCB.Text = "Render Background";
+            this.backgroundCB.UseVisualStyleBackColor = true;
+            this.backgroundCB.CheckedChanged += new System.EventHandler(this.backgroundCB_CheckedChanged);
             // 
-            // label3
+            // boundingCB
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 127);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(72, 13);
-            this.label3.TabIndex = 28;
-            this.label3.Text = "Render Mode";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(117, 67);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(57, 13);
-            this.label4.TabIndex = 29;
-            this.label4.Text = "FOV Slider";
+            this.boundingCB.AutoSize = true;
+            this.boundingCB.Location = new System.Drawing.Point(12, 170);
+            this.boundingCB.Name = "boundingCB";
+            this.boundingCB.Size = new System.Drawing.Size(141, 17);
+            this.boundingCB.TabIndex = 20;
+            this.boundingCB.Text = "Render Bounding Boxes";
+            this.boundingCB.UseVisualStyleBackColor = true;
+            this.boundingCB.CheckedChanged += new System.EventHandler(this.boundingCB_CheckedChanged);
             // 
             // RenderSettings
             // 
@@ -469,8 +495,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.gammaSlider)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.fovSlider)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gammaSlider)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -508,5 +534,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TrackBar fovSlider;
+        private System.Windows.Forms.CheckBox backgroundCB;
+        private System.Windows.Forms.CheckBox boundingCB;
     }
 }

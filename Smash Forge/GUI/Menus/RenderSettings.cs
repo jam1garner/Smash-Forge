@@ -21,6 +21,7 @@ namespace Smash_Forge.GUI
             checkBox3.Checked = Runtime.renderHitboxes;
             checkBox4.Checked = Runtime.renderPath;
             checkBox5.Checked = Runtime.renderFloor;
+            backgroundCB.Checked = Runtime.renderBackGround;
             checkBox6.Checked = Runtime.renderLVD;
             checkBox7.Checked = Runtime.renderCollisions;
             checkBox8.Checked = Runtime.renderSpawns;
@@ -31,6 +32,7 @@ namespace Smash_Forge.GUI
             swagViewing.Checked = Runtime.renderSwag;
             lightCheckBox.Checked = Runtime.renderLighting;
             useNormCB.Checked = Runtime.useNormalMap;
+            boundingCB.Checked = Runtime.renderBoundingBox;
 
             depthSlider.Value = (int)Runtime.renderDepth;
             fovSlider.Value = (int)(Runtime.fov * 10);
@@ -153,6 +155,16 @@ namespace Smash_Forge.GUI
         private void fovSlider_Scroll(object sender, EventArgs e)
         {
             Runtime.fov = fovSlider.Value / 10f;
+        }
+
+        private void backgroundCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderBackGround = backgroundCB.Checked;
+        }
+
+        private void boundingCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderBoundingBox = boundingCB.Checked;
         }
     }
 }

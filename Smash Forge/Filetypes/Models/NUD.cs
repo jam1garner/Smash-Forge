@@ -101,6 +101,8 @@ namespace Smash_Forge
                         p.isTransparent = false;
                         if (v.col.Z < 0x7F)
                             p.isTransparent = true;
+                        if(p.materials[0].srcFactor > 1)
+                            p.isTransparent = true;
 
                         vert.Add(nv);
                     }
@@ -116,7 +118,7 @@ namespace Smash_Forge
             //vertdata = vert.ToArray();
         }
 
-        public void Render(Shader shader)
+        public void Render(Shader shader, Matrix4 view)
         {
             // create lists...
             // first draw opaque
@@ -126,9 +128,16 @@ namespace Smash_Forge
             List<Polygon> opaque = new List<Polygon>();
             List<Polygon> trans = new List<Polygon>();
 
-            for (int mes = mesh.Count - 1; mes >= 0; mes--)
+            /*SortedList<float, Mesh> transorder = new SortedList<float, Mesh>();
+            foreach(Mesh m in mesh)
             {
-                Mesh m = mesh[mesh.Count - 1-mes];
+                float pos = Vector4.Transform(new Vector4(m.bbox[0], m.bbox[1], m.bbox[2], 1.0f), view).Z;
+                if (!transorder.ContainsKey(pos))
+                    transorder.Add(pos, m);
+            }*/
+
+            foreach (Mesh m in mesh)
+            {
                 for (int pol = m.polygons.Count - 1; pol >= 0; pol--)
                 {
                     Polygon p = m.polygons[m.polygons.Count - 1 - pol];
@@ -154,6 +163,8 @@ namespace Smash_Forge
                         opaque.Add(p);
                 }
             }
+
+
 
             //GL.Enable(EnableCap.PrimitiveRestartFixedIndex);
 

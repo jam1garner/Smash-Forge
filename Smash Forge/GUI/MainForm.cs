@@ -56,6 +56,7 @@ namespace Smash_Forge
             Runtime.renderBones = true;
             Runtime.renderLVD = true;
             Runtime.renderFloor = true;
+            Runtime.renderBackGround = true;
             Runtime.renderHitboxes = true;
             Runtime.renderModel = true;
             Runtime.renderPath = true;

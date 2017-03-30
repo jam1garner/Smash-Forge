@@ -688,14 +688,17 @@ main()
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
 
-            /*GL.Begin(PrimitiveType.Quads);
-            GL.Color3(back1);
-            GL.Vertex2(1.0, 1.0);
-            GL.Vertex2(-1.0, 1.0);
-            GL.Color3(back2);
-            GL.Vertex2(-1.0, -1.0);
-            GL.Vertex2(1.0, -1.0);
-            GL.End();*/
+            if (Runtime.renderBackGround)
+            {
+                GL.Begin(PrimitiveType.Quads);
+                GL.Color3(back1);
+                GL.Vertex2(1.0, 1.0);
+                GL.Vertex2(-1.0, 1.0);
+                GL.Color3(back2);
+                GL.Vertex2(-1.0, -1.0);
+                GL.Vertex2(1.0, -1.0);
+                GL.End();
+            }
 
             //GL.DepthFunc(DepthFunction.Never);
             GL.Enable(EnableCap.DepthTest);
@@ -837,18 +840,20 @@ main()
         private void DrawModels()
         {
             // Bounding Box Render
-            /*foreach (ModelContainer m in Runtime.ModelContainers)
+            if(Runtime.renderBoundingBox)
+            foreach (ModelContainer m in Runtime.ModelContainers)
             {
                 if (m.nud != null)
                 {
                     RenderTools.drawCubeWireframe(new Vector3(m.nud.param[0], m.nud.param[1], m.nud.param[2]), m.nud.param[3]);
                     foreach (NUD.Mesh mesh in m.nud.mesh)
                     {
-                        RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
+                        if(mesh.Checked)
+                            RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
                     }
                 }
-            }*/
-
+            }
+            
             GL.UseProgram(shader.programID);
             int rt = (int)Runtime.renderType;
             if(rt == 0)
@@ -938,7 +943,7 @@ main()
                     if (Runtime.TargetMTA != null)
                         m.nud.applyMTA(Runtime.TargetMTA, (int)nupdFrame.Value);//Apply additional mta (can override base)
 
-                    m.nud.Render(shader);
+                    m.nud.Render(shader, v);
                     shader.disableAttrib();
                 }
             }
