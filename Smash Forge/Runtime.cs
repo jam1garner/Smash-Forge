@@ -16,6 +16,8 @@ namespace Smash_Forge
             MaterialAnimations = new Dictionary<string, MTA>();
         }
 
+        public static Dictionary<string, Shader> shaders = new Dictionary<string, Shader>();
+
         public static List<ModelContainer> ModelContainers = new List<ModelContainer>();
         public static List<NUT> TextureContainers = new List<NUT>();
         public static List<NUS3BANK> SoundContainers = new List<NUS3BANK>();

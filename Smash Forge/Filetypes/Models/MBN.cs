@@ -95,7 +95,7 @@ namespace Smash_Forge
                 else
                     uv.Add(new Vector2(0, 0));
                 // TODO: Bones
-                Console.WriteLine(v.node.Count);
+                //Console.WriteLine(v.node.Count);
                 if (v.node.Count > 1)
                 {
                     foreach (Mesh m in mesh)

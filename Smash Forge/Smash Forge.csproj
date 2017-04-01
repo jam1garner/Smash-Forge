@@ -298,6 +298,12 @@
     <Compile Include="GUI\Menus\RenderSettings.Designer.cs">
       <DependentUpon>RenderSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\ModelViewport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\ModelViewport.Designer.cs">
+      <DependentUpon>ModelViewport.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Nodes\ProjectNode.cs" />
     <Compile Include="IO\FileBase.cs" />
     <Compile Include="MovesetManager.cs" />
@@ -404,6 +410,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\DAEImportSettings.resx">
       <DependentUpon>DAEImportSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\ModelViewport.resx">
+      <DependentUpon>ModelViewport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

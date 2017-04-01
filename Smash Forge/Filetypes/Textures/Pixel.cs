@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
@@ -7,10 +8,6 @@ namespace Smash_Forge
 {
     public class Pixel
     {
-        public Pixel()
-        {
-
-        }
 
         public static Bitmap fromBGRA(FileData d, int width, int height)
         {
@@ -22,7 +19,7 @@ namespace Smash_Forge
 
             for (int i = 0; i < pixels.Length; i++)
             {
-                pixels[i] = (d.readByte() << 16) | (d.readByte() << 8) | (d.readByte()) | (d.readByte() << 24);
+                pixels[i] = (d.readByte()) | (d.readByte() << 8) | (d.readByte()<<16) | (d.readByte() << 24);
             }
 
             Marshal.Copy(pixels, 0, bmpData.Scan0, pixels.Length);
@@ -41,7 +38,26 @@ namespace Smash_Forge
 
             for (int i = 0; i < pixels.Length; i++)
             {
-                pixels[i] = (d.readByte()) | (d.readByte() << 8) | (d.readByte() << 16) | (d.readByte() << 24);
+                pixels[i] = (d.readByte()<<16) | (d.readByte() << 8) | (d.readByte() << 0) | (d.readByte() << 24);
+            }
+
+            Marshal.Copy(pixels, 0, bmpData.Scan0, pixels.Length);
+            bmp.UnlockBits(bmpData);
+
+            return bmp;
+        }
+
+        public static Bitmap fromABGR(FileData d, int width, int height)
+        {
+            Bitmap bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
+
+            int[] pixels = new int[width * height];
+
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                pixels[i] = (d.readByte() << 24) | (d.readByte()) | (d.readByte() << 8) | (d.readByte() << 16);
             }
 
             Marshal.Copy(pixels, 0, bmpData.Scan0, pixels.Length);
@@ -55,7 +71,30 @@ namespace Smash_Forge
         // transformations
 
 
+        public static Bitmap ResizeImage(Image image, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
 
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
 
         // 3ds stuff
 

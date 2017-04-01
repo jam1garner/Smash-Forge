@@ -12,10 +12,13 @@ using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
 using System.IO;
 using System.Threading;
+using WeifenLuo.WinFormsUI.Docking;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 namespace Smash_Forge
 {
-    public partial class NUTEditor : Form
+    public partial class NUTEditor : DockContent
     {
         private NUT selected;
         private FileSystemWatcher fw;
@@ -91,7 +94,7 @@ namespace Smash_Forge
             {
                 NUT.NUD_Texture tex = ((NUT.NUD_Texture)listBox2.SelectedItem);
                 textBox1.Text = tex.ToString();
-                label2.Text = "Format: " + tex.type;
+                label2.Text = "Format: " + (tex.type == PixelInternalFormat.Rgba ? "" + tex.utype : "" + tex.type);
                 label3.Text = "Width: " + tex.width;
                 label4.Text = "Height:" + tex.height;
                 label5.Text = "Mipmap:" + tex.mipmaps.Count;
@@ -135,21 +138,6 @@ namespace Smash_Forge
                 float HeightPre = texureRatioH * glControl1.Width;
                 h = glControl1.Height / HeightPre;
             }
-            
-            /*GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
-            GL.Color3(Color.White);
-            GL.Begin(PrimitiveType.Quads);
-            GL.TexCoord2(w, h);
-            GL.Vertex2(1, -1);
-            GL.TexCoord2(0, h);
-            GL.Vertex2(-1, -1);
-            GL.TexCoord2(0, 0);
-            GL.Vertex2(-1, 1);
-            GL.TexCoord2(w, 0);
-            GL.Vertex2(1, 1);
-            GL.End();*/
 
             GL.BindTexture(TextureTarget.Texture2D, rt);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
@@ -227,56 +215,143 @@ namespace Smash_Forge
 
         private void importToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(selected != null)
-            using (var ofd = new OpenFileDialog())
-            {
-                ofd.Filter = "Direct Draw Surface (.dds)|*.dds|" +
-                             "All files(*.*)|*.*";
-
-                if (ofd.ShowDialog() == DialogResult.OK)
+            if (selected != null)
+                using (var ofd = new OpenFileDialog())
                 {
-                    int texId;
-                    bool isTex = int.TryParse(Path.GetFileNameWithoutExtension(ofd.FileName), NumberStyles.HexNumber,
-                        new CultureInfo("en-US"), out texId);
+                    ofd.Filter = "Supported Formats|*.dds;*.png|" + 
+                                 "Direct Draw Surface (.dds)|*.dds|" +
+                                 "Portable Networks Graphic (.png)|*.png|" +
+                                 "All files(*.*)|*.*";
 
-                    if(isTex)
-                    foreach (NUT.NUD_Texture tex in selected.textures)
-                        if (texId == tex.id)
-                            isTex = false;
-
-                    if (ofd.FileName.EndsWith(".dds") && selected != null)
+                    if (ofd.ShowDialog() == DialogResult.OK)
                     {
-                        DDS dds = new DDS(new FileData(ofd.FileName));
-                        NUT.NUD_Texture tex = dds.toNUT_Texture();
-                        if(isTex)
-                            tex.id = texId;
-                        else
-                            tex.id = 0x40FFFF00 | (selected.textures.Count);
-                        selected.textures.Add(tex);
-                        selected.draw.Add(tex.id, NUT.loadImage(tex));
-                        FillForm();
-                        listBox1.SelectedItem = selected;
+                        int texId;
+                        bool isTex = int.TryParse(Path.GetFileNameWithoutExtension(ofd.FileName), NumberStyles.HexNumber,
+                            new CultureInfo("en-US"), out texId);
+
+                        if (isTex)
+                            foreach (NUT.NUD_Texture te in selected.textures)
+                                if (texId == te.id)
+                                    isTex = false;
+
+                        NUT.NUD_Texture tex = null;
+
+                        if (ofd.FileName.EndsWith(".dds") && selected != null)
+                        {
+                            DDS dds = new DDS(new FileData(ofd.FileName));
+                            tex = dds.toNUT_Texture();
+                        }
+                        if (ofd.FileName.EndsWith(".png") && selected != null)
+                        {
+                            tex = fromPNG(ofd.FileName, 1);
+                        }
+
+                        if (tex != null)
+                        {
+                            if (isTex)
+                                tex.id = texId;
+                            else
+                                tex.id = 0x40FFFF00 | (selected.textures.Count);
+                            selected.textures.Add(tex);
+                            selected.draw.Add(tex.id, NUT.loadImage(tex));
+                            FillForm();
+                            listBox1.SelectedItem = selected;
+                        }
                     }
                 }
+        }
+
+
+        private unsafe NUT.NUD_Texture fromPNG(string fname, int mipcount)
+        {
+            Bitmap bmp = new Bitmap(fname);
+            NUT.NUD_Texture tex = new NUT.NUD_Texture();
+
+            tex.mipmaps.Add(fromPNG(bmp));
+            for (int i = 1; i < mipcount; i++)
+            {
+                if(bmp.Width / (int)Math.Pow(2, i) < 4 || bmp.Height / (int)Math.Pow(2, i) < 4) break;
+                tex.mipmaps.Add(fromPNG(Pixel.ResizeImage(bmp, bmp.Width / (int)Math.Pow(2, i), bmp.Height / (int)Math.Pow(2, i))));
             }
+            tex.width = bmp.Width;
+            tex.height = bmp.Height;
+            tex.type = PixelInternalFormat.Rgba;
+            tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+
+            return tex;
+        }
+
+        private unsafe byte[] fromPNG(Bitmap bmp)
+        {
+            BitmapData bmpData =
+                bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            
+            IntPtr ptr = bmpData.Scan0;
+            
+            int bytes = Math.Abs(bmpData.Stride) * bmp.Height;
+            byte[] pix = new byte[bytes];
+            
+            Marshal.Copy(ptr, pix, 0, bytes);
+
+            bmp.UnlockBits(bmpData);
+
+            // swap red and blue channels
+            for(int i = 0; i < pix.Length; i += 4)
+            {
+                byte temp = pix[i];
+                pix[i] = pix[i + 2];
+                pix[i + 2] = temp;
+            }
+
+            return pix;
         }
 
         private void exportAsDDSToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (var sfd = new SaveFileDialog())
             {
-                sfd.Filter = "Direct Draw Surface (.dds)|*.dds|" +
-                             "All Files (*.*)|*.*";
+                NUT.NUD_Texture tex = (NUT.NUD_Texture)(listBox2.SelectedItem);
+                if (tex.type == PixelInternalFormat.Rgba)
+                    sfd.Filter = "Portable Networks Graphic (.png)|*.png|" +
+                                 "All files(*.*)|*.*";
+                else
+                    sfd.Filter = "Direct Draw Surface (.dds)|*.dds|" +
+                                 "All files(*.*)|*.*";
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
+                    // use png instead
+                    if (sfd.FileName.EndsWith(".png") && selected != null && tex.type == PixelInternalFormat.Rgba)
+                    {
+                        ExportPNG(sfd.FileName, tex);
+                    }
                     if (sfd.FileName.EndsWith(".dds") && selected != null)
                     {
                         DDS dds = new DDS();
-                        dds.fromNUT_Texture((NUT.NUD_Texture)(listBox2.SelectedItem));
+                        dds.fromNUT_Texture(tex);
                         dds.Save(sfd.FileName);
                     }
                 }
+            }
+        }
+
+        private void ExportPNG(string fname, NUT.NUD_Texture tex)
+        {
+            if (tex.mipmaps.Count > 1)
+                MessageBox.Show("RGBA texture exported as PNG do no preserve mipmaps");
+
+            switch (tex.utype)
+            {
+                case OpenTK.Graphics.OpenGL.PixelFormat.Rgba:
+                    Pixel.fromRGBA(new FileData(tex.mipmaps[0]), tex.width, tex.height).Save(fname);
+                    break;
+                case OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt:
+                    Pixel.fromABGR(new FileData(tex.mipmaps[0]), tex.width, tex.height).Save(fname);
+                    break;
+                case OpenTK.Graphics.OpenGL.PixelFormat.Bgra:
+                    Pixel.fromBGRA(new FileData(tex.mipmaps[0]), tex.width, tex.height).Save(fname);
+                    break;
             }
         }
 
@@ -317,32 +392,42 @@ namespace Smash_Forge
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Direct Draw Surface (.dds)|*.dds|" +
-                             "All files(*.*)|*.*";
+                NUT.NUD_Texture tex = (NUT.NUD_Texture)(listBox2.SelectedItem);
+
+                if (tex.type == PixelInternalFormat.Rgba)
+                    ofd.Filter = "Portable Networks Graphic (.png)|*.png|" +
+                                 "All files(*.*)|*.*";
+                else
+                    ofd.Filter = "Direct Draw Surface (.dds)|*.dds|" +
+                                 "All files(*.*)|*.*";
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
+                    NUT.NUD_Texture ntex = null;
                     if (ofd.FileName.EndsWith(".dds") && selected != null)
                     {
-
-                        NUT.NUD_Texture tex = (NUT.NUD_Texture)(listBox2.SelectedItem);
-
                         DDS dds = new DDS(new FileData(ofd.FileName));
-                        NUT.NUD_Texture ntex = dds.toNUT_Texture();
+                        ntex = dds.toNUT_Texture();
 
                         tex.height = ntex.height;
                         tex.width = ntex.width;
                         tex.type = ntex.type;
                         tex.mipmaps = ntex.mipmaps;
                         tex.utype = ntex.utype;
-
-                        GL.DeleteTexture(selected.draw[tex.id]);
-                        selected.draw.Remove(tex.id);
-                        selected.draw.Add(tex.id, NUT.loadImage(tex));
-
-                        FillForm();
-                        listBox1.SelectedItem = selected;
                     }
+
+                    if (ofd.FileName.EndsWith(".png") && selected != null)
+                        ntex = fromPNG(ofd.FileName, 1);
+
+                    if (ntex == null)
+                        return;
+                    
+                    GL.DeleteTexture(selected.draw[tex.id]);
+                    selected.draw.Remove(tex.id);
+                    selected.draw.Add(tex.id, NUT.loadImage(tex));
+
+                    FillForm();
+                    listBox1.SelectedItem = selected;
                 }
             }
         }
@@ -553,9 +638,15 @@ namespace Smash_Forge
                     foreach (var tex in selected.textures)
                     {
                         string filename = Path.Combine(f.SelectedPath, $"{tex.id.ToString("X")}.dds");
-                        DDS dds = new DDS();
-                        dds.fromNUT_Texture(tex);
-                        dds.Save(filename);
+                        if(tex.type == PixelInternalFormat.Rgba)
+                        {
+                            ExportPNG(filename, tex);
+                        }else
+                        {
+                            DDS dds = new DDS();
+                            dds.fromNUT_Texture(tex);
+                            dds.Save(filename);
+                        }
                     }
                     Process.Start("explorer.exe", f.SelectedPath);
                 }

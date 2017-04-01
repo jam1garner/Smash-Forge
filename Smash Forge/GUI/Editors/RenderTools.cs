@@ -9,7 +9,17 @@ namespace Smash_Forge
 {
     public class RenderTools
     {
-        // Taken from Brawllib render TKContext.cs
+        public static int defaultTex;
+        public static int cubeTex;
+
+        public static void Setup()
+        {
+            cubeTex = LoadCubeMap();
+            defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
+        }
+
+
+        #region Taken from Brawllib render TKContext.cs
         public static void drawSphere(Vector3 center, float radius, uint precision)
         {
 
@@ -134,6 +144,8 @@ namespace Smash_Forge
 
         public static void drawFloor(Matrix4 s)
         {
+            GL.UseProgram(0);
+
             GL.Color3(Color.Gray);
             GL.LineWidth(1f);
             GL.Begin(PrimitiveType.Lines);
@@ -282,9 +294,114 @@ namespace Smash_Forge
             GL.End();
         }
 
+        #endregion
 
+        #region FileRendering
+        
+        
+        public static void DrawModel(ModelContainer m, Matrix4 v)
+        {
+            if (m.dat_melee != null)
+            {
+                m.dat_melee.Render(v);
+            }
 
-        //Other things for rendering
+            if (m.nud != null)
+            {
+                m.nud.Render(v, m.vbn);
+            }
+        }
+
+        public static void DrawBones()
+        {
+            if (Runtime.ModelContainers.Count > 0)
+            {
+                foreach (ModelContainer m in Runtime.ModelContainers)
+                {
+                    DrawVBN(m.vbn);
+                    if (m.bch != null)
+                    {
+                        DrawVBN(m.bch.models[0].skeleton);
+                    }
+
+                    if (m.dat_melee != null)
+                    {
+                        DrawVBN(m.dat_melee.bones);
+                    }
+                }
+            }
+        }
+
+        public static void DrawVBN(VBN vbn)
+        {
+            if (vbn != null && Runtime.renderBones)
+            {
+                foreach (Bone bone in vbn.bones)
+                {
+                    // first calcuate the point and draw a point
+                    if (bone == BoneTreePanel.selectedBone)
+                        GL.Color3(Color.Red);
+                    else
+                        GL.Color3(Color.GreenYellow);
+
+                    Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform);
+                    RenderTools.drawCube(pos_c, .085f);
+
+                    // if swing bones then draw swing radius
+                    if (vbn.swingBones.bones.Count > 0 && Runtime.renderSwag)
+                    {
+                        SB.SBEntry sb = null;
+                        vbn.swingBones.TryGetEntry(bone.boneId, out sb);
+                        if (sb != null)
+                        {
+                            // draw
+                            if (bone.ParentBone != null)
+                            {
+                                int i = bone.parentIndex;
+                                float degtorad = (float)(Math.PI / 180);
+                                Vector3 pos_sb = Vector3.Transform(Vector3.Zero,
+                                    Matrix4.CreateTranslation(new Vector3(3, 3, 3))
+                                    * Matrix4.CreateScale(bone.sca)
+                                    * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(sb.rx1 * degtorad, sb.ry1 * degtorad, sb.rz1 * degtorad))
+                                    * Matrix4.CreateTranslation(bone.pos)
+                                    * vbn.bones[i].transform);
+
+                                Vector3 pos_sb2 = Vector3.Transform(Vector3.Zero,
+                                    Matrix4.CreateTranslation(new Vector3(3, 3, 3))
+                                    * Matrix4.CreateScale(bone.sca)
+                                    * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(sb.rx2 * degtorad, sb.ry2 * degtorad, sb.rz2 * degtorad))
+                                    * Matrix4.CreateTranslation(bone.pos)
+                                    * vbn.bones[i].transform);
+
+                                GL.Color3(Color.ForestGreen);
+                                GL.Begin(PrimitiveType.LineLoop);
+                                GL.Vertex3(pos_c);
+                                GL.Vertex3(pos_sb);
+                                GL.Vertex3(pos_sb2);
+                                GL.End();
+                            }
+                        }
+                    }
+
+                    // now draw line between parent 
+                    GL.Color3(Color.LightBlue);
+                    GL.LineWidth(2f);
+
+                    GL.Begin(PrimitiveType.Lines);
+                    if (bone.ParentBone != null)
+                    {
+                        Vector3 pos_p = Vector3.Transform(Vector3.Zero, bone.ParentBone.transform);
+                        GL.Vertex3(pos_c);
+                        GL.Color3(Color.Blue);
+                        GL.Vertex3(pos_p);
+                    }
+                    GL.End();
+                }
+            }
+        }
+
+        #endregion
+        #region Other
         public static int LoadCubeMap()
         {
             int id;
@@ -326,7 +443,7 @@ namespace Smash_Forge
             return id;
         }
 
-
+        #endregion
     }
 }
 

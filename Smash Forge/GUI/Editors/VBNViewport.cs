@@ -298,7 +298,7 @@ namespace Smash_Forge
 
         #region Rendering
 
-        string vs = @"#version 330
+        public static string vs = @"#version 330
 
 in vec3 vPosition;
 in vec4 vColor;
@@ -387,7 +387,7 @@ void main()
     }
 }";
 
-        string fs = @"#version 330
+        public static string fs = @"#version 330
 
 in vec3 pos;
 in vec2 texcoord;
@@ -943,7 +943,7 @@ main()
                     if (Runtime.TargetMTA != null)
                         m.nud.applyMTA(Runtime.TargetMTA, (int)nupdFrame.Value);//Apply additional mta (can override base)
 
-                    m.nud.Render(shader, v);
+                    m.nud.Render(shader);
                     shader.disableAttrib();
                 }
             }

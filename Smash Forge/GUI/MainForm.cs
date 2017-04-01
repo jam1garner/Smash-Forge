@@ -76,6 +76,12 @@ namespace Smash_Forge
             //ReadChimeraLucas();
             viewportWindowToolStripMenuItem.Checked = true;
             openFiles();
+
+            // load up the shaders
+            Shader nud = new Shader();
+            nud.vertexShader(VBNViewport.vs);
+            nud.fragmentShader(VBNViewport.fs);
+            Runtime.shaders.Add("NUD", nud);
         }
 
         public void openFiles()
@@ -365,6 +371,10 @@ namespace Smash_Forge
 
             Runtime.ModelContainers.Add(model);
             meshList.refresh();
+
+            //ModelViewport viewport = new ModelViewport();
+            //viewport.draw.Add(model);
+            //AddDockedControl(viewport);
         }
 
         private void addMaterialAnimation(string name, MTA m)

@@ -142,6 +142,7 @@ namespace Smash_Forge
             aTimer.Elapsed += OnTimedEvent;
             aTimer.AutoReset = true;
             aTimer.Enabled = true;*/
+            RenderTexture();
         }
 
 

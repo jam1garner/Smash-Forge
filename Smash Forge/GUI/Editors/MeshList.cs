@@ -393,6 +393,7 @@ namespace Smash_Forge
             brs.ShowDialog();
             if (!brs.Cancelled)
             {
+                mesh.boneflag = 8;
                 mesh.singlebind = brs.boneIndex;
                 foreach (NUD.Polygon poly in mesh.polygons)
                 {

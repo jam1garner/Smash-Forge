@@ -60,6 +60,9 @@ namespace Smash_Forge
             Matrix4 rot = Matrix4.CreateRotationX(0.5f * (float)Math.PI);
             foreach (NUD.Mesh mesh in nud.mesh)
             {
+                if (BoneTypes[(string)comboBox2.SelectedItem] == BoneTypes["No Bones"])
+                    mesh.boneflag = 0;
+
                 foreach (NUD.Polygon poly in mesh.polygons)
                 {
                     poly.vertSize = (BoneTypes[(string)comboBox2.SelectedItem]) | (VertTypes[(string)comboBox1.SelectedItem]);

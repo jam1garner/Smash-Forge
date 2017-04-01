@@ -2155,6 +2155,21 @@ namespace Smash_Forge
                             }
                         }
                     }
+                    else if (node.Name.Equals("translate"))
+                    {
+                        string[] data = node.InnerText.Trim().Replace("\n", " ").Split(' ');
+                        pos = new Vector3(float.Parse(data[0]), float.Parse(data[1]), float.Parse(data[2]));
+                    }
+                    else if (node.Name.Equals("scale"))
+                    {
+                        string[] data = node.InnerText.Trim().Replace("\n", " ").Split(' ');
+                        sca = new Vector3(float.Parse(data[0]), float.Parse(data[1]), float.Parse(data[2]));
+                    }
+                    else if (node.Name.Equals("rotate"))
+                    {
+                        string[] data = node.InnerText.Trim().Replace("\n", " ").Split(' ');
+                        rot = new Vector3(float.Parse(data[0]), float.Parse(data[1]), float.Parse(data[2]));
+                    }
                     else
                     {
                         Console.WriteLine(node.Name);
