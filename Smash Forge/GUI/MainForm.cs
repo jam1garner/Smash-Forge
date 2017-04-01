@@ -76,7 +76,13 @@ namespace Smash_Forge
             //ReadChimeraLucas();
             viewportWindowToolStripMenuItem.Checked = true;
             openFiles();
-
+            openNud("lib/c08/model.nud");
+            openNud("lib/stc_End_f_base_set/model.nud");
+            Runtime.Animations.Add("lib/FitLinkBodyMainJ02Win3Wait.omo", OMO.read(new FileData("lib/FitLinkBodyMainJ02Win3Wait.omo")));
+            animNode.Nodes.Add("lib/FitLinkBodyMainJ02Win3Wait.omo");
+            Runtime.TargetAnimString = "lib/FitLinkBodyMainJ02Win3Wait.omo";
+            Runtime.TargetAnim = Runtime.Animations["lib/FitLinkBodyMainJ02Win3Wait.omo"];
+            Runtime.renderBones = false;
             // load up the shaders
             Shader nud = new Shader();
             nud.vertexShader(VBNViewport.vs);
