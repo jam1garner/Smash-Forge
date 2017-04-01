@@ -262,7 +262,7 @@ namespace Smash_Forge
         }
 
 
-        private unsafe NUT.NUD_Texture fromPNG(string fname, int mipcount)
+        private NUT.NUD_Texture fromPNG(string fname, int mipcount)
         {
             Bitmap bmp = new Bitmap(fname);
             NUT.NUD_Texture tex = new NUT.NUD_Texture();
@@ -281,7 +281,7 @@ namespace Smash_Forge
             return tex;
         }
 
-        private unsafe byte[] fromPNG(Bitmap bmp)
+        private byte[] fromPNG(Bitmap bmp)
         {
             BitmapData bmpData =
                 bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
