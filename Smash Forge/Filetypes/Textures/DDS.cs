@@ -206,11 +206,14 @@ namespace Smash_Forge
             for (int i = 0; i < header.mipmapCount; i++)
             {
                 int s = (int)((w * h) * size);
+                if (s < 0x8) s = 0x8;
+                //Console.WriteLine(off.ToString("x") + " " + s.ToString("x"));
                 w /= 2;
                 h /= 2;
                 tex.mipmaps.Add(d.getSection(off, s));
                 off += s;
             }
+            Console.WriteLine(off.ToString("x"));
 
             return tex;
         }

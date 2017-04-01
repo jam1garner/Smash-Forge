@@ -56,7 +56,10 @@ namespace Smash_Forge
                     { 0x06, "LessOrEqual + 255"}
                 };
 
-
+        Dictionary<int, string> ref0 = new Dictionary<int, string>(){
+                    { 0x00, "Nothing"},
+                    { 0x02, "GreaterOrEqual + 128"}
+                };
 
         Dictionary<int, string> mapmode = new Dictionary<int, string>(){
                     { 0x00, "TexCoord"},
@@ -195,7 +198,7 @@ namespace Smash_Forge
             textBox1.Text = mat.flags.ToString("X") + "";
             textBox3.Text = mat.dstFactor + "";
             textBox4.Text = mat.srcFactor + "";
-            textBox5.Text = mat.alphaFunc + "";
+            //textBox5.Text = mat.alphaFunc + "";
             textBox6.Text = mat.drawPriority + "";
             textBox7.Text = mat.cullMode + "";
             textBox8.Text = mat.zBufferOffset + "";
@@ -204,20 +207,57 @@ namespace Smash_Forge
 
             listView1.Items.Clear();
             listView1.View = View.List;
+
+            int[] locs = new int[mat.textures.Count + 4];
+            int li = 0;
+            if ((mat.flags & (uint)NUD.TextureFlags.DiffuseMap) > 0)
+                locs[li++] = 0;
+
+            if ((mat.flags & (uint)NUD.TextureFlags.RIM) > 0)
+            {
+                // as a stage map...
+                if ((mat.flags & (uint)NUD.TextureFlags.AOMap) > 0)
+                    locs[li++] = 2;
+            }
+            else
+            {
+                if ((mat.flags & (uint)NUD.TextureFlags.CubeMap) > 0)
+                    locs[li++] = 3;
+            }
+
+            if ((mat.flags & (uint)NUD.TextureFlags.UnknownTex) > 0)
+                locs[li++] = 5;
+
+            if ((mat.flags & (uint)NUD.TextureFlags.NormalMap) > 0)
+                locs[li++] = 1;
+            else if ((mat.flags & (uint)NUD.TextureFlags.RIM) > 0)
+            {
+                locs[li++] = 0; // second diffuse
+            }
+
+            if ((mat.flags & (uint)NUD.TextureFlags.RIM) > 0)
+            {
+                // as a rim lighting
+                if ((mat.flags & (uint)NUD.TextureFlags.CubeMap) > 0)
+                    locs[li++] = 3;
+            }
+            else
+            {
+                if ((mat.flags & (uint)NUD.TextureFlags.AOMap) > 0)
+                    locs[li++] = 2;
+            }
+            if ((mat.flags & (uint)NUD.TextureFlags.Shadow) > 0)
+                locs[li++] = 4;
+
+            string[] texnames = new string[] { "Diffuse Map", "Normal Map", 
+                ((mat.flags & (uint)NUD.TextureFlags.RIM) > 0) ? "Stage Map" : "Cube Map",
+                ((mat.flags & (uint)NUD.TextureFlags.RIM) > 0) ? "Rim Map" : "AO Map",
+                "Dummy Rim",
+                "Specular Map"};
+
             for (int i = 0; i < mat.textures.Count; i++)
             {
-                switch (i)
-                {
-                    case 0:
-                        listView1.Items.Add("Diffuse_" + mat.textures[i].hash.ToString("X"));
-                        break;
-                    case 1:
-                        listView1.Items.Add("Bump_" + mat.textures[i].hash.ToString("X"));
-                        break;
-                    default:
-                        listView1.Items.Add("Dunno_" + mat.textures[i].hash.ToString("X"));
-                        break;
-                }
+                listView1.Items.Add(texnames[locs[i]]);
             }
             listView1.SelectedIndices.Add(0);
 
@@ -317,7 +357,7 @@ namespace Smash_Forge
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            setValue(textBox5, comboBox4, afunc, out material[current].alphaFunc);
+            //setValue(textBox5, comboBox4, afunc, out material[current].alphaFunc);
         }
         #endregion
 

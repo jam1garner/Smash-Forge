@@ -56,6 +56,7 @@ namespace Smash_Forge
             Runtime.renderBones = true;
             Runtime.renderLVD = true;
             Runtime.renderFloor = true;
+            Runtime.renderBackGround = true;
             Runtime.renderHitboxes = true;
             Runtime.renderModel = true;
             Runtime.renderPath = true;
@@ -610,7 +611,7 @@ namespace Smash_Forge
 
         public void openMats(NUD.Polygon poly, string name)
         {
-            (new NUDMaterialEditor(poly) {ShowHint = DockState.Float, Text = name}).Show();
+            (new NUDMaterialEditor(poly) { ShowHint = DockState.DockRight, Text = name}).Show();
         }
 
         private void clearWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)

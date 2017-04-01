@@ -13,12 +13,19 @@ namespace Smash_Forge
 		int vsID;
 		int fsID;
 
+        private string errorlog = "";
+
 		Dictionary<string, int> attributes = new Dictionary<string, int>();
 
 		public Shader ()
 		{
 			programID = GL.CreateProgram();
-		}
+            errorlog += programID + "\n";
+            errorlog += GL.GetInteger(GetPName.MajorVersion) + "\n";
+            errorlog += GL.GetInteger(GetPName.MinorVersion) + "\n";
+            errorlog += GL.GetInteger(GetPName.MaxUniformBlockSize) + "\n";
+
+        }
 
         /*~Shader()
         {
@@ -27,9 +34,12 @@ namespace Smash_Forge
 
 		public int getAttribute(string s){
 			int v;
-			attributes.TryGetValue (s, out v);
+			bool success = attributes.TryGetValue (s, out v);
 
-			return v;
+            if (success)
+                return v;
+            else
+                return -1;
 		}
 
 		public void enableAttrib(){
@@ -46,33 +56,59 @@ namespace Smash_Forge
 			}
 		}
 
+        public void SaveErrorLog()
+        {
+            File.WriteAllText("shad_ErrorLog.txt", errorlog.Replace("\n", Environment.NewLine));
+        }
+
 		private void addAttribute(string name, bool uniform){
             if (attributes.ContainsKey(name)) attributes.Remove(name);
-			int pos;
-            //MessageBox.Show(name);
+			int pos = -1;
 			if(uniform)
 				pos = GL.GetUniformLocation(programID, name);
 			else
 				pos = GL.GetAttribLocation(programID, name);
-			attributes.Add (name, pos);
+
+
+            errorlog += name + " " + uniform + " " + pos + "\n";
+
+            attributes.Add (name, pos);
 		}
         
         public void LoadAttributes(string src, bool fragment = false)
         {
-            string[] lines = src.Split('\n');
+            int attributeCount;
+            GL.GetProgram(programID, GetProgramParameterName.ActiveAttributes, out attributeCount);
+            errorlog += "Att:" + attributeCount + "\n";
 
-            foreach (string line in lines)
+            for (int i = 0; i < attributeCount; i++)
             {
-                string[] args = line.Split(' ');
-                if (args[0].Equals("in") && !fragment)
-                    addAttribute(args[2].Replace(";", "").Trim(), false);
-                if (args[0].Equals("uniform"))
-                {
-                    string arg = args[2].Replace(";", "").Trim();
-                    if (arg.Contains("["))
-                        arg = arg.Substring(0, arg.IndexOf('['));
-                    addAttribute(arg, true);
-                }
+                int attributeSize;
+                ActiveAttribType attributeType;
+                string attribute = GL.GetActiveAttrib(programID, i, out attributeSize, out attributeType);
+
+                int index = attribute.IndexOf('[');
+                if (index > 0)
+                    attribute = attribute.Substring(0, index);
+
+                addAttribute(attribute, false);
+            }
+
+            int uniformCount;
+            GL.GetProgram(programID, GetProgramParameterName.ActiveUniforms, out uniformCount);
+            errorlog += "Uni:" + uniformCount + "\n";
+
+            for (int i = 0; i < uniformCount; i++)
+            {
+                int uniformSize;
+                ActiveUniformType uniformType;
+                string uniform = GL.GetActiveUniform(programID, i, out uniformSize, out uniformType);
+
+                int index = uniform.IndexOf('[');
+                if (index > 0)
+                    uniform = uniform.Substring(0, index);
+
+                addAttribute(uniform, true);
             }
         }
 
@@ -83,8 +119,8 @@ namespace Smash_Forge
 			GL.LinkProgram (programID);
             LoadAttributes(filename);
             string error = GL.GetProgramInfoLog(programID);
+            errorlog += error + "\n";
             Console.WriteLine(error);
-            
         }
 
 		public void fragmentShader(string filename){
@@ -92,7 +128,10 @@ namespace Smash_Forge
 			GL.LinkProgram (programID);
             LoadAttributes(filename, true);
             string error = GL.GetProgramInfoLog(programID);
+            errorlog += error + "\n";
             Console.WriteLine(error);
+
+            SaveErrorLog();
         }
 
         void loadShader(string shader, ShaderType type, int program, out int address)
@@ -107,7 +146,8 @@ namespace Smash_Forge
             //File.WriteAllText("log.txt", GL.GetShaderInfoLog(address).ToLower() + "Shader Log");
             //MessageBox.Show(GL.GetShaderInfoLog(address));
 			Console.WriteLine(GL.GetShaderInfoLog(address));
-		}
+            errorlog += GL.GetShaderInfoLog(address) + "\n";
+        }
 	}
 }
 

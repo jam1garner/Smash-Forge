@@ -16,6 +16,8 @@ using OpenTK.Graphics;
 using System.Diagnostics;
 using WeifenLuo.WinFormsUI.Docking;
 using System.IO;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 namespace Smash_Forge
 {
@@ -63,7 +65,7 @@ namespace Smash_Forge
                 GL.Viewport(glControl1.ClientRectangle);
 
 
-                v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 500.0f);
+                v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 500.0f);
             }
         }
 
@@ -126,6 +128,8 @@ namespace Smash_Forge
                 }
 
                 MainForm.Instance.project.fillTree();
+
+                GC.Collect();
             }
 
             //if (Runtime.ModelContainers.Count > 0)
@@ -305,87 +309,103 @@ in vec4 vWeight;
 
 out vec3 pos;
 out vec4 color;
-out vec2 f_texcoord;
+out vec2 texcoord;
 out vec3 normal;
 out vec3 fragpos;
 
+uniform vec4 colorSamplerUV;
 uniform mat4 eyeview;
-uniform mat4 bones[200];
+uniform uint flags;
+
+uniform bones
+{
+    mat4 transforms[200];
+    mat4 transformsIT[200];
+} bones_;
 
 uniform int renderType;
+
+
+vec4 skin(vec3 po, ivec4 index);
+vec3 skinNRM(vec3 po, ivec4 index);
  
-vec4 skin(vec3 pos)
+vec4 skin(vec3 po, ivec4 index)
 {
-    vec4 objPos = vec4(pos.xyz, 1.0);
-    ivec4 index = ivec4(vBone); 
+    vec4 oPos = vec4(po.xyz, 1.0);
 
-    objPos = bones[index.x] * vec4(pos, 1.0) * vWeight.x;
-    objPos += bones[index.y] * vec4(pos, 1.0) * vWeight.y;
-    objPos += bones[index.z] * vec4(pos, 1.0) * vWeight.z;
-    objPos += bones[index.w] * vec4(pos, 1.0) * vWeight.w;
+    oPos = bones_.transforms[index.x] * vec4(po, 1.0) * vWeight.x;
+    oPos += bones_.transforms[index.y] * vec4(po, 1.0) * vWeight.y;
+    oPos += bones_.transforms[index.z] * vec4(po, 1.0) * vWeight.z;
+    oPos += bones_.transforms[index.w] * vec4(po, 1.0) * vWeight.w;
 
-	return objPos;
+    return oPos;
 }
 
-//todo: this is NOT efficient
-vec4 skinNRM(vec3 pos)
+vec3 skinNRM(vec3 nr, ivec4 index)
 {
-    vec4 objPos = vec4(pos.xyz, 1.0);
-    ivec4 index = ivec4(vBone); 
+    vec3 nrmPos = vec3(0);
+	
+    if(vWeight.x != 0) nrmPos = mat3(bones_.transforms[index.x]) * nr * vWeight.x;
+    if(vWeight.y != 0) nrmPos += mat3(bones_.transforms[index.y]) * nr * vWeight.y;
+    if(vWeight.z != 0) nrmPos += mat3(bones_.transforms[index.z]) * nr * vWeight.z;
+    if(vWeight.w != 0) nrmPos += mat3(bones_.transforms[index.w]) * nr * vWeight.w;
 
-    objPos = transpose(inverse(bones[index.x])) * vec4(pos, 1.0) * vWeight.x;
-    objPos += transpose(inverse(bones[index.y])) * vec4(pos, 1.0) * vWeight.y;
-    objPos += transpose(inverse(bones[index.z])) * vec4(pos, 1.0) * vWeight.z;
-    objPos += transpose(inverse(bones[index.w])) * vec4(pos, 1.0) * vWeight.w;
-
-	return objPos;
+    return nrmPos;
 }
 
 void main()
 {
     vec4 objPos = vec4(vPosition.xyz, 1.0);
+    ivec4 bi = ivec4(vBone); 
 
-    if(vBone.x != -1) objPos = skin(vPosition);
+    if(vBone.x != -1) objPos = skin(vPosition, bi);
 
-    gl_Position = eyeview * vec4(objPos.xyz, 1.0);
+    objPos = eyeview * vec4(objPos.xyz, 1.0);
 
-    f_texcoord = vUV;
+    gl_Position = objPos;
+
+    texcoord = vec2((vUV * colorSamplerUV.xy) + colorSamplerUV.zw);
     normal = vec3(0,0,0);
     color = vec4(vNormal, 1);
-
-	pos = vec3(vPosition * mat3(eyeview));
+    pos = vec3(vPosition * mat3(eyeview));
 
     if(renderType != 1){
 
 	if(renderType == 2){
-        float normal = dot(vec4(vNormal * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
-        color = vec4(normal, normal, normal, 1);
+        	float normal = dot(vec4(vNormal * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
+        	color = vec4(normal, normal, normal, 1);
 	}
         else
             color = vColor;
 
-	fragpos = mat3(eyeview) * objPos.xyz;
+	fragpos = objPos.xyz;
+
 	if(vBone.x != -1) 
-		normal = skinNRM(vNormal).xyz ;//* transpose(inverse(mat3(eyeview)));
+		normal = normalize((skinNRM(vNormal.xyz, bi)).xyz) ; //  * -1 * mat3(eyeview)
 	else
-		normal =vNormal ;//* transpose(inverse(mat3(eyeview)));
+		normal = vNormal ;
     }
 }";
 
         string fs = @"#version 330
 
 in vec3 pos;
-in vec2 f_texcoord;
+in vec2 texcoord;
 in vec4 color;
 in vec3 normal;
 in vec3 fragpos;
 
-// Textures (can have 4)
+// Textures 
 uniform sampler2D tex;
 uniform sampler2D nrm;
+uniform sampler2D rim;
+uniform sampler2D cube;
+
+// other textures
+uniform samplerCube cmap;
 
 // Da Flags
-uniform int flags;
+uniform uint flags;
 
 // Properties
 uniform vec4 colorSamplerUV;
@@ -397,73 +417,139 @@ uniform vec4 specularColor;
 uniform vec4 specularColorGain;
 uniform vec4 diffuseColor;
 uniform vec4 colorGain;
+uniform vec4 reflectionColor;
 
 // params
 uniform vec4 fresnelParams;
 uniform vec4 specularParams;
+uniform vec4 reflectionParams;
 
 uniform int renderType;
 uniform int renderLighting;
 uniform int renderVertColor;
 uniform int renderNormal;
+
+uniform int renderDiffuse;
+uniform int renderSpecular;
+uniform int renderFresnel;
+uniform int renderReflection;
+
+uniform int useNormalMap;
+
+uniform float gamma = 1.2; 
+
 uniform mat4 eyeview;
 
-const vec3 lightPos = vec3(0,10,-30);
-const vec3 specPos = vec3(0,-15,-70);
+const vec3 lightPos = vec3(0,0,-50);
+const vec3 specPos = vec3(0,-10,-40);
+
+const uint Glow         = 0x00000080u;
+const uint Shadow       = 0x00000040u;
+const uint RIM          = 0x00000020u;
+const uint UnknownTex   = 0x00000010u;
+
+const uint AOMap        = 0x00000008u;
+const uint CubeMap      = 0x00000004u;
+const uint NormalMap    = 0x00000002u;
+const uint DiffuseMap   = 0x00000001u;
 
 vec3 lerp(float v, vec3 from, vec3 to)
 {
     return from + (to - from) * v;
 }
 
-vec4 CalculateReflect()
+vec3 CalcBumpedNormal()
 {
-	vec3 I = normalize(fragpos - lightPos * mat3(eyeview));
-	vec3 R = reflect(I, normalize(normal));
-	vec3 col = vec3(1,1,1) * R;
+    // if no normal map, then return just the normal
+    if((flags & NormalMap) > 0u && useNormalMap == 1) {} else
+	{
+		return normal;
+	}
 
-	return vec4(col.xyz, 1);
+    vec3 Normal = normalize(normal);
+    vec3 Tangent = normalize(texture2D(nrm, texcoord).xyz);
+    Tangent = normalize(Tangent - dot(Tangent, Normal) * Normal);
+    vec3 Bitangent = cross(Tangent, Normal);
+    vec3 BumpMapNormal = texture2D(nrm, texcoord).xyz;
+    BumpMapNormal = 2.0 * BumpMapNormal - vec3(1.0, 1.0, 1.0);
+    vec3 NewNormal;
+    mat3 TBN = mat3(Tangent, Bitangent, Normal);
+    NewNormal = TBN * BumpMapNormal;
+    NewNormal = normalize(NewNormal);
+    return NewNormal;
 }
 
-vec3 CalculateDiffuse()
+vec4 CalculateDiffuse(vec3 norm)
 {
-	//vec3 norm = normalize(texture2D(nrm, f_texcoord).xyz);
-	vec3 norm = normal;
-
-	vec3 cameraPosition = (-transpose(mat3(eyeview)) * eyeview[3].xyz);
-	//cameraPosition.y -= 10;
-	vec3 lightDir = normalize(lightPos * mat3(eyeview) - fragpos);  
-	
-	vec3 specDir = normalize(cameraPosition-fragpos);  
-	
-	float diff = max(dot(norm, lightDir), 0.0);
-	vec3 diffuse = diff * diffuseColor.xyz;
+	// diffuse
+	vec3 difDir = normalize(-fragpos * mat3(eyeview));  
+	float diff = clamp(pow(dot(norm, difDir), 0.2f), 0.5, 2.0);
+	vec3 diffuse = vec3(diff) * diffuseColor.www * diffuseColor.xyz;
+	//diffuse = diffuseColor.rgb * (1 / (1.0 + (0.25 * difDir * difDir)));
 	if(diffuse == vec3(0,0,0)) diffuse = vec3(1);
 
-// specular
-	vec3 viewDir = normalize(fragpos); //pos - 
-	vec3 reflectDir = reflect(-specDir, norm); 
-	
-	float specDrop = specularParams.x * specularParams.y;
-	if(specDrop == 0) specDrop = 3;
+	vec3 fin = vec3(0);
+	if(renderDiffuse == 1)
+		fin += diffuse;
 
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), specDrop);
-	vec3 specular = vec3(spec) * (specularColor.xyz * specularColorGain.xyz);
+    	//fin.rgb = pow(fin.rgb, vec3(1.0/gamma));
 
-// fresnel
-	vec3 F0 = vec3(0.2); //fresnelParams.w
-	F0      = mix(F0, vec3(0), 0);
-	float cosTheta = dot(lightDir, norm);
+	return vec4(fin.xyz, fresnelColor.a);
+}
+
+vec3 CalculateFresnel(vec3 norm){
+	vec3 difDir = normalize(-fragpos * mat3(eyeview));  
+	float diff = clamp(pow(dot(norm, difDir), 0.5f), 0.4, 1.0);
+	vec3 f = (normalize(-fragpos));
+	f.z -= 0.8;
+	f.y -= 0.2;
+	vec3 lightDir = normalize(f * mat3(eyeview));  // vec3(0,-0.3,-0.7)
+	vec3 F0 = vec3(0); //fresnelParams.w 
+	F0 = mix(F0, vec3(0), 0);
+	float cosTheta = dot(lightDir, normal);
 	vec3 fresnel = F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); // 5.0
 
-// combine
-	vec3 fin = 0.3 + diffuse * 0.3;
+	float fdiv = min(1 + fresnelParams.x / 5, 1);
+	return max(fresnel.xyz*fresnelColor.rgb / fdiv, 0); 
+}
 
-	fin += max(fresnel * fresnelColor.xyz, 0);
+vec3 CalculateReflection(vec3 norm){
+// reflection
+	vec3 cameraPosition = (transpose(mat3(eyeview)) * eyeview[3].xyz);
+	cameraPosition.y += 20;
+	float ratio = 1.0 / 1.0;
+	vec3 I = normalize(fragpos - cameraPosition);
+    	vec3 R = refract(I, norm, ratio);
+	R.y *= -1;
+    	vec3 refColor = texture(cmap, R).rgb * reflectionColor.rgb;
 
-	fin += specular * specularColor.www / 2;
+	return refColor / reflectionColor.aaa;
+}
 
-	return fin;
+vec3 CalculateSpecular(vec3 norm){
+
+// specular
+	vec3 cameraPosition = (transpose(mat3(eyeview)) * eyeview[3].xyz);
+	cameraPosition.y += 20;
+	vec3 specDir = vec3(0,0,1) * mat3(eyeview);  
+	//specDir = normalize(vec3(0,0,1) * mat3(eyeview));  
+
+	vec3 viewDir = normalize(-fragpos); //pos - 
+	//vec3 halfDir = normalize(normalize(cameraPosition) + viewDir);
+	//float sp = pow(max(dot(halfDir, normalize(norm)), 0.0), 16.0);
+
+	vec3 reflectDir = reflect(-specDir, norm);
+	float specDrop = max(specularParams.y / 50, 0.1);
+	float spec = pow(max(dot(specDir, reflectDir), 0.0), 2 + specularParams.z) * specDrop;
+	float div = max(specularParams.x/10, 1.0);
+	vec3 specular = vec3(spec) * specularColor.www * (specularColor.xyz) / div;
+
+	if((flags & UnknownTex) > 0u)
+	{
+		return vec3(spec);
+	}
+	
+	return specular + specular * specularColorGain.xyz;
 }
 
 void
@@ -473,62 +559,83 @@ main()
     if(renderType == 1 || renderType == 2 || renderType == 3){
         gl_FragColor = color;
     } else {
-/*
-        if(renderType == 0x20 || renderType == 0x60)
-            fnormal = 1;
-        if(renderType == 0x40 || renderType == 0x60)
-            fcolor = vec4(1,1,1,1);
-
-        if(flags == 0x65 && fincol.a < 1)
-            fincol = vec4(1,1,1,1);
-*/
-	// final texture coordinate
-        vec2 texcoord = vec2((f_texcoord * colorSamplerUV.xy) + colorSamplerUV.zw);
 
 	// calcuate final color by mixing with vertex color
-	vec4 fincol = texture2D(tex, texcoord);
+	vec4 fincol = vec4(0);
 
-	if(renderVertColor == 1)
-		fincol = fincol * color;
+	if((flags & DiffuseMap) > 0u){
+		fincol = texture2D(tex, texcoord);
 
-	// diffuse specular and fresnel
-	if(renderLighting == 1)
-		fincol *= vec4(CalculateDiffuse(),1.0);
-    else
-    {
-        // old lighting
-        if(renderNormal == 1){
-            float normal = dot(vec4(normal * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
-            fincol *= normal;
-        }
-    }
+		if((flags & NormalMap) == 0u && (flags & RIM) > 0u && (flags & CubeMap) > 0u){
+			fincol = texture2D(cube, texcoord);
+			//fincol = mix(fincol, texture2D(nrm, texcoord), texture2D(nrm, texcoord).a);
+			fincol = mix(fincol, texture2D(tex, texcoord), texture2D(tex, texcoord).a);
+			fincol.a = 1;
+		}
+	}
 
-	// ambient occlusion
-	fincol *= (minGain + texture2D(nrm, texcoord).aaaa);
+	float a = fincol.a;
+
+	if(renderVertColor == 1) fincol = fincol * color;
 
 	// color gains
 	fincol = (colorOffset + fincol * colorGain);
 
-	// correct alpha
-	fincol = vec4(fincol.xyz, texture2D(tex, texcoord).a * color.a);
+	// diffuse specular and fresnel
+	vec3 norm = CalcBumpedNormal();
+        if(renderNormal == 1){
+		if(renderLighting == 1){
+			// ambient occlusion
+			vec4 dif = CalculateDiffuse(norm);
+			if(renderSpecular == 1) dif.xyz += CalculateSpecular(norm);
+			if(renderReflection == 1) dif.xyz += CalculateReflection(norm);
+			vec4 ao = ((minGain + texture2D(nrm, texcoord).aaaa));
+			fincol *= ao;
+			fincol *= dif.rgba;
+			//if(flags & UnknownTex) a = dif.a;
+			if(renderFresnel == 1) fincol.xyz += CalculateFresnel(norm) * texture2D(tex, texcoord).rgb;
+		}
+    		else
+    		{
+        		// old lighting
+            		float normal = dot(vec4(normal * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
+            		fincol *= normal;
+			vec4 ao = ((minGain + texture2D(nrm, texcoord).aaaa));
+			fincol *= ao;
+        	}
+    	}
 
-        if(flags == 0x65 && fincol.a < 1)
-            fincol = vec4(1,1,1,1) * 
-	vec4(CalculateDiffuse(),1.0);;
+	// correct alpha
+	fincol.a = a * color.a;
+	
+	// gamma correction
+	fincol.rgb = pow(fincol.rgb, vec3(1.0/gamma));
+
+	//vec3 norm = ((texture2D(nrm, texcoord).rgb+1)/2);
+	//fincol = vec4(texture2D(tex, texcoord).xyz, 1.0);
+	//fincol = vec4(CalculateFresnel(norm), 1.0);
+	//fincol = vec4(norm, 1.0);
 
         gl_FragColor = fincol;
     }
 }
 ";
+        
+        public int ubo_bones, ubo_bonesIT;
+        public int cubeTex;
 
         private void SetupViewPort()
         {
+            cubeTex = RenderTools.LoadCubeMap();
 
             if (shader != null)
                 GL.DeleteShader(shader.programID);
 
             if (shader == null)
             {
+                GL.GenBuffers(1, out ubo_bones);
+                GL.GenBuffers(1, out ubo_bonesIT);
+
                 shader = new Shader();
 
                 {
@@ -550,7 +657,7 @@ main()
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
             v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
-                * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, Runtime.renderDepth);
+                * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
 
         }
@@ -568,6 +675,8 @@ main()
 
             glControl1.MakeCurrent();
 
+            GL.Viewport(glControl1.ClientRectangle);
+
             //GL.ClearColor(back1);
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
@@ -579,14 +688,17 @@ main()
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
 
-            GL.Begin(PrimitiveType.Quads);
-            GL.Color3(back1);
-            GL.Vertex2(1.0, 1.0);
-            GL.Vertex2(-1.0, 1.0);
-            GL.Color3(back2);
-            GL.Vertex2(-1.0, -1.0);
-            GL.Vertex2(1.0, -1.0);
-            GL.End();
+            if (Runtime.renderBackGround)
+            {
+                GL.Begin(PrimitiveType.Quads);
+                GL.Color3(back1);
+                GL.Vertex2(1.0, 1.0);
+                GL.Vertex2(-1.0, 1.0);
+                GL.Color3(back2);
+                GL.Vertex2(-1.0, -1.0);
+                GL.Vertex2(1.0, -1.0);
+                GL.End();
+            }
 
             //GL.DepthFunc(DepthFunction.Never);
             GL.Enable(EnableCap.DepthTest);
@@ -625,13 +737,16 @@ main()
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 
             GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Less);
+            GL.DepthFunc(DepthFunction.Lequal);
 
             GL.Enable(EnableCap.AlphaTest);
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
 
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
+
+            GL.Enable(EnableCap.LineSmooth);
+            
 
             // draw models
             if (Runtime.renderModel)
@@ -689,7 +804,7 @@ main()
             zoom += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale;
 
             v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
-                * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, Runtime.renderDepth);
+                * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
         public bool IsMouseOverViewport()
@@ -708,7 +823,7 @@ main()
                     cf = 0;
                 pathFrame f = Runtime.TargetPath.Frames[cf];
                 v = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() 
-                    * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
+                    * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 90000.0f);
                 cf++;
             }
             else if (Runtime.TargetCMR0 != null && checkBox1.Checked)
@@ -717,7 +832,7 @@ main()
                     cf = 0;
                 Matrix4 m = Runtime.TargetCMR0.frames[cf].Inverted();
                 v = Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) 
-                    * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, 90000.0f);
+                    * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 90000.0f);
                 cf++;
             }
         }
@@ -725,18 +840,20 @@ main()
         private void DrawModels()
         {
             // Bounding Box Render
-            /*foreach (ModelContainer m in Runtime.ModelContainers)
+            if(Runtime.renderBoundingBox)
+            foreach (ModelContainer m in Runtime.ModelContainers)
             {
                 if (m.nud != null)
                 {
                     RenderTools.drawCubeWireframe(new Vector3(m.nud.param[0], m.nud.param[1], m.nud.param[2]), m.nud.param[3]);
                     foreach (NUD.Mesh mesh in m.nud.mesh)
                     {
-                        RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
+                        if(mesh.Checked)
+                            RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
                     }
                 }
-            }*/
-
+            }
+            
             GL.UseProgram(shader.programID);
             int rt = (int)Runtime.renderType;
             if(rt == 0)
@@ -750,6 +867,13 @@ main()
             GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderNormal"), Runtime.renderNormals ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderDiffuse"), Runtime.renderDiffuse ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
+
+            GL.Uniform1(shader.getAttribute("gamma"), Runtime.gamma);
 
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
@@ -770,14 +894,45 @@ main()
 
                 if (m.nud != null)
                 {
+                    GL.ActiveTexture(TextureUnit.Texture2);
+                    GL.BindTexture(TextureTarget.TextureCubeMap, cubeTex);
+                    GL.Uniform1(shader.getAttribute("cmap"), 2);
                     GL.UniformMatrix4(shader.getAttribute("eyeview"), false, ref v);
                     //GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref v2);
 
                     if (m.vbn != null)
                     {
                         Matrix4[] f = m.vbn.getShaderMatrix();
-                        int shad = shader.getAttribute("bone");
-                        GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);
+                        /*int shad = shader.getAttribute("bones");
+                        GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);*/
+                        //int shadi = shader.getAttribute("boneIT");
+                        //GL.UniformMatrix4(shadi, f.Length, false, ref m.vbn.bonematIT[0].Row0.X);
+
+                        int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
+                        int boneCount = m.vbn.bones.Count;
+                        int dataSize = boneCount * Vector4.SizeInBytes * 4;
+
+                        GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
+                        GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
+                        GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+
+                        var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
+                        GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
+
+                        //GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bonesIT);
+                        //GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
+                        //GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+                        //blockIndex = GL.GetUniformBlockIndex(shader.programID, "bonesIT");
+                        //GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bonesIT);
+
+                        if (f.Length > 0)
+                        {
+                            GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
+                            GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
+
+                            //GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bonesIT);
+                            //GL.BufferSubData(BufferTarget.UniformBuffer, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), (IntPtr)(f.Length * Vector4.SizeInBytes * 4), m.vbn.bonematIT);
+                        }
                     }
 
                     shader.enableAttrib();
@@ -788,7 +943,7 @@ main()
                     if (Runtime.TargetMTA != null)
                         m.nud.applyMTA(Runtime.TargetMTA, (int)nupdFrame.Value);//Apply additional mta (can override base)
 
-                    m.nud.Render(shader);
+                    m.nud.Render(shader, v);
                     shader.disableAttrib();
                 }
             }
@@ -1840,9 +1995,121 @@ main()
         {
             if (e.KeyChar == 'i')
             {
+                //GL.DeleteProgram(shader.programID);
                 //shader = new Shader();
-                //shader.vertexShader(File.ReadAllText("C:\\s\\Smash\\extract\\vert.txt"));
-                //shader.fragmentShader(File.ReadAllText("C:\\s\\Smash\\extract\\frag.txt"));
+                //shader.vertexShader(File.ReadAllText("vert.txt"));
+                //shader.fragmentShader(File.ReadAllText("frag.txt"));
+            }
+            if (e.KeyChar == 'r')
+            {
+                /*int fb;
+                GL.GenFramebuffers(1, out fb);
+
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, fb);
+
+                int rt;
+                GL.GenTextures(1, out rt);
+                GL.BindTexture(TextureTarget.Texture2D, rt);
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, 1024, 768, 0, PixelFormat.Rgb, PixelType.UnsignedByte, (IntPtr)0);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                GL.BindTexture(TextureTarget.Texture2D, 0);
+
+                int dep;
+                GL.GenRenderbuffers(1, out dep);
+                GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, dep);
+                GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, 1024, 768);
+                GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, dep);
+
+                GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, rt, 0);
+
+                DrawBuffersEnum[] drawBuffers = new DrawBuffersEnum[] { DrawBuffersEnum .ColorAttachment0};
+                GL.DrawBuffers(1, drawBuffers);
+
+                if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+                    MessageBox.Show("Error Rendering");*/
+
+                //GL.BindFramebuffer(FramebufferTarget.Framebuffer, fb);
+                //GL.Viewport(0, 0, 1024, 768);
+
+
+                // GL.MatrixMode(MatrixMode.Projection);
+                //GL.LoadIdentity();
+                /*GL.Begin(PrimitiveType.Quads);
+                GL.Color3(back1);
+                GL.Vertex2(1.0, 1.0);
+                GL.Vertex2(-1.0, 1.0);
+                GL.Color3(back2);
+                GL.Vertex2(-1.0, -1.0);
+                GL.Vertex2(1.0, -1.0);
+                GL.End();*/
+
+                /*GL.Enable(EnableCap.Normalize);  
+                GL.Enable(EnableCap.RescaleNormal);
+
+                GL.Enable(EnableCap.Blend);
+                GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+
+                GL.Enable(EnableCap.DepthTest);
+                GL.DepthFunc(DepthFunction.Less);
+
+                GL.Enable(EnableCap.AlphaTest);
+                GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
+
+                GL.Enable(EnableCap.CullFace);
+                GL.CullFace(CullFaceMode.Front);
+
+                GL.Enable(EnableCap.LineSmooth);*/
+
+                //GL.LoadMatrix(ref v);
+                // set up the viewport projection and send it to GPU
+                //GL.PushAttrib(AttribMask.AllAttribBits);
+                //GL.Enable(EnableCap.DepthTest);
+                //GL.DepthFunc(DepthFunction.Less);
+                //GL.MatrixMode(MatrixMode.Modelview);
+
+                //GL.UseProgram(0);
+                // drawing floor---------------------------
+                //if (Runtime.renderFloor)RenderTools.drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
+
+                // draw models
+                //if (Runtime.renderModel)
+                //    DrawModels();
+
+                int width = glControl1.Width;
+                int height = glControl1.Height;
+
+                byte[] pixels = new byte[width*height*4];
+                GL.ReadPixels(0,0,width, height, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
+                File.WriteAllBytes("test.bin", pixels);
+                
+                Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
+
+                byte[] np = new byte[width*height * 4];
+                // need to flip and rearrange the data
+                for(int h = 0; h < height; h++)
+                    for(int w = 0;  w < width; w++)
+                    {
+                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 2] = pixels[(w + h * bmp.Width) * 4 + 0];
+                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 1] = pixels[(w + h * bmp.Width) * 4 + 1];
+                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 0] = pixels[(w + h * bmp.Width) * 4 + 2];
+                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 3] = pixels[(w + h * bmp.Width) * 4 + 3];
+                    }
+
+                Marshal.Copy(np, 0, bmpData.Scan0, np.Length);
+                bmp.UnlockBits(bmpData);
+
+                Console.WriteLine("Saving");
+                bmp.Save("Render.png");
+                //GL.DeleteFramebuffer(fb);
+                //GL.DeleteTexture(rt);
+                //GL.DeleteTexture(dep);
+
+                //GL.PopAttrib();
+
+                //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             }
             if (e.KeyChar == 'f')
             {
@@ -1857,8 +2124,8 @@ main()
                     width = tr.X / 5f;
                     height = (tr.Y+5f) / -5f;
                     zoom = -(tr.Z + 15f);*/
-                }
-                else
+            }
+            else
                 {
                 }
             }
@@ -1909,7 +2176,7 @@ main()
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
             v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) 
-                * Matrix4.CreatePerspectiveFieldOfView(1.3f, Width / (float)Height, 1.0f, Runtime.renderDepth);
+                * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
     }

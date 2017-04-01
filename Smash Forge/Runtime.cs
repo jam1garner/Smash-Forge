@@ -40,6 +40,7 @@ namespace Smash_Forge
         public static bool renderCollisionNormals { get; set; }
         public static bool renderHitboxes { get; set; }
         public static bool renderFloor { get; set; }
+        public static bool renderBackGround { get; set; }
         public static bool renderPath { get; set; }
         public static bool renderRespawns { get; set; }
         public static bool renderSpawns { get; set; }
@@ -47,11 +48,20 @@ namespace Smash_Forge
         public static bool renderGeneralPoints { get; set; }
         public static bool renderOtherLVDEntries { get; set; }
         public static bool renderSwag { get; set; }
+        public static bool renderBoundingBox { get; set; }
+
+        public static float gamma = 1.2f;
+        public static float fov = 1.0f;
+        public static bool renderDiffuse = true;
+        public static bool renderFresnel = true;
+        public static bool renderSpecular = true;
+        public static bool renderReflection = true;
 
         public static float renderDepth { get; set; }
         public static bool renderNormals { get; set; }
         public static bool renderVertColor { get; set; }
         public static bool renderLighting { get; set; }
+        public static bool useNormalMap { get; set; }
         public static RenderTypes renderType { get; set; }
 
         public enum RenderTypes

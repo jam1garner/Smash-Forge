@@ -114,7 +114,6 @@ namespace Smash_Forge
                 d.seek(temp);
             }
 
-
             d.seek(offset3);
             for (int i = 0; i < frameSize; i++)
             {
@@ -155,13 +154,14 @@ namespace Smash_Forge
 
                     if (baseNode[j].r_type == 3)
                     {
-                        float i4 = ((float)d.readShort() / (0xffff));
                         float i1 = ((float)d.readShort() / (0xffff));
                         float i2 = ((float)d.readShort() / (0xffff));
                         float i3 = ((float)d.readShort() / (0xffff));
+                        float i4 = ((float)d.readShort() / (0xffff));
 
                         node.r = new Quaternion(new Vector3(i1, i2, i3), i4);
-                        node.r = VBN.FromEulerAngles(i4 * i1, i4 * i2, i4 * i3);
+                        //Console.WriteLine(node.r.ToString());
+                        //node.r = VBN.FromEulerAngles(i4 * i1, i4 * i2, i4 * i3);
                         node.r_type = KeyNode.INTERPOLATED;
                         //node.r.Normalize();
                     }
@@ -213,7 +213,7 @@ namespace Smash_Forge
                     key.addNode(node);
                 }
                 d.seek(off + frameStart);
-
+                
                 anim.addKeyframe(key);
             }
 

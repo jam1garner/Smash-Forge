@@ -21,6 +21,7 @@ namespace Smash_Forge.GUI
             checkBox3.Checked = Runtime.renderHitboxes;
             checkBox4.Checked = Runtime.renderPath;
             checkBox5.Checked = Runtime.renderFloor;
+            backgroundCB.Checked = Runtime.renderBackGround;
             checkBox6.Checked = Runtime.renderLVD;
             checkBox7.Checked = Runtime.renderCollisions;
             checkBox8.Checked = Runtime.renderSpawns;
@@ -30,8 +31,17 @@ namespace Smash_Forge.GUI
             checkBox12.Checked = Runtime.renderCollisionNormals;
             swagViewing.Checked = Runtime.renderSwag;
             lightCheckBox.Checked = Runtime.renderLighting;
+            useNormCB.Checked = Runtime.useNormalMap;
+            boundingCB.Checked = Runtime.renderBoundingBox;
 
             depthSlider.Value = (int)Runtime.renderDepth;
+            fovSlider.Value = (int)(Runtime.fov * 10);
+            gammaSlider.Value = (int)(Runtime.gamma * 10);
+
+            diffuseCB.Checked = Runtime.renderDiffuse;
+            specularCB.Checked = Runtime.renderSpecular;
+            fresnelCB.Checked = Runtime.renderFresnel;
+            reflectionCB.Checked = Runtime.renderReflection;
 
             cb_normals.Checked = Runtime.renderNormals;
             cb_vertcolor.Checked = Runtime.renderVertColor;
@@ -77,11 +87,6 @@ namespace Smash_Forge.GUI
 
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void depthSlider_ValueChanged(object sender, EventArgs e)
         {
             Runtime.renderDepth = depthSlider.Value;
@@ -90,7 +95,6 @@ namespace Smash_Forge.GUI
         private void renderMode_SelectionChangeCommitted(object sender, EventArgs e)
         {
             Runtime.renderType = (Runtime.RenderTypes)renderMode.SelectedIndex;
-            
         }
 
         private void swagViewing_CheckedChanged(object sender, EventArgs e)
@@ -101,6 +105,11 @@ namespace Smash_Forge.GUI
         private void lightCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderLighting = lightCheckBox.Checked;
+            
+            diffuseCB.Enabled = lightCheckBox.Checked;
+            fresnelCB.Enabled = lightCheckBox.Checked;
+            specularCB.Enabled = lightCheckBox.Checked;
+            reflectionCB.Enabled = lightCheckBox.Checked;
         }
 
         private void cb_normals_CheckedChanged(object sender, EventArgs e)
@@ -111,6 +120,51 @@ namespace Smash_Forge.GUI
         private void cb_vertcolor_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderVertColor = cb_vertcolor.Checked;
+        }
+
+        private void diffuseCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderDiffuse = diffuseCB.Checked;
+        }
+
+        private void fresnelCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderFresnel = fresnelCB.Checked;
+        }
+
+        private void specularCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderSpecular = specularCB.Checked;
+        }
+
+        private void reflectionCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderReflection = reflectionCB.Checked;
+        }
+
+        private void gammaSlider_Scroll(object sender, EventArgs e)
+        {
+            Runtime.gamma = gammaSlider.Value / 10f;
+        }
+
+        private void useNormCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.useNormalMap = useNormCB.Checked;
+        }
+
+        private void fovSlider_Scroll(object sender, EventArgs e)
+        {
+            Runtime.fov = fovSlider.Value / 10f;
+        }
+
+        private void backgroundCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderBackGround = backgroundCB.Checked;
+        }
+
+        private void boundingCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderBoundingBox = boundingCB.Checked;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Drawing;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using System.Drawing.Imaging;
 
 namespace Smash_Forge
 {
@@ -279,6 +280,50 @@ namespace Smash_Forge
             GL.Vertex3(center.X + size, center.Y - size, center.Z + size);
             GL.Vertex3(center.X + size, center.Y - size, center.Z - size);
             GL.End();
+        }
+
+
+
+        //Other things for rendering
+        public static int LoadCubeMap()
+        {
+            int id;
+            GL.GenBuffers(1, out id);
+
+            GL.ActiveTexture(0);
+            
+            GL.BindTexture(TextureTarget.TextureCubeMap, id);
+
+            Bitmap bmp = new Bitmap(Smash_Forge.Properties.Resources.cubemap);
+
+            Rectangle[] srcRect = new Rectangle[] {
+            new Rectangle(0, 0, 128, 128),
+            new Rectangle(0, 128, 128, 128),
+            new Rectangle(0, 256, 128, 128),
+            new Rectangle(0, 384, 128, 128),
+            new Rectangle(0, 512, 128, 128),
+            new Rectangle(0, 640, 128, 128),
+            }; 
+
+            for(int i = 0; i < 6; i++)
+            {
+                Bitmap image = (Bitmap)bmp.Clone(srcRect[i], bmp.PixelFormat);
+                BitmapData data = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
+                    ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
+                    OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+                image.UnlockBits(data);
+            }
+
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
+
+            GL.BindTexture(TextureTarget.TextureCubeMap, 0);
+
+            return id;
         }
 
 

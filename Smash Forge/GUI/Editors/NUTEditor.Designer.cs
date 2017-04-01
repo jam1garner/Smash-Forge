@@ -43,6 +43,7 @@
             this.openNUTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newNUTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveNUTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveNUTZLIBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dumpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importNUTFromFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,7 +55,6 @@
             this.extractAndOpenInDefaultEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractAndPickAProgramToEditWithToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importEditedFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveNUTZLIBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -228,6 +228,15 @@
             this.saveNUTToolStripMenuItem.Text = "Save NUT";
             this.saveNUTToolStripMenuItem.Click += new System.EventHandler(this.saveNUTToolStripMenuItem_Click);
             // 
+            // saveNUTZLIBToolStripMenuItem
+            // 
+            this.saveNUTZLIBToolStripMenuItem.Name = "saveNUTZLIBToolStripMenuItem";
+            this.saveNUTZLIBToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.saveNUTZLIBToolStripMenuItem.Text = "Save NUT (ZLIB)";
+            this.saveNUTZLIBToolStripMenuItem.ToolTipText = "Compresses the NUT with ZLIB when saving. Don\'t use if you don\'t know what that m" +
+    "eans.";
+            this.saveNUTZLIBToolStripMenuItem.Click += new System.EventHandler(this.saveNUTZLIBToolStripMenuItem_Click);
+            // 
             // dumpToolStripMenuItem
             // 
             this.dumpToolStripMenuItem.Name = "dumpToolStripMenuItem";
@@ -258,28 +267,28 @@
             // importToolStripMenuItem
             // 
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.importToolStripMenuItem.Text = "Import";
             this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
             // 
             // exportAsDDSToolStripMenuItem
             // 
             this.exportAsDDSToolStripMenuItem.Name = "exportAsDDSToolStripMenuItem";
-            this.exportAsDDSToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.exportAsDDSToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exportAsDDSToolStripMenuItem.Text = "Export";
             this.exportAsDDSToolStripMenuItem.Click += new System.EventHandler(this.exportAsDDSToolStripMenuItem_Click);
             // 
             // exportAsDDSToolStripMenuItem1
             // 
             this.exportAsDDSToolStripMenuItem1.Name = "exportAsDDSToolStripMenuItem1";
-            this.exportAsDDSToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
+            this.exportAsDDSToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.exportAsDDSToolStripMenuItem1.Text = "Remove";
             this.exportAsDDSToolStripMenuItem1.Click += new System.EventHandler(this.RemoveToolStripMenuItem1_Click_1);
             // 
             // replaceToolStripMenuItem
             // 
             this.replaceToolStripMenuItem.Name = "replaceToolStripMenuItem";
-            this.replaceToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.replaceToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.replaceToolStripMenuItem.Text = "Replace";
             this.replaceToolStripMenuItem.Click += new System.EventHandler(this.replaceToolStripMenuItem_Click);
             // 
@@ -313,15 +322,6 @@
             this.importEditedFileToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.importEditedFileToolStripMenuItem.Text = "Import Edited File";
             this.importEditedFileToolStripMenuItem.Click += new System.EventHandler(this.importEditedFileToolStripMenuItem_Click);
-            // 
-            // saveNUTZLIBToolStripMenuItem
-            // 
-            this.saveNUTZLIBToolStripMenuItem.Name = "saveNUTZLIBToolStripMenuItem";
-            this.saveNUTZLIBToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.saveNUTZLIBToolStripMenuItem.Text = "Save NUT (ZLIB)";
-            this.saveNUTZLIBToolStripMenuItem.ToolTipText = "Compresses the NUT with ZLIB when saving. Don\'t use if you don\'t know what that m" +
-    "eans.";
-            this.saveNUTZLIBToolStripMenuItem.Click += new System.EventHandler(this.saveNUTZLIBToolStripMenuItem_Click);
             // 
             // NUTEditor
             // 

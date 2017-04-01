@@ -16,11 +16,6 @@ namespace Smash_Forge
         public NUD()
         {
             GL.GenBuffers(1, out vbo_position);
-            GL.GenBuffers(1, out vbo_color);
-            GL.GenBuffers(1, out vbo_nrm);
-            GL.GenBuffers(1, out vbo_uv);
-            GL.GenBuffers(1, out vbo_bone);
-            GL.GenBuffers(1, out vbo_weight);
             GL.GenBuffers(1, out ibo_elements);
         }
         public NUD(string fname) : this()
@@ -31,17 +26,10 @@ namespace Smash_Forge
 
         // gl buffer objects
         int vbo_position;
-        int vbo_color;
-        int vbo_nrm;
-        int vbo_uv;
-        int vbo_weight;
-        int vbo_bone;
         int ibo_elements;
-
-        Vector2[] uvdata;
-        Vector3[] vertdata, nrmdata;
+        
         int[] facedata;
-        Vector4[] bonedata, coldata, weightdata;
+        dVertex[] vertdata;
 
         public const int SMASH = 0;
         public const int POKKEN = 1;
@@ -57,11 +45,23 @@ namespace Smash_Forge
         public void Destroy()
         {
             GL.DeleteBuffer(vbo_position);
-            GL.DeleteBuffer(vbo_color);
-            GL.DeleteBuffer(vbo_nrm);
-            GL.DeleteBuffer(vbo_uv);
-            GL.DeleteBuffer(vbo_weight);
-            GL.DeleteBuffer(vbo_bone);
+            GL.DeleteBuffer(ibo_elements);
+
+            vertdata = null;
+            facedata = null;
+            mesh.Clear();
+        }
+
+        public enum TextureFlags
+        {
+            Glow = 0x00000080,
+            Shadow = 0x00000040,
+            RIM = 0x00000020,
+            UnknownTex = 0x00000010,
+            AOMap = 0x00000008,
+            CubeMap = 0x00000004,
+            NormalMap = 0x00000002,
+            DiffuseMap = 0x00000001
         }
 
         /*
@@ -69,309 +69,349 @@ namespace Smash_Forge
         */
         public void PreRender()
         {
-            List<Vector3> vert = new List<Vector3>();
-            List<Vector2> uv = new List<Vector2>();
-            List<Vector4> col = new List<Vector4>();
-            List<Vector3> nrm = new List<Vector3>();
-            List<Vector4> bone = new List<Vector4>();
-            List<Vector4> weight = new List<Vector4>();
-            List<int> face = new List<int>();
-
-            int i = 0;
+            List<dVertex> vert = new List<dVertex>();
 
             for (int mes = mesh.Count - 1; mes >= 0; mes--)
             {
                 Mesh m = mesh[mes];
-                foreach (Polygon p in m.polygons)
+                for (int pol = m.polygons.Count - 1; pol >= 0; pol--)
                 {
-                    
+                    Polygon p = m.polygons[pol];
                     if (p.faces.Count <= 3)
                         continue;
                     foreach (Vertex v in p.vertices)
                     {
-                        vert.Add(v.pos);
-                        if(Endian == Endianness.Little)
-                            col.Add(new Vector4(1f, 1f, 1f, 1));
-                        else
-                            col.Add(v.col/0x7F);
-                        nrm.Add(v.nrm);
-
-                        uv.Add(v.tx[0]);
-
-                        if(v.node.Count == 0)
+                        dVertex nv = new dVertex()
                         {
-                            v.node.Add(-1);
-                            v.weight.Add(1);
-                        }
-                        while (v.node.Count < 4)
-                        {
-                            v.node.Add(0);
-                            v.weight.Add(0);
-                        }
-                        //bone.Add(new Vector4(-1, 0, 0, 0));
-                        //weight.Add(new Vector4(-1, 0, 0, 0));
-                        bone.Add(new Vector4(v.node[0], v.node[1], v.node[2], v.node[3]));
-                        weight.Add(new Vector4(v.weight[0], v.weight[1], v.weight[2], v.weight[3]));
+                            pos = v.pos,
+                            nrm = v.nrm,
+                            col = Endian == Endianness.Little ? new Vector4(1f, 1f, 1f, 1f) : v.col / 0x7F,
+                            tx0 = v.tx.Count > 0 ? v.tx[0] : new Vector2(0, 0),
+                            node = new Vector4(v.node.Count > 0 ? v.node[0] : -1,
+                            v.node.Count > 1 ? v.node[1] : -1, 
+                            v.node.Count > 2 ? v.node[2] : -1, 
+                            v.node.Count > 3 ? v.node[3] : -1),
+                            weight = new Vector4(v.weight.Count > 0 ? v.weight[0] : 0,
+                            v.weight.Count > 1 ? v.weight[1] : 0,
+                            v.weight.Count > 2 ? v.weight[2] : 0,
+                            v.weight.Count > 3 ? v.weight[3] : 0),
+
+                        };
+
+                        p.isTransparent = false;
+                        if (v.col.Z < 0x7F)
+                            p.isTransparent = true;
+                        if(p.materials[0].srcFactor > 1)
+                            p.isTransparent = true;
+
+                        vert.Add(nv);
                     }
+                    p.vertdata = vert.ToArray();
+                    vert = new List<dVertex>();
 
                     // rearrange faces
-                    int[] ia = p.getDisplayFace().ToArray();
-                    for (int j = 0; j < ia.Length; j++)
+                    p.display = p.getDisplayFace().ToArray();
+                }
+            }
+            
+            //facedata = face.ToArray();
+            //vertdata = vert.ToArray();
+        }
+
+        public void Render(Shader shader, Matrix4 view)
+        {
+            // create lists...
+            // first draw opaque
+            // then sort transparent by distance to camera
+            // 
+
+            List<Polygon> opaque = new List<Polygon>();
+            List<Polygon> trans = new List<Polygon>();
+
+            /*SortedList<float, Mesh> transorder = new SortedList<float, Mesh>();
+            foreach(Mesh m in mesh)
+            {
+                float pos = Vector4.Transform(new Vector4(m.bbox[0], m.bbox[1], m.bbox[2], 1.0f), view).Z;
+                if (!transorder.ContainsKey(pos))
+                    transorder.Add(pos, m);
+            }*/
+
+            foreach (Mesh m in mesh)
+            {
+                for (int pol = m.polygons.Count - 1; pol >= 0; pol--)
+                {
+                    Polygon p = m.polygons[m.polygons.Count - 1 - pol];
+                    if (p.isTransparent)
                     {
-                        ia[j] += i;
+                        trans.Add(p);
+                        continue;
                     }
-                    face.AddRange(ia);
-                    i += p.vertices.Count;
+                    int hash = p.materials[0].textures[0].hash;
+                    NUT.NUD_Texture tex = null;
+                    foreach (NUT nut in Runtime.TextureContainers)
+                    {
+                        if(nut.getTextureByID(hash, out tex))
+                        {
+                            if (tex.getNutFormat() == 2)
+                                trans.Add(p);
+                            else
+                                opaque.Add(p);
+                            break;
+                        }
+                    }
+                    if (tex == null)
+                        opaque.Add(p);
                 }
             }
 
-            vertdata = vert.ToArray();
-            coldata = col.ToArray();
-            nrmdata = nrm.ToArray();
-            uvdata = uv.ToArray();
-            facedata = face.ToArray();
-            bonedata = bone.ToArray();
-            weightdata = weight.ToArray();
 
-        }
-
-        public void Render(Shader shader)
-        {
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(vertdata.Length * Vector3.SizeInBytes), vertdata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_color);
-            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(coldata.Length * Vector4.SizeInBytes), coldata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_nrm);
-            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(nrmdata.Length * Vector3.SizeInBytes), nrmdata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_uv);
-            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, (IntPtr)(uvdata.Length * Vector2.SizeInBytes), uvdata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_bone);
-            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(bonedata.Length * Vector4.SizeInBytes), bonedata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_weight);
-            GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(weightdata.Length * Vector4.SizeInBytes), weightdata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, 0, 0);
-
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(facedata.Length * sizeof(int)), facedata, BufferUsageHint.StaticDraw);
 
             //GL.Enable(EnableCap.PrimitiveRestartFixedIndex);
 
-            int indiceat = 0;
+            foreach (Polygon p in opaque)
+                if (((Mesh)p.Parent).Checked)
+                    DrawPolygon(p, shader);
 
-            for (int mes = mesh.Count - 1; mes >= 0; mes--)
+            foreach (Polygon p in trans)
+                if(((Mesh)p.Parent).Checked)
+                    DrawPolygon(p, shader);
+        }
+
+        private void DrawPolygon(Polygon p, Shader shader)
+        {
+            if (p.faces.Count <= 3)
+                return;
+
+            //foreach (Material mat in p.materials)
             {
-                Mesh m = mesh[mes];
+                Material mat = p.materials[0];
+                GL.Uniform1(shader.getAttribute("flags"), mat.flags);
 
-                foreach (Polygon p in m.polygons)
+                GL.ActiveTexture(TextureUnit.Texture0);
+                GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
+                GL.Uniform1(shader.getAttribute("tex"), 0);
+
+                GL.ActiveTexture(TextureUnit.Texture0 + 1);
+                GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
+                GL.Uniform1(shader.getAttribute("nrm"), 1);
+
+                GL.ActiveTexture(TextureUnit.Texture0 + 2);
+                GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
+                GL.Uniform1(shader.getAttribute("rim"), 2);
+
+                GL.ActiveTexture(TextureUnit.Texture0 + 3);
+                GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
+                GL.Uniform1(shader.getAttribute("cube"), 3);
+
+                int[] locs = new int[4] { 3, 3, 3, 3 };
+                int li = 0;
+                if ((mat.flags & (uint)TextureFlags.DiffuseMap) > 0)
+                    locs[li++] = 0;
+
+                if ((mat.flags & (uint)TextureFlags.RIM) > 0)
                 {
+                    // as a stage map...
+                    if ((mat.flags & (uint)TextureFlags.AOMap) > 0)
+                        locs[li++] = 2;
+                }
+                else
+                    if ((mat.flags & (uint)TextureFlags.CubeMap) > 0)
+                    locs[li++] = 3;
 
-                    if (p.faces.Count <= 3)
-                        continue;
+                // TODO: This is a specular shine map thing, I'm putting it as rim for now
+                if ((mat.flags & (uint)NUD.TextureFlags.UnknownTex) > 0)
+                    locs[li++] = 2;
 
-                    //foreach (Material mat in p.materials)
+                if ((mat.flags & (uint)TextureFlags.NormalMap) > 0)
+                    locs[li++] = 1;
+                else if ((mat.flags & (uint)TextureFlags.RIM) > 0)
+                {
+                    locs[li++] = 1; // second diffuse
+                }
+
+                if ((mat.flags & (uint)TextureFlags.RIM) > 0)
+                {
+                    // as rim lighting
+                    if ((mat.flags & (uint)TextureFlags.CubeMap) > 0)
+                        locs[li++] = 3;
+                }
+                else
+                    if ((mat.flags & (uint)TextureFlags.AOMap) > 0)
+                    locs[li++] = 2;
+
+                int texid;
+                bool success;
+                for (int i = 0; i < mat.textures.Count; i++)
+                {
+                    if (i > locs.Length) break;
+                    foreach (NUT nut in Runtime.TextureContainers)
                     {
-                        Material mat = p.materials[0];
-                        int fl = ((int)mat.flags & 0xFF);
-                        GL.Uniform1(shader.getAttribute("flags"), fl);
-                        int texHash = mat.displayTexId == -1 ? mat.textures[0].hash : mat.displayTexId;
-                        int nrmHash = -1;
-                        if (mat.textures.Count > 1)
-                            nrmHash = mat.textures[1].hash;
-
-                        int tex = -1, finalTex = -1, finalNrm = -1;
-                        bool success;
-                        GL.ActiveTexture(TextureUnit.Texture0);
-                        GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
-                        GL.Uniform1(shader.getAttribute("tex"), 0);
-                        GL.ActiveTexture(TextureUnit.Texture1);
-                        GL.BindTexture(TextureTarget.Texture2D, 0);
-                        GL.Uniform1(shader.getAttribute("nrm"), 1);
-                        foreach (NUT nut in Runtime.TextureContainers)
+                        success = nut.draw.TryGetValue(mat.textures[i].hash, out texid);
+                        if (success)
                         {
-                            success = nut.draw.TryGetValue(texHash, out tex);
-                            if (success)
-                                finalTex = tex;
-                            success = nut.draw.TryGetValue(nrmHash, out tex);
-                            if (success)
-                                finalNrm = tex;
+                            GL.ActiveTexture(TextureUnit.Texture0 + locs[i]);
+                            GL.BindTexture(TextureTarget.Texture2D, texid);
+                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[i].WrapMode1]);
+                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[i].WrapMode2]);
+                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)wrapmode[mat.textures[i].minFilter]);
+                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)wrapmode[mat.textures[i].magFilter]);
+                            //GL.BindTexture(TextureTarget.Texture2D, 0);
+                            break;
                         }
-
-                        if (finalTex != 0)
-                        {
-                            tex = finalTex;
-                            GL.ActiveTexture(TextureUnit.Texture0);
-                            GL.BindTexture(TextureTarget.Texture2D, tex);
-                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[0].WrapMode1]);
-                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[0].WrapMode2]);
-                            GL.Uniform1(shader.getAttribute("tex"), 0);
-                        }
-                        else
-                        {
-                            GL.ActiveTexture(TextureUnit.Texture0);
-                            GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
-                            GL.Uniform1(shader.getAttribute("tex"), 0);
-                        }
-
-                        if (finalNrm != 0 && mat.textures.Count > 1)
-                        {
-                            tex = finalNrm;
-                            GL.ActiveTexture(TextureUnit.Texture1);
-                            GL.BindTexture(TextureTarget.Texture2D, tex);
-                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[1].WrapMode1]);
-                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[1].WrapMode2]);
-                            GL.Uniform1(shader.getAttribute("nrm"), 1);
-                        }
-                        else
-                        {
-                            GL.ActiveTexture(TextureUnit.Texture1);
-                            GL.BindTexture(TextureTarget.Texture2D, 0);
-                            GL.Uniform1(shader.getAttribute("nrm"), 1);
-                        }
-
-                        Vector4 colorSamplerUV = new Vector4(1, 1, 0, 0);
-                        {
-                            float[] colorSamplerUVFloats;
-                            mat.entries.TryGetValue("NU_colorSamplerUV", out colorSamplerUVFloats);
-                            if (colorSamplerUVFloats != null && colorSamplerUVFloats.Length >= 4)
-                            {
-                                //Console.WriteLine("Anim of NU_ColorSamplerUV from NUD");
-                                colorSamplerUV = new Vector4(colorSamplerUVFloats[0], colorSamplerUVFloats[1], colorSamplerUVFloats[2], colorSamplerUVFloats[3]);
-                            }
-                        }
-                        GL.Uniform4(shader.getAttribute("colorSamplerUV"), colorSamplerUV);
-
-                        float[] ao;
-                        mat.entries.TryGetValue("NU_aoMinGain", out ao);
-                        if (ao == null) ao = new float[] { 0, 0, 0, 0 };
-                        Vector4 aoo = new Vector4(ao[0], ao[1], ao[2], ao[3]);
-                        GL.Uniform4(shader.getAttribute("minGain"), aoo);
-
-                        float[] co;
-                        mat.entries.TryGetValue("NU_colorOffset", out co);
-                        if (co == null) co = new float[] { 0, 0, 0, 0 };
-                        Vector4 coo = new Vector4(co[0], co[1], co[2], co[3]);
-                        GL.Uniform4(shader.getAttribute("colorOffset"), coo);
-
-                        float[] cg;
-                        mat.entries.TryGetValue("NU_colorGain", out cg);
-                        if (cg == null) cg = new float[] { 1,1,1,1 };
-                        Vector4 cgo = new Vector4(cg[0], cg[1], cg[2], cg[3]);
-                        GL.Uniform4(shader.getAttribute("colorGain"), cgo);
-
-                        {
-                            float[] pa;
-                            mat.entries.TryGetValue("NU_diffuseColor", out pa);
-                            if (pa == null) pa = new float[] { 1, 1, 1, 1 };
-                            GL.Uniform4(shader.getAttribute("diffuseColor"), pa[0], pa[1], pa[2], pa[3]);
-                        }
-                        {
-                            float[] pa;
-                            mat.entries.TryGetValue("NU_specularColor", out pa);
-                            if (pa == null) pa = new float[] { 0, 0, 0, 0 };
-                            GL.Uniform4(shader.getAttribute("specularColor"), pa[0], pa[1], pa[2], pa[3]);
-                        }
-                        {
-                            float[] pa;
-                            mat.entries.TryGetValue("NU_specularColorGain", out pa);
-                            if (pa == null) pa = new float[] { 1, 1, 1, 1 };
-                            GL.Uniform4(shader.getAttribute("specularColorGain"), pa[0], pa[1], pa[2], pa[3]);
-                        }
-                        {
-                            float[] pa;
-                            mat.entries.TryGetValue("NU_specularParams", out pa);
-                            if (pa == null) pa = new float[] { 0, 0, 0, 0 };
-                            GL.Uniform4(shader.getAttribute("specularParams"), pa[0], pa[1], pa[2], pa[3]);
-                        }
-                        {
-                            float[] pa;
-                            mat.entries.TryGetValue("NU_fresnelColor", out pa);
-                            if (pa == null) pa = new float[] { 0, 0, 0, 0 };
-                            GL.Uniform4(shader.getAttribute("fresnelColor"), pa[0], pa[1], pa[2], pa[3]);
-                        }
-                        {
-                            float[] pa;
-                            mat.entries.TryGetValue("NU_fresnelParams", out pa);
-                            if (pa == null) pa = new float[] { 0, 0, 0, 0 };
-                            GL.Uniform4(shader.getAttribute("fresnelParams"), pa[0], pa[1], pa[2], pa[3]);
-                        }
-
-                        GL.Enable(EnableCap.Blend);
-                        if(mat.srcFactor == 5)
-                        {
-                            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-                        }
-
-                        /*GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
-                            dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
-
-                        GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-                        switch (mat.alphaFunc){
-                            case 0:
-                                GL.AlphaFunc(AlphaFunction.Gequal, 128 / 255f);
-                                break;
-                        }
-                        /*switch (mat.ref1)
-                        {
-                            case 4:
-                                GL.AlphaFunc(AlphaFunction.Lequal, 128 / 255f);
-                                break;
-                            case 6:
-                                GL.AlphaFunc(AlphaFunction.Lequal, 255 / 255f);
-                                break;
-                        }*/
-
-                        GL.Enable(EnableCap.CullFace);
-                        GL.CullFace(CullFaceMode.Front);
-                        switch (mat.cullMode)
-                        {
-                            case 0:
-                                GL.Disable(EnableCap.CullFace);
-                                break;
-                            case 2:
-                                GL.Disable(EnableCap.CullFace);
-                                break;
-                            case 4:
-                                GL.CullFace(CullFaceMode.Back);
-                                break;
-                        }
-
-                        if (p.Checked && m.Checked)
-                        {
-                            //(p.strip >> 4) == 4 ? PrimitiveType.Triangles : PrimitiveType.TriangleStrip
-                            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
-                        }
-                        GL.Enable(EnableCap.CullFace);
-                        indiceat += p.displayFaceSize;
                     }
+                }
+
+
+                float[] ao;
+                mat.entries.TryGetValue("NU_aoMinGain", out ao);
+                if (ao == null) ao = new float[] { 0, 0, 0, 0 };
+                Vector4 aoo = new Vector4(ao[0], ao[1], ao[2], ao[3]);
+                GL.Uniform4(shader.getAttribute("minGain"), aoo);
+
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_colorSamplerUV", out pa);
+                    if (pa == null) pa = new float[] { 1, 1, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("colorSamplerUV"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_colorGain", out pa);
+                    if (pa == null) pa = new float[] { 1, 1, 1, 1 };
+                    GL.Uniform4(shader.getAttribute("colorGain"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_colorOffset", out pa);
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("colorOffset"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_diffuseColor", out pa);
+                    if (pa == null) pa = new float[] { 1, 1, 1, 1 };
+                    GL.Uniform4(shader.getAttribute("diffuseColor"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_specularColor", out pa);
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("specularColor"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_specularColorGain", out pa);
+                    if (pa == null) pa = new float[] { 1, 1, 1, 1 };
+                    GL.Uniform4(shader.getAttribute("specularColorGain"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_specularParams", out pa);
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("specularParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_fresnelColor", out pa);
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("fresnelColor"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_fresnelParams", out pa);
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("fresnelParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_reflectionColor", out pa);
+                    if (pa == null) pa = new float[] { 0, 0, 0, 1 };
+                    GL.Uniform4(shader.getAttribute("reflectionColor"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_reflectionParams", out pa);
+                    if (pa == null) pa = new float[] { 0, 0, 0, 1 };
+                    GL.Uniform4(shader.getAttribute("reflectionParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
+
+                GL.Enable(EnableCap.Blend);
+                if (mat.srcFactor == 5)
+                {
+                    GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+                }
+
+                GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
+                    dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
+
+                /*GL.Enable(EnableCap.AlphaTest);
+
+                GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
+                switch (mat.alphaFunc){
+                    case 0:
+                        GL.AlphaFunc(AlphaFunction.Gequal, 128 / 255f);
+                        break;
+                }
+                /*switch (mat.ref1)
+                {
+                    case 4:
+                        GL.AlphaFunc(AlphaFunction.Lequal, 128 / 255f);
+                        break;
+                    case 6:
+                        GL.AlphaFunc(AlphaFunction.Lequal, 255 / 255f);
+                        break;
+                }*/
+
+                GL.Enable(EnableCap.CullFace);
+                GL.CullFace(CullFaceMode.Front);
+                switch (mat.cullMode)
+                {
+                    case 0:
+                        GL.Disable(EnableCap.CullFace);
+                        break;
+                    case 2:
+                        GL.CullFace(CullFaceMode.Front);
+                        break;
+                    case 4:
+                        GL.CullFace(CullFaceMode.Back);
+                        break;
+                }
+
+                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
+                GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
+                GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
+                GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 12);
+                GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 24);
+                GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 32);
+                GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 48);
+                GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 64);
+
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
+                GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
+                if (p.Checked)
+                {
+                    //(p.strip >> 4) == 4 ? PrimitiveType.Triangles : PrimitiveType.TriangleStrip
+                    GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
                 }
             }
         }
 
         Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
-                    { 0x01, BlendingFactorDest.SrcAlpha},
+                    { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
                     { 0x02, BlendingFactorDest.One},
-                    { 0x03, BlendingFactorDest.OneMinusSrcColor},
-                    { 0x04, BlendingFactorDest.OneMinusDstAlpha},
-                    { 0x05, BlendingFactorDest.OneMinusSrcAlpha},
+                    { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
+                    { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
+                    { 0x05, BlendingFactorDest.ConstantAlpha},
                     { 0x07, BlendingFactorDest.DstAlpha}
                 };
 
         Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
                     { 0x01, BlendingFactorSrc.SrcAlpha},
-                    { 0x02, BlendingFactorSrc.One},
-                    { 0x03, BlendingFactorSrc.OneMinusSrcColor},
-                    { 0x04, BlendingFactorSrc.SrcColor},
+                    { 0x02, BlendingFactorSrc.SrcAlpha},
+                    { 0x03, BlendingFactorSrc.DstAlpha},
+                    { 0x04, BlendingFactorSrc.SrcAlpha},
                     { 0x0a, BlendingFactorSrc.Zero}
                 };
 
@@ -379,7 +419,7 @@ namespace Smash_Forge
                     { 0x01, TextureWrapMode.Repeat},
                     { 0x02, TextureWrapMode.MirroredRepeat},
                     { 0x03, TextureWrapMode.Clamp}
-                };
+        };
         #endregion
 
         #region MTA
@@ -622,13 +662,14 @@ namespace Smash_Forge
 
                 m.flags = (uint)d.readInt();
                 d.skip(4);
-                m.blendMode = d.readByte();
-                m.dstFactor = d.readByte();
 
-                int propCount = d.readShort();
+                
                 m.srcFactor = d.readShort();
-                m.alphaFunc = d.readByte();
+                int propCount = d.readShort();
+                m.dstFactor = d.readShort();
                 m.ref1 = d.readByte();
+                m.ref0 = d.readByte();
+
                 d.skip(1); // unknown
                 m.drawPriority = d.readByte();
                 m.cullMode = d.readByte();
@@ -1195,12 +1236,11 @@ namespace Smash_Forge
                 offs[c++] = d.size();
                 d.writeInt((int)mat.flags);
                 d.writeInt(0); // padding
-                d.writeByte(mat.blendMode);
-                d.writeByte(mat.dstFactor);
-                d.writeShort(mat.textures.Count);
                 d.writeShort(mat.srcFactor);
-                d.writeByte(mat.alphaFunc);
+                d.writeShort(mat.textures.Count);
+                d.writeShort(mat.dstFactor);
                 d.writeByte(mat.ref1);
+                d.writeByte(mat.ref0);
                 d.writeByte(0); // unknown padding?
                 d.writeByte(mat.drawPriority);
                 d.writeByte(mat.cullMode);
@@ -1273,6 +1313,34 @@ namespace Smash_Forge
         #endregion
 
         #region ClassStructure
+
+        public struct Vector4i
+        {
+            int x, y, z, w;
+
+            public Vector4i(int x, int y, int z, int w)
+            {
+                this.x = x;
+                this.y = y;
+                this.z = z;
+                this.w = w;
+            }
+
+            public static int Size = 4 * sizeof(int);
+        }
+
+        public struct dVertex
+        {
+            public Vector3 pos;
+            public Vector3 nrm;
+            public Vector2 tx0;
+            public Vector4 col;
+            public Vector4 node;
+            public Vector4 weight;
+
+            public static int Size = 4 * (3 + 3 + 2 + 4 + 4 + 4);
+        }
+
         public class Vertex
         {
             public Vector3 pos = new Vector3(0, 0, 0), nrm = new Vector3(0, 0, 0);
@@ -1331,8 +1399,8 @@ namespace Smash_Forge
             public int blendMode = 0;
             public int dstFactor = 0;
             public int srcFactor = 0;
-            public int alphaFunc = 0;
             public int ref1 = 0;
+            public int ref0 = 0;
             public int drawPriority = 0;
             public int cullMode = 0;
             public int displayTexId = -1;
@@ -1360,6 +1428,11 @@ namespace Smash_Forge
             public int UVSize = 0x12;
             public int strip = 0x40;
             public int polflag = 0x04;
+
+            // for drawing
+            public bool isTransparent = false;
+            public dVertex[] vertdata;
+            public int[] display;
 
             public Polygon()
             {
