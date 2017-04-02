@@ -542,7 +542,7 @@ vec3 CalculateReflection(vec3 norm){
 	R.y *= -1;
     	vec3 refColor = texture(cmap, R).rgb * reflectionColor.rgb;
 
-	return refColor / reflectionColor.aaa;
+	return refColor ;
 }
 
 vec3 CalculateSpecular(vec3 norm){

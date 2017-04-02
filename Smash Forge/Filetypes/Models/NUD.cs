@@ -200,18 +200,18 @@ namespace Smash_Forge
             List<Polygon> opaque = new List<Polygon>();
             List<Polygon> trans = new List<Polygon>();
 
-            SortedList<float, Mesh> transorder = new SortedList<float, Mesh>();
-            foreach(Mesh m in mesh)
-            {
-                // get nearest box point
-                float pos = Vector4.Transform(new Vector4(m.bbox[0], m.bbox[1], m.bbox[2], 1.0f), Matrix4.CreateTranslation(0,0,0)).Z;
-                if (!transorder.ContainsKey((pos+m.bbox[3])*-1))
-                    transorder.Add((pos + m.bbox[3])*-1, m);
-                else
-                    transorder.Add(((pos + m.bbox[3]) * -1) + 0.01f, m);
-            }
+            /*SortedList<float, Mesh> transorder = new SortedList<float, Mesh>();
+          foreach(Mesh m in mesh)
+           {
+               // get nearest box point
+               float pos = Vector4.Transform(new Vector4(m.bbox[0], m.bbox[1], m.bbox[2], 1.0f), Matrix4.CreateTranslation(0,0,0)).Z;
+               if (!transorder.ContainsKey((pos+m.bbox[3])*-1))
+                   transorder.Add((pos + m.bbox[3])*-1, m);
+               else
+                   transorder.Add(((pos + m.bbox[3]) * -1) + 0.01f, m);
+           }*/
 
-            foreach (Mesh m in transorder.Values)
+            foreach (Mesh m in mesh)
             {
                 for (int pol = m.polygons.Count - 1; pol >= 0; pol--)
                 {
