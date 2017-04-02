@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,36 +11,55 @@ namespace Smash_Forge
 {
     class Skapon
     {
-
         // I'm completely totally serious
 
         public static NUD Create(VBN vbn)
         {
+            Dictionary<string, string> files = new Dictionary<string, string>();
+            ZipArchive zip = ZipFile.OpenRead("lib\\Skapon.zip");
+
+            Random random = new Random();
+            int randomNumber = random.Next(0, 0xFFFFFF);
+
+            NUT nut = new NUT();
+            foreach (ZipArchiveEntry e in zip.Entries)
+            {
+                byte[] b;
+                using (BinaryReader br = new BinaryReader(e.Open()))
+                {
+                    b = br.ReadBytes((int)e.Length);
+                }
+                var stream = new StreamReader(new MemoryStream(b));
+                string s = stream.ReadToEnd();
+                files.Add(e.Name, s);
+
+                if (e.Name.EndsWith(".dds"))
+                {
+                    NUT.NUD_Texture tex = new DDS(new FileData(b)).toNUT_Texture();
+                    nut.textures.Add(tex);
+                    tex.id = 0x40000000 + randomNumber;
+                    nut.draw.Add(tex.id, NUT.loadImage(tex));
+                }
+            }
+
             NUD nud = new NUD();
             NUD.Mesh head = new NUD.Mesh();
             nud.mesh.Add(head);
             head.Text = "Skapon";
 
-            NUT nut = new NUT();
-            NUT.NUD_Texture tex = new DDS(new FileData("Skapon//tex.dds")).toNUT_Texture();
-            nut.textures.Add(tex);
-            Random random = new Random();
-            int randomNumber = random.Next(0, 0xFFFFFF);
-
-            tex.id = 0x40000000 + randomNumber;
-            nut.draw.Add(tex.id, NUT.loadImage(tex));
-
-            head.polygons.Add(setToBone(scale(readPoly(File.ReadAllText("Skapon//head.obj")), 1, 1, 1), vbn.bones[vbn.boneIndex("HeadN")], vbn));
-            head.polygons.Add(setToBone(scale(readPoly(File.ReadAllText("Skapon//body.obj")), 1, 1, 1), vbn.bones[vbn.boneIndex("BustN")], vbn));
-            head.polygons.Add(setToBone(scale(readPoly(File.ReadAllText("Skapon//hand.obj")), 1, 1, 1), vbn.bones[vbn.boneIndex("RHandN")], vbn));
-            head.polygons.Add(setToBone(scale(readPoly(File.ReadAllText("Skapon//hand.obj")), -1, -1, 1), vbn.bones[vbn.boneIndex("LHandN")], vbn));
-            head.polygons.Add(setToBone(scale(readPoly(File.ReadAllText("Skapon//foot.obj")), 1, 1, 1), vbn.bones[vbn.boneIndex("RFootJ")], vbn));
-            head.polygons.Add(setToBone(scale(readPoly(File.ReadAllText("Skapon//foot.obj")), -1, -1, -1), vbn.bones[vbn.boneIndex("LFootJ")], vbn));
+            head.Nodes.Add(setToBone(scale(readPoly(files["head.obj"]), 1, 1, 1), vbn.bones[vbn.boneIndex("HeadN")], vbn));
+            head.Nodes.Add(setToBone(scale(readPoly(files["body.obj"]), 1, 1, 1), vbn.bones[vbn.boneIndex("BustN")], vbn));
+            head.Nodes.Add(setToBone(scale(readPoly(files["hand.obj"]), 1, 1, 1), vbn.bones[vbn.boneIndex("RHandN")], vbn));
+            head.Nodes.Add(setToBone(scale(readPoly(files["hand.obj"]), -1, -1, 1), vbn.bones[vbn.boneIndex("LHandN")], vbn));
+            head.Nodes.Add(setToBone(scale(readPoly(files["foot.obj"]), 1, 1, 1), vbn.bones[vbn.boneIndex("RFootJ")], vbn));
+            head.Nodes.Add(setToBone(scale(readPoly(files["foot.obj"]), -1, -1, -1), vbn.bones[vbn.boneIndex("LFootJ")], vbn));
 
             foreach (NUD.Polygon p in head.polygons)
             {
-                p.materials[0].textures[0].hash = tex.id;
+                p.materials[0].textures[0].hash = 0x40000000 + randomNumber;
             }
+
+            nud.PreRender();
 
             return nud;
         }

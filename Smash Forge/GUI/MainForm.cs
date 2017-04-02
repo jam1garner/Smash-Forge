@@ -1086,14 +1086,14 @@ namespace Smash_Forge
             {
                 Runtime.TargetVBN = new VBN(filename);
 
+                ModelContainer con = new ModelContainer();
+                con.vbn = Runtime.TargetVBN;
+                Runtime.ModelContainers.Add(con);
+
                 if (Directory.Exists("Skapon\\"))
                 {
                     NUD nud = Skapon.Create(Runtime.TargetVBN);
-                    ModelContainer con = new ModelContainer();
-                    con.vbn = Runtime.TargetVBN;
                     con.nud = nud;
-                    nud.PreRender();
-                    Runtime.ModelContainers.Add(con);
                 }
             }
 
@@ -1553,6 +1553,14 @@ namespace Smash_Forge
             {
                 texEditor.BringToFront();
             }
+        }
+
+        private void MainForm_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        {
+        }
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
         }
     }
 }

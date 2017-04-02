@@ -433,12 +433,12 @@ namespace Smash_Forge
                     //Console.WriteLine(tex.id.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + swizzle);
                     //Console.WriteLine((tex.width >> mipLevel) + " " + (tex.height >> mipLevel));
                     
-                    if (cmap) tex.height *= 2;
+                    //if (cmap) tex.height *= 2;
 
                     int w = (tex.width >> mipLevel);
                     int h = (tex.height >> mipLevel);
 
-                    if (mipSize % 0x10 != 0) mipSize += mipSize % 0x10;
+                    //if (mipSize % 0x10 != 0) mipSize += mipSize % 0x10;
                     //if (cmap) mipSize /= 6;
 
                     //if (p <= 16) p = 64;
@@ -485,7 +485,7 @@ namespace Smash_Forge
             {
                 if (!draw.ContainsKey(tex.id))
                 {
-                    draw.Add(tex.id, loadImage(tex, false));
+                    draw.Add(tex.id, loadImage(tex));
                 }
             }
         }
@@ -544,13 +544,8 @@ namespace Smash_Forge
                 || t.type == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
                 || t.type == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext)
             {
-                //if(t.mipmaps.Count > 3)
-                //GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type,
-                //    t.width/8, t.height/8, 0, t.Size / 64, t.mipmaps[3]);
-                //else
-                    GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type,
-                        t.width, t.height, 0, t.Size, t.mipmaps[0]);
-                //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type,
+                    t.width, t.height, 0, t.Size, t.mipmaps[0]);
                 
                 if (t.mipmaps.Count > 1 && DDS)
                 {
@@ -560,15 +555,6 @@ namespace Smash_Forge
                     for(int i = 0; i <t.mipmaps.Count; i++)
                         GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, i, t.type,
                         t.width / (int)Math.Pow(2,i), t.height / (int)Math.Pow(2, i), 0, t.Size / (int)Math.Pow(4, i), t.mipmaps[i]);
-
-                        // GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 1, t.type,
-                        //    t.width / 2, t.height / 2, 0, t.Size, t.mipmaps[1]);
-
-                        //GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 2, t.type,
-                        //   t.width / 4, t.height / 4, 0, t.Size, t.mipmaps[2]);
-
-                        //GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 3, t.type,
-                        //    t.width / 8, t.height / 8, 0, t.Size, t.mipmaps[3]);
                 }
                 else
                 {

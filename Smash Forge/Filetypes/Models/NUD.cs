@@ -200,16 +200,18 @@ namespace Smash_Forge
             List<Polygon> opaque = new List<Polygon>();
             List<Polygon> trans = new List<Polygon>();
 
-            /*SortedList<float, Mesh> transorder = new SortedList<float, Mesh>();
+            SortedList<float, Mesh> transorder = new SortedList<float, Mesh>();
             foreach(Mesh m in mesh)
             {
                 // get nearest box point
-                float pos = Vector4.Transform(new Vector4(m.bbox[0], m.bbox[1], m.bbox[2], 1.0f), view).Z;
+                float pos = Vector4.Transform(new Vector4(m.bbox[0], m.bbox[1], m.bbox[2], 1.0f), Matrix4.CreateTranslation(0,0,0)).Z;
                 if (!transorder.ContainsKey((pos+m.bbox[3])*-1))
                     transorder.Add((pos + m.bbox[3])*-1, m);
-            }*/
+                else
+                    transorder.Add(((pos + m.bbox[3]) * -1) + 0.01f, m);
+            }
 
-            foreach (Mesh m in mesh)
+            foreach (Mesh m in transorder.Values)
             {
                 for (int pol = m.polygons.Count - 1; pol >= 0; pol--)
                 {
@@ -311,6 +313,11 @@ namespace Smash_Forge
                     if ((mat.flags & (uint)TextureFlags.AOMap) > 0)
                     locs[li++] = 2;
 
+                if(mat.displayTexId != -1)
+                {
+                    locs[0] = mat.displayTexId;
+                }
+
                 int texid;
                 bool success;
                 for (int i = 0; i < mat.textures.Count; i++)
@@ -333,85 +340,93 @@ namespace Smash_Forge
                     }
                 }
 
-
-                float[] ao;
-                mat.entries.TryGetValue("NU_aoMinGain", out ao);
-                if (ao == null) ao = new float[] { 0, 0, 0, 0 };
-                Vector4 aoo = new Vector4(ao[0], ao[1], ao[2], ao[3]);
-                GL.Uniform4(shader.getAttribute("minGain"), aoo);
-
+                {
+                    float[] ao;
+                    mat.entries.TryGetValue("NU_aoMinGain", out ao);
+                    //mat.anims.TryGetValue("NU_aoMinGain", out ao);
+                    if (ao == null) ao = new float[] { 0, 0, 0, 0 };
+                    Vector4 aoo = new Vector4(ao[0], ao[1], ao[2], ao[3]);
+                    GL.Uniform4(shader.getAttribute("minGain"), aoo);
+                }
                 {
                     float[] pa;
                     mat.entries.TryGetValue("NU_colorSamplerUV", out pa);
+                    mat.anims.TryGetValue("NU_colorSamplerUV", out pa);
                     if (pa == null) pa = new float[] { 1, 1, 0, 0 };
                     GL.Uniform4(shader.getAttribute("colorSamplerUV"), pa[0], pa[1], pa[2], pa[3]);
                 }
                 {
                     float[] pa;
                     mat.entries.TryGetValue("NU_colorGain", out pa);
+                    //mat.anims.TryGetValue("NU_colorGain", out pa);
                     if (pa == null) pa = new float[] { 1, 1, 1, 1 };
                     GL.Uniform4(shader.getAttribute("colorGain"), pa[0], pa[1], pa[2], pa[3]);
                 }
                 {
                     float[] pa;
                     mat.entries.TryGetValue("NU_colorOffset", out pa);
+                    //mat.anims.TryGetValue("NU_colorOffset", out pa);
                     if (pa == null) pa = new float[] { 0, 0, 0, 0 };
                     GL.Uniform4(shader.getAttribute("colorOffset"), pa[0], pa[1], pa[2], pa[3]);
                 }
                 {
                     float[] pa;
                     mat.entries.TryGetValue("NU_diffuseColor", out pa);
+                    //mat.anims.TryGetValue("NU_diffuseColor", out pa);
                     if (pa == null) pa = new float[] { 1, 1, 1, 1 };
                     GL.Uniform4(shader.getAttribute("diffuseColor"), pa[0], pa[1], pa[2], pa[3]);
                 }
                 {
                     float[] pa;
                     mat.entries.TryGetValue("NU_specularColor", out pa);
+                    //mat.anims.TryGetValue("NU_specularColor", out pa);
                     if (pa == null) pa = new float[] { 0, 0, 0, 0 };
                     GL.Uniform4(shader.getAttribute("specularColor"), pa[0], pa[1], pa[2], pa[3]);
                 }
                 {
                     float[] pa;
                     mat.entries.TryGetValue("NU_specularColorGain", out pa);
+                    //mat.anims.TryGetValue("NU_specularColorGain", out pa);
                     if (pa == null) pa = new float[] { 1, 1, 1, 1 };
                     GL.Uniform4(shader.getAttribute("specularColorGain"), pa[0], pa[1], pa[2], pa[3]);
                 }
                 {
                     float[] pa;
                     mat.entries.TryGetValue("NU_specularParams", out pa);
+                    //mat.anims.TryGetValue("NU_specularParams", out pa);
                     if (pa == null) pa = new float[] { 0, 0, 0, 0 };
                     GL.Uniform4(shader.getAttribute("specularParams"), pa[0], pa[1], pa[2], pa[3]);
                 }
                 {
                     float[] pa;
                     mat.entries.TryGetValue("NU_fresnelColor", out pa);
+                    //mat.anims.TryGetValue("NU_fresnelColor", out pa);
                     if (pa == null) pa = new float[] { 0, 0, 0, 0 };
                     GL.Uniform4(shader.getAttribute("fresnelColor"), pa[0], pa[1], pa[2], pa[3]);
                 }
                 {
                     float[] pa;
                     mat.entries.TryGetValue("NU_fresnelParams", out pa);
+                    //mat.anims.TryGetValue("NU_fresnelParams", out pa);
                     if (pa == null) pa = new float[] { 0, 0, 0, 0 };
                     GL.Uniform4(shader.getAttribute("fresnelParams"), pa[0], pa[1], pa[2], pa[3]);
                 }
                 {
                     float[] pa;
                     mat.entries.TryGetValue("NU_reflectionColor", out pa);
+                    //mat.anims.TryGetValue("NU_reflectionColor", out pa);
                     if (pa == null) pa = new float[] { 0, 0, 0, 1 };
                     GL.Uniform4(shader.getAttribute("reflectionColor"), pa[0], pa[1], pa[2], pa[3]);
                 }
                 {
                     float[] pa;
                     mat.entries.TryGetValue("NU_reflectionParams", out pa);
+                    //mat.anims.TryGetValue("NU_reflectionParams", out pa);
                     if (pa == null) pa = new float[] { 0, 0, 0, 1 };
                     GL.Uniform4(shader.getAttribute("reflectionParams"), pa[0], pa[1], pa[2], pa[3]);
                 }
 
                 GL.Enable(EnableCap.Blend);
-                if (mat.srcFactor == 5)
-                {
-                    GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-                }
 
                 GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
                     dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
@@ -527,26 +542,26 @@ namespace Smash_Forge
                                 Buffer.BlockCopy(matHashFloat, 0, bytes, 0, 4);
                                 int matHash = BitConverter.ToInt32(bytes, 0);
 
+                                int frm = (int)((frame * 60 / m.frameRate) % (m.numFrames));
+
                                 if (matHash == mat.matHash || matHash == mat.matHash2)
                                 {
                                     //Console.WriteLine("MTA mat hash match");
                                     if (mat.hasPat)
                                     {
-                                        ma.displayTexId = mat.pat0.getTexId((int)((frame * 60 / m.frameRate) % m.numFrames));
+                                        ma.displayTexId = mat.pat0.getTexId(frm);
                                         //Console.WriteLine("PAT0 TexID - " + ma.displayTexId);
                                     }
 
                                     foreach(MatData md in mat.properties)
                                     {
-                                        //Console.WriteLine("Frame - "+frame+" "+md.name);
-                                        
                                         if (md.frames.Count > 0)
                                         {
                                             if (ma.anims.ContainsKey(md.name))
-                                                ma.anims[md.name] = md.frames[(int)((frame * 60 / m.frameRate) % (m.numFrames))].values;
+                                                ma.anims[md.name] = md.frames[frm].values;
                                             else
-                                                if(md.frames.Count > (int)((frame * 60 / m.frameRate) % (m.numFrames)))
-                                                    ma.anims.Add(md.name, md.frames[(int)((frame * 60 / m.frameRate) % (m.numFrames))].values);
+                                                if(md.frames.Count > frm)
+                                                    ma.anims.Add(md.name, md.frames[frm].values);
                                             //Console.WriteLine(""+md.frames[frame % md.frames.Count].values[0]+"," + md.frames[frame % md.frames.Count].values[1] + "," + md.frames[frame % md.frames.Count].values[2] + "," + md.frames[frame % md.frames.Count].values[3]);
                                         }
                                             

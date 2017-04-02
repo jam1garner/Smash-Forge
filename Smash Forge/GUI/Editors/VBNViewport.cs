@@ -144,6 +144,25 @@ namespace Smash_Forge
             {
                 if (Smash_Forge.Update.Downloaded)
                     MainForm.Instance.pictureBox1.Image = Resources.Resources.sexy_green_down_arrow;
+                
+                if (Keyboard.GetState().IsKeyDown(Key.S)
+                    && Keyboard.GetState().IsKeyDown(Key.K)
+                    && Keyboard.GetState().IsKeyDown(Key.A)
+                    && Keyboard.GetState().IsKeyDown(Key.P)
+                    && Keyboard.GetState().IsKeyDown(Key.O)
+                    && Keyboard.GetState().IsKeyDown(Key.N))
+                {
+                    DialogResult dialogResult = MessageBox.Show("Activate Skapon?", "Skapon Code", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        foreach (ModelContainer m in Runtime.ModelContainers)
+                        {
+                            if (m.vbn != null && m.nud == null)
+                                m.nud = Skapon.Create(m.vbn);
+                        }
+                    }
+                }
+
                 if (isPlaying)
                 {
                     if (nupdFrame.Value < nupdMaxFrame.Value)
