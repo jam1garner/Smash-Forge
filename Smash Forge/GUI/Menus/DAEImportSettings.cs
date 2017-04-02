@@ -65,7 +65,7 @@ namespace Smash_Forge
 
                 foreach (NUD.Polygon poly in mesh.polygons)
                 {
-                    poly.vertSize = (BoneTypes[(string)comboBox2.SelectedItem]) | (VertTypes[(string)comboBox1.SelectedItem]);
+                    poly.vertSize = ((poly.vertSize == 0x6 ? 0 : BoneTypes[(string)comboBox2.SelectedItem])) | (VertTypes[(string)comboBox1.SelectedItem]);
 
                     if (checkBox1.Checked || checkBox4.Checked)
                         foreach (NUD.Vertex v in poly.vertices)
@@ -91,7 +91,7 @@ namespace Smash_Forge
                         mesh.Text = mesh.Text.Substring(5, mesh.Text.Length - 5);
                 }
             }
-
+            
             nud.PreRender();
         }
 

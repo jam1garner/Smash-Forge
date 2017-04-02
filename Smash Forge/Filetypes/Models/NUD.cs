@@ -1683,6 +1683,7 @@ namespace Smash_Forge
         public void Optimize()
         {
             // to help with duplicates
+            MergePoly();
 
             bool isSingleBound;
             int sbind;
@@ -1701,7 +1702,7 @@ namespace Smash_Forge
                         int i = 0;
                         foreach (Vertex v in nVert)
                         {
-                            if (v.node.Count > 0)
+                            if (v.node.Count > 0 && isSingleBound)
                             {
                                 if (sbind == -1)
                                     sbind = p.vertices[f].node[0];

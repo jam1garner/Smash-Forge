@@ -395,6 +395,12 @@ namespace Smash_Forge
                 }
 
                 d.skip(0x04);
+                
+                // check for cubemap
+                bool cmap = (d.readInt() == d.readInt());
+                d.seek(d.pos() - 8);
+                if (cmap) Console.WriteLine("cubemap detected");
+
                 d.skip(headerSize - 0x50);
 
                 d.skip(0x18);
@@ -426,21 +432,14 @@ namespace Smash_Forge
 
                     //Console.WriteLine(tex.id.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + swizzle);
                     //Console.WriteLine((tex.width >> mipLevel) + " " + (tex.height >> mipLevel));
+                    
+                    if (cmap) tex.height *= 2;
 
                     int w = (tex.width >> mipLevel);
                     int h = (tex.height >> mipLevel);
 
-                    // NOTES:
-                    // There's a padding, but I don't know how it works
-                    // Mips with pitch 32 and below don't work for some reason....
-                    /*if (mipSize == 0x1000)
-                    {
-                        //dataOffset += 0x400;
-                        mipSize = 0x2000;
-                        p = 8;
-                        w = 128;
-                        h = 128;
-                    }*/
+                    if (mipSize % 0x10 != 0) mipSize += mipSize % 0x10;
+                    //if (cmap) mipSize /= 6;
 
                     //if (p <= 16) p = 64;
                     {
@@ -454,8 +453,27 @@ namespace Smash_Forge
                             swizzle
                         ));
                     }
-
                     dataOffset += mipSize;
+                    
+                    /*if (cmap)
+                    {
+                        for(int k = 0; k < 5; k++)
+                        {
+                            p = pitch >> (mipLevel + k + 1);
+                            tex.mipmaps.Add(GTX.swizzleBC(
+                                d.getSection(dataOffset, mipSize),
+                                w,
+                                h,
+                                format,
+                                tileMode,
+                                p,
+                                swizzle
+                            ));
+
+                            dataOffset += mipSize;
+                        }
+                    }*/
+
                     //while (dataOffset % 1024 != 0) dataOffset++;
                     //if (mipSize == 0x4000) dataOffset += 0x400;
                 }
@@ -467,7 +485,7 @@ namespace Smash_Forge
             {
                 if (!draw.ContainsKey(tex.id))
                 {
-                    draw.Add(tex.id, loadImage(tex));
+                    draw.Add(tex.id, loadImage(tex, false));
                 }
             }
         }

@@ -262,11 +262,8 @@ namespace Smash_Forge
             }
 
             // then image materials and effects
-
-
-            n.MergePoly();
+            
             n.Optimize();
-            n.PreRender();
         }
 
         private static void ReadSemantic(ColladaInput input, NUD.Vertex v, int p, Dictionary<string, ColladaSource> sources)

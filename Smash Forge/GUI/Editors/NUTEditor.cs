@@ -309,6 +309,7 @@ namespace Smash_Forge
 
         private void exportAsDDSToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (listBox2.SelectedItem == null) return;
             using (var sfd = new SaveFileDialog())
             {
                 NUT.NUD_Texture tex = (NUT.NUD_Texture)(listBox2.SelectedItem);
