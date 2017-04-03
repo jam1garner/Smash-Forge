@@ -32,6 +32,7 @@ namespace Smash_Forge
 			d.skip(8);
 
 			SkelAnimation anim = new SkelAnimation();
+            
 			//anim.setModel(m);
 
 			d.seek(offset);
@@ -115,7 +116,8 @@ namespace Smash_Forge
 						//System.out.println("R is ISO");
 
 						int nid = anim.getNodeIndex(d.readString(nameOff, -1), m);
-						KeyNode node = anim.getNode(0, nid);
+                        Console.WriteLine(nid.ToString("x"));
+                        KeyNode node = anim.getNode(0, nid);
 						node.r_type = 1;
 						float iss = (float)((d.readFloat ()) * Math.PI / 180f);
 						node.r = VBN.FromEulerAngles(iss, iss, iss);

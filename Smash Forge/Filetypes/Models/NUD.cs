@@ -1723,7 +1723,7 @@ namespace Smash_Forge
         }
 
     */
-        public void Optimize()
+        public void Optimize(bool singleBind = false)
         {
             // to help with duplicates
             MergePoly();
@@ -1777,7 +1777,7 @@ namespace Smash_Forge
                     p.faces = nFace;
                     p.displayFaceSize = 0;
                 }
-                if (isSingleBound)
+                if (isSingleBound && singleBind)
                 {
                     m.boneflag = 0x08; // single bind flag
                     m.singlebind = (short)sbind; // single bind bone

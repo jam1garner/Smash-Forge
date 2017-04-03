@@ -142,7 +142,7 @@ namespace Smash_Forge
 
 			SkelAnimation a = new SkelAnimation ();
 
-			for (int i = 0; i < endTime - startTime; i++) {
+			for (int i = 0; i < endTime - startTime+1; i++) {
 				KeyFrame key = new KeyFrame ();
 				a.addKeyframe (key);
 

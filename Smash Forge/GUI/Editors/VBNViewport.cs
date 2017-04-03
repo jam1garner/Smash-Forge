@@ -317,7 +317,7 @@ namespace Smash_Forge
 
         #region Rendering
 
-        public static string vs = @"#version 330
+        public static string vs = @"#version 150
 
 in vec3 vPosition;
 in vec4 vColor;
@@ -364,10 +364,10 @@ vec3 skinNRM(vec3 nr, ivec4 index)
 {
     vec3 nrmPos = vec3(0);
 	
-    if(vWeight.x != 0) nrmPos = mat3(bones_.transforms[index.x]) * nr * vWeight.x;
-    if(vWeight.y != 0) nrmPos += mat3(bones_.transforms[index.y]) * nr * vWeight.y;
-    if(vWeight.z != 0) nrmPos += mat3(bones_.transforms[index.z]) * nr * vWeight.z;
-    if(vWeight.w != 0) nrmPos += mat3(bones_.transforms[index.w]) * nr * vWeight.w;
+    if(vWeight.x != 0.0) nrmPos = mat3(bones_.transforms[index.x]) * nr * vWeight.x;
+    if(vWeight.y != 0.0) nrmPos += mat3(bones_.transforms[index.y]) * nr * vWeight.y;
+    if(vWeight.z != 0.0) nrmPos += mat3(bones_.transforms[index.z]) * nr * vWeight.z;
+    if(vWeight.w != 0.0) nrmPos += mat3(bones_.transforms[index.w]) * nr * vWeight.w;
 
     return nrmPos;
 }
@@ -377,7 +377,7 @@ void main()
     vec4 objPos = vec4(vPosition.xyz, 1.0);
     ivec4 bi = ivec4(vBone); 
 
-    if(vBone.x != -1) objPos = skin(vPosition, bi);
+    if(vBone.x != -1.0) objPos = skin(vPosition, bi);
 
     objPos = eyeview * vec4(objPos.xyz, 1.0);
 
@@ -399,14 +399,14 @@ void main()
 
 	fragpos = objPos.xyz;
 
-	if(vBone.x != -1) 
+	if(vBone.x != -1.0) 
 		normal = normalize((skinNRM(vNormal.xyz, bi)).xyz) ; //  * -1 * mat3(eyeview)
 	else
 		normal = vNormal ;
     }
 }";
 
-        public static string fs = @"#version 330
+        public static string fs = @"#version 150
 
 in vec3 pos;
 in vec2 texcoord;
@@ -525,22 +525,33 @@ vec3 CalculateFresnel(vec3 norm){
 	f.y -= 0.2;
 	vec3 lightDir = normalize(f * mat3(eyeview));  // vec3(0,-0.3,-0.7)
 	vec3 F0 = vec3(0); //fresnelParams.w 
-	F0 = mix(F0, vec3(0), 0);
+	//F0 = mix(F0, vec3(0), 0);
+	//F0 = vec3(0.0,0.0,0.0);
 	float cosTheta = dot(lightDir, normal);
 	vec3 fresnel = F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); // 5.0
 
-	float fdiv = min(1 + fresnelParams.x / 5, 1);
-	return max(fresnel.xyz*fresnelColor.rgb / fdiv, 0); 
+	float fdiv = min(1.0 + fresnelParams.x / 5.0, 1.0);
+	return max(fresnel.xyz*fresnelColor.rgb / fdiv, vec3(0.0, 0.0, 0.0)); 
+}
+
+vec3 max(vec3 i, vec3 o){
+	vec3 n = vec3(0.0, 0.0, 0.0);
+
+	if(i.x > o.x) n.x = i.x; else n.x = o.x;
+	if(i.y > o.y) n.y = i.y; else n.y = o.y;
+	if(i.z > o.z) n.z = i.z; else n.z = o.z;
+
+	return n;
 }
 
 vec3 CalculateReflection(vec3 norm){
 // reflection
 	vec3 cameraPosition = (transpose(mat3(eyeview)) * eyeview[3].xyz);
-	cameraPosition.y += 20;
+	cameraPosition.y += 20.0;
 	float ratio = 1.0 / 1.0;
 	vec3 I = normalize(fragpos - cameraPosition);
     	vec3 R = refract(I, norm, ratio);
-	R.y *= -1;
+	R.y *= -1.0;
     	vec3 refColor = texture(cmap, R).rgb * reflectionColor.rgb;
 
 	return refColor ;
@@ -550,7 +561,7 @@ vec3 CalculateSpecular(vec3 norm){
 
 // specular
 	vec3 cameraPosition = (transpose(mat3(eyeview)) * eyeview[3].xyz);
-	cameraPosition.y += 20;
+	cameraPosition.y += 20.0;
 	vec3 specDir = vec3(0,0,1) * mat3(eyeview);  
 	//specDir = normalize(vec3(0,0,1) * mat3(eyeview));  
 
@@ -559,9 +570,9 @@ vec3 CalculateSpecular(vec3 norm){
 	//float sp = pow(max(dot(halfDir, normalize(norm)), 0.0), 16.0);
 
 	vec3 reflectDir = reflect(-specDir, norm);
-	float specDrop = max(specularParams.y / 50, 0.1);
-	float spec = pow(max(dot(specDir, reflectDir), 0.0), 2 + specularParams.z) * specDrop;
-	float div = max(specularParams.x/10, 1.0);
+	float specDrop = max(specularParams.y / 50.0, 0.1);
+	float spec = pow(max(dot(specDir, reflectDir), 0.0), 2.0 + specularParams.z) * specDrop;
+	float div = max(specularParams.x/10.0, 1.0);
 	vec3 specular = vec3(spec) * specularColor.www * (specularColor.xyz) / div;
 
 	if((flags & UnknownTex) > 0u)
@@ -590,7 +601,7 @@ main()
 			fincol = texture2D(cube, texcoord);
 			//fincol = mix(fincol, texture2D(nrm, texcoord), texture2D(nrm, texcoord).a);
 			fincol = mix(fincol, texture2D(tex, texcoord), texture2D(tex, texcoord).a);
-			fincol.a = 1;
+			fincol.a = 1.0;
 		}
 	}
 
@@ -661,16 +672,8 @@ main()
                 shader = new Shader();
 
                 {
-                    if (GL.GetInteger(GetPName.MajorVersion) < 3 || (GL.GetInteger(GetPName.MajorVersion) == 3 && GL.GetInteger(GetPName.MinorVersion) < 3))
-                    {
-                        shader.vertexShader(vs.Replace("#version 330", "#version 130"));
-                        shader.fragmentShader(fs.Replace("#version 330", "#version 130"));
-                    }
-                    else
-                    {
-                        shader.vertexShader(vs);
-                        shader.fragmentShader(fs);
-                    }
+                    shader.vertexShader(vs);
+                    shader.fragmentShader(fs);
                 }
             }
 

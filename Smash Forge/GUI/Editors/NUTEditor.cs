@@ -409,16 +409,16 @@ namespace Smash_Forge
                     {
                         DDS dds = new DDS(new FileData(ofd.FileName));
                         ntex = dds.toNUT_Texture();
-
-                        tex.height = ntex.height;
-                        tex.width = ntex.width;
-                        tex.type = ntex.type;
-                        tex.mipmaps = ntex.mipmaps;
-                        tex.utype = ntex.utype;
                     }
 
                     if (ofd.FileName.EndsWith(".png") && selected != null)
                         ntex = fromPNG(ofd.FileName, 1);
+                    
+                    tex.height = ntex.height;
+                    tex.width = ntex.width;
+                    tex.type = ntex.type;
+                    tex.mipmaps = ntex.mipmaps;
+                    tex.utype = ntex.utype;
 
                     if (ntex == null)
                         return;
