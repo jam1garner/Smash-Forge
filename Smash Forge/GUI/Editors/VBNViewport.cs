@@ -436,6 +436,7 @@ uniform vec4 specularColor;
 uniform vec4 specularColorGain;
 uniform vec4 diffuseColor;
 uniform vec4 colorGain;
+uniform vec4 finalColorGain;
 uniform vec4 reflectionColor;
 
 // params
@@ -624,6 +625,8 @@ main()
         	}
     	}
 
+    fincol = fincol * (finalColorGain * finalColorGain.aaaa);
+
 	// correct alpha
 	fincol.a = a * color.a;
 	
@@ -635,7 +638,7 @@ main()
 	//fincol = vec4(CalculateFresnel(norm), 1.0);
 	//fincol = vec4(norm, 1.0);
 
-        gl_FragColor = fincol;
+    gl_FragColor = fincol;
     }
 }
 ";

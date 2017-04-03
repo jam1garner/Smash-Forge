@@ -816,7 +816,7 @@ namespace Smash_Forge
 
         private void listView2_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == 'd' && listView2.SelectedIndices.Count > 0)
+            if ((e.KeyChar == 'd') && listView2.SelectedIndices.Count > 0)
             {
                 if (material[current].textures.Count > 1)
                 {
@@ -862,6 +862,18 @@ namespace Smash_Forge
                 textBox13.Text = colorDialog1.Color.G / 255f + "";
                 textBox14.Text = colorDialog1.Color.B / 255f + "";
                 
+            }
+        }
+
+        private void listView2_KeyUp(object sender, KeyEventArgs e)
+        {
+            if ((e.KeyCode == Keys.Delete) && listView2.SelectedIndices.Count > 0)
+            {
+                if (material[current].textures.Count > 1)
+                {
+                    material[current].entries.Remove(listView2.SelectedItems[0].Text);
+                    FillForm();
+                }
             }
         }
     }

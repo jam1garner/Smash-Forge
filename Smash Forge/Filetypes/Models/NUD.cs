@@ -84,6 +84,13 @@ namespace Smash_Forge
                         continue;
                     foreach (Vertex v in p.vertices)
                     {
+                        //if (v.pos.X > xmax) xmax = v.pos.X; if (v.pos.X < xmin) xmin = v.pos.X;
+                        //if (v.pos.Y > ymax) ymax = v.pos.Y; if (v.pos.Y < ymin) ymin = v.pos.Y;
+                        //if (v.pos.Z > zmax) zmax = v.pos.Z; if (v.pos.Z < zmin) zmin = v.pos.Z;
+
+                        //if (v.pos.Y > max.Y) max = v.pos;
+                        //if (v.pos.Y < min.Y) min = v.pos;
+
                         dVertex nv = new dVertex()
                         {
                             pos = v.pos,
@@ -116,6 +123,9 @@ namespace Smash_Forge
                     p.display = p.getDisplayFace().ToArray();
                 }
             }
+            //Console.WriteLine("Center: " + param[0] + " " + param[1] + " " + param[2] + " " + param[3] + "\n" 
+            //    + (xmax-xmin) + " " + (ymax - ymin) + " " + (zmax - zmin) + "\n" + 
+            //    (max-min).ToString());
         }
 
         public void Render(Matrix4 view, VBN vbn)
@@ -124,7 +134,9 @@ namespace Smash_Forge
             if (Runtime.renderBoundingBox)
             {
                 GL.UseProgram(0);
+                GL.Color4(Color.GhostWhite);
                 RenderTools.drawCubeWireframe(new Vector3(param[0], param[1], param[2]), param[3]);
+                GL.Color4(Color.OrangeRed);
                 foreach (NUD.Mesh mesh in mesh)
                 {
                     if (mesh.Checked)
@@ -365,6 +377,13 @@ namespace Smash_Forge
                 }
                 {
                     float[] pa;
+                    mat.entries.TryGetValue("NU_finalColorGain", out pa);
+                    if (mat.anims.ContainsKey("NU_finalColorGain")) pa = mat.anims["NU_finalColorGain"];
+                    if (pa == null) pa = new float[] { 1, 1, 1, 1 };
+                    GL.Uniform4(shader.getAttribute("finalColorGain"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
                     mat.entries.TryGetValue("NU_colorOffset", out pa);
                     if (mat.anims.ContainsKey("NU_colorOffset")) pa = mat.anims["NU_colorOffset"];
                     if (pa == null) pa = new float[] { 0, 0, 0, 0 };
@@ -482,6 +501,14 @@ namespace Smash_Forge
                 {
                     //(p.strip >> 4) == 4 ? PrimitiveType.Triangles : PrimitiveType.TriangleStrip
                     GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+                    /*if (p.IsSelected)
+                    {
+                        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+                        GL.Uniform1(shader.getAttribute("gamma"), 3);
+                        GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+                        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+                        GL.Uniform1(shader.getAttribute("gamma"), Runtime.gamma);
+                    }*/
                 }
             }
         }
@@ -1756,6 +1783,7 @@ namespace Smash_Forge
                     m.singlebind = (short)sbind; // single bind bone
                     foreach (Polygon p in m.polygons)
                     {
+                        p.polflag = 0;
                         p.vertSize = p.vertSize & 0x0F;
                     }
                 }
