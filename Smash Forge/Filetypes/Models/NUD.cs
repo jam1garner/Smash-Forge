@@ -95,6 +95,8 @@ namespace Smash_Forge
                         {
                             pos = v.pos,
                             nrm = v.nrm,
+                            tan = v.tan.Xyz,
+                            bit = v.bitan.Xyz,
                             col = Endian == Endianness.Little ? new Vector4(1f, 1f, 1f, 1f) : v.col / 0x7F,
                             tx0 = v.tx.Count > 0 ? v.tx[0] : new Vector2(0, 0),
                             node = new Vector4(v.node.Count > 0 ? v.node[0] : -1,
@@ -488,10 +490,12 @@ namespace Smash_Forge
                 GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
                 GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
                 GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 12);
-                GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 24);
-                GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 32);
-                GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 48);
-                GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 64);
+                GL.VertexAttribPointer(shader.getAttribute("vTangent"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 24);
+                GL.VertexAttribPointer(shader.getAttribute("vBiTangent"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 36);
+                GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 48);
+                GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 56);
+                GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 72);
+                GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 88);
 
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
                 GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
@@ -1446,12 +1450,14 @@ namespace Smash_Forge
         {
             public Vector3 pos;
             public Vector3 nrm;
+            public Vector3 tan;
+            public Vector3 bit;
             public Vector2 tx0;
             public Vector4 col;
             public Vector4 node;
             public Vector4 weight;
 
-            public static int Size = 4 * (3 + 3 + 2 + 4 + 4 + 4);
+            public static int Size = 4 * (3 + 3 + 3 + 3 + 2 + 4 + 4 + 4);
         }
 
         public class Vertex

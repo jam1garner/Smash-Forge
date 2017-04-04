@@ -317,16 +317,20 @@ namespace Smash_Forge
 
         #region Rendering
 
-        public static string vs = @"#version 150
+        public static string vs = @"#version 300
 
 in vec3 vPosition;
 in vec4 vColor;
 in vec3 vNormal;
+in vec3 vTangent;
+in vec3 vBiTangent;
 in vec2 vUV;
 in vec4 vBone;
 in vec4 vWeight;
 
 out vec3 pos;
+out vec3 tan;
+out vec3 bit;
 out vec4 color;
 out vec2 texcoord;
 out vec3 normal;
@@ -339,7 +343,6 @@ uniform uint flags;
 uniform bones
 {
     mat4 transforms[200];
-    mat4 transformsIT[200];
 } bones_;
 
 uniform int renderType;
@@ -385,6 +388,8 @@ void main()
 
     texcoord = vec2((vUV * colorSamplerUV.xy) + colorSamplerUV.zw);
     normal = vec3(0,0,0);
+    tan = vTangent;
+    bit = vBiTangent;
     color = vec4(vNormal, 1);
     pos = vec3(vPosition * mat3(eyeview));
 
@@ -406,12 +411,14 @@ void main()
     }
 }";
 
-        public static string fs = @"#version 150
+        public static string fs = @"#version 300
 
 in vec3 pos;
 in vec2 texcoord;
 in vec4 color;
 in vec3 normal;
+in vec3 tan;
+in vec3 bit;
 in vec3 fragpos;
 
 // Textures 
@@ -487,9 +494,13 @@ vec3 CalcBumpedNormal()
 	}
 
     vec3 Normal = normalize(normal);
+
     vec3 Tangent = normalize(texture2D(nrm, texcoord).xyz);
     Tangent = normalize(Tangent - dot(Tangent, Normal) * Normal);
     vec3 Bitangent = cross(Tangent, Normal);
+
+    //Tangent = tan;
+    //Bitangent = bit;
     vec3 BumpMapNormal = texture2D(nrm, texcoord).xyz;
     BumpMapNormal = 2.0 * BumpMapNormal - vec3(1.0, 1.0, 1.0);
     vec3 NewNormal;

@@ -82,7 +82,9 @@ namespace Smash_Forge
             nud.vertexShader(VBNViewport.vs);
             nud.fragmentShader(VBNViewport.fs);
             Runtime.shaders.Add("NUD", nud);
-            
+
+            BCH b = new Smash_Forge.BCH();
+            b.Read("C:\\Users\\ploaj_000\\Desktop\\SpriteRipping\\smashrom\\Pack English v3.2\\romfs\\data\\stage\\melee\\Magicant\\model\\S25_a\\normal.bch");
         }
 
         public void openFiles()
