@@ -554,7 +554,7 @@ namespace Smash_Forge
 
                     for(int i = 0; i <t.mipmaps.Count; i++)
                         GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, i, t.type,
-                        t.width / (int)Math.Pow(2,i), t.height / (int)Math.Pow(2, i), 0, t.Size / (int)Math.Pow(4, i), t.mipmaps[i]);
+                        t.width / (int)Math.Pow(2,i), t.height / (int)Math.Pow(2, i), 0, t.mipmaps[i].Length, t.mipmaps[i]);
                 }
                 else
                 {

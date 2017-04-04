@@ -534,16 +534,6 @@ vec3 CalculateFresnel(vec3 norm){
 	return max(fresnel.xyz*fresnelColor.rgb / fdiv, vec3(0.0, 0.0, 0.0)); 
 }
 
-vec3 max(vec3 i, vec3 o){
-	vec3 n = vec3(0.0, 0.0, 0.0);
-
-	if(i.x > o.x) n.x = i.x; else n.x = o.x;
-	if(i.y > o.y) n.y = i.y; else n.y = o.y;
-	if(i.z > o.z) n.z = i.z; else n.z = o.z;
-
-	return n;
-}
-
 vec3 CalculateReflection(vec3 norm){
 // reflection
 	vec3 cameraPosition = (transpose(mat3(eyeview)) * eyeview[3].xyz);
