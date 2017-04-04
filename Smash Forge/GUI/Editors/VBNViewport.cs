@@ -317,7 +317,7 @@ namespace Smash_Forge
 
         #region Rendering
 
-        public static string vs = @"#version 300
+        public static string vs = @"#version 330
 
 in vec3 vPosition;
 in vec4 vColor;
@@ -411,7 +411,7 @@ void main()
     }
 }";
 
-        public static string fs = @"#version 300
+        public static string fs = @"#version 330
 
 in vec3 pos;
 in vec2 texcoord;
