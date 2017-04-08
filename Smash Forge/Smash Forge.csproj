@@ -440,28 +440,28 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="lib\Skapon.zip" />
-    <None Include="materials\Standard\Char - Char Mat1.nmt">
+    <None Include="materials\Standard\Char - Char Mat01 [Bowser Orig].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Standard\Char - Char Mat2.nmt">
+    <None Include="materials\Standard\Char - Char Mat08 [Metal nud material].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Standard\Char - Char Mat3 [Bowser Orig].nmt">
+    <None Include="materials\Standard\Char - Char Mat02 [cell-shade].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Standard\Char - Char Mat4 [cell-shade].nmt">
+    <None Include="materials\Standard\Char - Char Mat03 [JoeTE Glow].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Standard\Char - Char Mat5 [JoeTE Glow].nmt">
+    <None Include="materials\Standard\Char - Char Mat04 [Nano Metal].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Standard\Char - Char Mat6 [Nano Metal].nmt">
+    <None Include="materials\Standard\Char - Char Mat05 [Smash64 Look].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Standard\Char - Char Mat7 [Smash64 Look].nmt">
+    <None Include="materials\Standard\Char - Char Mat06 [Skin Ramp Mat].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Standard\Char - Eyes.nmt">
+    <None Include="materials\Standard\Char - Char Mat07 [Ganon Armor].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="materials\Standard\Stg - Stg Mat01 [Regular].nmt">
