@@ -495,12 +495,12 @@ vec3 CalcBumpedNormal()
 
     vec3 Normal = normalize(normal);
 
-    vec3 Tangent = normalize(texture2D(nrm, texcoord).xyz);
-    Tangent = normalize(Tangent - dot(Tangent, Normal) * Normal);
-    vec3 Bitangent = cross(Tangent, Normal);
+    //vec3 Tangent = normalize(texture2D(nrm, texcoord).xyz);
+    //Tangent = normalize(Tangent - dot(Tangent, Normal) * Normal);
+    //vec3 Bitangent = cross(Tangent, Normal);
 
-    //Tangent = tan;
-    //Bitangent = bit;
+    vec3 Tangent = tan;
+    vec3 Bitangent = bit;
     vec3 BumpMapNormal = texture2D(nrm, texcoord).xyz;
     BumpMapNormal = 2.0 * BumpMapNormal - vec3(1.0, 1.0, 1.0);
     vec3 NewNormal;

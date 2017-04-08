@@ -341,6 +341,10 @@ namespace Smash_Forge
                 {
                     polyContextMenu.Show(this, e.X, e.Y);
                 }
+                if (treeView1.SelectedNode.Tag is NUD)
+                {
+                    nudContextMenu.Show(this, e.X, e.Y);
+                }
             }
         }
 
@@ -422,6 +426,103 @@ namespace Smash_Forge
             np.strip = p.strip;
             np.UVSize = p.UVSize;
             np.vertSize = p.vertSize;*/
+        }
+
+        private void makeMetalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NUD nud = ((NUD)treeView1.SelectedNode.Tag);
+
+            foreach(NUD.Mesh m in nud.mesh)
+            {
+                foreach (NUD.Polygon p in m.polygons)
+                {
+                    foreach(NUD.Material mat in p.materials)
+                    {
+                        float hash = -1f;
+                        if (mat.entries.ContainsKey("NU_materialHash"))
+                            hash = mat.entries["NU_materialHash"][0];
+
+                        mat.anims.Clear();
+                        mat.entries.Clear();
+
+                        mat.flags = (0x96u << 24) | (0x6Bu) | (mat.flags & 0x00FFFF00);
+
+                        //textures preserve normal map somehow...
+
+                        int difcol = (int)((long)mat.textures[0].hash & 0xFFFFFF00) | (0xF0);
+                        mat.textures.Clear();
+                        mat.displayTexId = -1;
+
+                        NUD.Mat_Texture dif = NUD.Polygon.makeDefault();
+                        dif.hash = difcol;
+                        NUD.Mat_Texture cub = NUD.Polygon.makeDefault();
+                        cub.hash = 0x10102000;
+                        NUD.Mat_Texture nrm = NUD.Polygon.makeDefault();
+                        NUD.Mat_Texture rim = NUD.Polygon.makeDefault();
+                        cub.hash = 0x10080000;
+
+                        mat.textures.Add(dif); mat.textures.Add(cub); mat.textures.Add(nrm); mat.textures.Add(rim);
+
+                        // properties
+                        mat.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
+                        mat.entries.Add("NU_fresnelColor", new float[] { 0.6f, 0.6f, 0.6f, 1 });
+                        mat.entries.Add("NU_blinkColor", new float[] { 0f, 0f, 0f, 0 });
+                        mat.entries.Add("NU_reflectionColor", new float[] { 3f, 3f, 3f, 1 });
+                        mat.entries.Add("NU_aoMinGain", new float[] { 0.3f, 0.3f, 0.3f, 1 });
+                        mat.entries.Add("NU_lightMapColorOffset", new float[] { 0f, 0f, 0f, 0 });
+                        mat.entries.Add("NU_fresnelParams", new float[] { 3.7f, 0f, 0f, 1 });
+                        mat.entries.Add("NU_alphaBlendParams", new float[] { 0f, 0f, 0f, 0 });
+                        mat.entries.Add("NU_materialHash", new float[] { hash, 0f, 0f, 0 });
+                    }
+                }
+            }
+        }
+
+        private void merge(TreeNode n)
+        {
+            NUD org = (NUD)treeView1.SelectedNode.Tag;
+            NUD nud = (NUD)n.Tag;
+
+            nud.mesh.AddRange(org.mesh);
+            org.mesh.Clear();
+
+            org.Destroy();
+            nud.PreRender();
+
+            treeView1.Nodes.Remove(treeView1.SelectedNode);
+            treeView1.SelectedNode = n;
+
+            // remove from model containers too
+            ModelContainer torem = null;
+            foreach (ModelContainer con in Runtime.ModelContainers)
+            {
+                if (con.nud == org)
+                {
+                    torem = con;
+                    break;
+                }
+            }
+            Runtime.ModelContainers.Remove(torem);
+
+            refresh();
+        }
+
+        private void belowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TreeNode n = treeView1.SelectedNode.NextNode;
+            if (n != null)
+            {
+                merge(n);
+            }
+        }
+
+        private void aboveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TreeNode n = treeView1.SelectedNode.PrevNode;
+            if (n != null)
+            {
+                merge(n);
+            }
         }
     }
 }

@@ -67,19 +67,21 @@ namespace Smash_Forge
             DiffuseMap = 0x00000001
         }
 
-        /*
-         * Not sure if update is needed here
-        */
+        
         public void PreRender()
         {
             List<dVertex> vert = new List<dVertex>();
-
+            
             for (int mes = mesh.Count - 1; mes >= 0; mes--)
             {
                 Mesh m = mesh[mes];
                 for (int pol = m.polygons.Count - 1; pol >= 0; pol--)
                 {
                     Polygon p = m.polygons[pol];
+
+                    if ((p.vertSize & 0xF) != 3 && (p.vertSize & 0xF) != 7)
+                        computeTangentBitangent(p);
+
                     if (p.faces.Count <= 3)
                         continue;
                     foreach (Vertex v in p.vertices)
@@ -1794,8 +1796,65 @@ namespace Smash_Forge
                     }
                 }
             }
-
+            
             PreRender();
+        }
+
+
+        public void computeTangentBitangent()
+        {
+            foreach (Mesh m in mesh)
+            {
+                foreach (Polygon p in m.polygons)
+                    computeTangentBitangent(p);
+            }
+        }
+
+        public void computeTangentBitangent(Polygon p)
+        {
+            List<int> f = p.getDisplayFace();
+            Vector3[] tan1 = new Vector3[p.vertices.Count];
+            Vector3[] tan2 = new Vector3[p.vertices.Count];
+            for (int i = 0; i < p.displayFaceSize; i += 3)
+            {
+                Vertex v1 = p.vertices[f[i]];
+                Vertex v2 = p.vertices[f[i + 1]];
+                Vertex v3 = p.vertices[f[i + 2]];
+
+                float x1 = v2.pos.X - v1.pos.X;
+                float x2 = v3.pos.X - v1.pos.X;
+                float y1 = v2.pos.Y - v1.pos.Y;
+                float y2 = v3.pos.Y - v1.pos.Y;
+                float z1 = v2.pos.Z - v1.pos.Z;
+                float z2 = v3.pos.Z - v1.pos.Z;
+
+                float s1 = v2.tx[0].X - v1.tx[0].X;
+                float s2 = v3.tx[0].X - v1.tx[0].X;
+                float t1 = v2.tx[0].Y - v1.tx[0].Y;
+                float t2 = v3.tx[0].Y - v1.tx[0].Y;
+
+                float r = 1.0f / (s1 * t2 - s2 * t1);
+                Vector3 s = new Vector3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
+        (t2 * z1 - t1 * z2) * r);
+                Vector3 t = new Vector3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
+        (s1 * z2 - s2 * z1) * r);
+
+                tan1[f[i]] += s;
+                tan1[f[i + 1]] += s;
+                tan1[f[i + 2]] += s;
+                tan2[f[i]] += t;
+                tan2[f[i + 1]] += t;
+                tan2[f[i + 2]] += t;
+            }
+
+            for (int i = 0; i < p.vertices.Count; i++)
+            {
+                Vertex v = p.vertices[i];
+                Vector3 t = tan1[i];
+
+                v.tan = new Vector4(Vector3.Normalize(t - v.nrm * Vector3.Dot(v.nrm, t)), Vector3.Dot(Vector3.Cross(v.nrm, t), tan2[i]) < 0.0f ? -1.0f : 1.0f);
+                v.bitan = new Vector4(Vector3.Cross(v.tan.Xyz, v.nrm), 1.0f);
+            }
         }
 
         #endregion

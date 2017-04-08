@@ -34,7 +34,9 @@ namespace Smash_Forge
         {
             { "No Normals", 0x0},
             { "Normals (Float)", 0x1},
-            { "Normals (Half Float)", 0x6}
+            { "Normals, Tan, Bi-Tan (Float)", 0x3},
+            { "Normals (Half Float)", 0x6},
+            { "Normals, Tan, Bi-Tan (Half Float)", 0x7}
         };
 
         public DAEImportSettings()
@@ -66,13 +68,16 @@ namespace Smash_Forge
                 foreach (NUD.Polygon poly in mesh.polygons)
                 {
                     poly.vertSize = ((poly.vertSize == 0x6 ? 0 : BoneTypes[(string)comboBox2.SelectedItem])) | (VertTypes[(string)comboBox1.SelectedItem]);
-
-                    if (checkBox1.Checked || checkBox4.Checked)
+                    
+                    if (checkBox1.Checked || checkBox4.Checked || vertcolorCB.Checked)
                         foreach (NUD.Vertex v in poly.vertices)
                         {
                             if (checkBox1.Checked)
                                 for (int i = 0; i < v.tx.Count; i++)
                                     v.tx[i] = new Vector2(v.tx[i].X, 1 - v.tx[i].Y);
+
+                            if (vertcolorCB.Checked)
+                                v.col = new Vector4(0x7F, 0x7F, 0x7F, 0x7F);
 
                             if (checkBox4.Checked)
                             {
@@ -82,6 +87,9 @@ namespace Smash_Forge
                         }
                 }
             }
+
+            if (VertTypes[(string)comboBox1.SelectedItem] == 3 || VertTypes[(string)comboBox1.SelectedItem] == 7)
+                nud.computeTangentBitangent();
 
             if (checkBox2.Checked)
             {

@@ -93,13 +93,13 @@ namespace Smash_Forge
             }
 
             //grab all that material data so we can apply images later
-            Dictionary<string,ColladaImages> images = new Dictionary<string, ColladaImages>();
+            Dictionary<string, ColladaImages> images = new Dictionary<string, ColladaImages>();
             foreach (var image in dae.library_images)
                 images.Add(image.id, image);
-            Dictionary<string,ColladaEffects> effects = new Dictionary<string, ColladaEffects>();
+            Dictionary<string, ColladaEffects> effects = new Dictionary<string, ColladaEffects>();
             foreach (var efc in dae.library_effects)
                 effects.Add(efc.id, efc);
-            Dictionary<string,ColladaMaterials> materials = new Dictionary<string, ColladaMaterials>();
+            Dictionary<string, ColladaMaterials> materials = new Dictionary<string, ColladaMaterials>();
             foreach (var mat in dae.library_materials)
                 materials.Add(mat.id, mat);
 
@@ -187,42 +187,51 @@ namespace Smash_Forge
                 int i = 0;
                 while (i < p.p.Length)
                 {
-                    if(importTexture)
-                    if (p.type == ColladaPrimitiveType.triangles)
-                    {
-                        NUT.NUD_Texture tempTex = null;
-                        ColladaMaterials mat = null;
-                        ColladaEffects eff = null;
-                        ColladaImages img = null;
-                        string matId = null;
-                        dae.scene.MaterialIds.TryGetValue(p.materialid, out matId);
-                        if(matId != null && matId[0] == '#')
-                            materials.TryGetValue(matId.Substring(1, matId.Length - 1), out mat);
-                        if (mat != null && mat.effecturl[0] == '#')
-                            effects.TryGetValue(mat.effecturl.Substring(1, mat.effecturl.Length - 1), out eff);
-                        if (eff != null && eff.source[0] == '#')
-                            images.TryGetValue(eff.source.Substring(1, eff.source.Length - 1), out img);
-                        if (img != null)
-                            existingTextures.TryGetValue(img.initref, out tempTex);
-                        //Console.WriteLine($"mat {mat != null} | matid = {p.materialid}");
-                        if (tempTex == null && img != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fname), img.initref))))
+                    if (importTexture)
+                        if (p.type == ColladaPrimitiveType.triangles)
                         {
-                            //Console.WriteLine($"Importing texture {img.initref}");
-                            DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fname), img.initref))));
-                            NUT.NUD_Texture tex = dds.toNUT_Texture();
-                            tex.id = 0x40FFFF00;
-                            while (NUT.texIdUsed(tex.id))
-                                tex.id++;
-                            thisNut.textures.Add(tex);
-                            thisNut.draw.Add(tex.id, NUT.loadImage(tex));
-                            existingTextures.Add(img.initref, tex);
-                            tempTex = tex;
+                            NUT.NUD_Texture tempTex = null;
+                            ColladaMaterials mat = null;
+                            ColladaEffects eff = null;
+                            ColladaImages img = null;
+                            string matId = null;
+                            dae.scene.MaterialIds.TryGetValue(p.materialid, out matId);
+                            if (matId != null && matId[0] == '#')
+                                materials.TryGetValue(matId.Substring(1, matId.Length - 1), out mat);
+                            if (mat != null && mat.effecturl[0] == '#')
+                                effects.TryGetValue(mat.effecturl.Substring(1, mat.effecturl.Length - 1), out eff);
+                            if (eff != null && eff.source[0] == '#')
+                                images.TryGetValue(eff.source.Substring(1, eff.source.Length - 1), out img);
+                            if (img != null)
+                                existingTextures.TryGetValue(img.initref, out tempTex);
+                            //Console.WriteLine($"mat {mat != null} | matid = {p.materialid}");
+                            if (tempTex == null && img != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fname), img.initref))))
+                            {
+                                //Console.WriteLine($"Importing texture {img.initref}");
+                                NUT.NUD_Texture tex = null;
+                                if (fname.ToLower().EndsWith(".dds"))
+                                {
+                                    DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fname), img.initref))));
+                                    tex = dds.toNUT_Texture();
+                                }
+                                if (fname.ToLower().EndsWith(".png"))
+                                {
+                                    tex = NUTEditor.fromPNG(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fname), img.initref)), 1);
+                                }
+                                if (tex == null) continue;
+                                tex.id = 0x40FFFF00;
+                                while (NUT.texIdUsed(tex.id))
+                                    tex.id++;
+                                thisNut.textures.Add(tex);
+                                thisNut.draw.Add(tex.id, NUT.loadImage(tex));
+                                existingTextures.Add(img.initref, tex);
+                                tempTex = tex;
+                            }
+                            if (tempTex != null)
+                            {
+                                npoly.materials[0].textures[0].hash = tempTex.id;
+                            }
                         }
-                        if (tempTex != null)
-                        {
-                            npoly.materials[0].textures[0].hash = tempTex.id;
-                        }
-                    }
 
                     NUD.Vertex v = new NUD.Vertex();
                     foreach (ColladaInput input in p.inputs)
@@ -241,7 +250,8 @@ namespace Smash_Forge
                             {
                                 ReadSemantic(vinput, v, p.p[i], sources);
                             }
-                        } else
+                        }
+                        else
                             ReadSemantic(input, v, p.p[i], sources);
                         i++;
                     }
@@ -262,7 +272,7 @@ namespace Smash_Forge
             }
 
             // then image materials and effects
-            
+
             n.Optimize();
         }
 
