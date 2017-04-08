@@ -437,76 +437,76 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="lib\Skapon.zip" />
-    <None Include="materials\Character Mats\Char - Char Mat01 [Bowser Orig].nmt">
+    <None Include="materials\Character Mats\Mat01 [Bowser Orig].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Char - Char Mat08 [Metal nud material].nmt">
+    <None Include="materials\Character Mats\Mat08 [Metal nud material].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Char - Char Mat02 [cell-shade].nmt">
+    <None Include="materials\Character Mats\Mat02 [cell-shade].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Char - Char Mat03 [JoeTE Glow].nmt">
+    <None Include="materials\Character Mats\Mat03 [JoeTE Glow].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Char - Char Mat04 [Nano Metal].nmt">
+    <None Include="materials\Character Mats\Mat04 [Nano Metal].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Char - Char Mat05 [Smash64 Look].nmt">
+    <None Include="materials\Character Mats\Mat05 [Smash64 Look].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Char - Char Mat06 [Skin Ramp Mat].nmt">
+    <None Include="materials\Character Mats\Mat06 [Skin Ramp Mat].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Char - Char Mat07 [Ganon Armor].nmt">
+    <None Include="materials\Character Mats\Mat07 [Ganon Armor].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Char - Char Mat09 [Beginners Material].nmt">
+    <None Include="materials\Character Mats\Mat09 [Beginners Material].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Stg - Stg Mat01 [Regular].nmt">
+    <None Include="materials\Stage Mats\Mat01 [Regular].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Stg - Stg Mat02 [Glow].nmt">
+    <None Include="materials\Stage Mats\Mat02 [Glow].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Stg - Stg Mat03 [Diffuse+Light map].nmt">
+    <None Include="materials\Stage Mats\Mat03 [Diffuse+Light map].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Stg - Stg Mat04 [DiffuseSpec+Reflection].nmt">
+    <None Include="materials\Stage Mats\Mat04 [DiffuseSpec+Reflection].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Stg - Stg Mat05 [Water+Norm].nmt">
+    <None Include="materials\Stage Mats\Mat05 [Water+Norm].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Stg - Stg Mat06 [Water+Cubemap].nmt">
+    <None Include="materials\Stage Mats\Mat06 [Water+Cubemap].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Stg - Stg Mat07 [Diffuse+Norm].nmt">
+    <None Include="materials\Stage Mats\Mat07 [Diffuse+Norm].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Stg - Stg Mat08 [Diffuse+Cubemap].nmt">
+    <None Include="materials\Stage Mats\Mat08 [Diffuse+Cubemap].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Stg - Stg Mat09 [Diffuse+Cubemap+Norm].nmt">
+    <None Include="materials\Stage Mats\Mat09 [Diffuse+Cubemap+Norm].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Stg - Stg Mat10 [Diffuse+Diffuse].nmt">
+    <None Include="materials\Stage Mats\Mat10 [Diffuse+Diffuse].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Stg - Stg Mat11 [Regular+Colors].nmt">
+    <None Include="materials\Stage Mats\Mat11 [Regular+Colors].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Stg - Stg Mat12 [Magma+3 UV].nmt">
+    <None Include="materials\Stage Mats\Mat12 [Magma+3 UV].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Stg - Stg Mat13 [Diffuse+Refl+finalColor].nmt">
+    <None Include="materials\Stage Mats\Mat13 [Diffuse+Refl+finalColor].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Stg - Stg Mat14 [Clouds+Norm].nmt">
+    <None Include="materials\Stage Mats\Mat14 [Clouds+Norm].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Stg - Stg Mat15 [Cubemap+Norm+Char Reflection].nmt">
+    <None Include="materials\Stage Mats\Mat15 [Cubemap+Norm+Char Reflection].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Properties\Settings.settings">
