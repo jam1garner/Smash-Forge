@@ -451,9 +451,6 @@
     <None Include="hashTable.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="lib\FitLinkBodyMainJ02Win3Wait.omo">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="lib\Skapon.zip" />
     <None Include="materials\Character Mats\Char - Char Mat01 [Bowser Orig].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -524,7 +521,9 @@
     <None Include="materials\Stage Mats\Stg - Stg Mat14 [Clouds+Norm].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Stg - Stg Mat15 [Cubemap+Norm+Char Reflection].nmt" />
+    <None Include="materials\Stage Mats\Stg - Stg Mat15 [Cubemap+Norm+Char Reflection].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
