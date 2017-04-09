@@ -12,10 +12,14 @@ namespace Smash_Forge
         public static int defaultTex;
         public static int cubeTex;
 
+        public static int cubeVAO, cubeVBO;
+
         public static void Setup()
         {
             cubeTex = LoadCubeMap();
             defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
+            GL.GenVertexArrays(1, out cubeVAO);
+            GL.GenBuffers(1, out cubeVBO);
         }
 
 
@@ -295,6 +299,7 @@ namespace Smash_Forge
         }
 
         #endregion
+        
 
         #region FileRendering
         
@@ -401,6 +406,7 @@ namespace Smash_Forge
         }
 
         #endregion
+        
         #region Other
         public static int LoadCubeMap()
         {
@@ -441,6 +447,100 @@ namespace Smash_Forge
             GL.BindTexture(TextureTarget.TextureCubeMap, 0);
 
             return id;
+        }
+
+        public static string cubevs = @"#version 330
+in vec3 position;
+out vec3 uv;
+
+uniform mat4 view;
+
+void main()
+{
+    gl_Position = vec4(position, 1.0);  
+    uv = position;
+}";
+
+        public static string cubefs = @"#version 330
+in vec3 uv;
+out vec4 color;
+
+uniform samplerCube cube;
+
+void main()
+{    
+    //color = texture(cube, uv);
+    color = vec4(1,1,1,1);
+}";
+
+        public static float[] cubevert = new float[]{
+    -1.0f,  1.0f, -1.0f,
+    -1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+    -1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f
+};
+
+        public static void RenderCubeMap(Matrix4 view)
+        {
+            Shader shader = Runtime.shaders["SkyBox"];
+            GL.UseProgram(shader.programID);
+            
+            GL.UniformMatrix4(shader.getAttribute("view"), false, ref view);
+            shader.enableAttrib();
+
+            GL.BindVertexArray(cubeVAO);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, cubeVBO);
+            GL.BufferData<float>(BufferTarget.ArrayBuffer, (IntPtr)(cubevert.Length * sizeof(float)), cubevert, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("position"), 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+            GL.BindVertexArray(0);
+
+            GL.BindVertexArray(cubeVAO);
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.Uniform1(shader.getAttribute("cube"), 0);
+            GL.BindTexture(TextureTarget.TextureCubeMap, VBNViewport.cubeTex);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, cubevert.Length);
+            GL.BindVertexArray(0);
+
+            shader.disableAttrib();
+
+            GL.UseProgram(0);
         }
 
         #endregion

@@ -495,12 +495,12 @@ vec3 CalcBumpedNormal()
 
     vec3 Normal = normalize(normal);
 
-    //vec3 Tangent = normalize(texture2D(nrm, texcoord).xyz);
-    //Tangent = normalize(Tangent - dot(Tangent, Normal) * Normal);
-    //vec3 Bitangent = cross(Tangent, Normal);
+    vec3 Tangent = normalize(texture2D(nrm, texcoord).xyz);
+    Tangent = normalize(Tangent - dot(Tangent, Normal) * Normal);
+    vec3 Bitangent = cross(Tangent, Normal);
 
-    vec3 Tangent = tan;
-    vec3 Bitangent = bit;
+    Tangent = tan;
+    Bitangent = bit;
     vec3 BumpMapNormal = texture2D(nrm, texcoord).xyz;
     BumpMapNormal = 2.0 * BumpMapNormal - vec3(1.0, 1.0, 1.0);
     vec3 NewNormal;
@@ -551,11 +551,12 @@ vec3 CalculateReflection(vec3 norm){
 	cameraPosition.y += 20.0;
 	float ratio = 1.0 / 1.0;
 	vec3 I = normalize(fragpos - cameraPosition);
-    	vec3 R = refract(I, norm, ratio);
+    	//vec3 R = refract(I, norm, ratio);
+	vec3 R = reflect(I, norm);
 	R.y *= -1.0;
     	vec3 refColor = texture(cmap, R).rgb * reflectionColor.rgb;
 
-	return refColor ;
+	return refColor;
 }
 
 vec3 CalculateSpecular(vec3 norm){
@@ -652,11 +653,10 @@ main()
 
     gl_FragColor = fincol;
     }
-}
-";
+}";
         
         public int ubo_bones, ubo_bonesIT;
-        public int cubeTex;
+        public static int cubeTex;
 
         private void SetupViewPort()
         {
@@ -725,6 +725,7 @@ main()
                 GL.Vertex2(1.0, -1.0);
                 GL.End();
             }
+            //RenderTools.RenderCubeMap(v);
 
             //GL.DepthFunc(DepthFunction.Never);
             GL.Enable(EnableCap.DepthTest);
@@ -747,8 +748,9 @@ main()
             GL.LoadMatrix(ref v);
             // ready to start drawing model stuff
             GL.MatrixMode(MatrixMode.Modelview);
-
+            
             GL.UseProgram(0);
+
             // drawing floor---------------------------
             if (Runtime.renderFloor)
                 RenderTools.drawFloor(Matrix4.CreateTranslation(Vector3.Zero));

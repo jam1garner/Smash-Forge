@@ -933,7 +933,7 @@ namespace Smash_Forge
                 }
             }
 
-            Debug.WriteLine(p.UVSize.ToString("x") + " " + p.vertSize.ToString("x") + " " + d.pos().ToString("x"));
+            //Debug.WriteLine(p.UVSize.ToString("x") + " " + p.vertSize.ToString("x") + " " + d.pos().ToString("x"));
 
             for (int i = 0; i < p.vertamt; i++)
             {
@@ -1254,16 +1254,16 @@ namespace Smash_Forge
             for (int i = 0; i < m.vertices.Count; i++)
             {
                 Vertex v = m.vertices[i];
-                d.writeFloat(v.pos.X);
-                d.writeFloat(v.pos.Y);
-                d.writeFloat(v.pos.Z);
-                
-                if (nrm > 1)
+                if(nrm < 8)
                 {
-                    d.writeHalfFloat(v.nrm.X);
-                    d.writeHalfFloat(v.nrm.Y);
-                    d.writeHalfFloat(v.nrm.Z);
-                    d.writeHalfFloat(1);
+                    d.writeFloat(v.pos.X);
+                    d.writeFloat(v.pos.Y);
+                    d.writeFloat(v.pos.Z);
+                }
+                
+                if(nrm == 0)
+                {
+                    d.writeInt(0);
                 }
                 else if (nrm == 1)
                 {
@@ -1272,12 +1272,49 @@ namespace Smash_Forge
                     d.writeFloat(v.nrm.Z);
                     d.writeFloat(1);
                     d.writeFloat(1);
+                }else if (nrm == 2)
+                {
+                    d.writeFloat(v.nrm.X);
+                    d.writeFloat(v.nrm.Y);
+                    d.writeFloat(v.nrm.Z);
+                    d.writeFloat(1);
+                    d.writeFloat(v.bitan.X); d.writeFloat(v.bitan.Y); d.writeFloat(v.bitan.Z);
+                    d.writeFloat(1);
+                    d.writeFloat(v.tan.X); d.writeFloat(v.tan.Y); d.writeFloat(v.tan.Z);
+                    d.writeFloat(1);
+                    d.writeFloat(1);
+                }else if (nrm == 3)
+                {
+                    d.writeFloat(1);
+                    d.writeFloat(v.nrm.X);
+                    d.writeFloat(v.nrm.Y);
+                    d.writeFloat(v.nrm.Z);
+                    d.writeFloat(1);
+                    // bn and tan floats
+                    d.writeFloat(m.vertices[i].bitan.X);
+                    d.writeFloat(m.vertices[i].bitan.Y);
+                    d.writeFloat(m.vertices[i].bitan.Z);
+                    d.writeFloat(m.vertices[i].bitan.W);
+                    d.writeFloat(m.vertices[i].tan.X);
+                    d.writeFloat(m.vertices[i].tan.Y);
+                    d.writeFloat(m.vertices[i].tan.Z);
+                    d.writeFloat(m.vertices[i].tan.W);
                 }
                 else
-                    d.writeInt(0);
-
+                if (nrm == 6)
+                {
+                    d.writeHalfFloat(v.nrm.X);
+                    d.writeHalfFloat(v.nrm.Y);
+                    d.writeHalfFloat(v.nrm.Z);
+                    d.writeHalfFloat(1);
+                }
+                else
                 if (nrm == 7)
                 {
+                    d.writeHalfFloat(v.nrm.X);
+                    d.writeHalfFloat(v.nrm.Y);
+                    d.writeHalfFloat(v.nrm.Z);
+                    d.writeHalfFloat(1);
                     // bn and tan half floats
                     d.writeHalfFloat(m.vertices[i].bitan.X);
                     d.writeHalfFloat(m.vertices[i].bitan.Y);
@@ -1331,7 +1368,6 @@ namespace Smash_Forge
                     d.writeHalfFloat(v.weight.Count > 2 ? v.weight[2] : 0);
                     d.writeHalfFloat(v.weight.Count > 3 ? v.weight[3] : 0);
                 }
-
                 if (weight == 4)
                 {
                     d.writeByte(v.node.Count > 0 ? v.node[0] : 0);
