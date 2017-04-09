@@ -88,6 +88,12 @@
     <Compile Include="Filetypes\Sounds\VGMStreamNative.cs" />
     <Compile Include="Filetypes\Sounds\WAVE.cs" />
     <Compile Include="Filetypes\Textures\3DSTex.cs" />
+    <Compile Include="GUI\Controls\MeshMover.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Controls\MeshMover.Designer.cs">
+      <DependentUpon>MeshMover.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\3DS\3DSTexEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -294,6 +300,12 @@
       <DependentUpon>DAEImportSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Filetypes\Models\ModelContainer.cs" />
+    <Compile Include="GUI\Menus\NUT_TexIDEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\NUT_TexIDEditor.Designer.cs">
+      <DependentUpon>NUT_TexIDEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Menus\RenderSettings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -319,6 +331,9 @@
     </Compile>
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
+    <EmbeddedResource Include="GUI\Controls\MeshMover.resx">
+      <DependentUpon>MeshMover.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\3DS\3DSTexEditor.resx">
       <DependentUpon>3DSTexEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -412,6 +427,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\DAEImportSettings.resx">
       <DependentUpon>DAEImportSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\NUT_TexIDEditor.resx">
+      <DependentUpon>NUT_TexIDEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\ModelViewport.resx">
       <DependentUpon>ModelViewport.cs</DependentUpon>

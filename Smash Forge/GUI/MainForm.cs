@@ -718,7 +718,16 @@ namespace Smash_Forge
                             v.Save(filename.Replace(".nud", ".vbn"));
                         }*/
                         else
-                            Runtime.ModelContainers[0].nud.Save(filename);
+                        {
+                            foreach(ModelContainer c in Runtime.ModelContainers)
+                            {
+                                if(c.nud != null)
+                                {
+                                    Runtime.ModelContainers[0].nud.Save(filename);
+                                    break;
+                                }
+                            }
+                        }
                 }
             }
         }

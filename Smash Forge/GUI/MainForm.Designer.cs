@@ -38,7 +38,6 @@
             this.openCharacterToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.openNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.clearWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.edittToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -119,7 +118,6 @@
             this.openVBNToolStripMenuItem,
             this.openNUDToolStripMenuItem,
             this.exportModelToolStripMenuItem,
-            this.saveNUDToolStripMenuItem,
             this.toolStripSeparator4,
             this.clearWorkspaceToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -174,13 +172,6 @@
             this.exportModelToolStripMenuItem.Text = "Export Model";
             this.exportModelToolStripMenuItem.Visible = false;
             this.exportModelToolStripMenuItem.Click += new System.EventHandler(this.saveAsDAEToolStripMenuItem_Click);
-            // 
-            // saveNUDToolStripMenuItem
-            // 
-            this.saveNUDToolStripMenuItem.Name = "saveNUDToolStripMenuItem";
-            this.saveNUDToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.saveNUDToolStripMenuItem.Text = "Save NUD";
-            this.saveNUDToolStripMenuItem.Click += new System.EventHandler(this.saveNUDToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
@@ -590,6 +581,7 @@
             this.glControl1.Name = "glControl1";
             this.glControl1.Size = new System.Drawing.Size(10, 10);
             this.glControl1.TabIndex = 19;
+            this.glControl1.Visible = false;
             this.glControl1.VSync = false;
             // 
             // checkBox1
@@ -674,7 +666,6 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem clearWorkspaceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem renderSettingsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveNUDToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem collisionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem spawnToolStripMenuItem;

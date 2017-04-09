@@ -670,6 +670,7 @@ namespace Smash_Forge
                         
                     foreach (var texPath in Directory.GetFiles(f.SelectedPath))
                     {
+                        if (!(texPath.ToLower().EndsWith(".dds") || texPath.ToLower().EndsWith(".png"))) return;
                         int texId;
                         bool isTex = int.TryParse(Path.GetFileNameWithoutExtension(texPath), NumberStyles.HexNumber,
                             new CultureInfo("en-US"), out texId);
@@ -683,8 +684,14 @@ namespace Smash_Forge
                             if (texture == null)
                             {
                                 //new texture
-                                DDS dds = new DDS(new FileData(texPath));
-                                NUT.NUD_Texture tex = dds.toNUT_Texture();
+                                NUT.NUD_Texture tex = null;
+                                if (texPath.ToLower().EndsWith(".png"))
+                                    tex = fromPNG(texPath, 1);
+                                if (texPath.ToLower().EndsWith(".dds"))
+                                {
+                                    DDS dds = new DDS(new FileData(texPath));
+                                    tex = dds.toNUT_Texture();
+                                }
                                 tex.id = texId;
                                 nut.textures.Add(tex);
                                 nut.draw.Add(tex.id, NUT.loadImage(tex));
@@ -694,8 +701,14 @@ namespace Smash_Forge
                                 //old texture
                                 NUT.NUD_Texture tex = texture;
 
-                                DDS dds = new DDS(new FileData(texPath));
-                                NUT.NUD_Texture ntex = dds.toNUT_Texture();
+                                NUT.NUD_Texture ntex = null;
+                                if (texPath.ToLower().EndsWith(".png"))
+                                    ntex = fromPNG(texPath, 1);
+                                if (texPath.ToLower().EndsWith(".dds"))
+                                {
+                                    DDS dds = new DDS(new FileData(texPath));
+                                    ntex = dds.toNUT_Texture();
+                                }
 
                                 tex.height = ntex.height;
                                 tex.width = ntex.width;

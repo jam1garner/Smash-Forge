@@ -41,11 +41,13 @@
             this.meshContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.singleBindToBoneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.nudContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.makeMetalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mergeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.belowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
             this.meshContextMenu.SuspendLayout();
@@ -148,9 +150,10 @@
             // 
             this.meshContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.deleteToolStripMenuItem1,
-            this.singleBindToBoneToolStripMenuItem});
+            this.singleBindToBoneToolStripMenuItem,
+            this.toolStripMenuItem1});
             this.meshContextMenu.Name = "meshContextMenu";
-            this.meshContextMenu.Size = new System.Drawing.Size(178, 48);
+            this.meshContextMenu.Size = new System.Drawing.Size(178, 92);
             // 
             // deleteToolStripMenuItem1
             // 
@@ -166,18 +169,26 @@
             this.singleBindToBoneToolStripMenuItem.Text = "Single Bind to Bone";
             this.singleBindToBoneToolStripMenuItem.Click += new System.EventHandler(this.singleBindToBoneToolStripMenuItem_Click);
             // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 22);
+            this.toolStripMenuItem1.Text = "Reposition";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            // 
             // nudContextMenu
             // 
             this.nudContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.makeMetalToolStripMenuItem,
-            this.mergeToolStripMenuItem});
+            this.mergeToolStripMenuItem,
+            this.saveToolStripMenuItem});
             this.nudContextMenu.Name = "nudContextMenu";
-            this.nudContextMenu.Size = new System.Drawing.Size(153, 70);
+            this.nudContextMenu.Size = new System.Drawing.Size(137, 70);
             // 
             // makeMetalToolStripMenuItem
             // 
             this.makeMetalToolStripMenuItem.Name = "makeMetalToolStripMenuItem";
-            this.makeMetalToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.makeMetalToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.makeMetalToolStripMenuItem.Text = "Make Metal";
             this.makeMetalToolStripMenuItem.Click += new System.EventHandler(this.makeMetalToolStripMenuItem_Click);
             // 
@@ -187,22 +198,29 @@
             this.belowToolStripMenuItem,
             this.aboveToolStripMenuItem});
             this.mergeToolStripMenuItem.Name = "mergeToolStripMenuItem";
-            this.mergeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.mergeToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.mergeToolStripMenuItem.Text = "Merge";
             // 
             // belowToolStripMenuItem
             // 
             this.belowToolStripMenuItem.Name = "belowToolStripMenuItem";
-            this.belowToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.belowToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.belowToolStripMenuItem.Text = "Below";
             this.belowToolStripMenuItem.Click += new System.EventHandler(this.belowToolStripMenuItem_Click);
             // 
             // aboveToolStripMenuItem
             // 
             this.aboveToolStripMenuItem.Name = "aboveToolStripMenuItem";
-            this.aboveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboveToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.aboveToolStripMenuItem.Text = "Above";
             this.aboveToolStripMenuItem.Click += new System.EventHandler(this.aboveToolStripMenuItem_Click);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // MeshList
             // 
@@ -244,5 +262,7 @@
         private System.Windows.Forms.ToolStripMenuItem mergeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem belowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     }
 }

@@ -14,7 +14,9 @@ namespace Smash_Forge
 		public enum DDSFormat {
 			RGBA,
 			DXT5,
-			DXT1
+			DXT1,
+            ATI1,
+            ATI2
 		}
 
 		public class Header
@@ -125,6 +127,12 @@ namespace Smash_Forge
             header.mipmapCount = tex.mipmaps.Count;
             switch (tex.type)
             {
+                case PixelInternalFormat.CompressedRedRgtc1:
+                    header.dwFourCC = 0x32495441;
+                    break;
+                case PixelInternalFormat.CompressedRgRgtc2:
+                    header.dwFourCC = 0x31495441;
+                    break;
                 case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
                     header.dwFourCC = 0x31545844;
                     break;
@@ -150,9 +158,9 @@ namespace Smash_Forge
                     break;
                 /*case PixelInternalFormat.CompressedRedRgtc1:
                     break;*/
-                case PixelInternalFormat.CompressedRgRgtc2:
-                    header.dwFourCC = 0x53354342;
-                    break;
+                /*case PixelInternalFormat.CompressedRgRgtc2:
+                    header.dwFourCC = 0x42433553;
+                    break;*/
                 default:
                     throw new NotImplementedException($"Unknown pixel format 0x{tex.type:X}");
             }
@@ -192,6 +200,14 @@ namespace Smash_Forge
                 case 0x35545844:
                     size = 1f;
                     tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    break;
+                case 0x32495441:
+                    size = 1/2f;
+                    tex.type = PixelInternalFormat.CompressedRedRgtc1;
+                    break;
+                case 0x31495441:
+                    size = 1f;
+                    tex.type = PixelInternalFormat.CompressedRgRgtc2;
                     break;
                 default:
                     MessageBox.Show("Unsupported DDS format - 0x" + header.dwFourCC.ToString("x"));

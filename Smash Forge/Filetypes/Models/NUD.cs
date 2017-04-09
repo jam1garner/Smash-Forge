@@ -70,61 +70,13 @@ namespace Smash_Forge
         
         public void PreRender()
         {
-            List<dVertex> vert = new List<dVertex>();
-            
             for (int mes = mesh.Count - 1; mes >= 0; mes--)
             {
                 Mesh m = mesh[mes];
                 for (int pol = m.polygons.Count - 1; pol >= 0; pol--)
                 {
                     Polygon p = m.polygons[pol];
-
-                    if ((p.vertSize & 0xF) != 3 && (p.vertSize & 0xF) != 7)
-                        computeTangentBitangent(p);
-
-                    if (p.faces.Count <= 3)
-                        continue;
-                    foreach (Vertex v in p.vertices)
-                    {
-                        //if (v.pos.X > xmax) xmax = v.pos.X; if (v.pos.X < xmin) xmin = v.pos.X;
-                        //if (v.pos.Y > ymax) ymax = v.pos.Y; if (v.pos.Y < ymin) ymin = v.pos.Y;
-                        //if (v.pos.Z > zmax) zmax = v.pos.Z; if (v.pos.Z < zmin) zmin = v.pos.Z;
-
-                        //if (v.pos.Y > max.Y) max = v.pos;
-                        //if (v.pos.Y < min.Y) min = v.pos;
-
-                        dVertex nv = new dVertex()
-                        {
-                            pos = v.pos,
-                            nrm = v.nrm,
-                            tan = v.tan.Xyz,
-                            bit = v.bitan.Xyz,
-                            col = Endian == Endianness.Little ? new Vector4(1f, 1f, 1f, 1f) : v.col / 0x7F,
-                            tx0 = v.tx.Count > 0 ? v.tx[0] : new Vector2(0, 0),
-                            node = new Vector4(v.node.Count > 0 ? v.node[0] : -1,
-                            v.node.Count > 1 ? v.node[1] : -1, 
-                            v.node.Count > 2 ? v.node[2] : -1, 
-                            v.node.Count > 3 ? v.node[3] : -1),
-                            weight = new Vector4(v.weight.Count > 0 ? v.weight[0] : 0,
-                            v.weight.Count > 1 ? v.weight[1] : 0,
-                            v.weight.Count > 2 ? v.weight[2] : 0,
-                            v.weight.Count > 3 ? v.weight[3] : 0),
-
-                        };
-
-                        p.isTransparent = false;
-                        if (v.col.Z < 0x7F)
-                            p.isTransparent = true;
-                        if(p.materials[0].srcFactor > 1)
-                            p.isTransparent = true;
-
-                        vert.Add(nv);
-                    }
-                    p.vertdata = vert.ToArray();
-                    vert = new List<dVertex>();
-
-                    // rearrange faces
-                    p.display = p.getDisplayFace().ToArray();
+                    p.PreRender();
                 }
             }
             //Console.WriteLine("Center: " + param[0] + " " + param[1] + " " + param[2] + " " + param[3] + "\n" 
@@ -1601,6 +1553,58 @@ namespace Smash_Forge
                 vertices.Add(v);
             }
 
+            public void PreRender()
+            {
+                if ((vertSize & 0xF) != 3 && (vertSize & 0xF) != 7)
+                    NUD.computeTangentBitangent(this);
+
+                List<dVertex> vert = new List<dVertex>();
+
+                if (faces.Count <= 3)
+                    return;
+                foreach (Vertex v in vertices)
+                {
+                    //if (v.pos.X > xmax) xmax = v.pos.X; if (v.pos.X < xmin) xmin = v.pos.X;
+                    //if (v.pos.Y > ymax) ymax = v.pos.Y; if (v.pos.Y < ymin) ymin = v.pos.Y;
+                    //if (v.pos.Z > zmax) zmax = v.pos.Z; if (v.pos.Z < zmin) zmin = v.pos.Z;
+
+                    //if (v.pos.Y > max.Y) max = v.pos;
+                    //if (v.pos.Y < min.Y) min = v.pos;
+
+                    dVertex nv = new dVertex()
+                    {
+                        pos = v.pos,
+                        nrm = v.nrm,
+                        tan = v.tan.Xyz,
+                        bit = v.bitan.Xyz,
+                        col = v.col / 0x7F, // ((NUD)Parent.Parent.Tag).Endian == Endianness.Little ? new Vector4(1f, 1f, 1f, 1f) : v.col / 0x7F,
+                        tx0 = v.tx.Count > 0 ? v.tx[0] : new Vector2(0, 0),
+                        node = new Vector4(v.node.Count > 0 ? v.node[0] : -1,
+                        v.node.Count > 1 ? v.node[1] : -1,
+                        v.node.Count > 2 ? v.node[2] : -1,
+                        v.node.Count > 3 ? v.node[3] : -1),
+                        weight = new Vector4(v.weight.Count > 0 ? v.weight[0] : 0,
+                        v.weight.Count > 1 ? v.weight[1] : 0,
+                        v.weight.Count > 2 ? v.weight[2] : 0,
+                        v.weight.Count > 3 ? v.weight[3] : 0),
+
+                    };
+
+                    isTransparent = false;
+                    if (v.col.Z < 0x7F)
+                        isTransparent = true;
+                    if (materials[0].srcFactor > 1)
+                        isTransparent = true;
+
+                    vert.Add(nv);
+                }
+                vertdata = vert.ToArray();
+                vert = new List<dVertex>();
+
+                // rearrange faces
+                display = getDisplayFace().ToArray();
+            }
+
             public void setDefaultMaterial()
             {
                 Material mat = new Material();
@@ -1846,7 +1850,7 @@ namespace Smash_Forge
             }
         }
 
-        public void computeTangentBitangent(Polygon p)
+        public static void computeTangentBitangent(Polygon p)
         {
             List<int> f = p.getDisplayFace();
             Vector3[] tan1 = new Vector3[p.vertices.Count];

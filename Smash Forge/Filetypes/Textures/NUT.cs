@@ -31,6 +31,10 @@ namespace Smash_Forge
                 {
                     switch (type)
                     {
+                        case PixelInternalFormat.CompressedRedRgtc1:
+                            return (width * height / 2);
+                        case PixelInternalFormat.CompressedRgRgtc2:
+                            return (width * height / 2);
                         case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
                             return (width * height / 2);
                         case PixelInternalFormat.CompressedRgbaS3tcDxt3Ext:
@@ -542,7 +546,9 @@ namespace Smash_Forge
 
             if (t.type == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext
                 || t.type == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
-                || t.type == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext)
+                || t.type == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext
+                || t.type == PixelInternalFormat.CompressedRedRgtc1
+                || t.type == PixelInternalFormat.CompressedRgRgtc2)
             {
                 GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type,
                     t.width, t.height, 0, t.Size, t.mipmaps[0]);

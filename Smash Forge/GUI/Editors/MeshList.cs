@@ -93,8 +93,8 @@ namespace Smash_Forge
             if (e.Node is NUD.Mesh)
             {
                 changingValue = true;//Since we are changing value but we don't want the entire model order to swap we are disabling the event for on change value temporarily
-                numericUpDown1.Value = ((NUD)e.Node.Parent.Tag).mesh.IndexOf((NUD.Mesh)e.Node);
                 numericUpDown1.Maximum = ((NUD)e.Node.Parent.Tag).mesh.Count - 1;
+                numericUpDown1.Value = ((NUD)e.Node.Parent.Tag).mesh.IndexOf((NUD.Mesh)e.Node);
 
                 numericUpDown1.Visible = true;
                 label1.Visible = true;
@@ -341,6 +341,7 @@ namespace Smash_Forge
                 {
                     polyContextMenu.Show(this, e.X, e.Y);
                 }
+                if(treeView1.SelectedNode != null)
                 if (treeView1.SelectedNode.Tag is NUD)
                 {
                     nudContextMenu.Show(this, e.X, e.Y);
@@ -523,6 +524,32 @@ namespace Smash_Forge
             {
                 merge(n);
             }
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string filename = "";
+            SaveFileDialog save = new SaveFileDialog();
+            save.Filter = "Namco Universal Data|*.nud|All files(*.*)|*.*";
+            DialogResult result = save.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                filename = save.FileName;
+                if (filename.EndsWith(".nud"))
+                    {
+                        ((NUD)treeView1.SelectedNode.Tag).Save(filename);
+                    }
+            }
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            MeshMover mm = new MeshMover();
+            if(treeView1.SelectedNode!=null)
+                if(treeView1.SelectedNode is NUD.Mesh)
+                    mm.mesh = (NUD.Mesh)treeView1.SelectedNode;
+            mm.Show();
         }
     }
 }
