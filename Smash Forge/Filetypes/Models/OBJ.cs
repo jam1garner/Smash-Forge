@@ -22,19 +22,16 @@ namespace Smash_Forge
         {
             public string name = "None";
             public List<OBJGroup> groups = new List<OBJGroup>();
-            public List<OBJVert> verts = new List<OBJVert>();
-        }
-
-        public class OBJVert
-        {
-            public Vector3 pos;
-            public Vector3 nrm;
-            public Vector2 tx;
+            public List<Vector3> v = new List<Vector3>();
+            public List<Vector2> vt = new List<Vector2>();
+            public List<Vector3> vn = new List<Vector3>();
         }
 
         public class OBJGroup
         {
-            public List<int> faces = new List<int>();
+            public List<int> v = new List<int>();
+            public List<int> vt = new List<int>();
+            public List<int> vn = new List<int>();
         }
 
         public void Read(string fname)
@@ -47,10 +44,9 @@ namespace Smash_Forge
 
             string[] lines = input.Split('\n');
 
-            OBJVert v;
+            Vector3 v;
             OBJObject o = null;
             OBJGroup g = null;
-            int vi = 0, vti = 0, vni = 0;
             for (int i = 0; i < lines.Length; i++)
             {
                 string[] args = lines[i].Split(' ');
@@ -64,35 +60,46 @@ namespace Smash_Forge
                             o.groups.Add(g);
                             objects.Add(o);
                         }
-                        v = new OBJVert();
-                        o.verts.Add(v);
-                        v.pos.X = float.Parse(args[1]);
-                        v.pos.Y = float.Parse(args[2]);
-                        v.pos.Z = float.Parse(args[3]);
+                        v = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
+                        o.v.Add(v);
                         break;
                     case "vn":
-                        v = o.verts[vni++];
-                        v.nrm.X = float.Parse(args[1]);
-                        v.nrm.Y = float.Parse(args[2]);
-                        v.nrm.Z = float.Parse(args[3]);
+                        v = new Vector3();
+                        o.vn.Add(v);
+                        v.X = float.Parse(args[1]);
+                        v.Y = float.Parse(args[2]);
+                        v.Z = float.Parse(args[3]);
                         break;
                     case "vt":
-                        v = o.verts[vti++];
-                        v.tx = new Vector2(float.Parse(args[1]), float.Parse(args[2]));
+                        o.vt.Add(new Vector2(float.Parse(args[1]), float.Parse(args[2])));
                         break;
                     case "f":
-                        g.faces.Add(int.Parse(args[1].Split('/')[0]) - 1);
-                        g.faces.Add(int.Parse(args[2].Split('/')[0]) - 1);
-                        g.faces.Add(int.Parse(args[3].Split('/')[0]) - 1);
+                        g.v.Add(int.Parse(args[1].Split('/')[0]) - 1);
+                        g.v.Add(int.Parse(args[2].Split('/')[0]) - 1);
+                        g.v.Add(int.Parse(args[3].Split('/')[0]) - 1);
+                        if(args[1].Split('/').Length > 1)
+                        {
+                            g.vt.Add(int.Parse(args[1].Split('/')[1]) - 1);
+                            g.vt.Add(int.Parse(args[2].Split('/')[1]) - 1);
+                            g.vt.Add(int.Parse(args[3].Split('/')[1]) - 1);
+                        }
+                        if (args[1].Split('/').Length > 2)
+                        {
+                            g.vn.Add(int.Parse(args[1].Split('/')[2]) - 1);
+                            g.vn.Add(int.Parse(args[2].Split('/')[2]) - 1);
+                            g.vn.Add(int.Parse(args[3].Split('/')[2]) - 1);
+                        }
                         break;
                     case "o":
                         o = new OBJObject();
                         o.name = args[1];
                         objects.Add(o);
+                        g = new OBJGroup();
+                        o.groups.Add(g);
                         break;
                     case "g":
                         g = new OBJGroup();
-                        if (o == null)
+                        if (o == null || args.Length > 1)
                         {
                             o = new OBJObject();
                             if(args.Length > 1)
@@ -121,37 +128,28 @@ namespace Smash_Forge
                 
                 foreach (OBJGroup g in o.groups)
                 {
-                    if (g.faces.Count == 0) continue;
+                    if (g.v.Count == 0) continue;
 
                     NUD.Polygon p = new NUD.Polygon();
                     m.polygons.Add(p);
                     p.setDefaultMaterial();
                     p.vertSize = 0x06;
-                    p.UVSize = 0x12;
+                    p.UVSize = 0x10;
                     p.polflag = 0x00;
 
                     Dictionary<int, int> collected = new Dictionary<int, int>();
 
-                    foreach (int f in g.faces)
+                    for (int i = 0; i < g.v.Count; i++)
                     {
-                        if (collected.ContainsKey(f))
-                        {
-                            p.faces.Add(collected[f]);
-                        }else
-                        {
-                            collected.Add(f, p.vertices.Count);
-                            p.faces.Add(p.vertices.Count);
-                            OBJVert ov = o.verts[f];
-                            NUD.Vertex v = new NUD.Vertex();
-                            p.vertices.Add(v);
-                            v.pos.X = ov.pos.X;
-                            v.pos.Y = ov.pos.Y;
-                            v.pos.Z = ov.pos.Z;
-                            v.nrm.X = ov.nrm.X;
-                            v.nrm.Y = ov.nrm.Y;
-                            v.nrm.Z = ov.nrm.Z;
-                            v.tx.Add(new Vector2(ov.tx.X, ov.tx.Y));
-                        }
+                        p.faces.Add(p.vertices.Count);
+                        NUD.Vertex v = new NUD.Vertex();
+                        p.vertices.Add(v);
+                        v.pos = o.v[g.v[i]] + Vector3.Zero;
+                        Console.WriteLine(v.pos);
+                        if (g.vn.Count > 0)
+                            v.nrm = o.vn[g.vn[i]] + Vector3.Zero; ;
+                        if (g.vt.Count > 0)
+                            v.tx.Add(o.vt[g.vt[i]] + Vector2.Zero);
                     }
                 }
             }
