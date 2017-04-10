@@ -458,6 +458,9 @@ namespace Smash_Forge
                 if (p.Checked)
                 {
                     //(p.strip >> 4) == 4 ? PrimitiveType.Triangles : PrimitiveType.TriangleStrip
+                    //if (p.IsSelected || p.Parent.IsSelected)
+                    //    GL.Uniform4(shader.getAttribute("finalColorGain"), 0.5f, 0.5f, 1.5f, 1f);
+                    
                     GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
                     /*if (p.IsSelected)
                     {

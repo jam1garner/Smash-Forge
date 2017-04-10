@@ -460,7 +460,7 @@ namespace Smash_Forge
                         cub.hash = 0x10102000;
                         NUD.Mat_Texture nrm = NUD.Polygon.makeDefault();
                         NUD.Mat_Texture rim = NUD.Polygon.makeDefault();
-                        cub.hash = 0x10080000;
+                        rim.hash = 0x10080000;
 
                         mat.textures.Add(dif); mat.textures.Add(cub); mat.textures.Add(nrm); mat.textures.Add(rim);
 
