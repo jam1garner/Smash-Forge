@@ -177,6 +177,17 @@ namespace Smash_Forge
                 }
 
                 NUD.Mesh nmesh = new NUD.Mesh();
+                Matrix4 nodeTrans = new Matrix4();
+
+                foreach(ColladaNode node in dae.scene.nodes)
+                {
+                    if (node.geom_id.Equals(geom.id))
+                    {
+                        nodeTrans = node.mat;
+                        break;
+                    }
+                }
+
                 geometries.Add("#" + geom.id, nmesh);
                 n.mesh.Add(nmesh);
                 nmesh.Text = geom.name;
@@ -256,10 +267,13 @@ namespace Smash_Forge
                         i++;
                     }
 
+                    v.pos = Vector3.Transform(v.pos, nodeTrans);
+                    v.nrm = Vector3.TransformNormal(v.nrm, nodeTrans);
+
                     if (dae.library_controllers.Count > 0)
                     {
                         v.pos = Vector3.Transform(v.pos, bindMatrix["#" + geom.id]);
-                        v.nrm = Vector3.Transform(v.nrm, bindMatrix["#" + geom.id]);
+                        v.nrm = Vector3.TransformNormal(v.nrm, bindMatrix["#" + geom.id]);
                     }
                 }
 
@@ -2108,6 +2122,9 @@ namespace Smash_Forge
             public string materialSymbol, materialTarget;
             public Dictionary<string,string> materialIds = new Dictionary<string, string>();
 
+            // instance geometry
+            public string geom_id = "";
+
             public void Read(XmlNode root, ColladaNode parent)
             {
                 this.parent = parent;
@@ -2127,7 +2144,7 @@ namespace Smash_Forge
                     else if (node.Name.Equals("matrix"))
                     {
                         string[] data = node.InnerText.Trim().Replace("\n", " ").Split(' ');
-                        Matrix4 mat = new Matrix4();
+                        mat = new Matrix4();
                         mat.M11 = float.Parse(data[0]); mat.M12 = float.Parse(data[1]); mat.M13 = float.Parse(data[2]); mat.M14 = float.Parse(data[3]);
                         mat.M21 = float.Parse(data[4]); mat.M22 = float.Parse(data[5]); mat.M23 = float.Parse(data[6]); mat.M24 = float.Parse(data[7]);
                         mat.M31 = float.Parse(data[8]); mat.M32 = float.Parse(data[9]); mat.M33 = float.Parse(data[10]); mat.M34 = float.Parse(data[11]);
@@ -2140,10 +2157,19 @@ namespace Smash_Forge
                         mat.ClearTranslation();
                         mat.Invert();
                         rot = ANIM.quattoeul(mat.ExtractRotation()); // TODO: We need a better conversion code for this
+
+                        mat.M11 = float.Parse(data[0]); mat.M12 = float.Parse(data[1]); mat.M13 = float.Parse(data[2]); mat.M14 = float.Parse(data[3]);
+                        mat.M21 = float.Parse(data[4]); mat.M22 = float.Parse(data[5]); mat.M23 = float.Parse(data[6]); mat.M24 = float.Parse(data[7]);
+                        mat.M31 = float.Parse(data[8]); mat.M32 = float.Parse(data[9]); mat.M33 = float.Parse(data[10]); mat.M34 = float.Parse(data[11]);
+                        mat.M41 = float.Parse(data[12]); mat.M42 = float.Parse(data[13]); mat.M43 = float.Parse(data[14]); mat.M44 = float.Parse(data[15]);
                     }
                     else if (node.Name.Equals("extra"))
                     {
-                        
+
+                    }
+                    else if (node.Name.Equals("instance_geometry"))
+                    {
+                        geom_id = node.Attributes["url"].Value.Replace("#", "");
                     }
                     else if (node.Name.Equals("instance_controller"))
                     {

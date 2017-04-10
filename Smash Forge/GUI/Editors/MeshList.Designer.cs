@@ -48,6 +48,7 @@
             this.belowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.smoothNormalsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
             this.meshContextMenu.SuspendLayout();
@@ -112,22 +113,23 @@
             this.editMaterialToolStripMenuItem,
             this.duplicateToolStripMenuItem,
             this.flipUVsToolStripMenuItem,
+            this.smoothNormalsToolStripMenuItem,
             this.deleteToolStripMenuItem});
             this.polyContextMenu.Name = "polyContextMenu";
-            this.polyContextMenu.Size = new System.Drawing.Size(141, 92);
+            this.polyContextMenu.Size = new System.Drawing.Size(165, 136);
             this.polyContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // editMaterialToolStripMenuItem
             // 
             this.editMaterialToolStripMenuItem.Name = "editMaterialToolStripMenuItem";
-            this.editMaterialToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.editMaterialToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.editMaterialToolStripMenuItem.Text = "Edit Material";
             this.editMaterialToolStripMenuItem.Click += new System.EventHandler(this.editMaterialToolStripMenuItem_Click);
             // 
             // duplicateToolStripMenuItem
             // 
             this.duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
-            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.duplicateToolStripMenuItem.Text = "Duplicate";
             this.duplicateToolStripMenuItem.Visible = false;
             this.duplicateToolStripMenuItem.Click += new System.EventHandler(this.duplicateToolStripMenuItem_Click);
@@ -135,14 +137,14 @@
             // flipUVsToolStripMenuItem
             // 
             this.flipUVsToolStripMenuItem.Name = "flipUVsToolStripMenuItem";
-            this.flipUVsToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.flipUVsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.flipUVsToolStripMenuItem.Text = "Flip UVs";
             this.flipUVsToolStripMenuItem.Click += new System.EventHandler(this.flipUVsToolStripMenuItem_Click);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
@@ -153,7 +155,7 @@
             this.singleBindToBoneToolStripMenuItem,
             this.toolStripMenuItem1});
             this.meshContextMenu.Name = "meshContextMenu";
-            this.meshContextMenu.Size = new System.Drawing.Size(178, 92);
+            this.meshContextMenu.Size = new System.Drawing.Size(178, 70);
             // 
             // deleteToolStripMenuItem1
             // 
@@ -222,6 +224,13 @@
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
+            // smoothNormalsToolStripMenuItem
+            // 
+            this.smoothNormalsToolStripMenuItem.Name = "smoothNormalsToolStripMenuItem";
+            this.smoothNormalsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.smoothNormalsToolStripMenuItem.Text = "Smooth Normals";
+            this.smoothNormalsToolStripMenuItem.Click += new System.EventHandler(this.smoothNormalsToolStripMenuItem_Click);
+            // 
             // MeshList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -264,5 +273,6 @@
         private System.Windows.Forms.ToolStripMenuItem aboveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem smoothNormalsToolStripMenuItem;
     }
 }

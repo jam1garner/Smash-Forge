@@ -551,5 +551,11 @@ namespace Smash_Forge
                     mm.mesh = (NUD.Mesh)treeView1.SelectedNode;
             mm.Show();
         }
+
+        private void smoothNormalsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(treeView1.SelectedNode is NUD.Polygon)
+                ((NUD.Polygon)treeView1.SelectedNode).SmoothNormals();
+        }
     }
 }

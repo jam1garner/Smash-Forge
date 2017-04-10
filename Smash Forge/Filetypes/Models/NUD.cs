@@ -1473,7 +1473,7 @@ namespace Smash_Forge
 
             public bool Equals(Vertex p)
             {
-                return pos.Equals(p.pos) && nrm.Equals(p.nrm) && new HashSet<Vector2>(tx).SetEquals(p.tx) && col.Equals(p.col)
+                return pos.Equals(p.pos) && new HashSet<Vector2>(tx).SetEquals(p.tx) && col.Equals(p.col)
                     && new HashSet<int>(node).SetEquals(p.node) && new HashSet<float>(weight).SetEquals(p.weight);
             }
         }
@@ -1558,6 +1558,9 @@ namespace Smash_Forge
 
             public void PreRender()
             {
+                // rearrange faces
+                display = getDisplayFace().ToArray();
+
                 if ((vertSize & 0xF) != 3 && (vertSize & 0xF) != 7)
                     NUD.computeTangentBitangent(this);
 
@@ -1603,9 +1606,65 @@ namespace Smash_Forge
                 }
                 vertdata = vert.ToArray();
                 vert = new List<dVertex>();
+            }
 
-                // rearrange faces
-                display = getDisplayFace().ToArray();
+            public void SmoothNormals()
+            {
+                Vector3[] normals = new Vector3[vertices.Count];
+
+                for(int i = 0; i < normals.Length; i++)
+                    normals[i] = new Vector3(0, 0, 0);
+
+                List<int> f = getDisplayFace();
+
+                for (int i = 0; i < displayFaceSize; i += 3)
+                {
+                    Vertex v1 = vertices[f[i]];
+                    Vertex v2 = vertices[f[i+1]];
+                    Vertex v3 = vertices[f[i+2]];
+                    Vector3 nrm = CalculateNormal(v1,v2,v3);
+
+                    /*Vector3 U = v1.pos-v2.pos;
+                    Vector3 V = v1.pos-v3.pos;
+                    Vector3 v = U * V;
+                    float dis = (float)Math.Sqrt(Math.Pow(v.X, 2) + Math.Pow(v.Y, 2) + Math.Pow(v.Z, 2));
+                    float area = (dis) / 2;*/
+
+                    //float a1 = Vector3.CalculateAngle(v1.pos - v2.pos, v1.pos - v3.pos);
+                    //float a2 = Vector3.CalculateAngle(v2.pos - v1.pos, v2.pos - v3.pos);
+                    //float a3 = Vector3.CalculateAngle(v3.pos - v1.pos, v3.pos - v2.pos);
+
+                    normals[f[i + 0]] += nrm;// * a1;
+                    normals[f[i + 1]] += nrm;// * a2;
+                    normals[f[i + 2]] += nrm;// * a3;
+                }
+                for (int i = 0; i < normals.Length; i++)
+                    vertices[i].nrm = normals[i].Normalized();
+                
+                foreach (Vertex v in vertices)
+                {
+                    foreach (Vertex v2 in vertices)
+                    {
+                        if (v == v2) continue;
+                        float dis = (float)Math.Sqrt(Math.Pow(v.pos.X - v2.pos.X, 2) + Math.Pow(v.pos.Y - v2.pos.Y, 2) + Math.Pow(v.pos.Z - v2.pos.Z, 2));
+                        if (dis <= 0f) // Extra smooth
+                        {
+                            Vector3 nn = (v2.nrm + v.nrm) / 2;
+                            v.nrm = nn;
+                            v2.nrm = nn;
+                        }
+                    }
+                }
+                
+                PreRender();
+            }
+
+            private Vector3 CalculateNormal(Vertex v1, Vertex v2, Vertex v3)
+            {
+                Vector3 U = v2.pos - v1.pos;
+                Vector3 V = v3.pos - v1.pos;
+
+                return Vector3.Cross(U, V).Normalized();
             }
 
             public void setDefaultMaterial()

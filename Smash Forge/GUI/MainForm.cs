@@ -1270,6 +1270,29 @@ namespace Smash_Forge
                 }
             }
 
+
+            if (filename.ToLower().EndsWith(".obj"))
+            {
+                OBJ obj = new OBJ();
+                obj.Read(filename);
+                Runtime.ModelContainers.Add(new ModelContainer() { nud = obj.toNUD() });
+                meshList.refresh();
+                /*DAEImportSettings m = new DAEImportSettings();
+                m.ShowDialog();
+                if (m.exitStatus == DAEImportSettings.Opened)
+                {
+                    if (Runtime.ModelContainers.Count < 1)
+                        Runtime.ModelContainers.Add(new ModelContainer());
+
+
+                    // apply settings
+                    m.Apply(Runtime.ModelContainers[0].nud);
+                    Runtime.ModelContainers[0].nud.MergePoly();
+
+                    meshList.refresh();
+                }*/
+            }
+
             if (filename.EndsWith(".mbn"))
             {
                 MBN m = new MBN();
@@ -1355,7 +1378,7 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc, .mbn)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.dat;*.mta;*.wrkspc;*.nut;*.sb;*.mbn;*.tex;*.drp;*.nus3bank;*.wav|" +
+                    "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc, .mbn)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.obj;*.dat;*.mta;*.wrkspc;*.nut;*.sb;*.mbn;*.tex;*.drp;*.nus3bank;*.wav|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +
@@ -1363,6 +1386,7 @@ namespace Smash_Forge
                     "Source Model (.SMD)|*.smd|" +
                     "Smash 4 Parameters (.bin)|*.bin|" +
                     "Collada Model Format (.dae)|*.dae|" +
+                    "Wavefront Object (.obj)|*.obj|" +
                     "All files(*.*)|*.*";
 
                 ofd.Multiselect = true;
