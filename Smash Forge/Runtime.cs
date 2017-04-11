@@ -37,6 +37,8 @@ namespace Smash_Forge
 
         public static bool renderLVD { get; set; }
         public static bool renderModel { get; set; }
+        public static bool renderModelSelection = true;
+        public static bool renderModelWireframe { get; set; }
         public static bool renderBones { get; set; }
         public static bool renderCollisions { get; set; }
         public static bool renderCollisionNormals { get; set; }

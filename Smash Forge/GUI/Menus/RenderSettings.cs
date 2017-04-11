@@ -33,6 +33,10 @@ namespace Smash_Forge.GUI
             lightCheckBox.Checked = Runtime.renderLighting;
             useNormCB.Checked = Runtime.useNormalMap;
             boundingCB.Checked = Runtime.renderBoundingBox;
+            wireframeCB.Checked = Runtime.renderModelWireframe;
+            modelSelectCB.Checked = Runtime.renderModelSelection;
+            wireframeCB.Enabled = checkBox1.Checked;
+            modelSelectCB.Enabled = checkBox1.Checked;
 
             depthSlider.Value = (int)Runtime.renderDepth;
             fovSlider.Value = (int)(Runtime.fov * 10);
@@ -75,6 +79,8 @@ namespace Smash_Forge.GUI
             Runtime.renderGeneralPoints = checkBox11.Checked;
             Runtime.renderCollisionNormals = checkBox12.Checked;
             checkBox12.Enabled = checkBox6.Checked && checkBox7.Checked;
+            wireframeCB.Enabled = checkBox1.Checked;
+            modelSelectCB.Enabled = checkBox1.Checked;
         }
 
         private void checkChanged(object sender, EventArgs e)
@@ -165,6 +171,16 @@ namespace Smash_Forge.GUI
         private void boundingCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderBoundingBox = boundingCB.Checked;
+        }
+
+        private void modelSelectCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderModelSelection = modelSelectCB.Checked;
+        }
+
+        private void wireframeCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderModelWireframe = wireframeCB.Checked;
         }
     }
 }

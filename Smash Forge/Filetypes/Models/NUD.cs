@@ -207,7 +207,7 @@ namespace Smash_Forge
                         opaque.Add(p);
                 }
             }
-            
+
             //GL.Enable(EnableCap.PrimitiveRestartFixedIndex);
 
             foreach (Polygon p in opaque)
@@ -217,9 +217,18 @@ namespace Smash_Forge
             foreach (Polygon p in trans)
                 if(((Mesh)p.Parent).Checked)
                     DrawPolygon(p, shader);
+            
+            foreach (Polygon p in opaque)
+                if (((Mesh)p.Parent).Checked)
+                {
+                    if (Runtime.renderModelSelection && (((Mesh)p.Parent).IsSelected || p.IsSelected))
+                    {
+                        DrawPolygon(p, shader, true);
+                    }
+                }
         }
 
-        private void DrawPolygon(Polygon p, Shader shader)
+        private void DrawPolygon(Polygon p, Shader shader, bool drawSelection = false)
         {
             if (p.faces.Count <= 3)
                 return;
@@ -461,15 +470,49 @@ namespace Smash_Forge
                     //if (p.IsSelected || p.Parent.IsSelected)
                     //    GL.Uniform4(shader.getAttribute("finalColorGain"), 0.5f, 0.5f, 1.5f, 1f);
                     
-                    GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
-                    /*if (p.IsSelected)
+                    if ((p.IsSelected || p.Parent.IsSelected) && drawSelection)
                     {
-                        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-                        GL.Uniform1(shader.getAttribute("gamma"), 3);
+                        GL.Disable(EnableCap.DepthTest);
+                        bool[] cwm = new bool[4];
+                        GL.GetBoolean(GetIndexedPName.ColorWritemask, 4, cwm);
+                        //GL.DepthMask(false);
+                        GL.ColorMask(false, false, false, false);
+
+                        GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
+                        GL.StencilMask(0xFF);
+
+                        GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+
+                        //GL.DepthMask(true);
+                        GL.ColorMask(cwm[0], cwm[1], cwm[2], cwm[3]);
+
+                        GL.StencilFunc(StencilFunction.Notequal, 1, 0xFF);
+                        GL.StencilMask(0x00);
+
+                        GL.Uniform1(shader.getAttribute("renderType"), 2);
+                        GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
+                        GL.LineWidth(2);
                         GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
                         GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-                        GL.Uniform1(shader.getAttribute("gamma"), Runtime.gamma);
-                    }*/
+                        GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
+
+                        GL.StencilMask(0xFF);
+                        GL.Enable(EnableCap.DepthTest);
+                    }
+                    else
+                    {
+                        GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+
+                        if (Runtime.renderModelWireframe)
+                        {
+                            GL.Uniform1(shader.getAttribute("renderType"), 2);
+                            GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
+                            GL.LineWidth(0.5f);
+                            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+                            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+                            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
+                        }
+                    }
                 }
             }
         }

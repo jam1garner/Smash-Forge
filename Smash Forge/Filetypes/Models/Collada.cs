@@ -177,7 +177,7 @@ namespace Smash_Forge
                 }
 
                 NUD.Mesh nmesh = new NUD.Mesh();
-                Matrix4 nodeTrans = new Matrix4();
+                Matrix4 nodeTrans = Matrix4.CreateScale(1,1,1);
 
                 foreach(ColladaNode node in dae.scene.nodes)
                 {

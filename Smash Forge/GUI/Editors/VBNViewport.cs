@@ -707,7 +707,7 @@ main()
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
             // clear the gf buffer
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
@@ -774,7 +774,10 @@ main()
             GL.CullFace(CullFaceMode.Front);
 
             GL.Enable(EnableCap.LineSmooth);
-            
+
+            GL.Enable(EnableCap.StencilTest);
+            GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
+
 
             // draw models
             if (Runtime.renderModel)
