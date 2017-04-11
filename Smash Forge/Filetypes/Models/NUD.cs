@@ -1638,9 +1638,10 @@ namespace Smash_Forge
                     normals[f[i + 1]] += nrm;// * a2;
                     normals[f[i + 2]] += nrm;// * a3;
                 }
+                
                 for (int i = 0; i < normals.Length; i++)
                     vertices[i].nrm = normals[i].Normalized();
-                
+
                 foreach (Vertex v in vertices)
                 {
                     foreach (Vertex v2 in vertices)
@@ -1649,13 +1650,13 @@ namespace Smash_Forge
                         float dis = (float)Math.Sqrt(Math.Pow(v.pos.X - v2.pos.X, 2) + Math.Pow(v.pos.Y - v2.pos.Y, 2) + Math.Pow(v.pos.Z - v2.pos.Z, 2));
                         if (dis <= 0f) // Extra smooth
                         {
-                            Vector3 nn = (v2.nrm + v.nrm) / 2;
+                            Vector3 nn = ((v2.nrm + v.nrm)/2).Normalized();
                             v.nrm = nn;
                             v2.nrm = nn;
                         }
                     }
                 }
-                
+
                 PreRender();
             }
 
@@ -1670,13 +1671,18 @@ namespace Smash_Forge
             public void setDefaultMaterial()
             {
                 Material mat = new Material();
-                mat.flags = 0x9a011063;
+                mat.flags = 0x94010161;
                 mat.cullMode = 4;
-                mat.entries.Add("NU_colorSamplerUV", new float[]{1, 1, 0, 0});
-                mat.entries.Add("NU_materialHash", new float[] {FileData.toFloat(0x68617368), 0, 0, 0});
+                mat.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
+                mat.entries.Add("NU_fresnelColor", new float[] { 1, 1, 1, 1 });
+                mat.entries.Add("NU_blinkColor", new float[] { 0, 0, 0, 0 });
+                mat.entries.Add("NU_aoMinGain", new float[] { 0, 0, 0, 0 });
+                mat.entries.Add("NU_lightMapColorOffset", new float[] { 0, 0, 0, 0 });
+                mat.entries.Add("NU_fresnelParams", new float[] { 1, 0, 0, 0 });
+                mat.entries.Add("NU_alphaBlendParams", new float[] { 0, 0, 0, 0 });
+                mat.entries.Add("NU_materialHash", new float[] { FileData.toFloat(0x7E538F65), 0, 0, 0 });
                 materials.Add(mat);
-                
-                mat.textures.Add(makeDefault());
+
                 mat.textures.Add(makeDefault());
                 mat.textures.Add(makeDefault());
             }

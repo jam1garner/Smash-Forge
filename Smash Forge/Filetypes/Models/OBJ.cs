@@ -18,13 +18,14 @@ namespace Smash_Forge
             objects = new List<OBJObject>();
         }
 
+        public List<Vector3> v = new List<Vector3>();
+        public List<Vector2> vt = new List<Vector2>();
+        public List<Vector3> vn = new List<Vector3>();
+
         public class OBJObject
         {
             public string name = "None";
             public List<OBJGroup> groups = new List<OBJGroup>();
-            public List<Vector3> v = new List<Vector3>();
-            public List<Vector2> vt = new List<Vector2>();
-            public List<Vector3> vn = new List<Vector3>();
         }
 
         public class OBJGroup
@@ -61,17 +62,14 @@ namespace Smash_Forge
                             objects.Add(o);
                         }
                         v = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
-                        o.v.Add(v);
+                        this.v.Add(v);
                         break;
                     case "vn":
-                        v = new Vector3();
-                        o.vn.Add(v);
-                        v.X = float.Parse(args[1]);
-                        v.Y = float.Parse(args[2]);
-                        v.Z = float.Parse(args[3]);
+                        v = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
+                        vn.Add(v);
                         break;
                     case "vt":
-                        o.vt.Add(new Vector2(float.Parse(args[1]), float.Parse(args[2])));
+                        vt.Add(new Vector2(float.Parse(args[1]), float.Parse(args[2])));
                         break;
                     case "f":
                         g.v.Add(int.Parse(args[1].Split('/')[0]) - 1);
@@ -79,15 +77,15 @@ namespace Smash_Forge
                         g.v.Add(int.Parse(args[3].Split('/')[0]) - 1);
                         if(args[1].Split('/').Length > 1)
                         {
-                            g.vt.Add(int.Parse(args[1].Split('/')[1]) - 1);
-                            g.vt.Add(int.Parse(args[2].Split('/')[1]) - 1);
-                            g.vt.Add(int.Parse(args[3].Split('/')[1]) - 1);
+                            g.vt.Add(int.Parse(args[1].Split('/')[2]) - 1);
+                            g.vt.Add(int.Parse(args[2].Split('/')[2]) - 1);
+                            g.vt.Add(int.Parse(args[3].Split('/')[2]) - 1);
                         }
                         if (args[1].Split('/').Length > 2)
                         {
-                            g.vn.Add(int.Parse(args[1].Split('/')[2]) - 1);
-                            g.vn.Add(int.Parse(args[2].Split('/')[2]) - 1);
-                            g.vn.Add(int.Parse(args[3].Split('/')[2]) - 1);
+                            g.vn.Add(int.Parse(args[1].Split('/')[1]) - 1);
+                            g.vn.Add(int.Parse(args[2].Split('/')[1]) - 1);
+                            g.vn.Add(int.Parse(args[3].Split('/')[1]) - 1);
                         }
                         break;
                     case "o":
@@ -121,7 +119,6 @@ namespace Smash_Forge
             foreach (OBJObject o in objects)
             {
                 NUD.Mesh m = new NUD.Mesh();
-                n.mesh.Add(m);
                 m.Text = o.name;
                 m.singlebind = -1;
                 m.boneflag = 0x08;
@@ -144,14 +141,16 @@ namespace Smash_Forge
                         p.faces.Add(p.vertices.Count);
                         NUD.Vertex v = new NUD.Vertex();
                         p.vertices.Add(v);
-                        v.pos = o.v[g.v[i]] + Vector3.Zero;
-                        Console.WriteLine(v.pos);
-                        if (g.vn.Count > 0)
-                            v.nrm = o.vn[g.vn[i]] + Vector3.Zero; ;
-                        if (g.vt.Count > 0)
-                            v.tx.Add(o.vt[g.vt[i]] + Vector2.Zero);
+                        if (g.v.Count > i)
+                            v.pos = this.v[g.v[i]] + Vector3.Zero;
+                        if (g.vn.Count > i)
+                            v.nrm = vn[g.vn[i]] + Vector3.Zero; ;
+                        if (g.vt.Count > i)
+                            v.tx.Add(vt[g.vt[i]] + Vector2.Zero);
                     }
                 }
+                if(m.polygons.Count > 0)
+                    n.mesh.Add(m);
             }
 
             n.Optimize();

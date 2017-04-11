@@ -268,12 +268,14 @@ namespace Smash_Forge
                     }
 
                     v.pos = Vector3.Transform(v.pos, nodeTrans);
-                    v.nrm = Vector3.TransformNormal(v.nrm, nodeTrans);
+                    if (v.nrm != null)
+                        v.nrm = Vector3.Transform(v.nrm, nodeTrans);
 
                     if (dae.library_controllers.Count > 0)
                     {
                         v.pos = Vector3.Transform(v.pos, bindMatrix["#" + geom.id]);
-                        v.nrm = Vector3.TransformNormal(v.nrm, bindMatrix["#" + geom.id]);
+                        if (v.nrm != null)
+                            v.nrm = Vector3.TransformNormal(v.nrm, bindMatrix["#" + geom.id]);
                     }
                 }
 
