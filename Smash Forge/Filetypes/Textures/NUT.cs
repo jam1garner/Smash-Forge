@@ -216,6 +216,21 @@ namespace Smash_Forge
                 o.writeInt(0);
                 o.writeInt(0);
                 o.writeInt(0);
+                
+                if (texture.getNutFormat() == 14 || texture.getNutFormat() == 17)
+                {
+                    foreach (byte[] mip in texture.mipmaps)
+                    {
+                        for (int t = 0; t < mip.Length; t += 4)
+                        {
+                            byte t1 = mip[t + 3];
+                            mip[t + 3] = mip[t + 2];
+                            mip[t + 2] = mip[t + 1];
+                            mip[t + 1] = mip[t];
+                            mip[t] = t1;
+                        }
+                    }
+                }
 
                 foreach (var mip in texture.mipmaps)
                 {
@@ -226,6 +241,21 @@ namespace Smash_Forge
                         o.writeInt(data.size() - ds);
                 }
                 o.align(16);
+                
+                if (texture.getNutFormat() == 14 || texture.getNutFormat() == 17)
+                {
+                    foreach (byte[] mip in texture.mipmaps)
+                    {
+                        for (int t = 0; t < mip.Length; t += 4)
+                        {
+                            byte t1 = mip[t];
+                            mip[t] = mip[t + 1];
+                            mip[t + 1] = mip[t + 2];
+                            mip[t + 2] = mip[t + 3];
+                            mip[t + 3] = t1;
+                        }
+                    }
+                }
 
                 o.writeInt(0x65587400); // "eXt\0"
                 o.writeInt(0x20);
@@ -323,6 +353,29 @@ namespace Smash_Forge
                 }
 
                 dataPtr += headerSize;
+                
+                if (tex.getNutFormat() == 14 || tex.getNutFormat() == 17)
+                {
+                    Console.WriteLine("Endian swap");
+                    // swap 
+                    foreach (byte[] mip in tex.mipmaps)
+                    {
+                        for (int t = 0; t < mip.Length; t += 4)
+                        {
+                            byte t1 = mip[t];
+                            mip[t] = mip[t + 1];
+                            mip[t + 1] = mip[t + 2];
+                            mip[t + 2] = mip[t + 3];
+                            mip[t + 3] = t1;
+                            /*byte t1 = mip[t];
+                            byte t2 = mip[t+1];
+                            mip[t] = mip[t + 3];
+                            mip[t + 1] = mip[t + 2];
+                            mip[t + 2] = t2;
+                            mip[t + 3] = t1;*/
+                        }
+                    }
+                }
 
                 textures.Add(tex);
 
@@ -480,6 +533,25 @@ namespace Smash_Forge
 
                     //while (dataOffset % 1024 != 0) dataOffset++;
                     //if (mipSize == 0x4000) dataOffset += 0x400;
+                }
+
+                // fix mipmap swizzle for rgba types
+                if(tex.getNutFormat() == 14 || tex.getNutFormat() == 17)
+                {
+                    Console.WriteLine("Endian swap");
+                    // swap 
+                    foreach(byte[] mip in tex.mipmaps)
+                    {
+                        for(int t = 0; t < mip.Length; t+=4)
+                        {
+                            /*byte t1 = mip[t];
+                            byte t2 = mip[t+1];
+                            mip[t] = mip[t + 3];
+                            mip[t + 1] = mip[t + 2];
+                            mip[t + 2] = t2;
+                            mip[t + 3] = t1;*/
+                        }
+                    }
                 }
 
                 textures.Add(tex);

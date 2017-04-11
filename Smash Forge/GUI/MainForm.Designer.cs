@@ -581,7 +581,6 @@
             this.glControl1.Name = "glControl1";
             this.glControl1.Size = new System.Drawing.Size(10, 10);
             this.glControl1.TabIndex = 19;
-            this.glControl1.Visible = false;
             this.glControl1.VSync = false;
             // 
             // checkBox1

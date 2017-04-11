@@ -269,7 +269,7 @@ namespace Smash_Forge
 
                     v.pos = Vector3.Transform(v.pos, nodeTrans);
                     if (v.nrm != null)
-                        v.nrm = Vector3.Transform(v.nrm, nodeTrans);
+                        v.nrm = Vector3.TransformNormal(v.nrm, nodeTrans);
 
                     if (dae.library_controllers.Count > 0)
                     {
