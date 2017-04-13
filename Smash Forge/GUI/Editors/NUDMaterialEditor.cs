@@ -21,7 +21,7 @@ namespace Smash_Forge
         public List<NUD.Material> material;
         int current = 0;
 
-        Dictionary<int, string> dstFactor = new Dictionary<int, string>(){
+        public static Dictionary<int, string> dstFactor = new Dictionary<int, string>(){
                     { 0x00, "Nothing"},
                     { 0x01, "SourceAlpha"},
                     { 0x02, "One"},
@@ -29,7 +29,7 @@ namespace Smash_Forge
                     { 0x04, "Dummy"},
                 };//{ 0x101f, "Invisible"}
 
-        Dictionary<int, string> srcFactor = new Dictionary<int, string>(){
+        public static Dictionary<int, string> srcFactor = new Dictionary<int, string>(){
                     { 0x00, "Nothing"},
                     { 0x01, "SourceAlpha + CompareBeforeTextureFalse + DepthTestTrue + EnableDepthUpdateTrue"},
                     { 0x03, "SourceAlpha + CompareBeforeTextureTrue + DepthTestTrue + EnableDepthUpdateFalse + MultiplyBy1"},
@@ -40,51 +40,51 @@ namespace Smash_Forge
                     { 0x33, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + MultiplyBy1"}
                 };//{ 0x101f, "Invisible"}
 
-        Dictionary<int, string> cullmode = new Dictionary<int, string>(){
+        public static Dictionary<int, string> cullmode = new Dictionary<int, string>(){
                     { 0x00, "Cull None"},
                     { 0x04, "Cull Inside"}
                 };
 
-        Dictionary<int, string> afunc = new Dictionary<int, string>(){
+        public static Dictionary<int, string> afunc = new Dictionary<int, string>(){
                     { 0x0000, "Nothing"},
                     { 0x0204, "GreaterOrEqual + 128"}
                 };
 
-        Dictionary<int, string> ref1 = new Dictionary<int, string>(){
+        public static Dictionary<int, string> ref1 = new Dictionary<int, string>(){
                     { 0x00, "Nothing"},
                     { 0x04, "LessOrEqual + 128"},
                     { 0x06, "LessOrEqual + 255"}
                 };
 
-        Dictionary<int, string> ref0 = new Dictionary<int, string>(){
+        public static Dictionary<int, string> ref0 = new Dictionary<int, string>(){
                     { 0x00, "Nothing"},
                     { 0x02, "GreaterOrEqual + 128"}
                 };
 
-        Dictionary<int, string> mapmode = new Dictionary<int, string>(){
+        public static Dictionary<int, string> mapmode = new Dictionary<int, string>(){
                     { 0x00, "TexCoord"},
                     { 0x1D00, "EnvCamera"},
                     { 0x1E00, "Projection"},
                     { 0x1ECD, "EnvLight"},
                     { 0x1F00, "EnvSpec"}
                 };
-        Dictionary<int, string> minfilter = new Dictionary<int, string>(){
+        public static Dictionary<int, string> minfilter = new Dictionary<int, string>(){
                     { 0x00, "Linear_Mipmap_Linear"},
                     { 0x01, "Nearest"},
                     { 0x02, "Linear"},
                     { 0x03, "Nearest_Mipmap_Linear"}
                 };
-        Dictionary<int, string> magfilter = new Dictionary<int, string>(){
+        public static Dictionary<int, string> magfilter = new Dictionary<int, string>(){
                     { 0x00, "???"},
                     { 0x01, "Nearest"},
                     { 0x02, "Linear"}
                 };
-        Dictionary<int, string> wrapmode = new Dictionary<int, string>(){
+        public static Dictionary<int, string> wrapmode = new Dictionary<int, string>(){
                     { 0x01, "Repeat"},
                     { 0x02, "Mirror"},
                     { 0x03, "Clamp"}
                 };
-        Dictionary<int, string> mip = new Dictionary<int, string>(){
+        public static Dictionary<int, string> mip = new Dictionary<int, string>(){
                     { 0x01, "1 mip level, anisotropic off"},
                     { 0x02, "1 mip level, anisotropic off 2"},
                     { 0x03, "4 mip levels, trilinear off, anisotropic off"},
@@ -164,7 +164,6 @@ namespace Smash_Forge
             foreach(string s in propList.Keys)
                 comboBox7.Items.Add(s);
 
-
             if (comboBox10.Items.Count == 0)
             {
                 foreach (int i in srcFactor.Keys)
@@ -207,7 +206,27 @@ namespace Smash_Forge
             checkBox1.Checked = mat.unkownWater != 0;
 
             listView1.Items.Clear();
-            listView1.View = View.List;
+
+            mat.flags = mat.RebuildFlags();
+
+            shadowCB.Checked = mat.hasShadow;
+            GlowCB.Checked = mat.glow;
+            specLightCB.Checked = mat.useSpecular;
+            rimLightCB.Checked = mat.useRimLight;
+            
+            if (mat.highlight) listView1.Items.Add("Specular");
+            if (mat.highlight) listView1.Items.Add("ShineHighlight");
+            if (mat.diffuse) listView1.Items.Add("Diffuse");
+            if (mat.diffuse2) listView1.Items.Add("Diffuse2");
+            if (mat.stagemap) listView1.Items.Add("StageMap");
+            if (mat.cubemap) listView1.Items.Add("Cubemap");
+            if (mat.aomap) listView1.Items.Add("AO Map");
+            if (mat.normalmap) listView1.Items.Add("NormalMap");
+            if (mat.ramp) listView1.Items.Add("Ramp");
+
+            if (mat.useRimLight) listView1.Items.Add("Dummy Rim");
+
+            /*listView1.View = View.List;
 
             int[] locs = new int[mat.textures.Count + 4];
             int li = 0;
@@ -260,7 +279,7 @@ namespace Smash_Forge
             {
                 listView1.Items.Add(texnames[locs[i]]);
             }
-            listView1.SelectedIndices.Add(0);
+            listView1.SelectedIndices.Add(0);*/
 
             listView2.Items.Clear();
             listView2.View = View.List;
@@ -695,7 +714,9 @@ namespace Smash_Forge
                     texprop4 = f.readInt()
                 };
 
+                int texid = poly.materials[0].textures[0].hash;
                 poly.materials = NUD.readMaterial(f, pol, soff);
+                poly.materials[0].textures[0].hash = texid;
                 material = poly.materials;
                 Console.WriteLine(material.Count);
                 current = 0;
@@ -875,6 +896,34 @@ namespace Smash_Forge
                     FillForm();
                 }
             }
+        }
+
+        private void rimLightCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].UseRimLight = rimLightCB.Checked;
+            if(rimLightCB.Checked)
+                specLightCB.Checked = !rimLightCB.Checked;
+            FillForm();
+        }
+
+        private void specLightCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].UseSpecular = specLightCB.Checked;
+            if (specLightCB.Checked)
+                rimLightCB.Checked = !specLightCB.Checked;
+            FillForm();
+        }
+
+        private void shadowCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].hasShadow = shadowCB.Checked;
+            FillForm();
+        }
+
+        private void GlowCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].glow = GlowCB.Checked;
+            FillForm();
         }
     }
 }

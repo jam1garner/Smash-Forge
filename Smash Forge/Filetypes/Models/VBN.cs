@@ -79,6 +79,25 @@ namespace Smash_Forge
             int hashOffset = f.readInt() + 0x28;
             f.skip(4);
 
+            int pos = f.pos();
+            f.seek(hashOffset);
+
+            csvHashes csv = new csvHashes(Path.Combine(MainForm.executableDir, "hashTable.csv"));
+            List<string> bonename = new List<string>();
+
+            for (int i = 0; i < hashCount; i++)
+            {
+                uint hash = (uint)f.readInt();
+                for (int j = 0; j < csv.ids.Count; j++)
+                    if (csv.ids[j] == hash)
+                    {
+                        Console.WriteLine(csv.names[j]);
+                        bonename.Add(csv.names[j]);
+                        break;
+                    }
+            }
+
+            f.seek(pos);
             Console.WriteLine("Count " + count);
 
             for (int i = 0; i < dataCount; i++)
@@ -88,35 +107,17 @@ namespace Smash_Forge
                 int secLength = f.readInt();
                 int someCount = f.readInt(); // usually 2?
 
-                int size1 = f.readInt();
-                Console.Write(size1 + "\t");
-                for (int j = 0; j < (size1 / 4) - 1; j++)
-                    Console.Write(f.readShort() + " " + f.readShort() + "\t");
-                Console.WriteLine();
-
-                int size2 = f.readInt();
-                Console.Write(size2 + "\t");
-                for (int j = 0; j < (size2 / 4) - 1; j++)
-                    Console.Write(f.readShort() + " " + f.readShort() + "\t");
-                Console.WriteLine();
-
-                int size3 = f.readInt();
-                Console.Write(size3 + "\t");
-                for (int j = 0; j < (size3 / 4) - 1; j++)
-                    Console.Write(f.readShort() + " " + f.readShort() + "\t");
-                Console.WriteLine();
-
-                int size4 = f.readInt();
-                Console.Write(size4 + "\t");
-                for (int j = 0; j < (size4 / 4) - 1; j++)
-                    Console.Write(f.readShort() + " " + f.readShort() + "\t");
-                Console.WriteLine();
-
-                int size5 = f.readInt();
-                Console.Write(size5 + "\t");
-                for (int j = 0; j < (size5 / 4) - 1; j++)
-                    Console.Write(f.readShort() + " " + f.readShort() + "\t");
-                Console.WriteLine();
+                for(int sec = 0; sec < 5; sec++)
+                {
+                    int size = f.readInt();
+                    int id = f.readInt();
+                    Console.WriteLine(id + ":\t" + size.ToString("x"));
+                    for (int j = 0; j < ((size - 1) / 4) - 1; j++)
+                    {
+                        Console.Write("\t" + f.readShort() + " " + f.readShort() + "\t");
+                    }
+                    Console.WriteLine();
+                }
 
                 f.skip(8);
             }
@@ -126,10 +127,8 @@ namespace Smash_Forge
             int hashSize = f.readInt();
             int unk = f.readInt();
 
-            for (int i = 0; i < hashCount; i++)
-            {
-                Console.WriteLine(f.readInt().ToString("X"));
-            }
+
+            
         }
     }
 

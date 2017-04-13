@@ -1550,7 +1550,14 @@ namespace Smash_Forge
             public Dictionary<string, float[]> anims = new Dictionary<string, float[]>();
             public List<Mat_Texture> textures = new List<Mat_Texture>();
 
-            public uint flags;
+            public uint flags { get
+                {
+                    return RebuildFlags();
+                } set
+                {
+                    InterpretFlags(value);
+                } }
+            private uint flag;
             public int blendMode = 0;
             public int dstFactor = 0;
             public int srcFactor = 0;
@@ -1564,8 +1571,96 @@ namespace Smash_Forge
             public int unkownWater = 0;
             public int zBufferOffset = 0;
 
+            //flags
+            public bool glow = false;
+            public bool hasShadow = false;
+            public bool useRimLight = false;
+            public bool UseRimLight
+            {
+                get
+                {
+                    return useRimLight;
+                }
+                set
+                {
+                    useRimLight = value;
+                    TestTextures();
+                }
+            }
+            public bool useSpecular = false;
+            public bool UseSpecular
+            {
+                get
+                {
+                    return useSpecular;
+                }
+                set
+                {
+                    useSpecular = value;
+                    TestTextures();
+                }
+            }
+
+            public bool diffuse = false;
+            public bool normalmap = false;
+            public bool diffuse2 = false;
+            public bool aomap = false;
+            public bool stagemap = false;
+            public bool cubemap = false;
+            public bool ramp = false;
+            public bool highlight = false;
+
             public Material()
             {
+            }
+
+            public uint RebuildFlags()
+            {
+                int t = 0;
+                if (glow) t |= 0x80;
+                if (hasShadow) t |= 0x40;
+                if (useRimLight) t |= 0x20;
+                if (useSpecular) t |= 0x10;
+
+                if (diffuse) t |= 0x01;
+                if (highlight) t |= 0x01;
+                if (normalmap) t |= 0x02;
+                if (cubemap) t |= 0x04;
+                if (diffuse2) t |= 0x04;
+                if (ramp) t |= 0x04;
+                if (aomap) t |= 0x08;
+                if (stagemap) t |= 0x08;
+                flag = (uint)(((int)flag & 0xFFFFFF00) | t);
+
+                return flag;
+            }
+
+            public void InterpretFlags(uint flags)
+            {
+                // set depending on flags
+                this.flag = flags;
+                int flag = ((int)flags) & 0xFF;
+                glow = (flag & 0x80) > 0;
+                hasShadow = (flag & 0x40) > 0;
+                useRimLight = (flag & 0x20) > 0;
+                useSpecular = (flag & 0x10) > 0;
+                TestTextures();
+            }
+
+            public void TestTextures()
+            {
+                // texture flags
+                aomap = (flag & 0x08) > 0 && !useRimLight;
+                stagemap = (flag & 0x08) > 0 && useRimLight;
+
+                cubemap = (flag & 0x04) > 0 && !useRimLight;
+                ramp = (flag & 0x04) > 0 && !useSpecular && useRimLight;
+
+                diffuse2 = (flag & 0x02) == 0 && useRimLight;
+                normalmap = (flag & 0x02) > 0;
+
+                diffuse = (flag & 0x01) > 0 && !useSpecular;
+                highlight = (flag & 0x01) > 0 && useSpecular;
             }
         }
 

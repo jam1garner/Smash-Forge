@@ -536,13 +536,11 @@ vec3 CalculateFresnel(vec3 norm){
 	f.y -= 0.2;
 	vec3 lightDir = normalize(f * mat3(eyeview));  // vec3(0,-0.3,-0.7)
 	vec3 F0 = vec3(0); //fresnelParams.w 
-	//F0 = mix(F0, vec3(0), 0);
-	//F0 = vec3(0.0,0.0,0.0);
 	float cosTheta = dot(lightDir, normal);
 	vec3 fresnel = F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); // 5.0
 
 	float fdiv = min(1.0 + fresnelParams.x / 5.0, 1.0);
-	return max(fresnel.xyz*fresnelColor.rgb / fdiv, vec3(0.0, 0.0, 0.0)); 
+	return max(fresnel.xyz*fresnelColor.aaa*fresnelColor.rgb / fdiv, vec3(0.0, 0.0, 0.0)); 
 }
 
 vec3 CalculateReflection(vec3 norm){
