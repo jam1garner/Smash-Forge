@@ -422,16 +422,28 @@ in vec3 bit;
 in vec3 fragpos;
 
 // Textures 
-uniform sampler2D tex;
+uniform sampler2D dif;
+uniform sampler2D dif2;
+uniform sampler2D ramp;
 uniform sampler2D nrm;
-uniform sampler2D rim;
 uniform sampler2D cube;
+uniform sampler2D ao;
+
+uniform int hasDif;
+uniform int hasDif2;
+uniform int hasStage;
+uniform int hasCube;
+uniform int hasOo;
+uniform int hasNrm;
+uniform int hasRamp;
+uniform int hasRim;
 
 // other textures
 uniform samplerCube cmap;
 
 // Da Flags
 uniform uint flags;
+uniform int isTransparent;
 
 // Properties
 uniform vec4 colorSamplerUV;
@@ -488,19 +500,17 @@ vec3 lerp(float v, vec3 from, vec3 to)
 vec3 CalcBumpedNormal()
 {
     // if no normal map, then return just the normal
-    if((flags & NormalMap) > 0u && useNormalMap == 1) {} else
-	{
-		return normal;
-	}
+    if(hasNrm == 0 || useNormalMap == 0)
+	return normal;
 
     vec3 Normal = normalize(normal);
 
-    vec3 Tangent = normalize(texture2D(nrm, texcoord).xyz);
-    Tangent = normalize(Tangent - dot(Tangent, Normal) * Normal);
-    vec3 Bitangent = cross(Tangent, Normal);
+    //vec3 Tangent = normalize(texture2D(nrm, texcoord).xyz);
+    //Tangent = normalize(Tangent - dot(Tangent, Normal) * Normal);
+    //vec3 Bitangent = cross(Tangent, Normal);
 
-    Tangent = tan;
-    Bitangent = bit;
+    vec3 Tangent = tan;
+    vec3 Bitangent = bit;
     vec3 BumpMapNormal = texture2D(nrm, texcoord).xyz;
     BumpMapNormal = 2.0 * BumpMapNormal - vec3(1.0, 1.0, 1.0);
     vec3 NewNormal;
@@ -514,16 +524,20 @@ vec4 CalculateDiffuse(vec3 norm)
 {
 	// diffuse
 	vec3 difDir = normalize(-fragpos * mat3(eyeview));  
-	float diff = clamp(pow(dot(norm, difDir), 0.2f), 0.5, 2.0);
-	vec3 diffuse = vec3(diff) * diffuseColor.www * diffuseColor.xyz;
+	float diff = clamp(pow(dot(norm, difDir), 0.15f), 0.5, 2.0);
+	vec3 diffuse = vec3(diff);
+
+	if(hasRamp){
+		diffuse = texture2D(ramp, vec2(clamp(1-diff, 0.1, 0.9), 0.5f)).rgb;
+	}
+
+	//diffuse *= diffuseColor.www * diffuseColor.xyz;
 	//diffuse = diffuseColor.rgb * (1 / (1.0 + (0.25 * difDir * difDir)));
 	if(diffuse == vec3(0,0,0)) diffuse = vec3(1);
 
 	vec3 fin = vec3(0);
 	if(renderDiffuse == 1)
 		fin += diffuse;
-
-    	//fin.rgb = pow(fin.rgb, vec3(1.0/gamma));
 
 	return vec4(fin.xyz, fresnelColor.a);
 }
@@ -573,7 +587,9 @@ vec3 CalculateSpecular(vec3 norm){
 	float specDrop = max(specularParams.y / 50.0, 0.1);
 	float spec = pow(max(dot(specDir, reflectDir), 0.0), 2.0 + specularParams.z) * specDrop;
 	float div = max(specularParams.x/10.0, 1.0);
-	vec3 specular = vec3(spec) * specularColor.www * (specularColor.xyz) / div;
+	vec3 specular = vec3(spec);
+	//if(hasRamp==1 && spec>0.05) specular = texture2D(ramp, vec2(spec*spec, 0.5f)).rgb;
+	specular *= (specularColor.xyz) * specularColor.www / div;
 
 	if((flags & UnknownTex) > 0u)
 	{
@@ -594,13 +610,13 @@ main()
 	// calcuate final color by mixing with vertex color
 	vec4 fincol = vec4(0);
 
-	if((flags & DiffuseMap) > 0u){
-		fincol = texture2D(tex, texcoord);
+	if(hasDif){
+		fincol = texture2D(dif, texcoord);
 
-		if((flags & NormalMap) == 0u && (flags & RIM) > 0u && (flags & CubeMap) > 0u){
-			fincol = texture2D(cube, texcoord);
+		if(hasDif2){
+			fincol = texture2D(dif2, texcoord);
 			//fincol = mix(fincol, texture2D(nrm, texcoord), texture2D(nrm, texcoord).a);
-			fincol = mix(fincol, texture2D(tex, texcoord), texture2D(tex, texcoord).a);
+			fincol = mix(fincol, texture2D(dif, texcoord), texture2D(dif, texcoord).a);
 			fincol.a = 1.0;
 		}
 	}
@@ -617,14 +633,14 @@ main()
         if(renderNormal == 1){
 		if(renderLighting == 1){
 			// ambient occlusion
-			vec4 dif = CalculateDiffuse(norm);
-			if(renderSpecular == 1) dif.xyz += CalculateSpecular(norm);
-			if(renderReflection == 1) dif.xyz += CalculateReflection(norm);
+			vec4 difc = CalculateDiffuse(norm);
+			if(renderSpecular == 1) difc.xyz += CalculateSpecular(norm);
+			if(renderReflection == 1) difc.xyz += CalculateReflection(norm);
 			vec4 ao = ((minGain + texture2D(nrm, texcoord).aaaa));
 			fincol *= ao;
-			fincol *= dif.rgba;
-			//if(flags & UnknownTex) a = dif.a;
-			if(renderFresnel == 1) fincol.xyz += CalculateFresnel(norm) * texture2D(tex, texcoord).rgb;
+			fincol *= difc.rgba;
+			//if(flags & UnknownTex) a = difc.a;
+			if(renderFresnel == 1) fincol.xyz += CalculateFresnel(norm) * texture2D(dif, texcoord).rgb;
 		}
     		else
     		{
@@ -639,17 +655,13 @@ main()
     fincol = fincol * (finalColorGain * finalColorGain.aaaa);
 
 	// correct alpha
-	fincol.a = a * color.a;
+	fincol.a = a;
+	if(isTransparent == 0) fincol.a *= color.a;
 	
 	// gamma correction
 	fincol.rgb = pow(fincol.rgb, vec3(1.0/gamma));
 
-	//vec3 norm = ((texture2D(nrm, texcoord).rgb+1)/2);
-	//fincol = vec4(texture2D(tex, texcoord).xyz, 1.0);
-	//fincol = vec4(CalculateFresnel(norm), 1.0);
-	//fincol = vec4(norm, 1.0);
-
-    gl_FragColor = fincol;
+    	gl_FragColor = fincol;
     }
 }";
         

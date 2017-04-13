@@ -217,14 +217,17 @@ namespace Smash_Forge
             if (mat.highlight) listView1.Items.Add("Specular");
             if (mat.highlight) listView1.Items.Add("ShineHighlight");
             if (mat.diffuse) listView1.Items.Add("Diffuse");
-            if (mat.diffuse2) listView1.Items.Add("Diffuse2");
             if (mat.stagemap) listView1.Items.Add("StageMap");
             if (mat.cubemap) listView1.Items.Add("Cubemap");
+            if (mat.diffuse2) listView1.Items.Add("Diffuse2");
             if (mat.aomap) listView1.Items.Add("AO Map");
             if (mat.normalmap) listView1.Items.Add("NormalMap");
             if (mat.ramp) listView1.Items.Add("Ramp");
 
             if (mat.useRimLight) listView1.Items.Add("Dummy Rim");
+
+            while (listView1.Items.Count > mat.textures.Count)
+                listView1.Items.RemoveAt(1);
 
             /*listView1.View = View.List;
 
@@ -396,6 +399,11 @@ namespace Smash_Forge
             if (listView1.SelectedItems.Count > 0)
             {
                 index = listView1.Items.IndexOf(listView1.SelectedItems[0]);
+            }
+            if(index >= material[current].textures.Count)
+            {
+                MessageBox.Show("Texture doesn't exist");
+                return;
             }
             NUD.Mat_Texture tex = material[current].textures[index];
             textBox10.Text = tex.hash.ToString("X");
@@ -758,6 +766,7 @@ namespace Smash_Forge
 
         private void RenderTexture()
         {
+            if (!tabControl1.SelectedTab.Text.Equals("Textures")) return;
             glControl1.MakeCurrent();
             GL.ClearColor(Color.Red);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -901,16 +910,14 @@ namespace Smash_Forge
         private void rimLightCB_CheckedChanged(object sender, EventArgs e)
         {
             material[current].UseRimLight = rimLightCB.Checked;
-            if(rimLightCB.Checked)
-                specLightCB.Checked = !rimLightCB.Checked;
+            //if(rimLightCB.Checked)specLightCB.Checked = !rimLightCB.Checked;
             FillForm();
         }
 
         private void specLightCB_CheckedChanged(object sender, EventArgs e)
         {
             material[current].UseSpecular = specLightCB.Checked;
-            if (specLightCB.Checked)
-                rimLightCB.Checked = !specLightCB.Checked;
+            //if (specLightCB.Checked)rimLightCB.Checked = !specLightCB.Checked;
             FillForm();
         }
 
@@ -924,6 +931,11 @@ namespace Smash_Forge
         {
             material[current].glow = GlowCB.Checked;
             FillForm();
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RenderTexture();
         }
     }
 }

@@ -125,9 +125,9 @@ namespace Smash_Forge
 
             {
 
-                GL.ActiveTexture(TextureUnit.Texture2);
+                GL.ActiveTexture(TextureUnit.Texture10);
                 GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex);
-                GL.Uniform1(shader.getAttribute("cmap"), 2);
+                GL.Uniform1(shader.getAttribute("cmap"), 10);
                 GL.UniformMatrix4(shader.getAttribute("eyeview"), false, ref view);
 
                 if (vbn != null)
@@ -191,19 +191,9 @@ namespace Smash_Forge
                         continue;
                     }
                     int hash = p.materials[0].textures[0].hash;
-                    NUT.NUD_Texture tex = null;
-                    foreach (NUT nut in Runtime.TextureContainers)
-                    {
-                        if(nut.getTextureByID(hash, out tex))
-                        {
-                            if (tex.getNutFormat() == 2)
-                                trans.Add(p);
-                            else
-                                opaque.Add(p);
-                            break;
-                        }
-                    }
-                    if (tex == null)
+                    if (p.isTransparent)
+                        trans.Add(p);
+                    else
                         opaque.Add(p);
                 }
             }
@@ -217,15 +207,21 @@ namespace Smash_Forge
             foreach (Polygon p in trans)
                 if(((Mesh)p.Parent).Checked)
                     DrawPolygon(p, shader);
-            
-            foreach (Polygon p in opaque)
-                if (((Mesh)p.Parent).Checked)
+
+            foreach (Mesh m in mesh)
+            {
+                for (int pol = m.polygons.Count - 1; pol >= 0; pol--)
                 {
-                    if (Runtime.renderModelSelection && (((Mesh)p.Parent).IsSelected || p.IsSelected))
+                    Polygon p = m.polygons[m.polygons.Count - 1 - pol];
+                    if (((Mesh)p.Parent).Checked)
                     {
-                        DrawPolygon(p, shader, true);
+                        if (Runtime.renderModelSelection && (((Mesh)p.Parent).IsSelected || p.IsSelected))
+                        {
+                            DrawPolygon(p, shader, true);
+                        }
                     }
                 }
+            }
         }
 
         private void DrawPolygon(Polygon p, Shader shader, bool drawSelection = false)
@@ -237,86 +233,65 @@ namespace Smash_Forge
             {
                 Material mat = p.materials[0];
                 GL.Uniform1(shader.getAttribute("flags"), mat.flags);
+                GL.Uniform1(shader.getAttribute("isTransparent"), p.isTransparent ? 1 : 0);
+
+                GL.Uniform1(shader.getAttribute("hasDif"), mat.diffuse ? 1 : 0);
+                GL.Uniform1(shader.getAttribute("hasDif2"), mat.diffuse2 ? 1 : 0);
+                GL.Uniform1(shader.getAttribute("hasStage"), mat.stagemap ? 1 : 0);
+                GL.Uniform1(shader.getAttribute("hasCube"), mat.cubemap ? 1 : 0);
+                GL.Uniform1(shader.getAttribute("hasAo"), mat.aomap ? 1 : 0);
+                GL.Uniform1(shader.getAttribute("hasNrm"), mat.normalmap ? 1 : 0);
+                GL.Uniform1(shader.getAttribute("hasRamp"), mat.ramp ? 1 : 0);
+                GL.Uniform1(shader.getAttribute("hasRim"), 0);
 
                 GL.ActiveTexture(TextureUnit.Texture0);
-                GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
-                GL.Uniform1(shader.getAttribute("tex"), 0);
+                GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
 
-                GL.ActiveTexture(TextureUnit.Texture0 + 1);
-                GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
-                GL.Uniform1(shader.getAttribute("nrm"), 1);
+                GL.Uniform1(shader.getAttribute("dif"), 0);
+                GL.Uniform1(shader.getAttribute("dif2"), 0);
+                GL.Uniform1(shader.getAttribute("nrm"), 0);
+                GL.Uniform1(shader.getAttribute("cube"), 0);
+                GL.Uniform1(shader.getAttribute("ao"), 0);
+                GL.Uniform1(shader.getAttribute("ramp"), 0);
 
-                GL.ActiveTexture(TextureUnit.Texture0 + 2);
-                GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
-                GL.Uniform1(shader.getAttribute("rim"), 2);
-
-                GL.ActiveTexture(TextureUnit.Texture0 + 3);
-                GL.BindTexture(TextureTarget.Texture2D, VBNViewport.defaulttex);
-                GL.Uniform1(shader.getAttribute("cube"), 3);
-
-                int[] locs = new int[4] { 3, 3, 3, 3 };
-                int li = 0;
-                if ((mat.flags & (uint)TextureFlags.DiffuseMap) > 0)
-                    locs[li++] = 0;
-
-                if ((mat.flags & (uint)TextureFlags.RIM) > 0)
+                int texid = 0;
+                if (mat.highlight) GL.Uniform1(shader.getAttribute("dif"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                if (mat.diffuse && texid < mat.textures.Count)
                 {
-                    // as a stage map...
-                    if ((mat.flags & (uint)TextureFlags.AOMap) > 0)
-                        locs[li++] = 2;
+                    int hash = mat.textures[texid].hash;
+                    if (mat.displayTexId != -1) hash = mat.displayTexId;
+                    GL.Uniform1(shader.getAttribute("dif"), BindTexture(mat.textures[texid], hash, texid));
+                    texid++;
                 }
-                else
-                    if ((mat.flags & (uint)TextureFlags.CubeMap) > 0)
-                    locs[li++] = 3;
-
-                // TODO: This is a specular shine map thing, I'm putting it as rim for now
-                if ((mat.flags & (uint)NUD.TextureFlags.UnknownTex) > 0)
-                    locs[li++] = 2;
-
-                if ((mat.flags & (uint)TextureFlags.NormalMap) > 0)
-                    locs[li++] = 1;
-                else if ((mat.flags & (uint)TextureFlags.RIM) > 0)
+                if (mat.stagemap && texid < mat.textures.Count)
                 {
-                    locs[li++] = 1; // second diffuse
+                    GL.Uniform1(shader.getAttribute("ao"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
                 }
-
-                if ((mat.flags & (uint)TextureFlags.RIM) > 0)
+                if (mat.cubemap && texid < mat.textures.Count)
                 {
-                    // as rim lighting
-                    if ((mat.flags & (uint)TextureFlags.CubeMap) > 0)
-                        locs[li++] = 3;
+                    GL.Uniform1(shader.getAttribute("cube"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
                 }
-                else
-                    if ((mat.flags & (uint)TextureFlags.AOMap) > 0)
-                    locs[li++] = 2;
-
-                int texid;
-                bool success;
-                for (int i = 0; i < mat.textures.Count; i++)
+                if (mat.diffuse2 && texid < mat.textures.Count)
                 {
-                    if (i > locs.Length) break;
-
-                    int hash = mat.textures[i].hash;
-                    if (mat.displayTexId != -1 && locs[i] == 0)
-                        hash = mat.displayTexId;
-
-                    foreach (NUT nut in Runtime.TextureContainers)
-                    {
-                        success = nut.draw.TryGetValue(hash, out texid);
-                        
-                        if (success)
-                        {
-                            GL.ActiveTexture(TextureUnit.Texture0 + locs[i]);
-                            GL.BindTexture(TextureTarget.Texture2D, texid);
-                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mat.textures[i].WrapMode1]);
-                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mat.textures[i].WrapMode2]);
-                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)wrapmode[mat.textures[i].minFilter]);
-                            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)wrapmode[mat.textures[i].magFilter]);
-                            //GL.BindTexture(TextureTarget.Texture2D, 0);
-                            break;
-                        }
-                    }
+                    GL.Uniform1(shader.getAttribute("dif2"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
                 }
+                if (mat.aomap && texid < mat.textures.Count)
+                {
+                    GL.Uniform1(shader.getAttribute("ao"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                }
+                if (mat.normalmap && texid < mat.textures.Count)
+                {
+                    GL.Uniform1(shader.getAttribute("nrm"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                }
+                if (mat.ramp && texid < mat.textures.Count)
+                {
+                    GL.Uniform1(shader.getAttribute("ramp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                }
+                /*if (mat.rim)
+                {
+                    GL.Uniform1(shader.getAttribute("dif2"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                }*/
+
 
                 {
                     float[] ao;
@@ -489,7 +464,7 @@ namespace Smash_Forge
                         GL.StencilFunc(StencilFunction.Notequal, 1, 0xFF);
                         GL.StencilMask(0x00);
 
-                        GL.Uniform1(shader.getAttribute("renderType"), 2);
+                        GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.RenderTypes.VertColor);
                         GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
                         GL.LineWidth(2);
                         GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
@@ -497,6 +472,8 @@ namespace Smash_Forge
                         GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
 
                         GL.StencilMask(0xFF);
+                        GL.Clear(ClearBufferMask.StencilBufferBit);
+                        GL.Enable(EnableCap.StencilTest);
                         GL.Enable(EnableCap.DepthTest);
                     }
                     else
@@ -526,7 +503,7 @@ namespace Smash_Forge
                     { 0x07, BlendingFactorDest.DstAlpha}
                 };
 
-        Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
+        static Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
                     { 0x01, BlendingFactorSrc.SrcAlpha},
                     { 0x02, BlendingFactorSrc.SrcAlpha},
                     { 0x03, BlendingFactorSrc.DstAlpha},
@@ -534,11 +511,37 @@ namespace Smash_Forge
                     { 0x0a, BlendingFactorSrc.Zero}
                 };
 
-        Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>(){
+        static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>(){
                     { 0x01, TextureWrapMode.Repeat},
                     { 0x02, TextureWrapMode.MirroredRepeat},
                     { 0x03, TextureWrapMode.Clamp}
         };
+
+        public static int BindTexture(NUD.Mat_Texture tex, int hash, int loc)
+        {
+            GL.ActiveTexture(TextureUnit.Texture3 + loc);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
+
+            int texid;
+            bool success;
+            foreach (NUT nut in Runtime.TextureContainers)
+            {
+                success = nut.draw.TryGetValue(hash, out texid);
+
+                if (success)
+                {
+                    GL.BindTexture(TextureTarget.Texture2D, texid);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[tex.WrapMode1]);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[tex.WrapMode2]);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)wrapmode[tex.minFilter]);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)wrapmode[tex.magFilter]);
+                    break;
+                }
+            }
+
+            return 3 + loc;
+        }
+
         #endregion
 
         #region MTA
@@ -1626,7 +1629,7 @@ namespace Smash_Forge
                 if (highlight) t |= 0x01;
                 if (normalmap) t |= 0x02;
                 if (cubemap) t |= 0x04;
-                if (diffuse2) t |= 0x04;
+                //if (diffuse2) t |= 0x04;
                 if (ramp) t |= 0x04;
                 if (aomap) t |= 0x08;
                 if (stagemap) t |= 0x08;
@@ -1653,14 +1656,14 @@ namespace Smash_Forge
                 aomap = (flag & 0x08) > 0 && !useRimLight;
                 stagemap = (flag & 0x08) > 0 && useRimLight;
 
-                cubemap = (flag & 0x04) > 0 && !useRimLight;
-                ramp = (flag & 0x04) > 0 && !useSpecular && useRimLight;
+                cubemap = (flag & 0x04) > 0 && (!useRimLight || (useRimLight && useSpecular));// && !useRimLight;
+                ramp = (flag & 0x04) > 0 && useRimLight; //&& !useSpecular 
 
-                diffuse2 = (flag & 0x02) == 0 && useRimLight;
+                diffuse2 = (flag & 0x04) > 0 && (flag & 0x02) == 0 && useRimLight;
                 normalmap = (flag & 0x02) > 0;
 
-                diffuse = (flag & 0x01) > 0 && !useSpecular;
-                highlight = (flag & 0x01) > 0 && useSpecular;
+                diffuse = (flag & 0x01) > 0;
+                //highlight = (flag & 0x01) > 0 && useSpecular;
             }
         }
 
@@ -1737,7 +1740,7 @@ namespace Smash_Forge
                     isTransparent = false;
                     if (v.col.Z < 0x7F)
                         isTransparent = true;
-                    if (materials[0].srcFactor > 1)
+                    if (materials[0].srcFactor > 0 || materials[0].dstFactor > 0)
                         isTransparent = true;
 
                     vert.Add(nv);
