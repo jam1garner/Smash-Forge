@@ -263,7 +263,7 @@ namespace Smash_Forge
             {
                 string filename = "";
                 SaveFileDialog save = new SaveFileDialog();
-                save.Filter = "Supported Filetypes (VBN,LVD)|*.vbn;*.lvd;*.dae|Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
+                save.Filter = "Supported Filetypes (VBN,LVD)|*.vbn;*.lvd;*.dae;*.nud;|Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
                 DialogResult result = save.ShowDialog();
 
                 if (result == DialogResult.OK)
@@ -1087,6 +1087,14 @@ namespace Smash_Forge
                     Collada.Save(filename, Runtime.ModelContainers[0]);
                 }
             }
+            
+            if (filename.EndsWith(".nud"))
+                if (Runtime.ModelContainers[0].dat_melee != null)
+                {
+                    ModelContainer m = Runtime.ModelContainers[0].dat_melee.wrapToNUD();
+                    m.nud.Save(filename);
+                    m.vbn.Save(filename.Replace(".nud", ".vbn"));
+                }
         }
 
         ///<summary>
