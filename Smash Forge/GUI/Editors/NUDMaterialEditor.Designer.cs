@@ -705,6 +705,7 @@
             this.glControl1.TabIndex = 23;
             this.glControl1.VSync = false;
             this.glControl1.Click += new System.EventHandler(this.glControl1_Click);
+            this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
             // 
             // colorSelect
             // 
@@ -878,6 +879,7 @@
             this.Text = "NUDMaterialEditor";
             this.Load += new System.EventHandler(this.NUDMaterialEditor_Load);
             this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.NUDMaterialEditor_Scroll);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.NUDMaterialEditor_Paint);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);

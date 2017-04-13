@@ -78,15 +78,15 @@ namespace Smash_Forge
             openFiles();
 
             // load up the shaders
-            Shader nud = new Shader();
-            nud.vertexShader(VBNViewport.vs);
-            nud.fragmentShader(VBNViewport.fs);
-            Runtime.shaders.Add("NUD", nud);
-
             Shader cub = new Shader();
             cub.vertexShader(RenderTools.cubevs);
             cub.fragmentShader(RenderTools.cubefs);
             Runtime.shaders.Add("SkyBox", cub);
+
+            Shader nud = new Shader();
+            nud.vertexShader(VBNViewport.vs);
+            nud.fragmentShader(VBNViewport.fs);
+            Runtime.shaders.Add("NUD", nud);
 
             RenderTools.Setup();
         }

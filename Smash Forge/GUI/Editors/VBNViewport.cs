@@ -527,7 +527,7 @@ vec4 CalculateDiffuse(vec3 norm)
 	float diff = clamp(pow(dot(norm, difDir), 0.15f), 0.5, 2.0);
 	vec3 diffuse = vec3(diff);
 
-	if(hasRamp){
+	if(hasRamp == 1){
 		diffuse = texture2D(ramp, vec2(clamp(1-diff, 0.1, 0.9), 0.5f)).rgb;
 	}
 

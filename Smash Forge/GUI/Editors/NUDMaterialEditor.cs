@@ -768,6 +768,7 @@ namespace Smash_Forge
         {
             if (!tabControl1.SelectedTab.Text.Equals("Textures")) return;
             glControl1.MakeCurrent();
+            GL.Viewport(glControl1.ClientRectangle);
             GL.ClearColor(Color.Red);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
@@ -935,6 +936,16 @@ namespace Smash_Forge
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            RenderTexture();
+        }
+
+        private void NUDMaterialEditor_Paint(object sender, PaintEventArgs e)
+        {
+        }
+
+        private void glControl1_Paint(object sender, PaintEventArgs e)
+        {
+
             RenderTexture();
         }
     }
