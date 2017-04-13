@@ -610,10 +610,10 @@ main()
 	// calcuate final color by mixing with vertex color
 	vec4 fincol = vec4(0);
 
-	if(hasDif){
+	if(hasDif == 1){
 		fincol = texture2D(dif, texcoord);
 
-		if(hasDif2){
+		if(hasDif2 == 1){
 			fincol = texture2D(dif2, texcoord);
 			//fincol = mix(fincol, texture2D(nrm, texcoord), texture2D(nrm, texcoord).a);
 			fincol = mix(fincol, texture2D(dif, texcoord), texture2D(dif, texcoord).a);
