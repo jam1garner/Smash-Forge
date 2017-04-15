@@ -638,6 +638,15 @@ namespace Smash_Forge
                 d.format[i] = 0;
                 d.scale[i] = 1f;
             }
+            d.format[3] = 1;
+            d.format[0] = 3;
+            d.scale[0] = 0.000628672249f;
+            d.format[1] = 2;
+            d.scale[1] = 0.007874f;
+            d.format[2] = 3;
+            d.scale[2] = 0.000089f;
+            d.format[4] = 1;
+            d.scale[4] = 0.01f;
             descript.Add(d);
         }
 
