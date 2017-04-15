@@ -41,24 +41,19 @@ namespace Smash_Forge
                 };//{ 0x101f, "Invisible"}
 
         public static Dictionary<int, string> cullmode = new Dictionary<int, string>(){
-                    { 0x00, "Cull None"},
-                    { 0x04, "Cull Inside"}
-                };
-
-        public static Dictionary<int, string> afunc = new Dictionary<int, string>(){
-                    { 0x0000, "Nothing"},
-                    { 0x0204, "GreaterOrEqual + 128"}
+                    { 0x0000, "Cull None"},
+                    { 0x0405, "Cull Inside"}
                 };
 
         public static Dictionary<int, string> ref1 = new Dictionary<int, string>(){
                     { 0x00, "Nothing"},
-                    { 0x04, "LessOrEqual + 128"},
-                    { 0x06, "LessOrEqual + 255"}
+                    { 0x02, "LessOrEqual + 255"},
                 };
 
         public static Dictionary<int, string> ref0 = new Dictionary<int, string>(){
                     { 0x00, "Nothing"},
-                    { 0x02, "GreaterOrEqual + 128"}
+                    { 0x04, "GreaterOrEqual + 128"},
+                    { 0x06, "GreaterOrEqual + 255"}
                 };
 
         public static Dictionary<int, string> mapmode = new Dictionary<int, string>(){
@@ -142,7 +137,6 @@ namespace Smash_Forge
             aTimer.Elapsed += OnTimedEvent;
             aTimer.AutoReset = true;
             aTimer.Enabled = true;*/
-            RenderTexture();
         }
 
 
@@ -172,8 +166,10 @@ namespace Smash_Forge
                     comboBox3.Items.Add(dstFactor[i]);
                 foreach (int i in cullmode.Keys)
                     comboBox6.Items.Add(cullmode[i]);
-                foreach (int i in afunc.Keys)
-                    comboBox4.Items.Add(afunc[i]);
+                foreach (int i in ref1.Keys)
+                    ref1CB.Items.Add(ref1[i]);
+                foreach (int i in ref0.Keys)
+                    ref0CB.Items.Add(ref0[i]);
 
                 foreach (int i in wrapmode.Keys)
                 {
@@ -196,9 +192,10 @@ namespace Smash_Forge
             NUD.Material mat = material[current];
 
             textBox1.Text = mat.flags.ToString("X") + "";
-            textBox3.Text = mat.dstFactor + "";
-            textBox4.Text = mat.srcFactor + "";
-            //textBox5.Text = mat.alphaFunc + "";
+            textBox3.Text = mat.srcFactor + "";
+            textBox4.Text = mat.dstFactor + "";
+            ref1CB.SelectedItem = ref1[mat.ref1];
+            ref0CB.SelectedItem = ref0[mat.ref0];
             textBox6.Text = mat.drawPriority + "";
             textBox7.Text = mat.cullMode + "";
             textBox8.Text = mat.zBufferOffset + "";
@@ -228,61 +225,6 @@ namespace Smash_Forge
 
             while (listView1.Items.Count > mat.textures.Count)
                 listView1.Items.RemoveAt(1);
-
-            /*listView1.View = View.List;
-
-            int[] locs = new int[mat.textures.Count + 4];
-            int li = 0;
-            if ((mat.flags & (uint)NUD.TextureFlags.DiffuseMap) > 0)
-                locs[li++] = 0;
-
-            if ((mat.flags & (uint)NUD.TextureFlags.RIM) > 0)
-            {
-                // as a stage map...
-                if ((mat.flags & (uint)NUD.TextureFlags.AOMap) > 0)
-                    locs[li++] = 2;
-            }
-            else
-            {
-                if ((mat.flags & (uint)NUD.TextureFlags.CubeMap) > 0)
-                    locs[li++] = 3;
-            }
-
-            if ((mat.flags & (uint)NUD.TextureFlags.UnknownTex) > 0)
-                locs[li++] = 5;
-
-            if ((mat.flags & (uint)NUD.TextureFlags.NormalMap) > 0)
-                locs[li++] = 1;
-            else if ((mat.flags & (uint)NUD.TextureFlags.RIM) > 0)
-            {
-                locs[li++] = 0; // second diffuse
-            }
-
-            if ((mat.flags & (uint)NUD.TextureFlags.RIM) > 0)
-            {
-                // as a rim lighting
-                if ((mat.flags & (uint)NUD.TextureFlags.CubeMap) > 0)
-                    locs[li++] = 3;
-            }
-            else
-            {
-                if ((mat.flags & (uint)NUD.TextureFlags.AOMap) > 0)
-                    locs[li++] = 2;
-            }
-            if ((mat.flags & (uint)NUD.TextureFlags.Shadow) > 0)
-                locs[li++] = 4;
-
-            string[] texnames = new string[] { "Diffuse Map", "Normal Map", 
-                ((mat.flags & (uint)NUD.TextureFlags.RIM) > 0) ? "Stage Map" : "Cube Map",
-                ((mat.flags & (uint)NUD.TextureFlags.RIM) > 0) ? "Rim Map" : "AO Map",
-                "Dummy Rim",
-                "Specular Map"};
-
-            for (int i = 0; i < mat.textures.Count; i++)
-            {
-                listView1.Items.Add(texnames[locs[i]]);
-            }
-            listView1.SelectedIndices.Add(0);*/
 
             listView2.Items.Clear();
             listView2.View = View.List;
@@ -370,8 +312,8 @@ namespace Smash_Forge
         #region alpha function
         private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (int i in afunc.Keys)
-                if (afunc[i].Equals(comboBox4.SelectedItem))
+            foreach (int i in ref1.Keys)
+                if (ref1[i].Equals(ref1CB.SelectedItem))
                 {
                     textBox5.Text = i + "";
                     break;
@@ -380,8 +322,30 @@ namespace Smash_Forge
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
+            int.TryParse(textBox5.Text, out material[current].ref1);
             //setValue(textBox5, comboBox4, afunc, out material[current].alphaFunc);
         }
+        
+        private void ref0CB_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+            foreach (int i in ref0.Keys)
+                if (ref0[i].Equals(ref0CB.SelectedItem))
+                {
+                    Console.WriteLine(ref0[i] + " " + i);
+                    textBox2.Text = i + "";
+                    material[current].ref0 = i;
+                    break;
+                }
+        }
+        
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            int.TryParse(textBox2.Text, out material[current].ref0);
+        }
+
+
+
         #endregion
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -779,6 +743,7 @@ namespace Smash_Forge
 
             GL.Enable(EnableCap.Texture2D);
 
+            NUT.NUD_Texture tex = null;
             int rt = 0;
             if (material[current].entries.ContainsKey("NU_materialHash") && listView1.SelectedIndices.Count > 0)
             {
@@ -787,20 +752,37 @@ namespace Smash_Forge
                 foreach (NUT n in Runtime.TextureContainers)
                     if (n.draw.ContainsKey(hash))
                     {
+                        n.getTextureByID(hash, out tex);
                         rt = n.draw[hash];
                         break;
                     }
             }
+            float h = 1f, w = 1f;
+            if (tex != null)
+            {
+                float texureRatioW = tex.width / tex.height;
+                float widthPre = texureRatioW * glControl1.Height;
+                w = glControl1.Width / widthPre;
+                if (texureRatioW > glControl1.AspectRatio)
+                {
+                    w = 1f;
+                    float texureRatioH = tex.height / tex.width;
+                    float HeightPre = texureRatioH * glControl1.Width;
+                    h = glControl1.Height / HeightPre;
+                }
+            }
 
             GL.BindTexture(TextureTarget.Texture2D, rt);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
             GL.Begin(PrimitiveType.Quads);
-            GL.TexCoord2(1, 1);
+            GL.TexCoord2(w, h);
             GL.Vertex2(1, -1);
-            GL.TexCoord2(0, 1);
+            GL.TexCoord2(0, h);
             GL.Vertex2(-1, -1);
             GL.TexCoord2(0, 0);
             GL.Vertex2(-1, 1);
-            GL.TexCoord2(1, 0);
+            GL.TexCoord2(w, 0);
             GL.Vertex2(1, 1);
             GL.End();
 
@@ -948,5 +930,6 @@ namespace Smash_Forge
 
             RenderTexture();
         }
+
     }
 }

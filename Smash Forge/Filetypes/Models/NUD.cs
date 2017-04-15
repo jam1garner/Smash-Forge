@@ -391,23 +391,23 @@ namespace Smash_Forge
                 GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
                     dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
 
-                /*GL.Enable(EnableCap.AlphaTest);
+                GL.Enable(EnableCap.AlphaTest);
 
                 GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-                switch (mat.alphaFunc){
-                    case 0:
-                        GL.AlphaFunc(AlphaFunction.Gequal, 128 / 255f);
+                switch (mat.ref1){
+                    case 0x2:
+                        GL.AlphaFunc(AlphaFunction.Lequal, 255f / 255f);
                         break;
                 }
-                /*switch (mat.ref1)
+                switch (mat.ref0)
                 {
-                    case 4:
-                        GL.AlphaFunc(AlphaFunction.Lequal, 128 / 255f);
+                    case 0x4:
+                        GL.AlphaFunc(AlphaFunction.Gequal, 128f / 255f);
                         break;
-                    case 6:
-                        GL.AlphaFunc(AlphaFunction.Lequal, 255 / 255f);
+                    case 0x6:
+                        GL.AlphaFunc(AlphaFunction.Gequal, 255f / 255f);
                         break;
-                }*/
+                }
 
                 GL.Enable(EnableCap.CullFace);
                 GL.CullFace(CullFaceMode.Front);
@@ -416,10 +416,10 @@ namespace Smash_Forge
                     case 0:
                         GL.Disable(EnableCap.CullFace);
                         break;
-                    case 2:
+                    case 0x0205:
                         GL.CullFace(CullFaceMode.Front);
                         break;
-                    case 4:
+                    case 0x0405:
                         GL.CullFace(CullFaceMode.Back);
                         break;
                 }
@@ -794,8 +794,7 @@ namespace Smash_Forge
 
                 d.skip(1); // unknown
                 m.drawPriority = d.readByte();
-                m.cullMode = d.readByte();
-                m.unknown1 = d.readByte();
+                m.cullMode = d.readShort();
                 d.skip(4); // padding
                 m.unkownWater = d.readInt();
                 m.zBufferOffset = d.readInt();
@@ -1399,8 +1398,7 @@ namespace Smash_Forge
                 d.writeByte(mat.ref0);
                 d.writeByte(0); // unknown padding?
                 d.writeByte(mat.drawPriority);
-                d.writeByte(mat.cullMode);
-                d.writeByte(mat.unknown1);
+                d.writeShort(mat.cullMode);
                 d.writeInt(0); // padding
                 d.writeInt(mat.unkownWater); 
                 d.writeInt(mat.zBufferOffset); 
