@@ -446,7 +446,7 @@ namespace Smash_Forge
                 // writing node attributes
                 foreach (Bone b in vbn.getBoneTreeOrder())
                 {
-                    i = vbn.boneIndex(new string(b.boneName));
+                    i = vbn.boneIndex(b.Text);
 
                     if (i < anim.nodes.Count)
                     {
@@ -456,46 +456,46 @@ namespace Smash_Forge
 
                         int tracknum = 0;
                         if (tracks.Count == 0)
-                            file.WriteLine("anim " + new string(b.boneName) + " 0 0 0;");
+                            file.WriteLine("anim " + b.Text + " 0 0 0;");
                                
                         foreach (DAT_Animation.DATAnimTrack track in tracks)
                         {
                             switch (track.type)
                             {
                                 case DAT_Animation.AnimType.XPOS:
-                                    file.WriteLine("anim translate.translateX translateX " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    file.WriteLine("anim translate.translateX translateX " + b.Text + " 0 0 " + (tracknum++) + ";");
                                     WriteAnimKey(file, i, track, false);
                                     break;
                                 case DAT_Animation.AnimType.YPOS:
-                                    file.WriteLine("anim translate.translateY translateY " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    file.WriteLine("anim translate.translateY translateY " + b.Text + " 0 0 " + (tracknum++) + ";");
                                     WriteAnimKey(file, i, track, false);
                                     break;
                                 case DAT_Animation.AnimType.ZPOS:
-                                    file.WriteLine("anim translate.translateZ translateZ " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    file.WriteLine("anim translate.translateZ translateZ " + b.Text + " 0 0 " + (tracknum++) + ";");
                                     WriteAnimKey(file, i, track, false);
                                     break;
                                 case DAT_Animation.AnimType.XROT:
-                                    file.WriteLine("anim rotate.rotateX rotateX " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    file.WriteLine("anim rotate.rotateX rotateX " + b.Text + " 0 0 " + (tracknum++) + ";");
                                     WriteAnimKey(file, i, track, true);
                                     break;
                                 case DAT_Animation.AnimType.YROT:
-                                    file.WriteLine("anim rotate.rotateY rotateY " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    file.WriteLine("anim rotate.rotateY rotateY " + b.Text + " 0 0 " + (tracknum++) + ";");
                                     WriteAnimKey(file, i, track, true);
                                     break;
                                 case DAT_Animation.AnimType.ZROT:
-                                    file.WriteLine("anim rotate.rotateZ rotateZ " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    file.WriteLine("anim rotate.rotateZ rotateZ " + b.Text + " 0 0 " + (tracknum++) + ";");
                                     WriteAnimKey(file, i, track, true);
                                     break;
                                 case DAT_Animation.AnimType.XSCA:
-                                    file.WriteLine("anim scale.scaleX scaleX " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    file.WriteLine("anim scale.scaleX scaleX " + b.Text + " 0 0 " + (tracknum++) + ";");
                                     WriteAnimKey(file, i, track, false);
                                     break;
                                 case DAT_Animation.AnimType.YSCA:
-                                    file.WriteLine("anim scale.scaleY scaleY " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    file.WriteLine("anim scale.scaleY scaleY " + b.Text + " 0 0 " + (tracknum++) + ";");
                                     WriteAnimKey(file, i, track, false);
                                     break;
                                 case DAT_Animation.AnimType.ZSCA:
-                                    file.WriteLine("anim scale.scaleZ scaleZ " + new string(b.boneName) + " 0 0 " + (tracknum++) + ";");
+                                    file.WriteLine("anim scale.scaleZ scaleZ " + b.Text + " 0 0 " + (tracknum++) + ";");
                                     WriteAnimKey(file, i, track, false);
                                     break;
                             }
@@ -503,7 +503,7 @@ namespace Smash_Forge
                     }
                     else
                     {
-                        file.WriteLine("anim " + new string(b.boneName) + " 0 0 0;");
+                        file.WriteLine("anim " + b.Text + " 0 0 0;");
                     }
                 }
             }

@@ -249,7 +249,7 @@ namespace Smash_Forge
         {
             for (int i = 0; i < vbn.bones.Count; i++)
             {
-                if (new string(vbn.bones[i].boneName).Equals(n))
+                if (vbn.bones[i].Text.Equals(n))
                 {
                     return i;
                 }

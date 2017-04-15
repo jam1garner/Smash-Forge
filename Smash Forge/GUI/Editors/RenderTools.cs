@@ -299,11 +299,88 @@ namespace Smash_Forge
         }
 
         #endregion
+
         
+        public static void drawCircle(Vector3 pos, float r, int smooth)
+        {
+            float t = 2 * (float)Math.PI / smooth;
+            float tf = (float)Math.Tan(t);
+
+            float rf = (float)Math.Cos(t);
+
+            float x = r;
+            float y = 0;
+
+            GL.Begin(PrimitiveType.LineLoop);
+
+            for (int i = 0; i < smooth; i++)
+            {
+                GL.Vertex3(x + pos.X, y + pos.Y, pos.Z);
+                float tx = -y;
+                float ty = x;
+                x += tx * tf;
+                y += ty * tf;
+                x *= rf;
+                y *= rf;
+            }
+
+            GL.End();
+        }
+
+
+        public static bool intersectCircle(Vector3 pos, float r, int smooth, Vector3 vA, Vector3 vB)
+        {
+            float t = 2 * (float)Math.PI / smooth;
+            float tf = (float)Math.Tan(t);
+
+            float rf = (float)Math.Cos(t);
+
+            float x = r;
+            float y = 0;
+            
+
+            for (int i = 0; i < smooth; i++)
+            {
+                Vector3 c;
+                Vector3 p = new Vector3(x + pos.X, y +pos.Y, pos.Z);
+                if (CheckSphereHit(p, 0.3f, vA, vB, out c))
+                    return true;
+                float tx = -y;
+                float ty = x;
+                x += tx * tf;
+                y += ty * tf;
+                x *= rf;
+                y *= rf;
+            }
+
+            return false;
+        }
+
+        public static bool CheckSphereHit(Vector3 sphere, float rad, Vector3 vA, Vector3 vB, out Vector3 closest)
+        {
+            Vector3 dirToSphere = sphere - vA;
+            Vector3 vLineDir = (vB - vA).Normalized();
+            float fLineLength = 100;
+            /*(float)Math.Sqrt(Math.Pow(vA.X - vB.X, 2)
+                + Math.Pow(vA.Y - vB.Y, 2)
+                + Math.Pow(vA.Z - vB.Z, 2));*/
+            float t = Vector3.Dot(dirToSphere, vLineDir);
+
+            if (t <= 0.0f)
+                closest = vA;
+            else if (t >= fLineLength)
+                closest = vB;
+            else
+                closest = vA + vLineDir * t;
+
+            return (Math.Pow(sphere.X - closest.X, 2)
+                + Math.Pow(sphere.Y - closest.Y, 2)
+                + Math.Pow(sphere.Z - closest.Z, 2) <= rad * rad);
+        }
 
         #region FileRendering
-        
-        
+
+
         public static void DrawModel(ModelContainer m, Matrix4 v)
         {
             if (m.dat_melee != null)
@@ -343,17 +420,10 @@ namespace Smash_Forge
             {
                 foreach (Bone bone in vbn.bones)
                 {
-                    // first calcuate the point and draw a point
-                    if (bone == BoneTreePanel.selectedBone)
-                        GL.Color3(Color.Red);
-                    else
-                        GL.Color3(Color.GreenYellow);
-
-                    Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform);
-                    RenderTools.drawCube(pos_c, .085f);
+                    bone.Draw();
 
                     // if swing bones then draw swing radius
-                    if (vbn.swingBones.bones.Count > 0 && Runtime.renderSwag)
+                    /*if (vbn.swingBones.bones.Count > 0 && Runtime.renderSwag)
                     {
                         SB.SBEntry sb = null;
                         vbn.swingBones.TryGetEntry(bone.boneId, out sb);
@@ -386,21 +456,7 @@ namespace Smash_Forge
                                 GL.End();
                             }
                         }
-                    }
-
-                    // now draw line between parent 
-                    GL.Color3(Color.LightBlue);
-                    GL.LineWidth(2f);
-
-                    GL.Begin(PrimitiveType.Lines);
-                    if (bone.ParentBone != null)
-                    {
-                        Vector3 pos_p = Vector3.Transform(Vector3.Zero, bone.ParentBone.transform);
-                        GL.Vertex3(pos_c);
-                        GL.Color3(Color.Blue);
-                        GL.Vertex3(pos_p);
-                    }
-                    GL.End();
+                    }*/
                 }
             }
         }

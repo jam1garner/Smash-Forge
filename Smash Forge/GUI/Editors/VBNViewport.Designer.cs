@@ -248,8 +248,9 @@
             this.glControl1.Size = new System.Drawing.Size(624, 407);
             this.glControl1.TabIndex = 9;
             this.glControl1.VSync = false;
-            this.glControl1.DoubleClick += new System.EventHandler(this.glControl1_DoubleClick);
             this.glControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseClick);
+            this.glControl1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.glControl1_DoubleClick);
+            this.glControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseDown);
             this.glControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseMove);
             // 
             // VBNViewport

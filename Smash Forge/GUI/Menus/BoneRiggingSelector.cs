@@ -88,9 +88,9 @@ namespace Smash_Forge
                     foreach (Bone b in model.vbn.bones)
                     {
                         object[] objs = { model.vbn, b };
-                        TreeNode temp = new TreeNode(new string(b.boneName)) {Tag = objs};
+                        TreeNode temp = new TreeNode(b.Text) {Tag = objs};
                         treeView1.Nodes.Add(temp);
-                        if (str.data == b.boneName)
+                        if (str.data == b.Text.ToCharArray())
                             treeView1.SelectedNode = temp;
                     }
                 }

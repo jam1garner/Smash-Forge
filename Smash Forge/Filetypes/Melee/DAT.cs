@@ -343,7 +343,7 @@ main()
                 boneTrack.Add(j);
 
                 Bone b = new Bone(bones);
-                b.boneName = ("Bone_" + boneTrack.IndexOf(j).ToString()).ToCharArray();
+                b.Text = ("Bone_" + boneTrack.IndexOf(j).ToString());
                 if (node.Parent.Tag is JOBJ)
                     b.parentIndex = boneTrack.IndexOf((JOBJ)node.Parent.Tag);
                 else

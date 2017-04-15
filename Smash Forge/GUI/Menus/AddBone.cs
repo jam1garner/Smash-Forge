@@ -46,7 +46,7 @@ namespace Smash_Forge
 				return;
 
             Bone temp = new Bone(Runtime.TargetVBN);
-			temp.boneName = textBox1.Text.ToCharArray();
+			temp.Text = textBox1.Text;
 			if(!textBox2.Text.Equals(""))
             	temp.boneId = (uint)int.Parse(textBox2.Text, System.Globalization.NumberStyles.HexNumber);
 
@@ -56,8 +56,10 @@ namespace Smash_Forge
             if (Runtime.TargetVBN == null)
                 Runtime.TargetVBN = new VBN();
 
-            if (Runtime.TargetVBN.bones.Count > 0)
-                temp.ParentBone = parent;
+            parent.Nodes.Add(temp);
+            //if (Runtime.TargetVBN.bones.Count > 0)
+            //    temp.ParentBone = parent;
+
             temp.position = new float[] {0f,0f,0f};
             temp.rotation = new float[] { 0f,0f,0f};
             temp.scale = new float[] { 1f,1f,1f};

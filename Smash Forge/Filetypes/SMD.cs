@@ -47,7 +47,7 @@ namespace Smash_Forge
 
 				if (current.Equals ("nodes")) {
 					Bone b = new Bone (vbn);
-					b.boneName = args [1].Replace ("\"", "").ToCharArray();
+					b.Text = args [1].Replace ("\"", "");
 					b.parentIndex = int.Parse(args [2]);
 					//b.children = new System.Collections.Generic.List<int> ();
 					vbn.totalBoneCount++;
@@ -56,7 +56,7 @@ namespace Smash_Forge
 
 				if (current.Equals ("time")) {
 					KeyNode n = new KeyNode ();
-					n.id = v.boneIndex (new string(vbn.bones[int.Parse(args[0])].boneName));
+					n.id = v.boneIndex (vbn.bones[int.Parse(args[0])].Text);
 					if (n.id == -1) {
 						continue;
                     }

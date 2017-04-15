@@ -23,7 +23,7 @@ namespace Smash_Forge
         {
             LVDEditor.StringWrapper name = new LVDEditor.StringWrapper() { data = new char[0x40] };
             if (bone != null)
-                name.data = bone.boneName;
+                name.data = bone.Text.ToCharArray();
             BoneRiggingSelector brs = new BoneRiggingSelector(name);
             brs.CurrentBone = bone;
             brs.ShowDialog();
@@ -53,7 +53,7 @@ namespace Smash_Forge
             if (bone == null)
                 Text = "None";
             else
-                Text = charsToString(bone.boneName);
+                Text = bone.Text;
         }
 
         private Bone bone = null;
@@ -86,7 +86,7 @@ namespace Smash_Forge
                 return;
             }
             this.bone = bone;
-            Text = charsToString(bone.boneName);
+            Text = bone.Text;
             boneId = bone.boneId;
         }
     }

@@ -213,7 +213,7 @@ namespace Smash_Forge
 
 				// writing node attributes
 				foreach (Bone b in vbn.getBoneTreeOrder()) {
-					i = vbn.boneIndex (new string(b.boneName));
+					i = vbn.boneIndex (b.Text);
 						
 					if (nodes.Contains (i)) {
 						// write the bone attributes
@@ -221,40 +221,40 @@ namespace Smash_Forge
 						KeyNode n = a.getNode (0, i);
 						int ac = 0;
 						if (n.t_type != -1) {
-							file.WriteLine ("anim translate.translateX translateX " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
+							file.WriteLine ("anim translate.translateX translateX " + b.Text + " 0 0 " + (ac++) + ";");
 							writeKey(file, a, i, "translateX", n.t_type);
 							file.WriteLine ("}");
-							file.WriteLine ("anim translate.translateY translateY " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
+							file.WriteLine ("anim translate.translateY translateY " + b.Text + " 0 0 " + (ac++) + ";");
 							writeKey(file, a, i, "translateY", n.t_type);
 							file.WriteLine ("}");
-							file.WriteLine ("anim translate.translateZ translateZ " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
+							file.WriteLine ("anim translate.translateZ translateZ " + b.Text + " 0 0 " + (ac++) + ";");
 							writeKey(file, a, i, "translateZ", n.t_type);
 							file.WriteLine ("}");
 						}
 						if (n.r_type != -1) {
-							file.WriteLine ("anim rotate.rotateX rotateX " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
+							file.WriteLine ("anim rotate.rotateX rotateX " + b.Text + " 0 0 " + (ac++) + ";");
 							writeKey(file, a, i, "rotateX", n.r_type);
 							file.WriteLine ("}");
-							file.WriteLine ("anim rotate.rotateY rotateY " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
+							file.WriteLine ("anim rotate.rotateY rotateY " + b.Text + " 0 0 " + (ac++) + ";");
 							writeKey(file, a, i, "rotateY", n.r_type);
 							file.WriteLine ("}");
-							file.WriteLine ("anim rotate.rotateZ rotateZ " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
+							file.WriteLine ("anim rotate.rotateZ rotateZ " + b.Text + " 0 0 " + (ac++) + ";");
 							writeKey(file, a, i, "rotateZ", n.r_type);
 							file.WriteLine ("}");
 						}
 						if (n.s_type != -1) {
-							file.WriteLine ("anim scale.scaleX scaleX " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
+							file.WriteLine ("anim scale.scaleX scaleX " + b.Text + " 0 0 " + (ac++) + ";");
 							writeKey(file, a, i, "scaleX", n.s_type);
 							file.WriteLine ("}");
-							file.WriteLine ("anim scale.scaleY scaleY " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
+							file.WriteLine ("anim scale.scaleY scaleY " + b.Text + " 0 0 " + (ac++) + ";");
 							writeKey(file, a, i, "scaleY", n.s_type);
 							file.WriteLine ("}");
-							file.WriteLine ("anim scale.scaleZ scaleZ " + new string (b.boneName) + " 0 0 " + (ac++) + ";");
+							file.WriteLine ("anim scale.scaleZ scaleZ " + b.Text + " 0 0 " + (ac++) + ";");
 							writeKey(file, a, i, "scaleZ", n.s_type);
 							file.WriteLine ("}");
 						}
 					} else {
-						file.WriteLine ("anim " + new string (b.boneName) + " 0 0 0;");
+						file.WriteLine ("anim " + b.Text + " 0 0 0;");
 					}
 				}
 			}

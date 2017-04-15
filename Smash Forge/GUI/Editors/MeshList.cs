@@ -392,7 +392,7 @@ namespace Smash_Forge
             foreach (ModelContainer mc in Runtime.ModelContainers)
                 if (treeView1.SelectedNode.Parent.Tag == mc.nud)
                     if (mc.vbn.bones.Count > mesh.singlebind && mesh.singlebind != -1)
-                        str = new LVDEditor.StringWrapper() { data = mc.vbn.bones[mesh.singlebind].boneName };
+                        str = new LVDEditor.StringWrapper() { data = mc.vbn.bones[mesh.singlebind].Text.ToCharArray() };
 
             BoneRiggingSelector brs = new BoneRiggingSelector(str);
             brs.ShowDialog();

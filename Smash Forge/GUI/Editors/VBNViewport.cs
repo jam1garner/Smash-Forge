@@ -276,10 +276,21 @@ namespace Smash_Forge
             AnimationSpeed = (int)nupdFrameRate.Value;
         }
 
+        System.Drawing.Point _LastPoint = System.Drawing.Point.Empty;
         private void glControl1_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (!fpsView)
-                UpdateMousePosition();
+            if (!freezeCamera)
+                if (!fpsView)
+                    UpdateMousePosition();
+            if (_LastPoint != e.Location) // can add some slack by checking the distance
+            {
+                dbdistance = 0;
+            }
+            if(Runtime.TargetVBN != null && freezeCamera)
+            {
+                ((Bone)MainForm.Instance.boneTreePanel.treeView1.SelectedNode).rot += Quaternion.FromAxisAngle(Vector3.UnitX, 2);
+                Runtime.TargetVBN.update();
+            }
         }
 
         public event EventHandler FrameChanged;
@@ -652,11 +663,12 @@ main()
         	}
     	}
 
-    fincol = fincol * (finalColorGain * finalColorGain.aaaa);
+    fincol = fincol * (finalColorGain);
 
 	// correct alpha
 	fincol.a = a;
 	if(isTransparent == 0) fincol.a *= color.a;
+	if(isTransparent == 0) fincol.a *= finalColorGain.a;
 	
 	// gamma correction
 	fincol.rgb = pow(fincol.rgb, vec3(1.0/gamma));
@@ -744,7 +756,7 @@ main()
             // set up the viewport projection and send it to GPU
             GL.MatrixMode(MatrixMode.Projection);
 
-            if (IsMouseOverViewport() && glControl1.Focused)
+            if (IsMouseOverViewport() && glControl1.Focused && !freezeCamera)
             {
                 if (fpsView)
                     FPSCamera();
@@ -810,15 +822,11 @@ main()
             // drawing the bones
             DrawBones();
 
-            /*GL.LineWidth(5f);
-            GL.Begin(PrimitiveType.Lines);
-            GL.Color3(Color.White);
-            GL.Vertex3(p1);
-            GL.Color3(Color.Red);
-            GL.Vertex3(p2);
-            GL.Color3(sphereSelected ? Color.Orange : Color.Green);
-            GL.End();
-            RenderTools.drawSphere(new Vector3(2, 2, 2), 3, 30);*/
+            /*GL.LineWidth(3f);
+            GL.Color3(freezeCamera ? Color.Yellow : Color.White);
+            RenderTools.drawCircle(new Vector3(6, 6, 6), 5, 30);
+
+            Cursor.Current = freezeCamera ? Cursors.VSplit : Cursors.Default;*/
 
             // Clean up
             GL.PopAttrib();
@@ -1012,15 +1020,15 @@ main()
 
                 foreach (ModelContainer m in Runtime.ModelContainers)
                 {
-                    DrawVBN(m.vbn);
+                    RenderTools.DrawVBN(m.vbn);
                     if (m.bch != null)
                     {
-                        DrawVBN(m.bch.models[0].skeleton);
+                        RenderTools.DrawVBN(m.bch.models[0].skeleton);
                     }
 
                     if (m.dat_melee != null)
                     {
-                        DrawVBN(m.dat_melee.bones);
+                        RenderTools.DrawVBN(m.dat_melee.bones);
                     }
                 }
             }
@@ -1085,75 +1093,7 @@ main()
                 }
             }
         }
-
-        public void DrawVBN(VBN vbn)
-        {
-            if (vbn != null && Runtime.renderBones)
-            {
-                foreach (Bone bone in vbn.bones)
-                {
-                    // first calcuate the point and draw a point
-                    if(bone == BoneTreePanel.selectedBone)
-                        GL.Color3(Color.Red);
-                    else
-                        GL.Color3(Color.GreenYellow);
-
-                    Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform);
-                    RenderTools.drawCube(pos_c, .085f);
-
-                    // if swing bones then draw swing radius
-                    if(vbn.swingBones.bones.Count > 0 && Runtime.renderSwag)
-                    {
-                        SB.SBEntry sb = null;
-                        vbn.swingBones.TryGetEntry(bone.boneId, out sb);
-                        if (sb != null)
-                        {
-                            // draw
-                            if (bone.ParentBone != null)
-                            {
-                                int i = bone.parentIndex;
-                                float degtorad = (float)(Math.PI / 180);
-                                Vector3 pos_sb = Vector3.Transform(Vector3.Zero,
-                                    Matrix4.CreateTranslation(new Vector3(3, 3, 3))
-                                    * Matrix4.CreateScale(bone.sca)
-                                    * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(sb.rx1 * degtorad, sb.ry1 * degtorad, sb.rz1 * degtorad))
-                                    * Matrix4.CreateTranslation(bone.pos)
-                                    * vbn.bones[i].transform);
-
-                                Vector3 pos_sb2 = Vector3.Transform(Vector3.Zero,
-                                    Matrix4.CreateTranslation(new Vector3(3, 3, 3))
-                                    * Matrix4.CreateScale(bone.sca)
-                                    * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(sb.rx2 * degtorad, sb.ry2 * degtorad, sb.rz2 * degtorad))
-                                    * Matrix4.CreateTranslation(bone.pos)
-                                    * vbn.bones[i].transform);
-
-                                GL.Color3(Color.ForestGreen);
-                                GL.Begin(PrimitiveType.LineLoop);
-                                GL.Vertex3(pos_c);
-                                GL.Vertex3(pos_sb);
-                                GL.Vertex3(pos_sb2);
-                                GL.End();
-                            }
-                        }
-                    }
-
-                    // now draw line between parent 
-                    GL.Color3(Color.LightBlue);
-                    GL.LineWidth(2f);
-
-                    GL.Begin(PrimitiveType.Lines);
-                    if (bone.ParentBone != null)
-                    {
-                        Vector3 pos_p = Vector3.Transform(Vector3.Zero, bone.ParentBone.transform);
-                        GL.Vertex3(pos_c);
-                        GL.Color3(Color.Blue);
-                        GL.Vertex3(pos_p);
-                    }
-                    GL.End();
-                }
-            }
-        }
-
+        
         private static Color getLinkColor(DAT.COLL_DATA.Link link)
         {
             if ((link.flags & 1) != 0)
@@ -1346,7 +1286,7 @@ main()
                                     {
                                         foreach(Bone b in m.vbn.bones)
                                         {
-                                            if ((new string(b.boneName)).Equals(new string(c.unk4)))
+                                            if (b.Text.Equals(new string(c.unk4)))
                                             {
                                                 riggedBone = b;
                                             }
@@ -2181,10 +2121,11 @@ main()
             }
         }
 
-
+        System.Drawing.Point mouseDownPos = new System.Drawing.Point();
         Vector3 p1 = Vector3.Zero, p2 = Vector3.Zero;
-        bool sphereSelected = false;
-        private void glControl1_DoubleClick(object sender, EventArgs e)
+        public int dbdistance = 0;
+        bool freezeCamera = false;
+        private void glControl1_DoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             float mouse_x = this.PointToClient(Cursor.Position).X;
             float mouse_y = this.PointToClient(Cursor.Position).Y;
@@ -2194,92 +2135,84 @@ main()
             Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), v.Inverted());
             Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), v.Inverted());
 
-            Vector3 sphere = new Vector3(2, 2, 2);
-
             p1 = va.Xyz;
             p2 = p1 - (va - (va + vb)).Xyz * 100;
-            
-            sphereSelected = FindLineSphereIntersections(p1, p2, sphere, 3).Length > 0;
+
+            SortedList<double, Bone> selected = new SortedList<double, Bone>(new DuplicateKeyComparer<double>());
+
+            foreach (ModelContainer con in Runtime.ModelContainers)
+            {
+                if (con.vbn != null)
+                {
+                    foreach (Bone b in con.vbn.bones)
+                    {
+                        Vector3 closest = Vector3.Zero;
+                        Vector3 cen = b.transform.ExtractTranslation();
+                        if (!selected.Values.Contains(b) && RenderTools.CheckSphereHit(cen, .3f, p1, p2, out closest))
+                        {
+                            double dis = Math.Pow(closest.X - p1.X, 2) + Math.Pow(closest.Y - p1.Y, 2) + Math.Pow(closest.Z - p1.Z, 2);
+                            selected.Add(dis, b);
+                        }
+                    }
+                }
+            }
+
+            /*Console.WriteLine(dbdistance + " " + selected.Count);
+            foreach(var v in selected)
+            {
+                Console.WriteLine(new String(v.Value.boneName));
+            }*/
+
+            if (selected.Count > dbdistance)
+            {
+                if(Runtime.TargetVBN.bones.Contains(selected.Values.ElementAt(dbdistance)));
+                    MainForm.Instance.boneTreePanel.treeView1.SelectedNode = selected.Values.ElementAt(dbdistance);
+            }
+
+            dbdistance += 1;
+            if (dbdistance >= selected.Count) dbdistance = 0;
+            _LastPoint = e.Location;
         }
 
-        // taken from http://www.codeproject.com/Articles/19799/Simple-Ray-Tracing-in-C-Part-II-Triangles-Intersec
-        public static Vector3[] FindLineSphereIntersections(Vector3 linePoint0, Vector3 linePoint1, Vector3 circleCenter, double circleRadius)
+        private void glControl1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            double cx = circleCenter.X;
-            double cy = circleCenter.Y;
-            double cz = circleCenter.Z;
+            mouseDownPos = this.PointToClient(Cursor.Position);
+        }
 
-            double px = linePoint0.X;
-            double py = linePoint0.Y;
-            double pz = linePoint0.Z;
+        public class DuplicateKeyComparer<TKey> : IComparer<TKey> where TKey : IComparable
+        {
+            #region IComparer<TKey> Members
 
-            double vx = linePoint1.X - px;
-            double vy = linePoint1.Y - py;
-            double vz = linePoint1.Z - pz;
-
-            double A = vx * vx + vy * vy + vz * vz;
-            double B = 2.0 * (px * vx + py * vy + pz * vz - vx * cx - vy * cy - vz * cz);
-            double C = px * px - 2 * px * cx + cx * cx + py * py - 2 * py * cy + cy * cy +
-                       pz * pz - 2 * pz * cz + cz * cz - circleRadius * circleRadius;
-
-            // discriminant
-            double D = B * B - 4 * A * C;
-
-            if (D < 0)
+            public int Compare(TKey x, TKey y)
             {
-                return new Vector3[0];
+                int result = x.CompareTo(y);
+
+                if (result == 0)
+                    return 1;  
+                else
+                    return result;
             }
 
-            double t1 = (-B - Math.Sqrt(D)) / (2.0 * A);
-
-            Vector3 solution1 = new Vector3((float)(linePoint0.X * (1 - t1) + t1 * linePoint1.X),
-                                             (float)(linePoint0.Y * (1 - t1) + t1 * linePoint1.Y),
-                                             (float)(linePoint0.Z * (1 - t1) + t1 * linePoint1.Z));
-            if (D == 0)
-            {
-                return new Vector3[] { solution1 };
-            }
-
-            double t2 = (-B + Math.Sqrt(D)) / (2.0 * A);
-            Vector3 solution2 = new Vector3((float)(linePoint0.X * (1 - t2) + t2 * linePoint1.X),
-                                             (float)(linePoint0.Y * (1 - t2) + t2 * linePoint1.Y),
-                                             (float)(linePoint0.Z * (1 - t2) + t2 * linePoint1.Z));
-
-            // prefer a solution that's on the line segment itself
-
-            if (Math.Abs(t1 - 0.5) < Math.Abs(t2 - 0.5))
-            {
-                return new Vector3[] { solution1, solution2 };
-            }
-
-            return new Vector3[] { solution2, solution1 };
+            #endregion
         }
 
         private void glControl1_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            /*//create ray for mouse
-            //normalize mouse in 3d space
-            Vector4 ray = new Vector4(
-                (2.0f * e.X) / glControl1.Width - 1.0f,
-                1.0f - (2.0f * e.Y) / glControl1.Height,
-                -1.0f,
-                1.0f);
-            ray = Vector4.Transform(ray, v.Inverted());
-            ray = new Vector4(ray.X,ray.Y,-1.0f, 1.0f);
-            ray.Normalize();
-            Console.WriteLine(ray.ToString());
-            int t = 0;
-            while(t < 20)
+            if(mouseDownPos == this.PointToClient(Cursor.Position) && 1==2)
             {
+                float mouse_x = this.PointToClient(Cursor.Position).X;
+                float mouse_y = this.PointToClient(Cursor.Position).Y;
 
-                Vector4 b = ray * t * new Vector4((new Vector3(0, 0, 0) - new Vector3(2, 2, 2)), 1);
-                Vector4 c = (new Vector4((new Vector3(0, 0, 0) - new Vector3(2, 2, 2)), 1))
-                    * new Vector4((new Vector3(0, 0, 0) - new Vector3(2, 2, 2)), 1)
-                    - new Vector4(16, 16, 16, 16);
-                Console.WriteLine(b * b - c);
-                t++;
-            }*/
+                float x = (2.0f * mouse_x) / glControl1.Width - 1.0f;
+                float y = 1.0f - (2.0f * mouse_y) / glControl1.Height;
+                Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), v.Inverted());
+                Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), v.Inverted());
 
+                p1 = va.Xyz;
+                p2 = p1 - (va - (va + vb)).Xyz * 100;
+
+                freezeCamera = (RenderTools.intersectCircle(new Vector3(6, 6, 6), 5, 90, p1, p2));
+            }
         }
 
         public void FPSCamera()

@@ -111,7 +111,7 @@ namespace Smash_Forge
                         parentid = d.readInt();
                     n.parentIndex = (int)parentid;
 
-                    n.boneName = d.readString(nameOff, -1).ToCharArray();
+                    n.Text = d.readString(nameOff, -1);
                     n.boneId = boneID;
                     boneID++;
 

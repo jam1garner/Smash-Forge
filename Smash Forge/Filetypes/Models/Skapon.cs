@@ -374,7 +374,7 @@ namespace Smash_Forge
             {
                 int j = 0;
                 for (j = 0; j < vbn.bones.Count; j++)
-                    if (new string(vbn.bones[j].boneName).Equals(boneOrder[i]))
+                    if (vbn.bones[j].Text.Equals(boneOrder[i]))
                         break;
 
                 boneReorder.Add(j, i);
@@ -425,7 +425,7 @@ namespace Smash_Forge
         {
             foreach(int key in bonematch.Keys)
             {
-                vbn.bones[key].boneName = bonematch[key].ToCharArray();
+                vbn.bones[key].Text = bonematch[key];
             }
         }
 

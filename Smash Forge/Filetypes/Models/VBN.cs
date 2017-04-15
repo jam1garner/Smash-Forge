@@ -5,41 +5,42 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System.Drawing;
 
 namespace Smash_Forge
 {
     public class Bone : TreeNode
     {
-        public char[] boneName;
+        public VBN vbnParent;
         public UInt32 boneType;
+
+        public UInt32 boneId;
+        public float[] position;
+        public float[] rotation;
+        public float[] scale;
+        
+        public Vector3 pos = Vector3.Zero, sca = new Vector3(1f, 1f, 1f);
+        public Quaternion rot = Quaternion.FromMatrix(Matrix3.Zero);
+        public Matrix4 transform, invert;
 
         public int parentIndex
         {
             set
             {
-                if (value == 0xFFFFFFF || value == -1 || vbnParent.bones.Count < value)
+                if (Parent != null) Parent.Nodes.Remove(this);
+                if(value > -1 && value < vbnParent.bones.Count)
                 {
-                    ParentBone = null;
-                    return;
+                    vbnParent.bones[value].Nodes.Add(this);
                 }
-                ParentBone = vbnParent.bones[value];
             }
 
             get
             {
-                if (ParentBone == null)
+                if (Parent == null)
                     return -1;
-                return vbnParent.bones.IndexOf(ParentBone);
+                return vbnParent.bones.IndexOf((Bone)Parent);
             }
         }
-
-        public Bone ParentBone;
-        public UInt32 boneId;
-        public float[] position;
-        public float[] rotation;
-        public float[] scale;
-        public VBN vbnParent;
-        //public List<int> children;
 
         public Bone(VBN v)
         {
@@ -50,19 +51,41 @@ namespace Smash_Forge
         {
             List<Bone> l = new List<Bone>();
             foreach (Bone b in vbnParent.bones)
-                if(b.ParentBone == this)
+                if(b.Parent == this)
                     l.Add(b);
             return l;
         }
 
         public override string ToString()
         {
-            return new string(boneName).TrimEnd( (char)0 );
+            return Text;
         }
 
-        public Vector3 pos = Vector3.Zero, sca = new Vector3(1f, 1f, 1f);
-        public Quaternion rot = Quaternion.FromMatrix(Matrix3.Zero);
-        public Matrix4 transform, invert;
+        public void Draw()
+        {
+            // first calcuate the point and draw a point
+            if (IsSelected)
+                GL.Color3(Color.Red);
+            else
+                GL.Color3(Color.GreenYellow);
+
+            Vector3 pos_c = Vector3.Transform(Vector3.Zero, transform);
+            RenderTools.drawCube(pos_c, .1f);
+
+            // now draw line between parent 
+            GL.Color3(Color.LightBlue);
+            GL.LineWidth(2f);
+
+            GL.Begin(PrimitiveType.Lines);
+            if (Parent != null && Parent is Bone)
+            {
+                Vector3 pos_p = Vector3.Transform(Vector3.Zero, ((Bone)Parent).transform);
+                GL.Vertex3(pos_c);
+                GL.Color3(Color.Blue);
+                GL.Vertex3(pos_p);
+            }
+            GL.End();
+        }
     }
 
     public class HelperBone
@@ -210,7 +233,7 @@ namespace Smash_Forge
             for (int i = 0; i < bones.Count; i++)
             {
                 bones[i].transform = Matrix4.CreateScale(bones[i].sca) * Matrix4.CreateFromQuaternion(bones[i].rot) * Matrix4.CreateTranslation(bones[i].pos);
-                if (bones[i].parentIndex != 0x0FFFFFFF && bones[i].parentIndex != -1)
+                if (bones[i].Parent !=null)
                 {
                     bones[i].transform = bones[i].transform * bones[(int)bones[i].parentIndex].transform;
                 }
@@ -263,7 +286,7 @@ namespace Smash_Forge
                 for (int i = 0; i < totalBoneCount; i++)
                 {
                     Bone temp = new Bone(this);
-                    temp.boneName = file.readString(file.pos(), -1).ToCharArray();
+                    temp.Text = file.readString(file.pos(), -1);
                     file.skip(64);
                     temp.boneType = (UInt32)file.readInt();
                     pi[i] = file.readInt();
@@ -323,8 +346,8 @@ namespace Smash_Forge
 
                 for (int i = 0; i < bones.Count; i++)
                 {
-                    file.writeString(new string(bones[i].boneName));
-                    for (int j = 0; j < 64 - bones[i].boneName.Length; j++)
+                    file.writeString(bones[i].Text);
+                    for (int j = 0; j < 64 - bones[i].Text.Length; j++)
                         file.writeByte(0);
                     file.writeInt((int)bones[i].boneType);
                     if(bones[i].parentIndex == -1)
@@ -389,7 +412,7 @@ namespace Smash_Forge
         {
             foreach (Bone b in bones)
             {
-                if (new string(b.boneName) == name)
+                if (b.Text.Equals(name))
                 {
                     return b;
                 }
@@ -401,7 +424,7 @@ namespace Smash_Forge
         {
             for (int i = 0; i < bones.Count; i++)
             {
-                if (new string(bones[i].boneName) == name)
+                if (bones[i].Text.Equals(name))
                 {
                     return i;
                 }
@@ -483,7 +506,7 @@ namespace Smash_Forge
                 if (m.vbn != null)
                     foreach (Bone b in m.vbn.bones)
                         if (b.boneId == boneHash)
-                            return charsToString(b.boneName);
+                            return b.Text;
 
             csvHashes csv = new csvHashes(Path.Combine(MainForm.executableDir, "hashTable.csv"));
             for (int i = 0; i < csv.ids.Count; i++)

@@ -62,7 +62,7 @@ namespace Smash_Forge
 
                         Bone bone = new Smash_Forge.Bone(vbn);
                         vbn.bones.Add(bone);
-                        bone.boneName = bo.name.ToCharArray();
+                        bone.Text = bo.name;
                         bone.parentIndex = parenttrack.IndexOf(bo.parent);
                         bone.position = new float[3];
                         bone.rotation = new float[3];
@@ -597,7 +597,7 @@ namespace Smash_Forge
                 parent.children.Add(node);
             else
                 dae.scene.nodes.Add(node);
-            node.name = new string(b.boneName);
+            node.name = b.Text;
             node.id = node.name + "_id";
             node.type = "JOINT";
             node.mat = Matrix4.CreateScale(b.sca) * Matrix4.CreateFromQuaternion(b.rot) * Matrix4.CreateTranslation(b.pos);
@@ -821,7 +821,7 @@ namespace Smash_Forge
                     weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT, offset = 0 });
                     List<string> d = new List<string>();
                     foreach (Bone b in dat.bones.bones)
-                        d.Add(new string(b.boneName));
+                        d.Add(b.Text);
                     src.accessor.Add("JOINT");
                     src.data = d.ToArray();
                     src.count = d.Count;
@@ -1084,7 +1084,7 @@ namespace Smash_Forge
                         weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT, offset = 0 });
                         List<string> d = new List<string>();
                         foreach (Bone b in con.vbn.bones)
-                            d.Add(new string(b.boneName));
+                            d.Add(b.Text);
                         src.accessor.Add("JOINT");
                         src.data = d.ToArray();
                         src.count = d.Count;

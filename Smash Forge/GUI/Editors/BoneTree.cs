@@ -25,8 +25,8 @@ namespace Smash_Forge
             Runtime.TargetVBN.reset();
             treeView1.BeginUpdate();
             foreach (Bone b in Runtime.TargetVBN.bones)
-                if (b.ParentBone == null)
-                    treeView1.Nodes.Add(buildBoneTree(b));
+                if (b.Parent == null)
+                    treeView1.Nodes.Add(b);
             treeView1.EndUpdate();
             treeView1.ExpandAll();
             listBox1.Items.Clear();
@@ -42,14 +42,6 @@ namespace Smash_Forge
             tbl.Rows.Clear();
             tbl.Columns.Clear();
             dataGridView1.DataSource = tbl;
-        }
-
-        private TreeNode buildBoneTree(Bone b)
-        {
-            TreeNode temp = new TreeNode(b.ToString()) { Tag = b };
-            foreach (Bone childBone in b.GetChildren())
-                temp.Nodes.Add(buildBoneTree(childBone));
-            return temp;
         }
 
         public DataTable tbl;
@@ -85,12 +77,12 @@ namespace Smash_Forge
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            if(Runtime.TargetVBN != null)
+            /*if(Runtime.TargetVBN != null)
             {
-                Runtime.TargetVBN.bones[Runtime.TargetVBN.boneIndex(currentNode)].boneName = textBox1.Text.ToCharArray();
+                Runtime.TargetVBN.bones[Runtime.TargetVBN.boneIndex(currentNode)].Text = textBox1.Text.ToCharArray();
                 currentNode = textBox1.Text;
                 treeView1.SelectedNode.Text = textBox1.Text;
-            }
+            }*/
         }
 
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
@@ -147,7 +139,7 @@ namespace Smash_Forge
             {
                 draggedNode.Remove();
                 treeView1.Nodes.Add(draggedNode);
-                ((Bone) draggedNode.Tag).ParentBone = null;
+                //((Bone) draggedNode.Tag).ParentBone = null;
             }
             Runtime.TargetVBN.reset();
         }

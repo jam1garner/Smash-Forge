@@ -292,7 +292,7 @@ namespace Smash_Forge
                     // bone matrix... not really needed to be stored per say
                     f.skip(4*4*3);
 
-                    bone.boneName = f.readString(f.readInt() + stringTableOffset, -1).ToCharArray();
+                    bone.Text = f.readString(f.readInt() + stringTableOffset, -1);
 
                     f.skip(4); // Meta data
 

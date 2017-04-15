@@ -497,13 +497,13 @@ namespace Smash_Forge
                     {
                         for (int i = 0; i < csv.names.Count; i++)
                         {
-                            if (csv.names[i] == new string(bone.boneName))
+                            if (csv.names[i] == bone.Text)
                             {
                                 bone.boneId = csv.ids[i];
                             }
                         }
                         if (bone.boneId == 0)
-                            bone.boneId = Crc32.Compute(new string(bone.boneName));
+                            bone.boneId = Crc32.Compute(bone.Text);
                     }
                 }
 
@@ -513,13 +513,13 @@ namespace Smash_Forge
                     {
                         for (int i = 0; i < csv.names.Count; i++)
                         {
-                            if (csv.names[i] == new string(bone.boneName))
+                            if (csv.names[i] == bone.Text)
                             {
                                 bone.boneId = csv.ids[i];
                             }
                         }
                         if (bone.boneId == 0)
-                            bone.boneId = Crc32.Compute(new string(bone.boneName));
+                            bone.boneId = Crc32.Compute(bone.Text);
                     }
                 }
                 if (m.bch != null)
@@ -530,7 +530,7 @@ namespace Smash_Forge
                         {
                             for (int i = 0; i < csv.names.Count; i++)
                             {
-                                if (csv.names[i] == new string(bone.boneName))
+                                if (csv.names[i] == bone.Text)
                                 {
                                     bone.boneId = csv.ids[i];
                                 }
