@@ -8,7 +8,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge
 {
-    public class Bone
+    public class Bone : TreeNode
     {
         public char[] boneName;
         public UInt32 boneType;

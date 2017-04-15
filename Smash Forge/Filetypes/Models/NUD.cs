@@ -1811,7 +1811,7 @@ namespace Smash_Forge
             {
                 Material mat = new Material();
                 mat.flags = 0x94010161;
-                mat.cullMode = 4;
+                mat.cullMode = 0x0405;
                 mat.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
                 mat.entries.Add("NU_fresnelColor", new float[] { 1, 1, 1, 1 });
                 mat.entries.Add("NU_blinkColor", new float[] { 0, 0, 0, 0 });

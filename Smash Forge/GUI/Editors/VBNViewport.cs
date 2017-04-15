@@ -765,7 +765,6 @@ main()
             if (Runtime.renderFloor)
                 RenderTools.drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
 
-            //RenderTools.drawSphere(new Vector3(2,2,2), 3, 5);
 
             //GL.Enable(EnableCap.LineSmooth); // This is Optional 
             GL.Enable(EnableCap.Normalize);  // These is critical to have
@@ -810,6 +809,16 @@ main()
                 DrawLVD();
             // drawing the bones
             DrawBones();
+
+            /*GL.LineWidth(5f);
+            GL.Begin(PrimitiveType.Lines);
+            GL.Color3(Color.White);
+            GL.Vertex3(p1);
+            GL.Color3(Color.Red);
+            GL.Vertex3(p2);
+            GL.Color3(sphereSelected ? Color.Orange : Color.Green);
+            GL.End();
+            RenderTools.drawSphere(new Vector3(2, 2, 2), 3, 30);*/
 
             // Clean up
             GL.PopAttrib();
@@ -2170,6 +2179,80 @@ main()
                 {
                 }
             }
+        }
+
+
+        Vector3 p1 = Vector3.Zero, p2 = Vector3.Zero;
+        bool sphereSelected = false;
+        private void glControl1_DoubleClick(object sender, EventArgs e)
+        {
+            float mouse_x = this.PointToClient(Cursor.Position).X;
+            float mouse_y = this.PointToClient(Cursor.Position).Y;
+
+            float x = (2.0f * mouse_x) / glControl1.Width - 1.0f;
+            float y = 1.0f - (2.0f * mouse_y) / glControl1.Height;
+            Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), v.Inverted());
+            Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), v.Inverted());
+
+            Vector3 sphere = new Vector3(2, 2, 2);
+
+            p1 = va.Xyz;
+            p2 = p1 - (va - (va + vb)).Xyz * 100;
+            
+            sphereSelected = FindLineSphereIntersections(p1, p2, sphere, 3).Length > 0;
+        }
+
+        // taken from http://www.codeproject.com/Articles/19799/Simple-Ray-Tracing-in-C-Part-II-Triangles-Intersec
+        public static Vector3[] FindLineSphereIntersections(Vector3 linePoint0, Vector3 linePoint1, Vector3 circleCenter, double circleRadius)
+        {
+            double cx = circleCenter.X;
+            double cy = circleCenter.Y;
+            double cz = circleCenter.Z;
+
+            double px = linePoint0.X;
+            double py = linePoint0.Y;
+            double pz = linePoint0.Z;
+
+            double vx = linePoint1.X - px;
+            double vy = linePoint1.Y - py;
+            double vz = linePoint1.Z - pz;
+
+            double A = vx * vx + vy * vy + vz * vz;
+            double B = 2.0 * (px * vx + py * vy + pz * vz - vx * cx - vy * cy - vz * cz);
+            double C = px * px - 2 * px * cx + cx * cx + py * py - 2 * py * cy + cy * cy +
+                       pz * pz - 2 * pz * cz + cz * cz - circleRadius * circleRadius;
+
+            // discriminant
+            double D = B * B - 4 * A * C;
+
+            if (D < 0)
+            {
+                return new Vector3[0];
+            }
+
+            double t1 = (-B - Math.Sqrt(D)) / (2.0 * A);
+
+            Vector3 solution1 = new Vector3((float)(linePoint0.X * (1 - t1) + t1 * linePoint1.X),
+                                             (float)(linePoint0.Y * (1 - t1) + t1 * linePoint1.Y),
+                                             (float)(linePoint0.Z * (1 - t1) + t1 * linePoint1.Z));
+            if (D == 0)
+            {
+                return new Vector3[] { solution1 };
+            }
+
+            double t2 = (-B + Math.Sqrt(D)) / (2.0 * A);
+            Vector3 solution2 = new Vector3((float)(linePoint0.X * (1 - t2) + t2 * linePoint1.X),
+                                             (float)(linePoint0.Y * (1 - t2) + t2 * linePoint1.Y),
+                                             (float)(linePoint0.Z * (1 - t2) + t2 * linePoint1.Z));
+
+            // prefer a solution that's on the line segment itself
+
+            if (Math.Abs(t1 - 0.5) < Math.Abs(t2 - 0.5))
+            {
+                return new Vector3[] { solution1, solution2 };
+            }
+
+            return new Vector3[] { solution2, solution1 };
         }
 
         private void glControl1_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)

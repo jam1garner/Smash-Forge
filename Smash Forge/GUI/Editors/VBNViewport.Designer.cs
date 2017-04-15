@@ -43,7 +43,7 @@
             this.btnLastFrame = new System.Windows.Forms.Button();
             this.btnPrevFrame = new System.Windows.Forms.Button();
             this.btnFirstFrame = new System.Windows.Forms.Button();
-            this.glControl1 = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(32, 24, 0, 8));
+            this.glControl1 = new OpenTK.GLControl();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nupdFrameRate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nupdFrame)).BeginInit();
@@ -248,6 +248,7 @@
             this.glControl1.Size = new System.Drawing.Size(624, 407);
             this.glControl1.TabIndex = 9;
             this.glControl1.VSync = false;
+            this.glControl1.DoubleClick += new System.EventHandler(this.glControl1_DoubleClick);
             this.glControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseClick);
             this.glControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseMove);
             // 
