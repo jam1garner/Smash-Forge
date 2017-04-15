@@ -1087,7 +1087,7 @@ namespace Smash_Forge
                     Collada.Save(filename, Runtime.ModelContainers[0]);
                 }
             }
-            
+
             if (filename.EndsWith(".nud"))
                 if (Runtime.ModelContainers[0].dat_melee != null)
                 {
@@ -1095,6 +1095,11 @@ namespace Smash_Forge
                     m.nud.Save(filename);
                     m.vbn.Save(filename.Replace(".nud", ".vbn"));
                 }
+            if (Runtime.ModelContainers[0].bch != null)
+            {
+                Runtime.ModelContainers[0].bch.mbn.toNUD().Save(filename);
+                Runtime.ModelContainers[0].bch.models[0].skeleton.Save(filename.Replace(".nud", ".vbn"));
+            }
         }
 
         ///<summary>
