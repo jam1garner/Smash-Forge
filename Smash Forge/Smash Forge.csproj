@@ -321,6 +321,7 @@
     </Compile>
     <Compile Include="GUI\Nodes\ProjectNode.cs" />
     <Compile Include="IO\FileBase.cs" />
+    <Compile Include="lib\NintacoAPI.cs" />
     <Compile Include="MovesetManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
