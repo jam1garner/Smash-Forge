@@ -1626,5 +1626,11 @@ namespace Smash_Forge
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
         }
+
+        private void nESROMInjectorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ROM_Injector r = new ROM_Injector();
+            r.ShowDialog();
+        }
     }
 }

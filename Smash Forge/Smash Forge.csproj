@@ -313,6 +313,12 @@
     <Compile Include="GUI\Menus\RenderSettings.Designer.cs">
       <DependentUpon>RenderSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Menus\ROM_Injector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\ROM_Injector.Designer.cs">
+      <DependentUpon>ROM_Injector.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\ModelViewport.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -432,6 +438,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\NUT_TexIDEditor.resx">
       <DependentUpon>NUT_TexIDEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\ROM_Injector.resx">
+      <DependentUpon>ROM_Injector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\ModelViewport.resx">
       <DependentUpon>ModelViewport.cs</DependentUpon>
