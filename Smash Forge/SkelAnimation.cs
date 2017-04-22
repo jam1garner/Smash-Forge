@@ -211,8 +211,12 @@ namespace Smash_Forge
                 }
                 if (n.r_type != -1)
                 {
-                    //if(new string(b.boneName).Equals("HeadN"))
-                    //    Console.WriteLine(n.r.ToString() + (n.r.X + n.r.Y + n.r.X + n.r.W));
+                    if (b.Text.Equals("HeadN"))
+                    {
+                        //Console.WriteLine(b.transform.ExtractRotation().ToString());
+                        //Console.WriteLine(VBN.FromEulerAngles(b.rotation[0], b.rotation[1], b.rotation[2]).ToString());
+                        //Console.WriteLine(n.r.ToString() + " " + Math.Sqrt(n.r.X* n.r.X + n.r.Y* n.r.Y + n.r.Z* n.r.Z + n.r.W*n.r.W) + " " + n.r.Normalized().ToString());
+                    }
                     //Console.WriteLine(new string(b.boneName) + " " + b.rot.ToString() + " " + n.r.ToString() + "\n" + (n.r.X + n.r.Y + n.r.X + n.r.W));
                     b.rot = n.r;
                 }

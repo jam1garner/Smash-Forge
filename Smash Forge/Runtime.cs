@@ -33,7 +33,14 @@ namespace Smash_Forge
         public static Object LVDSelection { get; set; }
         public static SkelAnimation TargetAnim { get { return _targetAnim; } set { _targetAnim = value; OnAnimationChanged(); } }
         private static SkelAnimation _targetAnim;
-        
+
+        public enum ViewportModes
+        {
+            NORMAL = 0,
+            EDITVERT = 1
+        }
+
+        public static ViewportModes ViewportMode = ViewportModes.EDITVERT;
 
         public static bool renderLVD { get; set; }
         public static bool renderModel { get; set; }

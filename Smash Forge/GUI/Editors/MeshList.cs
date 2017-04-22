@@ -386,6 +386,11 @@ namespace Smash_Forge
 
         private void singleBindToBoneToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            /*if(mc.vbn.bones == null)
+            {
+                MessageBox.Show("No Skeleton Found");
+                return;
+            }*/
             NUD.Mesh mesh = (NUD.Mesh)treeView1.SelectedNode;
             char[] d = "None".ToCharArray();
             LVDEditor.StringWrapper str = new LVDEditor.StringWrapper() { data = d };

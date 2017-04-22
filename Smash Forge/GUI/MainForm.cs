@@ -83,6 +83,11 @@ namespace Smash_Forge
             cub.fragmentShader(RenderTools.cubefs);
             Runtime.shaders.Add("SkyBox", cub);
 
+            Shader poi = new Shader();
+            poi.vertexShader(RenderTools.vs_Point);
+            poi.fragmentShader(RenderTools.fs_Point);
+            Runtime.shaders.Add("Point", poi);
+
             Shader nud = new Shader();
             nud.vertexShader(VBNViewport.vs);
             nud.fragmentShader(VBNViewport.fs);
@@ -1609,6 +1614,18 @@ namespace Smash_Forge
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
+        }
+
+        private void editVerticesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.ViewportMode == Runtime.ViewportModes.NORMAL) Runtime.ViewportMode = Runtime.ViewportModes.EDITVERT; else
+            if (Runtime.ViewportMode == Runtime.ViewportModes.EDITVERT) Runtime.ViewportMode = Runtime.ViewportModes.NORMAL;
+        }
+
+        private void exportErrorLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Runtime.shaders["NUD"].SaveErrorLog();
+            MessageBox.Show("Saved to Forge directory");
         }
     }
 }

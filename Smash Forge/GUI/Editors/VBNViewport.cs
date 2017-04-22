@@ -542,7 +542,7 @@ vec4 CalculateDiffuse(vec3 norm)
 		diffuse = texture2D(ramp, vec2(clamp(1-diff, 0.1, 0.9), 0.5f)).rgb;
 	}
 
-	//diffuse *= diffuseColor.www * diffuseColor.xyz;
+	diffuse *= diffuseColor.www * diffuseColor.xyz;
 	//diffuse = diffuseColor.rgb * (1 / (1.0 + (0.25 * difDir * difDir)));
 	if(diffuse == vec3(0,0,0)) diffuse = vec3(1);
 
@@ -668,7 +668,7 @@ main()
 	// correct alpha
 	fincol.a = a;
 	if(isTransparent == 0) fincol.a *= color.a;
-	if(isTransparent == 0) fincol.a *= finalColorGain.a;
+	fincol.a *= finalColorGain.a;
 	
 	// gamma correction
 	fincol.rgb = pow(fincol.rgb, vec3(1.0/gamma));
@@ -911,6 +911,8 @@ main()
                     }
                 }
             }
+
+            shader = Runtime.shaders["NUD"];
             
             GL.UseProgram(shader.programID);
             int rt = (int)Runtime.renderType;
@@ -1003,6 +1005,8 @@ main()
 
                     m.nud.Render(shader);
                     shader.disableAttrib();
+
+                    //m.nud.DrawPoints(v, m.vbn);
                 }
             }
         }

@@ -37,6 +37,7 @@
             this.openStageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.openCharacterToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.openNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportErrorLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.clearWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,6 +58,7 @@
             this.deleteLVDEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mergeModelsMeshListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mergeBonesBoneListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editVerticesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.animationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -117,6 +119,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openVBNToolStripMenuItem,
             this.openNUDToolStripMenuItem,
+            this.exportErrorLogToolStripMenuItem,
             this.exportModelToolStripMenuItem,
             this.toolStripSeparator4,
             this.clearWorkspaceToolStripMenuItem});
@@ -165,6 +168,13 @@
             this.openNUDToolStripMenuItem.Text = "Save";
             this.openNUDToolStripMenuItem.Click += new System.EventHandler(this.openNUDToolStripMenuItem_Click);
             // 
+            // exportErrorLogToolStripMenuItem
+            // 
+            this.exportErrorLogToolStripMenuItem.Name = "exportErrorLogToolStripMenuItem";
+            this.exportErrorLogToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.exportErrorLogToolStripMenuItem.Text = "Export ErrorLog";
+            this.exportErrorLogToolStripMenuItem.Click += new System.EventHandler(this.exportErrorLogToolStripMenuItem_Click);
+            // 
             // exportModelToolStripMenuItem
             // 
             this.exportModelToolStripMenuItem.Name = "exportModelToolStripMenuItem";
@@ -192,7 +202,8 @@
             this.addToolStripMenuItem,
             this.deleteLVDEntryToolStripMenuItem,
             this.mergeModelsMeshListToolStripMenuItem,
-            this.mergeBonesBoneListToolStripMenuItem});
+            this.mergeBonesBoneListToolStripMenuItem,
+            this.editVerticesToolStripMenuItem});
             this.edittToolStripMenuItem.Name = "edittToolStripMenuItem";
             this.edittToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.edittToolStripMenuItem.Text = "Edit";
@@ -321,6 +332,14 @@
             this.mergeBonesBoneListToolStripMenuItem.Text = "Merge Bones (Bone List)";
             this.mergeBonesBoneListToolStripMenuItem.Click += new System.EventHandler(this.mergeBonesBoneListToolStripMenuItem_Click);
             // 
+            // editVerticesToolStripMenuItem
+            // 
+            this.editVerticesToolStripMenuItem.Enabled = false;
+            this.editVerticesToolStripMenuItem.Name = "editVerticesToolStripMenuItem";
+            this.editVerticesToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.editVerticesToolStripMenuItem.Text = "Edit Vertices";
+            this.editVerticesToolStripMenuItem.Click += new System.EventHandler(this.editVerticesToolStripMenuItem_Click);
+            // 
             // animationToolStripMenuItem
             // 
             this.animationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -412,7 +431,6 @@
             // 
             // open3DSTEXEditorToolStripMenuItem
             // 
-            this.open3DSTEXEditorToolStripMenuItem.Enabled = false;
             this.open3DSTEXEditorToolStripMenuItem.Name = "open3DSTEXEditorToolStripMenuItem";
             this.open3DSTEXEditorToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.open3DSTEXEditorToolStripMenuItem.Text = "Open 3DS TEX Editor";
@@ -575,8 +593,10 @@
             // 
             // glControl1
             // 
+            this.glControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(12, 27);
+            this.glControl1.Location = new System.Drawing.Point(1060, 7);
             this.glControl1.Margin = new System.Windows.Forms.Padding(4);
             this.glControl1.Name = "glControl1";
             this.glControl1.Size = new System.Drawing.Size(10, 10);
@@ -704,6 +724,8 @@
         private System.Windows.Forms.ToolStripMenuItem cleanViewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stageWorkToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem open3DSTEXEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editVerticesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportErrorLogToolStripMenuItem;
     }
 }
 

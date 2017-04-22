@@ -7,6 +7,8 @@ namespace Smash_Forge
 {
     public class OMO
     {
+        public static int flagsused = 0;
+
         public static SkelAnimation read(FileData d)
         {
 
@@ -38,6 +40,9 @@ namespace Smash_Forge
 
             for (int i = 0; i < numOfBones; i++)
             {
+                flagsused = flagsused | d.readInt(); d.seek(d.pos() - 4);
+                Console.WriteLine(flagsused.ToString("x"));
+
                 int flags = d.readByte();
                 int tFlag = d.readByte();
                 int rFlag = d.readByte();
@@ -154,10 +159,11 @@ namespace Smash_Forge
 
                     if (baseNode[j].r_type == 3)
                     {
-                        float i1 = ((float)d.readShort() / (0xffff));
-                        float i2 = ((float)d.readShort() / (0xffff));
-                        float i3 = ((float)d.readShort() / (0xffff));
-                        float i4 = ((float)d.readShort() / (0xffff));
+                        int v = short.MaxValue;
+                        float i1 = ((float)((short)d.readShort() ) / v);
+                        float i2 = ((float)((short)d.readShort() ) / v);
+                        float i3 = ((float)((short)d.readShort() ) / v);
+                        float i4 = ((float)((short)d.readShort() ) / v);
 
                         node.r = new Quaternion(new Vector3(i1, i2, i3), i4);
                         //Console.WriteLine(node.r.ToString());

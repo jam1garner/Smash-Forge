@@ -57,7 +57,9 @@ namespace Smash_Forge
             label4.Text = "Height: " + height;
 
             byte[] data = d.getSection(0x80, d.size() - 0x80);
-            pictureBox1.Image = Pixel.decodeAlpha(data, width, height);
+
+            pictureBox1.Image = _3DS.DecodeImage(data, width, height, (_3DS.Tex_Formats)type);
+            
             pictureBox1.Image.RotateFlip(RotateFlipType.RotateNoneFlipY);
         }
 
@@ -67,12 +69,9 @@ namespace Smash_Forge
 
             if (formatSelector.SelectedIndex < 0)
                 formatSelector.SelectedIndex = 0x0D;
-
-            if (formatSelector.SelectedIndex == 0x0C)
-                pictureBox1.Image = Pixel.decodeETC(Pixel.encodeETC(new Bitmap(pictureBox1.Image)), pictureBox1.Image.Width, pictureBox1.Image.Height);
-            if (formatSelector.SelectedIndex == 0x0D)
-                pictureBox1.Image = Pixel.decodeAlpha(Pixel.encodeETCa4(new Bitmap(pictureBox1.Image)), pictureBox1.Image.Width, pictureBox1.Image.Height);
-
+            
+            pictureBox1.Image = _3DS.DecodeImage(_3DS.EncodeImage(new Bitmap(pictureBox1.Image), (_3DS.Tex_Formats)formatSelector.SelectedIndex), pictureBox1.Image.Width, pictureBox1.Image.Height, (_3DS.Tex_Formats)formatSelector.SelectedIndex);
+            
             nameBox.Text = Path.GetFileNameWithoutExtension(filename);
             label3.Text = "Width: " + pictureBox1.Image.Width;
             label4.Text = "Height: " + pictureBox1.Image.Height;
@@ -134,12 +133,7 @@ namespace Smash_Forge
 
             pictureBox1.Image.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
-            if (formatSelector.SelectedIndex == 0x0C)
-                o.writeBytes(Pixel.encodeETC(new Bitmap(pictureBox1.Image)));
-            if (formatSelector.SelectedIndex == 0x0D)
-                o.writeBytes(Pixel.encodeETCa4(new Bitmap(pictureBox1.Image)));
-            else
-                throw new Exception("Unsuppored format");
+            o.writeBytes(_3DS.EncodeImage(new Bitmap(pictureBox1.Image), (_3DS.Tex_Formats)formatSelector.SelectedIndex));
 
             pictureBox1.Image.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
