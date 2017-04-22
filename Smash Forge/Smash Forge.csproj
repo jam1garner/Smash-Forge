@@ -314,6 +314,12 @@
     <Compile Include="GUI\Menus\RenderSettings.Designer.cs">
       <DependentUpon>RenderSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Menus\ROM_Injector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\ROM_Injector.Designer.cs">
+      <DependentUpon>ROM_Injector.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\ModelViewport.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -322,6 +328,7 @@
     </Compile>
     <Compile Include="GUI\Nodes\ProjectNode.cs" />
     <Compile Include="IO\FileBase.cs" />
+    <Compile Include="lib\NintacoAPI.cs" />
     <Compile Include="MovesetManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -433,6 +440,9 @@
     <EmbeddedResource Include="GUI\Menus\NUT_TexIDEditor.resx">
       <DependentUpon>NUT_TexIDEditor.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\ROM_Injector.resx">
+      <DependentUpon>ROM_Injector.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\ModelViewport.resx">
       <DependentUpon>ModelViewport.cs</DependentUpon>
     </EmbeddedResource>
@@ -527,6 +537,21 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="materials\Stage Mats\Mat15 [Cubemap+Norm+Char Reflection].nmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\Fighter_Param.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\Kumite_Param_Cafe.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\Render_Param.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\Stage_Param.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\ui_character_db.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Properties\Settings.settings">

@@ -941,10 +941,8 @@ main()
                 {
                     if (m.bch.mbn != null)
                     {
-                        m.bch.mbn.Render(shader);
+                        m.bch.mbn.Render(v);
                     }
-                    GL.UseProgram(shader.programID);
-                    GL.Uniform1(shader.getAttribute("renderType"), rt);
                 }
 
                 if (m.dat_melee != null)

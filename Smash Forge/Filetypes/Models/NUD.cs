@@ -1983,7 +1983,7 @@ namespace Smash_Forge
 
         #region Converters
 
-        /*public MBN toMBN()
+        public MBN toMBN()
         {
             MBN m = new Smash_Forge.MBN();
 
@@ -2007,7 +2007,9 @@ namespace Smash_Forge
                         MBN.Vertex mv = new MBN.Vertex();
                         mv.pos = v.pos;
                         mv.nrm = v.nrm;
-                        mv.tx = v.tx;
+                        List<Vector2> uvs = new List<Vector2>();
+                        uvs.Add(new Vector2(v.tx[0].X, 1 - v.tx[0].Y));
+                        mv.tx = uvs;
                         mv.col = v.col;
                         int n1 = v.node[0];
                         int n2 = v.node.Count > 1 ? v.node[1] : 0;
@@ -2038,7 +2040,7 @@ namespace Smash_Forge
             return m;
         }
 
-    */
+    
         public void Optimize(bool singleBind = false)
         {
             // to help with duplicates
