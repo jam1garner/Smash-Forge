@@ -51,6 +51,7 @@
             this.button2.TabIndex = 1;
             this.button2.Text = "Create Save State";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.createSaveState);
             // 
             // button3
             // 

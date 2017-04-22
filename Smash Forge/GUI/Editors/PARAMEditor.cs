@@ -79,7 +79,7 @@ namespace Smash_Forge
                         child.Tag = temp1;
                         children[j] = child;
                     }
-                    TreeNode parent = new TreeNode("Group [" + i + "]", children);
+                    TreeNode parent = new TreeNode("Group [" + (i+1) + "]", children);
                     int[] temp = new int[2];
                     temp[0] = i;
                     temp[1] = 0;
@@ -89,7 +89,7 @@ namespace Smash_Forge
                 else
                 {
                     int[] temp = { i, 0 };
-                    treeView1.Nodes.Add(new TreeNode("Group [" + i + "]") { Tag = temp });
+                    treeView1.Nodes.Add(new TreeNode("Group [" + (i+1) + "]") { Tag = temp });
                 }
             }
             fillTable(0,0);
@@ -112,7 +112,7 @@ namespace Smash_Forge
                         pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
                         break;
                     case ParamType.s8:
-                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToSByte(tbl.Rows[e.RowIndex][1]);
+                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
                         break;
                     case ParamType.u8:
                         pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
@@ -143,7 +143,7 @@ namespace Smash_Forge
                         i.Values[e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
                         break;
                     case ParamType.s8:
-                        i.Values[e.RowIndex].Value = Convert.ToSByte(tbl.Rows[e.RowIndex][1]);
+                        i.Values[e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
                         break;
                     case ParamType.u8:
                         i.Values[e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
@@ -198,6 +198,11 @@ namespace Smash_Forge
                 }
             }
 
+        }
+
+        public class IniLabels
+        {
+            
         }
     }
 }

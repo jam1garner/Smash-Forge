@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using Nintaco;
 
 namespace Smash_Forge
 {
@@ -41,7 +42,7 @@ namespace Smash_Forge
                             f.writeInt(0);
                             f.writeInt(0x1B + rom.Length);
                             f.writeInt(0x1B + rom.Length);
-                            f.writeString("NAMEGOESHERE");
+                            f.writeString("JAM WAS HERE");
                             f.writeInt(0);
                             f.writeBytes(rom);
                             f.save(sfd.FileName);
@@ -72,6 +73,20 @@ namespace Smash_Forge
                     }
                 }
             }
+        }
+
+        private readonly RemoteAPI api = ApiSource.API;
+
+        private void apiEnabled()
+        {
+            //grab save state info
+        }
+
+        private void createSaveState(object sender, EventArgs e)
+        {
+            
+            ApiSource.initRemoteAPI("localhost", 9999);
+            api.addActivateListener(apiEnabled);
         }
     }
 }
