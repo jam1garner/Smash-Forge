@@ -23,6 +23,64 @@ namespace Smash_Forge
         public List<Vertex> vertices = new List<Vertex>();
         public List<string> nameTable = new List<string>();
 
+        public static Shader shader = null;
+
+        static string vs = @"#version 330
+ 
+in vec3 vPosition;
+in vec4 vColor;
+in vec3 vNormal;
+in vec2 vUV;
+in vec4 vBone;
+in vec4 vWeight;
+
+out vec2 f_texcoord;
+out vec4 color;
+out float normal;
+
+uniform mat4 modelview;
+uniform bones
+{{
+    mat4 transforms[{0}];
+}} bones_;
+ 
+void
+main()
+{{
+    ivec4 index = ivec4(vBone); 
+    vec4 objPos = vec4(vPosition.xyz, 1.0);
+
+    if(vBone.x != -1)
+    {{
+        objPos = bones_.transforms[index.x] * vec4(vPosition, 1.0) * vWeight.x;
+        objPos += bones_.transforms[index.y] * vec4(vPosition, 1.0) * vWeight.y;
+        objPos += bones_.transforms[index.z] * vec4(vPosition, 1.0) * vWeight.z;
+        objPos += bones_.transforms[index.w] * vec4(vPosition, 1.0) * vWeight.w;
+    }}
+
+    gl_Position = modelview * vec4(objPos.xyz, 1.0);
+
+    f_texcoord = vUV;
+    color = vColor;
+    normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.3,0.3,0.3,1.0)) ;
+}}";
+
+        static string fs = @"#version 330
+
+in vec2 f_texcoord;
+in vec4 color;
+in float normal;
+
+uniform sampler2D tex;
+uniform vec2 uvscale;
+
+void
+main()
+{{
+    vec4 alpha = texture(tex, f_texcoord*uvscale).aaaa;
+    gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale) * normal).xyz, alpha.a * color.w);
+}}
+";
 
         public List<Descriptor> descript = new List<Descriptor>(); // Descriptors are used to describe the vertex data...
 
@@ -131,10 +189,34 @@ namespace Smash_Forge
             facedata = face.ToArray();
             bonedata = bone.ToArray();
             weightdata = weight.ToArray();
+
+            SetupShader();
         }
 
-        public void Render(Shader shader)
+        private void SetupShader()
         {
+            int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
+
+            if (shader == null)
+            {
+                shader = new Shader();
+
+                shader.vertexShader(string.Format(vs, 0));
+                shader.fragmentShader(string.Format(fs));
+            }
+        }
+
+        public void Render(Matrix4 modelview)
+        {
+            if (null == shader)
+                return;
+
+            GL.UseProgram(shader.programID);
+
+            GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref modelview);
+
+            shader.enableAttrib();
+
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
             GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(vertdata.Length * Vector3.SizeInBytes), vertdata, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, 0, 0);
@@ -178,6 +260,7 @@ namespace Smash_Forge
                     indiceat += l.Count;
                 }
             }
+            shader.disableAttrib();
         }
 
         /**

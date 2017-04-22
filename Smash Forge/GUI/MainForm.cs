@@ -1325,7 +1325,7 @@ namespace Smash_Forge
                 BCH b = new BCH();
                 con.bch = b;
                 b.mbn = m;
-                b.Read(filename.Replace(".mbn",".bch"));
+                b.Read(filename.Replace(".mbn", ".bch"));
                 Runtime.ModelContainers.Add(con);
             }
 
