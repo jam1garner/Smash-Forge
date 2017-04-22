@@ -538,6 +538,9 @@
     <None Include="materials\Stage Mats\Mat15 [Cubemap+Norm+Char Reflection].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="param_labels\Fighter_Param.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="param_labels\Kumite_Param_Cafe.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
