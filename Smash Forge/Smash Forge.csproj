@@ -466,7 +466,9 @@
     <None Include="hashTable.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Skapon.zip" />
+    <None Include="lib\Skapon.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="materials\Character Mats\Mat01 [Bowser Orig].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -590,11 +592,21 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="lib\libg7221_decode.dll" />
-    <Content Include="lib\libmpg123-0.dll" />
-    <Content Include="lib\libvgmstream.dll" />
-    <Content Include="lib\libvorbis.dll" />
-    <Content Include="lib\RG_ETC1.dll" />
+    <Content Include="lib\libg7221_decode.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\libmpg123-0.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\libvgmstream.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\libvorbis.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\RG_ETC1.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="lib\SALT.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
