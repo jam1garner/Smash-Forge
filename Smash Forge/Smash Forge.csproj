@@ -550,26 +550,29 @@
     <None Include="materials\Stage Mats\Mat15 [Cubemap+Norm+Char Reflection].nmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="param_labels\Fighter_Param.ini">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Include="param_labels\fighter_param.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="param_labels\Kumite_Param_Cafe.ini">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Include="param_labels\kumite_param_cafe.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="param_labels\Render_Param.ini">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Include="param_labels\render_param.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="param_labels\Stage_Param.ini">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Include="param_labels\stage_param.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\ui_button_sequence.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\ui_character_db.ini">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\ui_soft_db.ini">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\ui_stage_db.ini">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
