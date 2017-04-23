@@ -562,5 +562,12 @@ namespace Smash_Forge
             if(treeView1.SelectedNode is NUD.Polygon)
                 ((NUD.Polygon)treeView1.SelectedNode).SmoothNormals();
         }
+
+        private void copyMaterialToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            List<NUD.Polygon> polys = PolygonSelector.Popup();
+            foreach(NUD.Polygon poly in polys)
+                poly.materials = ((NUD.Polygon)treeView1.SelectedNode).materials;
+        }
     }
 }

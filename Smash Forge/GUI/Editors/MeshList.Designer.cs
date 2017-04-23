@@ -37,6 +37,7 @@
             this.editMaterialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.duplicateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.flipUVsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.smoothNormalsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.meshContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,7 +49,7 @@
             this.belowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.smoothNormalsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyMaterialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
             this.meshContextMenu.SuspendLayout();
@@ -111,12 +112,13 @@
             // 
             this.polyContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.editMaterialToolStripMenuItem,
+            this.copyMaterialToolStripMenuItem,
             this.duplicateToolStripMenuItem,
             this.flipUVsToolStripMenuItem,
             this.smoothNormalsToolStripMenuItem,
             this.deleteToolStripMenuItem});
             this.polyContextMenu.Name = "polyContextMenu";
-            this.polyContextMenu.Size = new System.Drawing.Size(165, 136);
+            this.polyContextMenu.Size = new System.Drawing.Size(165, 158);
             this.polyContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // editMaterialToolStripMenuItem
@@ -140,6 +142,13 @@
             this.flipUVsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.flipUVsToolStripMenuItem.Text = "Flip UVs";
             this.flipUVsToolStripMenuItem.Click += new System.EventHandler(this.flipUVsToolStripMenuItem_Click);
+            // 
+            // smoothNormalsToolStripMenuItem
+            // 
+            this.smoothNormalsToolStripMenuItem.Name = "smoothNormalsToolStripMenuItem";
+            this.smoothNormalsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.smoothNormalsToolStripMenuItem.Text = "Smooth Normals";
+            this.smoothNormalsToolStripMenuItem.Click += new System.EventHandler(this.smoothNormalsToolStripMenuItem_Click);
             // 
             // deleteToolStripMenuItem
             // 
@@ -224,12 +233,12 @@
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
-            // smoothNormalsToolStripMenuItem
+            // copyMaterialToolStripMenuItem
             // 
-            this.smoothNormalsToolStripMenuItem.Name = "smoothNormalsToolStripMenuItem";
-            this.smoothNormalsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.smoothNormalsToolStripMenuItem.Text = "Smooth Normals";
-            this.smoothNormalsToolStripMenuItem.Click += new System.EventHandler(this.smoothNormalsToolStripMenuItem_Click);
+            this.copyMaterialToolStripMenuItem.Name = "copyMaterialToolStripMenuItem";
+            this.copyMaterialToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.copyMaterialToolStripMenuItem.Text = "Copy Material";
+            this.copyMaterialToolStripMenuItem.Click += new System.EventHandler(this.copyMaterialToolStripMenuItem_Click);
             // 
             // MeshList
             // 
@@ -274,5 +283,6 @@
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem smoothNormalsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyMaterialToolStripMenuItem;
     }
 }

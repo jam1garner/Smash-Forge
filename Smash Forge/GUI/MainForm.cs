@@ -1258,8 +1258,6 @@ namespace Smash_Forge
             }
             else if (filename.EndsWith(".bin"))
             {
-                //Note to whoever is readin this: 
-                //Eventually we need to look at the magic here (and also make all .bins look at magic)
                 FileData f = new FileData(filename);
                 if(f.readShort() == 0xFFFF)
                 {
