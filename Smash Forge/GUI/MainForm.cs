@@ -1658,5 +1658,10 @@ namespace Smash_Forge
             ROM_Injector r = new ROM_Injector();
             r.ShowDialog();
         }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            e.Cancel = (MessageBox.Show("Would you like to close Forge? Any and all unsaved work will be lost.", "Close Confirmation" , MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No);
+        }
     }
 }
