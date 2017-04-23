@@ -254,7 +254,6 @@ namespace Smash_Forge
                 {
                     foreach (string file in Directory.GetFiles(Path.Combine(MainForm.executableDir, "param_labels\\")))
                     {
-                        Console.Write("");
                         string[] ini = File.ReadAllLines(file);
                         if (ini.Length > 0 && ini[0].StartsWith("name"))
                         {

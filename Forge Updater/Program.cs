@@ -19,39 +19,61 @@ namespace Forge_Updater
 
         static int Main(string[] args)
         {
-            executableDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
-            forgeDir = Path.GetDirectoryName(executableDir);
-            bool restartForge = false;
-            if(args.Length == 0)
+            try
             {
-                Console.WriteLine("Usage:\n\nForgeUpdater.exe [options]\n\nOptions:\n* Download latest release     -d\n* Download latest nightly     -dn\n* Install downloaded release  -i\n* Latest release info       -info\n* Restart Forge              -r");
-                return 0;
-            }
-            var client = new GitHubClient(new ProductHeaderValue("forge-updater"));
-            GetReleases(client).Wait();
-
-            bool foundRelease = false;
-            string alreadyDownloaded = "";
-            if (File.Exists(Path.Combine(executableDir, "currentRelease\\version.txt")))
-                alreadyDownloaded = File.ReadAllText(Path.Combine(executableDir, "currentRelease\\version.txt"));
-
-            foreach (string arg in args)
-            {
-                if (arg.Equals("-info"))
+                executableDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+                forgeDir = Path.GetDirectoryName(executableDir);
+                bool restartForge = false;
+                if (args.Length == 0)
                 {
-                    foreach(Release latest in releases)
-                    {
-                        Console.WriteLine($"Name: {latest.Name}\nDescription:\n{latest.Body}");
-                        Console.WriteLine($"URL: {latest.Assets[0].BrowserDownloadUrl}");
-                        Console.WriteLine($"Upload Date: {latest.Assets[0].UpdatedAt}");
-                        break;
-                    }
+                    Console.WriteLine("Usage:\n\nForgeUpdater.exe [options]\n\nOptions:\n* Download latest release     -d\n* Download latest nightly     -dn\n* Install downloaded release  -i\n* Latest release info       -info\n* Restart Forge              -r");
+                    return 0;
                 }
-                if (arg.Equals("-d"))
+                var client = new GitHubClient(new ProductHeaderValue("forge-updater"));
+                GetReleases(client).Wait();
+
+                bool foundRelease = false;
+                string alreadyDownloaded = "";
+                if (File.Exists(Path.Combine(executableDir, "currentRelease\\version.txt")))
+                    alreadyDownloaded = File.ReadAllText(Path.Combine(executableDir, "currentRelease\\version.txt"));
+
+                foreach (string arg in args)
                 {
-                    foreach(Release latest in releases)
+                    if (arg.Equals("-info"))
                     {
-                        if (!latest.Prerelease)
+                        foreach (Release latest in releases)
+                        {
+                            Console.WriteLine($"Name: {latest.Name}\nDescription:\n{latest.Body}");
+                            Console.WriteLine($"URL: {latest.Assets[0].BrowserDownloadUrl}");
+                            Console.WriteLine($"Upload Date: {latest.Assets[0].UpdatedAt}");
+                            break;
+                        }
+                    }
+                    if (arg.Equals("-d"))
+                    {
+                        foreach (Release latest in releases)
+                        {
+                            if (!latest.Prerelease)
+                            {
+                                if (!foundRelease)
+                                {
+                                    Console.WriteLine($"Name: {latest.Name}\nDescription:\n{latest.Body}");
+                                    Console.WriteLine($"URL: {latest.Assets[0].BrowserDownloadUrl}");
+                                    Console.WriteLine($"Upload Date: {latest.Assets[0].UpdatedAt}");
+                                    if (!latest.Assets[0].UpdatedAt.ToString().Equals(alreadyDownloaded))
+                                    {
+                                        int code = DownloadRelease(latest.Assets[0].BrowserDownloadUrl, "currentRelease", latest.Assets[0].UpdatedAt.ToString());
+                                        if (code != 0)
+                                            return code;
+                                    }
+                                    foundRelease = true;
+                                }
+                            }
+                        }
+                    }
+                    else if (arg.Equals("-dn"))
+                    {
+                        foreach (Release latest in releases)
                         {
                             if (!foundRelease)
                             {
@@ -68,56 +90,61 @@ namespace Forge_Updater
                             }
                         }
                     }
-                }
-                else if(arg.Equals("-dn"))
-                {
-                    foreach (Release latest in releases)
+                    else if (arg.Equals("-i"))
                     {
-                        if (!foundRelease)
+                        foreach (string dir in Directory.GetDirectories("currentRelease/"))
                         {
-                            Console.WriteLine($"Name: {latest.Name}\nDescription:\n{latest.Body}");
-                            Console.WriteLine($"URL: {latest.Assets[0].BrowserDownloadUrl}");
-                            Console.WriteLine($"Upload Date: {latest.Assets[0].UpdatedAt}");
-                            if (!latest.Assets[0].UpdatedAt.ToString().Equals(alreadyDownloaded))
+                            string dirName = new DirectoryInfo(dir).Name;
+                            if (!dirName.Equals("updater") && !dirName.Equals("materials") && !dirName.Equals("param_labels"))
                             {
-                                int code = DownloadRelease(latest.Assets[0].BrowserDownloadUrl, "currentRelease", latest.Assets[0].UpdatedAt.ToString());
-                                if (code != 0)
-                                    return code;
+                                if (Directory.Exists(Path.Combine(forgeDir, dirName + @"\")))
+                                    Directory.Delete(Path.Combine(forgeDir, dirName + @"\"), true);
+                                Directory.Move(dir, Path.Combine(forgeDir, dirName + @"\"));
                             }
-                            foundRelease = true;
+                            else if(dirName.Equals("updater"))
+                            {
+                                Directory.Move(dir, Path.Combine(forgeDir, @"new_updater\"));
+                            }
+                            else if(dirName.Equals("param_labels"))
+                            {
+                                foreach(string file in Directory.EnumerateFiles(dir))
+                                {
+                                    string copyPath = Path.Combine(forgeDir, "param_labels/", Path.GetFileName(file));
+                                    File.Copy(file, copyPath, true);
+                                }
+                            }
+                            else if (dirName.Equals("materials"))
+                            {
+                                foreach(string folder in Directory.EnumerateDirectories(dir))
+                                {
+                                    if (!Directory.Exists(Path.Combine(forgeDir, dirName + @"\", folder + @"\")))
+                                        Directory.CreateDirectory(Path.Combine(forgeDir, dirName + @"\", folder + @"\"));
+                                    foreach(string file in Directory.EnumerateFiles(folder))
+                                        File.Copy(file, Path.Combine(Path.Combine(forgeDir, dirName + @"\", folder + @"\"), Path.GetFileName(file)), true);
+                                    
+                                }
+                            }
+                        }
+                        foreach (string file in Directory.GetFiles("currentRelease/"))
+                        {
+                            if (File.Exists(Path.Combine(forgeDir, Path.GetFileName(file))))
+                                File.Delete(Path.Combine(forgeDir, Path.GetFileName(file)));
+                            File.Move(file, Path.Combine(forgeDir, Path.GetFileName(file)));
                         }
                     }
                 }
-                else if (arg.Equals("-i"))
-                {
-                    foreach(string dir in Directory.GetDirectories("currentRelease/"))
-                    {
-                        string dirName = new DirectoryInfo(dir).Name;
-                        if (!dirName.Equals("updater"))
-                        {
-                            if (Directory.Exists(Path.Combine(forgeDir, dirName + @"\")))
-                                Directory.Delete(Path.Combine(forgeDir, dirName + @"\"), true);
-                            Directory.Move(dir, Path.Combine(forgeDir, dirName + @"\"));
-                        }
-                        else
-                        {
-                            Directory.Move(dir, Path.Combine(forgeDir, @"new_updater\"));
-                        }
-                    }
-                    foreach (string file in Directory.GetFiles("currentRelease/"))
-                    {
-                        if (File.Exists(Path.Combine(forgeDir, Path.GetFileName(file))))
-                            File.Delete(Path.Combine(forgeDir, Path.GetFileName(file)));
-                        File.Move(file, Path.Combine(forgeDir,Path.GetFileName(file)));
-                    }
-                }
+
+                foreach (string arg in args)
+                    if (arg.Equals("-r"))
+                        System.Diagnostics.Process.Start(Path.Combine(forgeDir, "Smash Forge.exe"));
+
+                return 0;
             }
-
-            foreach(string arg in args)
-                if(arg.Equals("-r"))
-                    System.Diagnostics.Process.Start(Path.Combine(forgeDir, "Smash Forge.exe"));
-
-            return 0;
+            catch
+            {
+                return 1;
+            }
+            
         }
 
         static async Task GetReleases(GitHubClient client)
