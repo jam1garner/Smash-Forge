@@ -1255,12 +1255,23 @@ namespace Smash_Forge
             {
                 //Note to whoever is readin this: 
                 //Eventually we need to look at the magic here (and also make all .bins look at magic)
-                //Runtime.TargetCMR0 = new CMR0();
-                //Runtime.TargetCMR0.read(new FileData(filename));
-                PARAMEditor p = new PARAMEditor(filename) {ShowHint = DockState.Document};
-                p.Text = Path.GetFileName(filename);
-                AddDockedControl(p);
-                paramEditors.Add(p);
+                FileData f = new FileData(filename);
+                if(f.readShort() == 0xFFFF)
+                {
+                    PARAMEditor p = new PARAMEditor(filename) { ShowHint = DockState.Document };
+                    p.Text = Path.GetFileName(filename);
+                    AddDockedControl(p);
+                    paramEditors.Add(p);
+                }
+                else if (f.readString(4,4) == "PATH")
+                {
+                    Runtime.TargetPath = new PathBin(filename);
+                }
+                else
+                {
+                    Runtime.TargetCMR0 = new CMR0();
+                    Runtime.TargetCMR0.read(new FileData(filename));
+                }
             }
 
             if (filename.EndsWith(".mdl0"))
