@@ -248,7 +248,7 @@ namespace Smash_Forge
 
             public IniLabels(string filename)
             {
-                List<string> labelPaths = null;
+                List<string> labelPaths = new List<string>();
                 string noExtension = Path.GetFileNameWithoutExtension(filename);
                 if (Directory.Exists(Path.Combine(MainForm.executableDir, "param_labels\\")))
                 {
