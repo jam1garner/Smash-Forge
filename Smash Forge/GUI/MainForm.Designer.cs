@@ -89,13 +89,13 @@
             this.renderSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.masterpiecesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nESROMInjectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.glControl1 = new OpenTK.GLControl();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.masterpiecesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.nESROMInjectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -573,6 +573,21 @@
             this.aboutToolStripMenuItem1.Text = "About";
             this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // masterpiecesToolStripMenuItem
+            // 
+            this.masterpiecesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.nESROMInjectorToolStripMenuItem});
+            this.masterpiecesToolStripMenuItem.Name = "masterpiecesToolStripMenuItem";
+            this.masterpiecesToolStripMenuItem.Size = new System.Drawing.Size(88, 20);
+            this.masterpiecesToolStripMenuItem.Text = "Masterpieces";
+            // 
+            // nESROMInjectorToolStripMenuItem
+            // 
+            this.nESROMInjectorToolStripMenuItem.Name = "nESROMInjectorToolStripMenuItem";
+            this.nESROMInjectorToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.nESROMInjectorToolStripMenuItem.Text = "NES ROM Injector";
+            this.nESROMInjectorToolStripMenuItem.Click += new System.EventHandler(this.nESROMInjectorToolStripMenuItem_Click);
+            // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -630,21 +645,6 @@
             this.pictureBox1.TabIndex = 25;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
-            // 
-            // masterpiecesToolStripMenuItem
-            // 
-            this.masterpiecesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.nESROMInjectorToolStripMenuItem});
-            this.masterpiecesToolStripMenuItem.Name = "masterpiecesToolStripMenuItem";
-            this.masterpiecesToolStripMenuItem.Size = new System.Drawing.Size(88, 20);
-            this.masterpiecesToolStripMenuItem.Text = "Masterpieces";
-            // 
-            // nESROMInjectorToolStripMenuItem
-            // 
-            this.nESROMInjectorToolStripMenuItem.Name = "nESROMInjectorToolStripMenuItem";
-            this.nESROMInjectorToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.nESROMInjectorToolStripMenuItem.Text = "NES ROM Injector";
-            this.nESROMInjectorToolStripMenuItem.Click += new System.EventHandler(this.nESROMInjectorToolStripMenuItem_Click);
             // 
             // MainForm
             // 

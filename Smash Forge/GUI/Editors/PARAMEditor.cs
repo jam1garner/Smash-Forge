@@ -248,30 +248,27 @@ namespace Smash_Forge
 
             public IniLabels(string filename)
             {
-                string labelPath = null;
-                string testPath = Path.Combine(MainForm.executableDir,Path.Combine("param_labels\\", Path.ChangeExtension(Path.GetFileName(filename), ".ini")));
-                if (File.Exists(testPath))
-                    labelPath = testPath;
-                else
+                List<string> labelPaths = null;
+                string noExtension = Path.GetFileNameWithoutExtension(filename);
+                if (Directory.Exists(Path.Combine(MainForm.executableDir, "param_labels\\")))
                 {
-                    string noExtension = Path.GetFileNameWithoutExtension(filename);
-                    if(Directory.Exists(Path.Combine(MainForm.executableDir, "param_labels\\")))
+                    foreach (string file in Directory.GetFiles(Path.Combine(MainForm.executableDir, "param_labels\\")))
                     {
-                        foreach (string file in Directory.GetFiles(Path.Combine(MainForm.executableDir, "param_labels\\")))
+                        Console.Write("");
+                        string[] ini = File.ReadAllLines(file);
+                        if (ini.Length > 0 && ini[0].StartsWith("name"))
                         {
-                            Console.Write("");
-                            string[] ini = File.ReadAllLines(file);
-                            if (ini.Length > 0 && ini[0].StartsWith("name"))
-                            {
-                                string name = ini[0].Split('=')[1];
-                                if ((new Regex(name)).IsMatch(noExtension))
-                                    labelPath = file;
-                            }
+                            string name = ini[0].Split('=')[1];
+                            if ((new Regex(name)).IsMatch(noExtension))
+                                labelPaths.Add(file);
                         }
                     }
                 }
+                string testPath = Path.Combine(MainForm.executableDir, Path.Combine("param_labels\\", Path.ChangeExtension(Path.GetFileName(filename), ".ini")));
+                if (File.Exists(testPath))
+                    labelPaths.Add(testPath);
 
-                if (labelPath != null)
+                foreach(string labelPath in labelPaths)
                 {
                     string[] ini = File.ReadAllLines(labelPath);
                     for (int i = 0; i < ini.Length; i++)
