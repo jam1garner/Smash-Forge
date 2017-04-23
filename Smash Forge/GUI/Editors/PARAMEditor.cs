@@ -33,12 +33,20 @@ namespace Smash_Forge
         private int[] currentEntry = new int[2];
         private bool notSaved = false;
 
-        private string getEntryName(int i, int j, int k)
+        private string getValueName(int i, int j, int k)
         {
             foreach (IniLabels.Label label in labels.labels)
                 if (label.Type == IniLabels.Label.type.Value && (label.group == -1 || label.group == i) && (label.entry == -1 || label.entry == j) && label.value == k)
                     return label.name;
             return $"{k}";
+        }
+
+        private string getValueToolTip(int i, int j, int k)
+        {
+            foreach (IniLabels.Label label in labels.labels)
+                if (label.Type == IniLabels.Label.type.Value && (label.group == -1 || label.group == i) && (label.entry == -1 || label.entry == j) && label.value == k)
+                    return label.description;
+            return null;
         }
 
         private void fillTable(int groupNum, int entryNum)
@@ -54,9 +62,12 @@ namespace Smash_Forge
                     foreach (ParamEntry val in p.Groups[groupNum].Values)
                     {
                         DataRow tempRow = tbl.NewRow();
-                        tempRow[0] = getEntryName(groupNum, entryNum, i);
+                        tempRow[0] = getValueName(groupNum, entryNum, i);
                         tempRow[1] = val.Value;
                         tbl.Rows.Add(tempRow);
+                        string toolTip = getValueToolTip(groupNum, entryNum, i);
+                        if (toolTip != null)
+                            dataGridView1.Rows[i].Cells[0].ToolTipText = toolTip;
                         i++;
                     }
                 }
@@ -66,9 +77,13 @@ namespace Smash_Forge
                     for (int j = 0; j < entrySize; j++)
                     {
                         DataRow tempRow = tbl.NewRow();
-                        tempRow[0] = getEntryName(groupNum, entryNum, j);
+                        tempRow[0] = getValueName(groupNum, entryNum, j);
                         tempRow[1] = p.Groups[groupNum].Values[entrySize * entryNum + j].Value;
                         tbl.Rows.Add(tempRow);
+                        string toolTip = getValueToolTip(groupNum, entryNum, j);
+                        Console.WriteLine($"row {j} column 0 tool tip - {toolTip}");
+                        if (toolTip != null)
+                            dataGridView1.Rows[j].Cells[0].ToolTipText = toolTip;
                     }
                 }
             }
@@ -242,6 +257,7 @@ namespace Smash_Forge
                 public int group = -1;
                 public int entry = -1;
                 public int value = -1;
+                public string description = null;
             }
 
             public List<Label> labels = new List<Label>();
@@ -280,7 +296,7 @@ namespace Smash_Forge
                             if(Enum.TryParse(name, out temp))
                             {
                                 label.Type = temp;
-                                for (int j = 1; j <= 4 && i + j < ini.Length; j++)
+                                for (int j = 1; j <= 5 && i + j < ini.Length; j++)
                                 {
                                     if (ini[i + j].Length > 0 && ini[i + j][0] == '[')
                                         break;
@@ -292,6 +308,9 @@ namespace Smash_Forge
                                         label.entry = int.Parse(ini[i + j].Split('=')[1].Trim());
                                     if (ini[i + j].StartsWith("value"))
                                         label.value = int.Parse(ini[i + j].Split('=')[1].Trim());
+                                    if (ini[i + j].StartsWith("desc"))
+                                        label.description = ini[i + j].Split('=')[1].Trim();
+
                                 }
                                 labels.Add(label);
                             }
