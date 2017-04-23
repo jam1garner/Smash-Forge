@@ -130,8 +130,6 @@ namespace Smash_Forge
             string error = GL.GetProgramInfoLog(programID);
             errorlog += error + "\n";
             Console.WriteLine(error);
-
-            SaveErrorLog();
         }
 
         void loadShader(string shader, ShaderType type, int program, out int address)

@@ -600,6 +600,63 @@ void main()
         }
 
         #endregion
+
+        #region Shaders
+
+        public static string vs_Point = @"#version 330
+
+in vec3 vPosition;
+in vec4 vBone;
+in vec4 vWeight;
+in int vSelected;
+
+out int selected;
+
+uniform mat4 eyeview;
+uniform bones
+{
+    mat4 transforms[200];
+} bones_;
+
+vec4 skin(vec3 po, ivec4 index)
+{
+    vec4 oPos = vec4(po.xyz, 1.0);
+
+    oPos = bones_.transforms[index.x] * vec4(po, 1.0) * vWeight.x;
+    oPos += bones_.transforms[index.y] * vec4(po, 1.0) * vWeight.y;
+    oPos += bones_.transforms[index.z] * vec4(po, 1.0) * vWeight.z;
+    oPos += bones_.transforms[index.w] * vec4(po, 1.0) * vWeight.w;
+    
+    selected = vSelected;
+
+    return oPos;
+}
+
+void main()
+{
+    vec4 objPos = vec4(vPosition.xyz, 1.0);
+    ivec4 bi = ivec4(vBone); 
+
+    if(vBone.x != -1.0) objPos = skin(vPosition, bi);
+
+    gl_Position = eyeview * vec4(objPos.xyz, 1.0f);
+}
+";
+        public static string fs_Point = @"#version 330
+
+in int selected;
+
+void main()
+{
+    if(selected == 0)
+        gl_FragColor = vec4(1,1,1,1);
+    else
+        gl_FragColor = vec4(1,1,0,1);
+}
+";
+
+        #endregion
+
     }
 }
 

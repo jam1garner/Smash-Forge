@@ -486,8 +486,6 @@ namespace Smash_Forge
         }
 
 
-        // to etc
-
         public static byte[] encodeETC(Bitmap b)
         {
             int width = b.Width;

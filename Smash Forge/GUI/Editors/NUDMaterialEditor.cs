@@ -632,10 +632,12 @@ namespace Smash_Forge
                 sfd.Filter = "Namco Material (NMT)|*.nmt|" +
                              "All files(*.*)|*.*";
 
-                sfd.InitialDirectory = Path.Combine(MainForm.executableDir,"materials/");
+                sfd.InitialDirectory = Path.Combine(MainForm.executableDir,"materials\\");
+                Console.WriteLine(sfd.InitialDirectory);
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     sfd.FileName = sfd.FileName;
+                    sfd.RestoreDirectory = true;
 
                     if (sfd.FileName.EndsWith(".nmt"))
                     {

@@ -18,7 +18,9 @@ namespace Smash_Forge
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out ibo_elements);
             GL.GenBuffers(1, out ubo_bones);
+            GL.GenBuffers(1, out vbo_select);
         }
+
         public NUD(string fname) : this()
         {
             Read(fname);
@@ -29,9 +31,7 @@ namespace Smash_Forge
         int vbo_position;
         int ibo_elements;
         int ubo_bones;
-
-        int[] facedata;
-        dVertex[] vertdata;
+        int vbo_select;
 
         public const int SMASH = 0;
         public const int POKKEN = 1;
@@ -49,9 +49,8 @@ namespace Smash_Forge
             GL.DeleteBuffer(vbo_position);
             GL.DeleteBuffer(ibo_elements);
             GL.DeleteBuffer(ubo_bones);
+            GL.DeleteBuffer(vbo_select);
 
-            vertdata = null;
-            facedata = null;
             mesh.Clear();
         }
 
@@ -494,6 +493,62 @@ namespace Smash_Forge
             }
         }
 
+        public void DrawPoints(Matrix4 view, VBN vbn)
+        {
+            Shader shader = Runtime.shaders["Point"];
+            GL.UseProgram(shader.programID);
+            GL.UniformMatrix4(shader.getAttribute("eyeview"), false, ref view);
+            //GL.Uniform4(shader.getAttribute("color"), 1, 1, 1, 1);
+
+            if (vbn != null)
+            {
+                Matrix4[] f = vbn.getShaderMatrix();
+
+                int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
+                int boneCount = vbn.bones.Count;
+                int dataSize = boneCount * Vector4.SizeInBytes * 4;
+
+                GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
+                GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
+                GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+
+                var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
+                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
+
+                if (f.Length > 0)
+                {
+                    GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
+                    GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
+                }
+            }
+
+            shader.enableAttrib();
+            foreach (Mesh m in mesh)
+            {
+                foreach (Polygon p in m.polygons)
+                {
+                    if (!p.IsSelected) return;
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
+                    GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
+                    GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
+                    GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 72);
+                    GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 88);
+
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_select);
+                    GL.BufferData<int>(BufferTarget.ArrayBuffer, (IntPtr)(p.selectedVerts.Length * sizeof(int)), p.selectedVerts, BufferUsageHint.StaticDraw);
+                    GL.VertexAttribPointer(shader.getAttribute("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
+
+                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
+                    GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                    
+                    GL.PointSize(4f);
+                    GL.DrawElements(PrimitiveType.Points, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+                }
+            }
+            shader.disableAttrib();
+        }
+
         Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
                     { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
                     { 0x02, BlendingFactorDest.One},
@@ -507,7 +562,7 @@ namespace Smash_Forge
                     { 0x01, BlendingFactorSrc.SrcAlpha},
                     { 0x02, BlendingFactorSrc.SrcAlpha},
                     { 0x03, BlendingFactorSrc.DstAlpha},
-                    { 0x04, BlendingFactorSrc.SrcAlpha},
+                    { 0x04, BlendingFactorSrc.Src1Alpha},
                     { 0x0a, BlendingFactorSrc.Zero}
                 };
 
@@ -1684,6 +1739,7 @@ namespace Smash_Forge
             public bool isTransparent = false;
             public dVertex[] vertdata;
             public int[] display;
+            public int[] selectedVerts;
 
             public Polygon()
             {
@@ -1745,6 +1801,11 @@ namespace Smash_Forge
                 }
                 vertdata = vert.ToArray();
                 vert = new List<dVertex>();
+                selectedVerts = new int[vertdata.Length];
+                for(int i = 0; i < selectedVerts.Length / 10; i++)
+                {
+                    selectedVerts[i] = 1;
+                }
             }
 
             public void SmoothNormals()
