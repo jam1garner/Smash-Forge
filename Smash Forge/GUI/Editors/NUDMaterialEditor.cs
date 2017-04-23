@@ -12,6 +12,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using System.IO;
 using OpenTK.Graphics.OpenGL;
 using System.Timers;
+using System.Windows.Input;
 
 namespace Smash_Forge
 {
@@ -933,5 +934,17 @@ namespace Smash_Forge
             RenderTexture();
         }
 
+        private void listView2_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Delete)
+            {
+                NUD.Material mat = material[current];
+                foreach (var property in listView2.SelectedItems)
+                {
+                    mat.entries.Remove(property.ToString());
+                }
+                e.Handled = true;
+            }
+        }
     }
 }
