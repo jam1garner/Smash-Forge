@@ -566,8 +566,12 @@ namespace Smash_Forge
         private void copyMaterialToolStripMenuItem_Click(object sender, EventArgs e)
         {
             List<NUD.Polygon> polys = PolygonSelector.Popup();
-            foreach(NUD.Polygon poly in polys)
-                poly.materials = ((NUD.Polygon)treeView1.SelectedNode).materials;
+            foreach (NUD.Polygon poly in polys)
+            {
+                poly.materials.Clear();
+                foreach (NUD.Material m in ((NUD.Polygon)treeView1.SelectedNode).materials)
+                    poly.materials.Add(m.Clone());
+            }
         }
     }
 }

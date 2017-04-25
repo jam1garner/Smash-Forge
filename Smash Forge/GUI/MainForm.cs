@@ -1295,14 +1295,17 @@ namespace Smash_Forge
                 m.ShowDialog();
                 if (m.exitStatus == DAEImportSettings.Opened)
                 {
-                    if (Runtime.ModelContainers.Count < 1)
-                        Runtime.ModelContainers.Add(new ModelContainer());
+                    ModelContainer con = new ModelContainer();
+                    Runtime.ModelContainers.Add(con);
 
-                    Collada.DAEtoNUD(filename, Runtime.ModelContainers[0], m.checkBox5.Checked);
+                    // load vbn
+                    con.vbn = m.getVBN();
+
+                    Collada.DAEtoNUD(filename, con, m.checkBox5.Checked);
 
                     // apply settings
-                    m.Apply(Runtime.ModelContainers[0].nud);
-                    Runtime.ModelContainers[0].nud.MergePoly();
+                    m.Apply(con.nud);
+                    con.nud.MergePoly();
 
                     meshList.refresh();
                 }

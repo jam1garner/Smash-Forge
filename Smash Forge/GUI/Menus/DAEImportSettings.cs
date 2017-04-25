@@ -54,12 +54,15 @@ namespace Smash_Forge
                 comboBox2.Items.Add(key);
 
             comboBox1.SelectedIndex = 3;
-            comboBox2.SelectedIndex = 1;
+            comboBox2.SelectedIndex = 2;
         }
 
         public void Apply(NUD nud)
         {
             Matrix4 rot = Matrix4.CreateRotationX(0.5f * (float)Math.PI);
+            float sc = 1f;
+            bool hasScale = float.TryParse(scaleTB.Text, out sc);
+
             foreach (NUD.Mesh mesh in nud.mesh)
             {
                 if (BoneTypes[(string)comboBox2.SelectedItem] == BoneTypes["No Bones"])
@@ -67,9 +70,12 @@ namespace Smash_Forge
 
                 foreach (NUD.Polygon poly in mesh.polygons)
                 {
+                    if (smoothCB.Checked)
+                        poly.SmoothNormals();
+
                     poly.vertSize = ((poly.vertSize == 0x6 ? 0 : BoneTypes[(string)comboBox2.SelectedItem])) | (VertTypes[(string)comboBox1.SelectedItem]);
                     
-                    if (checkBox1.Checked || checkBox4.Checked || vertcolorCB.Checked)
+                    if (checkBox1.Checked || checkBox4.Checked || vertcolorCB.Checked || sc != 1f)
                         foreach (NUD.Vertex v in poly.vertices)
                         {
                             if (checkBox1.Checked)
@@ -84,6 +90,8 @@ namespace Smash_Forge
                                 v.pos = Vector3.Transform(v.pos, rot);
                                 v.nrm = Vector3.Transform(v.nrm, rot);
                             }
+                            if(sc != 1f)
+                                v.pos = Vector3.Multiply(v.pos, sc);
                         }
                 }
             }
@@ -101,6 +109,22 @@ namespace Smash_Forge
             }
             
             nud.PreRender();
+        }
+
+        public VBN getVBN()
+        {
+            VBN v = null;
+
+            if (!vbnFileLabel.Text.Equals(""))
+            {
+                v = new VBN(vbnFileLabel.Text);
+            }else
+            {
+                if (Runtime.ModelContainers.Count > 0)
+                    v = Runtime.ModelContainers[0].vbn;
+            }
+
+            return v;
         }
 
         private void closeButton(object sender, EventArgs e)
@@ -128,6 +152,17 @@ namespace Smash_Forge
         private void checkBox5_CheckedChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void vbnButton_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog() { Filter = "Visual Bone Namco (.vbn)|*.vbn|All Files (*.*)|*.*" })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    vbnFileLabel.Text = ofd.FileName;
+                }
+            }
         }
     }
 }

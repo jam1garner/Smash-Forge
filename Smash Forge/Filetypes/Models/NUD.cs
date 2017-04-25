@@ -1588,6 +1588,20 @@ namespace Smash_Forge
             public int magFilter = 0;
             public int mipDetail = 0;
             public int unknown = 0;
+
+            public Mat_Texture Clone()
+            {
+                Mat_Texture t = new Mat_Texture();
+                t.hash = hash;
+                t.MapMode = MapMode;
+                t.WrapMode1 = WrapMode1;
+                t.WrapMode2 = WrapMode2;
+                t.minFilter = minFilter;
+                t.magFilter = magFilter;
+                t.mipDetail = mipDetail;
+                t.unknown = unknown;
+                return t;
+            }
         }
 
         public enum SrcFactors 
@@ -1665,6 +1679,35 @@ namespace Smash_Forge
             public bool cubemap = false;
             public bool ramp = false;
             public bool highlight = false;
+
+            public Material Clone()
+            {
+                Material m = new Smash_Forge.NUD.Material();
+
+                foreach (KeyValuePair<string, float[]> e in entries)
+                    m.entries.Add(e.Key, e.Value);
+
+                m.flags = flags;
+                m.blendMode = blendMode;
+                m.dstFactor = dstFactor;
+                m.srcFactor = srcFactor;
+                m.ref1 = ref1;
+                m.ref0 = ref0;
+                m.drawPriority = drawPriority;
+                m.cullMode = cullMode;
+                m.displayTexId = displayTexId;
+
+                m.unknown1 = 0;
+                m.unkownWater = 0;
+                m.zBufferOffset = 0;
+
+                foreach(Mat_Texture t in textures)
+                {
+                    m.textures.Add(t.Clone());
+                }
+
+                return m;
+            }
 
             public Material()
             {
