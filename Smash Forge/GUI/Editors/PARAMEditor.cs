@@ -81,7 +81,6 @@ namespace Smash_Forge
                         tempRow[1] = p.Groups[groupNum].Values[entrySize * entryNum + j].Value;
                         tbl.Rows.Add(tempRow);
                         string toolTip = getValueToolTip(groupNum, entryNum, j);
-                        Console.WriteLine($"row {j} column 0 tool tip - {toolTip}");
                         if (toolTip != null)
                             dataGridView1.Rows[j].Cells[0].ToolTipText = toolTip;
                     }
@@ -115,23 +114,14 @@ namespace Smash_Forge
                     for (int j = 0; j < ((ParamGroup)p.Groups[i]).EntryCount; j++)
                     {
                         TreeNode child = new TreeNode(getEntryName(i, j));
-                        int[] temp1 = new int[2];
-                        temp1[0] = i;
-                        temp1[1] = j;
-                        child.Tag = temp1;
                         children[j] = child;
                     }
                     TreeNode parent = new TreeNode(getGroupName(i), children);
-                    int[] temp = new int[2];
-                    temp[0] = i;
-                    temp[1] = 0;
-                    parent.Tag = temp;
                     treeView1.Nodes.Add(parent);
                 }
                 else
                 {
-                    int[] temp = { i, 0 };
-                    treeView1.Nodes.Add(new TreeNode(getGroupName(i)) { Tag = temp });
+                    treeView1.Nodes.Add(new TreeNode(getGroupName(i)));
                 }
             }
             fillTable(0,0);
@@ -139,7 +129,10 @@ namespace Smash_Forge
 
         private void select(object sender, TreeViewEventArgs e)
         {
-            fillTable(((int[])e.Node.Tag)[0], ((int[])e.Node.Tag)[1]);
+            if (e.Node.Level == 0)
+                fillTable(e.Node.Index, 0);
+            else
+                fillTable(e.Node.Parent.Index, e.Node.Index);
         }
 
         private void edit(object sender, DataGridViewCellEventArgs e)
@@ -317,6 +310,88 @@ namespace Smash_Forge
                         }
                     }
                 }
+            }
+        }
+
+        private void treeView1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                treeView1.SelectedNode = treeView1.GetNodeAt(e.Location);
+                if (treeView1.SelectedNode != null)
+                {
+                    contextMenuStrip1.Show(this, e.X, e.Y);
+                }
+                
+            }
+        }
+
+        private void duplicateEntryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(treeView1.SelectedNode != null && treeView1.SelectedNode.Level != 0)
+            {
+                int groupNum = treeView1.SelectedNode.Parent.Index;
+                int entryNum = treeView1.SelectedNode.Index;
+                int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
+                for (int j = 0; j < entrySize; j++)
+                {
+                    ParamEntry temp = new ParamEntry(p.Groups[groupNum].Values[entrySize * entryNum + j].Value, p.Groups[groupNum].Values[entrySize * entryNum + j].Type);
+                    p.Groups[groupNum].Values.Add(temp);
+                }
+                ((ParamGroup)p.Groups[groupNum]).EntryCount++;
+                TreeNode temp2 = new TreeNode();
+                temp2.Text = getEntryName(groupNum, ((ParamGroup)p.Groups[groupNum]).EntryCount - 1);
+                treeView1.SelectedNode.Parent.Nodes.Add(temp2);
+                fillTable(groupNum, ((ParamGroup)p.Groups[groupNum]).EntryCount - 1);
+                treeView1.SelectedNode = treeView1.SelectedNode.Parent.LastNode;
+               
+            }
+        }
+
+        private void deleteEntryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode != null && treeView1.SelectedNode.Level != 0)
+            {
+                int groupNum = treeView1.SelectedNode.Parent.Index;
+                int entryNum = treeView1.SelectedNode.Index;
+                int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
+                for (int j = 0; j < entrySize; j++)
+                    p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum);
+                
+                ((ParamGroup)p.Groups[groupNum]).EntryCount--;
+                TreeNode temp2 = treeView1.SelectedNode;
+                treeView1.SelectedNode = temp2.Parent.PrevNode;
+                treeView1.Nodes.Remove(temp2);
+            }
+        }
+
+        private void treeView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Control && e.KeyCode == Keys.Up && treeView1.SelectedNode != null && treeView1.SelectedNode.Level != 0 && treeView1.SelectedNode.Parent.FirstNode != treeView1.SelectedNode)
+            {
+                int groupNum = treeView1.SelectedNode.Parent.Index;
+                int entryNum = treeView1.SelectedNode.Index;
+                int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
+                for (int j = 0; j < entrySize; j++)
+                {
+                    p.Groups[groupNum].Values.Insert(entrySize * (entryNum - 1) + j, p.Groups[groupNum].Values[entrySize * entryNum + j]);
+                    p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum + j + 1);
+                }
+                fillTable(groupNum, entryNum - 1);
+                treeView1.SelectedNode = treeView1.SelectedNode.PrevNode;
+            }
+            else if (e.Control && e.KeyCode == Keys.Down && treeView1.SelectedNode != null && treeView1.SelectedNode.Level != 0 && treeView1.SelectedNode.Parent.LastNode != treeView1.SelectedNode)
+            {
+                int groupNum = treeView1.SelectedNode.Parent.Index;
+                int entryNum = treeView1.SelectedNode.Index;
+                int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
+                for (int j = 0; j < entrySize; j++)
+                {
+                    p.Groups[groupNum].Values.Insert(entrySize * (entryNum + 2), p.Groups[groupNum].Values[entrySize * entryNum]);
+                    p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum);
+                }
+                fillTable(groupNum, entryNum + 1);
+                treeView1.SelectedNode = treeView1.SelectedNode.NextNode;
             }
         }
     }
