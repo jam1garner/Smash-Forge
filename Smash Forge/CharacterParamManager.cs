@@ -1,0 +1,127 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SALT.PARAMS;
+
+namespace Smash_Forge
+{
+    public class CharacterParamManager
+    {
+        public SortedList<int, MoveData> MovesData { get; set; }
+        public SortedList<int, Hurtbox> Hurtboxes { get; set; }
+        public SortedList<int, LedgeGrabbox> LedgeGrabboxes { get; set; }
+
+        public CharacterParamManager()
+        {
+            Reset();
+        }
+
+        public CharacterParamManager(string file)
+        {
+            Reset();
+            try
+            {
+                ParamFile param = new ParamFile(file);
+
+                //Move data (FAF, Intangibility)
+
+                for (int id = 0; id < ((ParamGroup)param.Groups[0]).Chunks.Length; id++)
+                {
+                    MoveData m = new MoveData();
+                    m.Index = id;
+                    m.FAF = Convert.ToInt32(((ParamGroup)param.Groups[0])[id][2].Value);
+                    m.IntangibilityStart = Convert.ToInt32(((ParamGroup)param.Groups[0])[id][3].Value);
+                    m.IntangibilityEnd = Convert.ToInt32(((ParamGroup)param.Groups[0])[id][4].Value);
+
+                    MovesData.Add(id, m);
+                }
+
+                //Hurtboxes
+
+                for (int id = 0; id < ((ParamGroup)param.Groups[4]).Chunks.Length; id++)
+                {
+                    Hurtbox hurtbox = new Hurtbox();
+                    hurtbox.X = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][0].Value);
+                    hurtbox.Y = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][1].Value);
+                    hurtbox.Z = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][2].Value);
+
+                    hurtbox.X2 = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][3].Value);
+                    hurtbox.Y2 = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][4].Value);
+                    hurtbox.Z2 = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][5].Value);
+
+                    hurtbox.Size = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][6].Value);
+                    hurtbox.Bone = (Convert.ToInt32(((ParamGroup)param.Groups[4])[id][7].Value)-1).Clamp(0, int.MaxValue);
+                    hurtbox.Part = Convert.ToInt32(((ParamGroup)param.Groups[4])[id][8].Value);
+                    hurtbox.Zone = Convert.ToInt32(((ParamGroup)param.Groups[4])[id][9].Value);
+
+                    Hurtboxes.Add(id, hurtbox);
+                }
+
+                //Ledge grabboxes
+
+                for (int id = 0; id < ((ParamGroup)param.Groups[6]).Chunks.Length; id++)
+                {
+                    LedgeGrabbox l = new LedgeGrabbox();
+                    l.ID = id;
+                    l.X1 = Convert.ToSingle(((ParamGroup)param.Groups[6])[id][0].Value);
+                    l.Y1 = Convert.ToSingle(((ParamGroup)param.Groups[6])[id][1].Value);
+                    l.X2 = Convert.ToSingle(((ParamGroup)param.Groups[6])[id][2].Value);
+                    l.Y2 = Convert.ToSingle(((ParamGroup)param.Groups[6])[id][3].Value);
+
+                    LedgeGrabboxes.Add(id, l);
+                }
+            }
+            catch
+            {
+                //Some error occurred (Invalid file probably)
+                //Reset lists
+                Reset();
+            }
+        }
+
+        public void Reset()
+        {
+            Hurtboxes = new SortedList<int, Hurtbox>();
+            MovesData = new SortedList<int, MoveData>();
+            LedgeGrabboxes = new SortedList<int, LedgeGrabbox>();
+        }
+    }
+
+    public class Hurtbox
+    {
+        public int Bone { get; set; }
+        public float Size { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
+        public float X2 { get; set; }
+        public float Y2 { get; set; }
+        public float Z2 { get; set; }
+        public int Zone { get; set; }
+
+        public const int LW_ZONE = 0;
+        public const int N_ZONE = 1;
+        public const int HI_ZONE = 2;
+
+        public int Part { get; set; }
+    }
+
+    public class MoveData
+    {
+        public int Index { get; set; }
+        public int FAF { get; set; }
+        public int IntangibilityStart { get; set; }
+        public int IntangibilityEnd { get; set; }
+    }
+
+    public class LedgeGrabbox
+    {
+        public int ID { get; set; }
+        public float X1 { get; set; }
+        public float Y1 { get; set; }
+        public float X2 { get; set; }
+        public float Y2 { get; set; }
+    }
+}

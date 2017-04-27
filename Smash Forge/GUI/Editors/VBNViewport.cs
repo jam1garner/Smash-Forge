@@ -1020,6 +1020,9 @@ main()
                 if (Runtime.renderHitboxes)
                     RenderHitboxes();
 
+                if (Runtime.renderHurtboxes)
+                    RenderHurtboxes();
+
                 foreach (ModelContainer m in Runtime.ModelContainers)
                 {
                     RenderTools.DrawVBN(m.vbn);
@@ -1605,13 +1608,21 @@ main()
                     {
                         foreach (ModelContainer m in Runtime.ModelContainers)
                         {
+                            //ModelContainers should store Hitbox data or have them linked since it will use last modelcontainer bone for hitbox display (which might not be the character model)
                             if (m.vbn != null)
                             {
-                                if (m.vbn.jointTable.Count < 1)
-                                    b = m.vbn.bones[bid];
-                                else
+                                try //Try used to avoid bone not found issue that crashes the application
                                 {
-                                    b = m.vbn.bones[m.vbn.jointTable[gr][bid]];
+                                    if (m.vbn.jointTable.Count < 1)
+                                        b = m.vbn.bones[bid];
+                                    else
+                                    {
+                                        b = m.vbn.bones[m.vbn.jointTable[gr][bid]];
+                                    }
+                                }
+                                catch
+                                {
+                                    //Console.WriteLine($"Hitbox: Bone not found {h.Bone}");
                                 }
                             }
                         }
@@ -1657,6 +1668,94 @@ main()
                     {
                         RenderTools.drawSphere(va, h.Size, 30);
                     }
+                }
+
+                GL.Disable(EnableCap.Blend);
+                GL.Disable(EnableCap.DepthTest);
+            }
+        }
+
+        public void RenderHurtboxes()
+        {
+            if (Runtime.ParamManager.Hurtboxes.Count > 0)
+            {
+                GL.Color4(Color.FromArgb(50, Color.Green));
+                GL.Enable(EnableCap.DepthTest);
+                GL.Enable(EnableCap.Blend);
+
+                foreach (var pair in Runtime.ParamManager.Hurtboxes)
+                {
+                    var h = pair.Value;
+                    var va = new Vector3(h.X, h.Y, h.Z);
+
+                    int bid = h.Bone;
+                    int gr = 0;
+                    if (bid > 1000)
+                    {
+                        /*while (bid >= 1000)
+                        {
+                            bid -= 1000;
+                            gr++;
+                        }
+                        gr = gr % 2;
+                        //bid = bid >> 6;
+                        Console.WriteLine(h.Bone + " " + gr + " " + bid);*/
+                        bid >>= 8;
+                    }
+
+                    Bone b = new Bone(null);
+
+                    if (h.Bone != -1)
+                    {
+                        foreach (ModelContainer m in Runtime.ModelContainers)
+                        {
+                            if (m.vbn != null)
+                            {
+                                try //Try used to avoid bone not found issue that crashes the application
+                                {
+                                    if (m.vbn.jointTable.Count < 1)
+                                        b = m.vbn.bones[bid];
+                                    else
+                                    {
+                                        b = m.vbn.bones[m.vbn.jointTable[gr][bid]];
+                                    }
+                                }
+                                catch
+                                {
+                                    //Console.WriteLine($"Hurtbox: Bone not found {h.Bone}");
+                                }
+                            }
+
+                        }
+                    }
+
+                    va = Vector3.Transform(va, b.transform.ClearScale());
+
+                    GL.Color4(Color.FromArgb(50, Color.Green));
+
+                    if (Runtime.renderHurtboxesZone)
+                    {
+                        switch (h.Zone)
+                        {
+                            case Hurtbox.LW_ZONE:
+                                GL.Color4(Color.FromArgb(50, Color.Aqua));
+                                break;
+                            case Hurtbox.N_ZONE:
+                                GL.Color4(Color.FromArgb(50, Color.Green));
+                                break;
+                            case Hurtbox.HI_ZONE:
+                                GL.Color4(Color.FromArgb(50, Color.Orange));
+                                break;
+                        }
+                    }
+
+                    GL.DepthMask(false);
+                    var va2 = new Vector3(h.X2, h.Y2, h.Z2);
+
+                    if (h.Bone != -1)
+                        va2 = Vector3.Transform(va2, b.transform.ClearScale());
+
+                    RenderTools.drawReducedSidesCylinder(va, va2, h.Size);
                 }
 
                 GL.Disable(EnableCap.Blend);
@@ -1752,6 +1851,13 @@ main()
                             h.X = (float)cmd.Parameters[9];
                             h.Y = (float)cmd.Parameters[10];
                             h.Z = (float)cmd.Parameters[11];
+                            if (cmd.Parameters.Count > 39)
+                            {
+                                if ((int)cmd.Parameters[39] == 1)
+                                {
+                                    h.Type = Hitbox.WINDBOX;
+                                }
+                            }
                             Hitboxes.Add(id, h);
                             break;
                         }
@@ -1773,6 +1879,10 @@ main()
                             h.X = (float)cmd.Parameters[9];
                             h.Y = (float)cmd.Parameters[10];
                             h.Z = (float)cmd.Parameters[11];
+                            if ((int)cmd.Parameters[39] == 1)
+                            {
+                                h.Type = Hitbox.WINDBOX;
+                            }
                             h.X2 = (float)cmd.Parameters[40];
                             h.Y2 = (float)cmd.Parameters[41];
                             h.Z2 = (float)cmd.Parameters[42];
@@ -1819,7 +1929,24 @@ main()
                                 h.X2 = float.Parse(cmd.Parameters[8] + "");
                                 h.Y2 = float.Parse(cmd.Parameters[9] + "");
                                 h.Z2 = float.Parse(cmd.Parameters[10] + "");
+                                h.Extended = true;
                             }
+
+                            Hitboxes.Add(id, h);
+                            break;
+                        }
+                    case 0x548F2D4C: //"Special grabbox" (used in tether grabs) Requires changing SALT's PARAM_FORMAT event values to float to work
+                        {
+                            //PARAM_SYNTAX "ID,Bone,Size,X,Y,Z,Action,Air/Ground"
+
+                            Hitbox h = new Hitbox();
+                            int id = (int)cmd.Parameters[0];
+                            h.Type = Hitbox.GRABBOX;
+                            h.Bone = (int.Parse(cmd.Parameters[1] + "")-1).Clamp(0, int.MaxValue);
+                            h.Size = (float)cmd.Parameters[2];
+                            h.X = (float)cmd.Parameters[3];
+                            h.Y = (float)cmd.Parameters[4];
+                            h.Z = (float)cmd.Parameters[5];
 
                             Hitboxes.Add(id, h);
                             break;

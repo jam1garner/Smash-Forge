@@ -70,6 +70,8 @@ namespace Smash_Forge
             Runtime.renderNormals = true;
             Runtime.renderVertColor = true;
             Runtime.renderSwag = false;
+            Runtime.renderHurtboxes = true;
+            Runtime.renderHurtboxesZone = true;
             Runtime.renderType = Runtime.RenderTypes.Texture;
             //Pichu.MakePichu();
             //meshList.refresh();
@@ -632,6 +634,7 @@ namespace Smash_Forge
         private void clearWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Runtime.killWorkspace = true;
+            Runtime.ParamManager.Reset();
         }
 
         private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1741,5 +1744,22 @@ namespace Smash_Forge
         {
             e.Cancel = false;// (MessageBox.Show("Would you like to close Forge? Any and all unsaved work will be lost.", "Close Confirmation" , MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No);
         }
+
+        private void importParamsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog() { Filter = "Character fighter_param_vl file (.bin)|*.bin|All Files (*.*)|*.*" })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    Runtime.ParamManager = new CharacterParamManager(ofd.FileName);
+                }
+            }
+        }
+
+        private void clearParamsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Runtime.ParamManager.Reset();
+        }
+
     }
 }
