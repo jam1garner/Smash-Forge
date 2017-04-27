@@ -109,6 +109,15 @@ namespace Smash_Forge
 			data.Add((byte)((i>>24)&0xFF));
 		}
 
+        public void writeFloatAt(float f, int p)
+        {
+            int i = SingleToInt32Bits(f, Endian == Endianness.Big);
+            data[p++] = (byte)((i) & 0xFF);
+            data[p++] = (byte)((i >> 8) & 0xFF);
+            data[p++] = (byte)((i >> 16) & 0xFF);
+            data[p++] = (byte)((i >> 24) & 0xFF);
+        }
+
 		public static int SingleToInt32Bits(float value, bool littleEndian) {
 			byte[] b = BitConverter.GetBytes (value);
 			int p = 0;

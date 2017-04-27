@@ -268,7 +268,7 @@ namespace Smash_Forge
             {
                 string filename = "";
                 SaveFileDialog save = new SaveFileDialog();
-                save.Filter = "Supported Filetypes (VBN,LVD)|*.vbn;*.lvd;*.dae;*.nud;|Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
+                save.Filter = "Supported Filetypes (VBN,LVD,DAE,DAT)|*.vbn;*.lvd;*.dae;*.dat;|Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
                 DialogResult result = save.ShowDialog();
 
                 if (result == DialogResult.OK)
@@ -1093,6 +1093,76 @@ namespace Smash_Forge
                 }
             }
 
+            if (filename.EndsWith(".dat"))
+            {
+                foreach(ModelContainer mc in Runtime.ModelContainers)
+                {
+                    if(mc.dat_melee != null)
+                    {
+                        FileOutput f = new FileOutput();
+                        f.writeBytes(File.ReadAllBytes(mc.dat_melee.filename));
+                        if (mc.dat_melee.spawns != null)
+                        {
+                            for (int i = 0; i < mc.dat_melee.spawns.Count; i++)
+                            {
+                                f.writeFloatAt(mc.dat_melee.spawns[i].x, mc.dat_melee.spawnOffs[i]);
+                                f.writeFloatAt(mc.dat_melee.spawns[i].y, mc.dat_melee.spawnOffs[i] + 4);
+                                f.writeFloatAt(0, mc.dat_melee.spawnOffs[i] + 8);
+                            }
+                        }
+
+                        if (mc.dat_melee.respawns != null)
+                        {
+                            for(int i = 0; i < mc.dat_melee.respawns.Count; i++)
+                            {
+                                f.writeFloatAt(mc.dat_melee.respawns[i].x, mc.dat_melee.respawnOffs[i]);
+                                f.writeFloatAt(mc.dat_melee.respawns[i].y, mc.dat_melee.respawnOffs[i] + 4);
+                                f.writeFloatAt(0, mc.dat_melee.respawnOffs[i] + 8);
+                            }
+                        }
+
+                        if (mc.dat_melee.itemSpawns != null)
+                        {
+                            for (int i = 0; i < mc.dat_melee.itemSpawns.Count; i++)
+                            {
+                                f.writeFloatAt(mc.dat_melee.itemSpawns[i].x, mc.dat_melee.itemSpawnOffs[i]);
+                                f.writeFloatAt(mc.dat_melee.itemSpawns[i].y, mc.dat_melee.itemSpawnOffs[i] + 4);
+                                f.writeFloatAt(0, mc.dat_melee.itemSpawnOffs[i] + 8);
+                            }
+                        }
+
+                        if (mc.dat_melee.blastzones != null)
+                        {
+                            f.writeFloatAt(mc.dat_melee.blastzones.left, mc.dat_melee.blastzoneOffs[0]);
+                            f.writeFloatAt(mc.dat_melee.blastzones.top, mc.dat_melee.blastzoneOffs[0] + 4);
+                            f.writeFloatAt(0, mc.dat_melee.blastzoneOffs[0] + 8);
+
+                            f.writeFloatAt(mc.dat_melee.blastzones.right, mc.dat_melee.blastzoneOffs[1]);
+                            f.writeFloatAt(mc.dat_melee.blastzones.bottom, mc.dat_melee.blastzoneOffs[1] + 4);
+                            f.writeFloatAt(0, mc.dat_melee.blastzoneOffs[1] + 8);
+                        }
+
+                        if (mc.dat_melee.cameraBounds != null)
+                        {
+                            f.writeFloatAt(mc.dat_melee.cameraBounds.left, mc.dat_melee.cameraBoundOffs[0]);
+                            f.writeFloatAt(mc.dat_melee.cameraBounds.top, mc.dat_melee.cameraBoundOffs[0] + 4);
+                            f.writeFloatAt(0, mc.dat_melee.cameraBoundOffs[0] + 8);
+
+                            f.writeFloatAt(mc.dat_melee.cameraBounds.right, mc.dat_melee.cameraBoundOffs[1]);
+                            f.writeFloatAt(mc.dat_melee.cameraBounds.bottom, mc.dat_melee.cameraBoundOffs[1] + 4);
+                            f.writeFloatAt(0, mc.dat_melee.cameraBoundOffs[1] + 8);
+                        }
+
+                        if (mc.dat_melee.collisions != null)
+                        {
+
+                        }
+
+                        f.save(filename);
+                    }
+                }
+            }
+
             if (filename.EndsWith(".nud"))
             {
                 if (Runtime.ModelContainers[0].dat_melee != null)
@@ -1159,6 +1229,7 @@ namespace Smash_Forge
                     return;
                 }
                 DAT dat = new DAT();
+                dat.filename = filename;
                 dat.Read(new FileData(filename));
                 ModelContainer c = new ModelContainer();
                 Runtime.ModelContainers.Add(c);
@@ -1168,7 +1239,11 @@ namespace Smash_Forge
                 HashMatch();
 
                 Runtime.TargetVBN = dat.bones;
-
+                if (dat.collisions != null)//if the dat is a stage
+                {
+                    DAT_stage_list stageList = new DAT_stage_list(dat) { ShowHint = DockState.DockLeft };
+                    AddDockedControl(stageList);
+                }
                 DAT_TreeView p = new DAT_TreeView() {ShowHint = DockState.DockLeft};
                 p.setDAT(dat);
                 AddDockedControl(p);

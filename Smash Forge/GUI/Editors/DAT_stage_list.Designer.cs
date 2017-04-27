@@ -1,6 +1,6 @@
 ﻿namespace Smash_Forge
 {
-    partial class DAT_TreeView
+    partial class DAT_stage_list
     {
         /// <summary>
         /// Required designer variable.
@@ -33,24 +33,23 @@
             // 
             // treeView1
             // 
-            this.treeView1.CheckBoxes = true;
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(284, 450);
+            this.treeView1.Size = new System.Drawing.Size(284, 536);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
-            this.treeView1.DoubleClick += new System.EventHandler(this.treeView1_DoubleClick);
             // 
-            // DAT_TreeView
+            // DAT_stage_list
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 450);
+            this.ClientSize = new System.Drawing.Size(284, 536);
             this.Controls.Add(this.treeView1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Name = "DAT_TreeView";
-            this.Text = "DAT_TreeView";
+            this.Name = "DAT_stage_list";
+            this.Text = "dat_stage_list";
+            this.Load += new System.EventHandler(this.DAT_stage_list_Load);
             this.ResumeLayout(false);
 
         }

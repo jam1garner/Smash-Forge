@@ -1217,6 +1217,18 @@ main()
                         GL.Vertex3(vi.x, vi.y, -5);
                         GL.End();
                     }
+
+                    /*GL.Color4(Color.FromArgb(128, Color.Purple));
+                    foreach(DAT.COLL_DATA.AreaTableEntry entry in m.dat_melee.collisions.areaTable)
+                    {
+                        GL.Begin(PrimitiveType.QuadStrip);
+                        GL.Vertex3(entry.xBotLeftCorner, entry.yBotLeftCorner, 0);
+                        GL.Vertex3(entry.xTopRightCorner, entry.yBotLeftCorner, 0);
+                        GL.Vertex3(entry.xBotLeftCorner, entry.yTopRightCorner, 0);
+                        GL.Vertex3(entry.xTopRightCorner, entry.yTopRightCorner, 0);
+                        GL.End();
+                        //Console.WriteLine($"{entry.xBotLeftCorner},{entry.yBotLeftCorner},{entry.xTopRightCorner},{entry.yTopRightCorner}");
+                    }*/
                 }
 
                 if(m.dat_melee != null && m.dat_melee.blastzones != null)
@@ -1244,17 +1256,17 @@ main()
                 }
 
                 if (m.dat_melee != null && m.dat_melee.respawns != null)
-                    foreach (Vector3 r in m.dat_melee.respawns)
-                        DrawSpawn(new Point() { x = r.X, y = r.Y }, true);
+                    foreach (Point r in m.dat_melee.respawns)
+                        DrawSpawn(r, true);
 
                 if (m.dat_melee != null && m.dat_melee.spawns != null)
-                    foreach (Vector3 r in m.dat_melee.spawns)
-                        DrawSpawn(new Point() { x = r.X, y = r.Y }, false);
+                    foreach (Point r in m.dat_melee.spawns)
+                        DrawSpawn(r, false);
 
                 GL.Color4(Color.FromArgb(200, Color.Fuchsia));
                 if (m.dat_melee != null && m.dat_melee.itemSpawns != null)
-                    foreach (Vector3 r in m.dat_melee.itemSpawns)
-                        RenderTools.drawCubeWireframe(r, 3);
+                    foreach (Point r in m.dat_melee.itemSpawns)
+                        RenderTools.drawCubeWireframe(new Vector3(r.x, r.y, 0), 3);
             }
 
             if (Runtime.TargetLVD != null)
