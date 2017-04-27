@@ -62,6 +62,11 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.generalPointShapeBox = new System.Windows.Forms.GroupBox();
+            this.label22 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.pointShapeY = new System.Windows.Forms.NumericUpDown();
+            this.pointShapeX = new System.Windows.Forms.NumericUpDown();
             this.pointGroup = new System.Windows.Forms.GroupBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
@@ -89,11 +94,6 @@
             this.label18 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
             this.label19 = new System.Windows.Forms.Label();
-            this.generalPointShapeBox = new System.Windows.Forms.GroupBox();
-            this.label22 = new System.Windows.Forms.Label();
-            this.label23 = new System.Windows.Forms.Label();
-            this.pointShapeY = new System.Windows.Forms.NumericUpDown();
-            this.pointShapeX = new System.Windows.Forms.NumericUpDown();
             this.rectangleGroup = new System.Windows.Forms.GroupBox();
             this.label24 = new System.Windows.Forms.Label();
             this.label25 = new System.Windows.Forms.Label();
@@ -114,6 +114,24 @@
             this.pathNodeX = new System.Windows.Forms.NumericUpDown();
             this.label30 = new System.Windows.Forms.Label();
             this.label31 = new System.Windows.Forms.Label();
+            this.meleeCollisionGroup = new System.Windows.Forms.GroupBox();
+            this.meleeY = new System.Windows.Forms.NumericUpDown();
+            this.meleeX = new System.Windows.Forms.NumericUpDown();
+            this.meleeLinks = new System.Windows.Forms.TreeView();
+            this.meleeVerts = new System.Windows.Forms.TreeView();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.label38 = new System.Windows.Forms.Label();
+            this.label39 = new System.Windows.Forms.Label();
+            this.numericUpDown8 = new System.Windows.Forms.NumericUpDown();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.label40 = new System.Windows.Forms.Label();
+            this.label41 = new System.Windows.Forms.Label();
+            this.label42 = new System.Windows.Forms.Label();
+            this.meleeSubtractVert = new System.Windows.Forms.Button();
+            this.meleeAddVert = new System.Windows.Forms.Button();
+            this.label43 = new System.Windows.Forms.Label();
             this.flowLayoutPanel1.SuspendLayout();
             this.collisionGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zStart)).BeginInit();
@@ -122,6 +140,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.yVert)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xVert)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.passthroughAngle)).BeginInit();
+            this.generalPointShapeBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pointShapeY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pointShapeX)).BeginInit();
             this.pointGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yPoint)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xPoint)).BeginInit();
@@ -133,9 +154,6 @@
             this.itemSpawnerGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
-            this.generalPointShapeBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pointShapeY)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pointShapeX)).BeginInit();
             this.rectangleGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rectLowerY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rectLowerX)).BeginInit();
@@ -144,6 +162,10 @@
             this.pathGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeX)).BeginInit();
+            this.meleeCollisionGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.meleeY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.meleeX)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown8)).BeginInit();
             this.SuspendLayout();
             // 
             // flowLayoutPanel1
@@ -157,11 +179,12 @@
             this.flowLayoutPanel1.Controls.Add(this.itemSpawnerGroup);
             this.flowLayoutPanel1.Controls.Add(this.rectangleGroup);
             this.flowLayoutPanel1.Controls.Add(this.pathGroup);
+            this.flowLayoutPanel1.Controls.Add(this.meleeCollisionGroup);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(555, 828);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(868, 828);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // name
@@ -590,6 +613,76 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "Vertices";
             // 
+            // generalPointShapeBox
+            // 
+            this.generalPointShapeBox.Controls.Add(this.label22);
+            this.generalPointShapeBox.Controls.Add(this.label23);
+            this.generalPointShapeBox.Controls.Add(this.pointShapeY);
+            this.generalPointShapeBox.Controls.Add(this.pointShapeX);
+            this.generalPointShapeBox.Location = new System.Drawing.Point(3, 663);
+            this.generalPointShapeBox.Name = "generalPointShapeBox";
+            this.generalPointShapeBox.Size = new System.Drawing.Size(200, 60);
+            this.generalPointShapeBox.TabIndex = 34;
+            this.generalPointShapeBox.TabStop = false;
+            this.generalPointShapeBox.Text = "Point (Shape)";
+            this.generalPointShapeBox.Visible = false;
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(98, 26);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(14, 13);
+            this.label22.TabIndex = 32;
+            this.label22.Text = "Y";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(9, 26);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(14, 13);
+            this.label23.TabIndex = 32;
+            this.label23.Text = "X";
+            // 
+            // pointShapeY
+            // 
+            this.pointShapeY.DecimalPlaces = 3;
+            this.pointShapeY.Location = new System.Drawing.Point(118, 24);
+            this.pointShapeY.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.pointShapeY.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.pointShapeY.Name = "pointShapeY";
+            this.pointShapeY.Size = new System.Drawing.Size(67, 20);
+            this.pointShapeY.TabIndex = 33;
+            this.pointShapeY.ValueChanged += new System.EventHandler(this.pointShape_ValueChanged);
+            // 
+            // pointShapeX
+            // 
+            this.pointShapeX.DecimalPlaces = 3;
+            this.pointShapeX.Location = new System.Drawing.Point(25, 24);
+            this.pointShapeX.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.pointShapeX.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.pointShapeX.Name = "pointShapeX";
+            this.pointShapeX.Size = new System.Drawing.Size(67, 20);
+            this.pointShapeX.TabIndex = 32;
+            this.pointShapeX.ValueChanged += new System.EventHandler(this.pointShape_ValueChanged);
+            // 
             // pointGroup
             // 
             this.pointGroup.Controls.Add(this.label12);
@@ -942,76 +1035,6 @@
             this.label19.TabIndex = 37;
             this.label19.Text = "X";
             // 
-            // generalPointShapeBox
-            // 
-            this.generalPointShapeBox.Controls.Add(this.label22);
-            this.generalPointShapeBox.Controls.Add(this.label23);
-            this.generalPointShapeBox.Controls.Add(this.pointShapeY);
-            this.generalPointShapeBox.Controls.Add(this.pointShapeX);
-            this.generalPointShapeBox.Location = new System.Drawing.Point(3, 663);
-            this.generalPointShapeBox.Name = "generalPointShapeBox";
-            this.generalPointShapeBox.Size = new System.Drawing.Size(200, 60);
-            this.generalPointShapeBox.TabIndex = 34;
-            this.generalPointShapeBox.TabStop = false;
-            this.generalPointShapeBox.Text = "Point (Shape)";
-            this.generalPointShapeBox.Visible = false;
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(98, 26);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(14, 13);
-            this.label22.TabIndex = 32;
-            this.label22.Text = "Y";
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(9, 26);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(14, 13);
-            this.label23.TabIndex = 32;
-            this.label23.Text = "X";
-            // 
-            // pointShapeY
-            // 
-            this.pointShapeY.DecimalPlaces = 3;
-            this.pointShapeY.Location = new System.Drawing.Point(118, 24);
-            this.pointShapeY.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.pointShapeY.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.pointShapeY.Name = "pointShapeY";
-            this.pointShapeY.Size = new System.Drawing.Size(67, 20);
-            this.pointShapeY.TabIndex = 33;
-            this.pointShapeY.ValueChanged += new System.EventHandler(this.pointShape_ValueChanged);
-            // 
-            // pointShapeX
-            // 
-            this.pointShapeX.DecimalPlaces = 3;
-            this.pointShapeX.Location = new System.Drawing.Point(25, 24);
-            this.pointShapeX.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.pointShapeX.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.pointShapeX.Name = "pointShapeX";
-            this.pointShapeX.Size = new System.Drawing.Size(67, 20);
-            this.pointShapeX.TabIndex = 32;
-            this.pointShapeX.ValueChanged += new System.EventHandler(this.pointShape_ValueChanged);
-            // 
             // rectangleGroup
             // 
             this.rectangleGroup.Controls.Add(this.label24);
@@ -1274,11 +1297,241 @@
             this.label31.TabIndex = 37;
             this.label31.Text = "X";
             // 
+            // meleeCollisionGroup
+            // 
+            this.meleeCollisionGroup.Controls.Add(this.meleeY);
+            this.meleeCollisionGroup.Controls.Add(this.meleeX);
+            this.meleeCollisionGroup.Controls.Add(this.meleeLinks);
+            this.meleeCollisionGroup.Controls.Add(this.meleeVerts);
+            this.meleeCollisionGroup.Controls.Add(this.comboBox2);
+            this.meleeCollisionGroup.Controls.Add(this.label38);
+            this.meleeCollisionGroup.Controls.Add(this.label39);
+            this.meleeCollisionGroup.Controls.Add(this.numericUpDown8);
+            this.meleeCollisionGroup.Controls.Add(this.checkBox1);
+            this.meleeCollisionGroup.Controls.Add(this.checkBox2);
+            this.meleeCollisionGroup.Controls.Add(this.checkBox3);
+            this.meleeCollisionGroup.Controls.Add(this.label40);
+            this.meleeCollisionGroup.Controls.Add(this.label41);
+            this.meleeCollisionGroup.Controls.Add(this.label42);
+            this.meleeCollisionGroup.Controls.Add(this.meleeSubtractVert);
+            this.meleeCollisionGroup.Controls.Add(this.meleeAddVert);
+            this.meleeCollisionGroup.Controls.Add(this.label43);
+            this.meleeCollisionGroup.Location = new System.Drawing.Point(542, 3);
+            this.meleeCollisionGroup.Name = "meleeCollisionGroup";
+            this.meleeCollisionGroup.Size = new System.Drawing.Size(277, 602);
+            this.meleeCollisionGroup.TabIndex = 34;
+            this.meleeCollisionGroup.TabStop = false;
+            this.meleeCollisionGroup.Text = "Collision Editing";
+            // 
+            // meleeY
+            // 
+            this.meleeY.DecimalPlaces = 3;
+            this.meleeY.Location = new System.Drawing.Point(122, 185);
+            this.meleeY.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.meleeY.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.meleeY.Name = "meleeY";
+            this.meleeY.Size = new System.Drawing.Size(67, 20);
+            this.meleeY.TabIndex = 24;
+            // 
+            // meleeX
+            // 
+            this.meleeX.DecimalPlaces = 3;
+            this.meleeX.Location = new System.Drawing.Point(29, 185);
+            this.meleeX.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.meleeX.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.meleeX.Name = "meleeX";
+            this.meleeX.Size = new System.Drawing.Size(67, 20);
+            this.meleeX.TabIndex = 23;
+            // 
+            // meleeLinks
+            // 
+            this.meleeLinks.HideSelection = false;
+            this.meleeLinks.Location = new System.Drawing.Point(6, 233);
+            this.meleeLinks.Name = "meleeLinks";
+            this.meleeLinks.Size = new System.Drawing.Size(259, 134);
+            this.meleeLinks.TabIndex = 22;
+            // 
+            // meleeVerts
+            // 
+            this.meleeVerts.HideSelection = false;
+            this.meleeVerts.Location = new System.Drawing.Point(6, 38);
+            this.meleeVerts.Name = "meleeVerts";
+            this.meleeVerts.Size = new System.Drawing.Size(259, 134);
+            this.meleeVerts.TabIndex = 21;
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Items.AddRange(new object[] {
+            "Iron",
+            "Snow",
+            "Ice",
+            "Wood",
+            "LargeBubbles",
+            "Hurt",
+            "Brick",
+            "Stone2",
+            "Metal2",
+            "Water",
+            "Bubbles",
+            "Clouds",
+            "Ice2",
+            "NebuIron",
+            "Danbouru",
+            "Rock",
+            "Gamewatch",
+            "Grass",
+            "SnowIce",
+            "Fence",
+            "Soil",
+            "Sand",
+            "MasterFortress",
+            "Carpet"});
+            this.comboBox2.Location = new System.Drawing.Point(10, 571);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(121, 21);
+            this.comboBox2.TabIndex = 20;
+            // 
+            // label38
+            // 
+            this.label38.AutoSize = true;
+            this.label38.Location = new System.Drawing.Point(9, 555);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(83, 13);
+            this.label38.TabIndex = 19;
+            this.label38.Text = "Physics Material";
+            // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Location = new System.Drawing.Point(6, 370);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(96, 13);
+            this.label39.TabIndex = 18;
+            this.label39.Text = "Passthrough Angle";
+            // 
+            // numericUpDown8
+            // 
+            this.numericUpDown8.Location = new System.Drawing.Point(105, 368);
+            this.numericUpDown8.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.numericUpDown8.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDown8.Name = "numericUpDown8";
+            this.numericUpDown8.Size = new System.Drawing.Size(59, 20);
+            this.numericUpDown8.TabIndex = 17;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(181, 578);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(92, 17);
+            this.checkBox1.TabIndex = 16;
+            this.checkBox1.Text = "No Wall Jump";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(181, 555);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(84, 17);
+            this.checkBox2.TabIndex = 15;
+            this.checkBox2.Text = "Right Ledge";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            // 
+            // checkBox3
+            // 
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Location = new System.Drawing.Point(184, 373);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(56, 17);
+            this.checkBox3.TabIndex = 14;
+            this.checkBox3.Text = "Ledge";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            // 
+            // label40
+            // 
+            this.label40.AutoSize = true;
+            this.label40.Location = new System.Drawing.Point(109, 217);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(32, 13);
+            this.label40.TabIndex = 9;
+            this.label40.Text = "Links";
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(102, 187);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(14, 13);
+            this.label41.TabIndex = 6;
+            this.label41.Text = "Y";
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(9, 187);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(14, 13);
+            this.label42.TabIndex = 4;
+            this.label42.Text = "X";
+            // 
+            // meleeSubtractVert
+            // 
+            this.meleeSubtractVert.Location = new System.Drawing.Point(212, 13);
+            this.meleeSubtractVert.Name = "meleeSubtractVert";
+            this.meleeSubtractVert.Size = new System.Drawing.Size(49, 23);
+            this.meleeSubtractVert.TabIndex = 3;
+            this.meleeSubtractVert.Text = "-";
+            this.meleeSubtractVert.UseVisualStyleBackColor = true;
+            // 
+            // meleeAddVert
+            // 
+            this.meleeAddVert.Location = new System.Drawing.Point(157, 13);
+            this.meleeAddVert.Name = "meleeAddVert";
+            this.meleeAddVert.Size = new System.Drawing.Size(49, 23);
+            this.meleeAddVert.TabIndex = 2;
+            this.meleeAddVert.Text = "+";
+            this.meleeAddVert.UseVisualStyleBackColor = true;
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Location = new System.Drawing.Point(106, 22);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(45, 13);
+            this.label43.TabIndex = 1;
+            this.label43.Text = "Vertices";
+            // 
             // LVDEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(555, 828);
+            this.ClientSize = new System.Drawing.Size(868, 828);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MinimumSize = new System.Drawing.Size(296, 822);
@@ -1295,6 +1548,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.yVert)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xVert)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.passthroughAngle)).EndInit();
+            this.generalPointShapeBox.ResumeLayout(false);
+            this.generalPointShapeBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pointShapeY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pointShapeX)).EndInit();
             this.pointGroup.ResumeLayout(false);
             this.pointGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yPoint)).EndInit();
@@ -1309,10 +1566,6 @@
             this.itemSpawnerGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
-            this.generalPointShapeBox.ResumeLayout(false);
-            this.generalPointShapeBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pointShapeY)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pointShapeX)).EndInit();
             this.rectangleGroup.ResumeLayout(false);
             this.rectangleGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rectLowerY)).EndInit();
@@ -1323,6 +1576,11 @@
             this.pathGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeX)).EndInit();
+            this.meleeCollisionGroup.ResumeLayout(false);
+            this.meleeCollisionGroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.meleeY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.meleeX)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown8)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1415,5 +1673,23 @@
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.GroupBox meleeCollisionGroup;
+        private System.Windows.Forms.NumericUpDown meleeY;
+        private System.Windows.Forms.NumericUpDown meleeX;
+        private System.Windows.Forms.TreeView meleeLinks;
+        private System.Windows.Forms.TreeView meleeVerts;
+        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.Label label38;
+        private System.Windows.Forms.Label label39;
+        private System.Windows.Forms.NumericUpDown numericUpDown8;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.CheckBox checkBox3;
+        private System.Windows.Forms.Label label40;
+        private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.Label label42;
+        private System.Windows.Forms.Button meleeSubtractVert;
+        private System.Windows.Forms.Button meleeAddVert;
+        private System.Windows.Forms.Label label43;
     }
 }

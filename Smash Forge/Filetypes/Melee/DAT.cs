@@ -831,6 +831,8 @@ main()
                 public int[] vertexIndices;
                 public int[] connectors;
                 public int collisionAngle;
+                public int idxVertFromLink = 0xFFFF;
+                public int idxVertToLink = 0xFFFF;
                 public byte flags;
                 public byte material;
             }
@@ -921,7 +923,8 @@ main()
                     int[] temp2 = { f.readShort(), f.readShort() };
                     link.vertexIndices = temp;
                     link.connectors = temp2;
-                    f.skip(4);
+                    link.idxVertFromLink = f.readShort();
+                    link.idxVertToLink = f.readShort();
                     link.collisionAngle = f.readShort();
                     link.flags = (byte)f.readByte();
                     link.material = (byte)f.readByte();

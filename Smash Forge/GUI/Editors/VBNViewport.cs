@@ -182,8 +182,12 @@ namespace Smash_Forge
                         }
                     }
                 }
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
                 Render();
-                System.Threading.Thread.Sleep(1000 / AnimationSpeed);
+                stopWatch.Stop();
+                if((1000 / AnimationSpeed) - stopWatch.ElapsedMilliseconds > 0)
+                    System.Threading.Thread.Sleep((int)((1000 / AnimationSpeed) - stopWatch.ElapsedMilliseconds));
             }
         }
         private void Runtime_AnimationChanged(object sender, EventArgs e)
