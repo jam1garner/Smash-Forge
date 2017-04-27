@@ -14,6 +14,7 @@ namespace Smash_Forge
             Animations = new Dictionary<string, SkelAnimation>();
             OpenedFiles = new SortedList<string, FileBase>();
             MaterialAnimations = new Dictionary<string, MTA>();
+            ParamManager = new CharacterParamManager();
         }
 
         public static Dictionary<string, Shader> shaders = new Dictionary<string, Shader>();
@@ -60,6 +61,8 @@ namespace Smash_Forge
         public static bool renderOtherLVDEntries { get; set; }
         public static bool renderSwag { get; set; }
         public static bool renderBoundingBox { get; set; }
+        public static bool renderHurtboxes { get; set; }
+        public static bool renderHurtboxesZone { get; set; }
 
         public static float gamma = 1.2f;
         public static float fov = 1.0f;
@@ -89,6 +92,7 @@ namespace Smash_Forge
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
         public static Dictionary<string, MTA> MaterialAnimations { get; set; }
         public static MovesetManager Moveset { get; set; }
+        public static CharacterParamManager ParamManager { get; set; }
         public static ACMDPreviewEditor acmdEditor;
 
         public static string CanonicalizePath(string path)

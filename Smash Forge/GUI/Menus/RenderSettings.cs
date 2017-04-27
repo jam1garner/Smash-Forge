@@ -29,6 +29,8 @@ namespace Smash_Forge.GUI
             checkBox10.Checked = Runtime.renderItemSpawners;
             checkBox11.Checked = Runtime.renderGeneralPoints;
             checkBox12.Checked = Runtime.renderCollisionNormals;
+            checkBox13.Checked = Runtime.renderHurtboxes;
+            checkBox14.Checked = Runtime.renderHurtboxesZone;
             swagViewing.Checked = Runtime.renderSwag;
             lightCheckBox.Checked = Runtime.renderLighting;
             useNormCB.Checked = Runtime.useNormalMap;
@@ -78,6 +80,8 @@ namespace Smash_Forge.GUI
             Runtime.renderItemSpawners = checkBox10.Checked;
             Runtime.renderGeneralPoints = checkBox11.Checked;
             Runtime.renderCollisionNormals = checkBox12.Checked;
+            Runtime.renderHurtboxes = checkBox13.Checked;
+            Runtime.renderHurtboxesZone = checkBox14.Checked;
             checkBox12.Enabled = checkBox6.Checked && checkBox7.Checked;
             wireframeCB.Enabled = checkBox1.Checked;
             modelSelectCB.Enabled = checkBox1.Checked;

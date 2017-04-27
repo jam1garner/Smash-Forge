@@ -146,6 +146,76 @@ namespace Smash_Forge
             GL.PopMatrix ();
         }
 
+        //Alternate drawCylinder method that tries to keep opacity uniform by reducing sides iterations, used for hurtboxes so model can still be visible
+        public static void drawReducedSidesCylinder(Vector3 p1, Vector3 p2, float R)
+        {
+            int q = 8, p = 20;
+
+            Vector3 yAxis = new Vector3(0, 1, 0);
+            Vector3 d = p2 - p1;
+            float height = (float)Math.Sqrt(d.X * d.X + d.Y * d.Y + d.Z * d.Z) / 2;
+
+            Vector3 mid = (p1 + p2) / 2;
+
+            Vector3 axis = Vector3.Cross(d, yAxis);
+            float angle = (float)Math.Acos(Vector3.Dot(d.Normalized(), yAxis));
+
+            GL.PushMatrix();
+            GL.Translate(p1);
+            GL.Rotate(-(float)((angle) * (180 / Math.PI)), axis);
+            for (int j = 0; j < q; j++)
+            {
+                GL.Begin(PrimitiveType.TriangleStrip);
+                for (int i = 0; i <= p; i++)
+                {
+                    GL.Vertex3(R * Math.Cos((float)(j + 1) / q * Math.PI / 2.0) * Math.Cos(2.0 * (float)i / p * Math.PI),
+                        -R * Math.Sin((float)(j + 1) / q * Math.PI / 2.0),
+                        R * Math.Cos((float)(j + 1) / q * Math.PI / 2.0) * Math.Sin(2.0 * (float)i / p * Math.PI));
+                    GL.Vertex3(R * Math.Cos((float)j / q * Math.PI / 2.0) * Math.Cos(2.0 * (float)i / p * Math.PI),
+                        -R * Math.Sin((float)j / q * Math.PI / 2.0),
+                        R * Math.Cos((float)j / q * Math.PI / 2.0) * Math.Sin(2.0 * (float)i / p * Math.PI));
+                }
+                GL.End();
+            }
+            GL.PopMatrix();
+
+            GL.PushMatrix();
+            GL.Translate(p2);
+            GL.Rotate(-(float)(angle * (180 / Math.PI)), axis);
+            for (int j = 0; j < q; j++)
+            {
+                GL.Begin(PrimitiveType.TriangleStrip);
+                for (int i = 0; i <= p; i++)
+                {
+                    GL.Vertex3(R * Math.Cos((float)(j + 1) / q * Math.PI / 2.0) * Math.Cos(2.0 * (float)i / p * Math.PI),
+                        R * Math.Sin((float)(j + 1) / q * Math.PI / 2.0),
+                        R * Math.Cos((float)(j + 1) / q * Math.PI / 2.0) * Math.Sin(2.0 * (float)i / p * Math.PI));
+                    GL.Vertex3(R * Math.Cos((float)j / q * Math.PI / 2.0) * Math.Cos(2.0 * (float)i / p * Math.PI),
+                        R * Math.Sin((float)j / q * Math.PI / 2.0),
+                        R * Math.Cos((float)j / q * Math.PI / 2.0) * Math.Sin(2.0 * (float)i / p * Math.PI));
+                }
+                GL.End();
+            }
+            GL.PopMatrix();
+
+
+            /*  sides */
+            GL.PushMatrix();
+
+            GL.Translate(mid);
+            GL.Rotate(-(float)(angle * (180 / Math.PI)), axis);
+
+            GL.Begin(PrimitiveType.QuadStrip);
+            for (int j = 0; j <= q * 3; j += 1) //Reduced iterations to make quadstrips do a cylinder but keeping opacity low
+            {
+                GL.Vertex3(Math.Cos(j) * R, +height, Math.Sin(j) * R);
+                GL.Vertex3(Math.Cos(j) * R, -height, Math.Sin(j) * R);
+            }
+            GL.End();
+
+            GL.PopMatrix();
+        }
+
         public static void drawFloor(Matrix4 s)
         {
             GL.UseProgram(0);
