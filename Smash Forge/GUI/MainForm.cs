@@ -1745,7 +1745,7 @@ namespace Smash_Forge
             e.Cancel = false;// (MessageBox.Show("Would you like to close Forge? Any and all unsaved work will be lost.", "Close Confirmation" , MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No);
         }
 
-        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        private void importParamsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (var ofd = new OpenFileDialog() { Filter = "Character fighter_param_vl file (.bin)|*.bin|All Files (*.*)|*.*" })
             {
@@ -1756,9 +1756,10 @@ namespace Smash_Forge
             }
         }
 
-        private void clearToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void clearParamsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Runtime.ParamManager.Reset();
         }
+
     }
 }

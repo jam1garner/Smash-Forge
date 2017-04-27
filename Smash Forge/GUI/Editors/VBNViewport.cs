@@ -1935,8 +1935,10 @@ main()
                             Hitboxes.Add(id, h);
                             break;
                         }
-                    case 0x548F2D4C: //"Special grabbox" (used in tether grabs/pikmin) Requires changing hex parameters to float on Smash Forge SALT version to work
+                    case 0x548F2D4C: //"Special grabbox" (used in tether grabs) Requires changing SALT's PARAM_FORMAT event values to float to work
                         {
+                            //PARAM_SYNTAX "ID,Bone,Size,X,Y,Z,Action,Air/Ground"
+
                             Hitbox h = new Hitbox();
                             int id = (int)cmd.Parameters[0];
                             h.Type = Hitbox.GRABBOX;
