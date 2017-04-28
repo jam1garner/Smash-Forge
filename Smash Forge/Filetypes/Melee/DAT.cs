@@ -33,7 +33,7 @@ namespace Smash_Forge
         public int[] cameraBoundOffs = new int[2];
         public Bounds blastzones = null;
         public int[] blastzoneOffs = new int[2];
-        private float stageScale = 1; 
+        public float stageScale = 1; 
 
         public VBN bones = new VBN();
 
@@ -257,12 +257,6 @@ main()
                     collisions = new COLL_DATA();
                     collisions.Read(d);
                 }
-            }
-            if(collisions != null)
-            foreach (Vector2D v in collisions.vertices)
-            {
-                v.x *= stageScale;
-                v.y *= stageScale;
             }
         }
 
@@ -624,6 +618,11 @@ main()
 
         public LVD toLVD(bool safemode)
         {
+            foreach (Vector2D v in collisions.vertices)
+            {
+                v.x *= stageScale;
+                v.y *= stageScale;
+            }
             LVD lvd = new LVD();
             int j = 0;
             if (safemode)
@@ -864,6 +863,7 @@ main()
 
             public int vertOffOff;
             public int linkOffOff;
+            public int polyOffOff; 
 
             public COLL_DATA()
             {
@@ -880,6 +880,7 @@ main()
                 int linkOff = f.readInt();
                 int linkCount = f.readInt();
                 f.skip(0x14);
+                polyOffOff = f.pos();
                 int polyOff = f.readInt();
                 int polyCount = f.readInt();
                 int returnOffset = f.pos();
@@ -919,10 +920,8 @@ main()
                 for (int i = 0; i < linkCount; i++)
                 {
                     Link link = new Link();
-                    int[] temp = { f.readShort(), f.readShort() };
-                    int[] temp2 = { f.readShort(), f.readShort() };
-                    link.vertexIndices = temp;
-                    link.connectors = temp2;
+                    link.vertexIndices = new int[] { f.readShort(), f.readShort() };
+                    link.connectors = new int[] { f.readShort(), f.readShort() };
                     link.idxVertFromLink = f.readShort();
                     link.idxVertToLink = f.readShort();
                     link.collisionAngle = f.readShort();

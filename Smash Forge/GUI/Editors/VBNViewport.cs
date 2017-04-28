@@ -1193,17 +1193,18 @@ main()
                 // JAM FIIIIIIXXXXXED IIIIIIIT
                 if (m.dat_melee != null && m.dat_melee.collisions != null)
                 {
+                    float scale = m.dat_melee.stageScale;
                     List<int> ledges = new List<int>();
                     foreach (DAT.COLL_DATA.Link link in m.dat_melee.collisions.links)
                     {
                         GL.Begin(PrimitiveType.Quads);
                         GL.Color4(getLinkColor(link));
                         Vector2D vi = m.dat_melee.collisions.vertices[link.vertexIndices[0]];
-                        GL.Vertex3(vi.x, vi.y, 5);
-                        GL.Vertex3(vi.x, vi.y, -5);
+                        GL.Vertex3(vi.x * scale, vi.y * scale, 5);
+                        GL.Vertex3(vi.x * scale, vi.y * scale, -5);
                         vi = m.dat_melee.collisions.vertices[link.vertexIndices[1]];
-                        GL.Vertex3(vi.x, vi.y, -5);
-                        GL.Vertex3(vi.x, vi.y, 5);
+                        GL.Vertex3(vi.x * scale, vi.y * scale, -5);
+                        GL.Vertex3(vi.x * scale, vi.y * scale, 5);
                         GL.End();
                         if ((link.flags & 2) != 0)
                         {
@@ -1220,8 +1221,8 @@ main()
                         else
                             GL.Color3(Color.Tomato);
                         GL.Begin(PrimitiveType.Lines);
-                        GL.Vertex3(vi.x, vi.y, 5);
-                        GL.Vertex3(vi.x, vi.y, -5);
+                        GL.Vertex3(vi.x * scale, vi.y * scale, 5);
+                        GL.Vertex3(vi.x * scale, vi.y * scale, -5);
                         GL.End();
                     }
 

@@ -1158,9 +1158,112 @@ namespace Smash_Forge
 
                         if (mc.dat_melee.collisions != null)
                         {
+                            while(f.pos() % 0x10 != 0)//get it back to being 0x10 alligned if it isn't already
+                                f.writeByte(0);
+                            
+                            f.writeIntAt(f.pos() - 0x20, mc.dat_melee.collisions.vertOffOff);
+                            f.writeIntAt(mc.dat_melee.collisions.vertices.Count, mc.dat_melee.collisions.vertOffOff + 4);
+                            foreach(Vector2D vert in mc.dat_melee.collisions.vertices)
+                            {
+                                f.writeFloat(vert.x);
+                                f.writeFloat(vert.y);
+                            }
+                            f.writeIntAt(f.pos() - 0x20, mc.dat_melee.collisions.linkOffOff);
+                            f.writeIntAt(mc.dat_melee.collisions.links.Count, mc.dat_melee.collisions.linkOffOff + 4);
+                            foreach(DAT.COLL_DATA.Link link in mc.dat_melee.collisions.links)
+                            {
+                                f.writeShort(link.vertexIndices[0]);
+                                f.writeShort(link.vertexIndices[1]);
+                                f.writeShort(link.connectors[0]);
+                                f.writeShort(link.connectors[1]);
+                                f.writeShort(link.idxVertFromLink);
+                                f.writeShort(link.idxVertToLink);
+                                f.writeShort(link.collisionAngle);
+                                f.writeByte(link.flags);
+                                f.writeByte(link.material);
+                            }
+                            f.writeIntAt(f.pos() - 0x20, mc.dat_melee.collisions.polyOffOff);
+                            f.writeIntAt(mc.dat_melee.collisions.areaTable.Count, mc.dat_melee.collisions.polyOffOff + 4);
+                            //Recalculate "area table" and write it to file
+                            foreach (DAT.COLL_DATA.AreaTableEntry ate in mc.dat_melee.collisions.areaTable)
+                            {
+                                int ceilingCount = 0, floorCount = 0, leftWallCount = 0, rightWallCount = 0;
+                                int firstCeiling = -1, firstFloor = -1, firstLeftWall = -1, firstRightWall = -1;
+                                float lowX = float.MaxValue, highX = float.MinValue, lowY = float.MaxValue, highY = float.MinValue;
+                                for (int i = ate.idxLowestSpot; i < ate.idxLowestSpot + ate.nbLinks && i < mc.dat_melee.collisions.links.Count; i++)
+                                {
+                                    DAT.COLL_DATA.Link link = mc.dat_melee.collisions.links[i];
+                                    
+                                    if ((link.collisionAngle & 4) != 0)//left wall
+                                    {
+                                        leftWallCount++;
+                                        if (firstLeftWall == -1)
+                                            firstLeftWall = i;
+                                    }
+                                    if ((link.collisionAngle & 8) != 0)//right wall
+                                    {
+                                        rightWallCount++;
+                                        if (firstRightWall == -1)
+                                            firstRightWall = i;
+                                    }
+                                    if ((link.collisionAngle & 1) != 0)//floor
+                                    {
+                                        floorCount++;
+                                        if (firstFloor == -1)
+                                            firstFloor = i;
+                                    }
+                                    if ((link.collisionAngle & 2) != 0)//ceiling
+                                    {
+                                        ceilingCount++;
+                                        if (firstCeiling == -1)
+                                            firstCeiling = i;
+                                    }
 
+                                    if (mc.dat_melee.collisions.vertices[link.vertexIndices[0]].x < lowX)
+                                        lowX = mc.dat_melee.collisions.vertices[link.vertexIndices[0]].x;
+                                    if (mc.dat_melee.collisions.vertices[link.vertexIndices[0]].x > highX)
+                                        highX = mc.dat_melee.collisions.vertices[link.vertexIndices[0]].x;
+                                    if (mc.dat_melee.collisions.vertices[link.vertexIndices[0]].y < lowY)
+                                        lowY = mc.dat_melee.collisions.vertices[link.vertexIndices[0]].y;
+                                    if (mc.dat_melee.collisions.vertices[link.vertexIndices[0]].y > highY)
+                                        highY = mc.dat_melee.collisions.vertices[link.vertexIndices[0]].y;
+                                    if (mc.dat_melee.collisions.vertices[link.vertexIndices[1]].x < lowX)
+                                        lowX = mc.dat_melee.collisions.vertices[link.vertexIndices[1]].x;
+                                    if (mc.dat_melee.collisions.vertices[link.vertexIndices[1]].x > highX)
+                                        highX = mc.dat_melee.collisions.vertices[link.vertexIndices[1]].x;
+                                    if (mc.dat_melee.collisions.vertices[link.vertexIndices[1]].y < lowY)
+                                        lowY = mc.dat_melee.collisions.vertices[link.vertexIndices[1]].y;
+                                    if (mc.dat_melee.collisions.vertices[link.vertexIndices[1]].y > highY)
+                                        highY = mc.dat_melee.collisions.vertices[link.vertexIndices[1]].y;
+                                }
+
+                                if (firstCeiling == -1)
+                                    firstCeiling = 0;
+                                if (firstFloor == -1)
+                                    firstFloor = 0;
+                                if (firstLeftWall == -1)
+                                    firstLeftWall = 0;
+                                if (firstRightWall == -1)
+                                    firstRightWall = 0;
+
+                                f.writeShort(firstFloor);
+                                f.writeShort(floorCount);
+                                f.writeShort(firstCeiling);
+                                f.writeShort(ceilingCount);
+                                f.writeShort(firstLeftWall);
+                                f.writeShort(leftWallCount);
+                                f.writeShort(firstRightWall);
+                                f.writeShort(rightWallCount);
+                                f.writeInt(0);
+                                f.writeFloat(lowX - 10);
+                                f.writeFloat(lowY - 10);
+                                f.writeFloat(highX + 10);
+                                f.writeFloat(highY + 10);
+                                f.writeShort(ate.idxLowestSpot);
+                                f.writeShort(ate.nbLinks);
+                            }
                         }
-
+                        f.writeIntAt(f.pos(), 0);
                         f.save(filename);
                     }
                 }
