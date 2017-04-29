@@ -29,6 +29,8 @@ namespace Smash_Forge
         public List<int> respawnOffs = new List<int>();
         public List<Point> itemSpawns = null;
         public List<int> itemSpawnOffs = new List<int>();
+        public List<Point> targets = null;
+        public List<int> targetOffs = new List<int>();
         public Bounds cameraBounds = null;
         public int[] cameraBoundOffs = new int[2];
         public Bounds blastzones = null;
@@ -1051,6 +1053,7 @@ main()
                 dat.itemSpawns = new List<Point>();
                 dat.spawns = new List<Point>();
                 dat.respawns = new List<Point>();
+                dat.targets = new List<Point>();
                 foreach(TreeNode t in j.node.Nodes)
                 {
                     if (!(t.Tag is JOBJ))
@@ -1105,6 +1108,17 @@ main()
                             //Console.WriteLine($"Death1 - {pos}");
                             dat.blastzoneOffs[1] = ((JOBJ)t.Tag).posOff;
                         }
+                        else if (0xC7 <= type && type <= 0xD0)
+                        {
+                            Console.WriteLine($"Target at {pos.x},{pos.y}");
+                            dat.targets.Add(new Point() { x = pos.x, y = pos.y });
+                            dat.targetOffs.Add(((JOBJ)t.Tag).posOff);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Type {type}");
+                        }
+
                     }
                     catch (KeyNotFoundException)
                     {

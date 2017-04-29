@@ -58,6 +58,13 @@ namespace Smash_Forge
                 foreach (Point spawn in dat.itemSpawns)
                     treeView1.Nodes.Add(new TreeNode($"Item Spawner {spawnNum++}") { Tag = spawn });
             }
+
+            if (dat.targets != null)
+            {
+                int spawnNum = 0;
+                foreach (Point target in dat.targets)
+                    treeView1.Nodes.Add(new TreeNode($"Target {spawnNum++}") { Tag = target });
+            }
         }
     }
 }

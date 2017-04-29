@@ -1108,8 +1108,8 @@ namespace Smash_Forge
                         {
                             for (int i = 0; i < mc.dat_melee.spawns.Count; i++)
                             {
-                                f.writeFloatAt(mc.dat_melee.spawns[i].x, mc.dat_melee.spawnOffs[i]);
-                                f.writeFloatAt(mc.dat_melee.spawns[i].y, mc.dat_melee.spawnOffs[i] + 4);
+                                f.writeFloatAt(mc.dat_melee.spawns[i].x / mc.dat_melee.stageScale, mc.dat_melee.spawnOffs[i]);
+                                f.writeFloatAt(mc.dat_melee.spawns[i].y / mc.dat_melee.stageScale, mc.dat_melee.spawnOffs[i] + 4);
                                 f.writeFloatAt(0, mc.dat_melee.spawnOffs[i] + 8);
                             }
                         }
@@ -1118,8 +1118,8 @@ namespace Smash_Forge
                         {
                             for(int i = 0; i < mc.dat_melee.respawns.Count; i++)
                             {
-                                f.writeFloatAt(mc.dat_melee.respawns[i].x, mc.dat_melee.respawnOffs[i]);
-                                f.writeFloatAt(mc.dat_melee.respawns[i].y, mc.dat_melee.respawnOffs[i] + 4);
+                                f.writeFloatAt(mc.dat_melee.respawns[i].x / mc.dat_melee.stageScale, mc.dat_melee.respawnOffs[i]);
+                                f.writeFloatAt(mc.dat_melee.respawns[i].y / mc.dat_melee.stageScale, mc.dat_melee.respawnOffs[i] + 4);
                                 f.writeFloatAt(0, mc.dat_melee.respawnOffs[i] + 8);
                             }
                         }
@@ -1128,31 +1128,41 @@ namespace Smash_Forge
                         {
                             for (int i = 0; i < mc.dat_melee.itemSpawns.Count; i++)
                             {
-                                f.writeFloatAt(mc.dat_melee.itemSpawns[i].x, mc.dat_melee.itemSpawnOffs[i]);
-                                f.writeFloatAt(mc.dat_melee.itemSpawns[i].y, mc.dat_melee.itemSpawnOffs[i] + 4);
+                                f.writeFloatAt(mc.dat_melee.itemSpawns[i].x / mc.dat_melee.stageScale, mc.dat_melee.itemSpawnOffs[i]);
+                                f.writeFloatAt(mc.dat_melee.itemSpawns[i].y / mc.dat_melee.stageScale, mc.dat_melee.itemSpawnOffs[i] + 4);
                                 f.writeFloatAt(0, mc.dat_melee.itemSpawnOffs[i] + 8);
+                            }
+                        }
+
+                        if (mc.dat_melee.targets != null)
+                        {
+                            for (int i = 0; i < mc.dat_melee.targets.Count; i++)
+                            {
+                                f.writeFloatAt(mc.dat_melee.targets[i].x / mc.dat_melee.stageScale, mc.dat_melee.targetOffs[i]);
+                                f.writeFloatAt(mc.dat_melee.targets[i].y / mc.dat_melee.stageScale, mc.dat_melee.targetOffs[i] + 4);
+                                f.writeFloatAt(0, mc.dat_melee.targetOffs[i] + 8);
                             }
                         }
 
                         if (mc.dat_melee.blastzones != null)
                         {
-                            f.writeFloatAt(mc.dat_melee.blastzones.left, mc.dat_melee.blastzoneOffs[0]);
-                            f.writeFloatAt(mc.dat_melee.blastzones.top, mc.dat_melee.blastzoneOffs[0] + 4);
+                            f.writeFloatAt(mc.dat_melee.blastzones.left / mc.dat_melee.stageScale, mc.dat_melee.blastzoneOffs[0]);
+                            f.writeFloatAt(mc.dat_melee.blastzones.top / mc.dat_melee.stageScale, mc.dat_melee.blastzoneOffs[0] + 4);
                             f.writeFloatAt(0, mc.dat_melee.blastzoneOffs[0] + 8);
 
-                            f.writeFloatAt(mc.dat_melee.blastzones.right, mc.dat_melee.blastzoneOffs[1]);
-                            f.writeFloatAt(mc.dat_melee.blastzones.bottom, mc.dat_melee.blastzoneOffs[1] + 4);
+                            f.writeFloatAt(mc.dat_melee.blastzones.right / mc.dat_melee.stageScale, mc.dat_melee.blastzoneOffs[1]);
+                            f.writeFloatAt(mc.dat_melee.blastzones.bottom / mc.dat_melee.stageScale, mc.dat_melee.blastzoneOffs[1] + 4);
                             f.writeFloatAt(0, mc.dat_melee.blastzoneOffs[1] + 8);
                         }
 
                         if (mc.dat_melee.cameraBounds != null)
                         {
-                            f.writeFloatAt(mc.dat_melee.cameraBounds.left, mc.dat_melee.cameraBoundOffs[0]);
-                            f.writeFloatAt(mc.dat_melee.cameraBounds.top, mc.dat_melee.cameraBoundOffs[0] + 4);
+                            f.writeFloatAt(mc.dat_melee.cameraBounds.left / mc.dat_melee.stageScale, mc.dat_melee.cameraBoundOffs[0]);
+                            f.writeFloatAt(mc.dat_melee.cameraBounds.top / mc.dat_melee.stageScale, mc.dat_melee.cameraBoundOffs[0] + 4);
                             f.writeFloatAt(0, mc.dat_melee.cameraBoundOffs[0] + 8);
 
-                            f.writeFloatAt(mc.dat_melee.cameraBounds.right, mc.dat_melee.cameraBoundOffs[1]);
-                            f.writeFloatAt(mc.dat_melee.cameraBounds.bottom, mc.dat_melee.cameraBoundOffs[1] + 4);
+                            f.writeFloatAt(mc.dat_melee.cameraBounds.right / mc.dat_melee.stageScale, mc.dat_melee.cameraBoundOffs[1]);
+                            f.writeFloatAt(mc.dat_melee.cameraBounds.bottom / mc.dat_melee.stageScale, mc.dat_melee.cameraBoundOffs[1] + 4);
                             f.writeFloatAt(0, mc.dat_melee.cameraBoundOffs[1] + 8);
                         }
 

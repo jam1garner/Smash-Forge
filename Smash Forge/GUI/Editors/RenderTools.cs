@@ -290,6 +290,28 @@ namespace Smash_Forge
             GL.End();
         }
 
+        public static void drawCircleOutline(Vector3 center, float radius, uint precision)
+        {
+            float theta = 2.0f * (float)Math.PI / precision;
+            float cosine = (float)Math.Cos(theta);
+            float sine = (float)Math.Sin(theta);
+
+            float x = radius;
+            float y = 0;
+
+            GL.Begin(PrimitiveType.LineStrip);
+            for (int i = 0; i < precision; i++)
+            {
+                GL.Vertex3(x + center.X, y + center.Y, center.Z);
+
+                //apply the rotation matrix
+                var temp = x;
+                x = cosine * x - sine * y;
+                y = sine * temp + cosine * y;
+            }
+            GL.End();
+        }
+
         public static void drawCube(Vector3 center, float size)
         {
             GL.Begin(PrimitiveType.Quads);

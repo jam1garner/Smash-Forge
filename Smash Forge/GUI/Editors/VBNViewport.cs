@@ -1263,6 +1263,15 @@ main()
                     GL.End();
                 }
 
+                if (m.dat_melee != null && m.dat_melee.targets != null)
+                {
+                    foreach(Point target in m.dat_melee.targets)
+                    {
+                        RenderTools.drawCircleOutline(new Vector3(target.x, target.y, 0), 2, 30);
+                        RenderTools.drawCircleOutline(new Vector3(target.x, target.y, 0), 4, 30);
+                    }
+                }
+
                 if (m.dat_melee != null && m.dat_melee.respawns != null)
                     foreach (Point r in m.dat_melee.respawns)
                         DrawSpawn(r, true);
