@@ -50,6 +50,7 @@
             this.belowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openEditToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
             this.meshContextMenu.SuspendLayout();
@@ -199,9 +200,10 @@
             this.nudContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.makeMetalToolStripMenuItem,
             this.mergeToolStripMenuItem,
-            this.saveToolStripMenuItem});
+            this.saveToolStripMenuItem,
+            this.openEditToolStripMenuItem});
             this.nudContextMenu.Name = "nudContextMenu";
-            this.nudContextMenu.Size = new System.Drawing.Size(153, 92);
+            this.nudContextMenu.Size = new System.Drawing.Size(153, 114);
             // 
             // makeMetalToolStripMenuItem
             // 
@@ -222,14 +224,14 @@
             // belowToolStripMenuItem
             // 
             this.belowToolStripMenuItem.Name = "belowToolStripMenuItem";
-            this.belowToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.belowToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.belowToolStripMenuItem.Text = "Below";
             this.belowToolStripMenuItem.Click += new System.EventHandler(this.belowToolStripMenuItem_Click);
             // 
             // aboveToolStripMenuItem
             // 
             this.aboveToolStripMenuItem.Name = "aboveToolStripMenuItem";
-            this.aboveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboveToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.aboveToolStripMenuItem.Text = "Above";
             this.aboveToolStripMenuItem.Click += new System.EventHandler(this.aboveToolStripMenuItem_Click);
             // 
@@ -239,6 +241,14 @@
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // openEditToolStripMenuItem
+            // 
+            this.openEditToolStripMenuItem.Enabled = false;
+            this.openEditToolStripMenuItem.Name = "openEditToolStripMenuItem";
+            this.openEditToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openEditToolStripMenuItem.Text = "Open Edit";
+            this.openEditToolStripMenuItem.Click += new System.EventHandler(this.openEditToolStripMenuItem_Click);
             // 
             // MeshList
             // 
@@ -284,5 +294,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem smoothNormalsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyMaterialToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openEditToolStripMenuItem;
     }
 }

@@ -1512,10 +1512,13 @@ namespace Smash_Forge
 
             if (filename.ToLower().EndsWith(".obj"))
             {
+                ModelViewport vp = new ModelViewport();
                 OBJ obj = new OBJ();
                 obj.Read(filename);
+                vp.draw.Add(new ModelContainer() { nud = obj.toNUD() });
                 Runtime.ModelContainers.Add(new ModelContainer() { nud = obj.toNUD() });
                 meshList.refresh();
+                AddDockedControl(vp);
                 /*DAEImportSettings m = new DAEImportSettings();
                 m.ShowDialog();
                 if (m.exitStatus == DAEImportSettings.Opened)

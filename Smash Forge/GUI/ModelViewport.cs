@@ -13,65 +13,8 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge
 {
-
     public partial class ModelViewport : DockContent
     {
-
-        public class Camera
-        {
-            Vector3 pos = new Vector3(0, -10, -30);
-            float rot = 0, lookup = 0;
-
-            public float mouseSLast, mouseYLast, mouseXLast;
-
-            public Camera()
-            {
-                mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
-                mouseXLast = OpenTK.Input.Mouse.GetState().X;
-                mouseYLast = OpenTK.Input.Mouse.GetState().Y;
-            }
-
-            public Matrix4 getViewMatrix()
-            {
-                return Matrix4.CreateRotationY(0.5f * rot) *
-                    Matrix4.CreateRotationX(0.2f * lookup) *
-                    Matrix4.CreateTranslation(pos);
-            }
-
-            public void Update()
-            {
-                float zoomscale = 1;
-
-                if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
-                {
-                    pos.Y -= 0.15f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                    pos.X += 0.15f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                }
-                if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
-                {
-                    rot += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                    lookup += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                }
-
-                if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
-                    zoomscale = 6;
-
-                if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Down))
-                    pos.Z -= 1 * zoomscale;
-                if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Up))
-                    pos.Z += 1 * zoomscale;
-
-                pos.Z += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale;
-            }
-
-            public void TrackMouse()
-            {
-                mouseXLast = OpenTK.Input.Mouse.GetState().X;
-                mouseYLast = OpenTK.Input.Mouse.GetState().Y;
-                mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
-            }
-        }
-
         // setup
         bool render = true;
 
@@ -80,6 +23,9 @@ namespace Smash_Forge
         Camera cam;
         Matrix4 perspective;
 
+        bool selecting = false;
+        public float sx1, sy1;
+
         public int AnimationSpeed = 60;
         public bool isPlaying;
 
@@ -87,6 +33,8 @@ namespace Smash_Forge
         Color back1 = Color.FromArgb((255 << 24) | (26 << 16) | (26 << 8) | (26));
         Color back2 = Color.FromArgb((255 << 24) | (77 << 16) | (77 << 8) | (77));
 
+        // controls
+        VertexTool vertexTool = new VertexTool();
 
         // Contents
         public List<ModelContainer> draw = new List<ModelContainer>();
@@ -101,6 +49,7 @@ namespace Smash_Forge
         private void ModelViewport_Load(object sender, EventArgs e)
         {
             Setup();
+            vertexTool.vp = this;
             //Application.Idle += Application_Idle;
             var timer = new Timer();
             timer.Interval = 1000 / 60;
@@ -154,6 +103,112 @@ namespace Smash_Forge
             view = cam.getViewMatrix() * perspective;
         }
         
+        public Vector2 getMouseOnViewPort()
+        {
+            float mouse_x = glViewport.PointToClient(Cursor.Position).X;
+            float mouse_y = glViewport.PointToClient(Cursor.Position).Y;
+
+            float mx = (2.0f * mouse_x) / glViewport.Width - 1.0f;
+            float my = 1.0f - (2.0f * mouse_y) / glViewport.Height;
+            return new Vector2(mx, my);
+        }
+
+        private void glViewport_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            // selects object
+            if (selecting)
+            {
+
+            }
+        }
+
+        private Vector3 getScreenPoint(Vector3 pos)
+        {
+            Vector4 n = Vector4.Transform(new Vector4(pos, 1), view);
+            n.X /= n.W;
+            n.Y /= n.W;
+            n.Z /= n.W;
+            return n.Xyz;
+        }
+
+        private void checkSelect()
+        {
+            if (selecting)
+            {
+                Vector2 m = getMouseOnViewPort();
+                if (!m.Equals(new Vector2(sx1, sy1)))
+                {
+                    // select group of vertices
+                    float minx = Math.Min(sx1, m.X);
+                    float miny = Math.Min(sy1, m.Y);
+                    float width = Math.Abs(sx1 - m.X);
+                    float height = Math.Abs(sy1 - m.Y);
+
+                    foreach (ModelContainer con in draw)
+                    {
+                        foreach (NUD.Mesh mesh in con.nud.mesh)
+                        {
+                            foreach (NUD.Polygon poly in mesh.polygons)
+                            {
+                                //if (!poly.IsSelected && !mesh.IsSelected) continue;
+                                int i = 0;
+                                foreach (NUD.Vertex v in poly.vertices)
+                                {
+                                    poly.selectedVerts[i] = 0;
+                                    Vector3 n = getScreenPoint(v.pos);
+                                    if (n.X >= minx && n.Y >= miny && n.X <= minx + width && n.Y <= miny + height)
+                                        poly.selectedVerts[i] = 1;
+                                    i++;
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // single vertex
+                    Ray r = RenderTools.createRay(view, getMouseOnViewPort());
+                    Vector3 close = Vector3.Zero;
+                    foreach (ModelContainer con in draw)
+                    {
+                        foreach (NUD.Mesh mesh in con.nud.mesh)
+                        {
+                            foreach (NUD.Polygon poly in mesh.polygons)
+                            {
+                                //if (!poly.IsSelected && !mesh.IsSelected) continue;
+                                int i = 0;
+                                foreach (NUD.Vertex v in poly.vertices)
+                                {
+                                    if (!poly.IsSelected) continue;
+                                    if (r.TrySphereHit(v.pos, 0.2f, out close))
+                                        poly.selectedVerts[i] = 1;
+                                    i++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                vertexTool.refresh();
+                selecting = false;
+            }
+        }
+
+        private void glViewport_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void glViewport_MouseUp(object sender, MouseEventArgs e)
+        {
+            checkSelect();
+        }
+
+        private void weightToolButton_Click(object sender, EventArgs e)
+        {
+            vertexTool.Show();
+        }
+
         // Rendering
         private void Render()
         {
@@ -168,8 +223,8 @@ namespace Smash_Forge
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
             // clear the gf buffer
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
 
@@ -186,14 +241,27 @@ namespace Smash_Forge
             }
             
             // set up the viewport projection and send it to GPU
-            GL.MatrixMode(MatrixMode.Projection);
 
-            if (glViewport.Focused && glViewport.ClientRectangle.Contains(PointToClient(Cursor.Position)))
+            if (!OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.S))
             {
-                cam.Update();
-                view = cam.getViewMatrix() * perspective;
+                selecting = false;
+                if (glViewport.Focused && glViewport.ClientRectangle.Contains(PointToClient(Cursor.Position)))
+                {
+                    cam.Update();
+                    view = cam.getViewMatrix() * perspective;
+                }
+                cam.TrackMouse();
             }
-            cam.TrackMouse();
+            else
+            {
+                if (OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Left) && !selecting)
+                {
+                    selecting = true;
+                    Vector2 m = getMouseOnViewPort();
+                    sx1 = m.X;
+                    sy1 = m.Y;
+                }
+            }
 
             GL.Enable(EnableCap.DepthTest);
             GL.ClearDepth(1.0);
@@ -221,6 +289,11 @@ namespace Smash_Forge
 
             GL.Enable(EnableCap.LineSmooth);
 
+            GL.Enable(EnableCap.StencilTest);
+            GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
+
+            // draw renderable objects
+
             foreach (ModelContainer m in draw)
             {
                 RenderTools.DrawModel(m, view);
@@ -231,15 +304,38 @@ namespace Smash_Forge
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
             GL.Disable(EnableCap.CullFace);
 
-            GL.UseProgram(0);
             // clear the buffer bit so the skeleton 
             // will be drawn on top of everything
+            GL.UseProgram(0);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             // drawing the bones
             foreach (ModelContainer m in draw)
                 if(m.vbn != null)
                     RenderTools.DrawVBN(m.vbn);
+            
+            // Mouse selection
+            if (selecting)
+            {
+                GL.MatrixMode(MatrixMode.Projection);
+                GL.LoadIdentity();
+                GL.Clear(ClearBufferMask.DepthBufferBit);
+                
+                if (OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
+                {
+                    selecting = false;
+                }
+
+                Vector2 m = getMouseOnViewPort();
+                GL.Color3(Color.AliceBlue);
+                GL.LineWidth(2f);
+                GL.Begin(PrimitiveType.LineLoop);
+                GL.Vertex2(sx1, sy1);
+                GL.Vertex2(m.X, sy1);
+                GL.Vertex2(m.X, m.Y);
+                GL.Vertex2(sx1, m.Y);
+                GL.End();
+            }
 
             GL.PopAttrib();
             glViewport.SwapBuffers();

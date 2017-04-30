@@ -41,7 +41,7 @@ namespace Smash_Forge
             for (int i = 0; i < numOfBones; i++)
             {
                 flagsused = flagsused | d.readInt(); d.seek(d.pos() - 4);
-                Console.WriteLine(flagsused.ToString("x"));
+                //Console.WriteLine(flagsused.ToString("x"));
 
                 int flags = d.readByte();
                 int tFlag = d.readByte();

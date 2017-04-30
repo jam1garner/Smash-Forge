@@ -1007,8 +1007,6 @@ main()
 
                     m.nud.Render(shader);
                     shader.disableAttrib();
-
-                    //m.nud.DrawPoints(v, m.vbn);
                 }
             }
         }
@@ -2140,10 +2138,11 @@ main()
         {
             if (e.KeyChar == 'i')
             {
-                //GL.DeleteProgram(shader.programID);
-                //shader = new Shader();
-                //shader.vertexShader(File.ReadAllText("vert.txt"));
-                //shader.fragmentShader(File.ReadAllText("frag.txt"));
+                /*GL.DeleteProgram(Runtime.shaders["NUD"].programID);
+                shader = new Shader();
+                shader.vertexShader(File.ReadAllText("vert.txt"));
+                shader.fragmentShader(File.ReadAllText("frag.txt"));
+                Runtime.shaders["NUD"] = shader;*/
             }
             if (e.KeyChar == 'r')
             {
@@ -2307,6 +2306,24 @@ main()
                         {
                             double dis = Math.Pow(closest.X - p1.X, 2) + Math.Pow(closest.Y - p1.Y, 2) + Math.Pow(closest.Z - p1.Z, 2);
                             selected.Add(dis, b);
+                        }
+                    }
+                }
+                foreach (NUD.Mesh mesh in con.nud.mesh)
+                {
+                    Vector3 closest = Vector3.Zero;
+                    foreach (NUD.Polygon poly in mesh.polygons)
+                    {
+                        int i = 0;
+                        foreach (NUD.Vertex v in poly.vertices)
+                        {
+                            poly.selectedVerts[i] = 0;
+                            if (RenderTools.CheckSphereHit(v.pos, 1f, p1, p2, out closest))
+                            {
+                                //Console.WriteLine("Selected Vert");
+                                poly.selectedVerts[i] = 1;
+                            }
+                            i++;
                         }
                     }
                 }

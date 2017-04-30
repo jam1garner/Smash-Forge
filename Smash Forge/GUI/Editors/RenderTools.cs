@@ -7,6 +7,73 @@ using System.Drawing.Imaging;
 
 namespace Smash_Forge
 {
+
+    public class Camera
+    {
+        Vector3 pos = new Vector3(0, -10, -30);
+        float rot = 0, lookup = 0;
+
+        public float mouseSLast, mouseYLast, mouseXLast;
+
+        public Camera()
+        {
+            mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
+            mouseXLast = OpenTK.Input.Mouse.GetState().X;
+            mouseYLast = OpenTK.Input.Mouse.GetState().Y;
+        }
+
+        public Matrix4 getViewMatrix()
+        {
+            return Matrix4.CreateRotationY(0.5f * rot) *
+                Matrix4.CreateRotationX(0.2f * lookup) *
+                Matrix4.CreateTranslation(pos);
+        }
+
+        public void Update()
+        {
+            float zoomscale = 1;
+
+            if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
+            {
+                pos.Y -= 0.15f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                pos.X += 0.15f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+            }
+            if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
+            {
+                rot += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                lookup += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+            }
+
+            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
+                zoomscale = 6;
+
+            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Down))
+                pos.Z -= 1 * zoomscale;
+            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Up))
+                pos.Z += 1 * zoomscale;
+
+            pos.Z += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale;
+        }
+
+        public void TrackMouse()
+        {
+            mouseXLast = OpenTK.Input.Mouse.GetState().X;
+            mouseYLast = OpenTK.Input.Mouse.GetState().Y;
+            mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
+        }
+    }
+
+
+    public class Ray
+    {
+        public Vector3 p1, p2;
+
+        public bool TrySphereHit(Vector3 sphere, float rad, out Vector3 closest)
+        {
+            return RenderTools.CheckSphereHit(sphere, rad, p1, p2,  out closest);
+        }
+    }
+
     public class RenderTools
     {
         public static int defaultTex;
@@ -20,6 +87,42 @@ namespace Smash_Forge
             defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
             GL.GenVertexArrays(1, out cubeVAO);
             GL.GenBuffers(1, out cubeVBO);
+        }
+
+
+        public static void drawTranslator(Matrix4 view)
+        {
+            Vector3 center = new Vector3(5, 10, 5);
+
+            // check if within range
+            {
+                Vector3 p1 = Vector3.Transform(center, view).Normalized();
+                Vector3 p2 = Vector3.Transform(center + new Vector3(0, 5, 0), view).Normalized();
+
+                // check if mouse is within range
+                
+            }
+
+            GL.Color3(Color.Green);
+            GL.LineWidth(1f);
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex3(center);
+            GL.Vertex3(center + new Vector3(0, 5, 0));
+            GL.End();
+
+            GL.Color3(Color.Red);
+            GL.LineWidth(1f);
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex3(center);
+            GL.Vertex3(center + new Vector3(5, 0, 0));
+            GL.End();
+
+            GL.Color3(Color.Blue);
+            GL.LineWidth(1f);
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex3(center);
+            GL.Vertex3(center + new Vector3(0, 0, 5));
+            GL.End();
         }
 
 
@@ -430,7 +533,6 @@ namespace Smash_Forge
             float x = r;
             float y = 0;
             
-
             for (int i = 0; i < smooth; i++)
             {
                 Vector3 c;
@@ -483,6 +585,7 @@ namespace Smash_Forge
             if (m.nud != null)
             {
                 m.nud.Render(v, m.vbn);
+                m.nud.DrawPoints(v, m.vbn);
             }
         }
 
@@ -693,6 +796,22 @@ void main()
 
         #endregion
 
+        #region Ray Trace Controls
+        
+        public static Ray createRay(Matrix4 v, Vector2 m)
+        {
+            Vector4 va = Vector4.Transform(new Vector4(m.X, m.Y, -1.0f, 1.0f), v.Inverted());
+            Vector4 vb = Vector4.Transform(new Vector4(m.X, m.Y, 1.0f, 1.0f), v.Inverted());
+
+            Vector3 p1 = va.Xyz;
+            Vector3 p2 = p1 - (va - (va + vb)).Xyz * 100;
+            Ray r = new Ray() { p1 = p1, p2 = p2 };
+
+            return r;
+        }
+
+        #endregion
+
         #region Shaders
 
         public static string vs_Point = @"#version 330
@@ -702,7 +821,7 @@ in vec4 vBone;
 in vec4 vWeight;
 in int vSelected;
 
-out int selected;
+flat out int selected;
 
 uniform mat4 eyeview;
 uniform bones
@@ -731,19 +850,23 @@ void main()
 
     if(vBone.x != -1.0) objPos = skin(vPosition, bi);
 
+    selected = vSelected;
+
     gl_Position = eyeview * vec4(objPos.xyz, 1.0f);
 }
 ";
         public static string fs_Point = @"#version 330
 
-in int selected;
+flat in int selected;
 
 void main()
 {
     if(selected == 0)
         gl_FragColor = vec4(1,1,1,1);
-    else
+    else if(selected > 0)
         gl_FragColor = vec4(1,1,0,1);
+    else
+        gl_FragColor = vec4(1,0,1,1);
 }
 ";
 
