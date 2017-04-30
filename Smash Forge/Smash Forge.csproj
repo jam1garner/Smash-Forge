@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharacterParamManager.cs" />
+    <Compile Include="Filetypes\ATKD.cs" />
     <Compile Include="Filetypes\DRP.cs" />
     <Compile Include="Filetypes\Melee\DAT.cs" />
     <Compile Include="Filetypes\Melee\DAT_Animation.cs" />
@@ -126,6 +127,12 @@
     </Compile>
     <Compile Include="GUI\Editors\AnimTrack.Designer.cs">
       <DependentUpon>AnimTrack.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\ATKD_Editor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\ATKD_Editor.Designer.cs">
+      <DependentUpon>ATKD_Editor.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\BoneButton.cs">
       <SubType>Component</SubType>
@@ -370,6 +377,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\AnimTrack.resx">
       <DependentUpon>AnimTrack.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\ATKD_Editor.resx">
+      <DependentUpon>ATKD_Editor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\BoneTree.resx">
       <DependentUpon>BoneTree.cs</DependentUpon>

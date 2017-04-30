@@ -1442,7 +1442,10 @@ namespace Smash_Forge
                 //project.openACMD(filename);
                 Runtime.Moveset = new MovesetManager(filename);
             }
-
+            if (filename.EndsWith(".atkd"))
+            {
+                AddDockedControl(new ATKD_Editor(new ATKD().Read(filename)));
+            }
             if (filename.EndsWith("path.bin"))
             {
                 Runtime.TargetPath = new PathBin(filename);
@@ -1460,6 +1463,10 @@ namespace Smash_Forge
                 else if (f.readString(4,4) == "PATH")
                 {
                     Runtime.TargetPath = new PathBin(filename);
+                }
+                else if (f.readString(0,4) == "ATKD")
+                {
+                    AddDockedControl(new ATKD_Editor(new ATKD().Read(filename)));
                 }
                 else
                 {

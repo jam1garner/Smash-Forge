@@ -1020,7 +1020,6 @@ main()
                 int mappymodelCount = d.readInt();
 
                 // and some other nonsense
-
                 Console.WriteLine($"spawnyOffset = {spawnyOffset}");
                 d.seek(spawnyOffset);
                 int stageBonesRoot = d.readInt();
@@ -1032,7 +1031,6 @@ main()
                 Dictionary<short, short> boneIds = new Dictionary<short, short>();
                 for (int i = 0; i < idEntryCount; i++)
                     boneIds.Add((short)(d.readShort() - 1), (short)d.readShort());
-
 
                 Console.WriteLine($"stageBonesRoot = {stageBonesRoot}");
                 d.seek(stageBonesRoot);
