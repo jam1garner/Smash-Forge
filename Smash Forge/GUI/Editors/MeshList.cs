@@ -573,5 +573,23 @@ namespace Smash_Forge
                     poly.materials.Add(m.Clone());
             }
         }
+
+        private void openEditToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode.Tag is NUD)
+            {
+                NUD org = (NUD)treeView1.SelectedNode.Tag;
+                foreach (ModelContainer con in Runtime.ModelContainers)
+                {
+                    if (con.nud == org)
+                    {
+                        ModelViewport v = new ModelViewport();
+                        v.draw.Add(con);
+                        MainForm.Instance.AddDockedControl(v);
+                        break;
+                    }
+                }
+            }
+        }
     }
 }

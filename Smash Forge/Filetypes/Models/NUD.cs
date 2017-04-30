@@ -483,7 +483,7 @@ namespace Smash_Forge
                         {
                             GL.Uniform1(shader.getAttribute("renderType"), 2);
                             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
-                            GL.LineWidth(0.5f);
+                            GL.LineWidth(1f);
                             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
                             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
                             GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
@@ -498,7 +498,7 @@ namespace Smash_Forge
             Shader shader = Runtime.shaders["Point"];
             GL.UseProgram(shader.programID);
             GL.UniformMatrix4(shader.getAttribute("eyeview"), false, ref view);
-            //GL.Uniform4(shader.getAttribute("color"), 1, 1, 1, 1);
+            GL.Uniform4(shader.getAttribute("color"), 1, 1, 1, 1);
 
             if (vbn != null)
             {
@@ -527,7 +527,7 @@ namespace Smash_Forge
             {
                 foreach (Polygon p in m.polygons)
                 {
-                    if (!p.IsSelected) return;
+                    //if (!p.Checked && !m.Checked) continue;
                     GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
                     GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
                     GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
@@ -542,7 +542,8 @@ namespace Smash_Forge
                     GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
                     GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                     
-                    GL.PointSize(4f);
+                    GL.PointSize(6f);
+                    GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
                     GL.DrawElements(PrimitiveType.Points, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
                 }
             }
@@ -1575,6 +1576,11 @@ namespace Smash_Forge
                 return pos.Equals(p.pos) && new HashSet<Vector2>(tx).SetEquals(p.tx) && col.Equals(p.col)
                     && new HashSet<int>(node).SetEquals(p.node) && new HashSet<float>(weight).SetEquals(p.weight);
             }
+
+            public override string ToString()
+            {
+                return pos.ToString();
+            }
         }
 
 
@@ -1845,10 +1851,10 @@ namespace Smash_Forge
                 vertdata = vert.ToArray();
                 vert = new List<dVertex>();
                 selectedVerts = new int[vertdata.Length];
-                for(int i = 0; i < selectedVerts.Length / 10; i++)
+                /*for(int i = 0; i < selectedVerts.Length / 10; i++)
                 {
                     selectedVerts[i] = 1;
-                }
+                }*/
             }
 
             public void SmoothNormals()

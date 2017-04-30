@@ -185,6 +185,14 @@ namespace Smash_Forge
             }
         }
 
+        /*public void readStageAnim()
+        {
+            FileData d = new FileData("C:\\Users\\ploaj_000\\Desktop\\Melee\\GrIz.dat");
+            d.Endian = System.IO.Endianness.Big;
+            Debug = true;
+            readKeyFrame(d, 8, 0x107300, 0x04, 0x00, 0x08, 0, 0x06);
+        }*/
+
         public void readKeyFrame(FileData d, int length, int dataoff, int valueFormat, int tanFormat, int keyframeCount, int boneId, int trackType)
         {
             int temp = d.pos();
