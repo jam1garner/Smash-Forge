@@ -345,7 +345,7 @@ namespace Smash_Forge
 
         /*---------------------------------------
          * 
-         * Code ported from Aboood's GTX Extractor https://github.com/aboood40091/GTX-Extractor/blob/master/gtx_extract.py
+         * Code ported from AboodXD's GTX Extractor https://github.com/aboood40091/GTX-Extractor/blob/master/gtx_extract.py
          * 
          * With help by Aelan!
          * 
@@ -364,7 +364,7 @@ namespace Smash_Forge
     };*/
 
 
-    public static byte[] swizzleBC(byte[] data, int width, int height, int format, int tileMode, int pitch, int swizzle)
+        public static byte[] swizzleBC(byte[] data, int width, int height, int format, int tileMode, int pitch, int swizzle)
     {
         GX2Surface sur = new GX2Surface();
         sur.width = width;

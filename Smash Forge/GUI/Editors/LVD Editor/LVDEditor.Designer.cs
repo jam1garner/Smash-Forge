@@ -62,6 +62,11 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.generalPointShapeBox = new System.Windows.Forms.GroupBox();
+            this.label22 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.pointShapeY = new System.Windows.Forms.NumericUpDown();
+            this.pointShapeX = new System.Windows.Forms.NumericUpDown();
             this.pointGroup = new System.Windows.Forms.GroupBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
@@ -89,11 +94,6 @@
             this.label18 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
             this.label19 = new System.Windows.Forms.Label();
-            this.generalPointShapeBox = new System.Windows.Forms.GroupBox();
-            this.label22 = new System.Windows.Forms.Label();
-            this.label23 = new System.Windows.Forms.Label();
-            this.pointShapeY = new System.Windows.Forms.NumericUpDown();
-            this.pointShapeX = new System.Windows.Forms.NumericUpDown();
             this.rectangleGroup = new System.Windows.Forms.GroupBox();
             this.label24 = new System.Windows.Forms.Label();
             this.label25 = new System.Windows.Forms.Label();
@@ -114,6 +114,47 @@
             this.pathNodeX = new System.Windows.Forms.NumericUpDown();
             this.label30 = new System.Windows.Forms.Label();
             this.label31 = new System.Windows.Forms.Label();
+            this.meleeCollisionGroup = new System.Windows.Forms.GroupBox();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.meleeVerts = new System.Windows.Forms.TreeView();
+            this.meleeAddVert = new System.Windows.Forms.Button();
+            this.meleeSubtractVert = new System.Windows.Forms.Button();
+            this.meleeY = new System.Windows.Forms.NumericUpDown();
+            this.label42 = new System.Windows.Forms.Label();
+            this.label41 = new System.Windows.Forms.Label();
+            this.meleeX = new System.Windows.Forms.NumericUpDown();
+            this.label43 = new System.Windows.Forms.Label();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.meleeDropThrough = new System.Windows.Forms.CheckBox();
+            this.vertEnd = new System.Windows.Forms.NumericUpDown();
+            this.label34 = new System.Windows.Forms.Label();
+            this.vertStart = new System.Windows.Forms.NumericUpDown();
+            this.label33 = new System.Windows.Forms.Label();
+            this.meleeLinks = new System.Windows.Forms.TreeView();
+            this.ceiling = new System.Windows.Forms.CheckBox();
+            this.meleeSubtractLink = new System.Windows.Forms.Button();
+            this.floor = new System.Windows.Forms.CheckBox();
+            this.meleeAddLink = new System.Windows.Forms.Button();
+            this.rightWall = new System.Windows.Forms.CheckBox();
+            this.label40 = new System.Windows.Forms.Label();
+            this.leftWall = new System.Windows.Forms.CheckBox();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.ledge = new System.Windows.Forms.CheckBox();
+            this.label38 = new System.Windows.Forms.Label();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.polyEnd = new System.Windows.Forms.NumericUpDown();
+            this.label36 = new System.Windows.Forms.Label();
+            this.polyStart = new System.Windows.Forms.NumericUpDown();
+            this.label37 = new System.Windows.Forms.Label();
+            this.meleePolygons = new System.Windows.Forms.TreeView();
+            this.polygonSubtract = new System.Windows.Forms.Button();
+            this.polygonAdd = new System.Windows.Forms.Button();
+            this.label35 = new System.Windows.Forms.Label();
+            this.label39 = new System.Windows.Forms.Label();
+            this.label44 = new System.Windows.Forms.Label();
+            this.linkBefore = new System.Windows.Forms.NumericUpDown();
+            this.linkAfter = new System.Windows.Forms.NumericUpDown();
             this.flowLayoutPanel1.SuspendLayout();
             this.collisionGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zStart)).BeginInit();
@@ -122,6 +163,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.yVert)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xVert)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.passthroughAngle)).BeginInit();
+            this.generalPointShapeBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pointShapeY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pointShapeX)).BeginInit();
             this.pointGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yPoint)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xPoint)).BeginInit();
@@ -133,9 +177,6 @@
             this.itemSpawnerGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
-            this.generalPointShapeBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pointShapeY)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pointShapeX)).BeginInit();
             this.rectangleGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rectLowerY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rectLowerX)).BeginInit();
@@ -144,6 +185,19 @@
             this.pathGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeX)).BeginInit();
+            this.meleeCollisionGroup.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.meleeY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.meleeX)).BeginInit();
+            this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.vertEnd)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vertStart)).BeginInit();
+            this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.polyEnd)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.polyStart)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.linkBefore)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.linkAfter)).BeginInit();
             this.SuspendLayout();
             // 
             // flowLayoutPanel1
@@ -157,11 +211,12 @@
             this.flowLayoutPanel1.Controls.Add(this.itemSpawnerGroup);
             this.flowLayoutPanel1.Controls.Add(this.rectangleGroup);
             this.flowLayoutPanel1.Controls.Add(this.pathGroup);
+            this.flowLayoutPanel1.Controls.Add(this.meleeCollisionGroup);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(555, 828);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(868, 828);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // name
@@ -590,6 +645,76 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "Vertices";
             // 
+            // generalPointShapeBox
+            // 
+            this.generalPointShapeBox.Controls.Add(this.label22);
+            this.generalPointShapeBox.Controls.Add(this.label23);
+            this.generalPointShapeBox.Controls.Add(this.pointShapeY);
+            this.generalPointShapeBox.Controls.Add(this.pointShapeX);
+            this.generalPointShapeBox.Location = new System.Drawing.Point(3, 663);
+            this.generalPointShapeBox.Name = "generalPointShapeBox";
+            this.generalPointShapeBox.Size = new System.Drawing.Size(200, 60);
+            this.generalPointShapeBox.TabIndex = 34;
+            this.generalPointShapeBox.TabStop = false;
+            this.generalPointShapeBox.Text = "Point (Shape)";
+            this.generalPointShapeBox.Visible = false;
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(98, 26);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(14, 13);
+            this.label22.TabIndex = 32;
+            this.label22.Text = "Y";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(9, 26);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(14, 13);
+            this.label23.TabIndex = 32;
+            this.label23.Text = "X";
+            // 
+            // pointShapeY
+            // 
+            this.pointShapeY.DecimalPlaces = 3;
+            this.pointShapeY.Location = new System.Drawing.Point(118, 24);
+            this.pointShapeY.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.pointShapeY.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.pointShapeY.Name = "pointShapeY";
+            this.pointShapeY.Size = new System.Drawing.Size(67, 20);
+            this.pointShapeY.TabIndex = 33;
+            this.pointShapeY.ValueChanged += new System.EventHandler(this.pointShape_ValueChanged);
+            // 
+            // pointShapeX
+            // 
+            this.pointShapeX.DecimalPlaces = 3;
+            this.pointShapeX.Location = new System.Drawing.Point(25, 24);
+            this.pointShapeX.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.pointShapeX.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.pointShapeX.Name = "pointShapeX";
+            this.pointShapeX.Size = new System.Drawing.Size(67, 20);
+            this.pointShapeX.TabIndex = 32;
+            this.pointShapeX.ValueChanged += new System.EventHandler(this.pointShape_ValueChanged);
+            // 
             // pointGroup
             // 
             this.pointGroup.Controls.Add(this.label12);
@@ -942,76 +1067,6 @@
             this.label19.TabIndex = 37;
             this.label19.Text = "X";
             // 
-            // generalPointShapeBox
-            // 
-            this.generalPointShapeBox.Controls.Add(this.label22);
-            this.generalPointShapeBox.Controls.Add(this.label23);
-            this.generalPointShapeBox.Controls.Add(this.pointShapeY);
-            this.generalPointShapeBox.Controls.Add(this.pointShapeX);
-            this.generalPointShapeBox.Location = new System.Drawing.Point(3, 663);
-            this.generalPointShapeBox.Name = "generalPointShapeBox";
-            this.generalPointShapeBox.Size = new System.Drawing.Size(200, 60);
-            this.generalPointShapeBox.TabIndex = 34;
-            this.generalPointShapeBox.TabStop = false;
-            this.generalPointShapeBox.Text = "Point (Shape)";
-            this.generalPointShapeBox.Visible = false;
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(98, 26);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(14, 13);
-            this.label22.TabIndex = 32;
-            this.label22.Text = "Y";
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(9, 26);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(14, 13);
-            this.label23.TabIndex = 32;
-            this.label23.Text = "X";
-            // 
-            // pointShapeY
-            // 
-            this.pointShapeY.DecimalPlaces = 3;
-            this.pointShapeY.Location = new System.Drawing.Point(118, 24);
-            this.pointShapeY.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.pointShapeY.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.pointShapeY.Name = "pointShapeY";
-            this.pointShapeY.Size = new System.Drawing.Size(67, 20);
-            this.pointShapeY.TabIndex = 33;
-            this.pointShapeY.ValueChanged += new System.EventHandler(this.pointShape_ValueChanged);
-            // 
-            // pointShapeX
-            // 
-            this.pointShapeX.DecimalPlaces = 3;
-            this.pointShapeX.Location = new System.Drawing.Point(25, 24);
-            this.pointShapeX.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.pointShapeX.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.pointShapeX.Name = "pointShapeX";
-            this.pointShapeX.Size = new System.Drawing.Size(67, 20);
-            this.pointShapeX.TabIndex = 32;
-            this.pointShapeX.ValueChanged += new System.EventHandler(this.pointShape_ValueChanged);
-            // 
             // rectangleGroup
             // 
             this.rectangleGroup.Controls.Add(this.label24);
@@ -1274,16 +1329,534 @@
             this.label31.TabIndex = 37;
             this.label31.Text = "X";
             // 
+            // meleeCollisionGroup
+            // 
+            this.meleeCollisionGroup.Controls.Add(this.tabControl1);
+            this.meleeCollisionGroup.Location = new System.Drawing.Point(542, 3);
+            this.meleeCollisionGroup.Name = "meleeCollisionGroup";
+            this.meleeCollisionGroup.Size = new System.Drawing.Size(272, 486);
+            this.meleeCollisionGroup.TabIndex = 34;
+            this.meleeCollisionGroup.TabStop = false;
+            this.meleeCollisionGroup.Text = "Melee Collision Editing";
+            this.meleeCollisionGroup.Visible = false;
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Location = new System.Drawing.Point(0, 19);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(272, 478);
+            this.tabControl1.TabIndex = 31;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.meleeVerts);
+            this.tabPage1.Controls.Add(this.meleeAddVert);
+            this.tabPage1.Controls.Add(this.meleeSubtractVert);
+            this.tabPage1.Controls.Add(this.meleeY);
+            this.tabPage1.Controls.Add(this.label42);
+            this.tabPage1.Controls.Add(this.label41);
+            this.tabPage1.Controls.Add(this.meleeX);
+            this.tabPage1.Controls.Add(this.label43);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(264, 452);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Vertices";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // meleeVerts
+            // 
+            this.meleeVerts.HideSelection = false;
+            this.meleeVerts.Location = new System.Drawing.Point(7, 35);
+            this.meleeVerts.Name = "meleeVerts";
+            this.meleeVerts.Size = new System.Drawing.Size(249, 357);
+            this.meleeVerts.TabIndex = 21;
+            this.meleeVerts.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.selectItem);
+            // 
+            // meleeAddVert
+            // 
+            this.meleeAddVert.Location = new System.Drawing.Point(151, 6);
+            this.meleeAddVert.Name = "meleeAddVert";
+            this.meleeAddVert.Size = new System.Drawing.Size(49, 23);
+            this.meleeAddVert.TabIndex = 2;
+            this.meleeAddVert.Text = "+";
+            this.meleeAddVert.UseVisualStyleBackColor = true;
+            this.meleeAddVert.Click += new System.EventHandler(this.meleeAddVert_Click);
+            // 
+            // meleeSubtractVert
+            // 
+            this.meleeSubtractVert.Location = new System.Drawing.Point(206, 6);
+            this.meleeSubtractVert.Name = "meleeSubtractVert";
+            this.meleeSubtractVert.Size = new System.Drawing.Size(49, 23);
+            this.meleeSubtractVert.TabIndex = 3;
+            this.meleeSubtractVert.Text = "-";
+            this.meleeSubtractVert.UseVisualStyleBackColor = true;
+            this.meleeSubtractVert.Click += new System.EventHandler(this.meleeSubtractVert_Click);
+            // 
+            // meleeY
+            // 
+            this.meleeY.DecimalPlaces = 3;
+            this.meleeY.Location = new System.Drawing.Point(152, 398);
+            this.meleeY.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.meleeY.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.meleeY.Name = "meleeY";
+            this.meleeY.Size = new System.Drawing.Size(67, 20);
+            this.meleeY.TabIndex = 24;
+            this.meleeY.ValueChanged += new System.EventHandler(this.updateVertexPosition);
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(39, 400);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(14, 13);
+            this.label42.TabIndex = 4;
+            this.label42.Text = "X";
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(132, 400);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(14, 13);
+            this.label41.TabIndex = 6;
+            this.label41.Text = "Y";
+            // 
+            // meleeX
+            // 
+            this.meleeX.DecimalPlaces = 3;
+            this.meleeX.Location = new System.Drawing.Point(59, 398);
+            this.meleeX.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.meleeX.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.meleeX.Name = "meleeX";
+            this.meleeX.Size = new System.Drawing.Size(67, 20);
+            this.meleeX.TabIndex = 23;
+            this.meleeX.ValueChanged += new System.EventHandler(this.updateVertexPosition);
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Location = new System.Drawing.Point(98, 11);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(45, 13);
+            this.label43.TabIndex = 1;
+            this.label43.Text = "Vertices";
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.linkAfter);
+            this.tabPage2.Controls.Add(this.linkBefore);
+            this.tabPage2.Controls.Add(this.label44);
+            this.tabPage2.Controls.Add(this.label39);
+            this.tabPage2.Controls.Add(this.meleeDropThrough);
+            this.tabPage2.Controls.Add(this.vertEnd);
+            this.tabPage2.Controls.Add(this.label34);
+            this.tabPage2.Controls.Add(this.vertStart);
+            this.tabPage2.Controls.Add(this.label33);
+            this.tabPage2.Controls.Add(this.meleeLinks);
+            this.tabPage2.Controls.Add(this.ceiling);
+            this.tabPage2.Controls.Add(this.meleeSubtractLink);
+            this.tabPage2.Controls.Add(this.floor);
+            this.tabPage2.Controls.Add(this.meleeAddLink);
+            this.tabPage2.Controls.Add(this.rightWall);
+            this.tabPage2.Controls.Add(this.label40);
+            this.tabPage2.Controls.Add(this.leftWall);
+            this.tabPage2.Controls.Add(this.comboBox2);
+            this.tabPage2.Controls.Add(this.ledge);
+            this.tabPage2.Controls.Add(this.label38);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(264, 452);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Links";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // meleeDropThrough
+            // 
+            this.meleeDropThrough.AutoSize = true;
+            this.meleeDropThrough.Location = new System.Drawing.Point(161, 361);
+            this.meleeDropThrough.Name = "meleeDropThrough";
+            this.meleeDropThrough.Size = new System.Drawing.Size(92, 17);
+            this.meleeDropThrough.TabIndex = 35;
+            this.meleeDropThrough.Text = "Drop Through";
+            this.meleeDropThrough.UseVisualStyleBackColor = true;
+            this.meleeDropThrough.CheckedChanged += new System.EventHandler(this.linkPropertyUpdate);
+            // 
+            // vertEnd
+            // 
+            this.vertEnd.Location = new System.Drawing.Point(202, 307);
+            this.vertEnd.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.vertEnd.Name = "vertEnd";
+            this.vertEnd.Size = new System.Drawing.Size(44, 20);
+            this.vertEnd.TabIndex = 34;
+            this.vertEnd.ValueChanged += new System.EventHandler(this.linkVertUpdate);
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(171, 309);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(25, 13);
+            this.label34.TabIndex = 33;
+            this.label34.Text = "and";
+            // 
+            // vertStart
+            // 
+            this.vertStart.Location = new System.Drawing.Point(121, 307);
+            this.vertStart.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.vertStart.Name = "vertStart";
+            this.vertStart.Size = new System.Drawing.Size(44, 20);
+            this.vertStart.TabIndex = 32;
+            this.vertStart.ValueChanged += new System.EventHandler(this.linkVertUpdate);
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(4, 309);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(111, 13);
+            this.label33.TabIndex = 31;
+            this.label33.Text = "Link between vertices";
+            // 
+            // meleeLinks
+            // 
+            this.meleeLinks.HideSelection = false;
+            this.meleeLinks.Location = new System.Drawing.Point(4, 35);
+            this.meleeLinks.Name = "meleeLinks";
+            this.meleeLinks.Size = new System.Drawing.Size(255, 266);
+            this.meleeLinks.TabIndex = 22;
+            this.meleeLinks.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.selectItem);
+            // 
+            // ceiling
+            // 
+            this.ceiling.AutoSize = true;
+            this.ceiling.Location = new System.Drawing.Point(80, 361);
+            this.ceiling.Name = "ceiling";
+            this.ceiling.Size = new System.Drawing.Size(57, 17);
+            this.ceiling.TabIndex = 28;
+            this.ceiling.Text = "Ceiling";
+            this.ceiling.UseVisualStyleBackColor = true;
+            this.ceiling.CheckedChanged += new System.EventHandler(this.linkPropertyUpdate);
+            // 
+            // meleeSubtractLink
+            // 
+            this.meleeSubtractLink.Location = new System.Drawing.Point(203, 6);
+            this.meleeSubtractLink.Name = "meleeSubtractLink";
+            this.meleeSubtractLink.Size = new System.Drawing.Size(49, 23);
+            this.meleeSubtractLink.TabIndex = 30;
+            this.meleeSubtractLink.Text = "-";
+            this.meleeSubtractLink.UseVisualStyleBackColor = true;
+            this.meleeSubtractLink.Click += new System.EventHandler(this.meleeSubtractLink_Click);
+            // 
+            // floor
+            // 
+            this.floor.AutoSize = true;
+            this.floor.Location = new System.Drawing.Point(6, 361);
+            this.floor.Name = "floor";
+            this.floor.Size = new System.Drawing.Size(49, 17);
+            this.floor.TabIndex = 27;
+            this.floor.Text = "Floor";
+            this.floor.UseVisualStyleBackColor = true;
+            this.floor.CheckedChanged += new System.EventHandler(this.linkPropertyUpdate);
+            // 
+            // meleeAddLink
+            // 
+            this.meleeAddLink.Location = new System.Drawing.Point(148, 6);
+            this.meleeAddLink.Name = "meleeAddLink";
+            this.meleeAddLink.Size = new System.Drawing.Size(49, 23);
+            this.meleeAddLink.TabIndex = 29;
+            this.meleeAddLink.Text = "+";
+            this.meleeAddLink.UseVisualStyleBackColor = true;
+            this.meleeAddLink.Click += new System.EventHandler(this.meleeAddLink_Click);
+            // 
+            // rightWall
+            // 
+            this.rightWall.AutoSize = true;
+            this.rightWall.Location = new System.Drawing.Point(80, 338);
+            this.rightWall.Name = "rightWall";
+            this.rightWall.Size = new System.Drawing.Size(75, 17);
+            this.rightWall.TabIndex = 26;
+            this.rightWall.Text = "Right Wall";
+            this.rightWall.UseVisualStyleBackColor = true;
+            this.rightWall.CheckedChanged += new System.EventHandler(this.linkPropertyUpdate);
+            // 
+            // label40
+            // 
+            this.label40.AutoSize = true;
+            this.label40.Location = new System.Drawing.Point(105, 11);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(32, 13);
+            this.label40.TabIndex = 9;
+            this.label40.Text = "Links";
+            // 
+            // leftWall
+            // 
+            this.leftWall.AutoSize = true;
+            this.leftWall.Location = new System.Drawing.Point(6, 338);
+            this.leftWall.Name = "leftWall";
+            this.leftWall.Size = new System.Drawing.Size(68, 17);
+            this.leftWall.TabIndex = 25;
+            this.leftWall.Text = "Left Wall";
+            this.leftWall.UseVisualStyleBackColor = true;
+            this.leftWall.CheckedChanged += new System.EventHandler(this.linkPropertyUpdate);
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Items.AddRange(new object[] {
+            "Iron",
+            "Snow",
+            "Ice",
+            "Wood",
+            "LargeBubbles",
+            "Hurt",
+            "Brick",
+            "Stone2",
+            "Metal2",
+            "Water",
+            "Bubbles",
+            "Clouds",
+            "Ice2",
+            "NebuIron",
+            "Danbouru",
+            "Rock",
+            "Gamewatch",
+            "Grass",
+            "SnowIce",
+            "Fence",
+            "Soil",
+            "Sand",
+            "MasterFortress",
+            "Carpet"});
+            this.comboBox2.Location = new System.Drawing.Point(6, 404);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(109, 21);
+            this.comboBox2.TabIndex = 20;
+            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
+            // 
+            // ledge
+            // 
+            this.ledge.AutoSize = true;
+            this.ledge.Location = new System.Drawing.Point(161, 338);
+            this.ledge.Name = "ledge";
+            this.ledge.Size = new System.Drawing.Size(56, 17);
+            this.ledge.TabIndex = 14;
+            this.ledge.Text = "Ledge";
+            this.ledge.UseVisualStyleBackColor = true;
+            this.ledge.CheckedChanged += new System.EventHandler(this.linkPropertyUpdate);
+            // 
+            // label38
+            // 
+            this.label38.AutoSize = true;
+            this.label38.Location = new System.Drawing.Point(3, 388);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(83, 13);
+            this.label38.TabIndex = 19;
+            this.label38.Text = "Physics Material";
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.polyEnd);
+            this.tabPage3.Controls.Add(this.label36);
+            this.tabPage3.Controls.Add(this.polyStart);
+            this.tabPage3.Controls.Add(this.label37);
+            this.tabPage3.Controls.Add(this.meleePolygons);
+            this.tabPage3.Controls.Add(this.polygonSubtract);
+            this.tabPage3.Controls.Add(this.polygonAdd);
+            this.tabPage3.Controls.Add(this.label35);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(264, 452);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Polygons";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // polyEnd
+            // 
+            this.polyEnd.Location = new System.Drawing.Point(198, 400);
+            this.polyEnd.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.polyEnd.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.polyEnd.Name = "polyEnd";
+            this.polyEnd.Size = new System.Drawing.Size(55, 20);
+            this.polyEnd.TabIndex = 38;
+            this.polyEnd.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.polyEnd.ValueChanged += new System.EventHandler(this.polygonRangeChange);
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(176, 402);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(16, 13);
+            this.label36.TabIndex = 37;
+            this.label36.Text = "to";
+            // 
+            // polyStart
+            // 
+            this.polyStart.Location = new System.Drawing.Point(115, 400);
+            this.polyStart.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.polyStart.Name = "polyStart";
+            this.polyStart.Size = new System.Drawing.Size(55, 20);
+            this.polyStart.TabIndex = 36;
+            this.polyStart.ValueChanged += new System.EventHandler(this.polygonRangeChange);
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Location = new System.Drawing.Point(16, 402);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(93, 13);
+            this.label37.TabIndex = 35;
+            this.label37.Text = "Composed of links";
+            // 
+            // meleePolygons
+            // 
+            this.meleePolygons.HideSelection = false;
+            this.meleePolygons.Location = new System.Drawing.Point(5, 38);
+            this.meleePolygons.Name = "meleePolygons";
+            this.meleePolygons.Size = new System.Drawing.Size(255, 356);
+            this.meleePolygons.TabIndex = 32;
+            this.meleePolygons.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.selectItem);
+            // 
+            // polygonSubtract
+            // 
+            this.polygonSubtract.Location = new System.Drawing.Point(204, 9);
+            this.polygonSubtract.Name = "polygonSubtract";
+            this.polygonSubtract.Size = new System.Drawing.Size(49, 23);
+            this.polygonSubtract.TabIndex = 34;
+            this.polygonSubtract.Text = "-";
+            this.polygonSubtract.UseVisualStyleBackColor = true;
+            this.polygonSubtract.Click += new System.EventHandler(this.polygonSubtract_Click);
+            // 
+            // polygonAdd
+            // 
+            this.polygonAdd.Location = new System.Drawing.Point(149, 9);
+            this.polygonAdd.Name = "polygonAdd";
+            this.polygonAdd.Size = new System.Drawing.Size(49, 23);
+            this.polygonAdd.TabIndex = 33;
+            this.polygonAdd.Text = "+";
+            this.polygonAdd.UseVisualStyleBackColor = true;
+            this.polygonAdd.Click += new System.EventHandler(this.polygonAdd_Click);
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(93, 14);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(50, 13);
+            this.label35.TabIndex = 31;
+            this.label35.Text = "Polygons";
+            // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Location = new System.Drawing.Point(124, 388);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(61, 13);
+            this.label39.TabIndex = 36;
+            this.label39.Text = "Link Before";
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(126, 412);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(52, 13);
+            this.label44.TabIndex = 37;
+            this.label44.Text = "Link After";
+            // 
+            // linkBefore
+            // 
+            this.linkBefore.Location = new System.Drawing.Point(191, 384);
+            this.linkBefore.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.linkBefore.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.linkBefore.Name = "linkBefore";
+            this.linkBefore.Size = new System.Drawing.Size(44, 20);
+            this.linkBefore.TabIndex = 38;
+            this.linkBefore.ValueChanged += new System.EventHandler(this.linkVertUpdate);
+            // 
+            // linkAfter
+            // 
+            this.linkAfter.Location = new System.Drawing.Point(191, 410);
+            this.linkAfter.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.linkAfter.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.linkAfter.Name = "linkAfter";
+            this.linkAfter.Size = new System.Drawing.Size(44, 20);
+            this.linkAfter.TabIndex = 39;
+            this.linkAfter.ValueChanged += new System.EventHandler(this.linkVertUpdate);
+            // 
             // LVDEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(555, 828);
+            this.ClientSize = new System.Drawing.Size(868, 828);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MinimumSize = new System.Drawing.Size(296, 822);
             this.Name = "LVDEditor";
-            this.Text = "LVDEditor";
+            this.Text = "Level Editor";
             this.Load += new System.EventHandler(this.LVDEditor_Load);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
@@ -1295,6 +1868,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.yVert)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xVert)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.passthroughAngle)).EndInit();
+            this.generalPointShapeBox.ResumeLayout(false);
+            this.generalPointShapeBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pointShapeY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pointShapeX)).EndInit();
             this.pointGroup.ResumeLayout(false);
             this.pointGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yPoint)).EndInit();
@@ -1309,10 +1886,6 @@
             this.itemSpawnerGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
-            this.generalPointShapeBox.ResumeLayout(false);
-            this.generalPointShapeBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pointShapeY)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pointShapeX)).EndInit();
             this.rectangleGroup.ResumeLayout(false);
             this.rectangleGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rectLowerY)).EndInit();
@@ -1323,6 +1896,22 @@
             this.pathGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeX)).EndInit();
+            this.meleeCollisionGroup.ResumeLayout(false);
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.meleeY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.meleeX)).EndInit();
+            this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.vertEnd)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vertStart)).EndInit();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.polyEnd)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.polyStart)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.linkBefore)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.linkAfter)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1415,5 +2004,46 @@
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.GroupBox meleeCollisionGroup;
+        private System.Windows.Forms.NumericUpDown meleeY;
+        private System.Windows.Forms.NumericUpDown meleeX;
+        private System.Windows.Forms.TreeView meleeLinks;
+        private System.Windows.Forms.TreeView meleeVerts;
+        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.Label label38;
+        private System.Windows.Forms.CheckBox ledge;
+        private System.Windows.Forms.Label label40;
+        private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.Label label42;
+        private System.Windows.Forms.Button meleeSubtractVert;
+        private System.Windows.Forms.Button meleeAddVert;
+        private System.Windows.Forms.Label label43;
+        private System.Windows.Forms.Button meleeSubtractLink;
+        private System.Windows.Forms.Button meleeAddLink;
+        private System.Windows.Forms.CheckBox ceiling;
+        private System.Windows.Forms.CheckBox floor;
+        private System.Windows.Forms.CheckBox rightWall;
+        private System.Windows.Forms.CheckBox leftWall;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.NumericUpDown vertStart;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.NumericUpDown vertEnd;
+        private System.Windows.Forms.NumericUpDown polyEnd;
+        private System.Windows.Forms.Label label36;
+        private System.Windows.Forms.NumericUpDown polyStart;
+        private System.Windows.Forms.Label label37;
+        private System.Windows.Forms.TreeView meleePolygons;
+        private System.Windows.Forms.Button polygonSubtract;
+        private System.Windows.Forms.Button polygonAdd;
+        private System.Windows.Forms.Label label35;
+        private System.Windows.Forms.CheckBox meleeDropThrough;
+        private System.Windows.Forms.NumericUpDown linkAfter;
+        private System.Windows.Forms.NumericUpDown linkBefore;
+        private System.Windows.Forms.Label label44;
+        private System.Windows.Forms.Label label39;
     }
 }

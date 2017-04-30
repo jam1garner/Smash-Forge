@@ -45,5 +45,14 @@ namespace Smash_Forge
                 Console.WriteLine($"Position - {jobj.pos}");
             }
         }
+
+        private void treeView1_DoubleClick(object sender, EventArgs e)
+        {
+            if(treeView1.SelectedNode != null && treeView1.SelectedNode.Text == "coll_data")
+            {
+                Console.WriteLine("coll_data");
+                //Open DAT collision editor
+            }
+        }
     }
 }

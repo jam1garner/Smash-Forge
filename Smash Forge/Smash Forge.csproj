@@ -70,6 +70,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CharacterParamManager.cs" />
     <Compile Include="Filetypes\DRP.cs" />
     <Compile Include="Filetypes\Melee\DAT.cs" />
     <Compile Include="Filetypes\Melee\DAT_Animation.cs" />
@@ -143,6 +144,12 @@
     </Compile>
     <Compile Include="GUI\Editors\BoneTree.Designer.cs">
       <DependentUpon>BoneTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\DAT_stage_list.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\DAT_stage_list.Designer.cs">
+      <DependentUpon>DAT_stage_list.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\DAT_TreeView.cs">
       <SubType>Form</SubType>
@@ -376,6 +383,9 @@
     <EmbeddedResource Include="GUI\Editors\BoneTree.resx">
       <DependentUpon>BoneTree.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\DAT_stage_list.resx">
+      <DependentUpon>DAT_stage_list.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\DAT_TreeView.resx">
       <DependentUpon>DAT_TreeView.cs</DependentUpon>
     </EmbeddedResource>
@@ -562,6 +572,9 @@
     <None Include="param_labels\fighter_param.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="param_labels\fighter_param_common.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="param_labels\item_assist_gen_param.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -584,6 +597,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\ui_soft_db.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\ui_sound_call_voice_db.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\ui_stage_db.ini">

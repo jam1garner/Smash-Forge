@@ -75,6 +75,7 @@ namespace Smash_Forge
             generalPointShapeBox.Visible = false;
             rectangleGroup.Visible = false;
             pathGroup.Visible = false;
+            meleeCollisionGroup.Visible = false;
             name.Text = currentEntry.name;
             subname.Text = currentEntry.subname;
             if (entry is Collision)
@@ -158,6 +159,22 @@ namespace Smash_Forge
                 int j = 0;
                 foreach(Vector2D v in p.points)
                     treeViewPath.Nodes.Add(new TreeNode($"Point {++j} ({v.x},{v.y})") { Tag = v });
+            }
+            else if(entry is DAT.COLL_DATA)
+            {
+                meleeCollisionGroup.Visible = true;
+                meleeVerts.Nodes.Clear();
+                meleeLinks.Nodes.Clear();
+                meleePolygons.Nodes.Clear();
+                int i = 0;
+                foreach (Vector2D vert in ((DAT.COLL_DATA)entry).vertices)
+                    meleeVerts.Nodes.Add(new TreeNode($"Vertex {i++}") { Tag = vert });
+                i = 0;
+                foreach (DAT.COLL_DATA.Link link in ((DAT.COLL_DATA)entry).links)
+                    meleeLinks.Nodes.Add(new TreeNode($"Link {i++}") { Tag = link });
+                i = 0;
+                foreach (DAT.COLL_DATA.AreaTableEntry ate in ((DAT.COLL_DATA)entry).areaTable)
+                    meleePolygons.Nodes.Add(new TreeNode($"Polygon {i++}") { Tag = ate });
             }
         }
 
@@ -576,6 +593,183 @@ namespace Smash_Forge
             generalPointShapeBox.Visible = false;
             rectangleGroup.Visible = false;
             pathGroup.Visible = false;
+        }
+
+        #region meleeCollisions
+        private DAT.COLL_DATA.AreaTableEntry currentAreaTableEntry;
+        private DAT.COLL_DATA.Link currentLink;
+        private Vector2D currentMeleeVert;
+
+        private void updateVertexPosition(object sender, EventArgs e)
+        {
+            if (currentMeleeVert == null)
+                return;
+            if (sender == meleeX)
+                currentMeleeVert.x = (float)meleeX.Value;
+            if (sender == meleeY)
+                currentMeleeVert.y = (float)meleeY.Value;
+        }
+
+        private void linkVertUpdate(object sender, EventArgs e)
+        {
+            if (currentLink == null)
+                return;
+            if (sender == vertStart)
+                currentLink.vertexIndices[0] = (int)vertStart.Value;
+            if (sender == vertEnd)
+                currentLink.vertexIndices[1] = (int)vertEnd.Value;
+            if (sender == linkBefore)
+                currentLink.connectors[0] = (int)linkBefore.Value;
+            if (sender == linkAfter)
+                currentLink.connectors[1] = (int)linkAfter.Value;
+            if (currentLink.connectors[0] == -1)
+                currentLink.connectors[0] = ushort.MaxValue;
+            if (currentLink.connectors[1] == -1)
+                currentLink.connectors[1] = ushort.MaxValue;
+        }
+
+        private int changeFlag(int original, int mask, bool newValue)
+        {
+            bool isSet = (original & mask) != 0;
+            if (newValue)
+                original |= mask;
+            else
+                original &= (byte)~mask;
+            return original;
+        }
+
+        private void linkPropertyUpdate(object sender, EventArgs e)
+        {
+            if (currentLink == null)
+                return;
+            if (sender == leftWall)
+                currentLink.collisionAngle = changeFlag(currentLink.collisionAngle, 4, leftWall.Checked);
+            if (sender == rightWall)
+                currentLink.collisionAngle = changeFlag(currentLink.collisionAngle, 8, rightWall.Checked);
+            if (sender == floor)
+                currentLink.collisionAngle = changeFlag(currentLink.collisionAngle, 1, floor.Checked);
+            if (sender == ceiling)
+                currentLink.collisionAngle = changeFlag(currentLink.collisionAngle, 2, ceiling.Checked);
+            if (sender == ledge)
+                currentLink.flags = (byte)changeFlag(currentLink.flags, 2, ledge.Checked);
+            if (sender == meleeDropThrough)
+                currentLink.flags = (byte)changeFlag(currentLink.flags, 1, meleeDropThrough.Checked);
+        }
+
+        private void polygonRangeChange(object sender, EventArgs e)
+        {
+            if (currentAreaTableEntry == null)
+                return;
+            if (sender == polyStart)
+                currentAreaTableEntry.idxLowestSpot = (ushort)polyStart.Value;
+            if (sender == polyEnd)
+                currentAreaTableEntry.nbLinks = (ushort)((polyEnd.Value - currentAreaTableEntry.idxLowestSpot) + 1);
+        }
+
+        private void selectItem(object sender, TreeViewEventArgs e)
+        {
+            if(sender == meleeVerts)
+            {
+                currentMeleeVert = (Vector2D)meleeVerts.SelectedNode.Tag;
+                meleeX.Value = (Decimal)currentMeleeVert.x;
+                meleeY.Value = (Decimal)currentMeleeVert.y;
+            }
+            else if(sender == meleeLinks)
+            {
+                currentLink = (DAT.COLL_DATA.Link)meleeLinks.SelectedNode.Tag;
+                vertStart.Value = currentLink.vertexIndices[0];
+                vertEnd.Value = currentLink.vertexIndices[1];
+                if (currentLink.connectors[0] != ushort.MaxValue)
+                    linkBefore.Value = currentLink.connectors[0];
+                else
+                    linkBefore.Value = -1;
+                if (currentLink.connectors[1] != ushort.MaxValue)
+                    linkAfter.Value = currentLink.connectors[1];
+                else
+                    linkAfter.Value = -1;
+                leftWall.Checked = ((currentLink.collisionAngle & 4) != 0);
+                rightWall.Checked = ((currentLink.collisionAngle & 8) != 0);
+                floor.Checked = ((currentLink.collisionAngle & 1) != 0);
+                ceiling.Checked = ((currentLink.collisionAngle & 2) != 0);
+                ledge.Checked = ((currentLink.flags & 2) != 0);
+                meleeDropThrough.Checked = ((currentLink.flags & 1) != 0);
+                comboBox2.Text = Enum.GetName(typeof(materialTypes), currentLink.material);
+            }
+            else if(sender == meleePolygons)
+            {
+                currentAreaTableEntry = (DAT.COLL_DATA.AreaTableEntry)meleePolygons.SelectedNode.Tag;
+                polyStart.Value = currentAreaTableEntry.idxLowestSpot;
+                polyEnd.Value = currentAreaTableEntry.idxLowestSpot + currentAreaTableEntry.nbLinks - 1;
+                Console.WriteLine(meleePolygons.SelectedNode.Text + $" - ({currentAreaTableEntry.xBotLeftCorner},{currentAreaTableEntry.yBotLeftCorner}),({currentAreaTableEntry.xTopRightCorner},{currentAreaTableEntry.yTopRightCorner})");
+            }
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (currentLink == null)
+                return;
+            currentLink.material = (byte)Enum.Parse(typeof(materialTypes), comboBox2.Text);
+        }
+        #endregion
+
+        private void meleeAddVert_Click(object sender, EventArgs e)
+        {
+            Vector2D vert = new Vector2D() { x = (float)meleeX.Value, y = (float)meleeY.Value };
+            DAT.COLL_DATA coll = (DAT.COLL_DATA)currentEntry;
+            coll.vertices.Add(vert);
+            meleeVerts.Nodes.Add(new TreeNode($"Vertex {meleeVerts.Nodes.Count}") { Tag = vert });
+        }
+
+        private void meleeSubtractVert_Click(object sender, EventArgs e)
+        {
+            DAT.COLL_DATA coll = (DAT.COLL_DATA)currentEntry;
+            Vector2D vert = (Vector2D)meleeVerts.SelectedNode.Tag;
+            coll.vertices.Remove(vert);
+            int index = meleeVerts.SelectedNode.Index;
+            meleeVerts.Nodes.Remove(meleeVerts.SelectedNode);
+            for(int i = index; i < meleeVerts.Nodes.Count; i++)
+                meleeVerts.Nodes[i].Text = $"Vertex {i}";
+        }
+
+        private void meleeAddLink_Click(object sender, EventArgs e)
+        {
+            DAT.COLL_DATA.Link link = new DAT.COLL_DATA.Link();
+            link.connectors = new int[]{ 0xFFFF, 0xFFFF };
+            link.vertexIndices = new int[2];
+            DAT.COLL_DATA coll = (DAT.COLL_DATA)currentEntry;
+            coll.links.Add(link);
+            meleeLinks.Nodes.Add(new TreeNode($"Link {meleeLinks.Nodes.Count}") { Tag = link });
+        }
+
+        private void meleeSubtractLink_Click(object sender, EventArgs e)
+        {
+            DAT.COLL_DATA coll = (DAT.COLL_DATA)currentEntry;
+            DAT.COLL_DATA.Link link = (DAT.COLL_DATA.Link)meleeLinks.SelectedNode.Tag;
+            coll.links.Remove(link);
+            int index = meleeLinks.SelectedNode.Index;
+            meleeLinks.Nodes.Remove(meleeLinks.SelectedNode);
+            for (int i = index; i < meleeLinks.Nodes.Count; i++)
+                meleeLinks.Nodes[i].Text = $"Link {i}";
+        }
+
+        private void polygonAdd_Click(object sender, EventArgs e)
+        {
+            DAT.COLL_DATA.AreaTableEntry ate = new DAT.COLL_DATA.AreaTableEntry();
+            ate.nbLinks = 1;
+            DAT.COLL_DATA coll = (DAT.COLL_DATA)currentEntry;
+            coll.areaTable.Add(ate);
+            meleePolygons.Nodes.Add(new TreeNode($"Polygon {meleePolygons.Nodes.Count}") { Tag = ate });
+        }
+
+        private void polygonSubtract_Click(object sender, EventArgs e)
+        {
+            DAT.COLL_DATA coll = (DAT.COLL_DATA)currentEntry;
+            DAT.COLL_DATA.AreaTableEntry link = (DAT.COLL_DATA.AreaTableEntry)meleePolygons.SelectedNode.Tag;
+            coll.areaTable.Remove(link);
+            int index = meleePolygons.SelectedNode.Index;
+            meleePolygons.Nodes.Remove(meleePolygons.SelectedNode);
+            for (int i = index; i < meleePolygons.Nodes.Count; i++)
+                meleePolygons.Nodes[i].Text = $"Polygon {i}";
         }
     }
 }

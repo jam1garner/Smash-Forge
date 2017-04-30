@@ -18,16 +18,24 @@ namespace Smash_Forge
         public const int MaxWeightCount = 4;
         public const int headerSize = 0x20;
         Header header = new Header();
+        public string filename;
 
         public List<TreeNode> tree = new List<TreeNode>();
         public List<TreeNode> displayList = new List<TreeNode>();
         public COLL_DATA collisions = null;
-        public List<Vector3> spawns = null;
-        public List<Vector3> respawns = null;
-        public List<Vector3> itemSpawns = null;
+        public List<Point> spawns = null;
+        public List<int> spawnOffs = new List<int>();
+        public List<Point> respawns = null;
+        public List<int> respawnOffs = new List<int>();
+        public List<Point> itemSpawns = null;
+        public List<int> itemSpawnOffs = new List<int>();
+        public List<Point> targets = null;
+        public List<int> targetOffs = new List<int>();
         public Bounds cameraBounds = null;
+        public int[] cameraBoundOffs = new int[2];
         public Bounds blastzones = null;
-        private float stageScale = 1; 
+        public int[] blastzoneOffs = new int[2];
+        public float stageScale = 1; 
 
         public VBN bones = new VBN();
 
@@ -190,7 +198,7 @@ main()
                 }
                 else if (node.Text.EndsWith("grGroundParam"))
                 {
-                    stageScale = d.readFloat();//Ploaj please figure out how we should handle this 
+                    stageScale = d.readFloat();
                     Console.WriteLine($"Stage scale - {stageScale}");
                 }
             }
@@ -251,12 +259,6 @@ main()
                     collisions = new COLL_DATA();
                     collisions.Read(d);
                 }
-            }
-            if(collisions != null)
-            foreach (Vector2D v in collisions.vertices)
-            {
-                v.x *= stageScale;
-                v.y *= stageScale;
             }
         }
 
@@ -618,6 +620,11 @@ main()
 
         public LVD toLVD(bool safemode)
         {
+            foreach (Vector2D v in collisions.vertices)
+            {
+                v.x *= stageScale;
+                v.y *= stageScale;
+            }
             LVD lvd = new LVD();
             int j = 0;
             if (safemode)
@@ -650,14 +657,14 @@ main()
             lvd.blastzones.Add(blastzones);
             lvd.cameraBounds.Add(cameraBounds);
             j = 0;
-            foreach (Vector3 s in spawns)
-                lvd.spawns.Add(new Point() { x = s.X, y = s.Y, name = $"Spawn_{j}", subname = $"{j++}" });
+            foreach (Point s in spawns)
+                lvd.spawns.Add(new Point() { x = s.x, y = s.y, name = $"Spawn_{j}", subname = $"{j++}" });
             j = 0;
-            foreach (Vector3 s in respawns)
-                lvd.respawns.Add(new Point() { x = s.X, y = s.Y, name = $"Respawn_{j}", subname = $"{j++}" });
+            foreach (Point s in respawns)
+                lvd.respawns.Add(new Point() { x = s.x, y = s.y, name = $"Respawn_{j}", subname = $"{j++}" });
             j = 0;
-            foreach (Vector3 p in itemSpawns)
-                lvd.generalPoints.Add(new Point() { x = p.X, y = p.Y, name = $"Item_{j}", subname = $"{j++}" });
+            foreach (Point p in itemSpawns)
+                lvd.generalPoints.Add(new Point() { x = p.x, y = p.y, name = $"Item_{j}", subname = $"{j++}" });
 
             /*//This is basically for DSX8 for him quickly converting items in the "dumb" way
             foreach (Vector3 p in itemSpawns)
@@ -818,29 +825,64 @@ main()
 
         #region Collisions
 
-        public class COLL_DATA
+        public class COLL_DATA : LVDEntry
         {
             public class Link
             {
                 public int[] vertexIndices;
                 public int[] connectors;
                 public int collisionAngle;
+                public int idxVertFromLink = 0xFFFF;
+                public int idxVertToLink = 0xFFFF;
                 public byte flags;
                 public byte material;
             }
 
+            public class AreaTableEntry
+            {
+                public ushort idxFirstTopLink;
+                public ushort nbTopLinks;
+                public ushort idxFirstBotLink;
+                public ushort nbBotLinks;
+                public ushort idxFirstRightLink;
+                public ushort nbRightLinks;
+                public ushort idxFirstLeftLink;
+                public ushort nbLeftLinks;
+                //0 (spacing)
+                public float xBotLeftCorner;
+                public float yBotLeftCorner;
+                public float xTopRightCorner;
+                public float yTopRightCorner;
+                public ushort idxLowestSpot;
+                public ushort nbLinks;
+            }
+
             public List<Vector2D> vertices = new List<Vector2D>();
             public List<List<Vector2D>> polys = new List<List<Vector2D>>();
+            public List<AreaTableEntry> areaTable = new List<AreaTableEntry>();
             public List<Link> links = new List<Link>();
             public List<int[]> polyRanges = new List<int[]>();
 
+            public int vertOffOff;
+            public int linkOffOff;
+            public int polyOffOff; 
+
+            public COLL_DATA()
+            {
+                name = "Collisions";
+                subname = "00";
+            }
+
             public void Read(FileData f)
             {
+                vertOffOff = f.pos();
                 int vertOff = f.readInt();
                 int vertCount = f.readInt();
+                linkOffOff = f.pos();
                 int linkOff = f.readInt();
                 int linkCount = f.readInt();
                 f.skip(0x14);
+                polyOffOff = f.pos();
                 int polyOff = f.readInt();
                 int polyCount = f.readInt();
                 int returnOffset = f.pos();
@@ -855,22 +897,35 @@ main()
                 f.seek(polyOff);
                 for (int i = 0; i < polyCount; i++)
                 {
-                    f.skip(0x24);
-                    int start = f.readShort();
-                    int length = f.readShort();
-                    int[] range = { start, start + length };
+                    AreaTableEntry entry = new AreaTableEntry();
+                    entry.idxFirstTopLink = (ushort)f.readShort();
+                    entry.nbTopLinks = (ushort)f.readShort();
+                    entry.idxFirstBotLink = (ushort)f.readShort();
+                    entry.nbBotLinks = (ushort)f.readShort();
+                    entry.idxFirstRightLink = (ushort)f.readShort();
+                    entry.nbRightLinks = (ushort)f.readShort();
+                    entry.idxFirstLeftLink = (ushort)f.readShort();
+                    entry.nbLeftLinks = (ushort)f.readShort();
+                    f.skip(4);
+                    entry.xBotLeftCorner = f.readFloat();
+                    entry.yBotLeftCorner = f.readFloat();
+                    entry.xTopRightCorner = f.readFloat();
+                    entry.yTopRightCorner = f.readFloat();
+                    entry.idxLowestSpot = (ushort)f.readShort();
+                    entry.nbLinks = (ushort)f.readShort();
+                    areaTable.Add(entry);
+                    int[] range = { entry.idxLowestSpot, entry.idxLowestSpot + entry.nbLinks };
                     polyRanges.Add(range);
-                    polys.Add(vertices.GetRange(start, length));
+                    polys.Add(vertices.GetRange(entry.idxLowestSpot, entry.nbLinks));
                 }
                 f.seek(linkOff);
                 for (int i = 0; i < linkCount; i++)
                 {
                     Link link = new Link();
-                    int[] temp = { f.readShort(), f.readShort() };
-                    int[] temp2 = { f.readShort(), f.readShort() };
-                    link.vertexIndices = temp;
-                    link.connectors = temp2;
-                    f.skip(4);
+                    link.vertexIndices = new int[] { f.readShort(), f.readShort() };
+                    link.connectors = new int[] { f.readShort(), f.readShort() };
+                    link.idxVertFromLink = f.readShort();
+                    link.idxVertToLink = f.readShort();
                     link.collisionAngle = f.readShort();
                     link.flags = (byte)f.readByte();
                     link.material = (byte)f.readByte();
@@ -966,22 +1021,25 @@ main()
 
                 // and some other nonsense
 
+                Console.WriteLine($"spawnyOffset = {spawnyOffset}");
                 d.seek(spawnyOffset);
                 int stageBonesRoot = d.readInt();
                 int boneIdTableOffset = d.readInt();
                 int idEntryCount = d.readInt();
 
+                Console.WriteLine($"boneIdTableOffset = {boneIdTableOffset}");
                 d.seek(boneIdTableOffset);
                 Dictionary<short, short> boneIds = new Dictionary<short, short>();
                 for (int i = 0; i < idEntryCount; i++)
                     boneIds.Add((short)(d.readShort() - 1), (short)d.readShort());
 
+
+                Console.WriteLine($"stageBonesRoot = {stageBonesRoot}");
                 d.seek(stageBonesRoot);
                 //PLOAJ WORK YOUR MAGIC HERE <3
                 // you got it fam
                 JOBJ j = new JOBJ();
                 j.Read(d, dat, parentNode);
-                
 
                 // models I guess gosh
                 d.seek(mappymodelOffset);
@@ -990,52 +1048,77 @@ main()
                 node.Read(d, dat, parentNode);
 
                 short index = 0;
-                dat.cameraBounds = new Bounds() { name = "CAMERA_00", subname = "00" };
-                dat.blastzones = new Bounds() { name = "DEATH_00", subname = "00" };
-                dat.itemSpawns = new List<Vector3>();
-                dat.spawns = new List<Vector3>();
-                dat.respawns = new List<Vector3>();
+                dat.cameraBounds = new Bounds() { name = "Camera Bounds", subname = "00" };
+                dat.blastzones = new Bounds() { name = "Blastzones", subname = "00" };
+                dat.itemSpawns = new List<Point>();
+                dat.spawns = new List<Point>();
+                dat.respawns = new List<Point>();
+                dat.targets = new List<Point>();
                 foreach(TreeNode t in j.node.Nodes)
                 {
                     if (!(t.Tag is JOBJ))
                         continue;
-
-                    Vector3 pos = Vector3.Multiply(((JOBJ)t.Tag).pos, dat.stageScale);
+                    Vector3 point = Vector3.Multiply(((JOBJ)t.Tag).pos, dat.stageScale);
+                    Point pos = new Point() { name = "", subname = "", x = point.X, y = point.Y };
                     int type = -1;
                     try
                     {
                         type = boneIds[index];
 
                         if (type >= 0 && type <= 3)
+                        {
                             dat.spawns.Add(pos);
+                            dat.spawnOffs.Add(((JOBJ)t.Tag).posOff);
+                        }
                         else if (type >= 4 && type <= 7)
+                        {
                             dat.respawns.Add(pos);
+                            dat.respawnOffs.Add(((JOBJ)t.Tag).posOff);
+                        }
                         else if (0x7F <= type && type <= 0x93)
+                        {
                             dat.itemSpawns.Add(pos);
+                            dat.itemSpawnOffs.Add(((JOBJ)t.Tag).posOff);
+                        }
                         else if (type == 0x95)
                         {
-                            dat.cameraBounds.left += pos.X;
-                            dat.cameraBounds.top += pos.Y;
+                            dat.cameraBounds.left += pos.x;
+                            dat.cameraBounds.top += pos.y;
+                            dat.cameraBoundOffs[0] = ((JOBJ)t.Tag).posOff;
                             //Console.WriteLine($"Cam0 - {pos}");
                         }
                         else if (type == 0x96)
                         {
-                            dat.cameraBounds.right += pos.X;
-                            dat.cameraBounds.bottom += pos.Y;
+                            dat.cameraBounds.right += pos.x;
+                            dat.cameraBounds.bottom += pos.y;
+                            dat.cameraBoundOffs[1] = ((JOBJ)t.Tag).posOff;
                             //Console.WriteLine($"Cam1 - {pos}");
                         }
                         else if (type == 0x97)
                         {
-                            dat.blastzones.left += pos.X;
-                            dat.blastzones.top += pos.Y;
+                            dat.blastzones.left += pos.x;
+                            dat.blastzones.top += pos.y;
                             //Console.WriteLine($"Death0 - {pos}");
+                            dat.blastzoneOffs[0] = ((JOBJ)t.Tag).posOff;
                         }
                         else if (type == 0x98)
                         {
-                            dat.blastzones.right += pos.X;
-                            dat.blastzones.bottom += pos.Y;
+                            dat.blastzones.right += pos.x;
+                            dat.blastzones.bottom += pos.y;
                             //Console.WriteLine($"Death1 - {pos}");
+                            dat.blastzoneOffs[1] = ((JOBJ)t.Tag).posOff;
                         }
+                        else if (0xC7 <= type && type <= 0xD0)
+                        {
+                            Console.WriteLine($"Target at {pos.x},{pos.y}");
+                            dat.targets.Add(new Point() { x = pos.x, y = pos.y });
+                            dat.targetOffs.Add(((JOBJ)t.Tag).posOff);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Type {type}");
+                        }
+
                     }
                     catch (KeyNotFoundException)
                     {
@@ -1060,6 +1143,7 @@ main()
             public Vector3 rot = new Vector3(), sca = new Vector3(), pos = new Vector3();
             public Matrix4 inverseTransform;
             public int unk2; //?? padding again??
+            public int posOff;
 
             public Matrix4 transform = new Matrix4();
 
@@ -1084,6 +1168,7 @@ main()
                 sca.X = d.readFloat();
                 sca.Y = d.readFloat();
                 sca.Z = d.readFloat();
+                posOff = d.pos();
                 pos.X = d.readFloat();
                 pos.Y = d.readFloat();
                 pos.Z = d.readFloat();

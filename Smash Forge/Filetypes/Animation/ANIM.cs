@@ -193,6 +193,7 @@ namespace Smash_Forge
 				}
 			}
 
+            reader.Close();
 			return a;
 		}
 
