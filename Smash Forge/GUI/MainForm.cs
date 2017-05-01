@@ -1165,8 +1165,8 @@ namespace Smash_Forge
                             f.writeFloatAt(mc.dat_melee.cameraBounds.bottom / mc.dat_melee.stageScale, mc.dat_melee.cameraBoundOffs[1] + 4);
                             f.writeFloatAt(0, mc.dat_melee.cameraBoundOffs[1] + 8);
                         }
-
-                        if (mc.dat_melee.collisions != null)
+                        
+                        if (MessageBox.Show("Overwrite collisions?","DAT Saving", MessageBoxButtons.YesNo) == DialogResult.OK && mc.dat_melee.collisions != null)
                         {
                             while(f.pos() % 0x10 != 0)//get it back to being 0x10 alligned if it isn't already
                                 f.writeByte(0);
