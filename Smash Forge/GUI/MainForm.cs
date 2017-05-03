@@ -1048,6 +1048,19 @@ namespace Smash_Forge
             }
         }
 
+        private static void writeDatJobjPositions(TreeNode node, FileOutput f)
+        {
+            if(node.Tag is DAT.JOBJ)
+            {
+                DAT.JOBJ jobj = (DAT.JOBJ)node.Tag;
+                f.writeFloatAt((float)jobj.pos.X, jobj.posOff);
+                f.writeFloatAt((float)jobj.pos.Y, jobj.posOff + 4);
+                f.writeFloatAt((float)jobj.pos.Z, jobj.posOff + 8);
+            }
+            foreach(TreeNode child in node.Nodes)
+                writeDatJobjPositions(child, f);
+        }
+
         ///<summary>
         /// Save file as if "Save" option was selected
         /// </summary>
@@ -1104,6 +1117,10 @@ namespace Smash_Forge
                     {
                         FileOutput f = new FileOutput();
                         f.writeBytes(File.ReadAllBytes(mc.dat_melee.filename));
+
+                        foreach (TreeNode node in mc.dat_melee.tree)
+                            writeDatJobjPositions(node, f);
+
                         if (mc.dat_melee.spawns != null)
                         {
                             for (int i = 0; i < mc.dat_melee.spawns.Count; i++)

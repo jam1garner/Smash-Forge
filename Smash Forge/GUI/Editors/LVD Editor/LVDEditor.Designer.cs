@@ -126,6 +126,10 @@
             this.meleeX = new System.Windows.Forms.NumericUpDown();
             this.label43 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.linkAfter = new System.Windows.Forms.NumericUpDown();
+            this.linkBefore = new System.Windows.Forms.NumericUpDown();
+            this.label44 = new System.Windows.Forms.Label();
+            this.label39 = new System.Windows.Forms.Label();
             this.meleeDropThrough = new System.Windows.Forms.CheckBox();
             this.vertEnd = new System.Windows.Forms.NumericUpDown();
             this.label34 = new System.Windows.Forms.Label();
@@ -151,10 +155,13 @@
             this.polygonSubtract = new System.Windows.Forms.Button();
             this.polygonAdd = new System.Windows.Forms.Button();
             this.label35 = new System.Windows.Forms.Label();
-            this.label39 = new System.Windows.Forms.Label();
-            this.label44 = new System.Windows.Forms.Label();
-            this.linkBefore = new System.Windows.Forms.NumericUpDown();
-            this.linkAfter = new System.Windows.Forms.NumericUpDown();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label45 = new System.Windows.Forms.Label();
+            this.label46 = new System.Windows.Forms.Label();
+            this.jobjY = new System.Windows.Forms.NumericUpDown();
+            this.jobjX = new System.Windows.Forms.NumericUpDown();
+            this.label47 = new System.Windows.Forms.Label();
+            this.jobjZ = new System.Windows.Forms.NumericUpDown();
             this.flowLayoutPanel1.SuspendLayout();
             this.collisionGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zStart)).BeginInit();
@@ -191,13 +198,17 @@
             ((System.ComponentModel.ISupportInitialize)(this.meleeY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.meleeX)).BeginInit();
             this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.linkAfter)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.linkBefore)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.vertEnd)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.vertStart)).BeginInit();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.polyEnd)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.polyStart)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.linkBefore)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.linkAfter)).BeginInit();
+            this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.jobjY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.jobjX)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.jobjZ)).BeginInit();
             this.SuspendLayout();
             // 
             // flowLayoutPanel1
@@ -212,6 +223,7 @@
             this.flowLayoutPanel1.Controls.Add(this.rectangleGroup);
             this.flowLayoutPanel1.Controls.Add(this.pathGroup);
             this.flowLayoutPanel1.Controls.Add(this.meleeCollisionGroup);
+            this.flowLayoutPanel1.Controls.Add(this.groupBox1);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
@@ -1334,7 +1346,7 @@
             this.meleeCollisionGroup.Controls.Add(this.tabControl1);
             this.meleeCollisionGroup.Location = new System.Drawing.Point(542, 3);
             this.meleeCollisionGroup.Name = "meleeCollisionGroup";
-            this.meleeCollisionGroup.Size = new System.Drawing.Size(272, 486);
+            this.meleeCollisionGroup.Size = new System.Drawing.Size(272, 499);
             this.meleeCollisionGroup.TabIndex = 34;
             this.meleeCollisionGroup.TabStop = false;
             this.meleeCollisionGroup.Text = "Melee Collision Editing";
@@ -1492,6 +1504,60 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Links";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // linkAfter
+            // 
+            this.linkAfter.Location = new System.Drawing.Point(191, 410);
+            this.linkAfter.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.linkAfter.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.linkAfter.Name = "linkAfter";
+            this.linkAfter.Size = new System.Drawing.Size(44, 20);
+            this.linkAfter.TabIndex = 39;
+            this.linkAfter.ValueChanged += new System.EventHandler(this.linkVertUpdate);
+            // 
+            // linkBefore
+            // 
+            this.linkBefore.Location = new System.Drawing.Point(191, 384);
+            this.linkBefore.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.linkBefore.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.linkBefore.Name = "linkBefore";
+            this.linkBefore.Size = new System.Drawing.Size(44, 20);
+            this.linkBefore.TabIndex = 38;
+            this.linkBefore.ValueChanged += new System.EventHandler(this.linkVertUpdate);
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(126, 412);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(52, 13);
+            this.label44.TabIndex = 37;
+            this.label44.Text = "Link After";
+            // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Location = new System.Drawing.Point(124, 388);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(61, 13);
+            this.label39.TabIndex = 36;
+            this.label39.Text = "Link Before";
             // 
             // meleeDropThrough
             // 
@@ -1793,59 +1859,104 @@
             this.label35.TabIndex = 31;
             this.label35.Text = "Polygons";
             // 
-            // label39
+            // groupBox1
             // 
-            this.label39.AutoSize = true;
-            this.label39.Location = new System.Drawing.Point(124, 388);
-            this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(61, 13);
-            this.label39.TabIndex = 36;
-            this.label39.Text = "Link Before";
+            this.groupBox1.Controls.Add(this.jobjZ);
+            this.groupBox1.Controls.Add(this.label47);
+            this.groupBox1.Controls.Add(this.label45);
+            this.groupBox1.Controls.Add(this.label46);
+            this.groupBox1.Controls.Add(this.jobjY);
+            this.groupBox1.Controls.Add(this.jobjX);
+            this.groupBox1.Location = new System.Drawing.Point(542, 508);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(268, 60);
+            this.groupBox1.TabIndex = 34;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "JOBJ";
             // 
-            // label44
+            // label45
             // 
-            this.label44.AutoSize = true;
-            this.label44.Location = new System.Drawing.Point(126, 412);
-            this.label44.Name = "label44";
-            this.label44.Size = new System.Drawing.Size(52, 13);
-            this.label44.TabIndex = 37;
-            this.label44.Text = "Link After";
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(93, 28);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(14, 13);
+            this.label45.TabIndex = 32;
+            this.label45.Text = "Y";
             // 
-            // linkBefore
+            // label46
             // 
-            this.linkBefore.Location = new System.Drawing.Point(191, 384);
-            this.linkBefore.Maximum = new decimal(new int[] {
-            10000,
+            this.label46.AutoSize = true;
+            this.label46.Location = new System.Drawing.Point(3, 28);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(14, 13);
+            this.label46.TabIndex = 32;
+            this.label46.Text = "X";
+            // 
+            // jobjY
+            // 
+            this.jobjY.DecimalPlaces = 3;
+            this.jobjY.Location = new System.Drawing.Point(109, 24);
+            this.jobjY.Maximum = new decimal(new int[] {
+            1000000000,
             0,
             0,
             0});
-            this.linkBefore.Minimum = new decimal(new int[] {
-            1,
+            this.jobjY.Minimum = new decimal(new int[] {
+            1000000000,
             0,
             0,
             -2147483648});
-            this.linkBefore.Name = "linkBefore";
-            this.linkBefore.Size = new System.Drawing.Size(44, 20);
-            this.linkBefore.TabIndex = 38;
-            this.linkBefore.ValueChanged += new System.EventHandler(this.linkVertUpdate);
+            this.jobjY.Name = "jobjY";
+            this.jobjY.Size = new System.Drawing.Size(67, 20);
+            this.jobjY.TabIndex = 33;
+            this.jobjY.ValueChanged += new System.EventHandler(this.jobjPostionUpdate);
             // 
-            // linkAfter
+            // jobjX
             // 
-            this.linkAfter.Location = new System.Drawing.Point(191, 410);
-            this.linkAfter.Maximum = new decimal(new int[] {
-            10000,
+            this.jobjX.DecimalPlaces = 3;
+            this.jobjX.Location = new System.Drawing.Point(20, 24);
+            this.jobjX.Maximum = new decimal(new int[] {
+            1000000000,
             0,
             0,
             0});
-            this.linkAfter.Minimum = new decimal(new int[] {
-            1,
+            this.jobjX.Minimum = new decimal(new int[] {
+            1000000000,
             0,
             0,
             -2147483648});
-            this.linkAfter.Name = "linkAfter";
-            this.linkAfter.Size = new System.Drawing.Size(44, 20);
-            this.linkAfter.TabIndex = 39;
-            this.linkAfter.ValueChanged += new System.EventHandler(this.linkVertUpdate);
+            this.jobjX.Name = "jobjX";
+            this.jobjX.Size = new System.Drawing.Size(67, 20);
+            this.jobjX.TabIndex = 32;
+            this.jobjX.ValueChanged += new System.EventHandler(this.jobjPostionUpdate);
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.Location = new System.Drawing.Point(182, 28);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(14, 13);
+            this.label47.TabIndex = 34;
+            this.label47.Text = "Z";
+            // 
+            // jobjZ
+            // 
+            this.jobjZ.DecimalPlaces = 3;
+            this.jobjZ.Location = new System.Drawing.Point(201, 24);
+            this.jobjZ.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.jobjZ.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.jobjZ.Name = "jobjZ";
+            this.jobjZ.Size = new System.Drawing.Size(67, 20);
+            this.jobjZ.TabIndex = 35;
+            this.jobjZ.ValueChanged += new System.EventHandler(this.jobjPostionUpdate);
             // 
             // LVDEditor
             // 
@@ -1904,14 +2015,19 @@
             ((System.ComponentModel.ISupportInitialize)(this.meleeX)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.linkAfter)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.linkBefore)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.vertEnd)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.vertStart)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.polyEnd)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.polyStart)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.linkBefore)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.linkAfter)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.jobjY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.jobjX)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.jobjZ)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -2045,5 +2161,12 @@
         private System.Windows.Forms.NumericUpDown linkBefore;
         private System.Windows.Forms.Label label44;
         private System.Windows.Forms.Label label39;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label45;
+        private System.Windows.Forms.Label label46;
+        private System.Windows.Forms.NumericUpDown jobjY;
+        private System.Windows.Forms.NumericUpDown jobjX;
+        private System.Windows.Forms.NumericUpDown jobjZ;
+        private System.Windows.Forms.Label label47;
     }
 }

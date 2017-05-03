@@ -35,6 +35,8 @@ namespace Smash_Forge
         private GeneralPoint currentGeneralPoint;
         private GeneralRect currentGeneralRect;
         private GeneralPath currentGeneralPath;
+        private DAT.JOBJ currentJobj;
+        public DAT datToPrerender = null;
 
         enum materialTypes : byte
         {
@@ -64,10 +66,8 @@ namespace Smash_Forge
             Carpet = 0x07
         }
 
-        public void open(LVDEntry entry, TreeNode entryTree)
+        public void open(Object obj, TreeNode entryTree)
         {
-            currentTreeNode = entryTree;
-            currentEntry = entry;
             collisionGroup.Visible = false;
             pointGroup.Visible = false;
             boundGroup.Visible = false;
@@ -76,105 +76,119 @@ namespace Smash_Forge
             rectangleGroup.Visible = false;
             pathGroup.Visible = false;
             meleeCollisionGroup.Visible = false;
-            name.Text = currentEntry.name;
-            subname.Text = currentEntry.subname;
-            if (entry is Collision)
+            if (obj is LVDEntry)
             {
-                Collision col = (Collision)entry;
-                collisionGroup.Visible = true;
-                xStart.Value = (decimal)col.startPos[0];
-                yStart.Value = (decimal)col.startPos[1];
-                zStart.Value = (decimal)col.startPos[2];
-                flag1.Checked = col.useStartPos;
-                flag2.Checked = col.flag2;
-                flag3.Checked = col.flag3;
-                flag4.Checked = col.flag4;
-                vertices.Nodes.Clear();
-                string boneNameRigging = "";
-                foreach (char b in col.unk4)
-                    if (b != (char)0)
-                        boneNameRigging += b;
-                if (boneNameRigging.Length == 0)
-                    boneNameRigging = "None";
-                button3.Text = boneNameRigging; 
-                for (int i = 0; i < col.verts.Count; i++)
-                    vertices.Nodes.Add(new TreeNode($"Vertex {i+1} ({col.verts[i].x},{col.verts[i].y})") { Tag = col.verts[i] });
-                lines.Nodes.Clear();
-                for (int i = 0; i < col.normals.Count; i++)
+                LVDEntry entry = (LVDEntry)obj;
+                currentTreeNode = entryTree;
+                currentEntry = entry;
+                name.Text = currentEntry.name;
+                subname.Text = currentEntry.subname;
+                if (entry is Collision)
                 {
-                    object[] temp = { col.normals[i], col.materials[i] };
-                    lines.Nodes.Add(new TreeNode($"Line {i+1}") { Tag = temp });
+                    Collision col = (Collision)entry;
+                    collisionGroup.Visible = true;
+                    xStart.Value = (decimal)col.startPos[0];
+                    yStart.Value = (decimal)col.startPos[1];
+                    zStart.Value = (decimal)col.startPos[2];
+                    flag1.Checked = col.useStartPos;
+                    flag2.Checked = col.flag2;
+                    flag3.Checked = col.flag3;
+                    flag4.Checked = col.flag4;
+                    vertices.Nodes.Clear();
+                    string boneNameRigging = "";
+                    foreach (char b in col.unk4)
+                        if (b != (char)0)
+                            boneNameRigging += b;
+                    if (boneNameRigging.Length == 0)
+                        boneNameRigging = "None";
+                    button3.Text = boneNameRigging;
+                    for (int i = 0; i < col.verts.Count; i++)
+                        vertices.Nodes.Add(new TreeNode($"Vertex {i + 1} ({col.verts[i].x},{col.verts[i].y})") { Tag = col.verts[i] });
+                    lines.Nodes.Clear();
+                    for (int i = 0; i < col.normals.Count; i++)
+                    {
+                        object[] temp = { col.normals[i], col.materials[i] };
+                        lines.Nodes.Add(new TreeNode($"Line {i + 1}") { Tag = temp });
+                    }
+                }
+                else if (entry is Point)
+                {
+                    pointGroup.Visible = true;
+                    currentPoint = (Point)entry;
+                    xPoint.Value = (decimal)((Point)entry).x;
+                    yPoint.Value = (decimal)((Point)entry).y;
+                }
+                else if (entry is Bounds)
+                {
+                    boundGroup.Visible = true;
+                    currentBounds = (Bounds)entry;
+                    topVal.Value = (decimal)currentBounds.top;
+                    rightVal.Value = (decimal)currentBounds.right;
+                    leftVal.Value = (decimal)currentBounds.left;
+                    bottomVal.Value = (decimal)currentBounds.bottom;
+                }
+                else if (entry is ItemSpawner)
+                {
+                    itemSpawnerGroup.Visible = true;
+                    ItemSpawner spawner = (ItemSpawner)entry;
+                    treeView1.Nodes.Clear();
+                    int i = 1;
+                    foreach (Section section in spawner.sections)
+                        treeView1.Nodes.Add(new TreeNode($"Section {i++}") { Tag = section });
+
+                }
+                else if (entry is GeneralPoint)
+                {
+                    generalPointShapeBox.Visible = true;
+                    GeneralPoint p = (GeneralPoint)entry;
+                    currentGeneralPoint = p;
+                    pointShapeX.Value = (Decimal)p.x;
+                    pointShapeX.Value = (Decimal)p.y;
+                }
+                else if (entry is GeneralRect)
+                {
+                    rectangleGroup.Visible = true;
+                    GeneralRect r = (GeneralRect)entry;
+                    currentGeneralRect = r;
+                    rectUpperX.Value = (Decimal)r.x2;
+                    rectUpperY.Value = (Decimal)r.y2;
+                    rectLowerX.Value = (Decimal)r.x1;
+                    rectLowerY.Value = (Decimal)r.y1;
+                }
+                else if (entry is GeneralPath)
+                {
+                    pathGroup.Visible = true;
+                    GeneralPath p = (GeneralPath)entry;
+                    currentGeneralPath = p;
+                    treeViewPath.Nodes.Clear();
+                    int j = 0;
+                    foreach (Vector2D v in p.points)
+                        treeViewPath.Nodes.Add(new TreeNode($"Point {++j} ({v.x},{v.y})") { Tag = v });
+                }
+                else if (entry is DAT.COLL_DATA)
+                {
+                    meleeCollisionGroup.Visible = true;
+                    meleeVerts.Nodes.Clear();
+                    meleeLinks.Nodes.Clear();
+                    meleePolygons.Nodes.Clear();
+                    int i = 0;
+                    foreach (Vector2D vert in ((DAT.COLL_DATA)entry).vertices)
+                        meleeVerts.Nodes.Add(new TreeNode($"Vertex {i++}") { Tag = vert });
+                    i = 0;
+                    foreach (DAT.COLL_DATA.Link link in ((DAT.COLL_DATA)entry).links)
+                        meleeLinks.Nodes.Add(new TreeNode($"Link {i++}") { Tag = link });
+                    i = 0;
+                    foreach (DAT.COLL_DATA.AreaTableEntry ate in ((DAT.COLL_DATA)entry).areaTable)
+                        meleePolygons.Nodes.Add(new TreeNode($"Polygon {i++}") { Tag = ate });
                 }
             }
-            else if(entry is Point)
+            else if(obj is DAT.JOBJ)
             {
-                pointGroup.Visible = true;
-                currentPoint = (Point)entry;
-                xPoint.Value = (decimal)((Point)entry).x;
-                yPoint.Value = (decimal)((Point)entry).y;
-            }
-            else if(entry is Bounds)
-            {
-                boundGroup.Visible = true;
-                currentBounds = (Bounds)entry;
-                topVal.Value = (decimal)currentBounds.top;
-                rightVal.Value = (decimal)currentBounds.right;
-                leftVal.Value = (decimal)currentBounds.left;
-                bottomVal.Value = (decimal)currentBounds.bottom;
-            }
-            else if(entry is ItemSpawner)
-            {
-                itemSpawnerGroup.Visible = true;
-                ItemSpawner spawner = (ItemSpawner)entry;
-                treeView1.Nodes.Clear();
-                int i = 1;
-                foreach(Section section in spawner.sections)
-                    treeView1.Nodes.Add(new TreeNode($"Section {i++}") { Tag = section });
-
-            }
-            else if(entry is GeneralPoint)
-            {
-                generalPointShapeBox.Visible = true;
-                GeneralPoint p = (GeneralPoint)entry;
-                currentGeneralPoint = p;
-                pointShapeX.Value = (Decimal)p.x;
-                pointShapeX.Value = (Decimal)p.y;
-            }
-            else if(entry is GeneralRect)
-            {
-                rectangleGroup.Visible = true;
-                GeneralRect r = (GeneralRect)entry;
-                currentGeneralRect = r;
-                rectUpperX.Value = (Decimal)r.x2;
-                rectUpperY.Value = (Decimal)r.y2;
-                rectLowerX.Value = (Decimal)r.x1;
-                rectLowerY.Value = (Decimal)r.y1;
-            }
-            else if(entry is GeneralPath)
-            {
-                pathGroup.Visible = true;
-                GeneralPath p = (GeneralPath)entry;
-                currentGeneralPath = p;
-                treeViewPath.Nodes.Clear();
-                int j = 0;
-                foreach(Vector2D v in p.points)
-                    treeViewPath.Nodes.Add(new TreeNode($"Point {++j} ({v.x},{v.y})") { Tag = v });
-            }
-            else if(entry is DAT.COLL_DATA)
-            {
-                meleeCollisionGroup.Visible = true;
-                meleeVerts.Nodes.Clear();
-                meleeLinks.Nodes.Clear();
-                meleePolygons.Nodes.Clear();
-                int i = 0;
-                foreach (Vector2D vert in ((DAT.COLL_DATA)entry).vertices)
-                    meleeVerts.Nodes.Add(new TreeNode($"Vertex {i++}") { Tag = vert });
-                i = 0;
-                foreach (DAT.COLL_DATA.Link link in ((DAT.COLL_DATA)entry).links)
-                    meleeLinks.Nodes.Add(new TreeNode($"Link {i++}") { Tag = link });
-                i = 0;
-                foreach (DAT.COLL_DATA.AreaTableEntry ate in ((DAT.COLL_DATA)entry).areaTable)
-                    meleePolygons.Nodes.Add(new TreeNode($"Polygon {i++}") { Tag = ate });
+                DAT.JOBJ jobj = (DAT.JOBJ)obj;
+                currentJobj = jobj;
+                jobjX.Value = (Decimal)jobj.pos.X;
+                jobjY.Value = (Decimal)jobj.pos.Y;
+                jobjZ.Value = (Decimal)jobj.pos.Z;
             }
         }
 
@@ -770,6 +784,59 @@ namespace Smash_Forge
             meleePolygons.Nodes.Remove(meleePolygons.SelectedNode);
             for (int i = index; i < meleePolygons.Nodes.Count; i++)
                 meleePolygons.Nodes[i].Text = $"Polygon {i}";
+        }
+
+        private void jobjPostionUpdate(object sender, EventArgs e)
+        {
+            if (sender == jobjX)
+            {
+                float xdelta = (float)jobjX.Value - currentJobj.pos.X;
+                jobjTranslate(currentJobj, new Vector3(xdelta, 0, 0), true);
+                if (datToPrerender != null)
+                    datToPrerender.PreRender();
+            }
+            if (sender == jobjY)
+            {
+                float ydelta = (float)jobjY.Value - currentJobj.pos.Y;
+                jobjTranslate(currentJobj, new Vector3(0, ydelta, 0), true);
+                if (datToPrerender != null)
+                    datToPrerender.PreRender();
+            }
+            if (sender == jobjZ)
+            {
+                float zdelta = (float)jobjZ.Value - currentJobj.pos.Z;
+                jobjTranslate(currentJobj, new Vector3(0, 0, zdelta), true);
+                if (datToPrerender != null)
+                    datToPrerender.PreRender();
+            }
+            
+        }
+
+        private void jobjTranslate(DAT.JOBJ jobj, Vector3 posTransform, bool applyTransform = false)
+        {
+            if (applyTransform)
+            {
+                jobj.pos += posTransform;
+                jobj.transform = Matrix4.Add(jobj.transform, Matrix4.CreateTranslation(posTransform));
+                jobj.inverseTransform = Matrix4.Invert(jobj.transform);
+            }
+
+            foreach (TreeNode node in jobj.node.Nodes)
+            {
+                if(node.Tag is DAT.JOBJ)
+                    jobjTranslate((DAT.JOBJ)node.Tag, posTransform);
+                if (node.Tag is DAT.DOBJ)
+                    dobjTranslate((DAT.DOBJ)node.Tag, posTransform);
+            }
+        }
+
+        private void dobjTranslate(DAT.DOBJ dobj, Vector3 posTransform)
+        {
+            foreach (DAT.POBJ pobj in dobj.polygons)
+                foreach (DAT.POBJ.DisplayObject disp in pobj.display)
+                    if(disp.verts != null)
+                        foreach (DAT.Vertex vert in disp.verts)
+                            vert.pos += posTransform;
         }
     }
 }

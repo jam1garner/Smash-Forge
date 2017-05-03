@@ -35,6 +35,9 @@ namespace Smash_Forge
         public int[] cameraBoundOffs = new int[2];
         public Bounds blastzones = null;
         public int[] blastzoneOffs = new int[2];
+
+        public Map_Head.Head_Node headNode = null;
+
         public float stageScale = 1; 
 
         public VBN bones = new VBN();
@@ -949,7 +952,7 @@ main()
 
             public class Head_Node
             {
-                TreeNode node = new TreeNode();
+                public TreeNode node = new TreeNode();
 
                 public int id, type;
 
@@ -964,7 +967,6 @@ main()
                         Head_Node_Object hno = new Head_Node_Object();
                         hno.Read(d, dat, node);
                     }
-
                 }
 
                 public class Head_Node_Object
@@ -1044,6 +1046,7 @@ main()
                 Head_Node node = new Head_Node();
                 node.id = mappymodelCount;
                 node.Read(d, dat, parentNode);
+                dat.headNode = node;
 
                 short index = 0;
                 dat.cameraBounds = new Bounds() { name = "Camera Bounds", subname = "00" };
@@ -1052,7 +1055,13 @@ main()
                 dat.spawns = new List<Point>();
                 dat.respawns = new List<Point>();
                 dat.targets = new List<Point>();
-                foreach(TreeNode t in j.node.Nodes)
+
+                List<JOBJ> testJobjs = new List<JOBJ>();
+                foreach (TreeNode t in j.node.Nodes)
+                    if (t.Tag is JOBJ)
+                        testJobjs.Add((JOBJ)t.Tag);
+
+                foreach (TreeNode t in j.node.Nodes)
                 {
                     if (!(t.Tag is JOBJ))
                         continue;
@@ -1283,7 +1292,7 @@ main()
                 if (nextOffset != 0)
                 {
                     d.seek(nextOffset);
-                    DOBJ de = new Smash_Forge.DAT.DOBJ();
+                    DOBJ de = new DOBJ();
                     de.Read(d, dat, parent);
                 }
             }
