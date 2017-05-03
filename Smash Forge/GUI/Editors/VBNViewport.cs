@@ -2309,21 +2309,24 @@ main()
                         }
                     }
                 }
-                foreach (NUD.Mesh mesh in con.nud.mesh)
+                if(con.nud != null)
                 {
-                    Vector3 closest = Vector3.Zero;
-                    foreach (NUD.Polygon poly in mesh.polygons)
+                    foreach (NUD.Mesh mesh in con.nud.mesh)
                     {
-                        int i = 0;
-                        foreach (NUD.Vertex v in poly.vertices)
+                        Vector3 closest = Vector3.Zero;
+                        foreach (NUD.Polygon poly in mesh.polygons)
                         {
-                            poly.selectedVerts[i] = 0;
-                            if (RenderTools.CheckSphereHit(v.pos, 1f, p1, p2, out closest))
+                            int i = 0;
+                            foreach (NUD.Vertex v in poly.vertices)
                             {
-                                //Console.WriteLine("Selected Vert");
-                                poly.selectedVerts[i] = 1;
+                                poly.selectedVerts[i] = 0;
+                                if (RenderTools.CheckSphereHit(v.pos, 1f, p1, p2, out closest))
+                                {
+                                    //Console.WriteLine("Selected Vert");
+                                    poly.selectedVerts[i] = 1;
+                                }
+                                i++;
                             }
-                            i++;
                         }
                     }
                 }
