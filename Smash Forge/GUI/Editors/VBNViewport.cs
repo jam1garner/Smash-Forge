@@ -119,7 +119,7 @@ namespace Smash_Forge
                 MainForm.Instance.paramEditors = new List<PARAMEditor>();
                 MainForm.Instance.lvdEditor.Clear();
                 MainForm.Instance.boneTreePanel.Clear();
-                string acmdpath = Path.Combine(MainForm.executableDir, "workspace/animcmd/");
+                string acmdpath = Path.Combine(Application.StartupPath, "workspace/animcmd/");
                 if (Directory.Exists(acmdpath))
                 {
                     foreach (string file in Directory.EnumerateFiles(acmdpath))

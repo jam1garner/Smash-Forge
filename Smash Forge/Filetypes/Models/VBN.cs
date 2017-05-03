@@ -105,7 +105,7 @@ namespace Smash_Forge
             int pos = f.pos();
             f.seek(hashOffset);
 
-            csvHashes csv = new csvHashes(Path.Combine(MainForm.executableDir, "hashTable.csv"));
+            csvHashes csv = new csvHashes(Path.Combine(Application.StartupPath, "hashTable.csv"));
             List<string> bonename = new List<string>();
 
             for (int i = 0; i < hashCount; i++)
@@ -508,7 +508,7 @@ namespace Smash_Forge
                         if (b.boneId == boneHash)
                             return b.Text;
 
-            csvHashes csv = new csvHashes(Path.Combine(MainForm.executableDir, "hashTable.csv"));
+            csvHashes csv = new csvHashes(Path.Combine(Application.StartupPath, "hashTable.csv"));
             for (int i = 0; i < csv.ids.Count; i++)
                 if (csv.ids[i] == boneHash)
                     return csv.names[i]+" (From hashTable.csv)";

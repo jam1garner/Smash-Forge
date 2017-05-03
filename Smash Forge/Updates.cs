@@ -48,11 +48,11 @@ namespace Smash_Forge
                         string version;
                         try
                         {
-                            version = File.ReadAllText(Path.Combine(MainForm.executableDir, "version.txt"));
+                            version = File.ReadAllText(Path.Combine(System.Windows.Forms.Application.StartupPath, "version.txt"));
                         }
                         catch (System.IO.FileNotFoundException)
                         {
-                            File.WriteAllText(Path.Combine(MainForm.executableDir, "version.txt"), "");
+                            File.WriteAllText(Path.Combine(System.Windows.Forms.Application.StartupPath, "version.txt"), "");
                             version = "";
                         }
                         if (!version.Equals(latest.Assets[0].UpdatedAt.ToString()))
@@ -76,8 +76,8 @@ namespace Smash_Forge
             ProcessStartInfo p = new ProcessStartInfo();
             p.WindowStyle = ProcessWindowStyle.Hidden;
             p.CreateNoWindow = true;
-            p.FileName = Path.Combine(MainForm.executableDir, "updater/ForgeUpdater.exe");
-            p.WorkingDirectory = Path.Combine(MainForm.executableDir, "updater/");
+            p.FileName = Path.Combine(System.Windows.Forms.Application.StartupPath, "updater/ForgeUpdater.exe");
+            p.WorkingDirectory = Path.Combine(System.Windows.Forms.Application.StartupPath, "updater/");
             Console.WriteLine($"Updater: {p.FileName}");
             if (includeNightlies)
                 p.Arguments = "-dn";
@@ -91,7 +91,7 @@ namespace Smash_Forge
             if (process.ExitCode != 0)
                 throw new TimeoutException();
             Console.WriteLine("Finished downloading");
-            string updateExe = Path.Combine(MainForm.executableDir, "updater\\currentRelease\\Smash Forge.exe"),
+            string updateExe = Path.Combine(System.Windows.Forms.Application.StartupPath, "updater\\currentRelease\\Smash Forge.exe"),
                   currentExe = System.Reflection.Assembly.GetEntryAssembly().Location;
             if (!Md5File(currentExe).SequenceEqual(Md5File(updateExe)))
                 Downloaded = true;

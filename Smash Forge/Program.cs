@@ -22,17 +22,16 @@ namespace Smash_Forge
             Application.SetCompatibleTextRenderingDefault(false);
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             string[] args = Environment.GetCommandLineArgs();
-            MainForm.executableDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
             //If the update has been installed and there is an update for the updater then run it
-            if (Directory.Exists(Path.Combine(MainForm.executableDir, "new_updater/")))
+            if (Directory.Exists(Path.Combine(Application.StartupPath, "new_updater/")))
             {
-                Directory.Delete(Path.Combine(MainForm.executableDir, "updater/"), true);
-                Directory.Move(Path.Combine(MainForm.executableDir, "new_updater/"), Path.Combine(MainForm.executableDir, "updater/"));
+                Directory.Delete(Path.Combine(Application.StartupPath, "updater/"), true);
+                Directory.Move(Path.Combine(Application.StartupPath, "new_updater/"), Path.Combine(Application.StartupPath, "updater/"));
             }
             SingleInstanceController controller = new SingleInstanceController();
             controller.Run(args);
             /*MainForm.Instance.filesToOpen = args;
-            MainForm.executableDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            Application.StartupPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
             Application.Run(MainForm.Instance);*/
         }
 

@@ -259,9 +259,9 @@ namespace Smash_Forge
             {
                 List<string> labelPaths = new List<string>();
                 string noExtension = Path.GetFileNameWithoutExtension(filename);
-                if (Directory.Exists(Path.Combine(MainForm.executableDir, "param_labels\\")))
+                if (Directory.Exists(Path.Combine(Application.StartupPath, "param_labels\\")))
                 {
-                    foreach (string file in Directory.GetFiles(Path.Combine(MainForm.executableDir, "param_labels\\")))
+                    foreach (string file in Directory.GetFiles(Path.Combine(Application.StartupPath, "param_labels\\")))
                     {
                         string[] ini = File.ReadAllLines(file);
                         if (ini.Length > 0 && ini[0].StartsWith("name"))
@@ -272,7 +272,7 @@ namespace Smash_Forge
                         }
                     }
                 }
-                string testPath = Path.Combine(MainForm.executableDir, Path.Combine("param_labels\\", Path.ChangeExtension(Path.GetFileName(filename), ".ini")));
+                string testPath = Path.Combine(Application.StartupPath, Path.Combine("param_labels\\", Path.ChangeExtension(Path.GetFileName(filename), ".ini")));
                 if (File.Exists(testPath))
                     labelPaths.Add(testPath);
 

@@ -278,18 +278,24 @@
     <Compile Include="GUI\FolderSelectDialog.designer.cs">
       <DependentUpon>FolderSelectDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="GUI\About.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\MainForm.designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <None Include="GUI\MainForm_orig.cs">
+      <SubType>Form</SubType>
+    </None>
+    <None Include="GUI\MainForm_orig.designer.cs">
+      <DependentUpon>MainForm_orig.cs</DependentUpon>
+    </None>
     <Compile Include="GUI\Menus\AddBone.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -450,13 +456,16 @@
     <EmbeddedResource Include="GUI\Editors\UIPreview.resx">
       <DependentUpon>UIPreview.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="GUI\About.resx">
       <DependentUpon>About.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="GUI\MainForm_orig.resx">
+      <DependentUpon>MainForm_orig.cs</DependentUpon>
+    </None>
     <EmbeddedResource Include="GUI\Menus\AddBone.resx">
       <DependentUpon>AddBone.cs</DependentUpon>
     </EmbeddedResource>

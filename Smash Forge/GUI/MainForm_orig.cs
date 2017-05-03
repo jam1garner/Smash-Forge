@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using WeifenLuo.WinFormsUI.Docking;
 using OpenTK;
 using System.Data;
+using Octokit;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Threading;
@@ -27,7 +28,7 @@ namespace Smash_Forge
         public WorkspaceManager Workspace { get; set; }
 
         public String[] filesToOpen = null;
-
+        public static string executableDir = null;
 
         public MainForm()
         {
@@ -40,7 +41,18 @@ namespace Smash_Forge
             Thread thread = new Thread(t);
             thread.Start();
             Runtime.renderDepth = 2500f;
+            foreach (var vp in viewports)
+                AddDockedControl(vp);
 
+            animationsWindowToolStripMenuItem.Checked =
+                boneTreeToolStripMenuItem.Checked = true;
+
+            Runtime.acmdEditor = new ACMDPreviewEditor() { ShowHint = DockState.DockRight };
+
+            allViewsPreset(new Object(), new EventArgs());
+
+            animList.treeView1.Nodes.Add(animNode);
+            animList.treeView1.Nodes.Add(mtaNode);
             Runtime.renderBones = true;
             Runtime.renderLVD = true;
             Runtime.renderFloor = true;
@@ -61,6 +73,11 @@ namespace Smash_Forge
             Runtime.renderHurtboxes = true;
             Runtime.renderHurtboxesZone = true;
             Runtime.renderType = Runtime.RenderTypes.Texture;
+            //Pichu.MakePichu();
+            //meshList.refresh();
+            //ReadChimeraLucas();
+            viewportWindowToolStripMenuItem.Checked = true;
+            openFiles();
 
             // load up the shaders
             Shader cub = new Shader();
@@ -83,58 +100,58 @@ namespace Smash_Forge
 
         public void openFiles()
         {
-            //for (int i = 0; i < filesToOpen.Length; i++)
-            //{
-            //    string file = filesToOpen[i];
-            //    if (file.Equals("--clean"))
-            //    {
-            //        clearWorkspaceToolStripMenuItem_Click(new object(), new EventArgs());
-            //        cleanPreset(new object(), new EventArgs());
-            //    }
-            //    else if (file.Equals("--superclean"))
-            //    {
-            //        clearWorkspaceToolStripMenuItem_Click(new object(), new EventArgs());
-            //        superCleanPreset(new object(), new EventArgs());
-            //    }
-            //    else if (file.Equals("--preview"))
-            //    {
-            //        string chr_00 = filesToOpen[i + 1];
-            //        string chr_11 = filesToOpen[i + 2];
-            //        string chr_13 = filesToOpen[i + 3];
-            //        string stock_90 = filesToOpen[i + 4];
-            //        NUT chr_00_nut = null, chr_11_nut = null, chr_13_nut = null, stock_90_nut = null;
-            //        if (!chr_00.Equals("blank"))
-            //        {
-            //            chr_00_nut = new NUT(chr_00);
-            //            Runtime.TextureContainers.Add(chr_00_nut);
-            //        }
-            //        if (!chr_11.Equals("blank"))
-            //        {
-            //            chr_11_nut = new NUT(chr_11);
-            //            Runtime.TextureContainers.Add(chr_11_nut);
-            //        }
-            //        if (!chr_13.Equals("blank"))
-            //        {
-            //            chr_13_nut = new NUT(chr_13);
-            //            Runtime.TextureContainers.Add(chr_13_nut);
-            //        }
-            //        if (!stock_90.Equals("blank"))
-            //        {
-            //            stock_90_nut = new NUT(stock_90);
-            //            Runtime.TextureContainers.Add(stock_90_nut);
-            //        }
-            //        UIPreview uiPreview = new UIPreview(chr_00_nut, chr_11_nut, chr_13_nut, stock_90_nut);
-            //        uiPreview.ShowHint = DockState.DockRight;
-            //        dockPanel1.DockRightPortion = 270;
-            //        AddDockedControl(uiPreview);
-            //        i += 4;
-            //    }
-            //    else
-            //    {
-            //        openFile(file);
-            //    }
-            //}
-            //filesToOpen = null;
+            for (int i = 0; i < filesToOpen.Length; i++)
+            {
+                string file = filesToOpen[i];
+                if (file.Equals("--clean"))
+                {
+                    clearWorkspaceToolStripMenuItem_Click(new object(), new EventArgs());
+                    cleanPreset(new object(), new EventArgs());
+                }
+                else if (file.Equals("--superclean"))
+                {
+                    clearWorkspaceToolStripMenuItem_Click(new object(), new EventArgs());
+                    superCleanPreset(new object(), new EventArgs());
+                }
+                else if (file.Equals("--preview"))
+                {
+                    string chr_00 = filesToOpen[i + 1];
+                    string chr_11 = filesToOpen[i + 2];
+                    string chr_13 = filesToOpen[i + 3];
+                    string stock_90 = filesToOpen[i + 4];
+                    NUT chr_00_nut = null, chr_11_nut = null, chr_13_nut = null, stock_90_nut = null;
+                    if (!chr_00.Equals("blank"))
+                    {
+                        chr_00_nut = new NUT(chr_00);
+                        Runtime.TextureContainers.Add(chr_00_nut);
+                    }
+                    if (!chr_11.Equals("blank"))
+                    {
+                        chr_11_nut = new NUT(chr_11);
+                        Runtime.TextureContainers.Add(chr_11_nut);
+                    }
+                    if (!chr_13.Equals("blank"))
+                    {
+                        chr_13_nut = new NUT(chr_13);
+                        Runtime.TextureContainers.Add(chr_13_nut);
+                    }
+                    if (!stock_90.Equals("blank"))
+                    {
+                        stock_90_nut = new NUT(stock_90);
+                        Runtime.TextureContainers.Add(stock_90_nut);
+                    }
+                    UIPreview uiPreview = new UIPreview(chr_00_nut, chr_11_nut, chr_13_nut, stock_90_nut);
+                    uiPreview.ShowHint = DockState.DockRight;
+                    dockPanel1.DockRightPortion = 270;
+                    AddDockedControl(uiPreview);
+                    i += 4;
+                }
+                else
+                {
+                    openFile(file);
+                }
+            }
+            filesToOpen = null;
         }
 
         private void MainForm_Close(object sender, EventArgs e)
@@ -161,6 +178,46 @@ namespace Smash_Forge
             }
             else
                 content.Show(dockPanel1);
+        }
+
+        private void RegenPanels()
+        {
+            if (animList.IsDisposed)
+            {
+                animList = new AnimListPanel();
+                animNode = (TreeNode)animNode.Clone();
+                mtaNode = (TreeNode)mtaNode.Clone();
+                animList.treeView1.Nodes.Add(animNode);
+                animList.treeView1.Nodes.Add(mtaNode);
+            }
+            if (boneTreePanel.IsDisposed)
+            {
+                boneTreePanel = new BoneTreePanel();
+                boneTreePanel.treeRefresh();
+            }
+            if (project.IsDisposed)
+            {
+                project = new ProjectTree();
+                project.fillTree();
+            }
+            if (lvdList.IsDisposed)
+            {
+                lvdList = new LVDList();
+                lvdList.fillList();
+            }
+            if (lvdEditor.IsDisposed)
+            {
+                lvdEditor = new LVDEditor();
+            }
+            if (meshList.IsDisposed)
+            {
+                meshList = new MeshList();
+                meshList.refresh();
+            }
+            if (Runtime.acmdEditor != null && Runtime.acmdEditor.IsDisposed)
+            {
+                Runtime.acmdEditor = new ACMDPreviewEditor();
+            }
         }
 
         #region Members
@@ -223,6 +280,11 @@ namespace Smash_Forge
                     //OMO.createOMO (anim, vbn, "C:\\Users\\ploaj_000\\Desktop\\WebGL\\test_outut.omo", -1, -1);
                 }
             }
+        }
+
+        public static void DAEReadSemantic(int p, Dictionary<string, string> semantic)
+        {
+
         }
 
         private void openNud(string filename, string name = "")
@@ -337,9 +399,103 @@ namespace Smash_Forge
             mtaNode.Nodes.Add(name);
         }
 
+        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd;*.mta;*.pac;*.dat|" +
+                             "Object Motion|*.omo|" +
+                             "Maya Animation|*.anim|" +
+                             "NW4R Animation|*.chr0|" +
+                             "Source Animation (SMD)|*.smd|" +
+                             "Smash 4 Material Animation (MTA)|*.mta|" +
+                             "All files(*.*)|*.*";
+
+                ofd.Multiselect = true;
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                    foreach (string filename in ofd.FileNames)
+                        openAnimation(filename);
+
+            }
+        }
+
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            /*if (Runtime.TargetVBN == null)
+            {
+                return;
+            }*/
+
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Supported Files (.omo, .anim, .pac, .mta)|*.omo;*.anim;*.pac;*.mta|" +
+                             "Object Motion (.omo)|*.omo|" +
+                             "Material Animation (.mta)|*.mta|" +
+                             "Maya Anim (.anim)|*.anim|" +
+                             "OMO Pack (.pac)|*.pac|" +
+                             "All Files (*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    sfd.FileName = sfd.FileName;
+
+                    if (sfd.FileName.EndsWith(".anim"))
+                    {
+                        if (Runtime.TargetAnim.Tag is AnimTrack)
+                            ((AnimTrack)Runtime.TargetAnim.Tag).createANIM(sfd.FileName, Runtime.TargetVBN);
+                        else
+                            ANIM.createANIM(sfd.FileName, Runtime.TargetAnim, Runtime.TargetVBN);
+                    }
+
+                    if (sfd.FileName.EndsWith(".omo"))
+                    {
+                        if (Runtime.TargetAnim.Tag is FileData)
+                        {
+                            FileOutput o = new FileOutput();
+                            o.writeBytes(((FileData)Runtime.TargetAnim.Tag).getSection(0,
+                                ((FileData)Runtime.TargetAnim.Tag).size()));
+                            o.save(sfd.FileName);
+                        }
+                        else
+                            OMO.createOMO(Runtime.TargetAnim, Runtime.TargetVBN, sfd.FileName);
+                    }
+
+                    if (sfd.FileName.EndsWith(".pac"))
+                    {
+                        var pac = new PAC();
+                        foreach (var anim in Runtime.Animations)
+                        {
+                            var bytes = OMO.createOMO(anim.Value, Runtime.TargetVBN);
+                            if (Runtime.TargetAnim.Tag is FileData)
+                                bytes = ((FileData)Runtime.TargetAnim.Tag).getSection(0,
+                                    ((FileData)Runtime.TargetAnim.Tag).size());
+
+                            pac.Files.Add(anim.Key, bytes);
+                        }
+                        pac.Save(sfd.FileName);
+                    }
+
+                    if (sfd.FileName.EndsWith(".mta"))
+                    {
+                        FileOutput f = new FileOutput();
+                        f.writeBytes(Runtime.TargetMTA.Rebuild());
+                        f.save(sfd.FileName);
+                    }
+                }
+            }
+        }
+
+        private void hashMatchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HashMatch();
+            //boneTreePanel.treeRefresh();
+        }
+
         public static void HashMatch()
         {
-            csvHashes csv = new csvHashes(Path.Combine(Application.StartupPath, "hashTable.csv"));
+            csvHashes csv = new csvHashes(Path.Combine(executableDir, "hashTable.csv"));
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
                 if (m.vbn != null)
@@ -400,11 +556,366 @@ namespace Smash_Forge
             }
         }
 
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            animNode.Nodes.Clear();
+            mtaNode.Nodes.Clear();
+            Runtime.SoundContainers.Clear();
+            Runtime.Animations.Clear();
+            Runtime.MaterialAnimations.Clear();
+            Runtime.TargetVBN.reset();
+        }
+
+        private void importToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog() { Filter = "Motion Table (.mtable)|*.mtable|All Files (*.*)|*.*" })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    Runtime.Moveset = new MovesetManager(ofd.FileName);
+                }
+            }
+        }
+
+        private void animationPanelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            animList.Show(dockPanel1);
+        }
+
+        private void viewportWindowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (viewportWindowToolStripMenuItem.Checked == false)
+            {
+                var vp = new VBNViewport();
+                viewports.Add(vp);
+                AddDockedControl(vp);
+                viewportWindowToolStripMenuItem.Checked = true;
+            }
+
+        }
+
+        private void animationsWindowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (animationsWindowToolStripMenuItem.Checked)
+                animList.Show(dockPanel1);
+            else
+                animList.Hide();
+        }
+
+        private void boneTreeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (boneTreeToolStripMenuItem.Checked)
+                boneTreePanel.Show(dockPanel1);
+            else
+                boneTreePanel.Hide();
+        }
+
         #endregion
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.TargetVBN.Endian = Endianness.Big;
+            Runtime.TargetVBN.unk_1 = 1;
+            Runtime.TargetVBN.unk_2 = 2;
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.TargetVBN.Endian = Endianness.Little;
+            Runtime.TargetVBN.unk_1 = 2;
+            Runtime.TargetVBN.unk_2 = 1;
+        }
 
         public void openMats(NUD.Polygon poly, string name)
         {
             (new NUDMaterialEditor(poly) { ShowHint = DockState.DockLeft, Text = name }).Show();
+        }
+
+        private void clearWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Runtime.killWorkspace = true;
+            Runtime.ParamManager.Reset();
+        }
+
+        private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            using (var rndr = new GUI.RenderSettings())
+            {
+                rndr.ShowDialog();
+            }
+        }
+
+        private void meshListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            meshList.refresh();
+            AddDockedControl(meshList);
+        }
+
+        private void projectTreeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (project.DockState == DockState.Unknown)
+                project = new ProjectTree();
+            else
+                project.Focus();
+        }
+
+        private void openCharacterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new FolderSelectDialog())
+            {
+                ofd.Title = "Character Folder";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    //project.openACMD($"{ofd.SelectedPath}\\script\\animcmd\\body\\motion.mtable",
+                    //    $"{ofd.SelectedPath}\\motion");
+
+                    string[] dirs = Directory.GetDirectories(ofd.SelectedPath);
+
+                    foreach (string s in dirs)
+                    {
+                        if (s.EndsWith("model"))
+                        {
+                            // load default model
+                            openNud(s + "\\body\\c00\\model.nud");
+                        }
+                        if (s.EndsWith("motion"))
+                        {
+                            string[] anims = Directory.GetFiles(s + "\\body\\");
+                            foreach (string a in anims)
+                                openAnimation(a);
+                        }
+                        if (s.EndsWith("script"))
+                        {
+                            if (File.Exists(s + "\\animcmd\\body\\motion.mtable"))
+                            {
+                                //openFile(s + "\\animcmd\\body\\motion.mtable");
+                                Runtime.Moveset = new MovesetManager(s + "\\animcmd\\body\\motion.mtable");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void saveNUDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.ModelContainers.Count > 0)
+            {
+                string filename = "";
+                SaveFileDialog save = new SaveFileDialog();
+                save.Filter = "Namco Universal Data|*.nud|All files(*.*)|*.*";
+                DialogResult result = save.ShowDialog();
+
+                if (result == DialogResult.OK)
+                {
+                    filename = save.FileName;
+                    if (filename.EndsWith(".nud"))
+                        if (Runtime.ModelContainers[0].dat_melee != null)
+                        {
+                            ModelContainer m = Runtime.ModelContainers[0].dat_melee.wrapToNUD();
+                            m.nud.Save(filename);
+                            m.vbn.Save(filename.Replace(".nud", ".vbn"));
+                        }
+                        /*else 
+                        if(Runtime.ModelContainers[0].bch != null)
+                        {
+                            NUD m = Runtime.ModelContainers[0].bch.mbn.toNUD();
+                            VBN v = Runtime.ModelContainers[0].bch.models[0].skeleton;
+                            m.Save(filename);
+                            v.Save(filename.Replace(".nud", ".vbn"));
+                        }*/
+                        else
+                        {
+                            foreach (ModelContainer c in Runtime.ModelContainers)
+                            {
+                                if (c.nud != null)
+                                {
+                                    Runtime.ModelContainers[0].nud.Save(filename);
+                                    break;
+                                }
+                            }
+                        }
+                }
+            }
+        }
+
+        private void collisionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.collisions.Add(new Collision() { name = "COL_00_NewCollision", subname = "00_NewCollision" });
+            lvdList.fillList();
+        }
+
+        private void spawnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.spawns.Add(new Point() { name = "START_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+
+        }
+
+        private void respawnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.respawns.Add(new Point() { name = "RESTART_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+        }
+
+        private void cameraBoundsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.cameraBounds.Add(new Bounds() { name = "CAMERA_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+
+        }
+
+        private void blastzonesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.blastzones.Add(new Bounds() { name = "DEATH_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+        }
+
+        private void itemSpawnerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.items.Add(new ItemSpawner() { name = "ITEM_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+        }
+
+        private void generalPointToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.TargetLVD == null)
+                Runtime.TargetLVD = new LVD();
+            Runtime.TargetLVD.generalPoints.Add(new Point() { name = "POINT_00_NEW", subname = "00_NEW" });
+            lvdList.fillList();
+        }
+
+        private void pointToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GeneralPoint g = new GeneralPoint() { name = "POINT_00_NEW", subname = "00_NEW" };
+            Runtime.TargetLVD.generalShapes.Add(g);
+            lvdList.fillList();
+        }
+
+        private void rectangleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GeneralRect g = new GeneralRect() { name = "RECT_00_NEW", subname = "00_NEW" };
+            Runtime.TargetLVD.generalShapes.Add(g);
+            lvdList.fillList();
+        }
+
+        private void pathToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GeneralPath g = new GeneralPath() { name = "PATH_00_NEW", subname = "00_NEW" };
+            Runtime.TargetLVD.generalShapes.Add(g);
+            lvdList.fillList();
+        }
+
+        private void openNUTEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (nutEditor == null || nutEditor.IsDisposed)
+            {
+                nutEditor = new NUTEditor();
+                nutEditor.Show();
+            }
+            else
+            {
+                nutEditor.BringToFront();
+            }
+            nutEditor.FillForm();
+        }
+
+        private void exportToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new FolderSelectDialog())
+            {
+                ofd.Title = "Export ACMD Folder";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    Runtime.Moveset.MotionTable.Export(ofd.SelectedPath + "\\motion.mtable");
+                    Runtime.Moveset.Game.Export(ofd.SelectedPath + "\\game.bin");
+                    Runtime.Moveset.Sound.Export(ofd.SelectedPath + "\\sound.bin");
+                    Runtime.Moveset.Expression.Export(ofd.SelectedPath + "\\expression.bin");
+                    Runtime.Moveset.Effect.Export(ofd.SelectedPath + "\\effect.bin");
+                }
+            }
+        }
+
+        private void deleteLVDEntryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            lvdList.deleteSelected();
+        }
+
+        private void openStageToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new FolderSelectDialog())
+            {
+                ofd.Title = "Stage Folder";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string stagePath = ofd.SelectedPath;
+                    string modelPath = stagePath + "\\model\\";
+                    string paramPath = stagePath + "\\param\\";
+                    string animationPath = stagePath + "\\animation\\";
+                    List<string> nuds = new List<string>();
+
+                    if (Directory.Exists(modelPath))
+                    {
+                        foreach (string d in Directory.GetDirectories(modelPath))
+                        {
+                            foreach (string f in Directory.GetFiles(d))
+                            {
+                                if (f.EndsWith(".nud"))
+                                {
+                                    openNud(f, Path.GetFileName(d));
+                                }
+                            }
+                        }
+                    }
+
+                    if (Directory.Exists(paramPath))
+                    {
+                        Runtime.TargetLVD = null;
+                        foreach (string f in Directory.GetFiles(paramPath))
+                        {
+                            if (Path.GetExtension(f).Equals(".lvd") && Runtime.TargetLVD == null)
+                            {
+                                Runtime.TargetLVD = new LVD(f);
+                                lvdList.fillList();
+                            }
+                        }
+                    }
+
+                    if (Directory.Exists(animationPath))
+                    {
+                        foreach (string d in Directory.GetDirectories(animationPath))
+                        {
+                            foreach (string f in Directory.GetFiles(d))
+                            {
+                                if (f.EndsWith(".omo"))
+                                {
+                                    Runtime.Animations.Add(f, OMO.read(new FileData(f)));
+                                    animNode.Nodes.Add(f);
+                                }
+                                else if (f.EndsWith("path.bin"))
+                                {
+                                    Runtime.TargetPath = new PathBin();
+                                    Runtime.TargetPath.Read(f);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
         }
 
         //<summary>
@@ -537,6 +1048,19 @@ namespace Smash_Forge
             }
         }
 
+        private static void writeDatJobjPositions(TreeNode node, FileOutput f)
+        {
+            if(node.Tag is DAT.JOBJ)
+            {
+                DAT.JOBJ jobj = (DAT.JOBJ)node.Tag;
+                f.writeFloatAt((float)jobj.pos.X, jobj.posOff);
+                f.writeFloatAt((float)jobj.pos.Y, jobj.posOff + 4);
+                f.writeFloatAt((float)jobj.pos.Z, jobj.posOff + 8);
+            }
+            foreach(TreeNode child in node.Nodes)
+                writeDatJobjPositions(child, f);
+        }
+
         ///<summary>
         /// Save file as if "Save" option was selected
         /// </summary>
@@ -594,8 +1118,8 @@ namespace Smash_Forge
                         FileOutput f = new FileOutput();
                         f.writeBytes(File.ReadAllBytes(mc.dat_melee.filename));
 
-                        //foreach (TreeNode node in mc.dat_melee.tree)
-                        //    writeDatJobjPositions(node, f);
+                        foreach (TreeNode node in mc.dat_melee.tree)
+                            writeDatJobjPositions(node, f);
 
                         if (mc.dat_melee.spawns != null)
                         {
@@ -795,6 +1319,7 @@ namespace Smash_Forge
                 }
             }
         }
+
 
         ///<summary>
         ///Open a file based on the filename
@@ -1164,8 +1689,8 @@ namespace Smash_Forge
                     "Smash Forge Updater", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 Process p = new Process();
-                p.StartInfo.FileName = Path.Combine(Application.StartupPath, "updater/ForgeUpdater.exe");
-                p.StartInfo.WorkingDirectory = Path.Combine(Application.StartupPath, "updater/");
+                p.StartInfo.FileName = Path.Combine(executableDir, "updater/ForgeUpdater.exe");
+                p.StartInfo.WorkingDirectory = Path.Combine(executableDir, "updater/");
                 p.StartInfo.Arguments = "-i -r";
                 p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 p.StartInfo.CreateNoWindow = true;
@@ -1174,9 +1699,207 @@ namespace Smash_Forge
             }
         }
 
+        private void mergeModelsMeshListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            meshList.mergeModel();
+        }
+
+        private void mergeBonesBoneListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //stub
+            //low key probably not going to make this feature
+        }
+
+        private void saveAsDAEToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var sfd = new FolderSelectDialog())
+            {
+                sfd.Title = "Model Save Folder";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    string folder = sfd.SelectedPath;
+                    string model = Path.Combine(folder, "model.dae");
+                    if (Runtime.ModelContainers.Count > 0)
+                    {
+                        Collada.Save(model, Runtime.ModelContainers[0]);
+                        if (Runtime.ModelContainers[0].nud != null)
+                        {
+                            NUD nud = Runtime.ModelContainers[0].nud;
+                            List<int> texIds = nud.GetTexIds();
+
+                            foreach (var nut in Runtime.TextureContainers)
+                            {
+                                foreach (var tex in nut.textures)
+                                {
+                                    if (texIds.Contains(tex.id))
+                                    {
+                                        DDS dds = new DDS();
+                                        dds.fromNUT_Texture(tex);
+                                        dds.Save(Path.Combine(folder, $"Tex_0x{tex.id.ToString("X")}.png"));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /*
+        public AnimListPanel animList = new AnimListPanel() {ShowHint = DockState.DockRight};
+        public BoneTreePanel boneTreePanel = new BoneTreePanel() {ShowHint = DockState.DockLeft};
+        public ProjectTree project = new ProjectTree() {ShowHint = DockState.DockLeft};
+        public LVDList lvdList = new LVDList() {ShowHint = DockState.DockLeft};
+        public LVDEditor lvdEditor = new LVDEditor() {ShowHint = DockState.DockRight};
+         */
+
+        private void allViewsPreset(object sender, EventArgs e)
+        {
+            animList.ShowHint = DockState.DockRight;
+            boneTreePanel.ShowHint = DockState.DockLeft;
+            project.ShowHint = DockState.DockLeft;
+            lvdList.ShowHint = DockState.DockLeft;
+            lvdEditor.ShowHint = DockState.DockRight;
+            Runtime.acmdEditor.ShowHint = DockState.DockLeft;
+            meshList.ShowHint = DockState.DockRight;
+            AddDockedControl(Runtime.acmdEditor);
+            AddDockedControl(boneTreePanel);
+            AddDockedControl(animList);
+            AddDockedControl(lvdEditor);
+            AddDockedControl(lvdList);
+            AddDockedControl(project);
+            AddDockedControl(meshList);
+        }
+
+        private void modelViewPreset(object sender, EventArgs e)
+        {
+            animList.Hide();
+            boneTreePanel.ShowHint = DockState.DockLeft;
+            project.Hide();
+            lvdList.Hide();
+            lvdEditor.Hide();
+            RegenPanels();
+            meshList.ShowHint = DockState.DockRight;
+            Runtime.acmdEditor.ShowHint = DockState.Hidden;
+            AddDockedControl(boneTreePanel);
+            AddDockedControl(meshList);
+        }
+
+        private void movesetModdingPreset(object sender, EventArgs e)
+        {
+            animList.ShowHint = DockState.DockLeft;
+            boneTreePanel.Hide();
+            project.Hide();
+            lvdList.Hide();
+            lvdEditor.Hide();
+            meshList.Hide();
+            RegenPanels();
+            Runtime.acmdEditor.ShowHint = DockState.Float;
+            AddDockedControl(Runtime.acmdEditor);
+            AddDockedControl(animList);
+        }
+
+        private void stageWorkPreset(object sender, EventArgs e)
+        {
+            animList.Hide();
+            boneTreePanel.ShowHint = DockState.DockLeft;
+            project.Hide();
+            lvdList.ShowHint = DockState.DockLeft;
+            lvdEditor.ShowHint = DockState.DockRight;
+            Runtime.acmdEditor.Hide();
+            meshList.ShowHint = DockState.DockRight;
+            RegenPanels();
+            AddDockedControl(boneTreePanel);
+            AddDockedControl(meshList);
+            AddDockedControl(lvdEditor);
+            AddDockedControl(lvdList);
+        }
+
+        private void cleanPreset(object sender, EventArgs e)
+        {
+            animList.Hide();
+            boneTreePanel.Hide();
+            project.Hide();
+            lvdList.Hide();
+            lvdEditor.Hide();
+            Runtime.acmdEditor.Hide();
+            meshList.Hide();
+            RegenPanels();
+        }
+
+        private void superCleanPreset(object sender, EventArgs e)
+        {
+            animList.Hide();
+            boneTreePanel.Hide();
+            project.Hide();
+            lvdList.Hide();
+            lvdEditor.Hide();
+            Runtime.acmdEditor.Hide();
+            meshList.Close();
+            //RegenPanels();
+            viewports[0].groupBox2.Visible = false;
+        }
+
+        private void open3DSTEXEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (texEditor == null || texEditor.IsDisposed)
+            {
+                texEditor = new _3DSTexEditor();
+                texEditor.Show();
+            }
+            else
+            {
+                texEditor.BringToFront();
+            }
+        }
+
+        private void MainForm_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        {
+        }
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+        }
+
+        private void editVerticesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.ViewportMode == Runtime.ViewportModes.NORMAL) Runtime.ViewportMode = Runtime.ViewportModes.EDITVERT; else
+            if (Runtime.ViewportMode == Runtime.ViewportModes.EDITVERT) Runtime.ViewportMode = Runtime.ViewportModes.NORMAL;
+        }
+
+        private void exportErrorLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Runtime.shaders["NUD"].SaveErrorLog();
+            MessageBox.Show("Saved to Forge directory");
+        }
+
+        private void nESROMInjectorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ROM_Injector r = new ROM_Injector();
+            r.ShowDialog();
+        }
+
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             e.Cancel = false;// (MessageBox.Show("Would you like to close Forge? Any and all unsaved work will be lost.", "Close Confirmation" , MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No);
         }
+
+        private void importParamsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog() { Filter = "Character fighter_param_vl file (.bin)|*.bin|All Files (*.*)|*.*" })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    Runtime.ParamManager = new CharacterParamManager(ofd.FileName);
+                }
+            }
+        }
+
+        private void clearParamsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Runtime.ParamManager.Reset();
+        }
+
     }
 }
