@@ -525,13 +525,22 @@
     <None Include="materials\Character Mats\Mat05 [Smash64 Look].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Mat06 [Skin Ramp Mat].nmt">
+    <None Include="materials\Character Mats\Mat06 [Skin Ramp Mat1].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="materials\Character Mats\Mat07 [Ganon Armor].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="materials\Character Mats\Mat09 [Beginners Material].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Character Mats\Mat10 [Satin Material].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Character Mats\Mat11 [Leather Armor].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Character Mats\Mat12 [Skin Ramp Mat2].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="materials\Stage Mats\Mat01 [Regular].nmt">
