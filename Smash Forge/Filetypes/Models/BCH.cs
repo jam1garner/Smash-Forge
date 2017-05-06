@@ -20,11 +20,10 @@ namespace Smash_Forge
         public List<BCH_Model> models = new List<BCH_Model>();
         public Dictionary<string, BCH_Texture> textures = new Dictionary<string, BCH_Texture>();
 
+        #region Reading
 
         public override void Read(string filename)
         {
-
-
             bchHeader header = new bchHeader();
             FileData f = new FileData(filename);
             f.Endian = System.IO.Endianness.Little;
@@ -277,7 +276,7 @@ namespace Smash_Forge
                 int rootReferenceBit = f.readInt(); //Radix tree
                 int rootLeftNode = f.readShort();
                 int rootRightNode = f.readShort();
-                int rootNameOffset = f.readInt() + header.mainHeaderOffset;
+                int rootNameOffset = f.readInt();
 
                 for (int i = 0; i < model.objectsNodeNameEntries; i++)
                 {
@@ -347,10 +346,30 @@ namespace Smash_Forge
                     f.skip(12);// center vector
                     f.skip(4); // flagsOffset
                     f.skip(4); // 0?
-                    f.readInt(); //bbOffsets[i] =  + mainheaderOffset
+                    f.readInt(); //bbOffsets[i]
 
                     //Debug.WriteLine(des.vshAttBufferCommandOffset.ToString("X"));
                 }
+
+                for (int index1 = 0; index1 < content.skeletalAnimationsPointerTableEntries; index1++)
+                {
+                    f.seek(content.skeletalAnimationsPointerTableOffset + (index1 * 4));
+                    int dataOffset = f.readInt();
+                    f.seek(dataOffset);
+                    
+
+                    string skeletalAnimationName = f.readString();
+                    int animationFlags = f.readInt();
+                    int skeletalAnimationloopMode = f.readByte();
+                    float skeletalAnimationframeSize = f.readFloat();
+                    int boneTableOffset = f.readInt();
+                    int boneTableEntries = f.readInt();
+                    int metaDataPointerOffset = f.readInt();
+
+                    Console.WriteLine("Animation Name: " + skeletalAnimationName);
+ 
+                }
+
 
 
                 //Skeleton
@@ -385,15 +404,29 @@ namespace Smash_Forge
                 }
                 model.skeleton.reset();
             }
+
         }
 
+        #endregion
+
+        #region Building
         public override byte[] Rebuild()
         {
             throw new NotImplementedException();
+            //FileOutput d = new FileOutput(); // data
+            //d.Endian = Endianness.Big;
+
+            //return d.getBytes();
         }
+        #endregion
 
-
-        #region helpers for reading
+        #region Struct/Class
+        //------------------------------------------------------------------------------------------------------------------------
+        /*
+         * Reads the contents of the bch file into this class
+         */
+        //------------------------------------------------------------------------------------------------------------------------
+        // HELPERS FOR READING
 
         public struct objDes // bchObjectEntry 
         {
@@ -488,9 +521,6 @@ namespace Smash_Forge
             public int sceneNameOffset;
         }
 
-        #endregion
-
-
         public class BCH_Texture
         {
             public int width, height, type;
@@ -524,5 +554,7 @@ namespace Smash_Forge
             public int objectsNodeNameOffset;
             public int metaDataPointerOffset;
         }
+        #endregion
+
     }
 }

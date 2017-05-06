@@ -1048,6 +1048,19 @@ namespace Smash_Forge
             }
         }
 
+        private static void writeDatJobjPositions(TreeNode node, FileOutput f)
+        {
+            if(node.Tag is DAT.JOBJ)
+            {
+                DAT.JOBJ jobj = (DAT.JOBJ)node.Tag;
+                f.writeFloatAt((float)jobj.pos.X, jobj.posOff);
+                f.writeFloatAt((float)jobj.pos.Y, jobj.posOff + 4);
+                f.writeFloatAt((float)jobj.pos.Z, jobj.posOff + 8);
+            }
+            foreach(TreeNode child in node.Nodes)
+                writeDatJobjPositions(child, f);
+        }
+
         ///<summary>
         /// Save file as if "Save" option was selected
         /// </summary>
@@ -1104,6 +1117,10 @@ namespace Smash_Forge
                     {
                         FileOutput f = new FileOutput();
                         f.writeBytes(File.ReadAllBytes(mc.dat_melee.filename));
+
+                        foreach (TreeNode node in mc.dat_melee.tree)
+                            writeDatJobjPositions(node, f);
+
                         if (mc.dat_melee.spawns != null)
                         {
                             for (int i = 0; i < mc.dat_melee.spawns.Count; i++)
@@ -1165,8 +1182,8 @@ namespace Smash_Forge
                             f.writeFloatAt(mc.dat_melee.cameraBounds.bottom / mc.dat_melee.stageScale, mc.dat_melee.cameraBoundOffs[1] + 4);
                             f.writeFloatAt(0, mc.dat_melee.cameraBoundOffs[1] + 8);
                         }
-
-                        if (mc.dat_melee.collisions != null)
+                        
+                        if (MessageBox.Show("Overwrite collisions?","DAT Saving", MessageBoxButtons.YesNo) == DialogResult.OK && mc.dat_melee.collisions != null)
                         {
                             while(f.pos() % 0x10 != 0)//get it back to being 0x10 alligned if it isn't already
                                 f.writeByte(0);
@@ -1442,7 +1459,10 @@ namespace Smash_Forge
                 //project.openACMD(filename);
                 Runtime.Moveset = new MovesetManager(filename);
             }
-
+            if (filename.EndsWith(".atkd"))
+            {
+                AddDockedControl(new ATKD_Editor(new ATKD().Read(filename)));
+            }
             if (filename.EndsWith("path.bin"))
             {
                 Runtime.TargetPath = new PathBin(filename);
@@ -1460,6 +1480,10 @@ namespace Smash_Forge
                 else if (f.readString(4,4) == "PATH")
                 {
                     Runtime.TargetPath = new PathBin(filename);
+                }
+                else if (f.readString(0,4) == "ATKD")
+                {
+                    AddDockedControl(new ATKD_Editor(new ATKD().Read(filename)));
                 }
                 else
                 {

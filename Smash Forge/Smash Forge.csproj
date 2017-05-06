@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharacterParamManager.cs" />
+    <Compile Include="Filetypes\ATKD.cs" />
     <Compile Include="Filetypes\DRP.cs" />
     <Compile Include="Filetypes\Melee\DAT.cs" />
     <Compile Include="Filetypes\Melee\DAT_Animation.cs" />
@@ -132,6 +133,12 @@
     </Compile>
     <Compile Include="GUI\Editors\AnimTrack.Designer.cs">
       <DependentUpon>AnimTrack.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\ATKD_Editor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\ATKD_Editor.Designer.cs">
+      <DependentUpon>ATKD_Editor.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\BoneButton.cs">
       <SubType>Component</SubType>
@@ -380,6 +387,9 @@
     <EmbeddedResource Include="GUI\Editors\AnimTrack.resx">
       <DependentUpon>AnimTrack.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\ATKD_Editor.resx">
+      <DependentUpon>ATKD_Editor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\BoneTree.resx">
       <DependentUpon>BoneTree.cs</DependentUpon>
     </EmbeddedResource>
@@ -515,13 +525,22 @@
     <None Include="materials\Character Mats\Mat05 [Smash64 Look].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Mat06 [Skin Ramp Mat].nmt">
+    <None Include="materials\Character Mats\Mat06 [Skin Ramp Mat1].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="materials\Character Mats\Mat07 [Ganon Armor].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="materials\Character Mats\Mat09 [Beginners Material].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Character Mats\Mat10 [Satin Material].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Character Mats\Mat11 [Leather Armor].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Character Mats\Mat12 [Skin Ramp Mat2].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="materials\Stage Mats\Mat01 [Regular].nmt">
@@ -573,6 +592,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\fighter_param_common.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\fighter_param_vl_luigi.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\fighter_param_vl_mario.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\fighter_param_vl_xxx.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\item_assist_gen_param.ini">
