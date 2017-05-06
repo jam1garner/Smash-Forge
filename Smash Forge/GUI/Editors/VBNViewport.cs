@@ -519,11 +519,6 @@ vec3 CalcBumpedNormal()
 	return normal;
 
     vec3 Normal = normalize(normal);
-
-    //vec3 Tangent = normalize(texture2D(nrm, texcoord).xyz);
-    //Tangent = normalize(Tangent - dot(Tangent, Normal) * Normal);
-    //vec3 Bitangent = cross(Tangent, Normal);
-
     vec3 Tangent = tan;
     vec3 Bitangent = bit;
     vec3 BumpMapNormal = texture2D(nrm, texcoord).xyz;
@@ -535,11 +530,8 @@ vec3 CalcBumpedNormal()
     return NewNormal;
 }
 
-vec4 CalculateDiffuse(vec3 norm)
+vec4 CalculateDiffuse(vec3 norm, float diff)
 {
-	// diffuse
-	vec3 difDir = normalize(-fragpos * mat3(eyeview));  
-	float diff = clamp(pow(dot(norm, difDir), 0.15f), 0.5, 2.0);
 	vec3 diffuse = vec3(diff);
 
 	if(hasRamp == 1){
@@ -547,33 +539,33 @@ vec4 CalculateDiffuse(vec3 norm)
 	}
 
 	diffuse *= diffuseColor.www * diffuseColor.xyz;
-	//diffuse = diffuseColor.rgb * (1 / (1.0 + (0.25 * difDir * difDir)));
-	if(diffuse == vec3(0,0,0)) diffuse = vec3(1);
-
+	
 	vec3 fin = vec3(0);
 	if(renderDiffuse == 1)
-		fin += diffuse;
+		fin = diffuse;
 
-	return vec4(fin.xyz, fresnelColor.a);
+	return vec4(fin.xyz, 1.0)*1.2; // value added when Diffuse == 1 in material lighting
+
 }
 
 vec3 CalculateFresnel(vec3 norm){
-	vec3 difDir = normalize(-fragpos * mat3(eyeview));  
-	float diff = clamp(pow(dot(norm, difDir), 0.5f), 0.4, 1.0);
-	vec3 f = (normalize(-fragpos));
-	f.z -= 0.8;
-	f.y -= 0.2;
-	vec3 lightDir = normalize(f * mat3(eyeview));  // vec3(0,-0.3,-0.7)
-	vec3 F0 = vec3(0); //fresnelParams.w 
-	float cosTheta = dot(lightDir, normal);
-	vec3 fresnel = F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); // 5.0
 
-	float fdiv = min(1.0 + fresnelParams.x / 5.0, 1.0);
-	return max(fresnel.xyz*fresnelColor.aaa*fresnelColor.rgb / fdiv, vec3(0.0, 0.0, 0.0)); 
+	// reworked this section. Fresnel params actually appears to update now and fresnel works on black models.
+	vec3 f = (normalize(-fragpos));
+	f.z -= 0.8; // move the position of the light behind the fragment
+	f.y -= 0.2;
+
+	vec3 lightDir = normalize(f * mat3(eyeview));  // vec3(0,-0.3,-0.7)
+	vec3 F0 = vec3(1); // = 1 (no effect)
+	float cosTheta = dot(lightDir, normal);
+	vec3 fresnel = F0 * pow(1.0 - cosTheta, 2.0 +fresnelParams.x); // fresnelParams of 0 = exponent of 1.75. 
+
+	return max(fresnel.xyz*fresnelColor.rgb, vec3(0.0, 0.0, 0.0)); // I don't think the alpha does anything, but I need to research it. Without alpha, cosmic spirit renders correctly.
 }
 
 vec3 CalculateReflection(vec3 norm){
-// reflection
+
+	// reflection
 	vec3 cameraPosition = (transpose(mat3(eyeview)) * eyeview[3].xyz);
 	cameraPosition.y += 20.0;
 	float ratio = 1.0 / 1.0;
@@ -640,22 +632,31 @@ main()
 
 	if(renderVertColor == 1) fincol = fincol * color;
 
+	vec4 ao = ((minGain + texture2D(nrm, texcoord).aaaa));
 	// color gains
-	fincol = (colorOffset + fincol * colorGain);
+	fincol = (colorOffset + fincol * colorGain); // the base color for material lighting
+	fincol *= ao*0.8; // The ambient color. When all material ighting options are off, the rendered color should = diffuse * ao * (1+AOMinGain). Moved up from following section.
 
 	// diffuse specular and fresnel
 	vec3 norm = CalcBumpedNormal();
         if(renderNormal == 1){
 		if(renderLighting == 1){
-			// ambient occlusion
-			vec4 difc = CalculateDiffuse(norm);
-			if(renderSpecular == 1) difc.xyz += CalculateSpecular(norm);
-			if(renderReflection == 1) difc.xyz += CalculateReflection(norm);
-			vec4 ao = ((minGain + texture2D(nrm, texcoord).aaaa));
-			fincol *= ao;
-			fincol *= difc.rgba;
+
+			// calculate camera direction
+			vec3 difDir = normalize(-fragpos * mat3(eyeview));
+			float diff = clamp((dot(norm, difDir)), 0.0, 1.0);
+
+			vec4 difc = CalculateDiffuse(norm, diff);
+			
+			// I rearranged this section. AO is only multiplied by diffuse. Now uses diffuse color as ambient color.
+			// The specular, reflection, and fresnel contributions have been darkened to avoid overly bright models.
+			if(renderSpecular == 1) fincol.rgb += CalculateSpecular(norm)*0.35;
+			if(renderReflection == 1) fincol.rgb += CalculateReflection(norm)*0.2;
+			fincol = fincol + (difc.rgba*ao*0.10); // diffuse contribution is super bright for some reason and needs to be darkened significantly
+			
+			
 			//if(flags & UnknownTex) a = difc.a;
-			if(renderFresnel == 1) fincol.xyz += CalculateFresnel(norm) * texture2D(dif, texcoord).rgb;
+			if(renderFresnel == 1) fincol.xyz += CalculateFresnel(norm)*0.35; // Removed the * texture2d, so fresnel works on black.
 		}
     		else
     		{
@@ -667,15 +668,12 @@ main()
         	}
     	}
 
-    fincol = fincol * (finalColorGain);
+    	fincol = fincol * (finalColorGain);
 
 	// correct alpha
 	fincol.a = a;
 	if(isTransparent == 0) fincol.a *= color.a;
 	fincol.a *= finalColorGain.a;
-	
-	// gamma correction
-	fincol.rgb = pow(fincol.rgb, vec3(1.0/gamma));
 
     	gl_FragColor = fincol;
     }
