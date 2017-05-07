@@ -2066,10 +2066,20 @@ main()
                 return;
             }
 
+            //Some characters don't have AttackS[3-4]S and use attacks[3-4] crc32 hash on scripts making forge unable to access the script, thus not visualizing these hitboxes
             if (!Runtime.Moveset.Game.Scripts.ContainsKey(crc))
             {
-                scr_game = null;
-                return;
+                //If the character doesn't have angled ftilt/fsmash
+                if (animname == "AttackS4S.omo" || animname == "AttackS3S.omo")
+                {
+                    HandleACMD(animname.Replace("S.omo", ".omo"));
+                    return;
+                }
+                else
+                {
+                    scr_game = null;
+                    return;
+                }
             }
 
             //Console.WriteLine("Handling " + animname);
