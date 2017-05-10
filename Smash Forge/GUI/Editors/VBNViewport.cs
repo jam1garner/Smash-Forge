@@ -1923,7 +1923,9 @@ main()
                         }
                         break;
 
-                    case 0x7B48FE1C: // grabbox 
+                    case 0x7B48FE1C: //Extended Grabbox
+                    case 0x1EAF840C: //Grabbox 2 (most command grabs)
+                    case 0x548F2D4C: //Grabbox (used in tether grabs)
                         {
                             Hitbox h = new Hitbox();
                             int id = (int)cmd.Parameters[0];
@@ -1934,29 +1936,13 @@ main()
                             h.Y = (float)cmd.Parameters[4];
                             h.Z = (float)cmd.Parameters[5];
 
-                            if (cmd.Parameters.Count > 8)
+                            if (cmd.Parameters.Count > 10)
                             {
                                 h.X2 = float.Parse(cmd.Parameters[8] + "");
                                 h.Y2 = float.Parse(cmd.Parameters[9] + "");
                                 h.Z2 = float.Parse(cmd.Parameters[10] + "");
                                 h.Extended = true;
                             }
-
-                            Hitboxes.Add(id, h);
-                            break;
-                        }
-                    case 0x548F2D4C: //"Special grabbox" (used in tether grabs) Requires changing SALT's PARAM_FORMAT event values to float to work
-                        {
-                            //PARAM_SYNTAX "ID,Bone,Size,X,Y,Z,Action,Air/Ground"
-
-                            Hitbox h = new Hitbox();
-                            int id = (int)cmd.Parameters[0];
-                            h.Type = Hitbox.GRABBOX;
-                            h.Bone = (int.Parse(cmd.Parameters[1] + "")-1).Clamp(0, int.MaxValue);
-                            h.Size = (float)cmd.Parameters[2];
-                            h.X = (float)cmd.Parameters[3];
-                            h.Y = (float)cmd.Parameters[4];
-                            h.Z = (float)cmd.Parameters[5];
 
                             Hitboxes.Add(id, h);
                             break;
