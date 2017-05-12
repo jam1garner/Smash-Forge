@@ -510,7 +510,7 @@
     <None Include="materials\Character Mats\Mat01 [Bowser Orig].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Mat08 [Metal nud material].nmt">
+    <None Include="materials\Character Mats\Mat08 [Metal NUD Mat1].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="materials\Character Mats\Mat02 [cell-shade].nmt">
@@ -541,6 +541,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="materials\Character Mats\Mat12 [Skin Ramp Mat2].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Character Mats\Mat13 [Metal NUD Mat2].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="materials\Stage Mats\Mat01 [Regular].nmt">
