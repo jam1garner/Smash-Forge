@@ -1923,7 +1923,9 @@ main()
                         }
                         break;
 
-                    case 0x7B48FE1C: // grabbox 
+                    case 0x7B48FE1C: //Extended Grabbox
+                    case 0x1EAF840C: //Grabbox 2 (most command grabs)
+                    case 0x548F2D4C: //Grabbox (used in tether grabs)
                         {
                             Hitbox h = new Hitbox();
                             int id = (int)cmd.Parameters[0];
@@ -1934,29 +1936,13 @@ main()
                             h.Y = (float)cmd.Parameters[4];
                             h.Z = (float)cmd.Parameters[5];
 
-                            if (cmd.Parameters.Count > 8)
+                            if (cmd.Parameters.Count > 10)
                             {
                                 h.X2 = float.Parse(cmd.Parameters[8] + "");
                                 h.Y2 = float.Parse(cmd.Parameters[9] + "");
                                 h.Z2 = float.Parse(cmd.Parameters[10] + "");
                                 h.Extended = true;
                             }
-
-                            Hitboxes.Add(id, h);
-                            break;
-                        }
-                    case 0x548F2D4C: //"Special grabbox" (used in tether grabs) Requires changing SALT's PARAM_FORMAT event values to float to work
-                        {
-                            //PARAM_SYNTAX "ID,Bone,Size,X,Y,Z,Action,Air/Ground"
-
-                            Hitbox h = new Hitbox();
-                            int id = (int)cmd.Parameters[0];
-                            h.Type = Hitbox.GRABBOX;
-                            h.Bone = (int.Parse(cmd.Parameters[1] + "")-1).Clamp(0, int.MaxValue);
-                            h.Size = (float)cmd.Parameters[2];
-                            h.X = (float)cmd.Parameters[3];
-                            h.Y = (float)cmd.Parameters[4];
-                            h.Z = (float)cmd.Parameters[5];
 
                             Hitboxes.Add(id, h);
                             break;
@@ -2066,10 +2052,20 @@ main()
                 return;
             }
 
+            //Some characters don't have AttackS[3-4]S and use attacks[3-4] crc32 hash on scripts making forge unable to access the script, thus not visualizing these hitboxes
             if (!Runtime.Moveset.Game.Scripts.ContainsKey(crc))
             {
-                scr_game = null;
-                return;
+                //If the character doesn't have angled ftilt/fsmash
+                if (animname == "AttackS4S.omo" || animname == "AttackS3S.omo")
+                {
+                    HandleACMD(animname.Replace("S.omo", ".omo"));
+                    return;
+                }
+                else
+                {
+                    scr_game = null;
+                    return;
+                }
             }
 
             //Console.WriteLine("Handling " + animname);
