@@ -57,6 +57,7 @@ namespace Smash_Forge
 
         Dictionary<int, JOBJ> jobjOffsetLinker = new Dictionary<int, JOBJ>();
         public Dictionary<int, Bitmap> texturesLinker = new Dictionary<int, Bitmap>();
+        public Dictionary<int, object[]> tobjLinker = new Dictionary<int, object[]>();
 
         static string vs = @"#version 330
  
@@ -1347,6 +1348,7 @@ main()
                     for (int i = 0; i < 13; i++)
                         d.skip(4); // ?? TODO:
 
+                    int testOffset = d.pos();
                     wrap_s = d.readInt();
                     wrap_t = d.readInt();
                     scale_w = d.readByte();
@@ -1362,6 +1364,8 @@ main()
                     width = d.readShort();
                     height = d.readShort();
                     format = d.readInt();
+
+                    Console.WriteLine($"TOBJ offset - {testOffset.ToString("X")} | image offset - {imageOffset.ToString("X")} | image data offset - {imageDataOffset.ToString("X")}");
 
                     d.seek(paletteOffset);
                     paletteDataOffset = d.readInt();
@@ -1380,6 +1384,7 @@ main()
                             paletteOffset == 0 ? null : d.getSection(paletteDataOffset, 4 * count), count, paletteFormat);
 
                         dat.texturesLinker.Add(imageDataOffset, image);
+                        dat.tobjLinker.Add(imageDataOffset, new object[]{ testOffset, image, imageOffset, imageDataOffset });
                     }
 
 

@@ -152,6 +152,12 @@
     <Compile Include="GUI\Editors\BoneTree.Designer.cs">
       <DependentUpon>BoneTree.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\DatTexEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\DatTexEditor.Designer.cs">
+      <DependentUpon>DatTexEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\DAT_stage_list.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -392,6 +398,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\BoneTree.resx">
       <DependentUpon>BoneTree.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\DatTexEditor.resx">
+      <DependentUpon>DatTexEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\DAT_stage_list.resx">
       <DependentUpon>DAT_stage_list.cs</DependentUpon>

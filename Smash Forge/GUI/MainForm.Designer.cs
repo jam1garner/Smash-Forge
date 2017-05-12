@@ -100,6 +100,7 @@
             this.glControl1 = new OpenTK.GLControl();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.openDATTextureEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -434,19 +435,19 @@
             // importParamsToolStripMenuItem
             // 
             this.importParamsToolStripMenuItem.Name = "importParamsToolStripMenuItem";
-            this.importParamsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.importParamsToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.importParamsToolStripMenuItem.Text = "Import";
             this.importParamsToolStripMenuItem.Click += new System.EventHandler(this.importParamsToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(107, 6);
             // 
             // clearToolStripMenuItem1
             // 
             this.clearToolStripMenuItem1.Name = "clearToolStripMenuItem1";
-            this.clearToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.clearToolStripMenuItem1.Size = new System.Drawing.Size(110, 22);
             this.clearToolStripMenuItem1.Text = "Clear";
             this.clearToolStripMenuItem1.Click += new System.EventHandler(this.clearParamsToolStripMenuItem_Click);
             // 
@@ -454,22 +455,23 @@
             // 
             this.texturesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openNUTEditorToolStripMenuItem,
-            this.open3DSTEXEditorToolStripMenuItem});
+            this.open3DSTEXEditorToolStripMenuItem,
+            this.openDATTextureEditorToolStripMenuItem});
             this.texturesToolStripMenuItem.Name = "texturesToolStripMenuItem";
-            this.texturesToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
+            this.texturesToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
             this.texturesToolStripMenuItem.Text = "Textures";
             // 
             // openNUTEditorToolStripMenuItem
             // 
             this.openNUTEditorToolStripMenuItem.Name = "openNUTEditorToolStripMenuItem";
-            this.openNUTEditorToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.openNUTEditorToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
             this.openNUTEditorToolStripMenuItem.Text = "Open NUT Editor";
             this.openNUTEditorToolStripMenuItem.Click += new System.EventHandler(this.openNUTEditorToolStripMenuItem_Click);
             // 
             // open3DSTEXEditorToolStripMenuItem
             // 
             this.open3DSTEXEditorToolStripMenuItem.Name = "open3DSTEXEditorToolStripMenuItem";
-            this.open3DSTEXEditorToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.open3DSTEXEditorToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
             this.open3DSTEXEditorToolStripMenuItem.Text = "Open 3DS TEX Editor";
             this.open3DSTEXEditorToolStripMenuItem.Click += new System.EventHandler(this.open3DSTEXEditorToolStripMenuItem_Click);
             // 
@@ -680,6 +682,13 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
+            // openDATTextureEditorToolStripMenuItem
+            // 
+            this.openDATTextureEditorToolStripMenuItem.Name = "openDATTextureEditorToolStripMenuItem";
+            this.openDATTextureEditorToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.openDATTextureEditorToolStripMenuItem.Text = "Open DAT Texture Editor";
+            this.openDATTextureEditorToolStripMenuItem.Click += new System.EventHandler(this.openDATTextureEditorToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AllowDrop = true;
@@ -784,6 +793,7 @@
         private System.Windows.Forms.ToolStripMenuItem importParamsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem openDATTextureEditorToolStripMenuItem;
     }
 }
 

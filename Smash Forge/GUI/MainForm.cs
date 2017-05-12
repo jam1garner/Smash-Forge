@@ -1183,7 +1183,7 @@ namespace Smash_Forge
                             f.writeFloatAt(0, mc.dat_melee.cameraBoundOffs[1] + 8);
                         }
                         
-                        if (MessageBox.Show("Overwrite collisions?","DAT Saving", MessageBoxButtons.YesNo) == DialogResult.OK && mc.dat_melee.collisions != null)
+                        if (MessageBox.Show("Overwrite collisions?","DAT Saving", MessageBoxButtons.YesNo) == DialogResult.Yes && mc.dat_melee.collisions != null)
                         {
                             while(f.pos() % 0x10 != 0)//get it back to being 0x10 alligned if it isn't already
                                 f.writeByte(0);
@@ -1901,5 +1901,14 @@ namespace Smash_Forge
             Runtime.ParamManager.Reset();
         }
 
+        private void openDATTextureEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DAT datToOpen = null;
+            foreach (ModelContainer mc in Runtime.ModelContainers)
+                if (mc.dat_melee != null)
+                    datToOpen = mc.dat_melee;
+            if(datToOpen != null)
+                AddDockedControl(new DatTexEditor(datToOpen));
+        }
     }
 }
