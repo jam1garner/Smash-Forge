@@ -63,6 +63,7 @@ namespace Smash_Forge
         public static bool renderBoundingBox { get; set; }
         public static bool renderHurtboxes { get; set; }
         public static bool renderHurtboxesZone { get; set; }
+        public static bool renderECB { get; set; }
 
         public static float gamma = 1.2f;
         public static float fov = 1.0f;

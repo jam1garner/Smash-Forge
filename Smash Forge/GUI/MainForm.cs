@@ -72,6 +72,7 @@ namespace Smash_Forge
             Runtime.renderSwag = false;
             Runtime.renderHurtboxes = true;
             Runtime.renderHurtboxesZone = true;
+            Runtime.renderECB = false;
             Runtime.renderType = Runtime.RenderTypes.Texture;
             //Pichu.MakePichu();
             //meshList.refresh();

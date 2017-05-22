@@ -10,6 +10,7 @@ namespace Smash_Forge
     public class CharacterParamManager
     {
         public SortedList<int, MoveData> MovesData { get; set; }
+        public SortedList<int, ECB> ECBs { get; set; }
         public SortedList<int, Hurtbox> Hurtboxes { get; set; }
         public SortedList<int, LedgeGrabbox> LedgeGrabboxes { get; set; }
 
@@ -38,6 +39,20 @@ namespace Smash_Forge
                     MovesData.Add(id, m);
                 }
 
+                //ECB
+
+                for (int id = 0; id < ((ParamGroup)param.Groups[3]).Chunks.Length; id++)
+                {
+                    ECB ecb = new ECB();
+                    ecb.ID = id;
+                    ecb.Bone = (Convert.ToInt32(((ParamGroup)param.Groups[3])[id][0].Value) - 1).Clamp(0, int.MaxValue);
+                    ecb.X = Convert.ToSingle(((ParamGroup)param.Groups[3])[id][1].Value);
+                    ecb.Y = Convert.ToSingle(((ParamGroup)param.Groups[3])[id][2].Value);
+                    ecb.Z = Convert.ToSingle(((ParamGroup)param.Groups[3])[id][3].Value);
+
+                    ECBs.Add(id, ecb);
+                }
+
                 //Hurtboxes
 
                 for (int id = 0; id < ((ParamGroup)param.Groups[4]).Chunks.Length; id++)
@@ -52,7 +67,7 @@ namespace Smash_Forge
                     hurtbox.Z2 = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][5].Value);
 
                     hurtbox.Size = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][6].Value);
-                    hurtbox.Bone = (Convert.ToInt32(((ParamGroup)param.Groups[4])[id][7].Value)-1).Clamp(0, int.MaxValue);
+                    hurtbox.Bone = (Convert.ToInt32(((ParamGroup)param.Groups[4])[id][7].Value) - 1).Clamp(0, int.MaxValue);
                     hurtbox.Part = Convert.ToInt32(((ParamGroup)param.Groups[4])[id][8].Value);
                     hurtbox.Zone = Convert.ToInt32(((ParamGroup)param.Groups[4])[id][9].Value);
 
@@ -86,6 +101,7 @@ namespace Smash_Forge
             Hurtboxes = new SortedList<int, Hurtbox>();
             MovesData = new SortedList<int, MoveData>();
             LedgeGrabboxes = new SortedList<int, LedgeGrabbox>();
+            ECBs = new SortedList<int, ECB>();
         }
     }
 
@@ -123,5 +139,14 @@ namespace Smash_Forge
         public float Y1 { get; set; }
         public float X2 { get; set; }
         public float Y2 { get; set; }
+    }
+
+    public class ECB
+    {
+        public int ID { get; set; }
+        public int Bone { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
     }
 }

@@ -1023,6 +1023,9 @@ main()
                 if (Runtime.renderHurtboxes)
                     RenderHurtboxes();
 
+                if (Runtime.renderECB)
+                    RenderECB();
+
                 foreach (ModelContainer m in Runtime.ModelContainers)
                 {
                     RenderTools.DrawVBN(m.vbn);
@@ -1654,13 +1657,23 @@ main()
                     switch (h.Type)
                     {
                         case Hitbox.HITBOX:
-                            GL.Color4(Color.FromArgb(85, Color.Red));
+                            if (h.Ignore_Throw)
+                            {
+                                GL.Color4(Color.FromArgb(85, Color.DarkGreen));
+                            }
+                            else
+                            {
+                                GL.Color4(Color.FromArgb(85, Color.Red));
+                            }
                             break;
                         case Hitbox.GRABBOX:
                             GL.Color4(Color.FromArgb(85, Color.Purple));
                             break;
                         case Hitbox.WINDBOX:
                             GL.Color4(Color.FromArgb(85, Color.Blue));
+                            break;
+                        case Hitbox.SEARCHBOX:
+                            GL.Color4(Color.FromArgb(85, Color.DarkOrange));
                             break;
                     }
 
@@ -1766,6 +1779,70 @@ main()
                         va2 = Vector3.Transform(va2, b.transform.ClearScale());
 
                     RenderTools.drawReducedSidesCylinder(va, va2, h.Size);
+                }
+
+                GL.Disable(EnableCap.Blend);
+                GL.Disable(EnableCap.DepthTest);
+            }
+        }
+
+        public void RenderECB()
+        {
+            if (Runtime.ParamManager.ECBs.Count > 0)
+            {
+                GL.Color4(Color.FromArgb(80, Color.DarkRed));
+                GL.Enable(EnableCap.DepthTest);
+                GL.Enable(EnableCap.Blend);
+
+                foreach (var pair in Runtime.ParamManager.ECBs)
+                {
+                    var e = pair.Value;
+                    var va = new Vector3(e.X, e.Y, e.Z);
+
+                    int bid = e.Bone;
+                    int gr = 0;
+                    if (bid > 1000)
+                    {
+                        /*while (bid >= 1000)
+                        {
+                            bid -= 1000;
+                            gr++;
+                        }
+                        gr = gr % 2;
+                        //bid = bid >> 6;
+                        Console.WriteLine(h.Bone + " " + gr + " " + bid);*/
+                        bid >>= 8;
+                    }
+
+                    Bone b = new Bone(null);
+
+                    if (e.Bone != -1)
+                    {
+                        foreach (ModelContainer m in Runtime.ModelContainers)
+                        {
+                            if (m.vbn != null)
+                            {
+                                try //Try used to avoid bone not found issue that crashes the application
+                                {
+                                    if (m.vbn.jointTable.Count < 1)
+                                        b = m.vbn.bones[bid];
+                                    else
+                                    {
+                                        b = m.vbn.bones[m.vbn.jointTable[gr][bid]];
+                                    }
+                                }
+                                catch
+                                {
+                                    //Console.WriteLine($"Hurtbox: Bone not found {h.Bone}");
+                                }
+                            }
+
+                        }
+                    }
+
+                    va = Vector3.Transform(va, b.transform.ClearScale());
+
+                    RenderTools.drawSphere(va, 0.5f, 30);
                 }
 
                 GL.Disable(EnableCap.Blend);
@@ -1899,6 +1976,56 @@ main()
                             Hitboxes.Add(id, h);
                             break;
                         }
+                    case 0xCC7CC705: // collateral hitbox (ignored by character being thrown)
+                        {
+                            Hitbox h = new Hitbox();
+                            int id = (int)cmd.Parameters[0];
+                            if (Hitboxes.ContainsKey(id))
+                                Hitboxes.Remove(id);
+                            h.Type = Hitbox.HITBOX;
+                            h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
+                            h.Damage = (float)cmd.Parameters[3];
+                            h.Angle = (int)cmd.Parameters[4];
+                            h.KnockbackGrowth = (int)cmd.Parameters[5];
+                            //FKB = (float)cmd.Parameters[6]
+                            h.KnockbackBase = (int)cmd.Parameters[7];
+                            h.Size = (float)cmd.Parameters[8];
+                            h.X = (float)cmd.Parameters[9];
+                            h.Y = (float)cmd.Parameters[10];
+                            h.Z = (float)cmd.Parameters[11];
+
+                            h.Ignore_Throw = true;
+
+                            Hitboxes.Add(id, h);
+                            break;
+                        }
+                    case 0xED67D5DA: // Extended collateral hitbox (ignored by character being thrown)
+                        {
+                            Hitbox h = new Hitbox();
+                            int id = (int)cmd.Parameters[0];
+                            if (Hitboxes.ContainsKey(id))
+                                Hitboxes.Remove(id);
+                            h.Type = Hitbox.HITBOX;
+                            h.Extended = true;
+                            h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
+                            h.Damage = (float)cmd.Parameters[3];
+                            h.Angle = (int)cmd.Parameters[4];
+                            h.KnockbackGrowth = (int)cmd.Parameters[5];
+                            //FKB = (float)cmd.Parameters[6]
+                            h.KnockbackBase = (int)cmd.Parameters[7];
+                            h.Size = (float)cmd.Parameters[8];
+                            h.X = (float)cmd.Parameters[9];
+                            h.Y = (float)cmd.Parameters[10];
+                            h.Z = (float)cmd.Parameters[11];
+                            h.X2 = (float)cmd.Parameters[24];
+                            h.Y2 = (float)cmd.Parameters[25];
+                            h.Z2 = (float)cmd.Parameters[26];
+
+                            h.Ignore_Throw = true;
+
+                            Hitboxes.Add(id, h);
+                            break;
+                        }
                     case 0x9245E1A8: // clear all hitboxes
                         Hitboxes.Clear();
                         break;
@@ -1926,6 +2053,7 @@ main()
                     case 0x7B48FE1C: //Extended Grabbox
                     case 0x1EAF840C: //Grabbox 2 (most command grabs)
                     case 0x548F2D4C: //Grabbox (used in tether grabs)
+                    case 0xEF787D43: //Extended Grabbox 2 (Mega Man's grab)
                         {
                             Hitbox h = new Hitbox();
                             int id = (int)cmd.Parameters[0];
@@ -1948,20 +2076,49 @@ main()
                             break;
                         }
                     case 0xF3A464AC: // Terminate_Grab_Collisions
-                        List<Hitbox> toDelete = new List<Hitbox>();
-                        for (int i = 0; i < Hitboxes.Count; i++)
                         {
-                            if (Hitboxes.Values[i].Type == Hitbox.GRABBOX)
-                                toDelete.Add(Hitboxes.Values[i]);
+                            List<Hitbox> toDelete = new List<Hitbox>();
+                            for (int i = 0; i < Hitboxes.Count; i++)
+                            {
+                                if (Hitboxes.Values[i].Type == Hitbox.GRABBOX)
+                                    toDelete.Add(Hitboxes.Values[i]);
+                            }
+                            foreach (Hitbox h in toDelete)
+                                Hitboxes.Remove(Hitboxes.IndexOfValue(h));
+                            break;
                         }
-                        foreach (Hitbox h in toDelete)
-                            Hitboxes.Remove(Hitboxes.IndexOfValue(h));
-                        break;
+                    case 0x44081C21: //SEARCH
+                        {
+                            Hitbox h = new Hitbox();
+                            int id = (int)cmd.Parameters[0];
+                            if (Hitboxes.ContainsKey(id))
+                                Hitboxes.Remove(id);
+                            h.Type = Hitbox.SEARCHBOX;
+                            h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
+
+                            h.Size = (float)cmd.Parameters[3];
+                            h.X = (float)cmd.Parameters[4];
+                            h.Y = (float)cmd.Parameters[5];
+                            h.Z = (float)cmd.Parameters[6];
+                            Hitboxes.Add(id, h);
+                            break;
+                        }
+                    case 0xCD0C1CC9: //Bat Within (it clears WT SEARCH event)
+                    case 0x98203AF6: //SRH_CLEAR_ALL
+                        {
+                            List<Hitbox> toDelete = new List<Hitbox>();
+                            for (int i = 0; i < Hitboxes.Count; i++)
+                            {
+                                if (Hitboxes.Values[i].Type == Hitbox.SEARCHBOX)
+                                    toDelete.Add(Hitboxes.Values[i]);
+                            }
+                            foreach (Hitbox h in toDelete)
+                                Hitboxes.Remove(Hitboxes.IndexOfValue(h));
+                            break;
+                        }
                     case 0xFAA85333:
                         break;
                     case 0x321297B0:
-                        break;
-                    case 0xED67D5DA:
                         break;
                     case 0x7640AEEB:
                         break;
@@ -2052,13 +2209,19 @@ main()
                 return;
             }
 
-            //Some characters don't have AttackS[3-4]S and use attacks[3-4] crc32 hash on scripts making forge unable to access the script, thus not visualizing these hitboxes
             if (!Runtime.Moveset.Game.Scripts.ContainsKey(crc))
             {
+                //Some characters don't have AttackS[3-4]S and use attacks[3-4] crc32 hash on scripts making forge unable to access the script, thus not visualizing these hitboxes
                 //If the character doesn't have angled ftilt/fsmash
                 if (animname == "AttackS4S.omo" || animname == "AttackS3S.omo")
                 {
                     HandleACMD(animname.Replace("S.omo", ".omo"));
+                    return;
+                }
+                //Rapid Jab Finisher
+                else if (animname == "AttackEnd.omo")
+                {
+                    HandleACMD("Attack100End.omo");
                     return;
                 }
                 else
