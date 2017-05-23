@@ -695,6 +695,8 @@ namespace Smash_Forge
                             }
                         }
                     }
+
+                    resyncTargetVBN();
                 }
             }
         }
@@ -1344,6 +1346,8 @@ namespace Smash_Forge
                     NUD nud = Skapon.Create(Runtime.TargetVBN);
                     con.nud = nud;
                 }
+
+                resyncTargetVBN();
             }
 
             if (filename.EndsWith(".sb"))
@@ -1382,6 +1386,8 @@ namespace Smash_Forge
                 p.setDAT(dat);
                 AddDockedControl(p);
                 //Runtime.TargetVBN = dat.bones;
+
+                resyncTargetVBN();
                 meshList.refresh();
             }
 
@@ -1497,12 +1503,21 @@ namespace Smash_Forge
             {
                 MDL0Bones mdl0 = new MDL0Bones();
                 Runtime.TargetVBN = mdl0.GetVBN(new FileData(filename));
+
+                resyncTargetVBN();
             }
 
             if (filename.EndsWith(".smd"))
             {
                 Runtime.TargetVBN = new VBN();
                 SMD.read(filename, new SkelAnimation(), Runtime.TargetVBN);
+
+                ModelContainer m = resyncTargetVBN();
+                if (m != null)
+                {
+                    m.nud = SMD.toNUD(filename);
+                    meshList.refresh();
+                }
             }
 
             if (filename.ToLower().EndsWith(".dae"))
@@ -1602,19 +1617,20 @@ namespace Smash_Forge
                 Workspace.OpenWorkspace(filename);
             }
 
+            // Don't want to mess up the project tree if we
+            // just set it up already
+            if (!filename.EndsWith(".wrkspc"))
+                project.fillTree();
+        }
+
+        private ModelContainer resyncTargetVBN()
+        {
+            ModelContainer modelContainer = null;
             if (Runtime.TargetVBN != null)
             {
-                ModelContainer m = new ModelContainer();
-                m.vbn = Runtime.TargetVBN;
-                Runtime.ModelContainers.Add(m);
-
-                if (filename.EndsWith(".smd"))
-                {
-                    m.nud = SMD.toNUD(filename);
-                    meshList.refresh();
-                }
-
-                boneTreePanel.treeRefresh();
+                modelContainer = new ModelContainer();
+                modelContainer.vbn = Runtime.TargetVBN;
+                Runtime.ModelContainers.Add(modelContainer);
             }
             else
             {
@@ -1622,15 +1638,15 @@ namespace Smash_Forge
                 {
                     if (m.vbn != null)
                     {
+                        // Use the first VBN we find
                         Runtime.TargetVBN = Runtime.ModelContainers[0].vbn;
+                        modelContainer = m;
                         break;
                     }
                 }
             }
-            // Don't want to mess up the project tree if we
-            // just set it up already
-            if (!filename.EndsWith(".wrkspc"))
-                project.fillTree();
+            boneTreePanel.treeRefresh();
+            return modelContainer;
         }
 
         private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
