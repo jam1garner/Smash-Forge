@@ -1337,17 +1337,12 @@ namespace Smash_Forge
             {
                 Runtime.TargetVBN = new VBN(filename);
 
-                ModelContainer con = new ModelContainer();
-                con.vbn = Runtime.TargetVBN;
-                Runtime.ModelContainers.Add(con);
-
+                ModelContainer con = resyncTargetVBN();
                 if (Directory.Exists("Skapon\\"))
                 {
                     NUD nud = Skapon.Create(Runtime.TargetVBN);
                     con.nud = nud;
                 }
-
-                resyncTargetVBN();
             }
 
             if (filename.EndsWith(".sb"))
@@ -1387,8 +1382,8 @@ namespace Smash_Forge
                 AddDockedControl(p);
                 //Runtime.TargetVBN = dat.bones;
 
-                resyncTargetVBN();
                 meshList.refresh();
+                resyncTargetVBN();
             }
 
             if (filename.EndsWith(".nut"))
@@ -1592,6 +1587,7 @@ namespace Smash_Forge
             if (filename.EndsWith(".nud"))
             {
                 openNud(filename);
+                resyncTargetVBN();
             }
 
             if (filename.EndsWith(".moi"))
@@ -1628,12 +1624,26 @@ namespace Smash_Forge
             ModelContainer modelContainer = null;
             if (Runtime.TargetVBN != null)
             {
-                modelContainer = new ModelContainer();
-                modelContainer.vbn = Runtime.TargetVBN;
-                Runtime.ModelContainers.Add(modelContainer);
+                // Make sure the TargetVBN is in use *somewhere* in our models
+                bool found = false;
+                foreach (ModelContainer m in Runtime.ModelContainers)
+                {
+                    if (m.vbn.essentialComparison(Runtime.TargetVBN))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    modelContainer = new ModelContainer();
+                    modelContainer.vbn = Runtime.TargetVBN;
+                    Runtime.ModelContainers.Add(modelContainer);
+                }
             }
             else
             {
+                // Fetch the TargetVBN from the first model we come across
                 foreach (ModelContainer m in Runtime.ModelContainers)
                 {
                     if (m.vbn != null)
