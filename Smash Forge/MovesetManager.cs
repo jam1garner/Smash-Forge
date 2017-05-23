@@ -160,18 +160,20 @@ namespace Smash_Forge
         public int Type { get; set; }
 
         public bool Extended { get; set; }
+        public bool Ignore_Throw { get; set; }
 
         public const int HITBOX = 0;
         public const int GRABBOX = 1;
         public const int WINDBOX = 2;
+        public const int SEARCHBOX = 3;
 
         public int Bone { get; set; }
         public float Size { get; set; }
         public float X { get; set; }
         public float Y { get; set; }
-		public float Z { get; set; }
-		public float X2 { get; set; }
-		public float Y2 { get; set; }
-		public float Z2 { get; set; }
+        public float Z { get; set; }
+        public float X2 { get; set; }
+        public float Y2 { get; set; }
+        public float Z2 { get; set; }
     }
 }
