@@ -45,7 +45,7 @@ namespace Smash_Forge
                 {
                     ECB ecb = new ECB();
                     ecb.ID = id;
-                    ecb.Bone = (Convert.ToInt32(((ParamGroup)param.Groups[3])[id][0].Value) - 1).Clamp(0, int.MaxValue);
+                    ecb.Bone = VBN.applyBoneThunk(Convert.ToInt32(((ParamGroup)param.Groups[3])[id][0].Value));
                     ecb.X = Convert.ToSingle(((ParamGroup)param.Groups[3])[id][1].Value);
                     ecb.Y = Convert.ToSingle(((ParamGroup)param.Groups[3])[id][2].Value);
                     ecb.Z = Convert.ToSingle(((ParamGroup)param.Groups[3])[id][3].Value);
@@ -67,9 +67,16 @@ namespace Smash_Forge
                     hurtbox.Z2 = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][5].Value);
 
                     hurtbox.Size = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][6].Value);
-                    hurtbox.Bone = (Convert.ToInt32(((ParamGroup)param.Groups[4])[id][7].Value) - 1).Clamp(0, int.MaxValue);
+                    hurtbox.Bone = VBN.applyBoneThunk(Convert.ToInt32(((ParamGroup)param.Groups[4])[id][7].Value));
                     hurtbox.Part = Convert.ToInt32(((ParamGroup)param.Groups[4])[id][8].Value);
                     hurtbox.Zone = Convert.ToInt32(((ParamGroup)param.Groups[4])[id][9].Value);
+
+                    if (hurtbox.X == hurtbox.X2 && hurtbox.Y == hurtbox.Y2 && hurtbox.Z == hurtbox.Z2)
+                    {
+                        // It can't be anything but a sphere. I think some part of the param might
+                        // control this so this might be a crude detection method. This fixes Bowser Jr at least.
+                        hurtbox.isSphere = true;
+                    }
 
                     Hurtboxes.Add(id, hurtbox);
                 }
@@ -116,6 +123,7 @@ namespace Smash_Forge
         public float Y2 { get; set; }
         public float Z2 { get; set; }
         public int Zone { get; set; }
+        public bool isSphere { get; set; } = false;
 
         public const int LW_ZONE = 0;
         public const int N_ZONE = 1;

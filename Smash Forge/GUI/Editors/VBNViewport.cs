@@ -1587,6 +1587,17 @@ main()
             }
         }
 
+        public Tuple<int, int> translateScriptBoneId(int boneId)
+        {
+            int jtbIndex = 0;
+            while (boneId >= 1000)
+            {
+                boneId -= 1000;
+                jtbIndex++;  // look in a different joint table
+            }
+            return Tuple.Create(boneId, jtbIndex);
+        }
+
         public void RenderHitboxes()
         {
             if (Hitboxes.Count > 0)
@@ -1600,20 +1611,9 @@ main()
                     var h = pair.Value;
                     var va = new Vector3(h.X, h.Y, h.Z);
 
-                    int bid = h.Bone;
-                    int gr = 0;
-                    if (bid > 1000)
-                    {
-                        /*while (bid >= 1000)
-                        {
-                            bid -= 1000;
-                            gr++;
-                        }
-                        gr = gr % 2;
-                        //bid = bid >> 6;
-                        Console.WriteLine(h.Bone + " " + gr + " " + bid);*/
-                        bid >>= 8;
-                    }
+                    Tuple<int, int> boneInfo = translateScriptBoneId(h.Bone);
+                    int bid = boneInfo.Item1;
+                    int jtbIndex = boneInfo.Item2;
 
                     Bone b = new Bone(null);
 
@@ -1621,7 +1621,9 @@ main()
                     {
                         foreach (ModelContainer m in Runtime.ModelContainers)
                         {
-                            //ModelContainers should store Hitbox data or have them linked since it will use last modelcontainer bone for hitbox display (which might not be the character model)
+                            // ModelContainers should store Hitbox data or have them linked since it will use last
+                            // modelcontainer bone for hitbox display (which might not be the character model).
+                            // This is especially important for the future when importing weapons for some moves.
                             if (m.vbn != null)
                             {
                                 try //Try used to avoid bone not found issue that crashes the application
@@ -1630,7 +1632,7 @@ main()
                                         b = m.vbn.bones[bid];
                                     else
                                     {
-                                        b = m.vbn.bones[m.vbn.jointTable[gr][bid]];
+                                        b = m.vbn.bones[m.vbn.jointTable[jtbIndex][bid]];
                                     }
                                 }
                                 catch
@@ -1711,20 +1713,9 @@ main()
                     var h = pair.Value;
                     var va = new Vector3(h.X, h.Y, h.Z);
 
-                    int bid = h.Bone;
-                    int gr = 0;
-                    if (bid > 1000)
-                    {
-                        /*while (bid >= 1000)
-                        {
-                            bid -= 1000;
-                            gr++;
-                        }
-                        gr = gr % 2;
-                        //bid = bid >> 6;
-                        Console.WriteLine(h.Bone + " " + gr + " " + bid);*/
-                        bid >>= 8;
-                    }
+                    Tuple<int, int> boneInfo = translateScriptBoneId(h.Bone);
+                    int bid = boneInfo.Item1;
+                    int jtbIndex = boneInfo.Item2;
 
                     Bone b = new Bone(null);
 
@@ -1740,7 +1731,7 @@ main()
                                         b = m.vbn.bones[bid];
                                     else
                                     {
-                                        b = m.vbn.bones[m.vbn.jointTable[gr][bid]];
+                                        b = m.vbn.bones[m.vbn.jointTable[jtbIndex][bid]];
                                     }
                                 }
                                 catch
@@ -1778,7 +1769,14 @@ main()
                     if (h.Bone != -1)
                         va2 = Vector3.Transform(va2, b.transform.ClearScale());
 
-                    RenderTools.drawReducedSidesCylinder(va, va2, h.Size);
+                    if (h.isSphere)
+                    {
+                        RenderTools.drawSphere(va, h.Size, 30);
+                    }
+                    else
+                    {
+                        RenderTools.drawReducedSidesCylinder(va, va2, h.Size);
+                    }
                 }
 
                 GL.Disable(EnableCap.Blend);
@@ -1799,20 +1797,9 @@ main()
                     var e = pair.Value;
                     var va = new Vector3(e.X, e.Y, e.Z);
 
-                    int bid = e.Bone;
-                    int gr = 0;
-                    if (bid > 1000)
-                    {
-                        /*while (bid >= 1000)
-                        {
-                            bid -= 1000;
-                            gr++;
-                        }
-                        gr = gr % 2;
-                        //bid = bid >> 6;
-                        Console.WriteLine(h.Bone + " " + gr + " " + bid);*/
-                        bid >>= 8;
-                    }
+                    Tuple<int, int> boneInfo = translateScriptBoneId(e.Bone);
+                    int bid = boneInfo.Item1;
+                    int jtbIndex = boneInfo.Item2;
 
                     Bone b = new Bone(null);
 
@@ -1828,7 +1815,7 @@ main()
                                         b = m.vbn.bones[bid];
                                     else
                                     {
-                                        b = m.vbn.bones[m.vbn.jointTable[gr][bid]];
+                                        b = m.vbn.bones[m.vbn.jointTable[jtbIndex][bid]];
                                     }
                                 }
                                 catch
@@ -1865,6 +1852,7 @@ main()
 
             while (halt < Frame)
             {
+                Hitbox newHitbox = null;
                 switch (cmd.Ident)
                 {
                     case 0x42ACFE7D: // Asynchronous Timer
@@ -1879,151 +1867,151 @@ main()
                         }
                     case 0xB738EABD: // hitbox 
                         {
-                            Hitbox h = new Hitbox();
+                            newHitbox = new Hitbox();
                             int id = (int)cmd.Parameters[0];
                             if (Hitboxes.ContainsKey(id))
                                 Hitboxes.Remove(id);
-                            h.Type = Hitbox.HITBOX;
-                            h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
-                            h.Damage = (float)cmd.Parameters[3];
-                            h.Angle = (int)cmd.Parameters[4];
-                            h.KnockbackGrowth = (int)cmd.Parameters[5];
+                            newHitbox.Type = Hitbox.HITBOX;
+                            newHitbox.Bone = (int)cmd.Parameters[2];
+                            newHitbox.Damage = (float)cmd.Parameters[3];
+                            newHitbox.Angle = (int)cmd.Parameters[4];
+                            newHitbox.KnockbackGrowth = (int)cmd.Parameters[5];
                             //FKB = (float)cmd.Parameters[6]
-                            h.KnockbackBase = (int)cmd.Parameters[7];
-                            h.Size = (float)cmd.Parameters[8];
-                            h.X = (float)cmd.Parameters[9];
-                            h.Y = (float)cmd.Parameters[10];
-                            h.Z = (float)cmd.Parameters[11];
-                            Hitboxes.Add(id, h);
+                            newHitbox.KnockbackBase = (int)cmd.Parameters[7];
+                            newHitbox.Size = (float)cmd.Parameters[8];
+                            newHitbox.X = (float)cmd.Parameters[9];
+                            newHitbox.Y = (float)cmd.Parameters[10];
+                            newHitbox.Z = (float)cmd.Parameters[11];
+                            Hitboxes.Add(id, newHitbox);
                             break;
                         }
                     case 0x2988D50F: // Extended hitbox
                         {
-                            Hitbox h = new Hitbox();
+                            newHitbox = new Hitbox();
                             int id = (int)cmd.Parameters[0];
                             if (Hitboxes.ContainsKey(id))
                                 Hitboxes.Remove(id);
-                            h.Type = Hitbox.HITBOX;
-                            h.Extended = true;
-                            h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
-                            h.Damage = (float)cmd.Parameters[3];
-                            h.Angle = (int)cmd.Parameters[4];
-                            h.KnockbackGrowth = (int)cmd.Parameters[5];
+                            newHitbox.Type = Hitbox.HITBOX;
+                            newHitbox.Extended = true;
+                            newHitbox.Bone = (int)cmd.Parameters[2];
+                            newHitbox.Damage = (float)cmd.Parameters[3];
+                            newHitbox.Angle = (int)cmd.Parameters[4];
+                            newHitbox.KnockbackGrowth = (int)cmd.Parameters[5];
                             //FKB = (float)cmd.Parameters[6]
-                            h.KnockbackBase = (int)cmd.Parameters[7];
-                            h.Size = (float)cmd.Parameters[8];
-                            h.X = (float)cmd.Parameters[9];
-                            h.Y = (float)cmd.Parameters[10];
-                            h.Z = (float)cmd.Parameters[11];
-                            h.X2 = (float)cmd.Parameters[24];
-                            h.Y2 = (float)cmd.Parameters[25];
-                            h.Z2 = (float)cmd.Parameters[26];
-                            Hitboxes.Add(id, h);
+                            newHitbox.KnockbackBase = (int)cmd.Parameters[7];
+                            newHitbox.Size = (float)cmd.Parameters[8];
+                            newHitbox.X = (float)cmd.Parameters[9];
+                            newHitbox.Y = (float)cmd.Parameters[10];
+                            newHitbox.Z = (float)cmd.Parameters[11];
+                            newHitbox.X2 = (float)cmd.Parameters[24];
+                            newHitbox.Y2 = (float)cmd.Parameters[25];
+                            newHitbox.Z2 = (float)cmd.Parameters[26];
+                            Hitboxes.Add(id, newHitbox);
                             break;
                         }
                     case 0x14FCC7E4: // special hitbox
                         {
-                            Hitbox h = new Hitbox();
+                            newHitbox = new Hitbox();
                             int id = (int)cmd.Parameters[0];
                             if (Hitboxes.ContainsKey(id))
                                 Hitboxes.Remove(id);
-                            h.Type = Hitbox.HITBOX;
-                            h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
-                            h.Damage = (float)cmd.Parameters[3];
-                            h.Angle = (int)cmd.Parameters[4];
-                            h.KnockbackGrowth = (int)cmd.Parameters[5];
+                            newHitbox.Type = Hitbox.HITBOX;
+                            newHitbox.Bone = (int)cmd.Parameters[2];
+                            newHitbox.Damage = (float)cmd.Parameters[3];
+                            newHitbox.Angle = (int)cmd.Parameters[4];
+                            newHitbox.KnockbackGrowth = (int)cmd.Parameters[5];
                             //FKB = (float)cmd.Parameters[6]
-                            h.KnockbackBase = (int)cmd.Parameters[7];
-                            h.Size = (float)cmd.Parameters[8];
-                            h.X = (float)cmd.Parameters[9];
-                            h.Y = (float)cmd.Parameters[10];
-                            h.Z = (float)cmd.Parameters[11];
+                            newHitbox.KnockbackBase = (int)cmd.Parameters[7];
+                            newHitbox.Size = (float)cmd.Parameters[8];
+                            newHitbox.X = (float)cmd.Parameters[9];
+                            newHitbox.Y = (float)cmd.Parameters[10];
+                            newHitbox.Z = (float)cmd.Parameters[11];
                             if (cmd.Parameters.Count > 39)
                             {
                                 if ((int)cmd.Parameters[39] == 1)
                                 {
-                                    h.Type = Hitbox.WINDBOX;
+                                    newHitbox.Type = Hitbox.WINDBOX;
                                 }
                             }
-                            Hitboxes.Add(id, h);
+                            Hitboxes.Add(id, newHitbox);
                             break;
                         }
                     case 0x7075DC5A: // Extended special hitbox
                         {
-                            Hitbox h = new Hitbox();
+                            newHitbox = new Hitbox();
                             int id = (int)cmd.Parameters[0];
                             if (Hitboxes.ContainsKey(id))
                                 Hitboxes.Remove(id);
-                            h.Type = Hitbox.HITBOX;
-                            h.Extended = true;
-                            h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
-                            h.Damage = (float)cmd.Parameters[3];
-                            h.Angle = (int)cmd.Parameters[4];
-                            h.KnockbackGrowth = (int)cmd.Parameters[5];
+                            newHitbox.Type = Hitbox.HITBOX;
+                            newHitbox.Extended = true;
+                            newHitbox.Bone = (int)cmd.Parameters[2];
+                            newHitbox.Damage = (float)cmd.Parameters[3];
+                            newHitbox.Angle = (int)cmd.Parameters[4];
+                            newHitbox.KnockbackGrowth = (int)cmd.Parameters[5];
                             //FKB = (float)cmd.Parameters[6]
-                            h.KnockbackBase = (int)cmd.Parameters[7];
-                            h.Size = (float)cmd.Parameters[8];
-                            h.X = (float)cmd.Parameters[9];
-                            h.Y = (float)cmd.Parameters[10];
-                            h.Z = (float)cmd.Parameters[11];
+                            newHitbox.KnockbackBase = (int)cmd.Parameters[7];
+                            newHitbox.Size = (float)cmd.Parameters[8];
+                            newHitbox.X = (float)cmd.Parameters[9];
+                            newHitbox.Y = (float)cmd.Parameters[10];
+                            newHitbox.Z = (float)cmd.Parameters[11];
                             if ((int)cmd.Parameters[39] == 1)
                             {
-                                h.Type = Hitbox.WINDBOX;
+                                newHitbox.Type = Hitbox.WINDBOX;
                             }
-                            h.X2 = (float)cmd.Parameters[40];
-                            h.Y2 = (float)cmd.Parameters[41];
-                            h.Z2 = (float)cmd.Parameters[42];
-                            Hitboxes.Add(id, h);
+                            newHitbox.X2 = (float)cmd.Parameters[40];
+                            newHitbox.Y2 = (float)cmd.Parameters[41];
+                            newHitbox.Z2 = (float)cmd.Parameters[42];
+                            Hitboxes.Add(id, newHitbox);
                             break;
                         }
                     case 0xCC7CC705: // collateral hitbox (ignored by character being thrown)
                         {
-                            Hitbox h = new Hitbox();
+                            newHitbox = new Hitbox();
                             int id = (int)cmd.Parameters[0];
                             if (Hitboxes.ContainsKey(id))
                                 Hitboxes.Remove(id);
-                            h.Type = Hitbox.HITBOX;
-                            h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
-                            h.Damage = (float)cmd.Parameters[3];
-                            h.Angle = (int)cmd.Parameters[4];
-                            h.KnockbackGrowth = (int)cmd.Parameters[5];
+                            newHitbox.Type = Hitbox.HITBOX;
+                            newHitbox.Bone = (int)cmd.Parameters[2];
+                            newHitbox.Damage = (float)cmd.Parameters[3];
+                            newHitbox.Angle = (int)cmd.Parameters[4];
+                            newHitbox.KnockbackGrowth = (int)cmd.Parameters[5];
                             //FKB = (float)cmd.Parameters[6]
-                            h.KnockbackBase = (int)cmd.Parameters[7];
-                            h.Size = (float)cmd.Parameters[8];
-                            h.X = (float)cmd.Parameters[9];
-                            h.Y = (float)cmd.Parameters[10];
-                            h.Z = (float)cmd.Parameters[11];
+                            newHitbox.KnockbackBase = (int)cmd.Parameters[7];
+                            newHitbox.Size = (float)cmd.Parameters[8];
+                            newHitbox.X = (float)cmd.Parameters[9];
+                            newHitbox.Y = (float)cmd.Parameters[10];
+                            newHitbox.Z = (float)cmd.Parameters[11];
 
-                            h.Ignore_Throw = true;
+                            newHitbox.Ignore_Throw = true;
 
-                            Hitboxes.Add(id, h);
+                            Hitboxes.Add(id, newHitbox);
                             break;
                         }
                     case 0xED67D5DA: // Extended collateral hitbox (ignored by character being thrown)
                         {
-                            Hitbox h = new Hitbox();
+                            newHitbox = new Hitbox();
                             int id = (int)cmd.Parameters[0];
                             if (Hitboxes.ContainsKey(id))
                                 Hitboxes.Remove(id);
-                            h.Type = Hitbox.HITBOX;
-                            h.Extended = true;
-                            h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
-                            h.Damage = (float)cmd.Parameters[3];
-                            h.Angle = (int)cmd.Parameters[4];
-                            h.KnockbackGrowth = (int)cmd.Parameters[5];
+                            newHitbox.Type = Hitbox.HITBOX;
+                            newHitbox.Extended = true;
+                            newHitbox.Bone = (int)cmd.Parameters[2];
+                            newHitbox.Damage = (float)cmd.Parameters[3];
+                            newHitbox.Angle = (int)cmd.Parameters[4];
+                            newHitbox.KnockbackGrowth = (int)cmd.Parameters[5];
                             //FKB = (float)cmd.Parameters[6]
-                            h.KnockbackBase = (int)cmd.Parameters[7];
-                            h.Size = (float)cmd.Parameters[8];
-                            h.X = (float)cmd.Parameters[9];
-                            h.Y = (float)cmd.Parameters[10];
-                            h.Z = (float)cmd.Parameters[11];
-                            h.X2 = (float)cmd.Parameters[24];
-                            h.Y2 = (float)cmd.Parameters[25];
-                            h.Z2 = (float)cmd.Parameters[26];
+                            newHitbox.KnockbackBase = (int)cmd.Parameters[7];
+                            newHitbox.Size = (float)cmd.Parameters[8];
+                            newHitbox.X = (float)cmd.Parameters[9];
+                            newHitbox.Y = (float)cmd.Parameters[10];
+                            newHitbox.Z = (float)cmd.Parameters[11];
+                            newHitbox.X2 = (float)cmd.Parameters[24];
+                            newHitbox.Y2 = (float)cmd.Parameters[25];
+                            newHitbox.Z2 = (float)cmd.Parameters[26];
 
-                            h.Ignore_Throw = true;
+                            newHitbox.Ignore_Throw = true;
 
-                            Hitboxes.Add(id, h);
+                            Hitboxes.Add(id, newHitbox);
                             break;
                         }
                     case 0x9245E1A8: // clear all hitboxes
@@ -2055,24 +2043,24 @@ main()
                     case 0x548F2D4C: //Grabbox (used in tether grabs)
                     case 0xEF787D43: //Extended Grabbox 2 (Mega Man's grab)
                         {
-                            Hitbox h = new Hitbox();
+                            newHitbox = new Hitbox();
                             int id = (int)cmd.Parameters[0];
-                            h.Type = Hitbox.GRABBOX;
-                            h.Bone = (int.Parse(cmd.Parameters[1] + "") - 1).Clamp(0, int.MaxValue);
-                            h.Size = (float)cmd.Parameters[2];
-                            h.X = (float)cmd.Parameters[3];
-                            h.Y = (float)cmd.Parameters[4];
-                            h.Z = (float)cmd.Parameters[5];
+                            newHitbox.Type = Hitbox.GRABBOX;
+                            newHitbox.Bone = int.Parse(cmd.Parameters[1] + "");
+                            newHitbox.Size = (float)cmd.Parameters[2];
+                            newHitbox.X = (float)cmd.Parameters[3];
+                            newHitbox.Y = (float)cmd.Parameters[4];
+                            newHitbox.Z = (float)cmd.Parameters[5];
 
                             if (cmd.Parameters.Count > 10)
                             {
-                                h.X2 = float.Parse(cmd.Parameters[8] + "");
-                                h.Y2 = float.Parse(cmd.Parameters[9] + "");
-                                h.Z2 = float.Parse(cmd.Parameters[10] + "");
-                                h.Extended = true;
+                                newHitbox.X2 = float.Parse(cmd.Parameters[8] + "");
+                                newHitbox.Y2 = float.Parse(cmd.Parameters[9] + "");
+                                newHitbox.Z2 = float.Parse(cmd.Parameters[10] + "");
+                                newHitbox.Extended = true;
                             }
 
-                            Hitboxes.Add(id, h);
+                            Hitboxes.Add(id, newHitbox);
                             break;
                         }
                     case 0xF3A464AC: // Terminate_Grab_Collisions
@@ -2087,20 +2075,26 @@ main()
                                 Hitboxes.Remove(Hitboxes.IndexOfValue(h));
                             break;
                         }
+                    case 0x2F08F54F: // Delete_Catch_Collision by ID
+                        int idToDelete = (int)cmd.Parameters[0];
+                        // May have some issues in fringe cases where a hitbox and grabbox
+                        // are out in the same move, since we count both as "Hitboxes"
+                        Hitboxes.Remove(idToDelete);
+                        break;
                     case 0x44081C21: //SEARCH
                         {
-                            Hitbox h = new Hitbox();
+                            newHitbox = new Hitbox();
                             int id = (int)cmd.Parameters[0];
                             if (Hitboxes.ContainsKey(id))
                                 Hitboxes.Remove(id);
-                            h.Type = Hitbox.SEARCHBOX;
-                            h.Bone = ((int)cmd.Parameters[2] - 1).Clamp(0, int.MaxValue);
+                            newHitbox.Type = Hitbox.SEARCHBOX;
+                            newHitbox.Bone = (int)cmd.Parameters[2];
 
-                            h.Size = (float)cmd.Parameters[3];
-                            h.X = (float)cmd.Parameters[4];
-                            h.Y = (float)cmd.Parameters[5];
-                            h.Z = (float)cmd.Parameters[6];
-                            Hitboxes.Add(id, h);
+                            newHitbox.Size = (float)cmd.Parameters[3];
+                            newHitbox.X = (float)cmd.Parameters[4];
+                            newHitbox.Y = (float)cmd.Parameters[5];
+                            newHitbox.Z = (float)cmd.Parameters[6];
+                            Hitboxes.Add(id, newHitbox);
                             break;
                         }
                     case 0xCD0C1CC9: //Bat Within (it clears WT SEARCH event)
@@ -2123,6 +2117,11 @@ main()
                     case 0x7640AEEB:
                         break;
 
+                }
+
+                if (newHitbox != null)
+                {
+                    newHitbox.Bone = VBN.applyBoneThunk(newHitbox.Bone);
                 }
 
                 e++;
