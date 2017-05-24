@@ -1632,7 +1632,16 @@ main()
                                         b = m.vbn.bones[bid];
                                     else
                                     {
-                                        b = m.vbn.bones[m.vbn.jointTable[jtbIndex][bid]];
+                                        if (jtbIndex < m.vbn.jointTable.Count)
+                                        {
+                                            b = m.vbn.bones[m.vbn.jointTable[jtbIndex][bid]];
+                                        }
+                                        else
+                                        {
+                                            //If there is no jointTable but bone is >1000 then don't look into a another joint table
+                                            //This makes some weapons like Luma have hitboxes visualized
+                                            b = m.vbn.bones[bid];
+                                        }
                                     }
                                 }
                                 catch
@@ -1731,7 +1740,14 @@ main()
                                         b = m.vbn.bones[bid];
                                     else
                                     {
-                                        b = m.vbn.bones[m.vbn.jointTable[jtbIndex][bid]];
+                                        if (jtbIndex < m.vbn.jointTable.Count)
+                                        {
+                                            b = m.vbn.bones[m.vbn.jointTable[jtbIndex][bid]];
+                                        }
+                                        else
+                                        {
+                                            b = m.vbn.bones[bid];
+                                        }
                                     }
                                 }
                                 catch
@@ -1815,7 +1831,14 @@ main()
                                         b = m.vbn.bones[bid];
                                     else
                                     {
-                                        b = m.vbn.bones[m.vbn.jointTable[jtbIndex][bid]];
+                                        if (jtbIndex < m.vbn.jointTable.Count)
+                                        {
+                                            b = m.vbn.bones[m.vbn.jointTable[jtbIndex][bid]];
+                                        }
+                                        else
+                                        {
+                                            b = m.vbn.bones[bid];
+                                        }
                                     }
                                 }
                                 catch
