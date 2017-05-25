@@ -460,10 +460,6 @@ namespace Smash_Forge
                             // Note that some bones appear twice in the joint tables
                             // and this function will only find the first occurrence.
                             index = j + (i * 1000);
-                            if (i == 0)
-                            {
-                                index = (index - 1).Clamp(0, int.MaxValue);
-                            }
                             return index;
                         }
                     }
