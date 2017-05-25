@@ -152,6 +152,12 @@
     <Compile Include="GUI\Editors\BoneTree.Designer.cs">
       <DependentUpon>BoneTree.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\DatTexEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\DatTexEditor.Designer.cs">
+      <DependentUpon>DatTexEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\DAT_stage_list.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -393,6 +399,9 @@
     <EmbeddedResource Include="GUI\Editors\BoneTree.resx">
       <DependentUpon>BoneTree.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\DatTexEditor.resx">
+      <DependentUpon>DatTexEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\DAT_stage_list.resx">
       <DependentUpon>DAT_stage_list.cs</DependentUpon>
     </EmbeddedResource>
@@ -510,7 +519,7 @@
     <None Include="materials\Character Mats\Mat01 [Bowser Orig].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Mat08 [Metal nud material].nmt">
+    <None Include="materials\Character Mats\Mat08 [Metal NUD Mat1].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="materials\Character Mats\Mat02 [cell-shade].nmt">
@@ -541,6 +550,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="materials\Character Mats\Mat12 [Skin Ramp Mat2].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Character Mats\Mat13 [Metal NUD Mat2].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="materials\Stage Mats\Mat01 [Regular].nmt">
@@ -610,6 +622,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\kumite_param_cafe.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\light_set_param.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\render_param.ini">

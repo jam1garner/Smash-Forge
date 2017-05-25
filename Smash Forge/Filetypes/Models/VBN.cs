@@ -228,6 +228,16 @@ namespace Smash_Forge
             }
         }
 
+        public static int applyBoneThunk(int boneId)
+        {
+            // Bone index thunk if we're in the base joint table.
+            // Secondary joint tables do not require this thunk and it breaks
+            // hitbox visualization if applied.
+            if (boneId < 1000)
+                boneId -= 1;
+            return boneId.Clamp(0, int.MaxValue);
+        }
+
         public void update()
         {
             for (int i = 0; i < bones.Count; i++)
@@ -393,6 +403,7 @@ namespace Smash_Forge
             //    d.seek(d.pos() - 2);
 
             List<int> t1 = new List<int>();
+
             for (int i = 0; i < table1; i++)
                 t1.Add(d.readShort());
 
@@ -434,8 +445,6 @@ namespace Smash_Forge
             //throw new Exception("No bone of char[] name");
         }
 
-        public int jtbShiftAmount = 8;
-
         public int getJTBIndex(string name)
         {
             int index = -1;
@@ -448,7 +457,14 @@ namespace Smash_Forge
                     {
                         if(jointTable[i][j] == vbnIndex)
                         {
-                            index = j + (i << 8);
+                            // Note that some bones appear twice in the joint tables
+                            // and this function will only find the first occurrence.
+                            index = j + (i * 1000);
+                            if (i == 0)
+                            {
+                                index = (index - 1).Clamp(0, int.MaxValue);
+                            }
+                            return index;
                         }
                     }
                 }
@@ -527,6 +543,22 @@ namespace Smash_Forge
                             return b;
             MessageBox.Show("Open the VBN before editing the SB");
             return null;
+        }
+
+        public bool essentialComparison(VBN compareTo)
+        {
+            // Because I don't want to override == just for a cursory bone comparison
+            if (this.bones.Count != compareTo.bones.Count)
+                return false;
+
+            for (int i = 0; i < this.bones.Count; i++)
+            {
+                if (this.bones[i].Name != compareTo.bones[i].Name)
+                    return false;
+                if (this.bones[i].pos != compareTo.bones[i].pos)
+                    return false;
+            }
+            return true;
         }
     }
 

@@ -72,6 +72,7 @@ namespace Smash_Forge
             Runtime.renderSwag = false;
             Runtime.renderHurtboxes = true;
             Runtime.renderHurtboxesZone = true;
+            Runtime.renderECB = false;
             Runtime.renderType = Runtime.RenderTypes.Texture;
             //Pichu.MakePichu();
             //meshList.refresh();
@@ -699,6 +700,8 @@ namespace Smash_Forge
                             }
                         }
                     }
+
+                    resyncTargetVBN();
                 }
             }
         }
@@ -1188,7 +1191,7 @@ namespace Smash_Forge
                             f.writeFloatAt(0, mc.dat_melee.cameraBoundOffs[1] + 8);
                         }
                         
-                        if (MessageBox.Show("Overwrite collisions?","DAT Saving", MessageBoxButtons.YesNo) == DialogResult.OK && mc.dat_melee.collisions != null)
+                        if (MessageBox.Show("Overwrite collisions?","DAT Saving", MessageBoxButtons.YesNo) == DialogResult.Yes && mc.dat_melee.collisions != null)
                         {
                             while(f.pos() % 0x10 != 0)//get it back to being 0x10 alligned if it isn't already
                                 f.writeByte(0);
@@ -1339,10 +1342,7 @@ namespace Smash_Forge
             {
                 Runtime.TargetVBN = new VBN(filename);
 
-                ModelContainer con = new ModelContainer();
-                con.vbn = Runtime.TargetVBN;
-                Runtime.ModelContainers.Add(con);
-
+                ModelContainer con = resyncTargetVBN();
                 if (Directory.Exists("Skapon\\"))
                 {
                     NUD nud = Skapon.Create(Runtime.TargetVBN);
@@ -1386,7 +1386,9 @@ namespace Smash_Forge
                 p.setDAT(dat);
                 AddDockedControl(p);
                 //Runtime.TargetVBN = dat.bones;
+
                 meshList.refresh();
+                resyncTargetVBN();
             }
 
             if (filename.EndsWith(".nut"))
@@ -1501,12 +1503,21 @@ namespace Smash_Forge
             {
                 MDL0Bones mdl0 = new MDL0Bones();
                 Runtime.TargetVBN = mdl0.GetVBN(new FileData(filename));
+
+                resyncTargetVBN();
             }
 
             if (filename.EndsWith(".smd"))
             {
                 Runtime.TargetVBN = new VBN();
                 SMD.read(filename, new SkelAnimation(), Runtime.TargetVBN);
+
+                ModelContainer m = resyncTargetVBN();
+                if (m != null)
+                {
+                    m.nud = SMD.toNUD(filename);
+                    meshList.refresh();
+                }
             }
 
             if (filename.ToLower().EndsWith(".dae"))
@@ -1581,6 +1592,7 @@ namespace Smash_Forge
             if (filename.EndsWith(".nud"))
             {
                 openNud(filename);
+                resyncTargetVBN();
             }
 
             if (filename.EndsWith(".moi"))
@@ -1606,35 +1618,50 @@ namespace Smash_Forge
                 Workspace.OpenWorkspace(filename);
             }
 
-            if (Runtime.TargetVBN != null)
-            {
-                ModelContainer m = new ModelContainer();
-                m.vbn = Runtime.TargetVBN;
-                Runtime.ModelContainers.Add(m);
-
-                if (filename.EndsWith(".smd"))
-                {
-                    m.nud = SMD.toNUD(filename);
-                    meshList.refresh();
-                }
-
-                boneTreePanel.treeRefresh();
-            }
-            else
-            {
-                foreach (ModelContainer m in Runtime.ModelContainers)
-                {
-                    if (m.vbn != null)
-                    {
-                        Runtime.TargetVBN = Runtime.ModelContainers[0].vbn;
-                        break;
-                    }
-                }
-            }
             // Don't want to mess up the project tree if we
             // just set it up already
             if (!filename.EndsWith(".wrkspc"))
                 project.fillTree();
+        }
+
+        private ModelContainer resyncTargetVBN()
+        {
+            ModelContainer modelContainer = null;
+            if (Runtime.TargetVBN != null)
+            {
+                // Make sure the TargetVBN is in use *somewhere* in our models
+                bool found = false;
+                foreach (ModelContainer m in Runtime.ModelContainers)
+                {
+                    if (m.vbn.essentialComparison(Runtime.TargetVBN))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    modelContainer = new ModelContainer();
+                    modelContainer.vbn = Runtime.TargetVBN;
+                    Runtime.ModelContainers.Add(modelContainer);
+                }
+            }
+            else
+            {
+                // Fetch the TargetVBN from the first model we come across
+                foreach (ModelContainer m in Runtime.ModelContainers)
+                {
+                    if (m.vbn != null)
+                    {
+                        // Use the first VBN we find
+                        Runtime.TargetVBN = Runtime.ModelContainers[0].vbn;
+                        modelContainer = m;
+                        break;
+                    }
+                }
+            }
+            boneTreePanel.treeRefresh();
+            return modelContainer;
         }
 
         private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1906,5 +1933,14 @@ namespace Smash_Forge
             Runtime.ParamManager.Reset();
         }
 
+        private void openDATTextureEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DAT datToOpen = null;
+            foreach (ModelContainer mc in Runtime.ModelContainers)
+                if (mc.dat_melee != null)
+                    datToOpen = mc.dat_melee;
+            if(datToOpen != null)
+                AddDockedControl(new DatTexEditor(datToOpen));
+        }
     }
 }

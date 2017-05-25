@@ -10,6 +10,7 @@ namespace Smash_Forge
     public class CharacterParamManager
     {
         public SortedList<int, MoveData> MovesData { get; set; }
+        public SortedList<int, ECB> ECBs { get; set; }
         public SortedList<int, Hurtbox> Hurtboxes { get; set; }
         public SortedList<int, LedgeGrabbox> LedgeGrabboxes { get; set; }
 
@@ -38,6 +39,20 @@ namespace Smash_Forge
                     MovesData.Add(id, m);
                 }
 
+                //ECB
+
+                for (int id = 0; id < ((ParamGroup)param.Groups[3]).Chunks.Length; id++)
+                {
+                    ECB ecb = new ECB();
+                    ecb.ID = id;
+                    ecb.Bone = VBN.applyBoneThunk(Convert.ToInt32(((ParamGroup)param.Groups[3])[id][0].Value));
+                    ecb.X = Convert.ToSingle(((ParamGroup)param.Groups[3])[id][1].Value);
+                    ecb.Y = Convert.ToSingle(((ParamGroup)param.Groups[3])[id][2].Value);
+                    ecb.Z = Convert.ToSingle(((ParamGroup)param.Groups[3])[id][3].Value);
+
+                    ECBs.Add(id, ecb);
+                }
+
                 //Hurtboxes
 
                 for (int id = 0; id < ((ParamGroup)param.Groups[4]).Chunks.Length; id++)
@@ -52,9 +67,16 @@ namespace Smash_Forge
                     hurtbox.Z2 = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][5].Value);
 
                     hurtbox.Size = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][6].Value);
-                    hurtbox.Bone = (Convert.ToInt32(((ParamGroup)param.Groups[4])[id][7].Value)-1).Clamp(0, int.MaxValue);
+                    hurtbox.Bone = VBN.applyBoneThunk(Convert.ToInt32(((ParamGroup)param.Groups[4])[id][7].Value));
                     hurtbox.Part = Convert.ToInt32(((ParamGroup)param.Groups[4])[id][8].Value);
                     hurtbox.Zone = Convert.ToInt32(((ParamGroup)param.Groups[4])[id][9].Value);
+
+                    if (hurtbox.X == hurtbox.X2 && hurtbox.Y == hurtbox.Y2 && hurtbox.Z == hurtbox.Z2)
+                    {
+                        // It can't be anything but a sphere. I think some part of the param might
+                        // control this so this might be a crude detection method. This fixes Bowser Jr at least.
+                        hurtbox.isSphere = true;
+                    }
 
                     Hurtboxes.Add(id, hurtbox);
                 }
@@ -86,6 +108,7 @@ namespace Smash_Forge
             Hurtboxes = new SortedList<int, Hurtbox>();
             MovesData = new SortedList<int, MoveData>();
             LedgeGrabboxes = new SortedList<int, LedgeGrabbox>();
+            ECBs = new SortedList<int, ECB>();
         }
     }
 
@@ -100,6 +123,7 @@ namespace Smash_Forge
         public float Y2 { get; set; }
         public float Z2 { get; set; }
         public int Zone { get; set; }
+        public bool isSphere { get; set; } = false;
 
         public const int LW_ZONE = 0;
         public const int N_ZONE = 1;
@@ -123,5 +147,14 @@ namespace Smash_Forge
         public float Y1 { get; set; }
         public float X2 { get; set; }
         public float Y2 { get; set; }
+    }
+
+    public class ECB
+    {
+        public int ID { get; set; }
+        public int Bone { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
     }
 }

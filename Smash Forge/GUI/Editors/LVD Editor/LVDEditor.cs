@@ -209,7 +209,7 @@ namespace Smash_Forge
             currentMat = (CollisionMat)((object[])e.Node.Tag)[1];
             leftLedge.Checked = currentMat.getFlag(6);
             rightLedge.Checked = currentMat.getFlag(7);
-            noWallJump.Checked = currentMat.getFlag(5);
+            noWallJump.Checked = currentMat.getFlag(4);
             comboBox1.Text = Enum.GetName(typeof(materialTypes), currentMat.getPhysics());
             passthroughAngle.Value = (decimal)(Math.Atan2(currentNormal.y, currentNormal.x) * 180.0 / Math.PI);
         }
@@ -278,7 +278,7 @@ namespace Smash_Forge
             if (sender == leftLedge)
                 currentMat.setFlag(6, ((CheckBox)sender).Checked);
             if (sender == noWallJump)
-                currentMat.setFlag(5, ((CheckBox)sender).Checked);
+                currentMat.setFlag(4, ((CheckBox)sender).Checked);
         }
 
         private void LVDEditor_Load(object sender, EventArgs e)
