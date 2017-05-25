@@ -42,12 +42,17 @@ namespace Smash_Forge.GUI
 
             depthSlider.Value = (int)Runtime.renderDepth;
             fovSlider.Value = (int)(Runtime.fov * 10);
-            gammaSlider.Value = (int)(Runtime.gamma * 10);
 
+            cameraLightCB.Checked = Runtime.CameraLight;
             diffuseCB.Checked = Runtime.renderDiffuse;
             specularCB.Checked = Runtime.renderSpecular;
             fresnelCB.Checked = Runtime.renderFresnel;
             reflectionCB.Checked = Runtime.renderReflection;
+            ambTB.Text = Runtime.amb_inten + "";
+            difTB.Text = Runtime.dif_inten + "";
+            spcTB.Text = Runtime.spc_inten + "";
+            frsTB.Text = Runtime.frs_inten + "";
+            refTB.Text = Runtime.ref_inten + "";
 
             cb_normals.Checked = Runtime.renderNormals;
             cb_vertcolor.Checked = Runtime.renderVertColor;
@@ -152,11 +157,6 @@ namespace Smash_Forge.GUI
             Runtime.renderReflection = reflectionCB.Checked;
         }
 
-        private void gammaSlider_Scroll(object sender, EventArgs e)
-        {
-            Runtime.gamma = gammaSlider.Value / 10f;
-        }
-
         private void useNormCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.useNormalMap = useNormCB.Checked;
@@ -185,6 +185,71 @@ namespace Smash_Forge.GUI
         private void wireframeCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderModelWireframe = wireframeCB.Checked;
+        }
+
+        private void cameraLightCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.CameraLight = cameraLightCB.Checked;
+        }
+
+        private void difTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(difTB.Text, out i))
+            {
+                difTB.BackColor = Color.White;
+                Runtime.dif_inten = i;
+            }
+            else
+                difTB.BackColor = Color.Red;
+        }
+
+        private void spcTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(spcTB.Text, out i))
+            {
+                spcTB.BackColor = Color.White;
+                Runtime.spc_inten = i;
+            }
+            else
+                spcTB.BackColor = Color.Red;
+        }
+
+        private void frsTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(frsTB.Text, out i))
+            {
+                frsTB.BackColor = Color.White;
+                Runtime.frs_inten = i;
+            }
+            else
+                frsTB.BackColor = Color.Red;
+        }
+
+        private void ambTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(ambTB.Text, out i))
+            {
+                ambTB.BackColor = Color.White;
+                Runtime.amb_inten = i;
+            }
+            else
+                ambTB.BackColor = Color.Red;
+        }
+
+        private void refTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(refTB.Text, out i))
+            {
+                refTB.BackColor = Color.White;
+                Runtime.ref_inten = i;
+            }
+            else
+                refTB.BackColor = Color.Red;
         }
     }
 }

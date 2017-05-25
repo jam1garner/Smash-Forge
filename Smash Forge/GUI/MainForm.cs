@@ -90,6 +90,11 @@ namespace Smash_Forge
             poi.fragmentShader(RenderTools.fs_Point);
             Runtime.shaders.Add("Point", poi);
 
+            Shader sha = new Shader();
+            sha.vertexShader(RenderTools.vs_Shadow);
+            sha.fragmentShader(RenderTools.fs_Shadow);
+            Runtime.shaders.Add("Shadow", sha);
+
             Shader nud = new Shader();
             nud.vertexShader(VBNViewport.vs);
             nud.fragmentShader(VBNViewport.fs);

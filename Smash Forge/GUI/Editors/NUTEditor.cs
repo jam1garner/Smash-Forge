@@ -747,5 +747,23 @@ namespace Smash_Forge
                 }
             }
         }
+
+        private void texIDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (selected != null)
+                using (var v = new NUT_TexIDEditor())
+                {
+                    v.Set(selected);
+                    v.ShowDialog();
+                    if (v.exitStatus == NUT_TexIDEditor.Opened)
+                    {
+                        v.Apply();
+                        listBox2.Refresh();
+                        listBox1.Refresh();
+                        Refresh();
+                        listBox1.SelectedItem = listBox1.SelectedItem;
+                    }
+                }
+        }
     }
 }

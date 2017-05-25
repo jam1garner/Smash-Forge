@@ -77,13 +77,14 @@ namespace Smash_Forge
     public class RenderTools
     {
         public static int defaultTex;
-        public static int cubeTex;
+        public static int cubeTex, cubeTex2;
 
         public static int cubeVAO, cubeVBO;
 
         public static void Setup()
         {
-            cubeTex = LoadCubeMap();
+            cubeTex = LoadCubeMap(Smash_Forge.Properties.Resources.cubemap);
+            cubeTex2 = LoadCubeMap(Smash_Forge.Properties.Resources._10101000);
             defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
             GL.GenVertexArrays(1, out cubeVAO);
             GL.GenBuffers(1, out cubeVBO);
@@ -319,47 +320,47 @@ namespace Smash_Forge
             GL.PopMatrix();
         }
 
-        public static void drawFloor(Matrix4 s)
+        public static void drawFloor()
         {
             GL.UseProgram(0);
 
             GL.Color3(Color.Gray);
             GL.LineWidth(1f);
             GL.Begin(PrimitiveType.Lines);
-            for (var i = -10; i <= 10; i++)
+            for (var i = -15; i <= 15; i++)
             {
                 if(i != 0)
                 {
-                    GL.Vertex3(Vector3.Transform(new Vector3(-10f * 2, 0f, i * 2), s));
-                    GL.Vertex3(Vector3.Transform(new Vector3(10f * 2, 0f, i * 2), s));
-                    GL.Vertex3(Vector3.Transform(new Vector3(i * 2, 0f, -10f * 2), s));
-                    GL.Vertex3(Vector3.Transform(new Vector3(i * 2, 0f, 10f * 2), s));
+                    GL.Vertex3(new Vector3(-30f, 0f, i * 2));
+                    GL.Vertex3(new Vector3(30f, 0f, i * 2));
+                    GL.Vertex3(new Vector3(i * 2, 0f, -30f));
+                    GL.Vertex3(new Vector3(i * 2, 0f, 30f));
                 }
             }
 
             GL.Color3(Color.White);
             GL.Begin(PrimitiveType.Lines);
-            GL.Vertex3(Vector3.Transform(new Vector3(-20f, 0f, 0), s));
-            GL.Vertex3(Vector3.Transform(new Vector3(20f, 0f, 0), s));
-            GL.Vertex3(Vector3.Transform(new Vector3(0, 0f, -20f), s));
-            GL.Vertex3(Vector3.Transform(new Vector3(0, 0f, 20f), s));
+            GL.Vertex3(new Vector3(-30f, 0f, 0));
+            GL.Vertex3(new Vector3(30f, 0f, 0));
+            GL.Vertex3(new Vector3(0, 0f, -30f));
+            GL.Vertex3(new Vector3(0, 0f, 30f));
             GL.End();
 
             GL.Disable(EnableCap.DepthTest);
             GL.Color3(Color.LightGray);
             GL.Begin(PrimitiveType.Lines);
-            GL.Vertex3(Vector3.Transform(new Vector3(0, 5, 0), s));
-            GL.Vertex3(Vector3.Transform(new Vector3(0, 0, 0), s));
+            GL.Vertex3(new Vector3(0, 5, 0));
+            GL.Vertex3(new Vector3(0, 0, 0));
 
             GL.Color3(Color.OrangeRed);
-            GL.Vertex3(Vector3.Transform(new Vector3(0f, 0f, 0), s));
+            GL.Vertex3(new Vector3(0f, 0f, 0));
             GL.Color3(Color.OrangeRed);
-            GL.Vertex3(Vector3.Transform(new Vector3(5f, 0f, 0), s));
+            GL.Vertex3(new Vector3(5f, 0f, 0));
 
             GL.Color3(Color.Olive);
-            GL.Vertex3(Vector3.Transform(new Vector3(0, 0f, 0f), s));
+            GL.Vertex3(new Vector3(0, 0f, 0f));
             GL.Color3(Color.Olive);
-            GL.Vertex3(Vector3.Transform(new Vector3(0, 0f, 5f), s));
+            GL.Vertex3(new Vector3(0, 0f, 5f));
 
             GL.End();
 
@@ -659,7 +660,7 @@ namespace Smash_Forge
         #endregion
         
         #region Other
-        public static int LoadCubeMap()
+        public static int LoadCubeMap(Bitmap b)
         {
             int id;
             GL.GenBuffers(1, out id);
@@ -668,7 +669,7 @@ namespace Smash_Forge
             
             GL.BindTexture(TextureTarget.TextureCubeMap, id);
 
-            Bitmap bmp = new Bitmap(Smash_Forge.Properties.Resources.cubemap);
+            Bitmap bmp = b;
 
             Rectangle[] srcRect = new Rectangle[] {
             new Rectangle(0, 0, 128, 128),
@@ -869,6 +870,28 @@ void main()
         gl_FragColor = vec4(1,0,1,1);
 }
 ";
+
+        #region Shadow Shader
+
+        public static string vs_Shadow = @"#version 330
+in vec3 vPosition;
+
+uniform mat4 lightSpaceMatrix;
+
+void main()
+{
+    gl_Position = lightSpaceMatrix * vec4(vPosition, 1.0f);
+}";
+        public static string fs_Shadow = @"#version 330
+
+void main()
+{             
+    gl_FragDepth = gl_FragCoord.z;
+gl_FragColor = vec4(1);
+}  ";
+        
+
+        #endregion
 
         #endregion
 

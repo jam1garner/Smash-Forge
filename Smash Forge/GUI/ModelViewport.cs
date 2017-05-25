@@ -270,7 +270,7 @@ namespace Smash_Forge
             // ready to start drawing model stuff
             GL.MatrixMode(MatrixMode.Modelview);
 
-            RenderTools.drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
+            RenderTools.drawFloor();
             
             GL.Enable(EnableCap.Normalize);  // These is critical to have
             GL.Enable(EnableCap.RescaleNormal);

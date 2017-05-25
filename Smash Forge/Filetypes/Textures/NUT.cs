@@ -41,7 +41,7 @@ namespace Smash_Forge
                             return (width * height);
                         case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
                             return (width * height);
-                        case PixelInternalFormat.Rgba:
+                        case PixelInternalFormat.SrgbAlpha:
                             return mipmaps[0].Length;
                         default:
                             return mipmaps[0].Length;
@@ -59,7 +59,7 @@ namespace Smash_Forge
                         return 1;
                     case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
                         return 2;
-                    case PixelInternalFormat.Rgba:
+                    case PixelInternalFormat.SrgbAlpha:
                         if (utype == OpenTK.Graphics.OpenGL.PixelFormat.Rgba)
                             return 14;
                         else
@@ -90,16 +90,16 @@ namespace Smash_Forge
                         type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
                         break;
                     case 14:
-                        type = PixelInternalFormat.Rgba;
+                        type = PixelInternalFormat.SrgbAlpha;
                         utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                         break;
                     case 16:
-                        type = PixelInternalFormat.Rgba;
+                        type = PixelInternalFormat.SrgbAlpha;
                         utype = OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt;
                         break;
                     case 17:
-                        type = PixelInternalFormat.Rgba;
-                        utype = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
+                        type = PixelInternalFormat.SrgbAlpha;
+                        utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                         break;
                     case 21:
                         type = PixelInternalFormat.CompressedRedRgtc1;

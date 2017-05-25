@@ -351,8 +351,11 @@ out vec2 texcoord;
 out vec3 normal;
 out vec3 fragpos;
 
+out vec4 lightPos;
+
 uniform vec4 colorSamplerUV;
 uniform mat4 eyeview;
+uniform mat4 lightview;
 uniform uint flags;
 
 uniform bones
@@ -407,6 +410,7 @@ void main()
     bit = vBiTangent;
     color = vec4(vNormal, 1);
     pos = vec3(vPosition * mat3(eyeview));
+    lightPos = lightview * vec4(pos, 1.0);
 
     if(renderType != 1){
 
@@ -435,14 +439,18 @@ in vec3 normal;
 in vec3 tan;
 in vec3 bit;
 in vec3 fragpos;
+in vec4 lightPos;
 
 // Textures 
 uniform sampler2D dif;
 uniform sampler2D dif2;
 uniform sampler2D ramp;
 uniform sampler2D nrm;
-uniform sampler2D cube;
+uniform samplerCube cube;
+uniform samplerCube stagecube;
 uniform sampler2D ao;
+
+uniform samplerCube cmap;
 
 uniform int hasDif;
 uniform int hasDif2;
@@ -452,9 +460,6 @@ uniform int hasOo;
 uniform int hasNrm;
 uniform int hasRamp;
 uniform int hasRim;
-
-// other textures
-uniform samplerCube cmap;
 
 // Da Flags
 uniform uint flags;
@@ -487,29 +492,89 @@ uniform int renderDiffuse;
 uniform int renderSpecular;
 uniform int renderFresnel;
 uniform int renderReflection;
+uniform float diffuse_intensity;
+uniform float ambient;
+uniform float specular_intensity;
+uniform float fresnel_intensity;
+uniform float reflection_intensity;
 
 uniform int useNormalMap;
 
-uniform float gamma = 1.2; 
-
 uniform mat4 eyeview;
 
-const vec3 lightPos = vec3(0,0,-50);
-const vec3 specPos = vec3(0,-10,-40);
+uniform vec3 lightPosition;
+uniform vec3 lightDirection;
+uniform vec3 freslightDirection;
 
-const uint Glow         = 0x00000080u;
-const uint Shadow       = 0x00000040u;
-const uint RIM          = 0x00000020u;
-const uint UnknownTex   = 0x00000010u;
+uniform sampler2D shadowMap;
 
-const uint AOMap        = 0x00000008u;
-const uint CubeMap      = 0x00000004u;
-const uint NormalMap    = 0x00000002u;
-const uint DiffuseMap   = 0x00000001u;
 
+// Tools
+// ------------------------------------------------------
 vec3 lerp(float v, vec3 from, vec3 to)
 {
     return from + (to - from) * v;
+}
+
+vec3 rgb2hsv(vec3 c)
+{
+    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+    vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+    vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+    float d = q.x - min(q.w, q.y);
+    float e = 1.0e-10;
+    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+
+vec3 hsv2rgb(vec3 c)
+{
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
+float luminance(vec3 rgb)
+{
+    const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+    return dot(rgb, W);
+}
+
+vec3 TintColor(vec3 col, float inten){
+	vec3 inputHSV = rgb2hsv(col);
+	return hsv2rgb(vec3(inputHSV.xy, pow(0.25, inten)));
+}
+
+vec3 calculate_tint_color(vec3 inputColor, float color_alpha, float blendAmount)
+{
+    float intensity = color_alpha*blendAmount;
+    vec3 inputHSV = rgb2hsv(inputColor);
+    vec3 outColorTint = hsv2rgb(vec3(inputHSV.x,inputHSV.y*intensity,1));
+    return outColorTint;
+}
+
+mat4 rotationMatrix(vec3 axis, float angle)
+{
+    axis = normalize(axis);
+    float s = sin(angle);
+    float c = cos(angle);
+    float oc = 1.0 - c;
+    
+    return mat4(oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
+                oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
+                oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
+                0.0,                                0.0,                                0.0,                                1.0);
+}
+
+float ShadowCalculation(vec4 fragPosLightSpace)
+{
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+    float closestDepth = texture(shadowMap, projCoords.xy).r; 
+    float currentDepth = projCoords.z;
+    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+
+    return shadow;
 }
 
 vec3 CalcBumpedNormal()
@@ -519,6 +584,7 @@ vec3 CalcBumpedNormal()
 	return normal;
 
     vec3 Normal = normalize(normal);
+
     vec3 Tangent = tan;
     vec3 Bitangent = bit;
     vec3 BumpMapNormal = texture2D(nrm, texcoord).xyz;
@@ -530,81 +596,98 @@ vec3 CalcBumpedNormal()
     return NewNormal;
 }
 
-vec4 CalculateDiffuse(vec3 norm, float diff)
-{
-	vec3 diffuse = vec3(diff);
-
+vec3 RampColor(vec3 col){
 	if(hasRamp == 1){
-		diffuse = texture2D(ramp, vec2(clamp(1-diff, 0.1, 0.9), 0.5f)).rgb;
+		float rampInputLuminance = luminance(col);
+		rampInputLuminance = clamp((rampInputLuminance), 0.00, 1.00); 
+		return texture2D(ramp, vec2(1.01-rampInputLuminance, 0.5)).rgb; 
 	}
+	else
+		return col;
+}
 
-	diffuse *= diffuseColor.www * diffuseColor.xyz;
+
+
+vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
+
+    vec3 I = vec3(0,0,-1) * mat3(eyeview);
+    float blendAmount = 0.5;
+    float RampIntensity = 1.0;
 	
-	vec3 fin = vec3(0);
-	if(renderDiffuse == 1)
-		fin = diffuse;
+	ao_map = pow(ao_map, vec4(1));
+    //vec3 lightDirection = normalize(vec3(-0.5,0.4,1));
+    //vec3 lightPosition = vec3(0) * mat3(eyeview);
+    //vec3 L = lightPosition - fragpos;
+    //float attenuation = (1/length(L) + 0.5);
 
-	return vec4(fin.xyz, 1.0)*1.2; // value added when Diffuse == 1 in material lighting
+    // light direction seems to be (z,x,y) from light_set_param
+    vec3 newDiffuseDirection = lightDirection; //normalize(I + diffuseLightDirection);
+    vec3 newFresnelDirection = freslightDirection; //normalize(I + fresnelLightDirection);
+    vec3 newSpecularDirection = lightDirection; //normalize(I + specularLightDirection);
+   
+//---------------------------------------------------------------------------------------------
+   // lambertian diffuse
 
-}
-
-vec3 CalculateFresnel(vec3 norm){
-
-	// reworked this section. Fresnel params actually appears to update now and fresnel works on black models.
-	vec3 f = (normalize(-fragpos));
-	f.z -= 0.8; // move the position of the light behind the fragment
-	f.y -= 0.2;
-
-	vec3 lightDir = normalize(f * mat3(eyeview));  // vec3(0,-0.3,-0.7)
-	vec3 F0 = vec3(1); // = 1 (no effect)
-	float cosTheta = dot(lightDir, normal);
-	vec3 fresnel = F0 * pow(1.0 - cosTheta, 2.0 +fresnelParams.x); // fresnelParams of 0 = exponent of 1.75. 
-
-	return max(fresnel.xyz*fresnelColor.rgb, vec3(0.0, 0.0, 0.0)); // I don't think the alpha does anything, but I need to research it. Without alpha, cosmic spirit renders correctly.
-}
-
-vec3 CalculateReflection(vec3 norm){
-
-	// reflection
-	vec3 cameraPosition = (transpose(mat3(eyeview)) * eyeview[3].xyz);
-	cameraPosition.y += 20.0;
-	float ratio = 1.0 / 1.0;
-	vec3 I = normalize(fragpos - cameraPosition);
-    	//vec3 R = refract(I, norm, ratio);
-	vec3 R = reflect(I, norm);
-	R.y *= -1.0;
-    	vec3 refColor = texture(cmap, R).rgb * reflectionColor.rgb;
-
-	return refColor;
-}
-
-vec3 CalculateSpecular(vec3 norm){
-
-// specular
-	vec3 cameraPosition = (transpose(mat3(eyeview)) * eyeview[3].xyz);
-	cameraPosition.y += 20.0;
-	vec3 specDir = vec3(0,0,1) * mat3(eyeview);  
-	//specDir = normalize(vec3(0,0,1) * mat3(eyeview));  
-
-	vec3 viewDir = normalize(-fragpos); //pos - 
-	//vec3 halfDir = normalize(normalize(cameraPosition) + viewDir);
-	//float sp = pow(max(dot(halfDir, normalize(norm)), 0.0), 16.0);
-
-	vec3 reflectDir = reflect(-specDir, norm);
-	float specDrop = max(specularParams.y / 50.0, 0.1);
-	float spec = pow(max(dot(specDir, reflectDir), 0.0), 2.0 + specularParams.z) * specDrop;
-	float div = max(specularParams.x/10.0, 1.0);
-	vec3 specular = vec3(spec);
-	//if(hasRamp==1 && spec>0.05) specular = texture2D(ramp, vec2(spec*spec, 0.5f)).rgb;
-	specular *= (specularColor.xyz) * specularColor.www / div;
-
-	if((flags & UnknownTex) > 0u)
+    float lambertBRDF = clamp((dot(newDiffuseDirection,N)),0,0.5);// * attenuation;
+    vec3 ao_blend = (ao_map.aaa) + (minGain.xyz);
+    //ao_blend = ao_blend + ao_blend * minGain.www;
+    vec3 diffuse_color = diffuse_map.xyz * ao_blend;
+    vec3 diffuse_shading = diffuse_color * lambertBRDF;
+	
+    vec3 resulting_color = vec3(0);
+	
+    if(renderDiffuse == 1)
 	{
-		return vec3(spec);
+		resulting_color = (ambient * diffuse_color); 
+		resulting_color += diffuse_intensity*(diffuse_shading * RampColor(vec3(lambertBRDF)) * RampIntensity);
+		
+		//vec3 r = rgb2hsv(resulting_color.xyz);
+		//resulting_color.xyz = hsv2rgb(vec3(r.x, r.y*0.8, r.z));
 	}
+
+
+//---------------------------------------------------------------------------------------------
+    // blinn-phong specular
+    vec3 half_angle = normalize(newSpecularDirection); 
+    float blinnPhongSpec = pow(clamp((dot(half_angle,N)),0,1),specularParams.y);
+    blinnPhongSpec *= (1-(specularParams.x/100));
+    
+//---------------------------------------------------------------------------------------------
+    // basic fresnel with fresnelParams control
+    vec3 F0 = vec3(1);
+    float cosTheta = dot(newFresnelDirection, N);
+    vec3 fresnel = F0 * pow(1.0 - cosTheta, 3.75 + fresnelParams.x); 
+
+
+//---------------------------------------------------------------------------------------------
+	// reflection
+    //vec3 I = normalize(pos - lightPosition);
+    vec3 R = reflect(I, N);
+    R.y *= -1.0;
+    vec3 refColor = texture(stagecube, R).rgb;// * ao_map.aaa;
 	
-	return specular + specular * specularColorGain.xyz;
+ 
+//---------------------------------------------------------------------------------------------
+    // Calculate the color tint. input colors are r,g,b,alpha. alpha is color blend amount
+    vec3 spec_tint = calculate_tint_color(texture2D(dif, texcoord).xyz,specularColor.w,blendAmount);
+    vec3 fresnel_tint = calculate_tint_color(diffuse_map.xyz,fresnelColor.w,blendAmount);
+    vec3 reflection_tint = calculate_tint_color(diffuse_map.xyz,reflectionColor.w,blendAmount);
+    
+
+//---------------------------------------------------------------------------------------------
+    // add fresnel and specular
+    if(renderFresnel == 1)
+    	resulting_color += (fresnelColor.xyz * fresnel * fresnel_intensity * fresnel_tint);
+    
+    if(renderSpecular == 1)
+	resulting_color += (specularColor.xyz * blinnPhongSpec  * spec_tint * specular_intensity * ao_blend)*specularColorGain.xyz;//
+
+    if(renderReflection == 1)
+	resulting_color += reflectionColor.rgb * refColor * reflection_tint * reflection_intensity;
+
+    return resulting_color;
 }
+
 
 void
 main()
@@ -614,67 +697,53 @@ main()
         gl_FragColor = color;
     } else {
 
-	// calcuate final color by mixing with vertex color
-	vec4 fincol = vec4(0);
+	    // calcuate final color by mixing with vertex color
+	    vec4 fincol = vec4(0);
 
-	if(hasDif == 1){
-		fincol = texture2D(dif, texcoord);
+	    vec4 fc = vec4(0,0,0,0);
+	    if(hasDif == 1){
+		    fc = texture2D(dif, texcoord);
+		    fincol = fc;
+    
+		    if(hasDif2 == 1){
+		    	fincol = texture2D(dif2, texcoord);// pow(texture2D(dif2, texcoord), vec4(2.2/1.0));
+		    	fincol = mix(fincol, fc, fc.a);
+		    	fincol.a = 1.0;
+		    }
+	    }
 
-		if(hasDif2 == 1){
-			fincol = texture2D(dif2, texcoord);
-			//fincol = mix(fincol, texture2D(nrm, texcoord), texture2D(nrm, texcoord).a);
-			fincol = mix(fincol, texture2D(dif, texcoord), texture2D(dif, texcoord).a);
-			fincol.a = 1.0;
-		}
-	}
+	    float a = fincol.a;
 
-	float a = fincol.a;
+	    if(renderVertColor == 1) fincol = fincol * color;
 
-	if(renderVertColor == 1) fincol = fincol * color;
+	    // color gains
+	    fincol = (colorOffset + fincol * colorGain); // the base color for material lighting
+	
+	    vec3 norm = CalcBumpedNormal();
 
-	vec4 ao = ((minGain + texture2D(nrm, texcoord).aaaa));
-	// color gains
-	fincol = (colorOffset + fincol * colorGain); // the base color for material lighting
-	fincol *= ao*0.8; // The ambient color. When all material ighting options are off, the rendered color should = diffuse * ao * (1+AOMinGain). Moved up from following section.
-
-	// diffuse specular and fresnel
-	vec3 norm = CalcBumpedNormal();
         if(renderNormal == 1){
-		if(renderLighting == 1){
-
-			// calculate camera direction
-			vec3 difDir = normalize(-fragpos * mat3(eyeview));
-			float diff = clamp((dot(norm, difDir)), 0.0, 1.0);
-
-			vec4 difc = CalculateDiffuse(norm, diff);
-			
-			// I rearranged this section. AO is only multiplied by diffuse. Now uses diffuse color as ambient color.
-			// The specular, reflection, and fresnel contributions have been darkened to avoid overly bright models.
-			if(renderSpecular == 1) fincol.rgb += CalculateSpecular(norm)*0.35;
-			if(renderReflection == 1) fincol.rgb += CalculateReflection(norm)*0.2;
-			fincol = fincol + (difc.rgba*ao*0.10); // diffuse contribution is super bright for some reason and needs to be darkened significantly
-			
-			
-			//if(flags & UnknownTex) a = difc.a;
-			if(renderFresnel == 1) fincol.xyz += CalculateFresnel(norm)*0.35; // Removed the * texture2d, so fresnel works on black.
-		}
+		    if(renderLighting == 1){
+			    fincol.xyz = sm4sh_shader(fincol, texture2D(nrm, texcoord).aaaa, norm);
+		    }
     		else
     		{
         		// old lighting
-            		float normal = dot(vec4(normal * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
-            		fincol *= normal;
-			vec4 ao = ((minGain + texture2D(nrm, texcoord).aaaa));
-			fincol *= ao;
+			    vec4 ao = texture2D(nrm, texcoord).aaaa * (1+minGain);
+			    fincol *= ao; // The ambient color. When all material ighting options are off, the rendered color should = diffuse * ao * (1+AOMinGain). Moved up from following section.
+
+                float normal = dot(vec4(norm * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0)) ;
+                fincol *= normal;
         	}
     	}
 
     	fincol = fincol * (finalColorGain);
 
-	// correct alpha
-	fincol.a = a;
-	if(isTransparent == 0) fincol.a *= color.a;
-	fincol.a *= finalColorGain.a;
+	    // correct alpha
+	    fincol.a = a;
+	    if(isTransparent == 0) fincol.a *= color.a;
+	    fincol.a *= finalColorGain.a;
 
+	    //fincol.xyz *= vec3(ShadowCalculation(lightPos));
     	gl_FragColor = fincol;
     }
 }";
@@ -684,7 +753,6 @@ main()
 
         private void SetupViewPort()
         {
-            cubeTex = RenderTools.LoadCubeMap();
 
             if (shader != null)
                 GL.DeleteShader(shader.programID);
@@ -710,6 +778,27 @@ main()
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
 
+            GL.GenFramebuffers(1, out sfb);
+
+            GL.GenTextures(1, out depthmap);
+
+            GL.BindTexture(TextureTarget.Texture2D, depthmap);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent
+                , sw, sh, 0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
+            GL.FramebufferTexture2D(FramebufferTarget.FramebufferExt, FramebufferAttachment.DepthAttachmentExt,
+                TextureTarget.Texture2D, depthmap, 0);
+            GL.DrawBuffer(DrawBufferMode.None);
+            GL.ReadBuffer(ReadBufferMode.None);
+            Console.WriteLine(GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer));
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            CalculateLightSource();
+
         }
 
 
@@ -717,6 +806,20 @@ main()
         Color back1 = Color.FromArgb((255 << 24) | (26 << 16) | (26 << 8) | (26));
         Color back2 = Color.FromArgb((255 << 24) | (77 << 16) | (77 << 8) | (77));
         //Matrix4 v2;
+        int sfb, sw=1024, sh=1024, depthmap;
+        Matrix4 lightMatrix;
+
+        public void CalculateLightSource()
+        {
+            Matrix4 lightProjection;
+            Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 500f, out lightProjection);
+            Matrix4 lightView = Matrix4.LookAt(Vector3.Transform(Vector3.Zero, v).Normalized(), //new Vector3(0.5f, 1f, 1f),
+                new Vector3(0),
+                new Vector3(0, 1, 0));
+
+            lightMatrix = lightProjection * lightView.Inverted();
+            //Console.WriteLine(v.ExtractTranslation().ToString());
+        }
 
         public void Render()
         {
@@ -724,6 +827,31 @@ main()
                 return;
 
             glControl1.MakeCurrent();
+
+            // shadow frame buffer
+            /*GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
+            GL.Viewport(0, 0, sw, sh);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            CalculateLightSource();
+            GL.Enable(EnableCap.DepthTest);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref lightMatrix);
+            RenderTools.drawFloor();
+            RenderTools.drawSphere(Vector3.Zero, 1, 5);
+            {
+                //draw
+                foreach(ModelContainer c in Runtime.ModelContainers)
+                {
+                    if(c.nud != null)
+                    {
+                        c.nud.RenderShadow(lightMatrix);
+                    }
+                }
+            }
+            GL.Disable(EnableCap.DepthTest);
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);*/
 
             GL.Viewport(glControl1.ClientRectangle);
 
@@ -769,15 +897,18 @@ main()
 
             SetCameraAnimation();
 
-            GL.LoadMatrix(ref v);
             // ready to start drawing model stuff
             GL.MatrixMode(MatrixMode.Modelview);
+            /*GL.LoadMatrix(ref lightMatrix);
+            RenderTools.drawFloor();
+            RenderTools.drawSphere(Vector3.Zero, 1, 5);*/
+            GL.LoadMatrix(ref v);
             
             GL.UseProgram(0);
 
             // drawing floor---------------------------
             if (Runtime.renderFloor)
-                RenderTools.drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
+                RenderTools.drawFloor();
 
 
             //GL.Enable(EnableCap.LineSmooth); // This is Optional 
@@ -801,15 +932,29 @@ main()
             GL.Enable(EnableCap.StencilTest);
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
 
+            //GL.Enable(EnableCap.FramebufferSrgb);
+
 
             // draw models
-            if (Runtime.renderModel)
-                DrawModels();
+
+            if (Runtime.renderModel) DrawModels();
+            /*{
+                //draw
+                foreach (ModelContainer c in Runtime.ModelContainers)
+                {
+                    if (c.nud != null)
+                    {
+                        c.nud.RenderShadow(v);
+                        c.nud.RenderShadow(lightMatrix);
+                    }
+                }
+            }*/
 
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
             GL.DepthFunc(DepthFunction.Less);
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
             GL.Disable(EnableCap.CullFace);
+            GL.Disable(EnableCap.FramebufferSrgb);
 
             GL.UseProgram(0);
             // draw path.bin
@@ -935,7 +1080,49 @@ main()
             GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
             GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
 
-            GL.Uniform1(shader.getAttribute("gamma"), Runtime.gamma);
+            GL.Uniform1(shader.getAttribute("ambient"), Runtime.amb_inten);
+            GL.Uniform1(shader.getAttribute("diffuse_intensity"), Runtime.dif_inten);
+            GL.Uniform1(shader.getAttribute("specular_intensity"), Runtime.spc_inten);
+            GL.Uniform1(shader.getAttribute("fresnel_intensity"), Runtime.frs_inten);
+            GL.Uniform1(shader.getAttribute("reflection_intensity"), Runtime.ref_inten);
+
+            GL.ActiveTexture(TextureUnit.Texture11);
+            GL.BindTexture(TextureTarget.Texture2D, depthmap);
+            GL.Uniform1(shader.getAttribute("shadowmap"), 11);
+
+
+            // send lighting to Shader
+            // Miiverse Params
+            /*float specRotZ = -0.2254f;
+            float specRotY = 0f;
+            float specRotX = 0f;
+
+            Matrix4 specrot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, specRotX)
+                 * Matrix4.CreateFromAxisAngle(Vector3.UnitY, specRotY)
+                 * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, specRotZ);*/
+
+
+            Vector3 specDir = new Vector3(0f, 0f, -1f);// Vector3.Transform(new Vector3(0f, 0f, -1f), specrot);
+            GL.Uniform3(shader.getAttribute("freslightDirection"), Vector3.TransformNormal(specDir, v.Inverted()).Normalized());
+            GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, v));
+            if (Runtime.CameraLight)
+            {
+                GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(specDir, v.Inverted()).Normalized());
+            } else
+            {
+                GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
+            }
+
+            /*float fresRotX = 0.45f;
+            float fresRotY = 1.32f;
+            float fresRotZ = 0f;
+
+            Matrix4 fresrot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, fresRotX)
+                 * Matrix4.CreateFromAxisAngle(Vector3.UnitY, fresRotY)
+                 * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, fresRotZ);
+
+            Vector3 fresDir = new Vector3(0f, 0f, -1f);// Vector3.Transform(new Vector3(1f, 0f, 0f), fresrot);
+            GL.Uniform3(shader.getAttribute("fresLightDir"), Vector3.TransformNormal(fresDir, v.Inverted()).Normalized());*/
 
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
@@ -955,10 +1142,9 @@ main()
                 if (m.nud != null)
                 {
                     GL.ActiveTexture(TextureUnit.Texture2);
-                    GL.BindTexture(TextureTarget.TextureCubeMap, cubeTex);
+                    GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex);
                     GL.Uniform1(shader.getAttribute("cmap"), 2);
                     GL.UniformMatrix4(shader.getAttribute("eyeview"), false, ref v);
-                    //GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref v2);
 
                     if (m.vbn != null)
                     {
@@ -2142,82 +2328,23 @@ main()
                 shader.fragmentShader(File.ReadAllText("frag.txt"));
                 Runtime.shaders["NUD"] = shader;*/
             }
+
+            /*if (e.KeyChar == 'w')
+            {
+                int width = sw;
+                int height = sh;
+
+                byte[] pixels = new byte[width * height * 4];
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
+                GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
+                File.WriteAllBytes("shadowFB.bin", pixels);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                GL.BindTexture(TextureTarget.Texture2D, depthmap);
+                GL.GetTexImage(TextureTarget.Texture2D,0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, pixels);
+                File.WriteAllBytes("shadowFB.bin", pixels);
+            }*/
             if (e.KeyChar == 'r')
             {
-                /*int fb;
-                GL.GenFramebuffers(1, out fb);
-
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, fb);
-
-                int rt;
-                GL.GenTextures(1, out rt);
-                GL.BindTexture(TextureTarget.Texture2D, rt);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, 1024, 768, 0, PixelFormat.Rgb, PixelType.UnsignedByte, (IntPtr)0);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                GL.BindTexture(TextureTarget.Texture2D, 0);
-
-                int dep;
-                GL.GenRenderbuffers(1, out dep);
-                GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, dep);
-                GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, 1024, 768);
-                GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, dep);
-
-                GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, rt, 0);
-
-                DrawBuffersEnum[] drawBuffers = new DrawBuffersEnum[] { DrawBuffersEnum .ColorAttachment0};
-                GL.DrawBuffers(1, drawBuffers);
-
-                if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
-                    MessageBox.Show("Error Rendering");*/
-
-                //GL.BindFramebuffer(FramebufferTarget.Framebuffer, fb);
-                //GL.Viewport(0, 0, 1024, 768);
-
-
-                // GL.MatrixMode(MatrixMode.Projection);
-                //GL.LoadIdentity();
-                /*GL.Begin(PrimitiveType.Quads);
-                GL.Color3(back1);
-                GL.Vertex2(1.0, 1.0);
-                GL.Vertex2(-1.0, 1.0);
-                GL.Color3(back2);
-                GL.Vertex2(-1.0, -1.0);
-                GL.Vertex2(1.0, -1.0);
-                GL.End();*/
-
-                /*GL.Enable(EnableCap.Normalize);  
-                GL.Enable(EnableCap.RescaleNormal);
-
-                GL.Enable(EnableCap.Blend);
-                GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-
-                GL.Enable(EnableCap.DepthTest);
-                GL.DepthFunc(DepthFunction.Less);
-
-                GL.Enable(EnableCap.AlphaTest);
-                GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-
-                GL.Enable(EnableCap.CullFace);
-                GL.CullFace(CullFaceMode.Front);
-
-                GL.Enable(EnableCap.LineSmooth);*/
-
-                //GL.LoadMatrix(ref v);
-                // set up the viewport projection and send it to GPU
-                //GL.PushAttrib(AttribMask.AllAttribBits);
-                //GL.Enable(EnableCap.DepthTest);
-                //GL.DepthFunc(DepthFunction.Less);
-                //GL.MatrixMode(MatrixMode.Modelview);
-
-                //GL.UseProgram(0);
-                // drawing floor---------------------------
-                //if (Runtime.renderFloor)RenderTools.drawFloor(Matrix4.CreateTranslation(Vector3.Zero));
-
-                // draw models
-                //if (Runtime.renderModel)
-                //    DrawModels();
-
                 int width = glControl1.Width;
                 int height = glControl1.Height;
 
@@ -2245,13 +2372,6 @@ main()
 
                 Console.WriteLine("Saving");
                 bmp.Save("Render.png");
-                //GL.DeleteFramebuffer(fb);
-                //GL.DeleteTexture(rt);
-                //GL.DeleteTexture(dep);
-
-                //GL.PopAttrib();
-
-                //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             }
             if (e.KeyChar == 'f')
             {

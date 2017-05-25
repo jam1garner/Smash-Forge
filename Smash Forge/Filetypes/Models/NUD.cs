@@ -120,7 +120,23 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
             GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
 
-            GL.Uniform1(shader.getAttribute("gamma"), Runtime.gamma);
+            GL.Uniform1(shader.getAttribute("ambient"), Runtime.amb_inten);
+            GL.Uniform1(shader.getAttribute("diffuse_intensity"), Runtime.dif_inten);
+            GL.Uniform1(shader.getAttribute("specular_intensity"), Runtime.spc_inten);
+            GL.Uniform1(shader.getAttribute("fresnel_intensity"), Runtime.frs_inten);
+            GL.Uniform1(shader.getAttribute("reflection_intensity"), Runtime.ref_inten);
+
+            if (Runtime.CameraLight)
+            {
+                Vector3 specDir = new Vector3(0f, 0f, -1f);
+                GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(specDir, view.Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, view));
+            }
+            else
+            {
+                GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
+                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, view));
+            }
 
             {
 
@@ -249,7 +265,8 @@ namespace Smash_Forge
                 GL.Uniform1(shader.getAttribute("dif"), 0);
                 GL.Uniform1(shader.getAttribute("dif2"), 0);
                 GL.Uniform1(shader.getAttribute("nrm"), 0);
-                GL.Uniform1(shader.getAttribute("cube"), 0);
+                GL.Uniform1(shader.getAttribute("cube"), 10);
+                GL.Uniform1(shader.getAttribute("stagecube"), 10);
                 GL.Uniform1(shader.getAttribute("ao"), 0);
                 GL.Uniform1(shader.getAttribute("ramp"), 0);
 
@@ -264,7 +281,7 @@ namespace Smash_Forge
                 }
                 if (mat.stagemap && texid < mat.textures.Count)
                 {
-                    GL.Uniform1(shader.getAttribute("ao"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                    GL.Uniform1(shader.getAttribute("stagecube"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
                 }
                 if (mat.cubemap && texid < mat.textures.Count)
                 {
@@ -332,7 +349,7 @@ namespace Smash_Forge
                     float[] pa;
                     mat.entries.TryGetValue("NU_diffuseColor", out pa);
                     if (mat.anims.ContainsKey("NU_diffuseColor")) pa = mat.anims["NU_diffuseColor"];
-                    if (pa == null) pa = new float[] { 1, 1, 1, 1 };
+                    if (pa == null) pa = new float[] { 1, 1, 1, 0.5f };
                     GL.Uniform4(shader.getAttribute("diffuseColor"), pa[0], pa[1], pa[2], pa[3]);
                 }
                 {
@@ -353,7 +370,7 @@ namespace Smash_Forge
                     float[] pa;
                     mat.entries.TryGetValue("NU_specularParams", out pa);
                     if (mat.anims.ContainsKey("NU_specularParams")) pa = mat.anims["NU_specularParams"];
-                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    if (pa == null) pa = new float[] { 0, 4, 0, 0 };
                     GL.Uniform4(shader.getAttribute("specularParams"), pa[0], pa[1], pa[2], pa[3]);
                 }
                 {
@@ -493,6 +510,36 @@ namespace Smash_Forge
             }
         }
 
+        // simple passthrough vertex render for shadow mapping
+        public void RenderShadow(Matrix4 lightMatrix)
+        {
+            Shader shader = Runtime.shaders["Shadow"];
+
+            GL.UseProgram(shader.programID);
+
+            GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
+
+            shader.enableAttrib();
+            foreach(Mesh m in mesh)
+            {
+                foreach(Polygon p in m.polygons)
+                {
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
+                    GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
+                    GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
+
+                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
+                    GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
+                    GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+                }
+            }
+            shader.disableAttrib();
+
+            GL.UseProgram(0);
+        }
+
         public void DrawPoints(Matrix4 view, VBN vbn)
         {
             Shader shader = Runtime.shaders["Point"];
@@ -575,6 +622,18 @@ namespace Smash_Forge
 
         public static int BindTexture(NUD.Mat_Texture tex, int hash, int loc)
         {
+            if (hash == 0x10101000)
+            {
+                GL.ActiveTexture(TextureUnit.Texture20 + loc);
+                GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex2);
+                return 20 + loc;
+            }
+            if (hash == 0x10102000)
+            {
+                GL.ActiveTexture(TextureUnit.Texture20 + loc);
+                GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex);
+                return 20 + loc;
+            }
             GL.ActiveTexture(TextureUnit.Texture3 + loc);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
 
@@ -591,6 +650,7 @@ namespace Smash_Forge
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[tex.WrapMode2]);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)wrapmode[tex.minFilter]);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)wrapmode[tex.magFilter]);
+                    GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 4.0f);
                     break;
                 }
             }
@@ -1277,15 +1337,39 @@ namespace Smash_Forge
 
         private static void writeUV(FileOutput d, Polygon m)
         {
+            int uvCount = (m.UVSize >> 4);
+            int uvType = (m.UVSize) & 0xF;
+
             for (int i = 0; i < m.vertices.Count; i++)
             {
-                if ((m.UVSize & 0xF) == 0x2)
+
+                if (uvType == 0x0)
+                {
+                    for (int j = 0; j < uvCount; j++)
+                    {
+                        d.writeHalfFloat(m.vertices[i].tx[j].X);
+                        d.writeHalfFloat(m.vertices[i].tx[j].Y);
+                    }
+                }else
+                if (uvType == 0x2)
                 {
                     d.writeByte((int)m.vertices[i].col.X);
                     d.writeByte((int)m.vertices[i].col.Y);
                     d.writeByte((int)m.vertices[i].col.Z);
                     d.writeByte((int)m.vertices[i].col.W);
-                    for (int j = 0; j < m.vertices[i].tx.Count; j++)
+                    for (int j = 0; j < uvCount; j++)
+                    {
+                        d.writeHalfFloat(m.vertices[i].tx[j].X);
+                        d.writeHalfFloat(m.vertices[i].tx[j].Y);
+                    }
+                }else
+                if (uvType == 0x4)
+                {
+                    d.writeHalfFloat(m.vertices[i].col.X / 0xFF);
+                    d.writeHalfFloat(m.vertices[i].col.Y / 0xFF);
+                    d.writeHalfFloat(m.vertices[i].col.Z / 0xFF);
+                    d.writeHalfFloat(m.vertices[i].col.W / 0xFF);
+                    for (int j = 0; j < uvCount; j++)
                     {
                         d.writeHalfFloat(m.vertices[i].tx[j].X);
                         d.writeHalfFloat(m.vertices[i].tx[j].Y);

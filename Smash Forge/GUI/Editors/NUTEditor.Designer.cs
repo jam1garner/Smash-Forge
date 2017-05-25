@@ -55,6 +55,7 @@
             this.extractAndOpenInDefaultEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractAndPickAProgramToEditWithToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importEditedFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.texIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -297,7 +298,8 @@
             this.editingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.extractAndOpenInDefaultEditorToolStripMenuItem,
             this.extractAndPickAProgramToEditWithToolStripMenuItem,
-            this.importEditedFileToolStripMenuItem});
+            this.importEditedFileToolStripMenuItem,
+            this.texIDToolStripMenuItem});
             this.editingToolStripMenuItem.Name = "editingToolStripMenuItem";
             this.editingToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             this.editingToolStripMenuItem.Text = "Editing";
@@ -322,6 +324,13 @@
             this.importEditedFileToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.importEditedFileToolStripMenuItem.Text = "Import Edited File";
             this.importEditedFileToolStripMenuItem.Click += new System.EventHandler(this.importEditedFileToolStripMenuItem_Click);
+            // 
+            // texIDToolStripMenuItem
+            // 
+            this.texIDToolStripMenuItem.Name = "texIDToolStripMenuItem";
+            this.texIDToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.texIDToolStripMenuItem.Text = "TexID";
+            this.texIDToolStripMenuItem.Click += new System.EventHandler(this.texIDToolStripMenuItem_Click);
             // 
             // NUTEditor
             // 
@@ -378,5 +387,6 @@
         private System.Windows.Forms.ToolStripMenuItem dumpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importNUTFromFolderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveNUTZLIBToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem texIDToolStripMenuItem;
     }
 }

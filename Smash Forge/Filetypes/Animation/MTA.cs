@@ -385,7 +385,7 @@ namespace Smash_Forge
         {
             f.Endian = Endian;
             if (f.size() < 4)
-                throw new EndOfStreamException("Blank/Broken MTA");
+                return;
             f.seek(4);
             unknown = (uint)f.readInt();
             numFrames = (uint)f.readInt();

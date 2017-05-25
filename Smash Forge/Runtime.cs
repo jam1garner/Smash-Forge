@@ -64,12 +64,18 @@ namespace Smash_Forge
         public static bool renderHurtboxes { get; set; }
         public static bool renderHurtboxesZone { get; set; }
 
-        public static float gamma = 1.2f;
-        public static float fov = 1.0f;
+        public static float gamma = 1.0f;
+        public static float fov = 0.8f;
+        public static bool CameraLight = true;
         public static bool renderDiffuse = true;
         public static bool renderFresnel = true;
         public static bool renderSpecular = true;
         public static bool renderReflection = true;
+        public static float dif_inten = 0.5f;
+        public static float spc_inten = 0.3f;
+        public static float frs_inten = 0.2f;
+        public static float ref_inten = 0.5f;
+        public static float amb_inten = 0.85f;
 
         public static float renderDepth { get; set; }
         public static bool renderNormals { get; set; }

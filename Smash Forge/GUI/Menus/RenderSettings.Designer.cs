@@ -41,6 +41,8 @@
             this.checkBox11 = new System.Windows.Forms.CheckBox();
             this.checkBox12 = new System.Windows.Forms.CheckBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.checkBox14 = new System.Windows.Forms.CheckBox();
+            this.checkBox13 = new System.Windows.Forms.CheckBox();
             this.wireframeCB = new System.Windows.Forms.CheckBox();
             this.modelSelectCB = new System.Windows.Forms.CheckBox();
             this.boundingCB = new System.Windows.Forms.CheckBox();
@@ -53,8 +55,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.fovSlider = new System.Windows.Forms.TrackBar();
             this.useNormCB = new System.Windows.Forms.CheckBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.gammaSlider = new System.Windows.Forms.TrackBar();
             this.reflectionCB = new System.Windows.Forms.CheckBox();
             this.specularCB = new System.Windows.Forms.CheckBox();
             this.fresnelCB = new System.Windows.Forms.CheckBox();
@@ -63,13 +63,23 @@
             this.cb_normals = new System.Windows.Forms.CheckBox();
             this.renderMode = new System.Windows.Forms.ComboBox();
             this.cb_vertcolor = new System.Windows.Forms.CheckBox();
-            this.checkBox13 = new System.Windows.Forms.CheckBox();
-            this.checkBox14 = new System.Windows.Forms.CheckBox();
+            this.difTB = new System.Windows.Forms.TextBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.spcTB = new System.Windows.Forms.TextBox();
+            this.frsTB = new System.Windows.Forms.TextBox();
+            this.ambTB = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.refTB = new System.Windows.Forms.TextBox();
+            this.cameraLightCB = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fovSlider)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gammaSlider)).BeginInit();
+            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // checkBox1
@@ -249,8 +259,34 @@
             this.panel1.Controls.Add(this.checkBox7);
             this.panel1.Location = new System.Drawing.Point(12, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(283, 447);
+            this.panel1.Size = new System.Drawing.Size(283, 497);
             this.panel1.TabIndex = 12;
+            // 
+            // checkBox14
+            // 
+            this.checkBox14.AutoSize = true;
+            this.checkBox14.Checked = true;
+            this.checkBox14.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox14.Location = new System.Drawing.Point(44, 165);
+            this.checkBox14.Name = "checkBox14";
+            this.checkBox14.Size = new System.Drawing.Size(145, 17);
+            this.checkBox14.TabIndex = 24;
+            this.checkBox14.Text = "Render Hurtboxes Zones";
+            this.checkBox14.UseVisualStyleBackColor = true;
+            this.checkBox14.CheckedChanged += new System.EventHandler(this.checkChanged);
+            // 
+            // checkBox13
+            // 
+            this.checkBox13.AutoSize = true;
+            this.checkBox13.Checked = true;
+            this.checkBox13.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox13.Location = new System.Drawing.Point(12, 146);
+            this.checkBox13.Name = "checkBox13";
+            this.checkBox13.Size = new System.Drawing.Size(112, 17);
+            this.checkBox13.TabIndex = 23;
+            this.checkBox13.Text = "Render Hurtboxes";
+            this.checkBox13.UseVisualStyleBackColor = true;
+            this.checkBox13.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // wireframeCB
             // 
@@ -329,12 +365,12 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cameraLightCB);
+            this.groupBox1.Controls.Add(this.tableLayoutPanel1);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.fovSlider);
             this.groupBox1.Controls.Add(this.useNormCB);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.gammaSlider);
             this.groupBox1.Controls.Add(this.reflectionCB);
             this.groupBox1.Controls.Add(this.specularCB);
             this.groupBox1.Controls.Add(this.fresnelCB);
@@ -347,7 +383,7 @@
             this.groupBox1.Controls.Add(this.depthSlider);
             this.groupBox1.Location = new System.Drawing.Point(301, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(283, 447);
+            this.groupBox1.Size = new System.Drawing.Size(283, 500);
             this.groupBox1.TabIndex = 15;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model Render Settings";
@@ -364,7 +400,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 192);
+            this.label3.Location = new System.Drawing.Point(9, 138);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(72, 13);
             this.label3.TabIndex = 28;
@@ -382,7 +418,7 @@
             // useNormCB
             // 
             this.useNormCB.AutoSize = true;
-            this.useNormCB.Location = new System.Drawing.Point(12, 380);
+            this.useNormCB.Location = new System.Drawing.Point(12, 323);
             this.useNormCB.Name = "useNormCB";
             this.useNormCB.Size = new System.Drawing.Size(110, 17);
             this.useNormCB.TabIndex = 26;
@@ -390,29 +426,11 @@
             this.useNormCB.UseVisualStyleBackColor = true;
             this.useNormCB.CheckedChanged += new System.EventHandler(this.useNormCB_CheckedChanged);
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(110, 127);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(72, 13);
-            this.label2.TabIndex = 25;
-            this.label2.Text = "Gamma Slider";
-            // 
-            // gammaSlider
-            // 
-            this.gammaSlider.Location = new System.Drawing.Point(12, 141);
-            this.gammaSlider.Maximum = 30;
-            this.gammaSlider.Name = "gammaSlider";
-            this.gammaSlider.Size = new System.Drawing.Size(265, 45);
-            this.gammaSlider.TabIndex = 24;
-            this.gammaSlider.Scroll += new System.EventHandler(this.gammaSlider_Scroll);
-            // 
             // reflectionCB
             // 
             this.reflectionCB.AutoSize = true;
             this.reflectionCB.Enabled = false;
-            this.reflectionCB.Location = new System.Drawing.Point(29, 354);
+            this.reflectionCB.Location = new System.Drawing.Point(29, 300);
             this.reflectionCB.Name = "reflectionCB";
             this.reflectionCB.Size = new System.Drawing.Size(74, 17);
             this.reflectionCB.TabIndex = 23;
@@ -424,7 +442,7 @@
             // 
             this.specularCB.AutoSize = true;
             this.specularCB.Enabled = false;
-            this.specularCB.Location = new System.Drawing.Point(29, 331);
+            this.specularCB.Location = new System.Drawing.Point(29, 277);
             this.specularCB.Name = "specularCB";
             this.specularCB.Size = new System.Drawing.Size(68, 17);
             this.specularCB.TabIndex = 22;
@@ -436,7 +454,7 @@
             // 
             this.fresnelCB.AutoSize = true;
             this.fresnelCB.Enabled = false;
-            this.fresnelCB.Location = new System.Drawing.Point(29, 308);
+            this.fresnelCB.Location = new System.Drawing.Point(29, 254);
             this.fresnelCB.Name = "fresnelCB";
             this.fresnelCB.Size = new System.Drawing.Size(60, 17);
             this.fresnelCB.TabIndex = 21;
@@ -448,7 +466,7 @@
             // 
             this.diffuseCB.AutoSize = true;
             this.diffuseCB.Enabled = false;
-            this.diffuseCB.Location = new System.Drawing.Point(29, 285);
+            this.diffuseCB.Location = new System.Drawing.Point(29, 231);
             this.diffuseCB.Name = "diffuseCB";
             this.diffuseCB.Size = new System.Drawing.Size(59, 17);
             this.diffuseCB.TabIndex = 20;
@@ -459,7 +477,7 @@
             // lightCheckBox
             // 
             this.lightCheckBox.AutoSize = true;
-            this.lightCheckBox.Location = new System.Drawing.Point(12, 262);
+            this.lightCheckBox.Location = new System.Drawing.Point(12, 208);
             this.lightCheckBox.Name = "lightCheckBox";
             this.lightCheckBox.Size = new System.Drawing.Size(196, 17);
             this.lightCheckBox.TabIndex = 19;
@@ -472,7 +490,7 @@
             this.cb_normals.AutoSize = true;
             this.cb_normals.Checked = true;
             this.cb_normals.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_normals.Location = new System.Drawing.Point(12, 239);
+            this.cb_normals.Location = new System.Drawing.Point(12, 185);
             this.cb_normals.Name = "cb_normals";
             this.cb_normals.Size = new System.Drawing.Size(94, 17);
             this.cb_normals.TabIndex = 17;
@@ -489,7 +507,7 @@
             "Normals(Color)",
             "Normals(BnW)",
             "Vertex Color"});
-            this.renderMode.Location = new System.Drawing.Point(87, 188);
+            this.renderMode.Location = new System.Drawing.Point(87, 134);
             this.renderMode.Name = "renderMode";
             this.renderMode.Size = new System.Drawing.Size(190, 21);
             this.renderMode.TabIndex = 16;
@@ -501,7 +519,7 @@
             this.cb_vertcolor.AutoSize = true;
             this.cb_vertcolor.Checked = true;
             this.cb_vertcolor.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_vertcolor.Location = new System.Drawing.Point(12, 216);
+            this.cb_vertcolor.Location = new System.Drawing.Point(12, 162);
             this.cb_vertcolor.Name = "cb_vertcolor";
             this.cb_vertcolor.Size = new System.Drawing.Size(118, 17);
             this.cb_vertcolor.TabIndex = 15;
@@ -509,37 +527,134 @@
             this.cb_vertcolor.UseVisualStyleBackColor = true;
             this.cb_vertcolor.CheckedChanged += new System.EventHandler(this.cb_vertcolor_CheckedChanged);
             // 
-            // checkBox13
+            // difTB
             // 
-            this.checkBox13.AutoSize = true;
-            this.checkBox13.Checked = true;
-            this.checkBox13.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox13.Location = new System.Drawing.Point(12, 146);
-            this.checkBox13.Name = "checkBox13";
-            this.checkBox13.Size = new System.Drawing.Size(112, 17);
-            this.checkBox13.TabIndex = 23;
-            this.checkBox13.Text = "Render Hurtboxes";
-            this.checkBox13.UseVisualStyleBackColor = true;
-            this.checkBox13.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.difTB.Location = new System.Drawing.Point(141, 3);
+            this.difTB.Name = "difTB";
+            this.difTB.Size = new System.Drawing.Size(100, 20);
+            this.difTB.TabIndex = 30;
+            this.difTB.TextChanged += new System.EventHandler(this.difTB_TextChanged);
             // 
-            // checkBox14
+            // tableLayoutPanel1
             // 
-            this.checkBox14.AutoSize = true;
-            this.checkBox14.Checked = true;
-            this.checkBox14.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox14.Location = new System.Drawing.Point(44, 165);
-            this.checkBox14.Name = "checkBox14";
-            this.checkBox14.Size = new System.Drawing.Size(145, 17);
-            this.checkBox14.TabIndex = 24;
-            this.checkBox14.Text = "Render Hurtboxes Zones";
-            this.checkBox14.UseVisualStyleBackColor = true;
-            this.checkBox14.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.difTB, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.spcTB, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.frsTB, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.ambTB, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.label2, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.label5, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.label6, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.label7, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.label8, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.refTB, 1, 4);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 346);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 5;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(277, 151);
+            this.tableLayoutPanel1.TabIndex = 31;
+            // 
+            // spcTB
+            // 
+            this.spcTB.Location = new System.Drawing.Point(141, 29);
+            this.spcTB.Name = "spcTB";
+            this.spcTB.Size = new System.Drawing.Size(100, 20);
+            this.spcTB.TabIndex = 31;
+            this.spcTB.TextChanged += new System.EventHandler(this.spcTB_TextChanged);
+            // 
+            // frsTB
+            // 
+            this.frsTB.Location = new System.Drawing.Point(141, 55);
+            this.frsTB.Name = "frsTB";
+            this.frsTB.Size = new System.Drawing.Size(100, 20);
+            this.frsTB.TabIndex = 32;
+            this.frsTB.TextChanged += new System.EventHandler(this.frsTB_TextChanged);
+            // 
+            // ambTB
+            // 
+            this.ambTB.Location = new System.Drawing.Point(141, 81);
+            this.ambTB.Name = "ambTB";
+            this.ambTB.Size = new System.Drawing.Size(100, 20);
+            this.ambTB.TabIndex = 33;
+            this.ambTB.TextChanged += new System.EventHandler(this.ambTB_TextChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(82, 13);
+            this.label2.TabIndex = 34;
+            this.label2.Text = "Diffuse Intensity";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(3, 26);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(91, 13);
+            this.label5.TabIndex = 35;
+            this.label5.Text = "Specular Intensity";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(3, 52);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(83, 13);
+            this.label6.TabIndex = 36;
+            this.label6.Text = "Fresnel Intensity";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(3, 78);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(87, 13);
+            this.label7.TabIndex = 37;
+            this.label7.Text = "Ambient Intensity";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(3, 104);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(97, 13);
+            this.label8.TabIndex = 38;
+            this.label8.Text = "Reflection Intensity";
+            // 
+            // refTB
+            // 
+            this.refTB.Location = new System.Drawing.Point(141, 107);
+            this.refTB.Name = "refTB";
+            this.refTB.Size = new System.Drawing.Size(100, 20);
+            this.refTB.TabIndex = 39;
+            this.refTB.TextChanged += new System.EventHandler(this.refTB_TextChanged);
+            // 
+            // cameraLightCB
+            // 
+            this.cameraLightCB.AutoSize = true;
+            this.cameraLightCB.Location = new System.Drawing.Point(191, 323);
+            this.cameraLightCB.Name = "cameraLightCB";
+            this.cameraLightCB.Size = new System.Drawing.Size(88, 17);
+            this.cameraLightCB.TabIndex = 32;
+            this.cameraLightCB.Text = "Camera Light";
+            this.cameraLightCB.UseVisualStyleBackColor = true;
+            this.cameraLightCB.CheckedChanged += new System.EventHandler(this.cameraLightCB_CheckedChanged);
             // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(598, 471);
+            this.ClientSize = new System.Drawing.Size(598, 524);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.panel1);
             this.Icon = global::Smash_Forge.Resources.Resources.forge2;
@@ -552,7 +667,8 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fovSlider)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gammaSlider)).EndInit();
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -580,12 +696,10 @@
         private System.Windows.Forms.CheckBox cb_normals;
         private System.Windows.Forms.CheckBox swagViewing;
         private System.Windows.Forms.CheckBox lightCheckBox;
-        private System.Windows.Forms.TrackBar gammaSlider;
         private System.Windows.Forms.CheckBox reflectionCB;
         private System.Windows.Forms.CheckBox specularCB;
         private System.Windows.Forms.CheckBox fresnelCB;
         private System.Windows.Forms.CheckBox diffuseCB;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.CheckBox useNormCB;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
@@ -596,5 +710,17 @@
         private System.Windows.Forms.CheckBox modelSelectCB;
         private System.Windows.Forms.CheckBox checkBox14;
         private System.Windows.Forms.CheckBox checkBox13;
+        private System.Windows.Forms.CheckBox cameraLightCB;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TextBox difTB;
+        private System.Windows.Forms.TextBox spcTB;
+        private System.Windows.Forms.TextBox frsTB;
+        private System.Windows.Forms.TextBox ambTB;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox refTB;
     }
 }
