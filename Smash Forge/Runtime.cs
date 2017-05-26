@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Xml;
+using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge
 {
@@ -67,9 +68,11 @@ namespace Smash_Forge
         public static bool renderHurtboxesZone;
         public static bool renderECB;
 
+        public static TextureWrapMode floorWrap = TextureWrapMode.MirroredRepeat;
         public static float floorSize = 30f;
         public static Color floorColor = Color.Gray;
         public static FloorStyle floorStyle = FloorStyle.Normal;
+        public static bool renderFloorLines = true;
         public static Color back1 = Color.FromArgb((255 << 24) | (26 << 16) | (26 << 8) | (26));
         public static Color back2 = Color.FromArgb((255 << 24) | (77 << 16) | (77 << 8) | (77));
         public static float fov = 0.8f;
@@ -159,6 +162,15 @@ namespace Smash_Forge
                                 }
                             }
                             break;
+                        case "texture_wrap":
+                            if (node.ParentNode != null)
+                            {
+                                switch (node.ParentNode.Name)
+                                {
+                                    case "floor":Enum.TryParse(node.InnerText, out floorWrap); break;
+                                }
+                            }
+                            break;
                         case "default_texture":
                             if (File.Exists(node.InnerText) && node.InnerText.ToLower().EndsWith(".png"))
                             {
@@ -174,6 +186,7 @@ namespace Smash_Forge
                                 }
                             }
                             break;
+                        case "guide_lines": bool.TryParse(node.InnerText, out renderFloorLines); break;
                         case "zoom_speed": float.TryParse(node.InnerText, out zoomspeed); break;
                         case "render_depth": float.TryParse(node.InnerText, out renderDepth); break;
                         case "fov": float.TryParse(node.InnerText, out fov); break;

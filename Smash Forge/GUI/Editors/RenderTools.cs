@@ -340,8 +340,8 @@ namespace Smash_Forge
                 else
                     GL.BindTexture(TextureTarget.Texture2D, defaultTex);
 
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)TextureWrapMode.MirroredRepeat);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)TextureWrapMode.MirroredRepeat);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)Runtime.floorWrap);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)Runtime.floorWrap);
 
                 GL.Color3(Runtime.floorColor == Color.Gray ? Color.White : Runtime.floorColor);
                 GL.Begin(PrimitiveType.Quads);
@@ -371,7 +371,7 @@ namespace Smash_Forge
             else
             {
                 GL.Begin(PrimitiveType.Lines);
-                for (var i = -s/2; i <= s/2; i++)
+                for (var i = -s / 2; i <= s / 2; i++)
                 {
                     if (i != 0)
                     {
@@ -384,34 +384,37 @@ namespace Smash_Forge
                 GL.End();
             }
 
-            GL.Disable(EnableCap.DepthTest);
-            GL.Begin(PrimitiveType.Lines);
-            GL.Color3(Color.White);
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex3(-s, 0f, 0);
-            GL.Vertex3(s, 0f, 0);
-            GL.Vertex3(0, 0f, -s);
-            GL.Vertex3(0, 0f, s);
-            GL.End();
-            GL.Enable(EnableCap.DepthTest);
+            if (Runtime.renderFloorLines)
+            {
+                GL.Disable(EnableCap.DepthTest);
+                GL.Begin(PrimitiveType.Lines);
+                GL.Color3(Color.White);
+                GL.Begin(PrimitiveType.Lines);
+                GL.Vertex3(-s, 0f, 0);
+                GL.Vertex3(s, 0f, 0);
+                GL.Vertex3(0, 0f, -s);
+                GL.Vertex3(0, 0f, s);
+                GL.End();
+                GL.Enable(EnableCap.DepthTest);
 
-            GL.Disable(EnableCap.DepthTest);
-            GL.Color3(Color.LightGray);
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex3(0, 5, 0);
-            GL.Vertex3(0, 0, 0);
+                GL.Disable(EnableCap.DepthTest);
+                GL.Color3(Color.LightGray);
+                GL.Begin(PrimitiveType.Lines);
+                GL.Vertex3(0, 5, 0);
+                GL.Vertex3(0, 0, 0);
 
-            GL.Color3(Color.OrangeRed);
-            GL.Vertex3(0f, 0f, 0);
-            GL.Color3(Color.OrangeRed);
-            GL.Vertex3(5f, 0f, 0);
+                GL.Color3(Color.OrangeRed);
+                GL.Vertex3(0f, 0f, 0);
+                GL.Color3(Color.OrangeRed);
+                GL.Vertex3(5f, 0f, 0);
 
-            GL.Color3(Color.Olive);
-            GL.Vertex3(0, 0f, 0f);
-            GL.Color3(Color.Olive);
-            GL.Vertex3(0, 0f, 5f);
+                GL.Color3(Color.Olive);
+                GL.Vertex3(0, 0f, 0f);
+                GL.Color3(Color.Olive);
+                GL.Vertex3(0, 0f, 5f);
 
-            GL.End();
+                GL.End();
+            }
 
             GL.Enable(EnableCap.DepthTest);
         }
