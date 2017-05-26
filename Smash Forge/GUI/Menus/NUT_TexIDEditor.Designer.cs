@@ -115,6 +115,11 @@
             // slotUD
             // 
             this.slotUD.Location = new System.Drawing.Point(73, 96);
+            this.slotUD.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
             this.slotUD.Name = "slotUD";
             this.slotUD.Size = new System.Drawing.Size(114, 20);
             this.slotUD.TabIndex = 9;
