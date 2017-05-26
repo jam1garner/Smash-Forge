@@ -29,10 +29,6 @@ namespace Smash_Forge
         public int AnimationSpeed = 60;
         public bool isPlaying;
 
-        // visuals
-        Color back1 = Color.FromArgb((255 << 24) | (26 << 16) | (26 << 8) | (26));
-        Color back2 = Color.FromArgb((255 << 24) | (77 << 16) | (77 << 8) | (77));
-
         // controls
         VertexTool vertexTool = new VertexTool();
 
@@ -231,10 +227,10 @@ namespace Smash_Forge
             if (Runtime.renderBackGround)
             {
                 GL.Begin(PrimitiveType.Quads);
-                GL.Color3(back1);
+                GL.Color3(Runtime.back1);
                 GL.Vertex2(1.0, 1.0);
                 GL.Vertex2(-1.0, 1.0);
-                GL.Color3(back2);
+                GL.Color3(Runtime.back2);
                 GL.Vertex2(-1.0, -1.0);
                 GL.Vertex2(1.0, -1.0);
                 GL.End();
@@ -270,8 +266,11 @@ namespace Smash_Forge
             // ready to start drawing model stuff
             GL.MatrixMode(MatrixMode.Modelview);
 
-            RenderTools.drawFloor();
-            
+            if (Runtime.renderFloor)
+            {
+                    RenderTools.drawFloor();
+            }
+
             GL.Enable(EnableCap.Normalize);  // These is critical to have
             GL.Enable(EnableCap.RescaleNormal);
 

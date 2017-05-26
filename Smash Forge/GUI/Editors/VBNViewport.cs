@@ -806,8 +806,6 @@ main()
 
 
         int cf = 0;
-        Color back1 = Color.FromArgb((255 << 24) | (26 << 16) | (26 << 8) | (26));
-        Color back2 = Color.FromArgb((255 << 24) | (77 << 16) | (77 << 8) | (77));
         //Matrix4 v2;
         int sfb, sw=1024, sh=1024, depthmap;
         Matrix4 lightMatrix;
@@ -872,10 +870,10 @@ main()
             if (Runtime.renderBackGround)
             {
                 GL.Begin(PrimitiveType.Quads);
-                GL.Color3(back1);
+                GL.Color3(Runtime.back1);
                 GL.Vertex2(1.0, 1.0);
                 GL.Vertex2(-1.0, 1.0);
-                GL.Color3(back2);
+                GL.Color3(Runtime.back2);
                 GL.Vertex2(-1.0, -1.0);
                 GL.Vertex2(1.0, -1.0);
                 GL.End();
@@ -911,7 +909,9 @@ main()
 
             // drawing floor---------------------------
             if (Runtime.renderFloor)
-                RenderTools.drawFloor();
+            {
+                    RenderTools.drawFloor();
+            }
 
 
             //GL.Enable(EnableCap.LineSmooth); // This is Optional 
@@ -985,7 +985,7 @@ main()
 
         public void UpdateMousePosition()
         {
-            float zoomscale = 1;
+            float zoomscale = Runtime.zoomspeed;
 
             if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
             {

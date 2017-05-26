@@ -76,7 +76,7 @@ namespace Smash_Forge
 
     public class RenderTools
     {
-        public static int defaultTex;
+        public static int defaultTex = -1, userTex;
         public static int cubeTex, cubeTex2;
 
         public static int cubeVAO, cubeVBO;
@@ -85,6 +85,7 @@ namespace Smash_Forge
         {
             cubeTex = LoadCubeMap(Smash_Forge.Properties.Resources.cubemap);
             cubeTex2 = LoadCubeMap(Smash_Forge.Properties.Resources._10101000);
+            if(defaultTex == -1)
             defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
             GL.GenVertexArrays(1, out cubeVAO);
             GL.GenBuffers(1, out cubeVBO);
@@ -322,45 +323,93 @@ namespace Smash_Forge
 
         public static void drawFloor()
         {
+            bool solid = Runtime.floorStyle == Runtime.FloorStyle.Solid;
+            float s = Runtime.floorSize;
+
             GL.UseProgram(0);
 
-            GL.Color3(Color.Gray);
+            GL.Color3(Runtime.floorColor);
             GL.LineWidth(1f);
-            GL.Begin(PrimitiveType.Lines);
-            for (var i = -15; i <= 15; i++)
+
+            if (Runtime.floorStyle == Runtime.FloorStyle.Textured || Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
             {
-                if(i != 0)
+                GL.Enable(EnableCap.Texture2D);
+                GL.ActiveTexture(TextureUnit.Texture0);
+                if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
+                    GL.BindTexture(TextureTarget.Texture2D, userTex);
+                else
+                    GL.BindTexture(TextureTarget.Texture2D, defaultTex);
+
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)TextureWrapMode.MirroredRepeat);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)TextureWrapMode.MirroredRepeat);
+
+                GL.Color3(Runtime.floorColor == Color.Gray ? Color.White : Runtime.floorColor);
+                GL.Begin(PrimitiveType.Quads);
+
+                GL.TexCoord2(0, 0);
+                GL.Vertex3(new Vector3(-s, 0f, -s));
+                GL.TexCoord2(0, 2);
+                GL.Vertex3(new Vector3(-s, 0f, s));
+                GL.TexCoord2(2, 2);
+                GL.Vertex3(new Vector3(s, 0f, s));
+                GL.TexCoord2(2, 0);
+                GL.Vertex3(new Vector3(s, 0f, -s));
+
+                GL.End();
+                GL.Disable(EnableCap.Texture2D);
+            }
+            else
+            if (solid)
+            {
+                GL.Begin(PrimitiveType.Quads);
+                GL.Vertex3(-s, 0f, -s);
+                GL.Vertex3(-s, 0f, s);
+                GL.Vertex3(s, 0f, s);
+                GL.Vertex3(s, 0f, -s);
+                GL.End();
+            }
+            else
+            {
+                GL.Begin(PrimitiveType.Lines);
+                for (var i = -s/2; i <= s/2; i++)
                 {
-                    GL.Vertex3(new Vector3(-30f, 0f, i * 2));
-                    GL.Vertex3(new Vector3(30f, 0f, i * 2));
-                    GL.Vertex3(new Vector3(i * 2, 0f, -30f));
-                    GL.Vertex3(new Vector3(i * 2, 0f, 30f));
+                    if (i != 0)
+                    {
+                        GL.Vertex3(-s, 0f, i * 2);
+                        GL.Vertex3(s, 0f, i * 2);
+                        GL.Vertex3(i * 2, 0f, -s);
+                        GL.Vertex3(i * 2, 0f, s);
+                    }
                 }
+                GL.End();
             }
 
+            GL.Disable(EnableCap.DepthTest);
+            GL.Begin(PrimitiveType.Lines);
             GL.Color3(Color.White);
             GL.Begin(PrimitiveType.Lines);
-            GL.Vertex3(new Vector3(-30f, 0f, 0));
-            GL.Vertex3(new Vector3(30f, 0f, 0));
-            GL.Vertex3(new Vector3(0, 0f, -30f));
-            GL.Vertex3(new Vector3(0, 0f, 30f));
+            GL.Vertex3(-s, 0f, 0);
+            GL.Vertex3(s, 0f, 0);
+            GL.Vertex3(0, 0f, -s);
+            GL.Vertex3(0, 0f, s);
             GL.End();
+            GL.Enable(EnableCap.DepthTest);
 
             GL.Disable(EnableCap.DepthTest);
             GL.Color3(Color.LightGray);
             GL.Begin(PrimitiveType.Lines);
-            GL.Vertex3(new Vector3(0, 5, 0));
-            GL.Vertex3(new Vector3(0, 0, 0));
+            GL.Vertex3(0, 5, 0);
+            GL.Vertex3(0, 0, 0);
 
             GL.Color3(Color.OrangeRed);
-            GL.Vertex3(new Vector3(0f, 0f, 0));
+            GL.Vertex3(0f, 0f, 0);
             GL.Color3(Color.OrangeRed);
-            GL.Vertex3(new Vector3(5f, 0f, 0));
+            GL.Vertex3(5f, 0f, 0);
 
             GL.Color3(Color.Olive);
-            GL.Vertex3(new Vector3(0, 0f, 0f));
+            GL.Vertex3(0, 0f, 0f);
             GL.Color3(Color.Olive);
-            GL.Vertex3(new Vector3(0, 0f, 5f));
+            GL.Vertex3(0, 0f, 5f);
 
             GL.End();
 

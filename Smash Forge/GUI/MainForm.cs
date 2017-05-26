@@ -80,6 +80,8 @@ namespace Smash_Forge
             viewportWindowToolStripMenuItem.Checked = true;
             openFiles();
 
+            Runtime.StartupFromConfig("config.xml");
+
             // load up the shaders
             Shader cub = new Shader();
             cub.vertexShader(RenderTools.cubevs);
@@ -1941,6 +1943,11 @@ namespace Smash_Forge
                     datToOpen = mc.dat_melee;
             if(datToOpen != null)
                 AddDockedControl(new DatTexEditor(datToOpen));
+        }
+
+        private void saveConfigToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Runtime.SaveConfig();
         }
     }
 }
