@@ -631,7 +631,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 //---------------------------------------------------------------------------------------------
    // lambertian diffuse
 
-    float lambertBRDF = clamp((dot(newDiffuseDirection,N)),0,0.5);// * attenuation;
+    float lambertBRDF = clamp((dot(newDiffuseDirection,N)),0,1);// * attenuation;
     vec3 ao_blend = (ao_map.aaa) + (minGain.xyz);
     //ao_blend = ao_blend + ao_blend * minGain.www;
     vec3 diffuse_color = diffuse_map.xyz * ao_blend;

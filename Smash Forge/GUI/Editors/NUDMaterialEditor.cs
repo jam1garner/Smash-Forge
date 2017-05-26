@@ -192,6 +192,7 @@ namespace Smash_Forge
         {
             NUD.Material mat = material[current];
 
+            //mat.flags = mat.RebuildFlags();
             textBox1.Text = mat.flags.ToString("X") + "";
             textBox3.Text = mat.srcFactor + "";
             textBox4.Text = mat.dstFactor + "";
@@ -205,7 +206,6 @@ namespace Smash_Forge
 
             listView1.Items.Clear();
 
-            mat.flags = mat.RebuildFlags();
 
             shadowCB.Checked = mat.hasShadow;
             GlowCB.Checked = mat.glow;
@@ -222,7 +222,7 @@ namespace Smash_Forge
             if (mat.normalmap) listView1.Items.Add("NormalMap");
             if (mat.ramp) listView1.Items.Add("Ramp");
 
-            if (mat.useRimLight) listView1.Items.Add("Dummy Rim");
+            if (mat.useRimLight) listView1.Items.Add("Dummy Ramp");
 
             while (listView1.Items.Count > mat.textures.Count)
                 listView1.Items.RemoveAt(1);
@@ -383,11 +383,16 @@ namespace Smash_Forge
         }
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            int f = -1;
-            int.TryParse(textBox1.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f);
-            if (f != -1 && listView1.SelectedIndices.Count > 0)
-                material[current].flags = (uint)f;
+            uint f = 0;
+            if (uint.TryParse(textBox1.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f))// && listView1.SelectedIndices.Count > 0
+            {
+                material[current].flags = f;
+                textBox1.BackColor = Color.White;
+            }
+            else
+                textBox1.BackColor = Color.Red;
         }
+
         private void textBox10_TextChanged(object sender, EventArgs e)
         {
             int f = -1;
@@ -922,6 +927,7 @@ namespace Smash_Forge
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
             RenderTexture();
+            FillForm();
         }
 
         private void NUDMaterialEditor_Paint(object sender, PaintEventArgs e)

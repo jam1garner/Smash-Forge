@@ -265,8 +265,8 @@ namespace Smash_Forge
                 GL.Uniform1(shader.getAttribute("dif"), 0);
                 GL.Uniform1(shader.getAttribute("dif2"), 0);
                 GL.Uniform1(shader.getAttribute("nrm"), 0);
-                GL.Uniform1(shader.getAttribute("cube"), 10);
-                GL.Uniform1(shader.getAttribute("stagecube"), 10);
+                GL.Uniform1(shader.getAttribute("cube"), 2);
+                GL.Uniform1(shader.getAttribute("stagecube"), 2);
                 GL.Uniform1(shader.getAttribute("ao"), 0);
                 GL.Uniform1(shader.getAttribute("ramp"), 0);
 
@@ -1826,6 +1826,7 @@ namespace Smash_Forge
 
             public void InterpretFlags(uint flags)
             {
+                //Debug.WriteLine("Interpretting flags");
                 // set depending on flags
                 this.flag = flags;
                 int flag = ((int)flags) & 0xFF;
