@@ -193,7 +193,7 @@ namespace Smash_Forge
                         float y = baseNode[j].rv.Y;
                         float z = baseNode[j].rv.Z;
 
-                        float w = (float)Math.Sqrt(1 - (x * x + y * y + z * z));
+                        float w = (float)Math.Sqrt(Math.Abs(1 - (x * x + y * y + z * z)));
 
                         node.r = new Quaternion(baseNode[j].rv, w);
 
