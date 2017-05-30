@@ -667,59 +667,60 @@ namespace Smash_Forge
                         nut = new NUT();
                     else
                         nut = selected;
-                        
+
                     foreach (var texPath in Directory.GetFiles(f.SelectedPath))
                     {
                         if (!(texPath.ToLower().EndsWith(".dds") || texPath.ToLower().EndsWith(".png"))) return;
                         int texId;
                         bool isTex = int.TryParse(Path.GetFileNameWithoutExtension(texPath), NumberStyles.HexNumber,
                             new CultureInfo("en-US"), out texId);
-                        if (isTex)
+
+                        NUT.NUD_Texture texture = null;
+                        foreach (var tex in nut.textures)
+                            if (tex.id == texId)
+                                texture = tex;
+
+                        if (texture == null)
                         {
-                            NUT.NUD_Texture texture = null;
-                            foreach (var tex in nut.textures)
-                                if (tex.id == texId)
-                                    texture = tex;
-
-                            if (texture == null)
+                            //new texture
+                            NUT.NUD_Texture tex = null;
+                            if (texPath.ToLower().EndsWith(".png"))
+                                tex = fromPNG(texPath, 1);
+                            if (texPath.ToLower().EndsWith(".dds"))
                             {
-                                //new texture
-                                NUT.NUD_Texture tex = null;
-                                if (texPath.ToLower().EndsWith(".png"))
-                                    tex = fromPNG(texPath, 1);
-                                if (texPath.ToLower().EndsWith(".dds"))
-                                {
-                                    DDS dds = new DDS(new FileData(texPath));
-                                    tex = dds.toNUT_Texture();
-                                }
+                                DDS dds = new DDS(new FileData(texPath));
+                                tex = dds.toNUT_Texture();
+                            }
+                            if (isTex)
                                 tex.id = texId;
-                                nut.textures.Add(tex);
-                                nut.draw.Add(tex.id, NUT.loadImage(tex));
-                            }
                             else
+                                tex.id = nut.textures.Count;
+                            nut.textures.Add(tex);
+                            nut.draw.Add(tex.id, NUT.loadImage(tex));
+                        }
+                        else
+                        {
+                            //old texture
+                            NUT.NUD_Texture tex = texture;
+
+                            NUT.NUD_Texture ntex = null;
+                            if (texPath.ToLower().EndsWith(".png"))
+                                ntex = fromPNG(texPath, 1);
+                            if (texPath.ToLower().EndsWith(".dds"))
                             {
-                                //old texture
-                                NUT.NUD_Texture tex = texture;
-
-                                NUT.NUD_Texture ntex = null;
-                                if (texPath.ToLower().EndsWith(".png"))
-                                    ntex = fromPNG(texPath, 1);
-                                if (texPath.ToLower().EndsWith(".dds"))
-                                {
-                                    DDS dds = new DDS(new FileData(texPath));
-                                    ntex = dds.toNUT_Texture();
-                                }
-
-                                tex.height = ntex.height;
-                                tex.width = ntex.width;
-                                tex.type = ntex.type;
-                                tex.mipmaps = ntex.mipmaps;
-                                tex.utype = ntex.utype;
-
-                                GL.DeleteTexture(selected.draw[tex.id]);
-                                selected.draw.Remove(tex.id);
-                                selected.draw.Add(tex.id, NUT.loadImage(tex));
+                                DDS dds = new DDS(new FileData(texPath));
+                                ntex = dds.toNUT_Texture();
                             }
+
+                            tex.height = ntex.height;
+                            tex.width = ntex.width;
+                            tex.type = ntex.type;
+                            tex.mipmaps = ntex.mipmaps;
+                            tex.utype = ntex.utype;
+
+                            GL.DeleteTexture(selected.draw[tex.id]);
+                            selected.draw.Remove(tex.id);
+                            selected.draw.Add(tex.id, NUT.loadImage(tex));
                         }
                     }
                     if (!Runtime.TextureContainers.Contains(nut))
