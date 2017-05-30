@@ -1312,11 +1312,11 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     float lambertBRDF = clamp((dot(newDiffuseDirection,N)),0,1);// * attenuation;
     vec3 ao_blend = (ao_map.aaa) + (minGain.xyz);
 
-    if((flags & 0x00F00000) == 0x00600000){
+    /*if((flags & 0x00F00000) == 0x00600000){
 	ao_blend = 0.5+texture2D(dif, texcoord).xyz + minGain.xyz;// - texture2D(dif, texcoord).xyz;
 	//ao_blend *= (vec3(1)+colorGain.xyz);
 	diffuse_map = vec4(colorOffset.xyz, 1) * (1+colorGain);
-    }
+    }*/
 
     vec3 diffuse_color = diffuse_map.xyz * ao_blend;
     vec3 diffuse_shading = diffuse_color * lambertBRDF;
