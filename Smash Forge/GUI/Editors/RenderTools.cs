@@ -246,11 +246,8 @@ namespace Smash_Forge
 
         public static Matrix4 def = Matrix4.CreateTranslation(0,0,0);
 
-        public static void drawReducedCylinderTransformed(Vector3 p1, Vector3 p2, float R, Matrix4 transform, Matrix4 view)
+        public static void drawReducedCylinderTransformed(Vector3 p1, Vector3 p2, float R, Matrix4 transform)
         {
-            p1 = Vector3.Transform(p1, transform);
-            p2 = Vector3.Transform(p2, transform);
-
             Vector3 yAxis = new Vector3(0, 1, 0);
             Vector3 d = p2 - p1;
             float height = (float)Math.Sqrt(d.X * d.X + d.Y * d.Y + d.Z * d.Z) / 2;
@@ -259,19 +256,7 @@ namespace Smash_Forge
 
             Vector3 axis = Vector3.Cross(d, yAxis);
             float angle = (float)Math.Acos(Vector3.Dot(d.Normalized(), yAxis));
-
-            //GL.Color3(Color.Green);
-            //drawSphereTransformed(p1, R, 20, transform);
-            //drawSphereTransformed(p2, R, 20, transform);
-            //GL.Color4(0, 180, 255, 0.5f);
-
-            /*GL.Begin(PrimitiveType.Quads);
-            GL.Vertex3(Vector3.Transform(new Vector3(-1, 1, 0), view));
-            GL.Vertex3(Vector3.Transform(new Vector3(1, 1, 0), view));
-            GL.Vertex3(Vector3.Transform(new Vector3(1, -1, 0), view));
-            GL.Vertex3(Vector3.Transform(new Vector3(-1, -1, 0), view));
-            GL.End();*/
-
+            
             GL.Enable(EnableCap.StencilTest);
 
             GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
@@ -280,12 +265,21 @@ namespace Smash_Forge
             GL.Clear(ClearBufferMask.StencilBufferBit);
             GL.ColorMask(false, false, false, false);
                 
-            drawSphere(p1, R, 20);
-            drawSphere(p2, R, 20);
+            drawSphereTransformed(p1, R, 20, transform);
+            drawSphereTransformed(p2, R, 20, transform);
 
-            /*  sides */
-            /*GL.PushMatrix();
+            //  sides
+            GL.PushMatrix();
 
+            //GL.Scale(scale.X, scale.Y, scale.Z);
+            double[] f = new double[] {
+                transform.M11, transform.M12, transform.M13, transform.M14,
+                transform.M21, transform.M22, transform.M23, transform.M24,
+                transform.M31, transform.M32, transform.M33, transform.M34,
+                transform.M41, transform.M42, transform.M43, transform.M44,
+            };
+            GL.MultMatrix(f);
+            //Vector3 scale = transform.ExtractScale();
             GL.Translate(mid);
             GL.Rotate(-(float)(angle * (180 / Math.PI)), axis);
 
@@ -297,7 +291,7 @@ namespace Smash_Forge
             }
             GL.End();
         
-            GL.PopMatrix();*/
+            GL.PopMatrix();
 
             GL.ColorMask(true, true, true, true);
             GL.StencilFunc(StencilFunction.Equal, 1, 0xFF);

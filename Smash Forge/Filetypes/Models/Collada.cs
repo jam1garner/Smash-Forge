@@ -468,6 +468,7 @@ namespace Smash_Forge
                                                 v.col.W = (float)bank[p * 4 + 3] * 127;
                                                 break;
                                             case "TEXCOORD":
+                                                // correct them
                                                 v.tx.Add(new OpenTK.Vector2((float)bank[p * 2 + 0], (float)bank[p * 2 + 1]));
                                                 break;
                                         }

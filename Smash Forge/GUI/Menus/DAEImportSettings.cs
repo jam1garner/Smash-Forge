@@ -63,6 +63,9 @@ namespace Smash_Forge
             float sc = 1f;
             bool hasScale = float.TryParse(scaleTB.Text, out sc);
 
+            bool checkedUVRange = false;
+            bool fixUV = false;
+
             foreach (NUD.Mesh mesh in nud.mesh)
             {
                 if (BoneTypes[(string)comboBox2.SelectedItem] == BoneTypes["No Bones"])
@@ -75,9 +78,26 @@ namespace Smash_Forge
 
                     poly.vertSize = ((poly.vertSize == 0x6 ? 0 : BoneTypes[(string)comboBox2.SelectedItem])) | (VertTypes[(string)comboBox1.SelectedItem]);
                     
-                    if (checkBox1.Checked || checkBox4.Checked || vertcolorCB.Checked || sc != 1f)
+                    //if (checkBox1.Checked || checkBox4.Checked || vertcolorCB.Checked || sc != 1f)
                         foreach (NUD.Vertex v in poly.vertices)
                         {
+
+                            if (!checkedUVRange && (Math.Abs(v.tx[0].X) > 4 || Math.Abs(v.tx[0].Y) > 4))
+                            {
+                                checkedUVRange = true;
+
+                                DialogResult dialogResult = MessageBox.Show("Some UVs are detected to be out of accurate range.\nFix them now?", "Potential UV Problem", MessageBoxButtons.YesNo);
+                                if (dialogResult == DialogResult.Yes)
+                                    fixUV = true;
+                            }
+
+                            if (fixUV)
+                            {
+                                for (int h = 0; h < v.tx.Count; h++)
+                                    v.tx[h] = new Vector2(v.tx[h].X - (int)v.tx[h].X, v.tx[h].Y - (int)v.tx[h].Y);
+                            }
+
+
                             if (checkBox1.Checked)
                                 for (int i = 0; i < v.tx.Count; i++)
                                     v.tx[i] = new Vector2(v.tx[i].X, 1 - v.tx[i].Y);

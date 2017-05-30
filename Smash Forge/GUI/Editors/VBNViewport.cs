@@ -518,8 +518,6 @@ namespace Smash_Forge
 
 
             // draw models
-            //GL.Color4(0f,180f,255f,0.5f);
-           // RenderTools.drawReducedCylinderTransformed(new Vector3(5, 5, 5), Vector3.Zero, 5, Matrix4.CreateTranslation(3, 0, 0), v.Inverted());
 
             if (Runtime.renderModel) DrawModels();
             /*{
@@ -1472,8 +1470,6 @@ namespace Smash_Forge
                     else
                     {
                         RenderTools.drawSphere(va, h.Size, 30);
-
-                        //RenderTools.drawCircle(va, h.Size, 30);
                     }
                 }
 
@@ -1541,13 +1537,13 @@ namespace Smash_Forge
                         switch (h.Zone)
                         {
                             case Hurtbox.LW_ZONE:
-                                GL.Color4(Color.FromArgb(50, Color.Aqua));
+                                GL.Color4(Color.FromArgb(180, Color.Aqua));
                                 break;
                             case Hurtbox.N_ZONE:
-                                GL.Color4(Color.FromArgb(50, Color.Green));
+                                GL.Color4(Color.FromArgb(180, Color.Green));
                                 break;
                             case Hurtbox.HI_ZONE:
-                                GL.Color4(Color.FromArgb(50, Color.Orange));
+                                GL.Color4(Color.FromArgb(180, Color.Orange));
                                 break;
                         }
                     }
@@ -1563,7 +1559,7 @@ namespace Smash_Forge
                     }
                     else
                     {
-                        RenderTools.drawReducedCylinderTransformed(va, va2, h.Size, b.transform, v);
+                        RenderTools.drawReducedCylinderTransformed(va, va2, h.Size, b.transform);
                     }
                 }
 
