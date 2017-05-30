@@ -518,6 +518,8 @@ namespace Smash_Forge
 
 
             // draw models
+            //GL.Color4(0f,180f,255f,0.5f);
+           // RenderTools.drawReducedCylinderTransformed(new Vector3(5, 5, 5), Vector3.Zero, 5, Matrix4.CreateTranslation(3, 0, 0), v.Inverted());
 
             if (Runtime.renderModel) DrawModels();
             /*{
@@ -531,6 +533,7 @@ namespace Smash_Forge
                     }
                 }
             }*/
+
 
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
             GL.DepthFunc(DepthFunction.Less);
@@ -1470,7 +1473,7 @@ namespace Smash_Forge
                     {
                         RenderTools.drawSphere(va, h.Size, 30);
 
-                        RenderTools.drawCircle(va, h.Size, 30);
+                        //RenderTools.drawCircle(va, h.Size, 30);
                     }
                 }
 
@@ -1529,7 +1532,7 @@ namespace Smash_Forge
                         }
                     }
 
-                    va = Vector3.Transform(va, b.transform.ClearScale());
+                    //va = Vector3.Transform(va, b.transform);
 
                     GL.Color4(Color.FromArgb(50, Color.Green));
 
@@ -1552,16 +1555,15 @@ namespace Smash_Forge
                     GL.DepthMask(false);
                     var va2 = new Vector3(h.X2, h.Y2, h.Z2);
 
-                    if (h.Bone != -1)
-                        va2 = Vector3.Transform(va2, b.transform.ClearScale());
+                    //if (h.Bone != -1)va2 = Vector3.Transform(va2, b.transform);
 
                     if (h.isSphere)
                     {
-                        RenderTools.drawSphere(va, h.Size, 30);
+                        RenderTools.drawSphereTransformed(va, h.Size, 30, b.transform);
                     }
                     else
                     {
-                        RenderTools.drawReducedSidesCylinder(va, va2, h.Size);
+                        RenderTools.drawReducedCylinderTransformed(va, va2, h.Size, b.transform, v);
                     }
                 }
 
