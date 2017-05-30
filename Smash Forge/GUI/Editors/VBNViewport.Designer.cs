@@ -43,7 +43,7 @@
             this.btnLastFrame = new System.Windows.Forms.Button();
             this.btnPrevFrame = new System.Windows.Forms.Button();
             this.btnFirstFrame = new System.Windows.Forms.Button();
-            this.glControl1 = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(32, 24, 0, 16));
+            this.glControl1 = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(32, 24, 8, 16));
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nupdFrameRate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nupdFrame)).BeginInit();
