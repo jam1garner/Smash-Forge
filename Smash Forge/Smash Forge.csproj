@@ -72,6 +72,7 @@
   <ItemGroup>
     <Compile Include="ACMDScriptManager.cs" />
     <Compile Include="CharacterParamManager.cs" />
+    <Compile Include="Filetypes\Animation\OMO.cs" />
     <Compile Include="Filetypes\ATKD.cs" />
     <Compile Include="Filetypes\DRP.cs" />
     <Compile Include="Filetypes\Melee\DAT.cs" />
@@ -662,7 +663,7 @@
     <Compile Include="Filetypes\Animation\CHR0.cs" />
     <Compile Include="IO\FileData.cs" />
     <Compile Include="IO\FileOutput.cs" />
-    <Compile Include="Filetypes\Animation\OMO.cs" />
+    <Compile Include="Filetypes\Animation\OMOOld.cs" />
     <Compile Include="Runtime.cs" />
     <Compile Include="SkelAnimation.cs" />
     <Compile Include="Filetypes\SMD.cs" />
@@ -725,6 +726,9 @@
     <Content Include="lib\WeifenLuo.WinFormsUI.Docking.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\icon_model.png" />
+    <None Include="Resources\icon_mesh.png" />
+    <None Include="Resources\icon_polygon.png" />
     <Content Include="Resources\sexy_green_down_arrow.png" />
     <Content Include="Resources\forge2.ico" />
     <None Include="Resources\DefaultTexture.png" />

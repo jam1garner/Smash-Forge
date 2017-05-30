@@ -40,7 +40,7 @@ namespace Smash_Forge
         public void Move(int type, float move)
         {
             // move mesh over
-            foreach (NUD.Polygon p in mesh.polygons)
+            foreach (NUD.Polygon p in mesh.Nodes)
             {
                 foreach (NUD.Vertex v in p.vertices)
                 {

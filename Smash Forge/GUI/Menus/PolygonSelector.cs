@@ -23,15 +23,15 @@ namespace Smash_Forge
         private void PolygonSelector_Load(object sender, EventArgs e)
         {
             int modelCount = 0;
-            foreach(ModelContainer mc in Runtime.ModelContainers)
+            foreach (ModelContainer mc in Runtime.ModelContainers)
             {
-                if(mc.nud != null)
+                if (mc.nud != null)
                 {
                     TreeNode model = new TreeNode($"Model {modelCount}") { Tag = mc.nud };
-                    foreach(NUD.Mesh m in mc.nud.mesh)
+                    foreach (NUD.Mesh m in mc.nud.mesh)
                     {
                         TreeNode mesh = new TreeNode(m.Text) { Tag = m };
-                        foreach(NUD.Polygon p in m.polygons)
+                        foreach (NUD.Polygon p in m.Nodes)
                         {
                             TreeNode poly = new TreeNode(p.Text) { Tag = p };
                             mesh.Nodes.Add(poly);
@@ -48,14 +48,14 @@ namespace Smash_Forge
             bool isChecked = (e.Node).Checked;
             if (e.Node.Tag is NUD)
             {
-                foreach(TreeNode mesh in e.Node.Nodes)
+                foreach (TreeNode mesh in e.Node.Nodes)
                 {
                     mesh.Checked = isChecked;
-                    foreach(TreeNode poly in mesh.Nodes)
+                    foreach (TreeNode poly in mesh.Nodes)
                         poly.Checked = isChecked;
                 }
             }
-            if(e.Node.Tag is NUD.Mesh)
+            if (e.Node.Tag is NUD.Mesh)
                 foreach (TreeNode poly in e.Node.Nodes)
                     poly.Checked = isChecked;
         }

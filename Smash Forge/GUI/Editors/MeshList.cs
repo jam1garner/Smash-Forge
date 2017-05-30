@@ -13,10 +13,20 @@ namespace Smash_Forge
 {
     public partial class MeshList : DockContent
     {
+        
+        public static ImageList iconList = new ImageList();
+
         public MeshList()
         {
             InitializeComponent();
             refresh();
+
+            iconList.ImageSize = new Size(24, 24);
+            iconList.Images.Add("sex", Properties.Resources.sexy_green_down_arrow);
+            iconList.Images.Add("polygon", Properties.Resources.icon_polygon);
+            iconList.Images.Add("mesh", Properties.Resources.icon_mesh);
+            iconList.Images.Add("model", Properties.Resources.icon_model);
+            treeView1.ImageList = iconList;
         }
 
         bool changingValue = false;
@@ -35,15 +45,15 @@ namespace Smash_Forge
                     else
                         model = new TreeNode(m.name) { Tag = m.nud };
                     treeView1.Nodes.Add(model);
+                    model.ImageKey = "model";
+                    model.SelectedImageKey = "model";
                     j++; 
                     foreach (NUD.Mesh mesh in m.nud.mesh)
                     {
                         model.Nodes.Add(mesh);
                         int i = 0;
-                        mesh.Nodes.Clear();
-                        foreach(NUD.Polygon poly in mesh.polygons)
+                        foreach(NUD.Polygon poly in mesh.Nodes)
                         {
-                            mesh.Nodes.Add(poly);
                             poly.Text = "Polygon_" + i;
                             i++;
                         }
@@ -55,11 +65,12 @@ namespace Smash_Forge
 
         private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
         {
-            /*if (e.Node.Tag is NUD.Mesh) {
-                ((NUD.Mesh)e.Node.Tag).isVisible = e.Node.Checked;
+            if (e.Node.Tag is NUD) {
+                
+                foreach (TreeNode n in e.Node.Nodes) n.Checked = e.Node.Checked;
                 
             }
-            else if (e.Node.Tag is NUD.Polygon) {
+            /*else if (e.Node.Tag is NUD.Polygon) {
                 ((NUD.Polygon)e.Node.Tag).isVisible = e.Node.Checked;
             }
             else if (e.Node.Tag is NUD){
@@ -268,7 +279,6 @@ namespace Smash_Forge
                 if (treeView1.SelectedNode is NUD.Polygon)
                 {
                     NUD.Mesh parent = ((NUD.Mesh)treeView1.SelectedNode.Parent);
-                    parent.polygons.Remove((NUD.Polygon)treeView1.SelectedNode);
                     parent.Nodes.Remove((NUD.Polygon)treeView1.SelectedNode);
                     NUD parentn = ((NUD)parent.Parent.Tag);
                     parentn.PreRender();
@@ -405,7 +415,7 @@ namespace Smash_Forge
             {
                 mesh.boneflag = 8;
                 mesh.singlebind = brs.boneIndex;
-                foreach (NUD.Polygon poly in mesh.polygons)
+                foreach (NUD.Polygon poly in mesh.Nodes)
                 {
                     poly.polflag = 0;
                     poly.vertSize = poly.vertSize & 0x0F;
@@ -440,7 +450,7 @@ namespace Smash_Forge
 
             foreach(NUD.Mesh m in nud.mesh)
             {
-                foreach (NUD.Polygon p in m.polygons)
+                foreach (NUD.Polygon p in m.Nodes)
                 {
                     foreach(NUD.Material mat in p.materials)
                     {
@@ -588,6 +598,86 @@ namespace Smash_Forge
                         MainForm.Instance.AddDockedControl(v);
                         break;
                     }
+                }
+            }
+        }
+
+        private void detachToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Polygon)
+            {
+                NUD.Polygon p = ((NUD.Polygon)treeView1.SelectedNode);
+                NUD.Mesh parent = (NUD.Mesh)p.Parent;
+                p.Parent.Nodes.Remove(p);
+                NUD.Mesh m = new NUD.Mesh();
+                ((NUD)parent.Parent.Tag).mesh.Add(m);
+                m.Text = parent.Text + "_" + p.Text;
+                m.Nodes.Add(p);
+
+                if (parent.Nodes.Count == 0) ((NUD)parent.Parent.Tag).mesh.Remove(parent);
+
+                refresh();
+            }
+        }
+
+        private void aboveToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Mesh)
+            {
+                NUD.Mesh m = ((NUD.Mesh)treeView1.SelectedNode);
+
+                NUD nud = (NUD)(m.Parent.Tag);
+
+                int index = nud.mesh.IndexOf(m);
+
+                if(index > 0)
+                {
+                    nud.mesh.Remove(m);
+
+                    NUD.Mesh merge = nud.mesh[index-1];
+
+                    List<TreeNode> polygons = new List<TreeNode>();
+                    foreach(NUD.Polygon p in m.Nodes)
+                        polygons.Add(p);
+
+                    foreach(NUD.Polygon p in polygons)
+                    {
+                        m.Nodes.Remove(p);
+                        merge.Nodes.Add(p);
+                    }
+
+                    refresh();
+                }
+            }
+        }
+
+        private void belowToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Mesh)
+            {
+                NUD.Mesh m = ((NUD.Mesh)treeView1.SelectedNode);
+
+                NUD nud = (NUD)(m.Parent.Tag);
+
+                int index = nud.mesh.IndexOf(m);
+
+                if (index+1 < nud.mesh.Count)
+                {
+                    nud.mesh.Remove(m);
+
+                    NUD.Mesh merge = nud.mesh[index];
+
+                    List<TreeNode> polygons = new List<TreeNode>();
+                    foreach (NUD.Polygon p in m.Nodes)
+                        polygons.Add(p);
+
+                    foreach (NUD.Polygon p in polygons)
+                    {
+                        m.Nodes.Remove(p);
+                        merge.Nodes.Add(p);
+                    }
+
+                    refresh();
                 }
             }
         }

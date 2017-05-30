@@ -144,7 +144,7 @@ namespace Smash_Forge
                     {
                         foreach (NUD.Mesh mesh in con.nud.mesh)
                         {
-                            foreach (NUD.Polygon poly in mesh.polygons)
+                            foreach (NUD.Polygon poly in mesh.Nodes)
                             {
                                 //if (!poly.IsSelected && !mesh.IsSelected) continue;
                                 int i = 0;
@@ -169,7 +169,7 @@ namespace Smash_Forge
                     {
                         foreach (NUD.Mesh mesh in con.nud.mesh)
                         {
-                            foreach (NUD.Polygon poly in mesh.polygons)
+                            foreach (NUD.Polygon poly in mesh.Nodes)
                             {
                                 //if (!poly.IsSelected && !mesh.IsSelected) continue;
                                 int i = 0;

@@ -61,15 +61,36 @@ namespace Smash_Forge
             return Text;
         }
 
+        public static float rot90 = (float)(90*(Math.PI / 180));
+
+        public int CheckControl(Ray r)
+        {
+
+            Vector3 pos_c = Vector3.Transform(Vector3.Zero, transform);
+            if (RenderTools.intersectCircle(pos_c, 2f, 30, r.p1, r.p2))
+                return 1;
+            
+
+            return -1;
+        }
+
         public void Draw()
         {
+            Vector3 pos_c = Vector3.Transform(Vector3.Zero, transform);
             // first calcuate the point and draw a point
             if (IsSelected)
+            {
+                /*GL.Color3(Color.Red);
+                RenderTools.drawCircleOutline(pos_c, 2f, 30, Matrix4.CreateRotationX(0));
+                GL.Color3(Color.Green);
+                RenderTools.drawCircleOutline(pos_c, 2f, 30, Matrix4.CreateRotationX(rot90));
+                GL.Color3(Color.Gold);
+                RenderTools.drawCircleOutline(pos_c, 2f, 30, Matrix4.CreateRotationY(rot90));*/
                 GL.Color3(Color.Red);
+            }
             else
                 GL.Color3(Color.GreenYellow);
 
-            Vector3 pos_c = Vector3.Transform(Vector3.Zero, transform);
             RenderTools.drawCube(pos_c, .1f);
 
             // now draw line between parent 

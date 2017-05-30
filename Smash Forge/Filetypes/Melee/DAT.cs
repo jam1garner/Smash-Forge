@@ -750,11 +750,9 @@ main()
                 {
                     foreach (POBJ.DisplayObject d in poly.display)
                     {
-                        Console.WriteLine("Mesh Type" + primitiveTypes[d.type]);
-                        List<int> faces = d.faces;
-                        if (d.type == 0x98)
-                            faces = TriangleTools.fromTriangleStrip(d.faces);
-                        else
+                        Console.WriteLine("Mesh Type" + primitiveTypes[d.type] + " " + mesh.Text);
+                        List<int> faces = new List<int>();// d.faces;
+                        if (d.type == 0x98)faces = TriangleTools.fromTriangleStrip(d.faces);else
                         if (d.type == 0x80)
                             faces = TriangleTools.fromQuad(d.faces);
 
@@ -785,7 +783,7 @@ main()
                     polygon.AddVertex(nv);
                 }
 
-                mesh.polygons.Add(polygon);
+                mesh.Nodes.Add(polygon);
             }
 
             nud.PreRender();

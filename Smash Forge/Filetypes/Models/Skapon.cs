@@ -54,7 +54,7 @@ namespace Smash_Forge
             head.Nodes.Add(setToBone(scale(readPoly(files["foot.obj"]), 1, 1, 1), vbn.bones[vbn.boneIndex("RFootJ")], vbn));
             head.Nodes.Add(setToBone(scale(readPoly(files["foot.obj"]), -1, -1, -1), vbn.bones[vbn.boneIndex("LFootJ")], vbn));
 
-            foreach (NUD.Polygon p in head.polygons)
+            foreach (NUD.Polygon p in head.Nodes)
             {
                 p.materials[0].textures[0].hash = 0x40000000 + randomNumber;
             }
@@ -221,8 +221,8 @@ namespace Smash_Forge
             DAT dat = new DAT();
             dat.Read(new FileData(path + "PlPcNr.dat"));
             dat.PreRender();
-            
-            //dat.ExportTextures(path, 0x401B1000);
+
+            dat.ExportTextures(path, 0x401B1000);
 
             BoneNameFix(dat.bones);
 
@@ -230,11 +230,11 @@ namespace Smash_Forge
             ModelContainer converted = dat.wrapToNUD();
             NUD nud = converted.nud;
             float sca = 0.6f;
-            
-            
+
+
             removeLowPolyNr(nud);
             nud.PreRender();
-            
+
             Runtime.ModelContainers.Add(converted);
             //-------------------------------------------------
 
@@ -253,7 +253,7 @@ namespace Smash_Forge
                 effectiveScale(anims[an], Matrix4.CreateTranslation(0, 0, 0) * Matrix4.CreateScale(sca, sca, sca));
             }
             effectiveScale(converted.nud, converted.vbn, Matrix4.CreateTranslation(0, 0, 0) * Matrix4.CreateScale(sca, sca, sca));
-            
+
             Directory.CreateDirectory(path + "build\\model\\body\\c00\\");
             nud.Save(path + "build\\model\\body\\c00\\model.nud");
             converted.vbn.Endian = Endianness.Little;
@@ -279,7 +279,7 @@ namespace Smash_Forge
                             KeyNode node = anims[an].getNode(0, 0);
                             node.t_type = 1;
                         }
-                        d = OMO.createOMO(anims[an], converted.vbn);
+                        d = OMOOld.createOMO(anims[an], converted.vbn);
                         break;
                     }
                 }
@@ -301,7 +301,7 @@ namespace Smash_Forge
         {
             List<NUD.Mesh> toRemove = new List<NUD.Mesh>();
 
-            for(int i = 15; i <= 32; i++)
+            for (int i = 15; i <= 32; i++)
                 toRemove.Add(n.mesh[i]);
 
             foreach (NUD.Mesh m in toRemove)
@@ -311,11 +311,11 @@ namespace Smash_Forge
 
         public static void effectiveScale(SkelAnimation anim, Matrix4 sca)
         {
-            foreach(KeyFrame frame in anim.frames)
+            foreach (KeyFrame frame in anim.frames)
             {
-                foreach(KeyNode node in frame.nodes)
+                foreach (KeyNode node in frame.nodes)
                 {
-                    if(node.t_type != -1)
+                    if (node.t_type != -1)
                     {
                         Vector3 pos = Vector3.Transform(node.t, sca);
                         if (node.t.X != -99) node.t.X = pos.X;
@@ -331,19 +331,19 @@ namespace Smash_Forge
             {
                 foreach (DAT_Animation.DATAnimTrack track2 in track)
                 {
-                    if(track2.type == DAT_Animation.AnimType.XPOS
+                    if (track2.type == DAT_Animation.AnimType.XPOS
                         || track2.type == DAT_Animation.AnimType.YPOS
                         || track2.type == DAT_Animation.AnimType.ZPOS)
-                    foreach (DAT_Animation.KeyNode node in track2.keys)
-                    {
-                        node.value = Vector3.Transform(new Vector3(node.value, 0, 0), sca).X;
-                    }
+                        foreach (DAT_Animation.KeyNode node in track2.keys)
+                        {
+                            node.value = Vector3.Transform(new Vector3(node.value, 0, 0), sca).X;
+                        }
                 }
             }
         }
         public static void effectiveScale(NUD nud, VBN vbn, Matrix4 sca)
         {
-            foreach(Bone b in vbn.bones)
+            foreach (Bone b in vbn.bones)
             {
                 Vector3 pos = Vector3.Transform(new Vector3(b.position[0], b.position[1], b.position[2]), sca);
                 b.position[0] = pos.X;
@@ -353,11 +353,11 @@ namespace Smash_Forge
 
             vbn.reset();
 
-            foreach(NUD.Mesh mesh in nud.mesh)
+            foreach (NUD.Mesh mesh in nud.mesh)
             {
-                foreach(NUD.Polygon poly in mesh.polygons)
+                foreach (NUD.Polygon poly in mesh.Nodes)
                 {
-                    foreach(NUD.Vertex v in poly.vertices)
+                    foreach (NUD.Vertex v in poly.vertices)
                     {
                         v.pos = Vector3.Transform(v.pos, sca);
                     }
@@ -390,7 +390,7 @@ namespace Smash_Forge
 
             // reorder vbn
             Bone[] nList = new Bone[vbn.bones.Count];
-            foreach(int k in boneReorder.Keys)
+            foreach (int k in boneReorder.Keys)
             {
                 nList[boneReorder[k]] = vbn.bones[k];
                 //if (new string(vbn.bones[k].boneName).Equals("RotN")) vbn.bones[k].parentIndex = 0;
@@ -405,13 +405,13 @@ namespace Smash_Forge
 
             // now fix the nud
 
-            foreach(NUD.Mesh mesh in nud.mesh)
+            foreach (NUD.Mesh mesh in nud.mesh)
             {
-                foreach(NUD.Polygon poly in mesh.polygons)
+                foreach (NUD.Polygon poly in mesh.Nodes)
                 {
-                    foreach(NUD.Vertex v in poly.vertices)
+                    foreach (NUD.Vertex v in poly.vertices)
                     {
-                        for(int k = 0; k < v.node.Count; k++)
+                        for (int k = 0; k < v.node.Count; k++)
                         {
                             v.node[k] = boneReorder[v.node[k]];
                         }
@@ -423,7 +423,7 @@ namespace Smash_Forge
 
         public static void BoneNameFix(VBN vbn)
         {
-            foreach(int key in bonematch.Keys)
+            foreach (int key in bonematch.Keys)
             {
                 vbn.bones[key].Text = bonematch[key];
             }

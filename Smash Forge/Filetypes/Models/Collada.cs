@@ -31,7 +31,7 @@ namespace Smash_Forge
             Collada dae = new Collada();
             dae.Read(fname);
 
-            NUD n = new Smash_Forge.NUD();
+            NUD n = new NUD();
             con.nud = n;
 
             NUT thisNut = new NUT();
@@ -193,7 +193,7 @@ namespace Smash_Forge
                 nmesh.Text = geom.name;
                 NUD.Polygon npoly = new NUD.Polygon();
                 npoly.setDefaultMaterial();
-                nmesh.polygons.Add(npoly);
+                nmesh.Nodes.Add(npoly);
 
                 int i = 0;
                 while (i < p.p.Length)
@@ -290,6 +290,7 @@ namespace Smash_Forge
             // then image materials and effects
 
             n.Optimize();
+            n.PreRender();
         }
 
         private static void ReadSemantic(ColladaInput input, NUD.Vertex v, int p, Dictionary<string, ColladaSource> sources)
@@ -387,7 +388,7 @@ namespace Smash_Forge
 
                                 NUD.Polygon poly = new NUD.Polygon();
                                 poly.setDefaultMaterial();
-                                n_mesh.polygons.Add(poly);
+                                n_mesh.Nodes.Add(poly);
                                 string[] ps = triangles.p.StartsWith(" ") ? triangles.p.Substring(1).Split(' ') : triangles.p.Split(' ');
                                 for (int i = 0; i < ps.Length;)
                                 {
@@ -521,7 +522,7 @@ namespace Smash_Forge
                         }
                         // Dump Items[] for geom
                         NUD.Mesh m = n.mesh[cid];
-                        List<NUD.Vertex> v = m.polygons[0].vertices;
+                        List<NUD.Vertex> v = ((NUD.Polygon)m.Nodes[0]).vertices;
                         string[] vcount = skin.vertex_weights.vcount.Split(' ');
                         string[] vi = skin.vertex_weights.v.Split(' ');
                         int pos = 0;
@@ -572,7 +573,7 @@ namespace Smash_Forge
 
             foreach (NUD.Mesh mesh in n.mesh)
             {
-                foreach (NUD.Polygon poly in mesh.polygons)
+                foreach (NUD.Polygon poly in mesh.Nodes)
                 {
                     poly.vertSize = 0x16;
 
@@ -920,12 +921,12 @@ namespace Smash_Forge
             int num = 0;
             foreach (NUD.Mesh mesh in nud.mesh)
             {
-                foreach (NUD.Polygon poly in mesh.polygons)
+                foreach (NUD.Polygon poly in mesh.Nodes)
                 {
                     ColladaGeometry geom = new ColladaGeometry();
                     dae.library_geometries.Add(geom);
                     geom.name = mesh.Text;
-                    geom.id = mesh.Text + mesh.polygons.IndexOf(poly); ;
+                    geom.id = mesh.Text + mesh.Nodes.IndexOf(poly); ;
                     geom.mesh = new ColladaMesh();
 
                     // create a node for this
@@ -973,7 +974,7 @@ namespace Smash_Forge
 
                     // create vertex object
                     ColladaVertices vertex = new ColladaVertices();
-                    vertex.id = mesh.Text + mesh.polygons.IndexOf(poly) + "_verts";
+                    vertex.id = mesh.Text + mesh.Nodes.IndexOf(poly) + "_verts";
                     geom.mesh.vertices = vertex;
 
                     // create sources... this may take a minute
@@ -981,7 +982,7 @@ namespace Smash_Forge
                     {
                         ColladaSource src = new ColladaSource();
                         geom.mesh.sources.Add(src);
-                        src.id = mesh.Text + mesh.polygons.IndexOf(poly) + "_pos";
+                        src.id = mesh.Text + mesh.Nodes.IndexOf(poly) + "_pos";
                         //src.name = mesh.name + "src1";
                         vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.POSITION });
                         List<string> d = new List<string>();
@@ -999,7 +1000,7 @@ namespace Smash_Forge
                     {
                         ColladaSource src = new ColladaSource();
                         geom.mesh.sources.Add(src);
-                        src.id = mesh.Text + mesh.polygons.IndexOf(poly) + "_nrm";
+                        src.id = mesh.Text + mesh.Nodes.IndexOf(poly) + "_nrm";
                         //src.name = mesh.name + "src1";
                         vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.NORMAL });
                         List<string> d = new List<string>();
@@ -1017,7 +1018,7 @@ namespace Smash_Forge
                     {
                         ColladaSource src = new ColladaSource();
                         geom.mesh.sources.Add(src);
-                        src.id = mesh.Text + mesh.polygons.IndexOf(poly) + "_tx0";
+                        src.id = mesh.Text + mesh.Nodes.IndexOf(poly) + "_tx0";
                         //src.name = mesh.name + "src1";
                         vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.TEXCOORD });
                         List<string> d = new List<string>();
@@ -1034,7 +1035,7 @@ namespace Smash_Forge
                     {
                         ColladaSource src = new ColladaSource();
                         geom.mesh.sources.Add(src);
-                        src.id = mesh.Text + mesh.polygons.IndexOf(poly) + "_clr";
+                        src.id = mesh.Text + mesh.Nodes.IndexOf(poly) + "_clr";
                         //src.name = mesh.name + "src1";
                         vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.COLOR });
                         List<string> d = new List<string>();
@@ -1055,7 +1056,7 @@ namespace Smash_Forge
                     ColladaInput inv = new ColladaInput();
                     inv.offset = 0;
                     inv.semantic = SemanticType.VERTEX;
-                    inv.source = "#" + mesh.Text + mesh.polygons.IndexOf(poly) + "_verts";
+                    inv.source = "#" + mesh.Text + mesh.Nodes.IndexOf(poly) + "_verts";
                     p.inputs.Add(inv);
                     p.count = poly.displayFaceSize;
                     p.p = poly.getDisplayFace().ToArray();
@@ -1532,8 +1533,11 @@ namespace Smash_Forge
 
             public void Read(XmlNode root)
             {
-                materialid = (string)root.Attributes["material"].Value;
-                int.TryParse((string)root.Attributes["count"].Value, out count);
+                foreach(XmlAttribute att in root.Attributes)
+                {
+                    if (att.Name.Equals("material")) materialid = (string)att.Value;
+                    if (att.Name.Equals("count")) int.TryParse((string)att.Value, out count);
+                }
 
                 foreach (XmlNode node in root.ChildNodes)
                 {
@@ -1707,8 +1711,12 @@ namespace Smash_Forge
 
             public void Read(XmlNode root)
             {
-                id = root.Attributes["id"].Value;
-                name = root.Attributes["name"].Value;
+                foreach(XmlAttribute att in root.Attributes)
+                {
+                    if (att.Name.Equals("id")) id = att.Value;
+                    if (att.Name.Equals("name")) name = root.Attributes["name"].Value;
+                }
+
                 foreach (XmlNode node in root.ChildNodes)
                 {
                     if (node.Name.Equals("profile_COMMON"))

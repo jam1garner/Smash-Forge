@@ -643,7 +643,7 @@ main()
                 foreach (List<int> i in m.faces)
                 {
                     NUD.Polygon poly = new NUD.Polygon();
-                    n_mesh.polygons.Add(poly);
+                    n_mesh.Nodes.Add(poly);
                     poly.setDefaultMaterial();
 
                     List<Vertex> indexSim = new List<Vertex>();

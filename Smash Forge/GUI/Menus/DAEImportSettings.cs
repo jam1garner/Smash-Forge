@@ -68,7 +68,7 @@ namespace Smash_Forge
                 if (BoneTypes[(string)comboBox2.SelectedItem] == BoneTypes["No Bones"])
                     mesh.boneflag = 0;
 
-                foreach (NUD.Polygon poly in mesh.polygons)
+                foreach (NUD.Polygon poly in mesh.Nodes)
                 {
                     if (smoothCB.Checked)
                         poly.SmoothNormals();

@@ -94,7 +94,7 @@ namespace Smash_Forge
             {
                 NUT.NUD_Texture tex = ((NUT.NUD_Texture)listBox2.SelectedItem);
                 textBox1.Text = tex.ToString();
-                label2.Text = "Format: " + (tex.type == PixelInternalFormat.SrgbAlpha ? "" + tex.utype : "" + tex.type);
+                label2.Text = "Format: " + (tex.type == PixelInternalFormat.Rgba ? "" + tex.utype : "" + tex.type);
                 label3.Text = "Width: " + tex.width;
                 label4.Text = "Height:" + tex.height;
                 label5.Text = "Mipmap:" + tex.mipmaps.Count;
@@ -275,7 +275,7 @@ namespace Smash_Forge
             }
             tex.width = bmp.Width;
             tex.height = bmp.Height;
-            tex.type = PixelInternalFormat.SrgbAlpha;
+            tex.type = PixelInternalFormat.Rgba;
             tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
 
             return tex;

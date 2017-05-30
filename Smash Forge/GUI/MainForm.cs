@@ -99,11 +99,21 @@ namespace Smash_Forge
             Runtime.shaders.Add("Shadow", sha);
 
             Shader nud = new Shader();
-            nud.vertexShader(VBNViewport.vs);
-            nud.fragmentShader(VBNViewport.fs);
+            nud.vertexShader(RenderTools.nud_vs);
+            nud.fragmentShader(RenderTools.nud_fs);
             Runtime.shaders.Add("NUD", nud);
 
             RenderTools.Setup();
+
+            /*openFile("C:\\s\\Smash\\extract\\data\\fighter\\kamui\\model\\body\\c00\\model.vbn");
+            {
+                OMO omo = new OMO(new FileData("C:\\s\\Smash\\extract\\data\\fighter\\kamui\\model\\body\\c00\\corrin2.omo"));
+                omo.Apply(Runtime.TargetVBN, 0);
+            }
+            {
+                OMO omo = new OMO(new FileData("C:\\s\\Smash\\extract\\data\\fighter\\kamui\\model\\body\\c00\\corrin.omo"));
+                omo.Apply(Runtime.TargetVBN, 0);
+            }*/
         }
 
         public void openFiles()
@@ -467,7 +477,7 @@ namespace Smash_Forge
                             o.save(sfd.FileName);
                         }
                         else
-                            OMO.createOMO(Runtime.TargetAnim, Runtime.TargetVBN, sfd.FileName);
+                            OMOOld.createOMO(Runtime.TargetAnim, Runtime.TargetVBN, sfd.FileName);
                     }
 
                     if (sfd.FileName.EndsWith(".pac"))
@@ -475,7 +485,7 @@ namespace Smash_Forge
                         var pac = new PAC();
                         foreach (var anim in Runtime.Animations)
                         {
-                            var bytes = OMO.createOMO(anim.Value, Runtime.TargetVBN);
+                            var bytes = OMOOld.createOMO(anim.Value, Runtime.TargetVBN);
                             if (Runtime.TargetAnim.Tag is FileData)
                                 bytes = ((FileData)Runtime.TargetAnim.Tag).getSection(0,
                                     ((FileData)Runtime.TargetAnim.Tag).size());
@@ -912,7 +922,7 @@ namespace Smash_Forge
                             {
                                 if (f.EndsWith(".omo"))
                                 {
-                                    Runtime.Animations.Add(f, OMO.read(new FileData(f)));
+                                    Runtime.Animations.Add(f, OMOOld.read(new FileData(f)));
                                     animNode.Nodes.Add(f);
                                 }
                                 else if (f.EndsWith("path.bin"))
@@ -970,7 +980,7 @@ namespace Smash_Forge
                 {
                     if (pair.Key.EndsWith(".omo"))
                     {
-                        var anim = OMO.read(new FileData(pair.Value));
+                        var anim = OMOOld.read(new FileData(pair.Value));
                         string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
                         //AnimName = pair.Key;
                         //AnimName = AnimName.Remove(AnimName.Length - 4);
@@ -1043,7 +1053,7 @@ namespace Smash_Forge
             //{
             if (filename.EndsWith(".omo"))
             {
-                Runtime.Animations.Add(filename, OMO.read(new FileData(filename)));
+                Runtime.Animations.Add(filename, OMOOld.read(new FileData(filename)));
                 animNode.Nodes.Add(filename);
             }
             if (filename.EndsWith(".chr0"))
@@ -1635,6 +1645,7 @@ namespace Smash_Forge
                 bool found = false;
                 foreach (ModelContainer m in Runtime.ModelContainers)
                 {
+                    if (m.vbn != null)
                     if (m.vbn.essentialComparison(Runtime.TargetVBN))
                     {
                         found = true;

@@ -100,7 +100,9 @@ namespace Smash_Forge
             Texture = 0,
             Normals = 1,
             NormalsBnW = 2,
-            VertColor = 3
+            NormalMap = 3,
+            VertColor = 4,
+            AmbientOcclusion = 5,
         }
         public enum FloorStyle
         {

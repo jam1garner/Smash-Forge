@@ -190,7 +190,7 @@ namespace Smash_Forge
             {
                 case 0x0:
                     size = 4f;
-                    tex.type = PixelInternalFormat.Rgba;
+                    tex.type = PixelInternalFormat.SrgbAlpha;
                     tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     break;
                 case 0x31545844:

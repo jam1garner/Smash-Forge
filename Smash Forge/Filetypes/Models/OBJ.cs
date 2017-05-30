@@ -128,7 +128,7 @@ namespace Smash_Forge
                     if (g.v.Count == 0) continue;
 
                     NUD.Polygon p = new NUD.Polygon();
-                    m.polygons.Add(p);
+                    m.Nodes.Add(p);
                     m.Nodes.Add(p);
                     p.setDefaultMaterial();
                     p.vertSize = 0x06;
@@ -150,7 +150,7 @@ namespace Smash_Forge
                             v.tx.Add(vt[g.vt[i]] + Vector2.Zero);
                     }
                 }
-                if(m.polygons.Count > 0)
+                if(m.Nodes.Count > 0)
                     n.mesh.Add(m);
             }
 
