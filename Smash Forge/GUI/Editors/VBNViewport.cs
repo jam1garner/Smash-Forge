@@ -1421,7 +1421,7 @@ namespace Smash_Forge
                         }
                     }
 
-                    va = Vector3.Transform(va, b.transform.ClearScale());
+                    va = Vector3.Transform(va, b.transform);
 
 
                     // Draw angle marker
@@ -1458,12 +1458,13 @@ namespace Smash_Forge
                     }
 
                     GL.DepthMask(false);
+
                     if (h.Extended)
                     {
                         var va2 = new Vector3(h.X2, h.Y2, h.Z2);
 
                         if (h.Bone != -1)
-                            va2 = Vector3.Transform(va2, b.transform.ClearScale());
+                            va2 = Vector3.Transform(va2, b.transform);
 
                         RenderTools.drawCylinder(va, va2, h.Size);
                     }
@@ -1537,13 +1538,13 @@ namespace Smash_Forge
                         switch (h.Zone)
                         {
                             case Hurtbox.LW_ZONE:
-                                GL.Color4(Color.FromArgb(180, Color.Aqua));
+                                GL.Color4(Color.FromArgb(60, Color.Aqua));
                                 break;
                             case Hurtbox.N_ZONE:
-                                GL.Color4(Color.FromArgb(180, Color.Green));
+                                GL.Color4(Color.FromArgb(60, Color.Green));
                                 break;
                             case Hurtbox.HI_ZONE:
-                                GL.Color4(Color.FromArgb(180, Color.Orange));
+                                GL.Color4(Color.FromArgb(60, Color.Orange));
                                 break;
                         }
                     }

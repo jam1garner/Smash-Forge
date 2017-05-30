@@ -259,11 +259,14 @@ namespace Smash_Forge
             return boneId.Clamp(0, int.MaxValue);
         }
 
-        public void update()
+        public void update(bool reset = false)
         {
             for (int i = 0; i < bones.Count; i++)
             {
                 bones[i].transform = Matrix4.CreateScale(bones[i].sca) * Matrix4.CreateFromQuaternion(bones[i].rot) * Matrix4.CreateTranslation(bones[i].pos);
+
+                if (i == 0 && !reset && Runtime.model_scale != 1) bones[i].transform *= Matrix4.CreateScale(Runtime.model_scale);
+
                 if (bones[i].Parent !=null)
                 {
                     bones[i].transform = bones[i].transform * bones[(int)bones[i].parentIndex].transform;
@@ -278,7 +281,7 @@ namespace Smash_Forge
                 bones[i].rot = (FromEulerAngles(bones[i].rotation[2], bones[i].rotation[1], bones[i].rotation[0]));
                 bones[i].sca = new Vector3(bones[i].scale[0], bones[i].scale[1], bones[i].scale[2]);
             }
-            update();
+            update(true);
             for (int i = 0; i < bones.Count; i++)
             {
                 try{
@@ -287,6 +290,7 @@ namespace Smash_Forge
                     bones[i].invert = Matrix4.Zero;
                 }
             }
+            if(Runtime.model_scale != 1f) update();
         }
 
         public override void Read(string filename)

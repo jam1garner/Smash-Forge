@@ -54,6 +54,7 @@ namespace Smash_Forge.GUI
             spcTB.Text = Runtime.spc_inten + "";
             frsTB.Text = Runtime.frs_inten + "";
             refTB.Text = Runtime.ref_inten + "";
+            modelscaleTB.Text = Runtime.model_scale + "";
 
             cb_normals.Checked = Runtime.renderNormals;
             cb_vertcolor.Checked = Runtime.renderVertColor;
@@ -252,6 +253,18 @@ namespace Smash_Forge.GUI
             }
             else
                 refTB.BackColor = Color.Red;
+        }
+
+        private void modelscaleTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(modelscaleTB.Text, out i))
+            {
+                modelscaleTB.BackColor = Color.White;
+                Runtime.model_scale = i;
+            }
+            else
+                modelscaleTB.BackColor = Color.Red;
         }
     }
 }

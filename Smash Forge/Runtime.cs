@@ -87,6 +87,7 @@ namespace Smash_Forge
         public static float frs_inten = 0.2f;
         public static float ref_inten = 0.5f;
         public static float amb_inten = 0.85f;
+        public static float model_scale = 1f;
 
         public static float renderDepth;
         public static bool renderNormals;
