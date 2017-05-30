@@ -1,7 +1,7 @@
 Smash Forge
 ===========
 [Bug Tracker](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [Request a feature](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [![Build status](https://ci.appveyor.com/api/projects/status/o73kaah41uewf1kx/branch/master?svg=true)](https://ci.appveyor.com/project/Sammi-Husky/smash-4-bone-animator/branch/master)
-##Features##
+## Features
  - Can open, preview and edit Smash 4 boneset files (.vbn)
  - Can play/import/export Smash 4 animation files (.omo), maya anim files (.anim), and NW4R Animation files (CHR0)
  - Can open .pac archives containing multiple animations
@@ -25,15 +25,15 @@ NOTE: this entire program is still very much a WIP. There may be bugs or incompl
  
  While credit on projects made using this tool is in no way necessary it is very much appreciated, thank you to those who use it.
  
-##Building##
-###Windows###
+## Building
+### Windows
  - Open the solution file in Visual Studio and build
 
 
-##Known Bugs/Issues##
+## Known Bugs/Issues
 For known bugs and issues, check out the [Bug Tracker](https://github.com/jam1garner/Smash-4-Bone-Animator/issues)
 
-## Credits ##
+## Credits
 This application uses Open Source components. You can find the source code of their open source projects along with license information below. We acknowledge and are grateful to these developers for their contributions to open source.
 
 Project: 
