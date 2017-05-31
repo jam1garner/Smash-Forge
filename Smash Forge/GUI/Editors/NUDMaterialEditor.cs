@@ -783,7 +783,8 @@ namespace Smash_Forge
                     h = glControl1.Height / HeightPre;
                 }
             }
-
+            if (float.IsInfinity(h)) h = 1;
+            Console.WriteLine(w + " " + h);
             GL.BindTexture(TextureTarget.Texture2D, rt);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
