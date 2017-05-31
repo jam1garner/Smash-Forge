@@ -60,6 +60,7 @@
             this.belowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openEditToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.flipUVsHorizontalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
             this.meshContextMenu.SuspendLayout();
@@ -128,11 +129,12 @@
             this.duplicateToolStripMenuItem,
             this.toolStripSeparator2,
             this.flipUVsToolStripMenuItem,
+            this.flipUVsHorizontalToolStripMenuItem,
             this.smoothNormalsToolStripMenuItem,
             this.toolStripSeparator3,
             this.detachToolStripMenuItem});
             this.polyContextMenu.Name = "polyContextMenu";
-            this.polyContextMenu.Size = new System.Drawing.Size(165, 176);
+            this.polyContextMenu.Size = new System.Drawing.Size(183, 220);
             this.polyContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // editMaterialToolStripMenuItem
@@ -177,8 +179,8 @@
             // flipUVsToolStripMenuItem
             // 
             this.flipUVsToolStripMenuItem.Name = "flipUVsToolStripMenuItem";
-            this.flipUVsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.flipUVsToolStripMenuItem.Text = "Flip UVs";
+            this.flipUVsToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.flipUVsToolStripMenuItem.Text = "Flip UVs (Vertical)";
             this.flipUVsToolStripMenuItem.Click += new System.EventHandler(this.flipUVsToolStripMenuItem_Click);
             // 
             // smoothNormalsToolStripMenuItem
@@ -209,7 +211,7 @@
             this.toolStripSeparator5,
             this.deleteToolStripMenuItem1});
             this.meshContextMenu.Name = "meshContextMenu";
-            this.meshContextMenu.Size = new System.Drawing.Size(178, 120);
+            this.meshContextMenu.Size = new System.Drawing.Size(178, 98);
             // 
             // mergeToolStripMenuItem1
             // 
@@ -321,6 +323,13 @@
             this.openEditToolStripMenuItem.Text = "Open Edit";
             this.openEditToolStripMenuItem.Click += new System.EventHandler(this.openEditToolStripMenuItem_Click);
             // 
+            // flipUVsHorizontalToolStripMenuItem
+            // 
+            this.flipUVsHorizontalToolStripMenuItem.Name = "flipUVsHorizontalToolStripMenuItem";
+            this.flipUVsHorizontalToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.flipUVsHorizontalToolStripMenuItem.Text = "Flip UVs (Horizontal)";
+            this.flipUVsHorizontalToolStripMenuItem.Click += new System.EventHandler(this.flipUVsHorizontalToolStripMenuItem_Click);
+            // 
             // MeshList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -375,5 +384,6 @@
         private System.Windows.Forms.ToolStripMenuItem belowToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem flipUVsHorizontalToolStripMenuItem;
     }
 }

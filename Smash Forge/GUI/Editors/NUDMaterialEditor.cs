@@ -155,6 +155,8 @@ namespace Smash_Forge
                 comboBox1.Items.Add("Material_" + i);
             }
 
+            tableLayoutPanel2.Enabled = false;
+
             comboBox7.Items.Clear();
             foreach(string s in propList.Keys)
                 comboBox7.Items.Add(s);
@@ -364,7 +366,9 @@ namespace Smash_Forge
             if (listView1.SelectedItems.Count > 0)
             {
                 index = listView1.Items.IndexOf(listView1.SelectedItems[0]);
+                tableLayoutPanel2.Enabled = true;
             }
+            else tableLayoutPanel2.Enabled = false;
             if(index >= material[current].textures.Count)
             {
                 MessageBox.Show("Texture doesn't exist");

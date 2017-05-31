@@ -681,5 +681,25 @@ namespace Smash_Forge
                 }
             }
         }
+
+        private void flipUVsHorizontalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Polygon)
+            {
+                NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+
+                foreach (NUD.Vertex v in p.vertices)
+                {
+                    for (int i = 0; i < v.tx.Count; i++)
+                        v.tx[i] = new OpenTK.Vector2(1 - v.tx[i].X, v.tx[i].Y);
+                }
+
+                foreach (ModelContainer con in Runtime.ModelContainers)
+                {
+                    if (con.nud != null)
+                        con.nud.PreRender();
+                }
+            }
+        }
     }
 }
