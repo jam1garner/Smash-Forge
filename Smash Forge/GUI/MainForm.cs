@@ -498,7 +498,7 @@ namespace Smash_Forge
                     if (sfd.FileName.EndsWith(".mta"))
                     {
                         FileOutput f = new FileOutput();
-                        f.writeBytes(Runtime.TargetMTA.Rebuild());
+                        f.writeBytes(Runtime.TargetMTA[0].Rebuild());
                         f.save(sfd.FileName);
                     }
                 }
@@ -1464,10 +1464,12 @@ namespace Smash_Forge
 
             if (filename.EndsWith(".mta"))
             {
-                Runtime.TargetMTA = new MTA();
-                Runtime.TargetMTA.Read(filename);
-                viewports[0].loadMTA(Runtime.TargetMTA);
-                MTAEditor temp = new MTAEditor(Runtime.TargetMTA) {ShowHint = DockState.DockLeft};
+                MTA TargetMTA = new MTA();
+                TargetMTA.Read(filename);
+                viewports[0].loadMTA(TargetMTA);
+                Runtime.TargetMTA.Clear();
+                Runtime.TargetMTA.Add(TargetMTA);
+                MTAEditor temp = new MTAEditor(TargetMTA) {ShowHint = DockState.DockLeft};
                 temp.Text = Path.GetFileName(filename);
                 AddDockedControl(temp);
                 mtaEditors.Add(temp);

@@ -32,6 +32,35 @@ namespace Smash_Forge
                 {
                     Runtime.TargetAnim = Runtime.Animations[e.Node.Text];
                     Runtime.TargetAnimString = e.Node.Text;
+                    
+                    //reset mtas
+                    foreach(ModelContainer con in Runtime.ModelContainers)
+                    {
+                        if(con.nud != null && con.mta != null)
+                        {
+                            con.nud.applyMTA(con.mta, 0);
+                            foreach (KeyValuePair<string, MTA> v in Runtime.MaterialAnimations)
+                            {
+                                if (v.Key.Contains("display"))
+                                {
+                                    con.nud.applyMTA(v.Value, 0);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    Runtime.TargetMTA.Clear();
+                    foreach (KeyValuePair<string, MTA> v in Runtime.MaterialAnimations)
+                    {
+                        if(v.Key.Contains(e.Node.Text.Replace(".omo", "")))
+                        {
+                            Runtime.TargetMTA.Add(v.Value);
+                        }
+                    }
+
+                    //MainForm.Instance.viewports[0].loadMTA(Runtime.MaterialAnimations[e.Node.Text]);
+
                     //Console.WriteLine("Selected Anim " + e.Node.Text);
                 }
                 else if(e.Node.Parent.Text == "Material Animations")

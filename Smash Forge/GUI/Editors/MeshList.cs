@@ -305,8 +305,8 @@ namespace Smash_Forge
                         Runtime.ModelContainers.Remove(m);
                     if (Runtime.TargetVBN == m.vbn)
                         Runtime.TargetVBN = null;
-                    if (Runtime.TargetMTA == m.mta)
-                        Runtime.TargetMTA = null;
+                    //if (Runtime.TargetMTA == m.mta)
+                    //    Runtime.TargetMTA = null;
                     if (Runtime.TargetNUD == m.nud)
                         Runtime.TargetNUD = null;
 
@@ -770,6 +770,7 @@ namespace Smash_Forge
                             { XmlAttribute a = doc.CreateAttribute("wrapmodeT"); a.Value = tex.WrapMode2.ToString("x"); texnode.Attributes.Append(a); }
                             { XmlAttribute a = doc.CreateAttribute("minfilter"); a.Value = tex.minFilter.ToString("x"); texnode.Attributes.Append(a); }
                             { XmlAttribute a = doc.CreateAttribute("magfilter"); a.Value = tex.magFilter.ToString("x"); texnode.Attributes.Append(a); }
+                            { XmlAttribute a = doc.CreateAttribute("mipdetail"); a.Value = tex.mipDetail.ToString("x"); texnode.Attributes.Append(a); }
                             matnode.AppendChild(texnode);
                         }
 
@@ -872,6 +873,7 @@ namespace Smash_Forge
                                                     case "wrapmodeT": int.TryParse(a.Value, out tex.WrapMode2); break;
                                                     case "minfilter": int.TryParse(a.Value, out tex.minFilter); break;
                                                     case "magfilter": int.TryParse(a.Value, out tex.magFilter); break;
+                                                    case "mipdetail": int.TryParse(a.Value, out tex.mipDetail); break;
                                                 }
                                             }
                                         }

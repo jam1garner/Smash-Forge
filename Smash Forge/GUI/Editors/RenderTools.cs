@@ -569,6 +569,33 @@ namespace Smash_Forge
             GL.End();
         }
 
+
+        public static void drawHitboxCircle(Vector3 pos, float size, uint smooth, Matrix4 view)
+        {
+            float t = 2 * (float)Math.PI / smooth;
+            float tf = (float)Math.Tan(t);
+
+            float rf = (float)Math.Cos(t);
+
+            float x = size;
+            float y = 0;
+
+            GL.Begin(PrimitiveType.LineLoop);
+
+            for (int i = 0; i < smooth; i++)
+            {
+                GL.Vertex3(Vector3.Transform(new Vector3(x + pos.X, y + pos.Y, pos.Z),view));
+                float tx = -y;
+                float ty = x;
+                x += tx * tf;
+                y += ty * tf;
+                x *= rf;
+                y *= rf;
+            }
+
+            GL.End();
+        }
+
         public static void drawCircleOutline(Vector3 center, float radius, uint precision)
         {
             float theta = 2.0f * (float)Math.PI / precision;

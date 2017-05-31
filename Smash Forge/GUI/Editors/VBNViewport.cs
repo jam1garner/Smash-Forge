@@ -518,6 +518,7 @@ namespace Smash_Forge
 
 
             // draw models
+            //RenderTools.drawHitboxCircle(new Vector3(3, 3, 3), 5, 30, v.ClearTranslation().Inverted());
 
             if (Runtime.renderModel) DrawModels();
             /*{
@@ -770,7 +771,8 @@ namespace Smash_Forge
                     if (m.mta != null)
                         m.nud.applyMTA(m.mta, (int)nupdFrame.Value);//Apply base mta
                     if (Runtime.TargetMTA != null)
-                        m.nud.applyMTA(Runtime.TargetMTA, (int)nupdFrame.Value);//Apply additional mta (can override base)
+                        foreach(MTA mta in Runtime.TargetMTA)
+                        m.nud.applyMTA(mta, (int)nupdFrame.Value);//Apply additional mta (can override base)
 
                     m.nud.Render(shader);
                     shader.disableAttrib();
@@ -1788,7 +1790,8 @@ namespace Smash_Forge
             nupdFrame.Value = 0;
             nupdMaxFrame.Value = m.numFrames;
             //Console.WriteLine(m.numFrames);
-            Runtime.TargetMTA = m;
+            Runtime.TargetMTA.Clear();
+            Runtime.TargetMTA.Add(m);
         }
 
         private void VBNViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)

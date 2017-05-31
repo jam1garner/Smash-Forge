@@ -33,6 +33,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label5 = new System.Windows.Forms.Label();
+            this.scaleTB = new System.Windows.Forms.TextBox();
             this.smoothCB = new System.Windows.Forms.CheckBox();
             this.vbnFileLabel = new System.Windows.Forms.Label();
             this.vbnButton = new System.Windows.Forms.Button();
@@ -45,8 +47,6 @@
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.scaleTB = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -100,6 +100,24 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(278, 248);
             this.panel1.TabIndex = 3;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(3, 145);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(34, 13);
+            this.label5.TabIndex = 13;
+            this.label5.Text = "Scale";
+            // 
+            // scaleTB
+            // 
+            this.scaleTB.Location = new System.Drawing.Point(43, 142);
+            this.scaleTB.Name = "scaleTB";
+            this.scaleTB.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.scaleTB.Size = new System.Drawing.Size(42, 20);
+            this.scaleTB.TabIndex = 12;
+            this.scaleTB.Text = "1";
             // 
             // smoothCB
             // 
@@ -214,24 +232,6 @@
             this.label2.Size = new System.Drawing.Size(75, 13);
             this.label2.TabIndex = 4;
             this.label2.Text = "Import Options";
-            // 
-            // scaleTB
-            // 
-            this.scaleTB.Location = new System.Drawing.Point(43, 142);
-            this.scaleTB.Name = "scaleTB";
-            this.scaleTB.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.scaleTB.Size = new System.Drawing.Size(42, 20);
-            this.scaleTB.TabIndex = 12;
-            this.scaleTB.Text = "1";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 145);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(34, 13);
-            this.label5.TabIndex = 13;
-            this.label5.Text = "Scale";
             // 
             // DAEImportSettings
             // 

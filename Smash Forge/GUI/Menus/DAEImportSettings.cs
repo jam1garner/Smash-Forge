@@ -66,6 +66,8 @@ namespace Smash_Forge
             bool checkedUVRange = false;
             bool fixUV = false;
 
+            bool warning = false;
+
             foreach (NUD.Mesh mesh in nud.mesh)
             {
                 if (BoneTypes[(string)comboBox2.SelectedItem] == BoneTypes["No Bones"])
@@ -77,6 +79,13 @@ namespace Smash_Forge
                         poly.SmoothNormals();
 
                     poly.vertSize = ((poly.vertSize == 0x6 ? 0 : BoneTypes[(string)comboBox2.SelectedItem])) | (VertTypes[(string)comboBox1.SelectedItem]);
+
+                    if(!warning && poly.vertSize == 0x27)
+                    {
+                        MessageBox.Show("Using \""+ (string)comboBox2.SelectedItem + "\" and \"" + (string)comboBox1.SelectedItem + "\" can make shadows not appear in-game",
+                            "Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        warning = true;
+                    }
                     
                     //if (checkBox1.Checked || checkBox4.Checked || vertcolorCB.Checked || sc != 1f)
                         foreach (NUD.Vertex v in poly.vertices)
