@@ -1349,12 +1349,12 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 	//ao_blend.xyz = hsv2rgb(vec3(c.x, c.y*2.5, c.z));
 	
 	// Color Gain/Offset
-	if ((flags & 0x00F00000) == uint(0x00600000)) // corrin, roy, etc
+	if ((flags & 0x00F00000u) == 0x00600000u) // corrin, roy, etc
 	{
 		diffuse_color = colorOffset.xyz + (luminance(diffuse_map.xyz) * (colorGain.xyz));
 	}
 	else 
-	if ((flags & 0x00420000) == uint(0x00420000)) // bayo hair 'diffuse' is actually a normal map
+	if ((flags & 0x00420000u) == 0x00420000u) // bayo hair 'diffuse' is actually a normal map
 		diffuse_color = colorOffset.xyz* (1 + colorGain.xyz);
 	else
 		diffuse_color = diffuse_map.xyz; // regular characters
@@ -1367,7 +1367,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 	
     if(renderLighting == 1)
 	{
-		if ((flags & 0xA0000000) == uint(0xA0000000)) // stage lighting
+		if ((flags & 0xA0000000u) == 0xA0000000u) // stage lighting
 			resulting_color = diffuse_color* ao_blend * color.xyz;
 		else // character lighting
 		{
@@ -1380,7 +1380,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 	else
 		resulting_color = (diffuse_color* ao_blend*0.9)+(diffuse_shading*0.15); 
 	
-	if ((flags & 0x00FF0000) == uint(0x00610000)) // byte 2 61 spec blend (Roy, Corrin, etc)
+	if ((flags & 0x00FF0000u) == 0x00610000u) // byte 2 61 spec blend (Roy, Corrin, etc)
 		ao_blend = diffuse_map.xyz;
 	
 	//resulting_color = diffuse_color * ao_blend;
