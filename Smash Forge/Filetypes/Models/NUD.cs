@@ -200,16 +200,16 @@ namespace Smash_Forge
                 {
                     Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - pol];
 
-                    if (p.isTransparent)
+                    //int hash = p.materials[0].textures[0].hash;
+                    if (p.materials[0].srcFactor != 0 || p.materials[0].dstFactor != 0)
                     {
                         trans.Add(p);
                         continue;
                     }
-                    int hash = p.materials[0].textures[0].hash;
-                    if (p.isTransparent)
-                        trans.Add(p);
-                    else
-                        opaque.Add(p);
+                    opaque.Add(p);
+                    //if (p.isTransparent)
+                    //    trans.Add(p);
+                    //else
                 }
             }
 

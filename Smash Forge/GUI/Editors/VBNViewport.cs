@@ -514,7 +514,7 @@ namespace Smash_Forge
             GL.Enable(EnableCap.StencilTest);
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
 
-            //GL.Enable(EnableCap.FramebufferSrgb);
+            GL.Enable(EnableCap.FramebufferSrgb);
 
 
             // draw models
@@ -1423,7 +1423,7 @@ namespace Smash_Forge
                         }
                     }
 
-                    va = Vector3.Transform(va, b.transform);
+                    va = Vector3.Transform(va, b.transform.ClearScale());
 
 
                     // Draw angle marker
@@ -1466,7 +1466,7 @@ namespace Smash_Forge
                         var va2 = new Vector3(h.X2, h.Y2, h.Z2);
 
                         if (h.Bone != -1)
-                            va2 = Vector3.Transform(va2, b.transform);
+                            va2 = Vector3.Transform(va2, b.transform.ClearScale());
 
                         RenderTools.drawCylinder(va, va2, h.Size);
                     }
@@ -1798,11 +1798,11 @@ namespace Smash_Forge
         {
             if (e.KeyChar == 'i')
             {
-                /*GL.DeleteProgram(Runtime.shaders["NUD"].programID);
+                GL.DeleteProgram(Runtime.shaders["NUD"].programID);
                 shader = new Shader();
                 shader.vertexShader(File.ReadAllText("vert.txt"));
                 shader.fragmentShader(File.ReadAllText("frag.txt"));
-                Runtime.shaders["NUD"] = shader;*/
+                Runtime.shaders["NUD"] = shader;
             }
 
             /*if (e.KeyChar == 'w')

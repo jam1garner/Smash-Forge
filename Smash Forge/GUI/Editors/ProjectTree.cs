@@ -77,12 +77,12 @@ namespace Smash_Forge
         }
         public void fillTree()
         {
-            if (!Directory.Exists(Path.Combine(MainForm.executableDir, "workspace/animcmd/")))
-                Directory.CreateDirectory(Path.Combine(MainForm.executableDir, "workspace/animcmd/"));
+            if (!Directory.Exists(Path.Combine(Application.StartupPath, "workspace/animcmd/")))
+                Directory.CreateDirectory(Path.Combine(Application.StartupPath, "workspace/animcmd/"));
 
             treeView1.Nodes.Clear();
             List<TreeNode> acmdFiles = new List<TreeNode>();
-            foreach (string f in Directory.GetFiles(Path.Combine(MainForm.executableDir,"workspace/animcmd/")))
+            foreach (string f in Directory.GetFiles(Path.Combine(Application.StartupPath, "workspace/animcmd/")))
             {
                 acmdFiles.Add(new TreeNode(Path.GetFileName(f)));
             }
@@ -94,7 +94,6 @@ namespace Smash_Forge
             foreach (ModelContainer con in Runtime.ModelContainers)
             {
                 List<TreeNode> modelCon = new List<TreeNode>();
-
                 if(con.nud != null)
                     modelCon.Add(new TreeNode("Mesh"));
                 
@@ -106,8 +105,6 @@ namespace Smash_Forge
                 models.Add(node);
             }
             treeView1.Nodes.Add(new TreeNode("Models", models.ToArray()));
-
-
             List<TreeNode> textures = new List<TreeNode>();
             modelLinks.Clear();
             foreach (NUT n in Runtime.TextureContainers)
@@ -124,11 +121,11 @@ namespace Smash_Forge
         {
             string filename = Path.GetFullPath(file);
             acmdDirectory = Path.GetDirectoryName(filename);
-            if (Directory.Exists(Path.Combine(MainForm.executableDir, "workspace/")))
-                Directory.Delete(Path.Combine(MainForm.executableDir, "workspace/"));
+            if (Directory.Exists(Path.Combine(Application.StartupPath, "workspace/")))
+                Directory.Delete(Path.Combine(Application.StartupPath, "workspace/"));
             ProcessStartInfo start = new ProcessStartInfo();
-            start.Arguments = $"\"{filename}\" -o \"{Path.Combine(MainForm.executableDir, "workspace/")}\"";
-            start.FileName = $"\"{Path.Combine(MainForm.executableDir,"/lib/FITD.exe")}\"";
+            start.Arguments = $"\"{filename}\" -o \"{Path.Combine(Application.StartupPath, "workspace/")}\"";
+            start.FileName = $"\"{Path.Combine(Application.StartupPath, "/lib/FITD.exe")}\"";
             start.WindowStyle = ProcessWindowStyle.Hidden;
             start.CreateNoWindow = true;
             int exit;
@@ -143,11 +140,11 @@ namespace Smash_Forge
         public void openACMD(string filename, string motionPath)
         {
             acmdDirectory = Path.GetDirectoryName(filename);
-            if (Directory.Exists(Path.Combine(MainForm.executableDir, "workspace/")))
-                Directory.Delete(Path.Combine(MainForm.executableDir, "workspace/"));
+            if (Directory.Exists(Path.Combine(Application.StartupPath, "workspace/")))
+                Directory.Delete(Path.Combine(Application.StartupPath, "workspace/"));
             ProcessStartInfo start = new ProcessStartInfo();
-            start.Arguments = $"-m \"{motionPath}\" -o \"{Path.Combine(MainForm.executableDir, "workspace/")}\" \"{filename}\"";
-            start.FileName = $"{Path.Combine(MainForm.executableDir, "/lib/FITD.exe")}";
+            start.Arguments = $"-m \"{motionPath}\" -o \"{Path.Combine(Application.StartupPath, "workspace/")}\" \"{filename}\"";
+            start.FileName = $"{Path.Combine(Application.StartupPath, "/lib/FITD.exe")}";
             Console.WriteLine(start.FileName + " " + start.Arguments);
             start.WindowStyle = ProcessWindowStyle.Hidden;
             start.CreateNoWindow = true;
@@ -190,7 +187,7 @@ namespace Smash_Forge
             {
                 if (e.Node.Parent.Text.Equals("ACMD"))
                 {
-                    ACMDEditor temp = new ACMDEditor(Path.Combine(MainForm.executableDir,"workspace/animcmd/") + e.Node.Text, this);
+                    ACMDEditor temp = new ACMDEditor(Path.Combine(Application.StartupPath, "workspace/animcmd/") + e.Node.Text, this);
                     MainForm.Instance.ACMDEditors.Add(temp);
                     MainForm.Instance.AddDockedControl(temp);
                 }
@@ -206,7 +203,7 @@ namespace Smash_Forge
             {
                 Directory.Move(((DirectoryInfo)e.Node.Tag).FullName, ((DirectoryInfo)e.Node.Tag).FullName.Replace(e.Node.Text, e.Label));
             }
-            if(e.Node.Tag is FileInfo)
+            if (e.Node.Tag is FileInfo)
             {
                 ((ProjectExplorerNode)e.Node).ProjectNode.Project.RenameFile(((FileInfo)e.Node.Tag).FullName, e.Node.Text, e.Label);
             }
