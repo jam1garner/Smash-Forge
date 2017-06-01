@@ -1797,11 +1797,11 @@ namespace Smash_Forge
         {
             if (e.KeyChar == 'i')
             {
-                GL.DeleteProgram(Runtime.shaders["NUD"].programID);
+                /*GL.DeleteProgram(Runtime.shaders["NUD"].programID);
                 shader = new Shader();
                 shader.vertexShader(File.ReadAllText("vert.txt"));
                 shader.fragmentShader(File.ReadAllText("frag.txt"));
-                Runtime.shaders["NUD"] = shader;
+                Runtime.shaders["NUD"] = shader;*/
             }
 
             /*if (e.KeyChar == 'w')
