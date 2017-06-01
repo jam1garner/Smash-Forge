@@ -190,6 +190,32 @@ namespace Smash_Forge
             }
         }
 
+        public static void drawSphereTransformedVisible(Vector3 center, float radius, uint precision, Matrix4 transform)
+        {
+            GL.Enable(EnableCap.StencilTest);
+
+            GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
+            GL.StencilMask(0xFF);
+            GL.Disable(EnableCap.DepthTest);
+            GL.Clear(ClearBufferMask.StencilBufferBit);
+            GL.ColorMask(false, false, false, false);
+
+            drawSphereTransformed(center, radius, precision, transform);
+
+            GL.ColorMask(true, true, true, true);
+            GL.StencilFunc(StencilFunction.Equal, 1, 0xFF);
+            GL.StencilMask(0x00);
+            GL.Disable(EnableCap.CullFace);
+
+            drawSphere(Vector3.Zero, 100, 10);
+
+            GL.StencilMask(0xFF);
+            GL.Clear(ClearBufferMask.StencilBufferBit);
+            GL.Enable(EnableCap.StencilTest);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
+        }
+
         public static void drawSphereTransformed(Vector3 center, float radius, uint precision, Matrix4 transform)
         {
             if (radius < 0.0f)

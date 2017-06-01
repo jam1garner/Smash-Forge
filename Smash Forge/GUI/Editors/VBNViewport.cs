@@ -1551,14 +1551,13 @@ namespace Smash_Forge
                         }
                     }
 
-                    GL.DepthMask(false);
                     var va2 = new Vector3(h.X2, h.Y2, h.Z2);
 
                     //if (h.Bone != -1)va2 = Vector3.Transform(va2, b.transform);
 
                     if (h.isSphere)
                     {
-                        RenderTools.drawSphereTransformed(va, h.Size, 30, b.transform);
+                        RenderTools.drawSphereTransformedVisible(va, h.Size, 30, b.transform);
                     }
                     else
                     {
