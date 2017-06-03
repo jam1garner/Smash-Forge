@@ -29,7 +29,6 @@ namespace Smash_Forge
         {
             InitializeComponent();
             this.TabText = "Renderer";
-            Hitboxes = new SortedList<int, Hitbox>();
             Application.Idle += Application_Idle;
             Runtime.AnimationChanged += Runtime_AnimationChanged;
             timeSinceSelected.Start();
@@ -272,10 +271,10 @@ namespace Smash_Forge
 
             Frame = (int)this.nupdFrame.Value;
 
-            if (scr_game != null)
+            if (gameScriptManager.script != null)
             {
-                scr_game.currentFrame = Frame;
-                Hitboxes = scr_game.processScript();
+                gameScriptManager.currentFrame = Frame;
+                gameScriptManager.processScript();
             }
         }
         private void nupdSpeed_ValueChanged(object sender, EventArgs e)
@@ -330,7 +329,6 @@ namespace Smash_Forge
         private int _animSpeed = 60;
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        private SortedList<int, Hitbox> Hitboxes { get; set; }
         #endregion
 
         #region Rendering
@@ -784,19 +782,7 @@ namespace Smash_Forge
         {
             if (Runtime.ModelContainers.Count > 0)
             {
-                // Render the hitboxes
-                if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
-                    HandleACMD(Runtime.TargetAnimString.Substring(3));
-
-                if (Runtime.renderHitboxes)
-                    RenderHitboxes();
-
-                if (Runtime.renderHurtboxes)
-                    RenderHurtboxes();
-
-                if (Runtime.renderECB)
-                    RenderECB();
-
+                // Render bones
                 foreach (ModelContainer m in Runtime.ModelContainers)
                 {
                     RenderTools.DrawVBN(m.vbn);
@@ -810,6 +796,25 @@ namespace Smash_Forge
                         RenderTools.DrawVBN(m.dat_melee.bones);
                     }
                 }
+
+                // Render the hitboxes - because of how we disable the depth buffer here,
+                // make sure that everything else is drawn before this!
+                if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
+                    HandleACMD(Runtime.TargetAnimString.Substring(3));
+
+                if (Runtime.renderHitboxes && Runtime.renderInterpolatedHitboxes)
+                    RenderInterpolatedHitboxes();
+
+                if (Runtime.renderHitboxes)
+                {
+                    RenderHitboxes();
+                }
+
+                if (Runtime.renderHurtboxes)
+                    RenderHurtboxes();
+
+                if (Runtime.renderECB)
+                    RenderECB();
             }
         }
 
@@ -1369,115 +1374,149 @@ namespace Smash_Forge
             return Tuple.Create(boneId, jtbIndex);
         }
 
-        public void RenderHitboxes()
+        public Bone getBone(int bone)
         {
-            if (Hitboxes.Count > 0)
+            Tuple<int, int> boneInfo = translateScriptBoneId(bone);
+            int bid = boneInfo.Item1;
+            int jtbIndex = boneInfo.Item2;
+
+            Bone b = new Bone(null);
+
+            if (bone != -1)
             {
-                GL.Color4(Color.FromArgb(85, Color.Red));
-                GL.Enable(EnableCap.DepthTest);
-                GL.Enable(EnableCap.Blend);
-
-                foreach (var pair in Hitboxes)
+                foreach (ModelContainer m in Runtime.ModelContainers)
                 {
-                    var h = pair.Value;
-                    var va = new Vector3(h.X, h.Y, h.Z);
-
-                    Tuple<int, int> boneInfo = translateScriptBoneId(h.Bone);
-                    int bid = boneInfo.Item1;
-                    int jtbIndex = boneInfo.Item2;
-
-                    Bone b = new Bone(null);
-
-                    if (h.Bone != -1)
+                    // ModelContainers should store Hitbox data or have them linked since it will use last
+                    // modelcontainer bone for hitbox display (which might not be the character model).
+                    // This is especially important for the future when importing weapons for some moves.
+                    if (m.vbn != null)
                     {
-                        foreach (ModelContainer m in Runtime.ModelContainers)
+                        try //Try used to avoid bone not found issue that crashes the application
                         {
-                            // ModelContainers should store Hitbox data or have them linked since it will use last
-                            // modelcontainer bone for hitbox display (which might not be the character model).
-                            // This is especially important for the future when importing weapons for some moves.
-                            if (m.vbn != null)
+                            if (m.vbn.jointTable.Count < 1)
+                                b = m.vbn.bones[bid];
+                            else
                             {
-                                try //Try used to avoid bone not found issue that crashes the application
+                                if (jtbIndex < m.vbn.jointTable.Count)
                                 {
-                                    if (m.vbn.jointTable.Count < 1)
-                                        b = m.vbn.bones[bid];
-                                    else
-                                    {
-                                        if (jtbIndex < m.vbn.jointTable.Count)
-                                        {
-                                            b = m.vbn.bones[m.vbn.jointTable[jtbIndex][bid]];
-                                        }
-                                        else
-                                        {
-                                            //If there is no jointTable but bone is >1000 then don't look into a another joint table
-                                            //This makes some weapons like Luma have hitboxes visualized
-                                            b = m.vbn.bones[bid];
-                                        }
-                                    }
+                                    b = m.vbn.bones[m.vbn.jointTable[jtbIndex][bid]];
                                 }
-                                catch
+                                else
                                 {
-                                    //Console.WriteLine($"Hitbox: Bone not found {h.Bone}");
+                                    //If there is no jointTable but bone is >1000 then don't look into a another joint table
+                                    //This makes some weapons like Luma have hitboxes visualized
+                                    b = m.vbn.bones[bid];
                                 }
                             }
                         }
-                    }
-
-                    va = Vector3.Transform(va, b.transform.ClearScale());
-
-
-                    // Draw angle marker
-                    /*GL.LineWidth(7f);
-                    GL.Begin(PrimitiveType.Lines);
-                    GL.Color3(Color.Black);
-                    GL.Vertex3(va);
-                    GL.Vertex3(va + Vector3.Transform(new Vector3(0,0,h.Size), Matrix4.CreateRotationX(-h.Angle * ((float)Math.PI / 180f))));
-                    GL.End();*/
-
-                    GL.Color4(Color.FromArgb(85, Color.Red));
-
-                    switch (h.Type)
-                    {
-                        case Hitbox.HITBOX:
-                            if (h.Ignore_Throw)
-                            {
-                                GL.Color4(Color.FromArgb(85, Color.DarkGreen));
-                            }
-                            else
-                            {
-                                GL.Color4(Color.FromArgb(85, Color.Red));
-                            }
-                            break;
-                        case Hitbox.GRABBOX:
-                            GL.Color4(Color.FromArgb(85, Color.Purple));
-                            break;
-                        case Hitbox.WINDBOX:
-                            GL.Color4(Color.FromArgb(85, Color.Blue));
-                            break;
-                        case Hitbox.SEARCHBOX:
-                            GL.Color4(Color.FromArgb(85, Color.DarkOrange));
-                            break;
-                    }
-
-                    GL.DepthMask(false);
-
-                    if (h.Extended)
-                    {
-                        var va2 = new Vector3(h.X2, h.Y2, h.Z2);
-
-                        if (h.Bone != -1)
-                            va2 = Vector3.Transform(va2, b.transform.ClearScale());
-
-                        RenderTools.drawCylinder(va, va2, h.Size);
-                    }
-                    else
-                    {
-                        RenderTools.drawSphere(va, h.Size, 30);
+                        catch { }
                     }
                 }
+            }
+            return b;
+        }
 
+        public void RenderHitboxes()
+        {
+            if (gameScriptManager.script == null || gameScriptManager.Hitboxes.Count <= 0)
+                return;
+
+            GL.Enable(EnableCap.Blend);
+
+            foreach (var pair in gameScriptManager.Hitboxes)
+            {
+                var h = pair.Value;
+                Bone b = getBone(h.Bone);
+                h.va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
+
+                // Draw angle marker
+                /*GL.LineWidth(7f);
+                GL.Begin(PrimitiveType.Lines);
+                GL.Color3(Color.Black);
+                GL.Vertex3(va);
+                GL.Vertex3(va + Vector3.Transform(new Vector3(0,0,h.Size), Matrix4.CreateRotationX(-h.Angle * ((float)Math.PI / 180f))));
+                GL.End();*/
+
+                switch (h.Type)
+                {
+                    case Hitbox.HITBOX:
+                        if (h.Ignore_Throw)
+                            GL.Color4(Color.FromArgb(85, Color.DarkGreen));
+                        else
+                            GL.Color4(Color.FromArgb(85, Color.Red));
+                        break;
+                    case Hitbox.GRABBOX:
+                        GL.Color4(Color.FromArgb(85, Color.Purple));
+                        break;
+                    case Hitbox.WINDBOX:
+                        GL.Color4(Color.FromArgb(85, Color.Blue));
+                        break;
+                    case Hitbox.SEARCHBOX:
+                        GL.Color4(Color.FromArgb(85, Color.DarkOrange));
+                        break;
+                    default:
+                        GL.Color4(Color.FromArgb(85, Color.FloralWhite));
+                        break;
+                }
+
+                // Draw everything to the stencil buffer
+                RenderTools.beginStencil();
+                if (h.Extended)
+                {
+                    h.va2 = new Vector3(h.X2, h.Y2, h.Z2);
+                    if (h.Bone != -1) h.va2 = Vector3.Transform(h.va2, b.transform.ClearScale());
+                    RenderTools.drawCylinder(h.va, h.va2, h.Size);
+                }
+                else
+                {
+                    RenderTools.drawSphere(h.va, h.Size, 30);
+                }
+                // End stenciling and draw over all the stenciled bits
+                RenderTools.endStencilAndDraw();
+            }
+            GL.Disable(EnableCap.Blend);
+        }
+
+        public void RenderInterpolatedHitboxes()
+        {
+            if (gameScriptManager.script != null && gameScriptManager.Hitboxes.Count > 0)
+            {
+                // Interpolation is one colour for all Hitbox types and rendered all
+                // at once to make a giant block. If people want sub-type
+                // interpolation later we can add it.
+                GL.Color4(Color.FromArgb(40, Color.DarkOrange));
+                GL.Enable(EnableCap.Blend);
+                // Draw everything to the stencil buffer
+                RenderTools.beginStencil();
+
+                foreach (var pair in gameScriptManager.Hitboxes)
+                {
+                    var h = pair.Value;
+                    Bone b = getBone(h.Bone);
+                    Vector3 va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
+
+                    // Draw a cylinder between the last known area and the current one
+                    Hitbox lastMatchingHitbox = null;
+                    bool success = gameScriptManager.LastHitboxes.TryGetValue(pair.Key, out lastMatchingHitbox);
+                    if (success)
+                    {
+                        if (h.Extended)
+                        {
+                            Vector3 va2 = new Vector3(h.X2, h.Y2, h.Z2);
+                            if (h.Bone != -1) va2 = Vector3.Transform(va2, b.transform.ClearScale());
+                            // Draw one giant cylinder made of 4 bounding cylinders
+                            RenderTools.drawCylinder(lastMatchingHitbox.va, va, h.Size);
+                            RenderTools.drawCylinder(lastMatchingHitbox.va2, va2, h.Size);
+                            RenderTools.drawCylinder(lastMatchingHitbox.va, lastMatchingHitbox.va2, h.Size);
+                            RenderTools.drawCylinder(va, va2, h.Size);
+                        }
+                        else
+                            RenderTools.drawCylinder(va, lastMatchingHitbox.va, lastMatchingHitbox.Size);
+                    }
+                }
+                // End stenciling and draw over all the stenciled bits
+                RenderTools.endStencilAndDraw();
                 GL.Disable(EnableCap.Blend);
-                GL.Disable(EnableCap.DepthTest);
             }
         }
 
@@ -1493,43 +1532,7 @@ namespace Smash_Forge
                 {
                     var h = pair.Value;
                     var va = new Vector3(h.X, h.Y, h.Z);
-
-                    Tuple<int, int> boneInfo = translateScriptBoneId(h.Bone);
-                    int bid = boneInfo.Item1;
-                    int jtbIndex = boneInfo.Item2;
-
-                    Bone b = new Bone(null);
-
-                    if (h.Bone != -1)
-                    {
-                        foreach (ModelContainer m in Runtime.ModelContainers)
-                        {
-                            if (m.vbn != null)
-                            {
-                                try //Try used to avoid bone not found issue that crashes the application
-                                {
-                                    if (m.vbn.jointTable.Count < 1)
-                                        b = m.vbn.bones[bid];
-                                    else
-                                    {
-                                        if (jtbIndex < m.vbn.jointTable.Count)
-                                        {
-                                            b = m.vbn.bones[m.vbn.jointTable[jtbIndex][bid]];
-                                        }
-                                        else
-                                        {
-                                            b = m.vbn.bones[bid];
-                                        }
-                                    }
-                                }
-                                catch
-                                {
-                                    //Console.WriteLine($"Hurtbox: Bone not found {h.Bone}");
-                                }
-                            }
-
-                        }
-                    }
+                    Bone b = getBone(h.Bone);
 
                     //va = Vector3.Transform(va, b.transform);
 
@@ -1630,7 +1633,7 @@ namespace Smash_Forge
             }
         }
 
-        ACMDScriptManager scr_game;
+        ACMDScriptManager gameScriptManager = new ACMDScriptManager();
         ACMDScript scr_sound;
 
         int lastFrame = 0;
@@ -1702,7 +1705,7 @@ namespace Smash_Forge
 
             if (Runtime.Moveset == null)
             {
-                scr_game = null;
+                gameScriptManager.Reset(null);
                 return;
             }
 
@@ -1723,7 +1726,7 @@ namespace Smash_Forge
                 }
                 else
                 {
-                    scr_game = null;
+                    gameScriptManager.Reset(null);
                     return;
                 }
             }
@@ -1731,9 +1734,9 @@ namespace Smash_Forge
             //Console.WriteLine("Handling " + animname);
             ACMDScript acmdScript = (ACMDScript)Runtime.Moveset.Game.Scripts[crc];
             if (acmdScript != null)
-                scr_game = new ACMDScriptManager(acmdScript);
+                gameScriptManager.Reset(acmdScript);
             else
-                scr_game = null;
+                gameScriptManager.Reset(null);
             //scr_sound = (ACMDScript)Runtime.Moveset.Sound.Scripts[crc];
             if (Runtime.acmdEditor.crc != crc)
                 Runtime.acmdEditor.SetAnimation(crc);

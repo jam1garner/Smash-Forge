@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SALT.Scripting.AnimCMD;
 using System.IO;
 using System.Security.Cryptography;
+using OpenTK;
 
 namespace Smash_Forge
 {
@@ -175,5 +176,9 @@ namespace Smash_Forge
         public float X2 { get; set; }
         public float Y2 { get; set; }
         public float Z2 { get; set; }
+
+        // Stuff for interpolation, set during rendering
+        // These are *post transform*
+        public Vector3 va, va2;
     }
 }
