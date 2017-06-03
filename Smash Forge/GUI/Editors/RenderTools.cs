@@ -191,6 +191,33 @@ namespace Smash_Forge
             }
         }
 
+        public static void beginStencil()
+        {
+            GL.Enable(EnableCap.StencilTest);
+
+            GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
+            GL.StencilMask(0xFF);
+            GL.Disable(EnableCap.DepthTest);
+            GL.Clear(ClearBufferMask.StencilBufferBit);
+            GL.ColorMask(false, false, false, false);
+        }
+
+        public static void endStencilAndDraw()
+        {
+            GL.ColorMask(true, true, true, true);
+            GL.StencilFunc(StencilFunction.Equal, 1, 0xFF);
+            GL.StencilMask(0x00);
+            //GL.Disable(EnableCap.CullFace);
+
+            drawSphere(Vector3.Zero, 100, 10);
+
+            GL.StencilMask(0xFF);
+            GL.Clear(ClearBufferMask.StencilBufferBit);
+            GL.Enable(EnableCap.StencilTest);
+            GL.Enable(EnableCap.DepthTest);
+            //GL.Enable(EnableCap.CullFace);
+        }
+
         public static void drawSphereTransformedVisible(Vector3 center, float radius, uint precision, Matrix4 transform)
         {
             GL.Enable(EnableCap.StencilTest);
@@ -201,7 +228,7 @@ namespace Smash_Forge
             GL.Clear(ClearBufferMask.StencilBufferBit);
             GL.ColorMask(false, false, false, false);
 
-            drawSphereTransformed(center, radius, precision, transform);
+               drawSphereTransformed(center, radius, precision, transform);
 
             GL.ColorMask(true, true, true, true);
             GL.StencilFunc(StencilFunction.Equal, 1, 0xFF);
@@ -272,6 +299,68 @@ namespace Smash_Forge
         }
 
         public static Matrix4 def = Matrix4.CreateTranslation(0,0,0);
+
+        public static void drawHitboxCylinder(Vector3 p1, Vector3 p2, float R)
+        {
+            Vector3 yAxis = new Vector3(0, 1, 0);
+            Vector3 d = p2 - p1;
+            float height = (float)Math.Sqrt(d.X * d.X + d.Y * d.Y + d.Z * d.Z) / 2;
+
+            Vector3 mid = (p1 + p2) / 2;  // midpoint
+
+            Vector3 axis = Vector3.Cross(d, yAxis);
+            float angle = (float)Math.Acos(Vector3.Dot(d.Normalized(), yAxis));
+            
+
+            GL.Enable(EnableCap.StencilTest);
+
+            GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
+            GL.StencilMask(0xFF);
+            GL.Disable(EnableCap.DepthTest);
+            GL.Clear(ClearBufferMask.StencilBufferBit);
+            GL.ColorMask(false, false, false, false);
+
+            drawSphere(p1, R, 20);
+            drawSphere(p2, R, 20);
+
+            //  sides
+            GL.PushMatrix();
+
+            //GL.Scale(scale.X, scale.Y, scale.Z);
+            //double[] f = new double[] {
+            //    transform.M11, transform.M12, transform.M13, transform.M14,
+            //    transform.M21, transform.M22, transform.M23, transform.M24,
+            //    transform.M31, transform.M32, transform.M33, transform.M34,
+            //    transform.M41, transform.M42, transform.M43, transform.M44,
+            //};
+            //GL.MultMatrix(f);
+            //Vector3 scale = transform.ExtractScale();
+            GL.Translate(mid);
+            GL.Rotate(-(float)(angle * (180 / Math.PI)), axis);
+
+            GL.Begin(PrimitiveType.QuadStrip);
+            for (int j = 0; j <= 8 * 3; j += 1)
+            {
+                GL.Vertex3((float)Math.Cos(j) * R, +height, (float)Math.Sin(j) * R);
+                GL.Vertex3((float)Math.Cos(j) * R, -height, (float)Math.Sin(j) * R);
+            }
+            GL.End();
+
+            GL.PopMatrix();
+
+            GL.ColorMask(true, true, true, true);
+            GL.StencilFunc(StencilFunction.Equal, 1, 0xFF);
+            GL.StencilMask(0x00);
+            GL.Disable(EnableCap.CullFace);
+
+            drawSphere(Vector3.Zero, 100, 10);
+
+            GL.StencilMask(0xFF);
+            GL.Clear(ClearBufferMask.StencilBufferBit);
+            GL.Enable(EnableCap.StencilTest);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
+        }
 
         public static void drawReducedCylinderTransformed(Vector3 p1, Vector3 p2, float R, Matrix4 transform)
         {
