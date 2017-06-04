@@ -191,7 +191,7 @@ namespace Smash_Forge
             }
         }
 
-        public static void beginStencil()
+        public static void beginTopLevelStencil()
         {
             GL.Enable(EnableCap.StencilTest);
 
@@ -202,7 +202,19 @@ namespace Smash_Forge
             GL.ColorMask(false, false, false, false);
         }
 
-        public static void endStencilAndDraw()
+        // The same as beginTopLevelStencil but writes 0s instead of 1s
+        // Also it does not clear the stencil buffer
+        public static void beginTopLevelAntiStencil()
+        {
+            GL.Enable(EnableCap.StencilTest);
+
+            GL.StencilFunc(StencilFunction.Always, 0, 0xFF);
+            GL.StencilMask(0xFF);
+            GL.Disable(EnableCap.DepthTest);
+            GL.ColorMask(false, false, false, false);
+        }
+
+        public static void endTopLevelStencilAndDraw()
         {
             GL.ColorMask(true, true, true, true);
             GL.StencilFunc(StencilFunction.Equal, 1, 0xFF);
