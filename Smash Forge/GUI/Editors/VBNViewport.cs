@@ -805,10 +805,9 @@ namespace Smash_Forge
                 if (Runtime.renderHitboxes && Runtime.renderInterpolatedHitboxes)
                     RenderInterpolatedHitboxes();
 
+                // Must come after interpolated boxes to appear on top
                 if (Runtime.renderHitboxes)
-                {
                     RenderHitboxes();
-                }
 
                 if (Runtime.renderHurtboxes)
                     RenderHurtboxes();
@@ -1460,7 +1459,7 @@ namespace Smash_Forge
                 }
 
                 // Draw everything to the stencil buffer
-                RenderTools.beginStencil();
+                RenderTools.beginTopLevelStencil();
                 if (h.Extended)
                 {
                     h.va2 = new Vector3(h.X2, h.Y2, h.Z2);
@@ -1472,7 +1471,7 @@ namespace Smash_Forge
                     RenderTools.drawSphere(h.va, h.Size, 30);
                 }
                 // End stenciling and draw over all the stenciled bits
-                RenderTools.endStencilAndDraw();
+                RenderTools.endTopLevelStencilAndDraw();
             }
             GL.Disable(EnableCap.Blend);
         }
@@ -1484,11 +1483,13 @@ namespace Smash_Forge
                 // Interpolation is one colour for all Hitbox types and rendered all
                 // at once to make a giant block. If people want sub-type
                 // interpolation later we can add it.
-                GL.Color4(Color.FromArgb(40, Color.DarkOrange));
+                GL.Color4(Color.FromArgb(40, Color.PaleGoldenrod));
                 GL.Enable(EnableCap.Blend);
                 // Draw everything to the stencil buffer
-                RenderTools.beginStencil();
+                RenderTools.beginTopLevelStencil();
 
+                // Render the interpolated area between the last frame's set of hitboxes
+                // and the current frame's set of hitboxes
                 foreach (var pair in gameScriptManager.Hitboxes)
                 {
                     var h = pair.Value;
@@ -1514,8 +1515,31 @@ namespace Smash_Forge
                             RenderTools.drawCylinder(va, lastMatchingHitbox.va, lastMatchingHitbox.Size);
                     }
                 }
+
+                // Now remove the spots for the current frame hitboxes so the colours don't get mixed
+                RenderTools.beginTopLevelAntiStencil();
+                foreach (var pair in gameScriptManager.Hitboxes)
+                {
+                    var h = pair.Value;
+                    Bone b = getBone(h.Bone);
+                    Vector3 va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
+
+                    if (h.Extended)
+                    {
+                        Vector3 va2 = new Vector3(h.X2, h.Y2, h.Z2);
+                        if (h.Bone != -1) va2 = Vector3.Transform(va2, b.transform.ClearScale());
+                        RenderTools.drawCylinder(va, va2, h.Size);
+                    }
+                    else
+                    {
+                        RenderTools.drawSphere(va, h.Size, 30);
+                    }
+                }
+
                 // End stenciling and draw over all the stenciled bits
-                RenderTools.endStencilAndDraw();
+                // which will now be the entire interpolated area minus
+                // the new hitboxes
+                RenderTools.endTopLevelStencilAndDraw();
                 GL.Disable(EnableCap.Blend);
             }
         }
@@ -1578,58 +1602,24 @@ namespace Smash_Forge
             if (Runtime.ParamManager.ECBs.Count > 0)
             {
                 GL.Color4(Color.FromArgb(80, Color.DarkRed));
-                GL.Enable(EnableCap.DepthTest);
                 GL.Enable(EnableCap.Blend);
 
                 foreach (var pair in Runtime.ParamManager.ECBs)
                 {
                     var e = pair.Value;
                     var va = new Vector3(e.X, e.Y, e.Z);
-
-                    Tuple<int, int> boneInfo = translateScriptBoneId(e.Bone);
-                    int bid = boneInfo.Item1;
-                    int jtbIndex = boneInfo.Item2;
-
-                    Bone b = new Bone(null);
-
-                    if (e.Bone != -1)
-                    {
-                        foreach (ModelContainer m in Runtime.ModelContainers)
-                        {
-                            if (m.vbn != null)
-                            {
-                                try //Try used to avoid bone not found issue that crashes the application
-                                {
-                                    if (m.vbn.jointTable.Count < 1)
-                                        b = m.vbn.bones[bid];
-                                    else
-                                    {
-                                        if (jtbIndex < m.vbn.jointTable.Count)
-                                        {
-                                            b = m.vbn.bones[m.vbn.jointTable[jtbIndex][bid]];
-                                        }
-                                        else
-                                        {
-                                            b = m.vbn.bones[bid];
-                                        }
-                                    }
-                                }
-                                catch
-                                {
-                                    //Console.WriteLine($"Hurtbox: Bone not found {h.Bone}");
-                                }
-                            }
-
-                        }
-                    }
+                    Bone b = getBone(e.Bone);
 
                     va = Vector3.Transform(va, b.transform.ClearScale());
 
+                    // Draw everything to the stencil buffer
+                    RenderTools.beginTopLevelStencil();
                     RenderTools.drawSphere(va, 0.5f, 30);
+                    // End stenciling and draw over all the stenciled bits
+                    RenderTools.endTopLevelStencilAndDraw();
                 }
 
                 GL.Disable(EnableCap.Blend);
-                GL.Disable(EnableCap.DepthTest);
             }
         }
 

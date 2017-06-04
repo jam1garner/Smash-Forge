@@ -78,8 +78,8 @@ namespace Smash_Forge.GUI
         {
             Runtime.renderModel = checkBox1.Checked;
             Runtime.renderBones = checkBox2.Checked;
-            Runtime.renderHitboxes = checkBox3.Checked;
-            Runtime.renderPath = checkBox4.Checked;
+            Runtime.renderHitboxes = checkBox4.Checked;
+            Runtime.renderPath = checkBox3.Checked;
             Runtime.renderFloor = checkBox5.Checked;
             Runtime.renderLVD = checkBox6.Checked;
             Runtime.renderCollisions = checkBox7.Checked;
