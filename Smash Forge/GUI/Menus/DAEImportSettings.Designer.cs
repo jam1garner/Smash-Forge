@@ -31,8 +31,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DAEImportSettings));
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.flipUVCB = new System.Windows.Forms.CheckBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.stagematCB = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.scaleTB = new System.Windows.Forms.TextBox();
             this.smoothCB = new System.Windows.Forms.CheckBox();
@@ -52,7 +53,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(116, 309);
+            this.button1.Location = new System.Drawing.Point(117, 345);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 0;
@@ -69,19 +70,20 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "Note: Noesis exported DAEs are the most reliable";
             // 
-            // checkBox1
+            // flipUVCB
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(3, 3);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(65, 17);
-            this.checkBox1.TabIndex = 2;
-            this.checkBox1.Text = "Flip UVs";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.flipUVCB.AutoSize = true;
+            this.flipUVCB.Location = new System.Drawing.Point(3, 3);
+            this.flipUVCB.Name = "flipUVCB";
+            this.flipUVCB.Size = new System.Drawing.Size(65, 17);
+            this.flipUVCB.TabIndex = 2;
+            this.flipUVCB.Text = "Flip UVs";
+            this.flipUVCB.UseVisualStyleBackColor = true;
+            this.flipUVCB.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.stagematCB);
             this.panel1.Controls.Add(this.label5);
             this.panel1.Controls.Add(this.scaleTB);
             this.panel1.Controls.Add(this.smoothCB);
@@ -95,16 +97,26 @@
             this.panel1.Controls.Add(this.comboBox1);
             this.panel1.Controls.Add(this.checkBox4);
             this.panel1.Controls.Add(this.checkBox2);
-            this.panel1.Controls.Add(this.checkBox1);
+            this.panel1.Controls.Add(this.flipUVCB);
             this.panel1.Location = new System.Drawing.Point(15, 55);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(278, 248);
+            this.panel1.Size = new System.Drawing.Size(278, 284);
             this.panel1.TabIndex = 3;
+            // 
+            // stagematCB
+            // 
+            this.stagematCB.AutoSize = true;
+            this.stagematCB.Location = new System.Drawing.Point(4, 143);
+            this.stagematCB.Name = "stagematCB";
+            this.stagematCB.Size = new System.Drawing.Size(116, 17);
+            this.stagematCB.TabIndex = 14;
+            this.stagematCB.Text = "Use Stage Material";
+            this.stagematCB.UseVisualStyleBackColor = true;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 145);
+            this.label5.Location = new System.Drawing.Point(3, 169);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(34, 13);
             this.label5.TabIndex = 13;
@@ -112,7 +124,7 @@
             // 
             // scaleTB
             // 
-            this.scaleTB.Location = new System.Drawing.Point(43, 142);
+            this.scaleTB.Location = new System.Drawing.Point(43, 166);
             this.scaleTB.Name = "scaleTB";
             this.scaleTB.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.scaleTB.Size = new System.Drawing.Size(42, 20);
@@ -132,14 +144,14 @@
             // vbnFileLabel
             // 
             this.vbnFileLabel.AutoSize = true;
-            this.vbnFileLabel.Location = new System.Drawing.Point(85, 173);
+            this.vbnFileLabel.Location = new System.Drawing.Point(85, 197);
             this.vbnFileLabel.Name = "vbnFileLabel";
             this.vbnFileLabel.Size = new System.Drawing.Size(0, 13);
             this.vbnFileLabel.TabIndex = 10;
             // 
             // vbnButton
             // 
-            this.vbnButton.Location = new System.Drawing.Point(4, 168);
+            this.vbnButton.Location = new System.Drawing.Point(4, 192);
             this.vbnButton.Name = "vbnButton";
             this.vbnButton.Size = new System.Drawing.Size(75, 23);
             this.vbnButton.TabIndex = 9;
@@ -171,7 +183,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 227);
+            this.label4.Location = new System.Drawing.Point(3, 251);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(59, 13);
             this.label4.TabIndex = 5;
@@ -181,7 +193,7 @@
             // 
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(76, 224);
+            this.comboBox2.Location = new System.Drawing.Point(76, 248);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(199, 21);
             this.comboBox2.TabIndex = 6;
@@ -189,7 +201,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 200);
+            this.label3.Location = new System.Drawing.Point(3, 224);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(53, 13);
             this.label3.TabIndex = 5;
@@ -199,7 +211,7 @@
             // 
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(76, 197);
+            this.comboBox1.Location = new System.Drawing.Point(76, 221);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(199, 21);
             this.comboBox1.TabIndex = 5;
@@ -237,7 +249,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(305, 344);
+            this.ClientSize = new System.Drawing.Size(305, 376);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label1);
@@ -256,13 +268,13 @@
 
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.CheckBox checkBox1;
+        public System.Windows.Forms.CheckBox flipUVCB;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.CheckBox checkBox4;
         private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ComboBox comboBox2;
+        public System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox comboBox1;
         public System.Windows.Forms.CheckBox checkBox5;
@@ -272,5 +284,6 @@
         private System.Windows.Forms.Button vbnButton;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox scaleTB;
+        public System.Windows.Forms.CheckBox stagematCB;
     }
 }

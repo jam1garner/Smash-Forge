@@ -22,6 +22,7 @@ namespace Smash_Forge
         Matrix4 view;
         Camera cam;
         Matrix4 perspective;
+        Matrix4 ortho;
 
         bool selecting = false;
         public float sx1, sy1;
@@ -90,7 +91,14 @@ namespace Smash_Forge
 
         private void ModelViewport_Resize(object sender, EventArgs e)
         {
-            perspective = Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glViewport.Width / (float)glViewport.Height, 1.0f, Runtime.renderDepth);
+            ResizeView(glViewport.Width, glViewport.Height);
+        }
+
+        public void ResizeView(float Width, float Height)
+        {
+
+            perspective = Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, Width / (float)Height, 1.0f, Runtime.renderDepth);
+            Matrix4.CreateOrthographic(Width, Height, 0.0f, Runtime.renderDepth, out ortho);
         }
 
         public void Setup()

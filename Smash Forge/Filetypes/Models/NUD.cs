@@ -201,6 +201,7 @@ namespace Smash_Forge
                     Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - pol];
 
                     //int hash = p.materials[0].textures[0].hash;
+                    if(p.materials.Count > 0)
                     if (p.materials[0].srcFactor != 0 || p.materials[0].dstFactor != 0)
                     {
                         trans.Add(p);

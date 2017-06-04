@@ -87,8 +87,6 @@ namespace Smash_Forge
                 }
                 if (node.type.Equals("NODE"))
                 {
-                    // this will link the controller to the geometry
-
                 }
             }
 
@@ -162,6 +160,7 @@ namespace Smash_Forge
             }
 
 
+            Dictionary<string, NUT.NUD_Texture> texturemap = new Dictionary<string, NUT.NUD_Texture>();
             Dictionary<string, NUD.Mesh> geometries = new Dictionary<string, NUD.Mesh>();
             foreach (ColladaGeometry geom in dae.library_geometries)
             {
@@ -178,11 +177,12 @@ namespace Smash_Forge
 
                 NUD.Mesh nmesh = new NUD.Mesh();
                 Matrix4 nodeTrans = Matrix4.CreateScale(1,1,1);
-
+                ColladaNode cnode = null;
                 foreach(ColladaNode node in dae.scene.nodes)
                 {
                     if (node.geom_id.Equals(geom.id))
                     {
+                        cnode = node;
                         nodeTrans = node.mat;
                         break;
                     }
@@ -199,6 +199,7 @@ namespace Smash_Forge
                 while (i < p.p.Length)
                 {
                     if (importTexture)
+                    {
                         if (p.type == ColladaPrimitiveType.triangles)
                         {
                             NUT.NUD_Texture tempTex = null;
@@ -206,7 +207,9 @@ namespace Smash_Forge
                             ColladaEffects eff = null;
                             ColladaImages img = null;
                             string matId = null;
+
                             dae.scene.MaterialIds.TryGetValue(p.materialid, out matId);
+
                             if (matId != null && matId[0] == '#')
                                 materials.TryGetValue(matId.Substring(1, matId.Length - 1), out mat);
                             if (mat != null && mat.effecturl[0] == '#')
@@ -215,21 +218,25 @@ namespace Smash_Forge
                                 images.TryGetValue(eff.source.Substring(1, eff.source.Length - 1), out img);
                             if (img != null)
                                 existingTextures.TryGetValue(img.initref, out tempTex);
-                            //Console.WriteLine($"mat {mat != null} | matid = {p.materialid}");
+                            
+                            if (texturemap.ContainsKey(img.initref))
+                            {
+                                tempTex = texturemap[img.initref];
+                            }else
                             if (tempTex == null && img != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fname), img.initref))))
                             {
-                                //Console.WriteLine($"Importing texture {img.initref}");
                                 NUT.NUD_Texture tex = null;
-                                if (fname.ToLower().EndsWith(".dds"))
+                                if (img.initref.ToLower().EndsWith(".dds"))
                                 {
                                     DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fname), img.initref))));
                                     tex = dds.toNUT_Texture();
                                 }
-                                if (fname.ToLower().EndsWith(".png"))
+                                if (img.initref.ToLower().EndsWith(".png"))
                                 {
                                     tex = NUTEditor.fromPNG(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fname), img.initref)), 1);
                                 }
                                 if (tex == null) continue;
+                                texturemap.Add(img.initref, tex);
                                 tex.id = 0x40FFFF00;
                                 while (NUT.texIdUsed(tex.id))
                                     tex.id++;
@@ -243,6 +250,7 @@ namespace Smash_Forge
                                 npoly.materials[0].textures[0].hash = tempTex.id;
                             }
                         }
+                    }
 
                     NUD.Vertex v = new NUD.Vertex();
                     foreach (ColladaInput input in p.inputs)
@@ -2180,12 +2188,12 @@ namespace Smash_Forge
                     {
 
                     }
-                    else if (node.Name.Equals("instance_geometry"))
+                    else if (node.Name.Equals("instance_controller") || node.Name.Equals("instance_geometry"))
                     {
-                        geom_id = node.Attributes["url"].Value.Replace("#", "");
-                    }
-                    else if (node.Name.Equals("instance_controller"))
-                    {
+                        if (node.Name.Equals("instance_geometry"))
+                        {
+                            geom_id = node.Attributes["url"].Value.Replace("#", "");
+                        }
                         foreach (XmlNode node1 in node.ChildNodes)
                         {
                             if (node1.Name.Equals("bind_material"))

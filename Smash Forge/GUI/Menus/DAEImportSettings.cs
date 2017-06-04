@@ -75,6 +75,9 @@ namespace Smash_Forge
 
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {
+                    if (BoneTypes[(string)comboBox2.SelectedItem] == BoneTypes["No Bones"])
+                        poly.polflag = 0;
+
                     if (smoothCB.Checked)
                         poly.SmoothNormals();
 
@@ -85,6 +88,27 @@ namespace Smash_Forge
                         MessageBox.Show("Using \""+ (string)comboBox2.SelectedItem + "\" and \"" + (string)comboBox1.SelectedItem + "\" can make shadows not appear in-game",
                             "Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         warning = true;
+                    }
+
+                    if (stagematCB.Checked)
+                    {
+                        // change to stage material
+                        NUD.Mat_Texture tex = poly.materials[0].textures[0];
+                        poly.materials[0].textures.Clear();
+                        poly.materials.Clear();
+
+                        NUD.Material m = new NUD.Material();
+                        poly.materials.Add(m);
+                        m.flags = 0xA4011041;
+                        m.drawPriority = 128;
+                        m.cullMode = 1029;
+
+                        m.textures.Clear();
+                        m.textures.Add(tex);
+
+                        m.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
+                        m.entries.Add("NU_diffuseColor", new float[] { 1, 1, 1, 1f });
+                        m.entries.Add("NU_materialHash", new float[] { BitConverter.ToSingle(new byte[] { 0x12, 0xEE, 0x2A, 0x1B}, 0), 0, 0, 0});
                     }
                     
                     //if (checkBox1.Checked || checkBox4.Checked || vertcolorCB.Checked || sc != 1f)
@@ -107,7 +131,7 @@ namespace Smash_Forge
                             }
 
 
-                            if (checkBox1.Checked)
+                            if (flipUVCB.Checked)
                                 for (int i = 0; i < v.tx.Count; i++)
                                     v.tx[i] = new Vector2(v.tx[i].X, 1 - v.tx[i].Y);
 

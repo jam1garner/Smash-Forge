@@ -164,8 +164,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox typeTB;
-        private System.Windows.Forms.NumericUpDown slotUD;
-        private System.Windows.Forms.TextBox charTB;
+        public System.Windows.Forms.TextBox typeTB;
+        public System.Windows.Forms.NumericUpDown slotUD;
+        public System.Windows.Forms.TextBox charTB;
     }
 }

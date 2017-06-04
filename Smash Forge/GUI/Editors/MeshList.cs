@@ -463,7 +463,7 @@ namespace Smash_Forge
                         mat.anims.Clear();
                         mat.entries.Clear();
 
-                        mat.flags = (0x96u << 24) | (0x6Bu) | (mat.flags & 0x00FFFF00);
+                        mat.flags = 0x9601106B;
 
                         //textures preserve normal map somehow...
 

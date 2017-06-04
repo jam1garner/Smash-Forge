@@ -31,12 +31,12 @@ namespace Smash_Forge
 
         public void Update()
         {
-            float zoomscale = 1;
+            float zoomscale = Runtime.zoomspeed;
 
             if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
             {
-                pos.Y -= 0.15f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                pos.X += 0.15f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                pos.Y += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                pos.X += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
             }
             if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
             {
@@ -53,6 +53,7 @@ namespace Smash_Forge
                 pos.Z += 1 * zoomscale;
 
             pos.Z += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale;
+            
         }
 
         public void TrackMouse()
