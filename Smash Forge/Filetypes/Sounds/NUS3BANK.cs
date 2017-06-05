@@ -456,14 +456,17 @@ namespace Smash_Forge
                     // this cannot be very fast .-.
                     // if anyone know how to pass the file via a byte array then that would be great...
                     File.WriteAllBytes("temp.idsp", idsp);
+                    Console.WriteLine("here");
                     IntPtr vgm = VGMStreamNative.InitVGMStream("temp.idsp");
                     if (vgm == IntPtr.Zero) throw new Exception("Error loading idsp");
 
+                    Console.WriteLine("here");
                     int channelCount = VGMStreamNative.GetVGMStreamChannelCount(vgm);
                     int bitsPerFrame = VGMStreamNative.GetVGMStreamFrameSize(vgm);
                     int size = VGMStreamNative.GetVGMStreamTotalSamples(vgm);
                     int samplerate = VGMStreamNative.GetVGMStreamSampleRate(vgm);
-                    
+                    Console.WriteLine("here");
+
                     int total = (int)((samplerate * bitsPerFrame * channelCount * (size / 24576000f)) / 8 * 1024);
                     
                     //Console.WriteLine(channelCount + " " + bitsPerFrame + " " + size + " " + samplerate + " " + total.ToString("x"));
@@ -471,12 +474,14 @@ namespace Smash_Forge
                     short[] buffer = new short[total];
                     
                     VGMStreamNative.RenderVGMStream(buffer, buffer.Length / 2, vgm);
+                    Console.WriteLine("here");
 
                     FileOutput o = new FileOutput();
                     o.Endian = Endianness.Little;
                     for(int i = 0; i < buffer.Length / 2; i++)
                         o.writeShort(buffer[i]);
-
+                    o.save("test.wav");
+                    Console.WriteLine("here");
                     WAVE.Play(o.getBytes(), VGMStreamNative.GetVGMStreamChannelCount(vgm), VGMStreamNative.GetVGMStreamSamplesPerFrame(vgm), VGMStreamNative.GetVGMStreamSampleRate(vgm));
 
                     VGMStreamNative.CloseVGMStream(vgm);

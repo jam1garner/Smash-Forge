@@ -408,10 +408,14 @@ namespace Smash_Forge
                 GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
                     dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
 
+                if (mat.srcFactor == 0 && mat.dstFactor == 0) GL.Disable(EnableCap.Blend);
+                
                 GL.Enable(EnableCap.AlphaTest);
+                if (mat.ref0 == 0 && mat.ref1 == 0) GL.Disable(EnableCap.AlphaTest);
 
                 GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-                switch (mat.ref1){
+                switch (mat.ref1)
+                {
                     case 0x2:
                         GL.AlphaFunc(AlphaFunction.Lequal, 255f / 255f);
                         break;
@@ -604,14 +608,13 @@ namespace Smash_Forge
                     { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
                     { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
                     { 0x05, BlendingFactorDest.ConstantAlpha},
-                    { 0x07, BlendingFactorDest.DstAlpha}
                 };
 
         static Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
                     { 0x01, BlendingFactorSrc.SrcAlpha},
                     { 0x02, BlendingFactorSrc.SrcAlpha},
-                    { 0x03, BlendingFactorSrc.DstAlpha},
-                    { 0x04, BlendingFactorSrc.Src1Alpha},
+                    { 0x03, BlendingFactorSrc.SrcAlpha},
+                    { 0x04, BlendingFactorSrc.SrcAlpha},
                     { 0x0a, BlendingFactorSrc.Zero}
                 };
 

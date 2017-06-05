@@ -1276,7 +1276,7 @@ vec3 TintColor(vec3 col, float inten){
 
 vec3 calculate_tint_color(vec3 inputColor, float color_alpha, float blendAmount)
 {
-    float intensity = color_alpha*blendAmount;
+    float intensity = min((color_alpha*blendAmount),1); // saturation is < 1
     vec3 inputHSV = rgb2hsv(inputColor);
     vec3 outColorTint = hsv2rgb(vec3(inputHSV.x,inputHSV.y*intensity,1));
     return outColorTint;
@@ -1337,73 +1337,71 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
    
 //---------------------------------------------------------------------------------------------
 	// lambertian diffuse
-    float lambertBRDF = clamp((dot(newDiffuseDirection,N)),0,1);// * attenuation;
-    
-	// Diffuse shading - lambert, offset/gain, diffuse map
+	
+    float lambertBRDF = clamp((dot(newDiffuseDirection,N)),0,1);
     vec3 diffuse_color = vec3(0);
+	vec3 diffuse_shading = vec3(0);
+	vec3 ao_blend = vec3(1);
+	float diffuse_luminance = luminance(diffuse_map.xyz);
 	
 	//ao_blend = total ambient occlusion term
-	vec3 ao_blend = min(((ao_map.aaa) + (minGain.rgb)),1+minGain.w);
-		
-	// Desaturate Ambient Occlusion
-	//vec3 c = rgb2hsv(ao_blend.xyz);
-	//ao_blend.xyz = hsv2rgb(vec3(c.x, c.y*2.5, c.z));
+	ao_blend = min(((ao_map.aaa) + (minGain.rgb)),1.35); 
+	vec3 c = rgb2hsv(ao_blend.xyz);
+	ao_blend.xyz = hsv2rgb(vec3(c.x, c.y*0.5, c.z)); // Desaturate Ambient Occlusion
 	
-	// Color Gain/Offset
-	if ((flags & 0x00F00000u) == 0x00600000u) // corrin, roy, etc
+	
+	if ((flags & 0x00FF0000u) == 0x00610000u || (flags & 0x00FF0000u) == 0x00440000u) // Color Gain/Offset
 	{
 		diffuse_color = colorOffset.xyz + (luminance(diffuse_map.xyz) * (colorGain.xyz));
-	}
-	else 
-	if ((flags & 0x00420000u) == 0x00420000u) // bayo hair 'diffuse' is actually a normal map
-		diffuse_color = colorOffset.xyz* (1 + colorGain.xyz);
-	else
-		diffuse_color = diffuse_map.xyz; // regular characters
+		diffuse_shading = diffuse_color * colorGain.xyz * RampColor(vec3(lambertBRDF));
+		ao_blend = vec3(diffuse_luminance);
+		}
+	else if ((flags & 0x00420000u) == 0x00420000u) // bayo hair 'diffuse' is weird
+		diffuse_color = colorOffset.xyz + (diffuse_map.xxx * colorGain.xyz);
 		
-    vec3 diffuse_shading = diffuse_color * ao_blend * RampColor(vec3(lambertBRDF));
+	else {
+			diffuse_color = diffuse_map.xyz * ao_blend; // regular characters
+			diffuse_shading = diffuse_color * colorGain.xyz * ao_blend * RampColor(vec3(lambertBRDF));
+			}
 
-
-
-        vec3 resulting_color = vec3(0);
+    vec3 resulting_color = vec3(0);
 	
     if(renderLighting == 1)
 	{
-		if ((flags & 0xA0000000u) == 0xA0000000u) // stage lighting
-			resulting_color = diffuse_color* ao_blend * color.xyz;
-		else // character lighting
+		//if ((flags & 0xA0000000u) == 0xA0000000u) // stage lighting
+		//	resulting_color = diffuseColor.xyz * diffuse_map.xyz * ao_blend * color.xyz;
+		//else // character lighting
 		{
-			if (renderDiffuse == 1){
-				resulting_color = (diffuse_color* ao_blend * ambient); // ambient
-				resulting_color += diffuse_shading* diffuse_intensity; // diffuse
-    }
-}
+			if (renderDiffuse == 1)
+			{
+				resulting_color = (diffuse_color * ambient * diffuseColor.xyz); // ambient
+				resulting_color += diffuse_shading * diffuse_intensity; // diffuse
+				
+			}
+		}	
 	}
+	
 	else
-		resulting_color = (diffuse_color* ao_blend*0.9)+(diffuse_shading*0.15); 
-	
-	if ((flags & 0x00FF0000u) == 0x00610000u) // byte 2 61 spec blend (Roy, Corrin, etc)
-		ao_blend = diffuse_map.xyz;
-	
-	//resulting_color = diffuse_color * ao_blend;
-	
+		resulting_color = (diffuse_color* diffuseColor.xyz)+(diffuse_shading*0.15); // no material lighting
+		
 	
 //---------------------------------------------------------------------------------------------
     // blinn-phong specular
     vec3 half_angle = normalize(newSpecularDirection);
-float blinnPhongSpec = pow(clamp((dot(half_angle, N)), 0, 1), specularParams.y);
-blinnPhongSpec *= (1-(specularParams.x/100));
+	float blinnPhongSpec = pow(clamp((dot(half_angle, N)), 0, 1), specularParams.y);
+	blinnPhongSpec *= (1-(specularParams.x/100));
     
 //---------------------------------------------------------------------------------------------
     // basic fresnel with fresnelParams control
     vec3 F0 = vec3(1);
-float cosTheta = dot(newFresnelDirection, N);
-vec3 fresnel = clamp((F0 * pow(1.0 - cosTheta, 3.75 + fresnelParams.x)), 0, 1);
+	float cosTheta = dot(newFresnelDirection, N);
+	vec3 fresnel = clamp((F0 * pow(1.0 - cosTheta, 2.0 + fresnelParams.x)), 0, 1);
 
 //---------------------------------------------------------------------------------------------
-// reflection
-//vec3 I = normalize(pos - lightPosition);
-vec3 R = reflect(I, N);
-R.y *= -1.0;
+	// cubemap reflection
+	//vec3 I = normalize(pos - lightPosition);
+	vec3 R = reflect(I, N);
+	R.y *= -1.0;
     vec3 refColor = texture(stagecube, R).rgb;// * ao_map.aaa;
 
 //---------------------------------------------------------------------------------------------
@@ -1414,18 +1412,28 @@ vec3 reflection_tint = calculate_tint_color(diffuse_color, reflectionColor.w, bl
 
 //---------------------------------------------------------------------------------------------
 // add fresnel and specular
-resulting_color = pow(resulting_color, vec3(2.2)); // gamma correction
+	resulting_color = pow(resulting_color, vec3(2.2)); // gamma correction
+	
 	if (renderLighting == 1) {
 		if(renderFresnel == 1)
 			resulting_color += pow((fresnelColor.xyz* fresnel * fresnel_intensity* fresnel_tint),vec3(2.2));
 		
 		if(renderSpecular == 1)
-			resulting_color += pow(specularColor.xyz* blinnPhongSpec  * spec_tint* specular_intensity * ao_blend* specularColorGain.xyz, vec3(2.2));
-
+		{
+			if ((flags & 0x00420000u) == 0x00420000u){ // bayo hair mats
+				resulting_color += pow(diffuse_map.zzz * blinnPhongSpec  * spec_tint * specular_intensity, vec3(2.2));
+			}
+			else if ((flags & 0x00FF0000u) == 0x00610000u || (flags & 0x00FF0000u) == 0x00440000u) // Color Gain/Offset	
+				resulting_color += pow(specularColor.xyz* blinnPhongSpec  * spec_tint* specular_intensity * ao_blend * (1+specularColorGain.xyz), vec3(2.2));
+				
+			else // default
+				resulting_color += pow(specularColor.xyz* blinnPhongSpec  * spec_tint* specular_intensity * ao_blend, vec3(2.2));
+		}
+		
 		if(renderReflection == 1)
 			resulting_color += pow((reflectionColor.rgb* refColor * reflection_tint* reflection_intensity),vec3(2.2));
 	}
-	//resulting_color = pow(resulting_color,vec3(1/2.2)); // gamma correction
+
     return resulting_color;
 }
 
@@ -1436,7 +1444,7 @@ main()
     // if the renderer wants to show something other than textures
     if (renderType == 3)
     {
-        gl_FragColor = vec4(texture2D(nrm, texcoord).xyz, 1);
+        gl_FragColor = vec4(pow(texture2D(nrm, texcoord).xyz, vec3(2.2)), 1);
     }
     else
     if (renderType == 5)
