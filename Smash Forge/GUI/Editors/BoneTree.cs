@@ -87,24 +87,24 @@ namespace Smash_Forge
 
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            Bone editingBone = (Bone)treeView1.SelectedNode.Tag;
-            editingBone.boneId = (uint)int.Parse(tbl.Rows[1][1].ToString(), System.Globalization.NumberStyles.HexNumber);
-            editingBone.boneType = Convert.ToUInt32(tbl.Rows[2][1]);
+            Bone editingBone = (Bone)treeView1.SelectedNode;
+            editingBone.boneId = uint.Parse(tbl.Rows[1][1].ToString(), System.Globalization.NumberStyles.HexNumber);
+            
+            uint.TryParse(tbl.Rows[2][1].ToString(), out editingBone.boneType);
 
-            editingBone.position[0] = Convert.ToSingle(tbl.Rows[3][1]);
-            editingBone.position[1] = Convert.ToSingle(tbl.Rows[4][1]);
-            editingBone.position[2] = Convert.ToSingle(tbl.Rows[5][1]);
+            float.TryParse(tbl.Rows[3][1].ToString(), out editingBone.position[0]);
+            float.TryParse(tbl.Rows[4][1].ToString(), out editingBone.position[1]);
+            float.TryParse(tbl.Rows[5][1].ToString(), out editingBone.position[2]);
 
-            editingBone.rotation[0] = Convert.ToSingle(tbl.Rows[6][1]);
-            editingBone.rotation[1] = Convert.ToSingle(tbl.Rows[7][1]);
-            editingBone.rotation[2] = Convert.ToSingle(tbl.Rows[8][1]);
+            float.TryParse(tbl.Rows[6][1].ToString(), out editingBone.rotation[0]);
+            float.TryParse(tbl.Rows[7][1].ToString(), out editingBone.rotation[1]);
+            float.TryParse(tbl.Rows[8][1].ToString(), out editingBone.rotation[2]);
 
-            editingBone.scale[0] = Convert.ToSingle(tbl.Rows[11][1]);
-            editingBone.scale[1] = Convert.ToSingle(tbl.Rows[10][1]);
-            editingBone.scale[2] = Convert.ToSingle(tbl.Rows[9][1]);
+            float.TryParse(tbl.Rows[11][1].ToString(), out editingBone.scale[0]);
+            float.TryParse(tbl.Rows[10][1].ToString(), out editingBone.scale[1]);
+            float.TryParse(tbl.Rows[9][1].ToString(), out editingBone.scale[2]);
 
             //vbn.update ();
-            Runtime.TargetVBN.reset();
             Runtime.TargetVBN.reset();
         }
 
