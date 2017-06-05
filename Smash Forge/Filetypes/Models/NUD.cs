@@ -248,6 +248,16 @@ namespace Smash_Forge
             //foreach (Material mat in p.materials)
             {
                 Material mat = p.materials[0];
+                //NSC
+                GL.Uniform3(shader.getAttribute("NSC"), Vector3.Zero);
+                /*if (p.Parent != null && p.Parent.Text.Contains("_NSC"))
+                {
+                    //GL.Uniform3(shader.getAttribute("NSC"), Vector3.Transform(Vector3.Zero, Runtime.ModelContainers[0].vbn.bones[((Mesh)p.Parent).singlebind].transform));
+                }else
+                {
+                    GL.Uniform3(shader.getAttribute("NSC"), Vector3.Zero);
+                }*/
+
                 GL.Uniform1(shader.getAttribute("flags"), mat.flags);
                 GL.Uniform1(shader.getAttribute("isTransparent"), p.isTransparent ? 1 : 0);
 
