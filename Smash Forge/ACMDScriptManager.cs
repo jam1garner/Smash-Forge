@@ -13,6 +13,8 @@ namespace Smash_Forge
     {
         public ACMDScript script { get; set; }
         public SortedList<int, Hitbox> Hitboxes { get; set; }
+        // For interpolation
+        public SortedList<int, Hitbox> LastHitboxes { get; set; }
         public int currentFrame;
 
         // TODO: these may need to be passed down for proper subscript parsing
@@ -31,11 +33,16 @@ namespace Smash_Forge
             this.script = script;
         }
 
-        public void Reset()
+        public void Reset(ACMDScript script = null)
         {
+            // Don't reset on the same script, unless it's null
+            if (script != null && script == this.script)
+                return;
+
             Hitboxes = new SortedList<int, Hitbox>();
+            LastHitboxes = new SortedList<int, Hitbox>();
             currentFrame = 0;
-            script = null;
+            this.script = script;
 
             setLoop = 0;
             iterations = 0;
@@ -60,7 +67,8 @@ namespace Smash_Forge
             {
                 case 0x42ACFE7D: // Asynchronous Timer (specific frame start for next commands)
                     {
-                        halt = (int)(float)cmd.Parameters[0] - 2;
+                        int frame = (int)(float)cmd.Parameters[0];
+                        halt = frame >= halt + 2 ? frame - 2 : halt;
                         break;
                     }
                 case 0x4B7B6E51: // Synchronous Timer (relative frame start for next commands)
@@ -72,8 +80,6 @@ namespace Smash_Forge
                     {
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
-                        if (Hitboxes.ContainsKey(id))
-                            Hitboxes.Remove(id);
                         newHitbox.Type = Hitbox.HITBOX;
                         newHitbox.Bone = (int)cmd.Parameters[2];
                         newHitbox.Damage = (float)cmd.Parameters[3];
@@ -92,8 +98,6 @@ namespace Smash_Forge
                     {
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
-                        if (Hitboxes.ContainsKey(id))
-                            Hitboxes.Remove(id);
                         newHitbox.Type = Hitbox.HITBOX;
                         newHitbox.Extended = true;
                         newHitbox.Bone = (int)cmd.Parameters[2];
@@ -116,8 +120,6 @@ namespace Smash_Forge
                     {
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
-                        if (Hitboxes.ContainsKey(id))
-                            Hitboxes.Remove(id);
                         newHitbox.Type = Hitbox.HITBOX;
                         newHitbox.Bone = (int)cmd.Parameters[2];
                         newHitbox.Damage = (float)cmd.Parameters[3];
@@ -143,8 +145,6 @@ namespace Smash_Forge
                     {
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
-                        if (Hitboxes.ContainsKey(id))
-                            Hitboxes.Remove(id);
                         newHitbox.Type = Hitbox.HITBOX;
                         newHitbox.Extended = true;
                         newHitbox.Bone = (int)cmd.Parameters[2];
@@ -171,8 +171,6 @@ namespace Smash_Forge
                     {
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
-                        if (Hitboxes.ContainsKey(id))
-                            Hitboxes.Remove(id);
                         newHitbox.Type = Hitbox.HITBOX;
                         newHitbox.Bone = (int)cmd.Parameters[2];
                         newHitbox.Damage = (float)cmd.Parameters[3];
@@ -194,8 +192,6 @@ namespace Smash_Forge
                     {
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
-                        if (Hitboxes.ContainsKey(id))
-                            Hitboxes.Remove(id);
                         newHitbox.Type = Hitbox.HITBOX;
                         newHitbox.Extended = true;
                         newHitbox.Bone = (int)cmd.Parameters[2];
@@ -335,9 +331,10 @@ namespace Smash_Forge
             return halt;
         }
 
-        public SortedList<int, Hitbox> processScript()
+        public void processScript()
         {
-            Hitboxes.Clear();
+            LastHitboxes = Hitboxes;
+            Hitboxes = new SortedList<int, Hitbox>();
             // The next frame the script halts at for execution. Only modified
             // by timer commands.
             int halt = 0;
@@ -359,7 +356,6 @@ namespace Smash_Forge
                 if (halt > currentFrame)
                     break;
             }
-            return Hitboxes;
         }
 
         public int processSubscriptCommandsAtCurrentFrame(uint crc, int halt, int scriptCommandIndex)
