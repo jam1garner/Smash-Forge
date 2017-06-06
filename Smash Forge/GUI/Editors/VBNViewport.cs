@@ -1136,6 +1136,8 @@ namespace Smash_Forge
                                 
 				                if(c.flag4)
 				                    color = Color.FromArgb(128, Color.Yellow);
+                                else if (c.materials[i].getFlag(4) && Math.Abs(c.normals[i].x) > Math.Abs(c.normals[i].y))
+                                    color = Color.FromArgb(128, Color.Purple);
                                 else if (Math.Abs(c.normals[i].x) > Math.Abs(c.normals[i].y))
                                     color = Color.FromArgb(128, Color.Lime);
                                 else if(c.normals[i].y < 0)
@@ -1548,9 +1550,18 @@ namespace Smash_Forge
         {
             if (Runtime.ParamManager.Hurtboxes.Count > 0)
             {
-                GL.Color4(Color.FromArgb(50, Color.Green));
+                GL.Color4(Color.FromArgb(80, Color.Green));
                 GL.Enable(EnableCap.DepthTest);
                 GL.Enable(EnableCap.Blend);
+
+                if(gameScriptManager.script != null)
+                {
+                    if (gameScriptManager.BodyIntangible)
+                        return;
+
+                    if (Frame + 1 >= Runtime.ParamManager.MovesData[gameScriptManager.scriptId].IntangibilityStart && Frame + 1 < Runtime.ParamManager.MovesData[gameScriptManager.scriptId].IntangibilityEnd)
+                        return;
+                }
 
                 foreach (var pair in Runtime.ParamManager.Hurtboxes)
                 {
@@ -1558,24 +1569,41 @@ namespace Smash_Forge
                     var va = new Vector3(h.X, h.Y, h.Z);
                     Bone b = getBone(h.Bone);
 
+                    if (gameScriptManager != null)
+                    {
+                        if (gameScriptManager.BodyIntangible)
+                            continue;
+                        if (gameScriptManager.IntangibleBones.Contains(h.Bone))
+                            continue;
+                    }
+
                     //va = Vector3.Transform(va, b.transform);
 
-                    GL.Color4(Color.FromArgb(50, Color.Green));
+                    GL.Color4(Color.FromArgb(80, Color.Green));
 
                     if (Runtime.renderHurtboxesZone)
                     {
                         switch (h.Zone)
                         {
                             case Hurtbox.LW_ZONE:
-                                GL.Color4(Color.FromArgb(60, Color.Aqua));
+                                GL.Color4(Color.FromArgb(80, Color.Aqua));
                                 break;
                             case Hurtbox.N_ZONE:
-                                GL.Color4(Color.FromArgb(60, Color.Green));
+                                GL.Color4(Color.FromArgb(80, Color.Green));
                                 break;
                             case Hurtbox.HI_ZONE:
-                                GL.Color4(Color.FromArgb(60, Color.Orange));
+                                GL.Color4(Color.FromArgb(80, Color.Orange));
                                 break;
                         }
+                    }
+
+                    if (gameScriptManager != null)
+                    {
+                        if (gameScriptManager.BodyInvincible)
+                            GL.Color4(Color.FromArgb(80, Color.White));
+
+                        if(gameScriptManager.InvincibleBones.Contains(h.Bone))
+                            GL.Color4(Color.FromArgb(80, Color.White));
                     }
 
                     var va2 = new Vector3(h.X2, h.Y2, h.Z2);
@@ -1724,12 +1752,14 @@ namespace Smash_Forge
             //Console.WriteLine("Handling " + animname);
             ACMDScript acmdScript = (ACMDScript)Runtime.Moveset.Game.Scripts[crc];
             if (acmdScript != null)
-                gameScriptManager.Reset(acmdScript);
+                gameScriptManager.Reset(acmdScript, Runtime.Moveset.ScriptsHashList.IndexOf(crc));
             else
                 gameScriptManager.Reset(null);
             //scr_sound = (ACMDScript)Runtime.Moveset.Sound.Scripts[crc];
             if (Runtime.acmdEditor.crc != crc)
                 Runtime.acmdEditor.SetAnimation(crc);
+
+            gameScriptManager.processScript();
         }
 
         #endregion
