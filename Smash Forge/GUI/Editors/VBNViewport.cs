@@ -1445,27 +1445,7 @@ namespace Smash_Forge
                 GL.Vertex3(va + Vector3.Transform(new Vector3(0,0,h.Size), Matrix4.CreateRotationX(-h.Angle * ((float)Math.PI / 180f))));
                 GL.End();*/
 
-                switch (h.Type)
-                {
-                    case Hitbox.HITBOX:
-                        if (h.Ignore_Throw)
-                            GL.Color4(Color.FromArgb(85, Color.DarkGreen));
-                        else
-                            GL.Color4(Color.FromArgb(85, Color.Red));
-                        break;
-                    case Hitbox.GRABBOX:
-                        GL.Color4(Color.FromArgb(85, Color.Purple));
-                        break;
-                    case Hitbox.WINDBOX:
-                        GL.Color4(Color.FromArgb(85, Color.Blue));
-                        break;
-                    case Hitbox.SEARCHBOX:
-                        GL.Color4(Color.FromArgb(85, Color.DarkOrange));
-                        break;
-                    default:
-                        GL.Color4(Color.FromArgb(85, Color.FloralWhite));
-                        break;
-                }
+                GL.Color4(h.GetDisplayColor());
 
                 // Draw everything to the stencil buffer
                 RenderTools.beginTopLevelStencil();
@@ -1492,7 +1472,7 @@ namespace Smash_Forge
                 // Interpolation is one colour for all Hitbox types and rendered all
                 // at once to make a giant block. If people want sub-type
                 // interpolation later we can add it.
-                GL.Color4(Color.FromArgb(40, Color.PaleGoldenrod));
+                GL.Color4(Color.FromArgb(40, 0xA6, 0xBD, 0xD7));
                 GL.Enable(EnableCap.Blend);
                 // Draw everything to the stencil buffer
                 RenderTools.beginTopLevelStencil();
