@@ -7,6 +7,7 @@ using SALT.Scripting.AnimCMD;
 using System.IO;
 using System.Security.Cryptography;
 using OpenTK;
+using System.Drawing;
 
 namespace Smash_Forge
 {
@@ -188,5 +189,71 @@ namespace Smash_Forge
         // Stuff for interpolation, set during rendering
         // These are *post transform*
         public Vector3 va, va2;
+
+        // Just a quick way to generalise this for all cases without opponent weight being involved
+        public float GetSimplifiedKnockback(float damage, float knockbackBase,
+            float knockbackGrowth, float targetPercent)
+        {
+            return (((damage + targetPercent) / 10) + (((targetPercent + damage) * damage) / 20)) *
+                (knockbackGrowth / 100) + knockbackBase;
+        }
+
+        // These values were chosen to capture the middle 70% of hitboxes. Outliers
+        // are just pulled in to the max/min values.
+        public static readonly float KB_UPPER_THRESHOLD = 210;
+        public static readonly float KB_LOWER_THRESHOLD = 100;
+        public int getKnockbackBucket(float knockback)
+        {
+            float bucketRange = (KB_UPPER_THRESHOLD - KB_LOWER_THRESHOLD) / distinctColors.Count;
+            if (knockback < KB_LOWER_THRESHOLD) knockback = KB_LOWER_THRESHOLD;
+            if (knockback > KB_UPPER_THRESHOLD) knockback = KB_UPPER_THRESHOLD - 0.001f;
+            return (int)Math.Floor((knockback - KB_LOWER_THRESHOLD) / bucketRange);
+        }
+
+        // See https://stackoverflow.com/questions/470690/how-to-automatically-generate-n-distinct-colors
+        // for a really good overview of how to use distinct colours.
+        public static readonly List<Color> distinctColors = new List<Color>()
+        {
+            Color.FromArgb(0xFF, 0xCE, 0xA2, 0x62), // Grayish yellow
+            //Color.FromArgb(0xFF, 0x00, 0x7D, 0x34), // Vivid green
+            Color.FromArgb(0xFF, 0xFF, 0xB3, 0x0),  // Vivid yellow
+            Color.FromArgb(0xFF, 0xFF, 0x68, 0x00), // Vivid orange
+            Color.FromArgb(0xFF, 0xC1, 0x0, 0x20),  // Vivid red
+        };
+
+        public Color GetRegularDisplayColor()
+        {
+            // Ranges from Red (weakest hitbox) to Yellow (strongest hitbox)
+            float kb = GetSimplifiedKnockback(Damage, KnockbackBase, KnockbackGrowth, 160);
+            return distinctColors[getKnockbackBucket(kb)];
+        }
+
+        // The colour to fill a Hitbox with when displaying
+        public Color GetDisplayColor()
+        {
+            Color color;
+            switch (Type)
+            {
+                case Hitbox.HITBOX:
+                    if (Ignore_Throw)
+                        color = Color.FromArgb(85, Color.Black);
+                    else
+                        color = Color.FromArgb(85, GetRegularDisplayColor());
+                    break;
+                case Hitbox.GRABBOX:
+                    color = Color.FromArgb(85, Color.Purple);
+                    break;
+                case Hitbox.WINDBOX:
+                    color = Color.FromArgb(85, Color.Blue);
+                    break;
+                case Hitbox.SEARCHBOX:
+                    color = Color.FromArgb(85, Color.DarkOrange);
+                    break;
+                default:
+                    color = Color.FromArgb(85, Color.FloralWhite);
+                    break;
+            }
+            return color;
+        }
     }
 }
