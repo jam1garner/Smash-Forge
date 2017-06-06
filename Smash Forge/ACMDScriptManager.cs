@@ -11,10 +11,16 @@ namespace Smash_Forge
     // For processing ACMD files and relaying the state to the GUI
     class ACMDScriptManager
     {
+        public int scriptId { get; set; }
         public ACMDScript script { get; set; }
         public SortedList<int, Hitbox> Hitboxes { get; set; }
         // For interpolation
         public SortedList<int, Hitbox> LastHitboxes { get; set; }
+        // Intangibility/Invincibility
+        public List<int> IntangibleBones { get; set; }
+        public List<int> InvincibleBones { get; set; }
+        public bool BodyIntangible { get; set; }
+        public bool BodyInvincible { get; set; }
         public int currentFrame;
 
         // TODO: these may need to be passed down for proper subscript parsing
@@ -33,7 +39,14 @@ namespace Smash_Forge
             this.script = script;
         }
 
-        public void Reset(ACMDScript script = null)
+        public ACMDScriptManager(ACMDScript script, int scriptId)
+        {
+            Reset();
+            this.script = script;
+            this.scriptId = scriptId;
+        }
+
+        public void Reset(ACMDScript script = null, int scriptId = -1)
         {
             // Don't reset on the same script, unless it's null
             if (script != null && script == this.script)
@@ -41,6 +54,12 @@ namespace Smash_Forge
 
             Hitboxes = new SortedList<int, Hitbox>();
             LastHitboxes = new SortedList<int, Hitbox>();
+            InvincibleBones = new List<int>();
+            IntangibleBones = new List<int>();
+            BodyIntangible = false;
+            BodyInvincible = false;
+            this.scriptId = scriptId;
+
             currentFrame = 0;
             this.script = script;
 
@@ -242,6 +261,7 @@ namespace Smash_Forge
                 case 0x1EAF840C: //Grabbox 2 (most command grabs)
                 case 0x548F2D4C: //Grabbox (used in tether grabs)
                 case 0xEF787D43: //Extended Grabbox 2 (Mega Man's grab)
+                case 0x323FB9D4: //Special Grabbox (Pikmin's grab)
                     {
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
@@ -322,6 +342,57 @@ namespace Smash_Forge
                     break;
                 case 0x895B9275: // FALSE
                     break;
+                case 0xF13BFE8D: //Bone collision state (intangibility/invincibility)
+                    {
+                        int bone = VBN.applyBoneThunk((int)cmd.Parameters[0]);
+                        int state = (int)cmd.Parameters[1];
+                        switch(state)
+                        {
+                            case 2:
+                                IntangibleBones.Remove(bone);
+                                InvincibleBones.Remove(bone);
+                                IntangibleBones.Add(bone);
+                                break;
+                            case 1:
+                                IntangibleBones.Remove(bone);
+                                InvincibleBones.Remove(bone);
+                                InvincibleBones.Add(bone);
+                                break;
+                            default:
+                                IntangibleBones.Remove(bone);
+                                InvincibleBones.Remove(bone);
+                                break;
+                        }
+                        break;
+                    }
+                case 0xCEDC237E: //Undo Bone collision state
+                    {
+                        int state = (int)cmd.Parameters[0];
+                        IntangibleBones.Clear();
+                        InvincibleBones.Clear();
+                        break;
+                    }
+                case 0xF0D25BDA: //Body_Collision (Full intangibility/invincibility)
+                    {
+                        int state = (int)cmd.Parameters[0];
+                        switch (state)
+                        {
+                            case 2:
+                                BodyInvincible = false;
+                                BodyIntangible = true;
+                                break;
+                            case 1:
+                                BodyInvincible = true;
+                                BodyIntangible = false;
+                                break;
+                            default:
+                                BodyInvincible = false;
+                                BodyIntangible = false;
+                                break;
+                        }
+                        break;
+                    }
+
             }
 
             if (newHitbox != null)
@@ -335,9 +406,11 @@ namespace Smash_Forge
         {
             LastHitboxes = Hitboxes;
             Hitboxes = new SortedList<int, Hitbox>();
+            InvincibleBones = new List<int>();
+            IntangibleBones = new List<int>();
             // The next frame the script halts at for execution. Only modified
             // by timer commands.
-            int halt = 0;
+            int halt = -1;
             int scriptCommandIndex = 0;
             ICommand cmd = script[scriptCommandIndex];
             //ProcessANMCMD_SOUND();
