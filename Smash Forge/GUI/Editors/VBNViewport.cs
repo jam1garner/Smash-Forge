@@ -192,6 +192,13 @@ namespace Smash_Forge
         private void Runtime_AnimationChanged(object sender, EventArgs e)
         {
             loadAnimation(Runtime.TargetAnim);
+            if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
+            {
+                HandleACMD(Runtime.TargetAnimString.Substring(3));
+                if (gameScriptManager != null)
+                    if (gameScriptManager.script != null)
+                        gameScriptManager.processScript();
+            }
         }
 
         private void btnFirstFrame_Click(object sender, EventArgs e)
@@ -1759,7 +1766,6 @@ namespace Smash_Forge
             if (Runtime.acmdEditor.crc != crc)
                 Runtime.acmdEditor.SetAnimation(crc);
 
-            gameScriptManager.processScript();
         }
 
         #endregion
