@@ -286,6 +286,9 @@
     <Compile Include="GUI\FolderSelectDialog.designer.cs">
       <DependentUpon>FolderSelectDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\FormBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="GUI\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -360,6 +363,8 @@
     <Compile Include="GUI\ModelViewport.Designer.cs">
       <DependentUpon>ModelViewport.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Nodes\BaseNode.cs" />
+    <Compile Include="GUI\Nodes\ModelNode.cs" />
     <Compile Include="GUI\Nodes\ProjectNode.cs" />
     <Compile Include="IO\FileBase.cs" />
     <Compile Include="lib\NintacoAPI.cs" />
