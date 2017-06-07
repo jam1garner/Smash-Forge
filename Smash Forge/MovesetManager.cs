@@ -48,6 +48,12 @@ namespace Smash_Forge
             }
             if (File.Exists(mtablePath))
                 MotionTable = new MTable(mtablePath, Endian);
+
+            ScriptsHashList = new List<uint>();
+            if (MotionTable != null)
+                ScriptsHashList.AddRange(MotionTable.ToList());
+
+
         }
 
         public Dictionary<int, Hitbox> Hitboxes { get; set; }
@@ -59,6 +65,8 @@ namespace Smash_Forge
         public ACMDFile Effect { get; set; }
         public ACMDFile Sound { get; set; }
         public ACMDFile Expression { get; set; }
+
+        public List<uint> ScriptsHashList { get; set; }
 
         public acmd_frame CommandsAtFrame(string animation, int frame)
         {
