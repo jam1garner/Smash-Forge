@@ -30,8 +30,8 @@ namespace Smash_Forge
             {
                 if (e.Node.Parent.Text == "Bone Animations")
                 {
-                    Runtime.TargetAnim = Runtime.Animations[e.Node.Text];
                     Runtime.TargetAnimString = e.Node.Text;
+                    Runtime.TargetAnim = Runtime.Animations[e.Node.Text];
                     
                     //reset mtas
                     foreach(ModelContainer con in Runtime.ModelContainers)
