@@ -141,13 +141,13 @@ namespace Smash_Forge
         {
             if (e.KeyChar == 'c')
             {
-                /*if (treeView1.SelectedNode is NUD.Polygon)
+                if (treeView1.SelectedNode is NUD.Polygon)
                 {
                     NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
 
                     foreach (NUD.Vertex v in p.vertices)
                     {
-                        v.col /= 2;
+                        v.col += new OpenTK.Vector4(5f);
                     }
 
                     foreach (ModelContainer con in Runtime.ModelContainers)
@@ -155,7 +155,25 @@ namespace Smash_Forge
                         if (con.nud != null)
                             con.nud.PreRender();
                     }
-                }*/
+                }
+            }
+            if (e.KeyChar == 'x')
+            {
+                if (treeView1.SelectedNode is NUD.Polygon)
+                {
+                    NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+
+                    foreach (NUD.Vertex v in p.vertices)
+                    {
+                        v.col -= new OpenTK.Vector4(5f);
+                    }
+
+                    foreach (ModelContainer con in Runtime.ModelContainers)
+                    {
+                        if (con.nud != null)
+                            con.nud.PreRender();
+                    }
+                }
             }
             if (e.KeyChar == '=')
             {

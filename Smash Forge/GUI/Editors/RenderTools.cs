@@ -1426,10 +1426,8 @@ vec3 RampColor(vec3 col){
 
 
 vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
-
     vec3 I = vec3(0,0,-1) * mat3(eyeview);
     float blendAmount = 0.5;
-
 	
     // light direction seems to be (z,x,y) from light_set_param
     vec3 newDiffuseDirection = lightDirection; //normalize(I + diffuseLightDirection);
@@ -1454,9 +1452,11 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 	if ((flags & 0x00FF0000u) == 0x00610000u || (flags & 0x00FF0000u) == 0x00440000u) // Color Gain/Offset
 	{
 		diffuse_color = colorOffset.xyz + (luminance(diffuse_map.xyz) * (colorGain.xyz));
+		diffuse_color *= (1+minGain.xyz);
 		diffuse_shading = diffuse_color * colorGain.xyz * RampColor(vec3(lambertBRDF));
 		ao_blend = vec3(diffuse_luminance);
 		}
+		
 	else if ((flags & 0x00420000u) == 0x00420000u) // bayo hair 'diffuse' is weird
 		diffuse_color = colorOffset.xyz + (diffuse_map.xxx * colorGain.xyz);
 		
@@ -1464,7 +1464,6 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			diffuse_color = diffuse_map.xyz * ao_blend; // regular characters
 			diffuse_shading = diffuse_color * colorGain.xyz * ao_blend * RampColor(vec3(lambertBRDF));
 			}
-
     vec3 resulting_color = vec3(0);
 	
     if(renderLighting == 1)
@@ -1497,20 +1496,17 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     vec3 F0 = vec3(1);
 	float cosTheta = dot(newFresnelDirection, N);
 	vec3 fresnel = clamp((F0 * pow(1.0 - cosTheta, 2.0 + fresnelParams.x)), 0, 1);
-
 //---------------------------------------------------------------------------------------------
 	// cubemap reflection
 	//vec3 I = normalize(pos - lightPosition);
 	vec3 R = reflect(I, N);
 	R.y *= -1.0;
     vec3 refColor = texture(stagecube, R).rgb;// * ao_map.aaa;
-
 //---------------------------------------------------------------------------------------------
 // Calculate the color tint. input colors are r,g,b,alpha. alpha is color blend amount
 vec3 spec_tint = calculate_tint_color(diffuse_color, specularColor.w, blendAmount);
 vec3 fresnel_tint = calculate_tint_color(diffuse_color, fresnelColor.w, blendAmount);
 vec3 reflection_tint = calculate_tint_color(diffuse_color, reflectionColor.w, blendAmount);
-
 //---------------------------------------------------------------------------------------------
 // add fresnel and specular
 	resulting_color = pow(resulting_color, vec3(2.2)); // gamma correction
@@ -1532,12 +1528,17 @@ vec3 reflection_tint = calculate_tint_color(diffuse_color, reflectionColor.w, bl
 		}
 		
 		if(renderReflection == 1)
+		{
+			if (hasCube == 1)
+				resulting_color += pow((diffuse_map.www* refColor * reflection_tint* reflection_intensity),vec3(2.2));
 			resulting_color += pow((reflectionColor.rgb* refColor * reflection_tint* reflection_intensity),vec3(2.2));
+		}
+			
 	}
-
+	
+	
     return resulting_color;
 }
-
 
 void
 main()
@@ -1559,16 +1560,13 @@ main()
     }
     else
     {
-
         vec4 fincol = vec4(0);
         vec4 fc = vec4(0, 0, 0, 0);
-
         // fincol = diffuse map. also includes identical flag based corrections as sm4sh shader
         if (hasDif == 1)
         {
             fc = texture2D(dif, texcoord);
             fincol = fc;
-
             if (hasDif2 == 1)
             { // 2nd diffuse texture
                 fincol = texture2D(dif2, texcoord);
@@ -1576,28 +1574,22 @@ main()
                 fincol.a = 1.0;
             }
         }
-
         // calcuate final color by mixing with vertex color
         if (renderVertColor == 1) fincol = fincol * color;
-
         vec3 norm = CalcBumpedNormal();
-
         // Material lighting done in sm4sh shader
         if (renderNormal == 1)
             fincol.xyz = sm4sh_shader(fincol, texture2D(nrm, texcoord).aaaa, norm);
-
         fincol = fincol * (finalColorGain);
-
         // correct alpha. alpha based on flags eventually?
         float a = fincol.a;
-
         fincol.a = a;
         fincol.a *= finalColorGain.a;
-
         //fincol.xyz *= vec3(ShadowCalculation(lightPos));
         gl_FragColor = fincol; // final output color
-    }
-}";
+		}
+	}
+";
 
         #endregion
 

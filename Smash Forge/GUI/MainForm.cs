@@ -15,7 +15,7 @@ using Microsoft.VisualBasic.Devices;
 
 namespace Smash_Forge
 {
-    public partial class MainForm : Form
+    public partial class MainForm : FormBase
     {
 
         public static MainForm Instance
@@ -115,6 +115,7 @@ namespace Smash_Forge
                 OMO omo = new OMO(new FileData("C:\\s\\Smash\\extract\\data\\fighter\\kamui\\model\\body\\c00\\corrin.omo"));
                 omo.Apply(Runtime.TargetVBN, 0);
             }*/
+            
         }
 
         public void openFiles()
@@ -349,9 +350,10 @@ namespace Smash_Forge
                     model.vbn.swingBones.Read(psb);
             }
 
+            NUT nut = null;
             if (!pnut.Equals(""))
             {
-                NUT nut = new NUT(pnut);
+                nut = new NUT(pnut);
                 Runtime.TextureContainers.Add(nut);
             }
 
@@ -404,6 +406,16 @@ namespace Smash_Forge
 
             Runtime.ModelContainers.Add(model);
             meshList.refresh();
+            
+            ModelNode n = new ModelNode();
+            n.NUD.Model = model.nud;
+            n.VBN.Skeleton = model.vbn;
+            n.NUT.Texture = nut;
+
+            project.treeView1.BeginUpdate();
+            project.treeView1.Nodes.Add(n);
+            project.treeView1.EndUpdate();
+            project.treeView1.Refresh();
 
             //ModelViewport viewport = new ModelViewport();
             //viewport.draw.Add(model);
