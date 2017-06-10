@@ -1188,10 +1188,15 @@ out vec4 color;
 out vec2 texcoord;
 out vec3 normal;
 out vec3 fragpos;
+out vec4 vBoneOut;
+out vec4 vWeightOut;
+
+
 
 uniform vec4 colorSamplerUV;
 uniform mat4 eyeview;
-uniform mat4 lightview;
+uniform uint flags;
+
 
 uniform bones
 {
@@ -1246,6 +1251,9 @@ void main()
     color = vec4(vNormal, 1);
     pos = vec3(vPosition * mat3(eyeview));
 
+	vBoneOut = vBone;
+	vWeightOut = vWeight;
+	
     if(renderType != 1){
 
 	if(renderType == 2){
@@ -1254,6 +1262,8 @@ void main()
 	}
         else
             color = vColor;
+
+	fragpos = objPos.xyz;
 
 	if(vBone.x != -1.0) 
 		normal = normalize((skinNRM(vNormal.xyz, bi)).xyz) ; //  * -1 * mat3(eyeview)
@@ -1270,6 +1280,9 @@ in vec4 color;
 in vec3 normal;
 in vec3 tan;
 in vec3 bit;
+in vec4 vBoneOut;
+in vec4 vWeightOut;
+//uniform boneIndex;
 
 // Textures 
 uniform sampler2D dif;
@@ -1423,7 +1436,51 @@ vec3 RampColor(vec3 col){
 		return col;
 }
 
-
+vec3 colorRamp(vec3 col) {
+	float rampInputLuminance = luminance(col);
+	rampInputLuminance = clamp((rampInputLuminance), 0.00, 1.00); 
+	vec3 rampOutColor = vec3(0);
+	vec3 rampColor = vec3(0);
+	float blend = 1.0;
+	
+	if (rampInputLuminance <= 0.05){
+		rampColor = vec3(0,0,1);
+		//blend = smoothstep(0.5,0.0,rampInputLuminance);
+		rampOutColor = mix(vec3(rampInputLuminance),rampColor,blend);
+	}
+	else if (rampInputLuminance <= 0.15){
+		rampColor = vec3(0,1,1);
+		//blend = smoothstep(0.5,0.0,rampInputLuminance);
+		rampOutColor = mix(vec3(rampInputLuminance),rampColor,blend);
+	}
+	else if (rampInputLuminance <= 0.3){
+		rampColor = vec3(0,1,0);
+		//blend = smoothstep(0.5,0.0,rampInputLuminance);
+		rampOutColor = mix(vec3(rampInputLuminance),rampColor,blend);
+	}
+	else if (rampInputLuminance <= 0.5){
+		rampColor = vec3(1,1,0);
+		//blend = smoothstep(0.5,0.0,rampInputLuminance);
+		rampOutColor = mix(vec3(rampInputLuminance),rampColor,blend);
+	}
+	else if (rampInputLuminance <= 0.75){
+		rampColor = vec3(1,0.5,0);
+		blend = smoothstep(0.76,0.73,rampInputLuminance);
+		rampOutColor = mix(vec3(rampInputLuminance),rampColor,blend);
+	}
+	else if (rampInputLuminance <= 0.95){
+		rampColor = vec3(1,0.0,0);
+		blend = smoothstep(0.96,0.94,rampInputLuminance);
+		rampOutColor = mix(vec3(rampInputLuminance),rampColor,blend);
+	}
+	else if (rampInputLuminance <= 1.0){
+		rampColor = vec3(1.0,1.0,1.0);
+		
+		rampOutColor = mix(vec3(rampInputLuminance),rampColor,blend);
+	}	
+		
+	return rampOutColor;
+}
 
 vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     vec3 I = vec3(0,0,-1) * mat3(eyeview);
@@ -1434,109 +1491,108 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     vec3 newFresnelDirection = freslightDirection; //normalize(I + fresnelLightDirection);
     vec3 newSpecularDirection = lightDirection; //normalize(I + specularLightDirection);
    
-//---------------------------------------------------------------------------------------------
-	// lambertian diffuse
-	
-    float lambertBRDF = clamp((dot(newDiffuseDirection,N)),0,1);
-    vec3 diffuse_color = vec3(0);
-	vec3 diffuse_shading = vec3(0);
-	vec3 ao_blend = vec3(1);
-	float diffuse_luminance = luminance(diffuse_map.xyz);
-	
-	//ao_blend = total ambient occlusion term
-	ao_blend = min(((ao_map.aaa) + (minGain.rgb)),1.35); 
-	vec3 c = rgb2hsv(ao_blend.xyz);
-	ao_blend.xyz = hsv2rgb(vec3(c.x, c.y*0.5, c.z)); // Desaturate Ambient Occlusion
-	
-	
-	if ((flags & 0x00FF0000u) == 0x00610000u || (flags & 0x00FF0000u) == 0x00440000u) // Color Gain/Offset
-	{
-		diffuse_color = colorOffset.xyz + (luminance(diffuse_map.xyz) * (colorGain.xyz));
-		diffuse_color *= (1+minGain.xyz);
-		diffuse_shading = diffuse_color * colorGain.xyz * RampColor(vec3(lambertBRDF));
-		ao_blend = vec3(diffuse_luminance);
-		}
+	//---------------------------------------------------------------------------------------------
+		// diffuse calculations
+		float lambertBRDF = clamp((dot(newDiffuseDirection,N)),0,1);
+		vec3 diffuse_color = vec3(0);
+		vec3 diffuse_shading = vec3(0);
+		vec3 ao_blend = vec3(1);
+		float diffuse_luminance = luminance(diffuse_map.xyz);
 		
-	else if ((flags & 0x00420000u) == 0x00420000u) // bayo hair 'diffuse' is weird
-		diffuse_color = colorOffset.xyz + (diffuse_map.xxx * colorGain.xyz);
+		//ao_blend = total ambient occlusion term. desaturated to look correct
+		ao_blend = min(((ao_map.aaa) + (minGain.rgb)),1.35); 
+		vec3 c = rgb2hsv(ao_blend.xyz);
+		ao_blend.xyz = hsv2rgb(vec3(c.x, c.y*0.5, c.z)); 
 		
-	else {
-			diffuse_color = diffuse_map.xyz * ao_blend; // regular characters
-			diffuse_shading = diffuse_color * colorGain.xyz * ao_blend * RampColor(vec3(lambertBRDF));
+		//---------------------------------------------------------------------------------------------		
+			// flags based corrections for diffuse
+		if ((flags & 0x00FF0000u) == 0x00610000u || (flags & 0x00FF0000u) == 0x00440000u) // Color Gain/Offset
+		{
+			diffuse_color = colorOffset.xyz + (luminance(diffuse_map.xyz) * (colorGain.xyz));
+			diffuse_color *= (1+minGain.xyz);
+			diffuse_shading = diffuse_color * colorGain.xyz * RampColor(vec3(lambertBRDF));
+			ao_blend = vec3(diffuse_luminance);
 			}
+			
+		else if ((flags & 0x00420000u) == 0x00420000u) // bayo hair 'diffuse' is weird
+			diffuse_color = colorOffset.xyz + (diffuse_map.xxx * colorGain.xyz);
+			
+		else {
+				diffuse_color = diffuse_map.xyz * ao_blend; // regular characters
+				diffuse_shading = diffuse_color * colorGain.xyz * ao_blend * RampColor(vec3(lambertBRDF));
+				}
+
+		//---------------------------------------------------------------------------------------------		
+	
+	//---------------------------------------------------------------------------------------------
+	
     vec3 resulting_color = vec3(0);
 	
-    if(renderLighting == 1)
+	
+    if(renderLighting == 1) // material lighting
 	{
-		//if ((flags & 0xA0000000u) == 0xA0000000u) // stage lighting
-		//	resulting_color = diffuseColor.xyz * diffuse_map.xyz * ao_blend * color.xyz;
-		//else // character lighting
-		{
-			if (renderDiffuse == 1)
+		//---------------------------------------------------------------------------------------------
+			// lambertian diffuse
+		if (renderDiffuse == 1)
 			{
-				resulting_color = (diffuse_color * ambient * diffuseColor.xyz); // ambient
-				resulting_color += diffuse_shading * diffuse_intensity; // diffuse
-				
+				resulting_color = (diffuse_color * ambient * diffuseColor.xyz);
+				resulting_color += diffuse_shading * diffuse_intensity; 
 			}
-		}	
-	}
-	
-	else
-		resulting_color = (diffuse_color* diffuseColor.xyz)+(diffuse_shading*0.15); // no material lighting
-		
-	
-//---------------------------------------------------------------------------------------------
-    // blinn-phong specular
-    vec3 half_angle = normalize(newSpecularDirection);
-	float blinnPhongSpec = pow(clamp((dot(half_angle, N)), 0, 1), specularParams.y);
-	blinnPhongSpec *= (1-(specularParams.x/100));
-    
-//---------------------------------------------------------------------------------------------
-    // basic fresnel with fresnelParams control
-    vec3 F0 = vec3(1);
-	float cosTheta = dot(newFresnelDirection, N);
-	vec3 fresnel = clamp((F0 * pow(1.0 - cosTheta, 2.0 + fresnelParams.x)), 0, 1);
-//---------------------------------------------------------------------------------------------
-	// cubemap reflection
-	//vec3 I = normalize(pos - lightPosition);
-	vec3 R = reflect(I, N);
-	R.y *= -1.0;
-    vec3 refColor = texture(stagecube, R).rgb;// * ao_map.aaa;
-//---------------------------------------------------------------------------------------------
-// Calculate the color tint. input colors are r,g,b,alpha. alpha is color blend amount
-vec3 spec_tint = calculate_tint_color(diffuse_color, specularColor.w, blendAmount);
-vec3 fresnel_tint = calculate_tint_color(diffuse_color, fresnelColor.w, blendAmount);
-vec3 reflection_tint = calculate_tint_color(diffuse_color, reflectionColor.w, blendAmount);
-//---------------------------------------------------------------------------------------------
-// add fresnel and specular
-	resulting_color = pow(resulting_color, vec3(2.2)); // gamma correction
-	
-	if (renderLighting == 1) {
-		if(renderFresnel == 1)
-			resulting_color += pow((fresnelColor.xyz* fresnel * fresnel_intensity* fresnel_tint),vec3(2.2));
-		
-		if(renderSpecular == 1)
-		{
-			if ((flags & 0x00420000u) == 0x00420000u){ // bayo hair mats
-				resulting_color += pow(diffuse_map.zzz * blinnPhongSpec  * spec_tint * specular_intensity, vec3(2.2));
-			}
-			else if ((flags & 0x00FF0000u) == 0x00610000u || (flags & 0x00FF0000u) == 0x00440000u) // Color Gain/Offset	
-				resulting_color += pow(specularColor.xyz* blinnPhongSpec  * spec_tint* specular_intensity * ao_blend * (1+specularColorGain.xyz), vec3(2.2));
-				
-			else // default
-				resulting_color += pow(specularColor.xyz* blinnPhongSpec  * spec_tint* specular_intensity * ao_blend, vec3(2.2));
-		}
-		
-		if(renderReflection == 1)
-		{
-			if (hasCube == 1)
-				resulting_color += pow((diffuse_map.www* refColor * reflection_tint* reflection_intensity),vec3(2.2));
-			resulting_color += pow((reflectionColor.rgb* refColor * reflection_tint* reflection_intensity),vec3(2.2));
-		}
+		//---------------------------------------------------------------------------------------------
+			// blinn-phong specular
+			vec3 half_angle = normalize(newSpecularDirection);
+			float blinnPhongSpec = pow(clamp((dot(half_angle, N)), 0, 1), specularParams.y);
+			blinnPhongSpec *= (1-(specularParams.x/100));
 			
+		//---------------------------------------------------------------------------------------------
+			// basic fresnel with fresnelParams control
+			vec3 F0 = vec3(1);
+			float cosTheta = dot(newFresnelDirection, N);
+			vec3 fresnel = clamp((F0 * pow(1.0 - cosTheta, 2.0 + fresnelParams.x)), 0, 1);
+			
+		//---------------------------------------------------------------------------------------------
+			// cubemap reflection
+			//vec3 I = normalize(pos - lightPosition);
+			vec3 R = reflect(I, N);
+			R.y *= -1.0;
+			vec3 refColor = texture(stagecube, R).rgb;// * ao_map.aaa;
+			
+		//---------------------------------------------------------------------------------------------
+		
+		// Calculate the color tint. input colors are r,g,b,alpha. alpha is color blend amount
+		vec3 spec_tint = calculate_tint_color(diffuse_color, specularColor.w, blendAmount);
+		vec3 fresnel_tint = calculate_tint_color(diffuse_color, fresnelColor.w, blendAmount);
+		vec3 reflection_tint = calculate_tint_color(diffuse_color, reflectionColor.w, blendAmount);
+		
+		//---------------------------------------------------------------------------------------------
+			// add fresnel and specular and reflection
+			resulting_color = pow(resulting_color, vec3(2.2)); // gamma correction
+			
+			if(renderFresnel == 1)
+					resulting_color += pow((fresnelColor.xyz* fresnel * fresnel_intensity* fresnel_tint),vec3(2.2));
+			if(renderSpecular == 1)
+			{
+					if ((flags & 0x00420000u) == 0x00420000u){ // bayo hair mats
+						resulting_color += pow(diffuse_map.zzz * blinnPhongSpec  * spec_tint * specular_intensity, vec3(2.2));
+					}
+					else if ((flags & 0x00FF0000u) == 0x00610000u || (flags & 0x00FF0000u) == 0x00440000u) // Color Gain/Offset	
+						resulting_color += pow(specularColor.xyz* blinnPhongSpec  * spec_tint* specular_intensity * ao_blend * (1+specularColorGain.xyz), vec3(2.2));
+						
+					else // default
+						resulting_color += pow(specularColor.xyz* blinnPhongSpec  * spec_tint* specular_intensity * ao_blend, vec3(2.2));
+			}
+			if(renderReflection == 1)
+			{
+				if (hasCube == 1)
+					resulting_color += pow((diffuse_map.www* refColor * reflection_tint* reflection_intensity),vec3(2.2));
+				resulting_color += pow((reflectionColor.rgb* refColor * reflection_tint* reflection_intensity),vec3(2.2));
+			}
+			
+		//---------------------------------------------------------------------------------------------
 	}
-	
-	
+	else // no material lighting
+		resulting_color = pow(((diffuse_color * diffuseColor.xyz*0.85)+(diffuse_shading*0.15)),vec3(2.2)); 
+
     return resulting_color;
 }
 
@@ -1562,7 +1618,8 @@ main()
     {
         vec4 fincol = vec4(0);
         vec4 fc = vec4(0, 0, 0, 0);
-        // fincol = diffuse map. also includes identical flag based corrections as sm4sh shader
+		
+        // fincol = diffuse map
         if (hasDif == 1)
         {
             fc = texture2D(dif, texcoord);
@@ -1577,11 +1634,13 @@ main()
         // calcuate final color by mixing with vertex color
         if (renderVertColor == 1) fincol = fincol * color;
         vec3 norm = CalcBumpedNormal();
+		
         // Material lighting done in sm4sh shader
         if (renderNormal == 1)
             fincol.xyz = sm4sh_shader(fincol, texture2D(nrm, texcoord).aaaa, norm);
         fincol = fincol * (finalColorGain);
-        // correct alpha. alpha based on flags eventually?
+		
+        // correct alpha
         float a = fincol.a;
         fincol.a = a;
         fincol.a *= finalColorGain.a;
@@ -1589,6 +1648,8 @@ main()
         gl_FragColor = fincol; // final output color
 		}
 	}
+		
+		
 ";
 
         #endregion
