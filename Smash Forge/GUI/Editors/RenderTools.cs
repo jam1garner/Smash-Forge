@@ -94,7 +94,7 @@ namespace Smash_Forge
             cubeTex2 = LoadCubeMap(Smash_Forge.Properties.Resources._10101000);
             if(defaultTex == -1)
             defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
-            GL.GenVertexArrays(1, out cubeVAO);
+            GL.GenBuffers(1, out cubeVAO);
             GL.GenBuffers(1, out cubeVBO);
         }
 
@@ -1017,7 +1017,7 @@ namespace Smash_Forge
             int id;
             GL.GenBuffers(1, out id);
 
-            GL.ActiveTexture(0);
+            GL.ActiveTexture(TextureUnit.Texture0);
             
             GL.BindTexture(TextureTarget.TextureCubeMap, id);
 
@@ -1053,104 +1053,85 @@ namespace Smash_Forge
             return id;
         }
 
+        private static float[] cube_vertices = new float[]{
+      -1.0f,  1.0f,  1.0f,
+      -1.0f, -1.0f,  1.0f,
+       1.0f, -1.0f,  1.0f,
+       1.0f,  1.0f,  1.0f,
+      -1.0f,  1.0f, -1.0f,
+      -1.0f, -1.0f, -1.0f,
+       1.0f, -1.0f, -1.0f,
+       1.0f,  1.0f, -1.0f,
+    };
+
+        private static short[] cube_indices = new short[]{
+	  0, 1, 2, 3,
+	  3, 2, 6, 7,
+	  7, 6, 5, 4,
+	  4, 5, 1, 0,
+	  0, 3, 7, 4,
+	  1, 2, 6, 5,
+	};
+
         public static string cubevs = @"#version 330
 in vec3 position;
 out vec3 uv;
 
-uniform mat4 view;
+uniform mat3 view;
 
 void main()
 {
-    gl_Position = vec4(position, 1.0);  
+    gl_Position =  vec4(position, 1.0);  
     uv = position;
 }";
 
         public static string cubefs = @"#version 330
 in vec3 uv;
-out vec4 color;
 
-uniform samplerCube cube;
+uniform samplerCube skycube;
 
 void main()
 {    
-    //color = texture(cube, uv);
-    color = vec4(1,1,1,1);
+    gl_FragColor = textureCube(skycube, uv);
 }";
-
-        public static float[] cubevert = new float[]{
-    -1.0f,  1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-
-    -1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-
-    -1.0f, -1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-
-    -1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f, -1.0f,
-
-    -1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f
-};
+        
 
         public static void RenderCubeMap(Matrix4 view)
         {
             Shader shader = Runtime.shaders["SkyBox"];
+            //------------------------------------------------------
             GL.UseProgram(shader.programID);
             
-            GL.UniformMatrix4(shader.getAttribute("view"), false, ref view);
             shader.enableAttrib();
+            //------------------------------------------------------
+            Matrix3 v = new Matrix3(view);
+            GL.UniformMatrix3(shader.getAttribute("view"), false, ref v);
 
-            GL.BindVertexArray(cubeVAO);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, cubeVBO);
-            GL.BufferData<float>(BufferTarget.ArrayBuffer, (IntPtr)(cubevert.Length * sizeof(float)), cubevert, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("position"), 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
-            GL.BindVertexArray(0);
-
-            GL.BindVertexArray(cubeVAO);
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.Uniform1(shader.getAttribute("cube"), 0);
-            GL.BindTexture(TextureTarget.TextureCubeMap, VBNViewport.cubeTex);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, cubevert.Length);
-            GL.BindVertexArray(0);
+            GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex);
+            GL.Uniform1(shader.getAttribute("skycube"), 0);
 
+            GL.BindBuffer(BufferTarget.ArrayBuffer, cubeVBO);
+            GL.BufferData<float>(BufferTarget.ArrayBuffer, (IntPtr)(cube_vertices.Length * sizeof(float)), cube_vertices, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
+
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, cubeVAO);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(cube_indices.Length * sizeof(short)), cube_indices, BufferUsageHint.StaticDraw);
+
+            GL.DrawElements(BeginMode.Quads, cube_indices.Length, DrawElementsType.UnsignedShort, 0);
+            //Console.WriteLine(GL.GetError());
+
+            //------------------------------------------------------
             shader.disableAttrib();
 
             GL.UseProgram(0);
+            //------------------------------------------------------
         }
 
         #endregion
 
         #region Ray Trace Controls
-        
+
         public static Ray createRay(Matrix4 v, Vector2 m)
         {
             Vector4 va = Vector4.Transform(new Vector4(m.X, m.Y, -1.0f, 1.0f), v.Inverted());

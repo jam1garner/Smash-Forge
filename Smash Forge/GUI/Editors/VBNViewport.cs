@@ -462,6 +462,7 @@ namespace Smash_Forge
                 GL.Vertex2(1.0, -1.0);
                 GL.End();
             }
+            
             //RenderTools.RenderCubeMap(v);
 
             //GL.DepthFunc(DepthFunction.Never);

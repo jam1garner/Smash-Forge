@@ -242,7 +242,7 @@ namespace Smash_Forge
                                 }
                             }
                             break;
-                        case "intensity":
+                        /*case "intensity":
                             if (node.ParentNode != null)
                             {
                                 switch (node.ParentNode.Name)
@@ -253,7 +253,7 @@ namespace Smash_Forge
                                     case "reflection": float.TryParse(node.InnerText, out ref_inten); break;
                                 }
                             }
-                            break;
+                            break;*/
                         case "color":
                             if (node.ParentNode != null)
                             {
