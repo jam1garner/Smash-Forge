@@ -18,6 +18,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using System.IO;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using SmashForge.Imaging;
 
 namespace Smash_Forge
 {
@@ -185,7 +186,24 @@ namespace Smash_Forge
                 stopWatch.Start();
                 Render();
                 stopWatch.Stop();
-                if((1000 / AnimationSpeed) - stopWatch.ElapsedMilliseconds > 0)
+
+                if (gifMaker.makingGif && !gifMaker.currentFrameCaptured)
+                {
+                    gifMaker.keyframes.Add(CaptureScreen());
+                    if (gifMaker.currentFrame >= nupdMaxFrame.Value)
+                    {
+                        SaveCompletedAnimationGif();
+                        gifMaker.makingGif = false;
+                    }
+                    else
+                    {
+                        gifMaker.currentFrame++;
+                        SetAnimationFrame(gifMaker.currentFrame);
+                    }
+                }
+
+                // Don't wait while making a gif, use max speed
+                if (!gifMaker.makingGif && ((1000 / AnimationSpeed) - stopWatch.ElapsedMilliseconds > 0))
                     System.Threading.Thread.Sleep((int)((1000 / AnimationSpeed) - stopWatch.ElapsedMilliseconds));
             }
         }
@@ -252,31 +270,36 @@ namespace Smash_Forge
                 this.nupdFrame.Value = Runtime.TargetAnim.size() - 1;
                 return;
             }
-            Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value);
+            SetAnimationFrame((int)this.nupdFrame.Value);
+        }
+
+        public void SetAnimationFrame(int frameNum)
+        {
+            Runtime.TargetAnim.setFrame(frameNum);
 
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
-                Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value);
+                Runtime.TargetAnim.setFrame(frameNum);
                 if (m.vbn != null)
                     Runtime.TargetAnim.nextFrame(m.vbn);
 
                 if (m.dat_melee != null)
                 {
-                    Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value);
+                    Runtime.TargetAnim.setFrame(frameNum);
                     Runtime.TargetAnim.nextFrame(m.dat_melee.bones);
                 }
                 if (m.bch != null)
                 {
                     foreach (BCH.BCH_Model mod in m.bch.models)
                     {
-                        Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value);
+                        Runtime.TargetAnim.setFrame(frameNum);
                         if (mod.skeleton != null)
                             Runtime.TargetAnim.nextFrame(mod.skeleton);
                     }
                 }
             }
 
-            Frame = (int)this.nupdFrame.Value;
+            Frame = frameNum;
 
             if (gameScriptManager.script != null)
             {
@@ -284,9 +307,15 @@ namespace Smash_Forge
                 gameScriptManager.processScript();
             }
         }
+
         private void nupdSpeed_ValueChanged(object sender, EventArgs e)
         {
-            AnimationSpeed = (int)nupdFrameRate.Value;
+            setAnimationSpeed((int)nupdFrameRate.Value);
+        }
+
+        public void setAnimationSpeed(int fps)
+        {
+            AnimationSpeed = fps;
         }
 
         System.Drawing.Point _LastPoint = System.Drawing.Point.Empty;
@@ -1830,33 +1859,11 @@ namespace Smash_Forge
             }*/
             if (e.KeyChar == 'r')
             {
-                int width = glControl1.Width;
-                int height = glControl1.Height;
-
-                byte[] pixels = new byte[width*height*4];
-                GL.ReadPixels(0,0,width, height, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
-                File.WriteAllBytes("test.bin", pixels);
-                
-                Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
-
-                byte[] np = new byte[width*height * 4];
-                // need to flip and rearrange the data
-                for(int h = 0; h < height; h++)
-                    for(int w = 0;  w < width; w++)
-                    {
-                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 2] = pixels[(w + h * bmp.Width) * 4 + 0];
-                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 1] = pixels[(w + h * bmp.Width) * 4 + 1];
-                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 0] = pixels[(w + h * bmp.Width) * 4 + 2];
-                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 3] = pixels[(w + h * bmp.Width) * 4 + 3];
-                    }
-
-                Marshal.Copy(np, 0, bmpData.Scan0, np.Length);
-                bmp.UnlockBits(bmpData);
-
-                Console.WriteLine("Saving");
-                bmp.Save("Render.png");
+                CaptureScreen().Save("Render.png");
+            }
+            if (e.KeyChar == 'g')
+            {
+                StartSavingAnimationGif();
             }
             if (e.KeyChar == 'f')
             {
@@ -2027,5 +2034,89 @@ namespace Smash_Forge
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
+
+        public Bitmap CaptureScreen()
+        {
+            int width = glControl1.Width;
+            int height = glControl1.Height;
+
+            byte[] pixels = new byte[width * height * 4];
+            GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
+            // Flip data becausee glReadPixels reads it in from bottom row to top row
+            byte[] fixedPixels = new byte[width * height * 4];
+            for (int h = 0; h < height; h++)
+                for (int w = 0; w < width; w++)
+                {
+                    // Remove alpha blending from the end image - we just want the post-render colours
+                    pixels[((w + h * width) * 4) + 3] = 255;
+
+                    // Copy a 4 byte pixel one at a time
+                    Array.Copy(pixels, (w + h * width) * 4, fixedPixels, ((height - h - 1) * width + w) * 4, 4);
+                }
+            // Format and save the data
+            Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bmp.PixelFormat);
+            Marshal.Copy(fixedPixels, 0, bmpData.Scan0, fixedPixels.Length);
+            bmp.UnlockBits(bmpData);
+            return bmp;
+        }
+
+        public Bitmap Vaporwave()
+        {
+            int width = glControl1.Width;
+            int height = glControl1.Height;
+
+            byte[] pixels = new byte[width * height * 3];
+            GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Rgb, PixelType.UnsignedByte, pixels);
+            // Flip data
+            byte[] fixedPixels = new byte[width * height * 3];
+            for (int h = 0; h < height; h++)
+                for (int w = 0; w < width; w++)
+                {
+                    // Copy a 4 byte pixel one at a time
+                    Array.Copy(pixels, (w + h * width) * 3, fixedPixels, ((height - h - 1) * width + w) * 3, 3);
+                }
+            // Format and save the data
+            Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bmp.PixelFormat);
+            Marshal.Copy(fixedPixels, 0, bmpData.Scan0, fixedPixels.Length);
+            bmp.UnlockBits(bmpData);
+            return bmp;
+        }
+
+        public void StartSavingAnimationGif()
+        {
+            if (Runtime.TargetAnim == null)
+            {
+                Console.WriteLine("Error making GIF: no animation selected");
+                return;
+            }
+            SetAnimationFrame(0);
+            this.gifMaker.makingGif = true;
+            this.gifMaker.currentFrame = 0;
+            this.gifMaker.currentFrameCaptured = false;
+            this.gifMaker.keyframes = new List<Image>();
+        }
+
+        public void SaveCompletedAnimationGif()
+        {
+            using (var gif = File.OpenWrite("anim.gif"))
+            using (var encoder = new GifEncoder(gif))
+            {
+                // 60fps for now
+                encoder.FrameDelay = TimeSpan.FromMilliseconds(1000 / 15);
+                foreach (Image frame in gifMaker.keyframes)
+                    encoder.AddFrame(frame);
+            }
+        }
+
+        public class GifMaker
+        {
+            public bool makingGif = false;
+            public int currentFrame = -1;
+            public bool currentFrameCaptured = false;
+            public List<Image> keyframes = null;
+        }
+        GifMaker gifMaker = new GifMaker();
     }
 }

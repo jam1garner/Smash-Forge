@@ -366,6 +366,7 @@
     <Compile Include="GUI\Nodes\BaseNode.cs" />
     <Compile Include="GUI\Nodes\ModelNode.cs" />
     <Compile Include="GUI\Nodes\ProjectNode.cs" />
+    <Compile Include="Imaging\GifEncoder.cs" />
     <Compile Include="IO\FileBase.cs" />
     <Compile Include="lib\NintacoAPI.cs" />
     <Compile Include="MovesetManager.cs" />
