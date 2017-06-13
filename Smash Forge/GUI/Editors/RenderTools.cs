@@ -225,9 +225,30 @@ namespace Smash_Forge
 
             GL.StencilMask(0xFF);
             GL.Clear(ClearBufferMask.StencilBufferBit);
-            GL.Enable(EnableCap.StencilTest);
+            GL.Disable(EnableCap.StencilTest);
             GL.Enable(EnableCap.DepthTest);
             //GL.Enable(EnableCap.CullFace);
+        }
+
+        public static void resetStencil()
+        {
+            GL.Enable(EnableCap.StencilTest);
+
+            GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
+            GL.StencilMask(0xFF);
+            GL.Disable(EnableCap.DepthTest);
+            GL.Clear(ClearBufferMask.StencilBufferBit);
+            GL.ColorMask(false, false, false, false);
+
+            GL.ColorMask(true, true, true, true);
+            GL.StencilFunc(StencilFunction.Equal, 1, 0xFF);
+            GL.StencilMask(0x00);
+            //GL.Disable(EnableCap.CullFace);
+
+            GL.StencilMask(0xFF);
+            GL.Clear(ClearBufferMask.StencilBufferBit);
+            GL.Disable(EnableCap.StencilTest);
+            GL.Enable(EnableCap.DepthTest);
         }
 
         public static void drawSphereTransformedVisible(Vector3 center, float radius, uint precision, Matrix4 transform)

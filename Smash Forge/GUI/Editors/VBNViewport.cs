@@ -524,7 +524,7 @@ namespace Smash_Forge
             // drawing floor---------------------------
             if (Runtime.renderFloor)
             {
-                    RenderTools.drawFloor();
+                RenderTools.drawFloor();
             }
 
 
@@ -594,9 +594,66 @@ namespace Smash_Forge
 
             Cursor.Current = freezeCamera ? Cursors.VSplit : Cursors.Default;*/
 
+            drawScale();
+
             // Clean up
             GL.PopAttrib();
             glControl1.SwapBuffers();
+        }
+
+        public void drawScale()
+        {
+            // TODO: make this scale with zooming in and out so that when we zoom out for the big animations it is still the same scale
+            // width = x camera offset
+            // height = y camera offset
+            // zoom = z camera offset
+            //double distanceToOrigin = Math.Sqrt((width * width) + (height * height) + (zoom * zoom));
+            double distanceToOrigin = Math.Sqrt(zoom * zoom);
+            double scale = distanceToOrigin;
+            float w = glControl1.Width;
+            float h = glControl1.Height;
+            float step = 2800f;
+
+            // No shaders
+            GL.UseProgram(0);
+
+            // Setup the 3d for 2d and use screen coords
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.PushMatrix();
+            GL.LoadIdentity();
+            GL.Ortho(0f, w, h, 0, -1f, 1f);
+
+            // Draw 2d
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+
+            // Draw over everything
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            // Allow transparency
+            GL.Enable(EnableCap.Blend);
+            // White transparent lines
+            GL.Color4(Color.FromArgb(35, 255, 255, 255));
+            GL.LineWidth(1f);
+
+            // Draw the scale grid
+            GL.Begin(PrimitiveType.Lines);
+            for (var i = 0.0; i <= w; i += step / scale)
+            {
+                GL.Vertex3(0f, i, 0f);
+                GL.Vertex3(w, i, 0f);
+                GL.Vertex3(i, 0f, 0f);
+                GL.Vertex3(i, h, 0f);
+            }
+            GL.End();
+
+            // Make sure we can render 3d again if we want
+            GL.Enable(EnableCap.DepthTest);
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.PopMatrix();
+            GL.MatrixMode(MatrixMode.Modelview);
         }
 
         public void UpdateMousePosition()
