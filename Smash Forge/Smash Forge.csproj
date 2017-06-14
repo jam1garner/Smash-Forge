@@ -38,6 +38,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="nQuant.Core">
+      <HintPath>lib\nQuant.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Octokit, Version=0.23.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Octokit.dll</HintPath>
@@ -366,7 +369,10 @@
     <Compile Include="GUI\Nodes\BaseNode.cs" />
     <Compile Include="GUI\Nodes\ModelNode.cs" />
     <Compile Include="GUI\Nodes\ProjectNode.cs" />
+    <Compile Include="Imaging\AnimatedGifEncoder.cs" />
     <Compile Include="Imaging\GifEncoder.cs" />
+    <Compile Include="Imaging\LZWEncoder.cs" />
+    <Compile Include="Imaging\NeuQuant.cs" />
     <Compile Include="IO\FileBase.cs" />
     <Compile Include="lib\NintacoAPI.cs" />
     <Compile Include="MovesetManager.cs" />
@@ -707,6 +713,7 @@
     <Content Include="lib\libvorbis.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="lib\nQuant.Core.dll" />
     <Content Include="lib\RG_ETC1.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

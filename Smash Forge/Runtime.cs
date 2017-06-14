@@ -56,6 +56,7 @@ namespace Smash_Forge
         public static bool renderHitboxes;
         public static bool renderInterpolatedHitboxes;
         public static bool renderFloor;
+        public static bool renderScale;
         public static bool renderBackGround;
         public static bool renderPath;
         public static bool renderRespawns;
@@ -68,6 +69,12 @@ namespace Smash_Forge
         public static bool renderHurtboxes;
         public static bool renderHurtboxesZone;
         public static bool renderECB;
+
+        public static bool swapScaleXYPlane = false;
+        public static bool swapScaleYZPlane = false;
+        public static float scaleSize = 180f;
+        public static float scaleWallStep = 12f;
+        public static float scaleFloorStep = 4.5f;
 
         public static TextureWrapMode floorWrap = TextureWrapMode.MirroredRepeat;
         public static float floorSize = 30f;
@@ -187,6 +194,25 @@ namespace Smash_Forge
                                 switch (node.ParentNode.Name)
                                 {
                                     case "floor": float.TryParse(node.InnerText, out floorSize); break;
+                                    case "scale": float.TryParse(node.InnerText, out scaleSize); break;
+                                }
+                            }
+                            break;
+                        case "wall_step":
+                            if (node.ParentNode != null)
+                            {
+                                switch (node.ParentNode.Name)
+                                {
+                                    case "scale": float.TryParse(node.InnerText, out scaleWallStep); break;
+                                }
+                            }
+                            break;
+                        case "floor_step":
+                            if (node.ParentNode != null)
+                            {
+                                switch (node.ParentNode.Name)
+                                {
+                                    case "scale": float.TryParse(node.InnerText, out scaleFloorStep); break;
                                 }
                             }
                             break;
@@ -236,6 +262,7 @@ namespace Smash_Forge
                                     case "fresnel": bool.TryParse(node.InnerText, out renderFresnel); break;
                                     case "reflection": bool.TryParse(node.InnerText, out renderReflection); break;
                                     case "floor": bool.TryParse(node.InnerText, out renderFloor); break;
+                                    case "scale": bool.TryParse(node.InnerText, out renderScale); break;
                                     case "lighting": bool.TryParse(node.InnerText, out renderLighting); break;
                                     case "render_model": bool.TryParse(node.InnerText, out renderModel); break;
                                     case "render_LVD": bool.TryParse(node.InnerText, out renderLVD); break;
@@ -272,12 +299,32 @@ namespace Smash_Forge
                                 }
                             }
                             break;
+                        case "swap_xy_plane":
+                            if (node.ParentNode != null)
+                            {
+                                switch (node.ParentNode.Name)
+                                {
+                                    case "scale": bool.TryParse(node.InnerText, out swapScaleXYPlane); break;
+                                }
+                            }
+                            break;
+                        case "swap_yz_plane":
+                            if (node.ParentNode != null)
+                            {
+                                switch (node.ParentNode.Name)
+                                {
+                                    case "scale": bool.TryParse(node.InnerText, out swapScaleYZPlane); break;
+                                }
+                            }
+                            break;
                         default:
                             Console.WriteLine(node.Name);
                             break;
                     }
                 }
 
+                if (Runtime.renderFloor && Runtime.renderScale)
+                    Runtime.renderFloor = false;
             }
         }
 
@@ -321,6 +368,16 @@ for changing default texure
                 node.AppendChild(createNode(doc, "style", floorStyle.ToString()));
                 node.AppendChild(createNode(doc, "color", ColorTranslator.ToHtml(floorColor)));
                 node.AppendChild(createNode(doc, "size", floorSize.ToString()));
+            }
+            {
+                XmlNode node = doc.CreateElement("scale");
+                viewportNode.AppendChild(node);
+                node.AppendChild(createNode(doc, "enabled", renderScale.ToString()));
+                node.AppendChild(createNode(doc, "swap_xy_plane", swapScaleXYPlane.ToString()));
+                node.AppendChild(createNode(doc, "swap_yz_plane", swapScaleYZPlane.ToString()));
+                node.AppendChild(createNode(doc, "size", scaleSize.ToString()));
+                node.AppendChild(createNode(doc, "wall_step", scaleWallStep.ToString()));
+                node.AppendChild(createNode(doc, "floor_step", scaleFloorStep.ToString()));
             }
             viewportNode.AppendChild(createNode(doc, "zoom_speed", zoomspeed.ToString()));
             viewportNode.AppendChild(createNode(doc, "fov", fov.ToString()));

@@ -593,6 +593,27 @@ namespace Smash_Forge
             GL.PopMatrix();
         }
 
+        public static void drawIdentity()
+        {
+            GL.Disable(EnableCap.DepthTest);
+
+            GL.LineWidth(2f);
+            GL.Color3(Color.DarkGreen);
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex3(0, 5, 0);
+            GL.Vertex3(0, 0, 0);
+
+            GL.Color3(Color.DarkRed);
+            GL.Vertex3(0f, 0f, 0);
+            GL.Vertex3(5f, 0f, 0);
+
+            GL.Color3(Color.DarkBlue);
+            GL.Vertex3(0, 0f, 0f);
+            GL.Vertex3(0, 0f, 5f);
+
+            GL.End();
+        }
+
         public static void drawFloor()
         {
             bool solid = Runtime.floorStyle == Runtime.FloorStyle.Solid;

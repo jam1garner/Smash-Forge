@@ -19,6 +19,8 @@ using System.IO;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using SmashForge.Imaging;
+using NGif;
+using nQuant;
 
 namespace Smash_Forge
 {
@@ -70,7 +72,7 @@ namespace Smash_Forge
         }
 
         #region Members
-        Matrix4 v;
+        Matrix4 v, vi;
         float rot = 0;
         float x = 0;
         float lookup = 0;
@@ -192,6 +194,7 @@ namespace Smash_Forge
                     gifMaker.keyframes.Add(CaptureScreen());
                     if (gifMaker.currentFrame >= nupdMaxFrame.Value)
                     {
+                        QuantizeImages();
                         SaveCompletedAnimationGif();
                         gifMaker.makingGif = false;
                     }
@@ -390,7 +393,7 @@ namespace Smash_Forge
             int w = Width;
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
-            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
+            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom)
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
 
@@ -527,7 +530,6 @@ namespace Smash_Forge
                 RenderTools.drawFloor();
             }
 
-
             //GL.Enable(EnableCap.LineSmooth); // This is Optional 
             GL.Enable(EnableCap.Normalize);  // These is critical to have
             GL.Enable(EnableCap.RescaleNormal);
@@ -550,6 +552,10 @@ namespace Smash_Forge
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
 
             GL.Enable(EnableCap.FramebufferSrgb);
+
+            // Draw scale lines, useful for comparing animations
+            if (Runtime.renderScale)
+                drawScale();
 
 
             // draw models
@@ -594,8 +600,6 @@ namespace Smash_Forge
 
             Cursor.Current = freezeCamera ? Cursors.VSplit : Cursors.Default;*/
 
-            drawScale();
-
             // Clean up
             GL.PopAttrib();
             glControl1.SwapBuffers();
@@ -603,57 +607,74 @@ namespace Smash_Forge
 
         public void drawScale()
         {
-            // TODO: make this scale with zooming in and out so that when we zoom out for the big animations it is still the same scale
-            // width = x camera offset
-            // height = y camera offset
-            // zoom = z camera offset
-            //double distanceToOrigin = Math.Sqrt((width * width) + (height * height) + (zoom * zoom));
-            double distanceToOrigin = Math.Sqrt(zoom * zoom);
-            double scale = distanceToOrigin;
-            float w = glControl1.Width;
-            float h = glControl1.Height;
-            float step = 2800f;
+            float floorStep = Runtime.scaleFloorStep;
+            float step = Runtime.scaleWallStep;
+            float cubeSize = Runtime.scaleSize;
 
             // No shaders
             GL.UseProgram(0);
 
-            // Setup the 3d for 2d and use screen coords
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.PushMatrix();
-            GL.LoadIdentity();
-            GL.Ortho(0f, w, h, 0, -1f, 1f);
-
-            // Draw 2d
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-
             // Draw over everything
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.CullFace);
-            GL.Clear(ClearBufferMask.DepthBufferBit);
+            //GL.Disable(EnableCap.DepthTest);
+            //GL.Disable(EnableCap.CullFace);
+            //GL.Clear(ClearBufferMask.DepthBufferBit);
 
             // Allow transparency
             GL.Enable(EnableCap.Blend);
             // White transparent lines
-            GL.Color4(Color.FromArgb(35, 255, 255, 255));
+            GL.Color4(Color.FromArgb(90, 0, 0, 0));
             GL.LineWidth(1f);
 
             // Draw the scale grid
             GL.Begin(PrimitiveType.Lines);
-            for (var i = 0.0; i <= w; i += step / scale)
+                // XY plane
+                float planePos = Runtime.swapScaleXYPlane ? cubeSize : -cubeSize;
+                for (var h = 0f; h <= cubeSize; h += step)
+                {
+                    // Each horizontal line
+                    GL.Vertex3(-cubeSize, h, planePos);
+                    GL.Vertex3(cubeSize, h, planePos);
+                }
+                for (var w = -cubeSize; w <= cubeSize; w += step)
+                {
+                    // Each vertical line
+                    GL.Vertex3(w, 0f, planePos);
+                    GL.Vertex3(w, cubeSize, planePos);
+                }
+
+                // YZ plane
+                planePos = Runtime.swapScaleYZPlane ? cubeSize : -cubeSize;
+                for (var h = 0f; h <= cubeSize; h += step)
+                {
+                    // Each horizontal line
+                    GL.Vertex3(planePos, h, -cubeSize);
+                    GL.Vertex3(planePos, h, cubeSize);
+                }
+                for (var w = -cubeSize; w <= cubeSize; w += step)
+                {
+                    // Each vertical line
+                    GL.Vertex3(planePos, 0f, w);
+                    GL.Vertex3(planePos, cubeSize, w);
+                }
+
+            // XZ plane (floor)
+            for (var h = -cubeSize; h <= cubeSize; h += floorStep)
             {
-                GL.Vertex3(0f, i, 0f);
-                GL.Vertex3(w, i, 0f);
-                GL.Vertex3(i, 0f, 0f);
-                GL.Vertex3(i, h, 0f);
+                // Each horizontal line
+                GL.Vertex3(-cubeSize, 0f, h);
+                GL.Vertex3(cubeSize, 0f, h);
+            }
+            for (var w = -cubeSize; w <= cubeSize; w += floorStep)
+            {
+                // Each vertical line
+                GL.Vertex3(w, 0f, -cubeSize);
+                GL.Vertex3(w, 0f, cubeSize);
             }
             GL.End();
 
-            // Make sure we can render 3d again if we want
+            RenderTools.drawIdentity();
+
             GL.Enable(EnableCap.DepthTest);
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.PopMatrix();
-            GL.MatrixMode(MatrixMode.Modelview);
         }
 
         public void UpdateMousePosition()
@@ -2149,22 +2170,47 @@ namespace Smash_Forge
                 return;
             }
             SetAnimationFrame(0);
+            // TODO: look into C# threads and look into how we can offload the old gifMaker
+            // to a thread for processing
+            this.gifMaker = new GifMaker();
             this.gifMaker.makingGif = true;
             this.gifMaker.currentFrame = 0;
             this.gifMaker.currentFrameCaptured = false;
             this.gifMaker.keyframes = new List<Image>();
+            this.gifMaker.gifName = Runtime.TargetAnimString.Replace(".omo", "").Substring(3);
+        }
+
+        public void QuantizeImages()
+        {
+            var sw = Stopwatch.StartNew();
+            List<Image> newKeyframes = new List<Image>();
+            var quantizer = new WuQuantizer();
+            foreach (Bitmap frame in gifMaker.keyframes)
+            {
+                var quantized = quantizer.QuantizeImage(frame, 10, 70);
+                newKeyframes.Add(quantized);
+            }
+            gifMaker.keyframes = newKeyframes;
+            Console.WriteLine($"Quantized GIF keyframes in {sw.ElapsedMilliseconds}ms");
         }
 
         public void SaveCompletedAnimationGif()
         {
-            using (var gif = File.OpenWrite("anim.gif"))
+            var sw = Stopwatch.StartNew();
+            using (var gif = File.OpenWrite($"{gifMaker.gifName}.gif"))
             using (var encoder = new GifEncoder(gif))
             {
                 // 60fps for now
+                // TODO: in the future support a list of FPS and output them all
+                // this should be fast since the quantization only happens once
                 encoder.FrameDelay = TimeSpan.FromMilliseconds(1000 / 15);
-                foreach (Image frame in gifMaker.keyframes)
+                foreach (Bitmap frame in gifMaker.keyframes)
+                {
                     encoder.AddFrame(frame);
+                }
             }
+            sw.Stop();
+            Console.WriteLine($"Encoded GIF in {sw.ElapsedMilliseconds}ms");
         }
 
         public class GifMaker
@@ -2173,6 +2219,7 @@ namespace Smash_Forge
             public int currentFrame = -1;
             public bool currentFrameCaptured = false;
             public List<Image> keyframes = null;
+            public string gifName;
         }
         GifMaker gifMaker = new GifMaker();
     }
