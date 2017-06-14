@@ -1263,6 +1263,8 @@ in vec3 tan;
 in vec3 bit;
 in vec4 vBoneOut;
 in vec4 vWeightOut;
+out vec4 fincol;
+
 //uniform boneIndex;
 
 // Textures 
@@ -1546,7 +1548,8 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 		vec3 reflection_tint = calculate_tint_color(diffuse_color, reflectionColor.w, blendAmount);
 		
 		//---------------------------------------------------------------------------------------------
-			// add fresnel and specular and reflection
+			// gamma correct diffuse term and then add fresnel,specular,reflection
+			
 			resulting_color = pow(resulting_color, vec3(2.2)); // gamma correction
 			
 			if(renderFresnel == 1)
@@ -1554,26 +1557,61 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			if(renderSpecular == 1)
 			{
 					if ((flags & 0x00420000u) == 0x00420000u){ // bayo hair mats
-						resulting_color += pow(diffuse_map.zzz * blinnPhongSpec  * spec_tint * specular_intensity, vec3(2.2));
+						resulting_color += pow(diffuse_map.zzz * blinnPhongSpec * spec_tint * specular_intensity, vec3(2.2));
 					}
 					else if ((flags & 0x00FF0000u) == 0x00610000u || (flags & 0x00FF0000u) == 0x00440000u) // Color Gain/Offset	
-						resulting_color += pow(specularColor.xyz* blinnPhongSpec  * spec_tint* specular_intensity * ao_blend * (1+specularColorGain.xyz), vec3(2.2));
+						resulting_color += pow(specularColor.xyz* blinnPhongSpec * spec_tint * specular_intensity * ao_blend * (1+specularColorGain.xyz), vec3(2.2));
 						
 					else // default
-						resulting_color += pow(specularColor.xyz* blinnPhongSpec  * spec_tint* specular_intensity * ao_blend, vec3(2.2));
+						resulting_color += pow(specularColor.xyz* blinnPhongSpec * spec_tint * specular_intensity * ao_blend, vec3(2.2));
 			}
 			if(renderReflection == 1)
 			{
-				if (hasCube == 1)
-					resulting_color += pow((diffuse_map.www* refColor * reflection_tint* reflection_intensity),vec3(2.2));
-				resulting_color += pow((reflectionColor.rgb* refColor * reflection_tint* reflection_intensity),vec3(2.2));
+				//if (hasCube == 1) // cubemaps from model.nut. currently just uses miiverse cubemap
+				//	resulting_color += pow((diffuse_map.www* refColor * reflection_tint* reflection_intensity),vec3(2.2));
+					
+				if ((flags & 0x00000010u) == 0x00000010u) // a weird single face reflection map (rosa's stars, sonic eyes, etc)
+				{/*
+					vec3 weirdVector = normal.xyz;
+					mat4 inverseEyeView = inverse(eyeview);
+					//weirdVector = weirdVector * mat3(inverseEyeView); 
+					
+					
+					float uCoord = (weirdVector.x+1)/2;// + 1)/2; // remap to [0,1]	
+					float vCoord = (weirdVector.y+1)/2;// + 1)/2; // remap to [0,1]	
+					//uCoord *= 1.2;
+					//vCoord *= 1.2;
+					
+				
+					//resulting_color = I.zzz;
+					//resulting_color = vec3(1-uCoord);
+					
+					//reflectionParams.w
+					
+					//cube map single face
+					//uCoord = (R.x/ abs(R.z)+1)*0.5;
+					//vCoord = (R.y/ abs(R.z)+1)*0.5;
+					
+					//sphere mapping
+					//float M = 2* sqrt((R.x*R.x)+(R.y*R.y)+pow((R.z+1),2));
+					//uCoord = (R.x/M) + 0.5;
+					//vCoord = (R.y/M) + 0.5;
+					
+					vec2 newTexCoord = vec2(uCoord,1-vCoord);
+					vec3 weirdReflection = texture2D(dif, newTexCoord).xyz; // currently not using proper texture
+					resulting_color += pow((weirdReflection*reflectionColor.xyz*reflection_tint*reflection_intensity),vec3(2.2));
+					*/
+					
+				}
+				else // stage cubemaps
+					resulting_color += pow((reflectionColor.xyz* refColor * reflection_tint* reflection_intensity),vec3(2.2));
 			}
 			
 		//---------------------------------------------------------------------------------------------
 	}
 	else // no material lighting
 		resulting_color = pow(((diffuse_color * diffuseColor.xyz*0.85)+(diffuse_shading*0.15)),vec3(2.2)); 
-
+	
     return resulting_color;
 }
 
@@ -1583,21 +1621,21 @@ main()
     // if the renderer wants to show something other than textures
     if (renderType == 3)
     {
-        gl_FragColor = vec4(pow(texture2D(nrm, texcoord).xyz, vec3(2.2)), 1);
+        fincol = vec4(pow(texture2D(nrm, texcoord).xyz, vec3(2.2)), 1);
     }
     else
     if (renderType == 5)
     {
-        gl_FragColor = vec4(texture2D(nrm, texcoord).aaa, 1);
+        fincol = vec4(texture2D(nrm, texcoord).aaa, 1);
     }
     else
     if (renderType == 1 || renderType == 2 || renderType == 4 || renderType == 5)
     {
-        gl_FragColor = color;
+        fincol = color;
     }
     else
     {
-        vec4 fincol = vec4(0);
+        fincol = vec4(0);
         vec4 fc = vec4(0, 0, 0, 0);
 		
         // fincol = diffuse map
@@ -1612,8 +1650,9 @@ main()
                 fincol.a = 1.0;
             }
         }
+		
         // calcuate final color by mixing with vertex color
-        if (renderVertColor == 1) fincol = fincol * color;
+        if (renderVertColor == 1) fincol *= color;
         vec3 norm = CalcBumpedNormal();
 		
         // Material lighting done in sm4sh shader
@@ -1626,12 +1665,9 @@ main()
         fincol.a = a;
         fincol.a *= finalColorGain.a;
         //fincol.xyz *= vec3(ShadowCalculation(lightPos));
-        gl_FragColor = fincol; // final output color
+        //gl_FragColor = fincol; // final output color
 		}
-	}
-		
-		
-";
+	} ";
 
         #endregion
 
