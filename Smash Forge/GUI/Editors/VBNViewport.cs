@@ -218,8 +218,11 @@ namespace Smash_Forge
             {
                 HandleACMD(Runtime.TargetAnimString.Substring(3));
                 if (gameScriptManager != null)
+                {
                     if (gameScriptManager.script != null)
                         gameScriptManager.processScript();
+                    gameScriptManager.processAnimationParams(Runtime.TargetAnimString.Substring(3).Replace(".omo", ""));
+                }
             }
         }
 
@@ -305,10 +308,14 @@ namespace Smash_Forge
 
             Frame = frameNum;
 
-            if (gameScriptManager.script != null)
+            if (gameScriptManager != null)
             {
                 gameScriptManager.currentFrame = Frame;
-                gameScriptManager.processScript();
+                if (gameScriptManager.script != null)
+                {
+                    gameScriptManager.processScript();
+                }
+                gameScriptManager.processAnimationParams(Runtime.TargetAnimString.Substring(3).Replace(".omo", ""));
             }
         }
 
@@ -916,7 +923,10 @@ namespace Smash_Forge
                 // Render the hitboxes - because of how we disable the depth buffer here,
                 // make sure that everything else is drawn before this!
                 if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
+                {
                     HandleACMD(Runtime.TargetAnimString.Substring(3));
+                }
+
 
                 if (Runtime.renderHitboxes && Runtime.renderInterpolatedHitboxes)
                     RenderInterpolatedHitboxes();
@@ -1854,7 +1864,6 @@ namespace Smash_Forge
             //scr_sound = (ACMDScript)Runtime.Moveset.Sound.Scripts[crc];
             if (Runtime.acmdEditor.crc != crc)
                 Runtime.acmdEditor.SetAnimation(crc);
-
         }
 
         #endregion

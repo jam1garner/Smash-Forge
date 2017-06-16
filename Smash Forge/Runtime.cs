@@ -104,6 +104,10 @@ namespace Smash_Forge
         public static bool useNormalMap;
         public static RenderTypes renderType;
 
+        // ETC
+        public static string fighterDir = "";
+        public static string paramDir = "";
+
         public enum RenderTypes
         {
             Texture = 0,
@@ -128,6 +132,8 @@ namespace Smash_Forge
         public static Dictionary<string, MTA> MaterialAnimations { get; set; }
         public static MovesetManager Moveset { get; set; }
         public static CharacterParamManager ParamManager { get; set; }
+        public static PARAMEditor ParamManagerHelper { get; set; }
+        public static Dictionary<string, int> ParamMoveNameIdMapping { get; set; }
         public static ACMDPreviewEditor acmdEditor;
 
         public static string CanonicalizePath(string path)
@@ -251,6 +257,8 @@ namespace Smash_Forge
                         case "render_general_points": bool.TryParse(node.InnerText, out renderGeneralPoints); break;
                         case "render_otherLVDEntries": bool.TryParse(node.InnerText, out renderOtherLVDEntries); break;
                         case "render_swag": bool.TryParse(node.InnerText, out renderSwag); break;
+                        case "fighter_dir": fighterDir = node.InnerText; break;
+                        case "param_dir": paramDir = node.InnerText; break;
 
                         case "enabled":
                             if (node.ParentNode != null)
