@@ -21,6 +21,7 @@ using System.Runtime.InteropServices;
 using SmashForge.Imaging;
 using NGif;
 using nQuant;
+using System.Drawing.Drawing2D;
 
 namespace Smash_Forge
 {
@@ -1952,6 +1953,15 @@ namespace Smash_Forge
                 zoom = -55;
                 Runtime.swapScaleYZPlane = true;
             }
+            if (e.KeyChar == ']')
+            {
+                foreach (TreeNode v in MainForm.animNode.Nodes)
+                {
+                    uint crc = Crc32.Compute(v.Text.Replace(".omo", "").Substring(3).ToLower());
+                    if (crc == 0xb7e43c63)
+                        Console.WriteLine(v.Text);
+                }
+            }
             if (e.KeyChar == 'f')
             {
                 fpsView = !fpsView;
@@ -2194,8 +2204,37 @@ namespace Smash_Forge
             var sw = Stopwatch.StartNew();
             List<Image> newKeyframes = new List<Image>();
             var quantizer = new WuQuantizer();
-            foreach (Bitmap frame in gifMaker.keyframes)
+
+            for (int i = 0; i < gifMaker.keyframes.Count; i++)
             {
+                Bitmap frame = (Bitmap)gifMaker.keyframes[i];
+
+                // Draw frame counter over the top right corner
+                RectangleF rectf = new RectangleF(6, 6, frame.Width, frame.Height);
+                Graphics g = Graphics.FromImage(frame);
+
+                StringFormat sf = new StringFormat();
+                sf.Alignment = StringAlignment.Near;
+
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.CompositingQuality = CompositingQuality.HighQuality;
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                Font f = new Font("Helvetica", 26, FontStyle.Bold, GraphicsUnit.Pixel);
+                // Pen is for text outline
+                Pen p = new Pen(ColorTranslator.FromHtml("#000000"), 4);
+                p.LineJoin = LineJoin.Round;
+
+                GraphicsPath gp = new GraphicsPath();
+                gp.AddString($"Frame: {i + 1}/{gifMaker.keyframes.Count}", f.FontFamily, (int)f.Style, 26, rectf, sf);
+                Brush b = new SolidBrush(Color.White);
+
+                g.DrawPath(p, gp);
+                g.FillPath(b, gp);
+                g.Flush();
+
+                // Quantize the image
                 var quantized = quantizer.QuantizeImage(frame, 10, 70);
                 newKeyframes.Add(quantized);
             }
