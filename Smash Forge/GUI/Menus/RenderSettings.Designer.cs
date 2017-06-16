@@ -128,8 +128,8 @@
             // checkBox4
             // 
             this.checkBox4.AutoSize = true;
-            this.checkBox4.Checked = true;
-            this.checkBox4.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox4.Checked = Runtime.renderHitboxes;
+            this.checkBox4.CheckState = this.checkBox4.Checked ? System.Windows.Forms.CheckState.Checked : System.Windows.Forms.CheckState.Unchecked;
             this.checkBox4.Location = new System.Drawing.Point(16, 135);
             this.checkBox4.Name = "checkBox4";
             this.checkBox4.Size = new System.Drawing.Size(105, 17);
@@ -141,6 +141,8 @@
             // checkBox16
             // 
             this.checkBox16.AutoSize = true;
+            this.checkBox16.Checked = Runtime.renderInterpolatedHitboxes;
+            this.checkBox16.CheckState = this.checkBox16.Checked ? System.Windows.Forms.CheckState.Checked : System.Windows.Forms.CheckState.Unchecked;
             this.checkBox16.Location = new System.Drawing.Point(48, 153);
             this.checkBox16.Name = "checkBox16";
             this.checkBox16.Size = new System.Drawing.Size(164, 17);
@@ -152,8 +154,8 @@
             // checkBox5
             // 
             this.checkBox5.AutoSize = true;
-            this.checkBox5.Checked = true;
-            this.checkBox5.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox5.Checked = Runtime.renderFloor;
+            this.checkBox5.CheckState = this.checkBox5.Checked ? System.Windows.Forms.CheckState.Checked : System.Windows.Forms.CheckState.Unchecked; ;
             this.checkBox5.Location = new System.Drawing.Point(16, 263);
             this.checkBox5.Name = "checkBox5";
             this.checkBox5.Size = new System.Drawing.Size(87, 17);
@@ -252,8 +254,8 @@
             // checkBox14
             // 
             this.checkBox14.AutoSize = true;
-            this.checkBox14.Checked = true;
-            this.checkBox14.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox14.Checked = Runtime.renderHurtboxesZone;
+            this.checkBox14.CheckState = this.checkBox14.Checked ? System.Windows.Forms.CheckState.Checked : System.Windows.Forms.CheckState.Unchecked;
             this.checkBox14.Location = new System.Drawing.Point(48, 193);
             this.checkBox14.Name = "checkBox14";
             this.checkBox14.Size = new System.Drawing.Size(145, 17);
@@ -265,8 +267,8 @@
             // checkBox13
             // 
             this.checkBox13.AutoSize = true;
-            this.checkBox13.Checked = true;
-            this.checkBox13.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox13.Checked = Runtime.renderHurtboxes;
+            this.checkBox13.CheckState = this.checkBox13.Checked ? System.Windows.Forms.CheckState.Checked : System.Windows.Forms.CheckState.Unchecked;
             this.checkBox13.Location = new System.Drawing.Point(16, 172);
             this.checkBox13.Name = "checkBox13";
             this.checkBox13.Size = new System.Drawing.Size(112, 17);

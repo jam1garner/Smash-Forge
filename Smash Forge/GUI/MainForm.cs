@@ -701,6 +701,7 @@ namespace Smash_Forge
                     //project.openACMD($"{ofd.SelectedPath}\\script\\animcmd\\body\\motion.mtable",
                     //    $"{ofd.SelectedPath}\\motion");
 
+                    string fighterName = new DirectoryInfo(ofd.SelectedPath).Name;
                     string[] dirs = Directory.GetDirectories(ofd.SelectedPath);
 
                     foreach (string s in dirs)
@@ -727,6 +728,19 @@ namespace Smash_Forge
                     }
 
                     resyncTargetVBN();
+
+                    if (!String.IsNullOrEmpty(Runtime.paramDir))
+                    {
+                        // If they set the wrong dir, oh well
+                        try
+                        {
+                            Runtime.ParamManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
+                            Runtime.ParamManagerHelper = new PARAMEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
+                            Runtime.ParamMoveNameIdMapping = Runtime.ParamManagerHelper.getMoveNameIdMapping();
+                            //for (int i = 0; i < )
+                        }
+                        catch { }
+                    }
                 }
             }
         }
