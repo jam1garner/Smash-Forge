@@ -23,6 +23,8 @@ namespace Smash_Forge
         public Quaternion rot = Quaternion.FromMatrix(Matrix3.Zero);
         public Matrix4 transform, invert;
 
+        public bool isSwingBone = false;
+
         public int parentIndex
         {
             set
@@ -329,6 +331,7 @@ namespace Smash_Forge
                     temp.position = new float[3];
                     temp.rotation = new float[3];
                     temp.scale = new float[3];
+                    temp.isSwingBone = temp.Text.Contains("__swing");
                     bones.Add(temp);
                 }
 
