@@ -1839,33 +1839,7 @@ namespace Smash_Forge
             }*/
             if (e.KeyChar == 'r')
             {
-                int width = glControl1.Width;
-                int height = glControl1.Height;
-
-                byte[] pixels = new byte[width*height*4];
-                GL.ReadPixels(0,0,width, height, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
-                File.WriteAllBytes("test.bin", pixels);
-                
-                Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
-
-                byte[] np = new byte[width*height * 4];
-                // need to flip and rearrange the data
-                for(int h = 0; h < height; h++)
-                    for(int w = 0;  w < width; w++)
-                    {
-                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 2] = pixels[(w + h * bmp.Width) * 4 + 0];
-                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 1] = pixels[(w + h * bmp.Width) * 4 + 1];
-                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 0] = pixels[(w + h * bmp.Width) * 4 + 2];
-                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 3] = pixels[(w + h * bmp.Width) * 4 + 3];
-                    }
-
-                Marshal.Copy(np, 0, bmpData.Scan0, np.Length);
-                bmp.UnlockBits(bmpData);
-
-                Console.WriteLine("Saving");
-                bmp.Save("Render.png");
+                CaptureScreen().Save("Render.png");
             }
             if (e.KeyChar == 'f')
             {
@@ -2035,6 +2009,32 @@ namespace Smash_Forge
             v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
+        }
+
+        public Bitmap CaptureScreen()
+        {
+            int width = glControl1.Width;
+            int height = glControl1.Height;
+
+            byte[] pixels = new byte[width * height * 4];
+            GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
+            // Flip data becausee glReadPixels reads it in from bottom row to top row
+            byte[] fixedPixels = new byte[width * height * 4];
+            for (int h = 0; h < height; h++)
+                for (int w = 0; w < width; w++)
+                {
+                    // Remove alpha blending from the end image - we just want the post-render colours
+                    pixels[((w + h * width) * 4) + 3] = 255;
+
+                    // Copy a 4 byte pixel one at a time
+                    Array.Copy(pixels, (w + h * width) * 4, fixedPixels, ((height - h - 1) * width + w) * 4, 4);
+                }
+            // Format and save the data
+            Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bmp.PixelFormat);
+            Marshal.Copy(fixedPixels, 0, bmpData.Scan0, fixedPixels.Length);
+            bmp.UnlockBits(bmpData);
+            return bmp;
         }
     }
 }
