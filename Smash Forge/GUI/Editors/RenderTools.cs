@@ -1476,7 +1476,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			// lambertian diffuse
 		if (renderDiffuse == 1)
 			{
-				if ((flags & 0x0F000000u) < 0x0A000000) // vertex color lighting
+				if ((flags & 0x0F000000u) < 0x0A000000u) // vertex color lighting
 				{
 					resulting_color = (diffuse_color * diffuseColor.xyz*1.2);
 					//resulting_color += diffuse_shading * diffuse_intensity; 
