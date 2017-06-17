@@ -468,6 +468,9 @@ namespace Smash_Forge
 
         public void processAnimationParams(string animname)
         {
+            if (Runtime.ParamMoveNameIdMapping == null)
+                return;
+
             int moveId;
             if (!Runtime.ParamMoveNameIdMapping.TryGetValue(animname, out moveId))
                 return;
