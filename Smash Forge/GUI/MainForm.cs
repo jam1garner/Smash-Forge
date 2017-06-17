@@ -737,7 +737,6 @@ namespace Smash_Forge
                             Runtime.ParamManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
                             Runtime.ParamManagerHelper = new PARAMEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
                             Runtime.ParamMoveNameIdMapping = Runtime.ParamManagerHelper.getMoveNameIdMapping();
-                            //for (int i = 0; i < )
                         }
                         catch { }
                     }
