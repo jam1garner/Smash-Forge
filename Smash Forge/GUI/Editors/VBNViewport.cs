@@ -527,7 +527,7 @@ namespace Smash_Forge
             GL.Enable(EnableCap.StencilTest);
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
 
-            GL.Enable(EnableCap.FramebufferSrgb);
+           // GL.Enable(EnableCap.FramebufferSrgb);
 
 
             // draw models
@@ -551,7 +551,7 @@ namespace Smash_Forge
             GL.DepthFunc(DepthFunction.Less);
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
             GL.Disable(EnableCap.CullFace);
-            GL.Disable(EnableCap.FramebufferSrgb);
+            //GL.Disable(EnableCap.FramebufferSrgb);
 
             GL.UseProgram(0);
             // draw path.bin
@@ -1815,7 +1815,7 @@ namespace Smash_Forge
         private void VBNViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
             if (e.KeyChar == 'i')
-            {   /*
+            {  /* 
                 GL.DeleteProgram(Runtime.shaders["NUD"].programID);
                 shader = new Shader();
                 shader.vertexShader(File.ReadAllText("vert.txt"));
