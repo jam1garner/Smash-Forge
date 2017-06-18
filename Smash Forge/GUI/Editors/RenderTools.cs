@@ -970,9 +970,13 @@ namespace Smash_Forge
         {
             if (vbn != null && Runtime.renderBones)
             {
+                Bone selectedBone = null;
                 foreach (Bone bone in vbn.bones)
                 {
-                    bone.Draw();
+                    if (!bone.IsSelected)
+                        bone.Draw();
+                    else
+                        selectedBone = bone;
 
                     // if swing bones then draw swing radius
                     /*if (vbn.swingBones.bones.Count > 0 && Runtime.renderSwag)
@@ -1009,6 +1013,11 @@ namespace Smash_Forge
                             }
                         }
                     }*/
+                }
+                if (selectedBone != null)
+                {
+                    GL.Clear(ClearBufferMask.DepthBufferBit);
+                    selectedBone.Draw();
                 }
             }
         }
