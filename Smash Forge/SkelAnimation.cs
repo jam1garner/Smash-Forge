@@ -178,7 +178,7 @@ namespace Smash_Forge
             }
 
 			KeyFrame key = frames[frame];
-            
+
             foreach (KeyNode n in key.nodes)
             {
 				//if (n.id == -1)
