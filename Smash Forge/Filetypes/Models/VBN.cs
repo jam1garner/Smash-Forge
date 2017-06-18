@@ -263,18 +263,50 @@ namespace Smash_Forge
 
         public void update(bool reset = false)
         {
-            for (int i = 0; i < bones.Count; i++)
+            List<Bone> nodesToProcess = new List<Bone>();
+            // assumption: the first listed bone in a VBN file is the root of the tree,
+            // could be wrong about this
+
+            // some special processing for the root bone before we start
+            bones[0].transform = Matrix4.CreateScale(bones[0].sca) * Matrix4.CreateFromQuaternion(bones[0].rot) * Matrix4.CreateTranslation(bones[0].pos);
+
+            // scale down the model in its entirety only when in animations (i.e. reset == false)
+            if (!reset && Runtime.model_scale != 1) bones[0].transform *= Matrix4.CreateScale(Runtime.model_scale);
+
+            // Process as a tree from the root node's children and beyond
+            nodesToProcess.AddRange(bones[0].GetChildren());
+            while (nodesToProcess.Count > 0)
             {
-                bones[i].transform = Matrix4.CreateScale(bones[i].sca) * Matrix4.CreateFromQuaternion(bones[i].rot) * Matrix4.CreateTranslation(bones[i].pos);
+                // DFS
+                Bone currentBone = nodesToProcess[0];
+                nodesToProcess.RemoveAt(0);
+                nodesToProcess.AddRange(currentBone.GetChildren());
 
-                if (i == 0 && !reset && Runtime.model_scale != 1) bones[i].transform *= Matrix4.CreateScale(Runtime.model_scale);
-
-                if (bones[i].Parent !=null)
+                // Process this node
+                currentBone.transform = Matrix4.CreateScale(currentBone.sca) * Matrix4.CreateFromQuaternion(currentBone.rot) * Matrix4.CreateTranslation(currentBone.pos);
+                if (currentBone.Parent != null)
                 {
-                    bones[i].transform = bones[i].transform * bones[(int)bones[i].parentIndex].transform;
+                    currentBone.transform = currentBone.transform * ((Bone)currentBone.Parent).transform;
                 }
             }
         }
+
+        //public void updateOld(bool reset = false)
+        //{
+        //    for (int i = 0; i < bones.Count; i++)
+        //    {
+        //        bones[i].transform = Matrix4.CreateScale(bones[i].sca) * Matrix4.CreateFromQuaternion(bones[i].rot) * Matrix4.CreateTranslation(bones[i].pos);
+
+        //        // Scale down the model only when in animations (e.g. reset == false)
+        //        if (i == 0 && !reset && Runtime.model_scale != 1) bones[i].transform *= Matrix4.CreateScale(Runtime.model_scale);
+
+        //        if (bones[i].Parent !=null)
+        //        {
+        //            bones[i].transform = bones[i].transform * bones[(int)bones[i].parentIndex].transform;
+        //        }
+        //    }
+        //}
+
         public void reset()
         {
             for (int i = 0; i < bones.Count; i++)
