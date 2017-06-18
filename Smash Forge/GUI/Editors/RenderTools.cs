@@ -1419,6 +1419,14 @@ vec3 RampColor(vec3 col){
 		return col;
 }
 
+// bayo hair mats, using ao map as spec shading map for testing purposes
+/*vec3 bayoHairSpec(vec3 col){
+	float rampInputLuminance = luminance(col);
+	rampInputLuminance = clamp((rampInputLuminance), 0.00, 1.00); 
+	return pow(texture2D(ao, vec2(1.01-rampInputLuminance, 0.5)).xyz, vec3(2.2)); 
+}*/
+
+
 
 vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     vec3 I = vec3(0,0,-1) * mat3(eyeview);
@@ -1528,9 +1536,13 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 				resulting_color += pow((fresnelColor.xyz* fresnel * fresnel_intensity* fresnel_tint),vec3(2.2));
 			if(renderSpecular == 1)
 			{	
-				if ((flags & 0x00420000u) == 0x00420000u){ // bayo hair mats
-					resulting_color += pow(diffuse_map.zzz * blinnPhongSpec * spec_tint * specular_intensity, vec3(2.2));
+				if ((flags & 0x00420000u) == 0x00420000u){ // bayo hair mats, using ao map as spec shading map for testing purposes
+					vec3 specularContribution = blinnPhongSpec * spec_tint;// * specular_intensity;
+					//specularContribution = RampColor(specularContribution); // spec ramp
+					specularContribution *= diffuse_map.zzz*1.35;
+					resulting_color += pow(specularContribution, vec3(2.2));
 					}
+					
 				else if ((flags & 0x00FF0000u) == 0x00610000u || (flags & 0x00FF0000u) == 0x00440000u) // Color Gain/Offset	
 					resulting_color += pow(specularColor.xyz* blinnPhongSpec * spec_tint * specular_intensity * ao_blend * (1+specularColorGain.xyz), vec3(2.2));
 						
@@ -1567,7 +1579,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 	else // no material lighting
 		resulting_color = pow(((diffuse_color * diffuseColor.xyz*0.85)+(diffuse_shading*0.15)),vec3(2.2)); 
 	
-
+	resulting_color = pow(resulting_color, vec3(1/2.2)); // gamma correction
     return resulting_color;// * pow((1-dot(N,I)),3);
 }
 
@@ -1619,10 +1631,13 @@ main()
         fincol.a = a;
         fincol.a *= finalColorGain.a;
 		
+		//if ((flags & 0x00420000u) == 0x00420000u)
+			//fincol.a *= diffuse_map.w;
+		
        // fincol.xyz *= vec3(ShadowCalculation(lightPos));
         //gl_FragColor = fincol; // final output color
 		}
-	} ";
+	}";
 
         #endregion
 
