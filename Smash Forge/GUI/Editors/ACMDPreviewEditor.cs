@@ -28,13 +28,13 @@ namespace Smash_Forge
             set = true;
             this.crc = crc;
             richTextBox1.Clear();
-            if(cb_section.Text.Equals("GAME"))
+            if(cb_section.Text.Equals("GAME") && Runtime.Moveset.Game.Scripts.ContainsKey(crc))
                 richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
-            if (cb_section.Text.Equals("SOUND"))
+            if (cb_section.Text.Equals("SOUND") && Runtime.Moveset.Sound.Scripts.ContainsKey(crc))
                 richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Sound.Scripts[crc]);
-            if (cb_section.Text.Equals("EXPRESSION"))
+            if (cb_section.Text.Equals("EXPRESSION") && Runtime.Moveset.Expression.Scripts.ContainsKey(crc))
                 richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Expression.Scripts[crc]);
-            if (cb_section.Text.Equals("EFFECT"))
+            if (cb_section.Text.Equals("EFFECT") && Runtime.Moveset.Effect.Scripts.ContainsKey(crc))
                 richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Effect.Scripts[crc]);
             //HighlightSyntax();
         }
