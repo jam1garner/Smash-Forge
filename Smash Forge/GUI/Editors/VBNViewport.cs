@@ -927,7 +927,6 @@ namespace Smash_Forge
                     HandleACMD(Runtime.TargetAnimString.Substring(3));
                 }
 
-
                 if (Runtime.renderHitboxes && Runtime.renderInterpolatedHitboxes)
                     RenderInterpolatedHitboxes();
 
@@ -1833,6 +1832,14 @@ namespace Smash_Forge
                 return;
             }
 
+            // Try and set up the editor
+            try
+            {
+                if (Runtime.acmdEditor.crc != crc)
+                    Runtime.acmdEditor.SetAnimation(crc);
+            } catch { }
+
+            // Game script specific processing stuff below here
             if (!Runtime.Moveset.Game.Scripts.ContainsKey(crc))
             {
                 //Some characters don't have AttackS[3-4]S and use attacks[3-4] crc32 hash on scripts making forge unable to access the script, thus not visualizing these hitboxes
@@ -1862,8 +1869,6 @@ namespace Smash_Forge
             else
                 gameScriptManager.Reset(null);
             //scr_sound = (ACMDScript)Runtime.Moveset.Sound.Scripts[crc];
-            if (Runtime.acmdEditor.crc != crc)
-                Runtime.acmdEditor.SetAnimation(crc);
         }
 
         #endregion

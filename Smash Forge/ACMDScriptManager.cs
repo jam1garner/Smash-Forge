@@ -437,14 +437,10 @@ namespace Smash_Forge
         {
             // Try and load the other script, if we can't just keep going
             ACMDScript subscript;
-            try
-            {
+            if (Runtime.Moveset.Game.Scripts.ContainsKey(crc))
                 subscript = (ACMDScript)Runtime.Moveset.Game.Scripts[crc];
-            }
-            catch (KeyNotFoundException)
-            {
+            else
                 return halt;
-            }
 
             int subscriptCommandIndex = 0;
             ICommand cmd = subscript[subscriptCommandIndex];
