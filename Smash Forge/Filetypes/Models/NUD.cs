@@ -314,10 +314,10 @@ namespace Smash_Forge
                 {
                     GL.Uniform1(shader.getAttribute("ramp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
                 }
-                /*if (mat.rim)
+                if (mat.useRimLight)
                 {
-                    GL.Uniform1(shader.getAttribute("dif2"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
-                }*/
+                    GL.Uniform1(shader.getAttribute("rimTex"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                }
 
 
                 {
@@ -646,6 +646,12 @@ namespace Smash_Forge
             {
                 GL.ActiveTexture(TextureUnit.Texture20 + loc);
                 GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex);
+                return 20 + loc;
+            }
+            if (hash == 0x10080000)
+            {
+                GL.ActiveTexture(TextureUnit.Texture20 + loc);
+                GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultRamp);
                 return 20 + loc;
             }
             GL.ActiveTexture(TextureUnit.Texture3 + loc);

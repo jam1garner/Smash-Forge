@@ -607,6 +607,9 @@
     <None Include="materials\Stage Mats\Mat15 [Cubemap+Norm+Char Reflection].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="param_labels\allstar_param_cafe.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="param_labels\event_param.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -724,6 +727,7 @@
     <None Include="Resources\1.dds.png" />
     <None Include="Resources\cubemap2.bmp" />
     <None Include="Resources\10101000.png" />
+    <Content Include="Resources\10080000.png" />
     <Content Include="Resources\forge.ico" />
     <Content Include="lib\FITC.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
