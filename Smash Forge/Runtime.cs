@@ -69,6 +69,7 @@ namespace Smash_Forge
         public static bool renderHurtboxes;
         public static bool renderHurtboxesZone;
         public static bool renderECB;
+        public static bool renderIndicators;
 
         public static bool swapScaleXYPlane = false;
         public static bool swapScaleYZPlane = false;
@@ -259,6 +260,7 @@ namespace Smash_Forge
                         case "render_swag": bool.TryParse(node.InnerText, out renderSwag); break;
                         case "fighter_dir": fighterDir = node.InnerText; break;
                         case "param_dir": paramDir = node.InnerText; break;
+                        case "render_indicators": bool.TryParse(node.InnerText, out renderIndicators); break;
 
                         case "enabled":
                             if (node.ParentNode != null)
@@ -457,6 +459,7 @@ for changing default texure
             renderNode.AppendChild(createNode(doc, "render_interpolated_hitboxes", renderInterpolatedHitboxes.ToString()));
             renderNode.AppendChild(createNode(doc, "render_ECB", renderECB.ToString()));
             renderNode.AppendChild(createNode(doc, "render_path", renderPath.ToString()));
+            renderNode.AppendChild(createNode(doc, "render_indicators", renderIndicators.ToString()));
             {
                 XmlNode node = doc.CreateElement("render_LVD");
                 renderNode.AppendChild(node);

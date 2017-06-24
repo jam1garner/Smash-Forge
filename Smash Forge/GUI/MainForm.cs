@@ -74,6 +74,7 @@ namespace Smash_Forge
             Runtime.renderHurtboxes = true;
             Runtime.renderHurtboxesZone = true;
             Runtime.renderECB = false;
+            Runtime.renderIndicators = false;
             Runtime.renderType = Runtime.RenderTypes.Texture;
             //Pichu.MakePichu();
             //meshList.refresh();
@@ -737,6 +738,7 @@ namespace Smash_Forge
                             Runtime.ParamManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
                             Runtime.ParamManagerHelper = new PARAMEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
                             Runtime.ParamMoveNameIdMapping = Runtime.ParamManagerHelper.getMoveNameIdMapping();
+                            Runtime.ModelContainers[0].name = fighterName;
                         }
                         catch { }
                     }

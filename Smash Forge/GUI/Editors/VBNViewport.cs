@@ -608,9 +608,24 @@ namespace Smash_Forge
 
             Cursor.Current = freezeCamera ? Cursors.VSplit : Cursors.Default;*/
 
+            if (Runtime.renderIndicators)
+                DrawIndicators();
+
             // Clean up
             GL.PopAttrib();
             glControl1.SwapBuffers();
+        }
+
+        public void DrawIndicators()
+        {
+            // FAF indicator
+            Color color;
+            if (gameScriptManager != null && gameScriptManager.FAFReached)
+                color = Color.FromKnownColor(KnownColor.Green);
+            else
+                color = Color.FromKnownColor(KnownColor.Red);
+
+            RenderTools.draw2DCircle(40f, glControl1.Height - 40f, 20f, Color.FromArgb(80, color), glControl1.Width, glControl1.Height);
         }
 
         public void drawScale()
