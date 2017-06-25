@@ -71,6 +71,10 @@
     <Reference Include="WeifenLuo.WinFormsUI.Docking">
       <HintPath>WeifenLuo.WinFormsUI.Docking.dll</HintPath>
     </Reference>
+    <Reference Include="YamlDotNet, Version=4.2.1.0, Culture=neutral, PublicKeyToken=ec19458f3c15af5e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\YamlDotNet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ACMDScriptManager.cs" />
@@ -97,6 +101,7 @@
     <Compile Include="Filetypes\Sounds\WAVE.cs" />
     <Compile Include="Filetypes\Textures\3DSTex.cs" />
     <Compile Include="Filetypes\Textures\RG_ETC1.cs" />
+    <Compile Include="GraphicsProcessing.cs" />
     <Compile Include="GUI\Controls\MeshMover.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -720,6 +725,7 @@
     <Content Include="lib\SALT.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="YamlDotNet.dll" />
     <None Include="Resources\1.dds.png" />
     <None Include="Resources\cubemap2.bmp" />
     <None Include="Resources\10101000.png" />

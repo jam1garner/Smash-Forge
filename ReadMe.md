@@ -57,3 +57,11 @@ Project:
 - Copyright (c) 2014 - 2016 Sammi Husky <Sammi-Husky@live.com>
 - FITD MIT License: https://github.com/Sammi-Husky/Sm4sh-Tools/blob/master/FITD/LICENSE.txt
 - FITC MIT License: https://github.com/Sammi-Husky/Sm4sh-Tools/blob/master/FITC/LICENSE.txt
+
+Project:
+- [nQuant](https://github.com/Crazycatz00/nQuant)
+- See Apache-LICENSE.md
+
+Project:
+- [Bumpkit](https://github.com/DataDink/Bumpkit)
+- Used for GIF encoding

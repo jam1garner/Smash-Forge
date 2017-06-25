@@ -1,0 +1,99 @@
+# List of animations we want to capture. These are regexes
+# You can add additional ones to each character to supplement this
+animations:
+  - '^Wait.*'
+  - '^Turn$'
+  - '^Walk(?:Fast|Middle|Slow)$'
+  # Look into RunBrakeL and RunBrakeR
+  - '^run.*'
+  - '^TurnRun.*'
+  - '^Jump.*'
+  # All falls, may remove some later if deemed not useful
+  - '^Fall.*'
+  - '^LandingFallSpecial$'
+  
+  ### Not sure about these, or what they are
+  - '^RunFall.*'
+  - '^WalkFall.*'
+  
+  - '^Landing(?:Heavy|Light)$'
+  - '^Squat.*'
+  
+  ### Not sure about these
+  - '^Step.*'
+  
+  # - '^Guard.*'  # shield size determines more than anything here, exclude
+  - '^Escape.*'
+  
+  # Now we're on to attacks....for another time :)
+
+# Default settings that are overridden per character where necessary
+default:
+  # Default defaults, overridden by other defaults here
+  all:
+    zoom: -55
+    rot: 3.14159
+    lookup: 0.025
+    x: 0
+    y: 0
+    swap_yz: true
+    swap_xy: false
+  
+  # These dict names match most specific first using a StartsWith rule
+  # BACK ROLLS
+  EscapeB:  # roll
+    x: 3
+  DownBackU:  # missed tech roll
+    x: 3
+  DownBackD:  # missed tech roll
+    x: 3
+  PassiveStandB:  # tech roll
+    x: 3
+  SlipEscapeB:  # slip roll
+    x: 3
+
+  # FORWARD ROLLS
+  EscapeF:  # roll
+    x: -3
+  DownForwardU:  # missed tech roll
+    x: -3
+  DownForwardD:  # missed tech roll
+    x: -3
+  PassiveStandF:  # tech roll
+    x: -3
+  SlipEscapeF:  # slip roll
+    x: -3
+    
+  # MOVEMENT
+  WalkFast:
+    x: -3
+  WalkMiddle:
+    x: -3
+  WalkSlow:
+    x: -3
+  Run:
+    x: -3
+  HeavyWalk:
+    x: -3
+    
+  # ATTACKS
+  CatchDash:
+    x: -3
+  CliffWait: &cliff
+    x: -3
+  CliffAttackQuick: *cliff
+  CliffEscapeQuick: &cliff
+  CliffJumpQuick1: &cliff
+  # CliffJumpQuick2  # don't show because it's not that useful - the jump part of cliff jump, not the handstand
+  
+  
+fox:
+  AttackDash:
+    x: -2
+  AttackS4S:  # attacks forward
+    x: -2
+  SpecialAirS: &FoxSideB
+    x: -6.5
+  SpecialS: *FoxSideB
+  
+# NOTES: Passive = tech

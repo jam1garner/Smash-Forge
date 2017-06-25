@@ -22,6 +22,7 @@ using SmashForge.Imaging;
 using NGif;
 using nQuant;
 using System.Drawing.Drawing2D;
+using System.Threading;
 
 namespace Smash_Forge
 {
@@ -195,9 +196,9 @@ namespace Smash_Forge
                     gifMaker.keyframes.Add(CaptureScreen());
                     if (gifMaker.currentFrame >= nupdMaxFrame.Value)
                     {
-                        QuantizeImages();
-                        SaveCompletedAnimationGif();
-                        gifMaker.makingGif = false;
+                        GifMaker finishedGif = gifMaker;
+                        gifMaker = new GifMaker();
+                        ThreadPool.QueueUserWorkItem(new WaitCallback(GraphicsProcessing.ProcessGIF), finishedGif);
                     }
                     else
                     {
@@ -625,7 +626,7 @@ namespace Smash_Forge
             else
                 color = Color.FromKnownColor(KnownColor.Red);
 
-            RenderTools.draw2DCircle(40f, glControl1.Height - 40f, 20f, Color.FromArgb(80, color), glControl1.Width, glControl1.Height);
+            RenderTools.draw2DCircle(40f, glControl1.Height - 40f, 20f, Color.FromArgb(180, color), glControl1.Width, glControl1.Height);
         }
 
         public void drawScale()
@@ -1987,9 +1988,10 @@ namespace Smash_Forge
                 foreach (TreeNode v in MainForm.animNode.Nodes)
                 {
                     uint crc = Crc32.Compute(v.Text.Replace(".omo", "").Substring(3).ToLower());
-                    if (crc == 0xb7e43c63)
+                    if (Runtime.Moveset.Game.Scripts.ContainsKey(crc))
                         Console.WriteLine(v.Text);
                 }
+                Console.WriteLine("Done");
             }
             if (e.KeyChar == 'f')
             {
@@ -2218,86 +2220,22 @@ namespace Smash_Forge
                 return;
             }
             SetAnimationFrame(0);
-            // TODO: look into C# threads and look into how we can offload the old gifMaker
-            // to a thread for processing
             this.gifMaker = new GifMaker();
             this.gifMaker.makingGif = true;
             this.gifMaker.currentFrame = 0;
             this.gifMaker.currentFrameCaptured = false;
             this.gifMaker.keyframes = new List<Image>();
-            this.gifMaker.gifName = Runtime.TargetAnimString.Replace(".omo", "").Substring(3);
+            System.IO.Directory.CreateDirectory(Runtime.ModelContainers[0].name);
+            this.gifMaker.gifName = $"{Runtime.ModelContainers[0].name}\\{Runtime.TargetAnimString.Replace(".omo", "").Substring(3)}";
         }
 
-        public void QuantizeImages()
+        public void EndSavingAnimationGif()
         {
-            var sw = Stopwatch.StartNew();
-            List<Image> newKeyframes = new List<Image>();
-            var quantizer = new WuQuantizer();
-
-            for (int i = 0; i < gifMaker.keyframes.Count; i++)
-            {
-                Bitmap frame = (Bitmap)gifMaker.keyframes[i];
-
-                // Draw frame counter over the top right corner
-                RectangleF rectf = new RectangleF(6, 6, frame.Width, frame.Height);
-                Graphics g = Graphics.FromImage(frame);
-
-                StringFormat sf = new StringFormat();
-                sf.Alignment = StringAlignment.Near;
-
-                g.SmoothingMode = SmoothingMode.AntiAlias;
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                g.CompositingQuality = CompositingQuality.HighQuality;
-                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                Font f = new Font("Helvetica", 26, FontStyle.Bold, GraphicsUnit.Pixel);
-                // Pen is for text outline
-                Pen p = new Pen(ColorTranslator.FromHtml("#000000"), 4);
-                p.LineJoin = LineJoin.Round;
-
-                GraphicsPath gp = new GraphicsPath();
-                gp.AddString($"Frame: {i + 1}/{gifMaker.keyframes.Count}", f.FontFamily, (int)f.Style, 26, rectf, sf);
-                Brush b = new SolidBrush(Color.White);
-
-                g.DrawPath(p, gp);
-                g.FillPath(b, gp);
-                g.Flush();
-
-                // Quantize the image
-                var quantized = quantizer.QuantizeImage(frame, 10, 70);
-                newKeyframes.Add(quantized);
-            }
-            gifMaker.keyframes = newKeyframes;
-            Console.WriteLine($"Quantized GIF keyframes in {sw.ElapsedMilliseconds}ms");
+            GraphicsProcessing.QuantizeImages(this.gifMaker);
+            GraphicsProcessing.SaveCompletedAnimationGif(this.gifMaker);
+            this.gifMaker = new GifMaker();
         }
 
-        public void SaveCompletedAnimationGif()
-        {
-            var sw = Stopwatch.StartNew();
-            using (var gif = File.OpenWrite($"{gifMaker.gifName}.gif"))
-            using (var encoder = new GifEncoder(gif))
-            {
-                // 60fps for now
-                // TODO: in the future support a list of FPS and output them all
-                // this should be fast since the quantization only happens once
-                encoder.FrameDelay = TimeSpan.FromMilliseconds(1000 / 15);
-                foreach (Bitmap frame in gifMaker.keyframes)
-                {
-                    encoder.AddFrame(frame);
-                }
-            }
-            sw.Stop();
-            Console.WriteLine($"Encoded GIF in {sw.ElapsedMilliseconds}ms");
-        }
-
-        public class GifMaker
-        {
-            public bool makingGif = false;
-            public int currentFrame = -1;
-            public bool currentFrameCaptured = false;
-            public List<Image> keyframes = null;
-            public string gifName;
-        }
         GifMaker gifMaker = new GifMaker();
     }
 }
