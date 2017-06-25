@@ -1844,7 +1844,11 @@ namespace Smash_Forge
             }*/
             if (e.KeyChar == 'r')
             {
-                CaptureScreen().Save("Render.png");
+                CaptureScreen(true).Save("Render.png");
+            }
+            if (e.KeyChar == 'p')
+            {
+                CaptureScreen(false).Save("Render.png");
             }
             if (e.KeyChar == 'f')
             {
@@ -2016,7 +2020,7 @@ namespace Smash_Forge
             //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
 
-        public Bitmap CaptureScreen()
+        public Bitmap CaptureScreen(bool saveAlpha = false)
         {
             int width = glControl1.Width;
             int height = glControl1.Height;
@@ -2028,8 +2032,9 @@ namespace Smash_Forge
             for (int h = 0; h < height; h++)
                 for (int w = 0; w < width; w++)
                 {
-                    // Remove alpha blending from the end image - we just want the post-render colours
-                    pixels[((w + h * width) * 4) + 3] = 255;
+                    if (!saveAlpha)
+                        // Remove alpha blending from the end image - we just want the post-render colours
+                        pixels[((w + h * width) * 4) + 3] = 255;
 
                     // Copy a 4 byte pixel one at a time
                     Array.Copy(pixels, (w + h * width) * 4, fixedPixels, ((height - h - 1) * width + w) * 4, 4);
