@@ -562,6 +562,12 @@
     <None Include="materials\Character Mats\Mat13 [Metal NUD Mat2].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="materials\Character Mats\Mat14 [Street Fighter Clothing Mat].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Character Mats\Mat15 [Reflectivity Map Mat].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="materials\Stage Mats\Mat01 [Regular].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
