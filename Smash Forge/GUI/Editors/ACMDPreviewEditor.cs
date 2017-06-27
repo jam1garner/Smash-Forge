@@ -25,18 +25,33 @@ namespace Smash_Forge
 
         public void SetAnimation(uint crc)
         {
-            set = true;
-            this.crc = crc;
-            richTextBox1.Clear();
-            if(cb_section.Text.Equals("GAME") && Runtime.Moveset.Game.Scripts.ContainsKey(crc))
+            bool changed = false;
+            if (cb_section.Text.Equals("GAME") && Runtime.Moveset.Game.Scripts.ContainsKey(crc))
+            {
                 richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
+                changed = true;
+            }
             if (cb_section.Text.Equals("SOUND") && Runtime.Moveset.Sound.Scripts.ContainsKey(crc))
+            {
                 richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Sound.Scripts[crc]);
+                changed = true;
+            }
             if (cb_section.Text.Equals("EXPRESSION") && Runtime.Moveset.Expression.Scripts.ContainsKey(crc))
+            {
                 richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Expression.Scripts[crc]);
+                changed = true;
+            }
             if (cb_section.Text.Equals("EFFECT") && Runtime.Moveset.Effect.Scripts.ContainsKey(crc))
+            {
                 richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Effect.Scripts[crc]);
-            //HighlightSyntax();
+                changed = true;
+            }
+            if (changed)
+            {
+                set = true;
+                this.crc = crc;
+                //HighlightSyntax();
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
