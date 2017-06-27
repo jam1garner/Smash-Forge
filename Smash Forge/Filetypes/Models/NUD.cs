@@ -314,7 +314,7 @@ namespace Smash_Forge
                 {
                     GL.Uniform1(shader.getAttribute("ramp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
                 }
-                if (mat.useRimLight)
+                if (mat.useRimLight && texid < mat.textures.Count)
                 {
                     GL.Uniform1(shader.getAttribute("rimTex"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
                 }
