@@ -819,18 +819,18 @@ namespace Smash_Forge
                     HandleACMD(Runtime.TargetAnimString.Substring(3));
                 }
 
+                // Hurtboxes and ECBs first so they appear under hitboxes
+                if (Runtime.renderHurtboxes)
+                    RenderHurtboxes();
+                if (Runtime.renderECB)
+                    RenderECB();
+
                 if (Runtime.renderHitboxes && Runtime.renderInterpolatedHitboxes)
                     RenderInterpolatedHitboxes();
 
                 // Must come after interpolated boxes to appear on top
                 if (Runtime.renderHitboxes)
                     RenderHitboxes();
-
-                if (Runtime.renderHurtboxes)
-                    RenderHurtboxes();
-
-                if (Runtime.renderECB)
-                    RenderECB();
             }
         }
 
