@@ -268,7 +268,7 @@ namespace Smash_Forge
                 GL.Uniform1(shader.getAttribute("hasAo"), mat.aomap ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasNrm"), mat.normalmap ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasRamp"), mat.ramp ? 1 : 0);
-                GL.Uniform1(shader.getAttribute("hasRim"), 0);
+                GL.Uniform1(shader.getAttribute("hasDummyRamp"), 0);
 
                 GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
@@ -278,11 +278,12 @@ namespace Smash_Forge
                 GL.Uniform1(shader.getAttribute("nrm"), 0);
                 GL.Uniform1(shader.getAttribute("cube"), 2);
                 GL.Uniform1(shader.getAttribute("stagecube"), 2);
+                GL.Uniform1(shader.getAttribute("spheremap"), 0);
                 GL.Uniform1(shader.getAttribute("ao"), 0);
                 GL.Uniform1(shader.getAttribute("ramp"), 0);
 
                 int texid = 0;
-                if (mat.highlight) GL.Uniform1(shader.getAttribute("dif"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+               
                 if (mat.diffuse && texid < mat.textures.Count)
                 {
                     int hash = mat.textures[texid].hash;
@@ -293,10 +294,14 @@ namespace Smash_Forge
                 if (mat.stagemap && texid < mat.textures.Count)
                 {
                     GL.Uniform1(shader.getAttribute("stagecube"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
-                }
+                }       
                 if (mat.cubemap && texid < mat.textures.Count)
                 {
                     GL.Uniform1(shader.getAttribute("cube"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                }
+                if (mat.spheremap && texid < mat.textures.Count)
+                {
+                    GL.Uniform1(shader.getAttribute("spheremap"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
                 }
                 if (mat.diffuse2 && texid < mat.textures.Count)
                 {
@@ -314,9 +319,9 @@ namespace Smash_Forge
                 {
                     GL.Uniform1(shader.getAttribute("ramp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
                 }
-                if (mat.useRimLight)
+                if (mat.useDummyRamp && texid < mat.textures.Count)
                 {
-                    GL.Uniform1(shader.getAttribute("rimTex"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                    GL.Uniform1(shader.getAttribute("dummyRamp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
                 }
 
 
@@ -1755,29 +1760,29 @@ namespace Smash_Forge
             //flags
             public bool glow = false;
             public bool hasShadow = false;
-            public bool useRimLight = false;
-            public bool UseRimLight
+            public bool useDummyRamp = false;
+            public bool UseDummyRamp
             {
                 get
                 {
-                    return useRimLight;
+                    return useDummyRamp;
                 }
                 set
                 {
-                    useRimLight = value;
+                    useDummyRamp = value;
                     TestTextures();
                 }
             }
-            public bool useSpecular = false;
-            public bool UseSpecular
+            public bool useSphereMap = false;
+            public bool UseSphereMap
             {
                 get
                 {
-                    return useSpecular;
+                    return useSphereMap;
                 }
                 set
                 {
-                    useSpecular = value;
+                    useSphereMap = value;
                     TestTextures();
                 }
             }
@@ -1789,7 +1794,7 @@ namespace Smash_Forge
             public bool stagemap = false;
             public bool cubemap = false;
             public bool ramp = false;
-            public bool highlight = false;
+            public bool spheremap = false;
 
             public Material Clone()
             {
@@ -1829,11 +1834,11 @@ namespace Smash_Forge
                 int t = 0;
                 if (glow) t |= 0x80;
                 if (hasShadow) t |= 0x40;
-                if (useRimLight) t |= 0x20;
-                if (useSpecular) t |= 0x10;
+                if (useDummyRamp) t |= 0x20;
+                if (useSphereMap) t |= 0x10;
 
                 if (diffuse) t |= 0x01;
-                if (highlight) t |= 0x01;
+                if (spheremap) t |= 0x01;
                 if (normalmap) t |= 0x02;
                 if (cubemap) t |= 0x04;
                 //if (diffuse2) t |= 0x04;
@@ -1853,25 +1858,25 @@ namespace Smash_Forge
                 int flag = ((int)flags) & 0xFF;
                 glow = (flag & 0x80) > 0;
                 hasShadow = (flag & 0x40) > 0;
-                useRimLight = (flag & 0x20) > 0;
-                useSpecular = (flag & 0x10) > 0;
+                useDummyRamp = (flag & 0x20) > 0;
+                useSphereMap = (flag & 0x10) > 0;
                 TestTextures();
             }
 
             public void TestTextures()
             {
                 // texture flags
-                aomap = (flag & 0x08) > 0 && !useRimLight;
-                stagemap = (flag & 0x08) > 0 && useRimLight;
+                aomap = (flag & 0x08) > 0 && !useDummyRamp;
+                stagemap = (flag & 0x08) > 0 && useDummyRamp;
 
-                cubemap = (flag & 0x04) > 0 && (!useRimLight || (useRimLight && useSpecular));// && !useRimLight;
-                ramp = (flag & 0x04) > 0 && useRimLight; //&& !useSpecular 
+                cubemap = (flag & 0x04) > 0 && (!useDummyRamp) && (!useSphereMap);//(!useRimLight || (useRimLight && useSphereMap));// && !useRimLight;
+                ramp = (flag & 0x04) > 0 && useDummyRamp; //&& !useSpecular 
 
-                diffuse2 = (flag & 0x04) > 0 && (flag & 0x02) == 0 && useRimLight;
+                diffuse2 = (flag & 0x04) > 0 && (flag & 0x02) == 0 && useDummyRamp;
                 normalmap = (flag & 0x02) > 0;
 
                 diffuse = (flag & 0x01) > 0;
-                //highlight = (flag & 0x01) > 0 && useSpecular;
+                spheremap = (flag & 0x01) > 0 && useSphereMap;
             }
         }
 
