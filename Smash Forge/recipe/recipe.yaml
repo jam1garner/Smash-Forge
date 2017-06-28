@@ -5,10 +5,12 @@ animations:
   - '^Turn$'
   - '^Walk(?:Fast|Middle|Slow)$'
   # Look into RunBrakeL and RunBrakeR
-  - '^run.*'
+  - '^Dash$'
+  - '^Run.*'
   - '^TurnRun.*'
   - '^Jump.*'
   # All falls, may remove some later if deemed not useful
+  - '^DamageFall$'
   - '^Fall.*'
   - '^LandingFallSpecial$'
   
@@ -19,81 +21,360 @@ animations:
   - '^Landing(?:Heavy|Light)$'
   - '^Squat.*'
   
-  ### Not sure about these
+  # Footstool related
   - '^Step.*'
   
   # - '^Guard.*'  # shield size determines more than anything here, exclude
   - '^Escape.*'
+  - '^Attack.*'
+  - '^Special.*'
+  - '^Catch(?!Wait)$'  # catchwait is kinda useless for non-doubles
+  - '^Throw.*'
+  - '^CaptureJump$'  # grab released
+  - '^Down(?:BackU|BoundU|ForwardU|StandU|WaitU|AttackD|BackD|BoundD|ForwardD|SpotD|StandD|WaitD)$'
+  - '^Passive.*'
+  - '^Cliff(?!Wait)$'  # cliffwait has some unknown rotation stuff going on, but the other cliffs are good
+  - '^AirCatch$'
+  - '^Slip.*'
+  - '^Appeal.*'  # taunts
   
-  # Now we're on to attacks....for another time :)
+# mapping between OMO names and colloquial move names
+animation_move_names:
+  ### BEGIN GENERICS
+  # Fall / run states
+  TurnRun: "Run Turnaround"
+  TurnRunBrake: "Stop (after Run Turnaround)"
+  JumpF: "Jump Forward"
+  JumpB: "Jump Backward"
+  JumpAerialF: "Double Jump Forward"
+  JumpAerialB: "Double Jump Backward"
+  JumpSquat: "Jumpsquat"
+
+  Fall: "Fall (grounded)"
+  FallF: "Fall Forward (grounded)"
+  FallB: "Fall Backward (grounded)"
+  FallAerial: "Fall (in air)"
+  FallAerialF: "Fall Forward (in air)"
+  FallAerialB: "Fall Backward (in air)"
+  
+  DamageFall: "Tumble"
+  FallSpecial: "Fall Neutral (Post-Special)"
+  FallSpecialB: "Fall Backward (Post-Special)"
+  FallSpecialF: "Fall Forward (Post-Special)"
+  LandingFallSpecial: "Special Fall Landing"
+  
+  Squat: "Crouch (from stand)"
+  SquatRv: "Stand (from crouch)"
+  SquatWait: "Crouch (hold)"
+  
+  StepJump: "Footstooling"
+  StepPose: "Footstooled (on ground)"
+  StepBack: "Grounded Footstool Recovery"
+  StepAirPose: "Footstooled (in air)"
+  StepFall: "Fall (after footstool)"
+  
+  # Rolls / spotdodges
+  EscapeAir: "Air Dodge"
+  EscapeB: "Roll Backward"
+  EscapeF: "Roll Forward"
+  EscapeN: "Spot Dodge"
+  
+  Rebound: "Clanging (Attack clank)"
+  
+  # Attacks
+  Attack100: "Multi-jab"
+  Attack100Start: "Multi-jab (First Hit)"
+  AttackEnd: "Multi-jab (Last Hit)"
+  Attack11: "Jab 1"
+  Attack12: "Jab 2"
+  
+  AttackDash: "Dash Attack"
+  
+  AttackS3Hi: "Forward Tilt (Angled Up)"
+  AttackS3Lw: "Forward Tilt (Angled Down)"
+  AttackS3S: "Forward Tilt"
+  AttackHi3: "Up Tilt"
+  AttackLw3: "Down Tilt"
+  
+  AttackS4S: "Forward Smash"
+  AttackS4: "Forward Smash"
+  AttackS4Charge: "Forward Smash (Charge)"
+  AttackHi4: "Up Smash"
+  AttackHi4Charge: "Up Smash (Charge)"
+  AttackLw4: "Down Smash"
+  AttackLw4Charge: "Down Smash (Charge)"
+  
+  AttackAirB: "Back Air"
+  AttackAirF: "Forward Air"
+  AttackAirN: "Neutral Air"
+  AttackAirHi: "Up Air"
+  AttackAirLw: "Down Air"
+  
+  LandingAirB: "Back Air (Landing)"
+  LandingAirF: "Forward Air (Landing)"
+  LandingAirN: "Neutral Air (Landing)"
+  LandingAirHi: "Up Air (Landing)"
+  LandingAirLw: "Down Air (Landing)"
+  
+  # Special Attacks
+  SpecialN: "Neutral Special"
+  SpecialNStart: "Neutral Special (Start)"
+  SpecialNLoop: "Neutral Special (Loop)"
+  SpecialNEnd: "Neutral Special (End)"
+  SpecialNHold: "Neutral Special (Charge)"
+  SpecialNHit: "Neutral Special (Hit during)"
+  
+  SpecialAirN: "Neutral Special (Air)"
+  SpecialAirNStart: "Neutral Special (Air, Start)"
+  SpecialAirNLoop: "Neutral Special (Air, Loop)"
+  SpecialAirNEnd: "Neutral Special (Air, End)"
+  SpecialAirNHold: "Neutral Special (Air, Charge)"
+  LandingSpecialAirN: "Neutral Special (Air, Landing)"
+  SpecialAirNBound: "Neutral Special (Bound??)"
+  SpecialAirNHit: "Neutral Special (Hit during)"
+  
+  
+  SpecialHi: "Up Special"
+  SpecialHiStart: "Up Special (Start)"
+  SpecialHiLoop: "Up Special (Loop)"
+  SpecialHiEnd: "Up Special (End)"
+  SpecialHiHold: "Up Special (Charge)"
+  SpecialHiHit: "Up Special (Hit during)"
+  
+  SpecialAirHi: "Up Special (Air)"
+  SpecialAirHiStart: "Up Special (Air, Start)"
+  SpecialAirHiLoop: "Up Special (Air, Loop)"
+  SpecialAirHiEnd: "Up Special (Air, End)"
+  SpecialAirHiHold: "Up Special (Air, Charge)"
+  LandingSpecialAirHi: "Up Special (Air, Landing)"
+  SpecialAirHiBound: "Up Special (Bound??)"
+  SpecialAirHiHit: "Up Special (Hit during)"
+  
+  
+  SpecialLw: "Down Special"
+  SpecialLwStart: "Down Special (Start)"
+  SpecialLwLoop: "Down Special (Loop)"
+  SpecialLwEnd: "Down Special (End)"
+  SpecialLwHold: "Down Special (Charge)"
+  SpecialLwHit: "Down Special (Hit during)"
+  
+  SpecialAirLw: "Down Special (Air)"
+  SpecialAirLwStart: "Down Special (Air, Start)"
+  SpecialAirLwLoop: "Down Special (Air, Loop)"
+  SpecialAirLwEnd: "Down Special (Air, End)"
+  SpecialAirLwHold: "Down Special (Air, Charge)"
+  LandingSpecialAirLw: "Down Special (Air, Landing)"
+  SpecialAirLwBound: "Down Special (Bound??)"
+  SpecialAirLwHit: "Down Special (Hit during)"
+  
+  
+  SpecialS: "Side Special"
+  SpecialSStart: "Side Special (Start)"
+  SpecialSLoop: "Side Special (Loop)"
+  SpecialSEnd: "Side Special (End)"
+  SpecialSHold: "Side Special (Charge)"
+  SpecialSHit: "Side Special (Hit during)"
+  
+  SpecialAirS: "Side Special (Air)"
+  SpecialAirSStart: "Side Special (Air, Start)"
+  SpecialAirSLoop: "Side Special (Air, Loop)"
+  SpecialAirSEnd: "Side Special (Air, End)"
+  SpecialAirSHold: "Side Special (Air, Charge)"
+  LandingSpecialAirS: "Side Special (Air, Landing)"
+  SpecialAirSBound: "Side Special (Bound??)"
+  SpecialAirSHit: "Side Special (Hit during)"
+  
+  # Grabs
+  Catch: "Grab"
+  CatchTurn: "Pivot Grab"
+  CatchDash: "Dash Grab"
+  CatchCut: "Grab Release (Releasing opponent)"
+  CatchWait: "Grab (Holding enemy)"
+  
+  ThrowB: "Back Throw"
+  ThrowF: "Forward Throw"
+  ThrowHi:  "Up Throw"
+  ThrowLw: "Down Throw"
+  
+  CaptureCut: "Grab Release (Released by opponent)"
+  
+  # Missed techs
+  DownAttackU: "Floor Getup Attack (Face Up)"
+  DownBackU: "Floor Roll Backward (Face Up)"
+  DownForwardU: "Floor Roll Forward (Face Up)"
+  DownStandU: "Floor Neutral Getup (Face Up)"
+  DownDamageU: "Floor Damage Received (Face Up)"
+  DownDamageU3: "Floor Heavy Damage Received (Face Up)"
+  DownWaitU: "Floor Wait (Face Up)"
+  DownBoundU: "Floor (Bound??) (Face Up)"
+  
+  DownAttackD: "Floor Getup Attack (Face Down)"
+  DownBackD: "Floor Roll Backward (Face Down)"
+  DownForwardD: "Floor Roll Forward (Face Down)"
+  DownStandD: "Floor Neutral Getup (Face Down)"
+  DownDamageD: "Floor Damage Received (Face Down)"
+  DownDamageU3: "Floor Heavy Damage Received (Face Down)"
+  DownWaitD: "Floor Wait (Face Down)"
+  DownBoundD: "Floor (Bound??) (Face Down)"
+  
+  # Techs
+  Passive: "Tech in place"
+  PassiveStandF: "Tech Roll Forward"
+  PassiveStandB: "Tech Roll Backward"
+  PassiveCeil: "Ceiling Tech"
+  PassiveWall: "Wall Tech"
+  PassiveWallJump: "Wall Tech Jump"
+  
+  # Cliff
+  CliffCatch: "Ledge Grab"
+  CliffAttackQuick: "Ledge Getup Attack"
+  CliffClimbQuick: "Ledge Getup"
+  CliffEscapeQuick: "Ledge Roll"
+  CliffJumpQuick1: "Ledge Jump (Start)"
+  CliffJumpQuick2: "Ledge Jump (Air)"
+  
+  # Slip
+  Slip: "Slip"
+  SlipAttack: "Slip Attack"
+  SlipDown: "Slip (Down??)"
+  SlipEscapeB: "Slip Roll Backward"
+  SlipEscapeF:  "Slip Roll Forward"
+  SlipStand: "Slip Neutral Getup"
+  SlipWait: "Slip Wait"
+  
+  # Taunts
+  AppealHi: "Up Taunt"
+  AppealLw: "Down Taunt"
+  AppealS: "Side Taunt"
+  AppealSR: "Special Taunt (e.g. Fox on Lylat)"
+  AppealSStartR: "Special Taunt (Start)"
+  AppealSEndR: "Special Taunt (End)"
+  ### END GENERICS
+  
+  ### ZERO SUIT SPECIFIC
+  SpecialAirLwStep: "Down Special Footstool (Begin)"
+  SpecialAirLwFlip: "Down Special Footstool (End)"
+  SpecialAirLwKick: "Down Special Kick"
+  SpecialAirLwStart: "Down Special Start (Air)"
+  SpecialLwStart: "Down Special Start (Ground)"
+  SpecialLwLanding: "Down Special Landing (No Kick Used)"
+  SpecialLwKickLanding: "Down Special Landing (Kick Used)"
+  ### END ZERO SUIT SPECIFIC
+  
+  
 
 # Default settings that are overridden per character where necessary
 default:
   # Default defaults, overridden by other defaults here
   all:
-    zoom: -55
-    rot: 3.14159
-    lookup: 0.025
-    x: 0
-    y: 0
-    swap_yz: true
-    swap_xy: false
+    game_view:
+      zoom: -55
+      rot: 3.14159
+      lookup: 0.025
+      x: 0
+      y: 0
+      swap_yz: true
+      swap_xy: false
+      
+    top_view:
+      zoom: -55
+      rot: 3.14159
+      lookup: 7.835
+      x: 0
+      y: 0
+      swap_yz: true
+      swap_xy: false
+      
+    front_view:
+      zoom: -55
+      rot: 0
+      lookup: 0.025
+      x: 0
+      y: 0
+      swap_yz: true
+      swap_xy: false
   
   # These dict names match most specific first using a StartsWith rule
   # BACK ROLLS
   EscapeB:  # roll
-    x: 3
+    game_view:
+      x: 3
   DownBackU:  # missed tech roll
-    x: 3
+    game_view:
+      x: 3
   DownBackD:  # missed tech roll
-    x: 3
+    game_view:
+      x: 3
   PassiveStandB:  # tech roll
-    x: 3
+    game_view:
+      x: 3
   SlipEscapeB:  # slip roll
-    x: 3
+    game_view:
+      x: 3
 
   # FORWARD ROLLS
   EscapeF:  # roll
-    x: -3
+    game_view:
+      x: -3
   DownForwardU:  # missed tech roll
-    x: -3
+    game_view:
+      x: -3
   DownForwardD:  # missed tech roll
-    x: -3
+    game_view:
+      x: -3
   PassiveStandF:  # tech roll
-    x: -3
+    game_view:
+      x: -3
   SlipEscapeF:  # slip roll
-    x: -3
+    game_view:
+      x: -3
     
   # MOVEMENT
   WalkFast:
-    x: -3
+    game_view:
+      x: -3
   WalkMiddle:
-    x: -3
+    game_view:
+      x: -3
   WalkSlow:
-    x: -3
+    game_view:
+      x: -3
   Run:
-    x: -3
+    game_view:
+      x: -3
   HeavyWalk:
-    x: -3
+    game_view:
+      x: -3
     
   # ATTACKS
   CatchDash:
-    x: -3
+    game_view:
+      x: -3
   CliffWait: &cliff
-    x: -3
+    game_view:
+      x: -3
   CliffAttackQuick: *cliff
-  CliffEscapeQuick: &cliff
-  CliffJumpQuick1: &cliff
-  # CliffJumpQuick2  # don't show because it's not that useful - the jump part of cliff jump, not the handstand
+  CliffEscapeQuick: *cliff
+  CliffJumpQuick1: *cliff
+  CliffJumpQuick2: *cliff
   
+szerosuit:
+  attacks:
+    # TODO
+    # flip jump start
+    # flip jump footstool
+    # upb
+    # zair?
+  mesh_visibility:
+    # Ponytail
+    TAIL_O_OBJ__O_SORTEACHNODE: false
   
 fox:
-  AttackDash:
-    x: -2
-  AttackS4S:  # attacks forward
-    x: -2
-  SpecialAirS: &FoxSideB
-    x: -6.5
-  SpecialS: *FoxSideB
-  
-# NOTES: Passive = tech
+  attacks:
+    AttackDash:
+      x: -2
+    AttackS4S:  # attacks forward
+      x: -2
+    SpecialAirS: &FoxSideB
+      x: -6.5
+    SpecialS: *FoxSideB
