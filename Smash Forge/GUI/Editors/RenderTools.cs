@@ -1284,15 +1284,15 @@ out vec4 fincol;
 uniform sampler2D dif;
 uniform sampler2D dif2;
 uniform sampler2D ramp;
+uniform sampler2D dummyRamp; 
 uniform sampler2D nrm;
+uniform sampler2D ao;
 uniform samplerCube cube;
 uniform samplerCube stagecube;
-uniform sampler2D ao;
-uniform sampler2D dummyRamp; 
 uniform sampler2D spheremap;
-
 uniform samplerCube cmap;
 
+// flags tests
 uniform int hasDif;
 uniform int hasDif2;
 uniform int hasStage;
@@ -1301,6 +1301,7 @@ uniform int hasOo;
 uniform int hasNrm;
 uniform int hasRamp;
 uniform int hasDummyRamp;
+uniform int hasColorGainOffset;
 
 // Da Flags
 uniform uint flags;
@@ -1329,6 +1330,7 @@ uniform int renderLighting;
 uniform int renderVertColor;
 uniform int renderNormal;
 
+// render settings
 uniform int renderDiffuse;
 uniform int renderSpecular;
 uniform int renderFresnel;
@@ -1425,19 +1427,31 @@ vec3 CalcBumpedNormal()
 }
 
 vec3 RampColor(vec3 col){
-	if(hasRamp == 1){
+	if(hasRamp == 1)
+	{
 		float rampInputLuminance = luminance(col);
-		rampInputLuminance = clamp((rampInputLuminance), 0.00, 1.00); 
-		return pow(texture2D(ramp, vec2(1.01-rampInputLuminance, 0.5)).rgb, vec3(2.2)); 
+		rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99); 
+		return pow(texture2D(ramp, vec2(1-rampInputLuminance, 0.50)).rgb, vec3(2.2)); 
 	}
 	else
-		return col;
+		return vec3(1);
 }
 
-vec3 DummyRampColor(vec3 col){ // currently just for bayo spec ramp
+vec3 DummyRampColor(vec3 col){
+	if(hasDummyRamp == 1)
+	{
+		float rampInputLuminance = luminance(col);
+		rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99); 
+		return pow(texture2D(dummyRamp, vec2(1-rampInputLuminance, 0.50)).rgb, vec3(2.2)); 
+	}
+	else
+		return vec3(1);
+}
+
+vec3 SpecRampColor(vec3 col){ // currently just for bayo spec ramp
 	float rampInputLuminance = luminance(col);
-	rampInputLuminance = clamp((rampInputLuminance), 0.00, 1.00); 
-	return pow(texture2D(dummyRamp, vec2(1.01-rampInputLuminance, 0.5)).rgb, vec3(2.2)); 
+	rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99); 
+	return pow(texture2D(dummyRamp, vec2(1-rampInputLuminance, 0.5)).rgb, vec3(2.2)); 
 }
 
 
@@ -1461,6 +1475,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			vec3 diffuse_shading = vec3(0);
 			vec3 ao_blend = vec3(1);
 			float diffuse_luminance = luminance(diffuse_map.xyz);
+			vec3 ramp_contribution = 0.5 * RampColor(vec3(lambertBRDF)) + 0.5 * DummyRampColor(vec3(lambertBRDF));
 			
 			//ao_blend = total ambient occlusion term. desaturated to look correct
 			ao_blend = min(((ao_map.aaa) + (minGain.rgb)),1.35); 
@@ -1469,9 +1484,12 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			
 			//---------------------------------------------------------------------------------------------		
 				// flags based corrections for diffuse
-			if ((flags & 0x00FF0000u) == 0x00610000u || (flags & 0x00FF0000u) == 0x00440000u) // Color Gain/Offset
+			//if ((flags & 0x00FF0000u) == 0x00610000u || (flags & 0x00FF0000u) == 0x00440000u) // Color Gain/Offset
+			
+			if (hasColorGainOffset == 1)
 			{
-				diffuse_color = colorOffset.xyz + (luminance(diffuse_map.xyz) * (colorGain.xyz));
+				//diffuse_color = colorOffset.xyz + (luminance(diffuse_map.xyz) * (colorGain.xyz));
+				diffuse_color = colorOffset.xyz + diffuse_map.xyz * (colorGain.xyz);
 				diffuse_color *= (1+minGain.xyz) * diffuseColor.xyz;
 				diffuse_shading = diffuse_color * colorGain.xyz * RampColor(vec3(lambertBRDF));
 				ao_blend = vec3(diffuse_luminance);
@@ -1481,11 +1499,12 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			else if ((flags & 0x00420000u) == 0x00420000u) // bayo hair 'diffuse' is weird
 				diffuse_color = colorOffset.xyz + (diffuse_map.xxx * colorGain.xyz);
 				
-			else {
-					diffuse_color = diffuse_map.xyz * ao_blend * diffuseColor.xyz; // regular characters
-					diffuse_shading = diffuse_color * colorGain.xyz * ao_blend * RampColor(vec3(lambertBRDF));
-					diffuse_pass = (diffuse_color * ambient) + (diffuse_shading * diffuse_intensity);
-					}
+			else // regular characters
+			{
+				diffuse_color = diffuse_map.xyz * ao_blend * diffuseColor.xyz; 
+				diffuse_shading = diffuse_color * colorGain.xyz * ao_blend * ramp_contribution;
+				diffuse_pass = (diffuse_color * ambient) + (diffuse_shading * diffuse_intensity);
+			}
 			
 			
 			//if ((flags & 0x00810000u) == 0x00810000u) // brighten byte2 81 (jigglypuff, pikachu, etc)
@@ -1516,7 +1535,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			if ((flags & 0x00420000u) == 0x00420000u) // bayo hair mats
 			{ 
 			vec3 specularContribution = blinnPhongSpec * spec_tint;// * specular_intensity;
-			specularContribution = DummyRampColor(specularContribution); // spec ramp
+			specularContribution = SpecRampColor(specularContribution); // spec ramp
 			specularContribution *= diffuse_map.zzz*1.35;
 			specular_pass += specularContribution;
 			}
@@ -1602,9 +1621,10 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 	else
 		resulting_color = diffuse_pass;
 	
-	resulting_color = pow(resulting_color, vec3(1/2.2)); // gamma correction. gamma correction also done within render passes
 
-	//resulting_color = vec3(hasRamp);
+	
+	resulting_color = pow(resulting_color, vec3(1/2.2)); // gamma correction. gamma correction also done within render passes
+	
 	
 	
     return resulting_color;
@@ -1650,7 +1670,7 @@ main()
 		
         // Material lighting done in sm4sh shader
         if (renderNormal == 1)
-            fincol.xyz = sm4sh_shader(fincol, texture2D(nrm, texcoord).aaaa, norm);
+          fincol.xyz = sm4sh_shader(fincol, texture2D(nrm, texcoord).aaaa, norm);
         fincol = fincol * (finalColorGain);
 		
         // correct alpha

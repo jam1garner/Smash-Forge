@@ -260,7 +260,7 @@ namespace Smash_Forge
 
                 GL.Uniform1(shader.getAttribute("flags"), mat.flags);
                 GL.Uniform1(shader.getAttribute("isTransparent"), p.isTransparent ? 1 : 0);
-
+             
                 GL.Uniform1(shader.getAttribute("hasDif"), mat.diffuse ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasDif2"), mat.diffuse2 ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasStage"), mat.stagemap ? 1 : 0);
@@ -268,7 +268,8 @@ namespace Smash_Forge
                 GL.Uniform1(shader.getAttribute("hasAo"), mat.aomap ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasNrm"), mat.normalmap ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasRamp"), mat.ramp ? 1 : 0);
-                GL.Uniform1(shader.getAttribute("hasDummyRamp"), 0);
+                GL.Uniform1(shader.getAttribute("hasDummyRamp"), mat.useDummyRamp ? 1 : 0);
+                GL.Uniform1(shader.getAttribute("hasColorGainOffset"), mat.useColorGainOffset ? 1 : 0);
 
                 GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
@@ -444,7 +445,7 @@ namespace Smash_Forge
                         GL.AlphaFunc(AlphaFunction.Gequal, 255f / 255f);
                         break;
                 }
-
+               
                 GL.Enable(EnableCap.CullFace);
                 GL.CullFace(CullFaceMode.Front);
                 switch (mat.cullMode)
@@ -1760,6 +1761,7 @@ namespace Smash_Forge
             //flags
             public bool glow = false;
             public bool hasShadow = false;
+            public bool useColorGainOffset = false;
             public bool useDummyRamp = false;
             public bool UseDummyRamp
             {
@@ -1795,6 +1797,7 @@ namespace Smash_Forge
             public bool cubemap = false;
             public bool ramp = false;
             public bool spheremap = false;
+           
 
             public Material Clone()
             {
@@ -1836,6 +1839,7 @@ namespace Smash_Forge
                 if (hasShadow) t |= 0x40;
                 if (useDummyRamp) t |= 0x20;
                 if (useSphereMap) t |= 0x10;
+                if (useColorGainOffset) t |= 0x0C000061;
 
                 if (diffuse) t |= 0x01;
                 if (spheremap) t |= 0x01;
@@ -1861,6 +1865,12 @@ namespace Smash_Forge
                 useDummyRamp = (flag & 0x20) > 0;
                 useSphereMap = (flag & 0x10) > 0;
                 TestTextures();
+
+                // check lighting channel and 4th byte of flags
+                flag = ((int)flags);
+                useColorGainOffset = (flag & 0x0C000000) == 0x0C000000 && (flag & 0x000000FF) == 0x00000061 && 
+                ((flag & 0x00FF0000) == 0x00610000 || (flag & 0x00FF0000) == 0x00420000 || (flag & 0x00FF0000) == 0x00440000);
+
             }
 
             public void TestTextures()
