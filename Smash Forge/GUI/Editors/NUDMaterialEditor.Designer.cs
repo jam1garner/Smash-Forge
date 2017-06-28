@@ -92,8 +92,8 @@
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.rimLightCB = new System.Windows.Forms.CheckBox();
-            this.specLightCB = new System.Windows.Forms.CheckBox();
+            this.dummyRampCB = new System.Windows.Forms.CheckBox();
+            this.sphereMapCB = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.GlowCB = new System.Windows.Forms.CheckBox();
             this.shadowCB = new System.Windows.Forms.CheckBox();
@@ -771,8 +771,8 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.rimLightCB);
-            this.groupBox2.Controls.Add(this.specLightCB);
+            this.groupBox2.Controls.Add(this.dummyRampCB);
+            this.groupBox2.Controls.Add(this.sphereMapCB);
             this.groupBox2.Controls.Add(this.listView1);
             this.groupBox2.Controls.Add(this.glControl1);
             this.groupBox2.Controls.Add(this.tableLayoutPanel2);
@@ -784,29 +784,29 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Textures";
             // 
-            // rimLightCB
+            // dummyRampCB
             // 
-            this.rimLightCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.rimLightCB.AutoSize = true;
-            this.rimLightCB.Location = new System.Drawing.Point(159, 113);
-            this.rimLightCB.Name = "rimLightCB";
-            this.rimLightCB.Size = new System.Drawing.Size(105, 17);
-            this.rimLightCB.TabIndex = 19;
-            this.rimLightCB.Text = "Rim Light Switch";
-            this.rimLightCB.UseVisualStyleBackColor = true;
-            this.rimLightCB.CheckedChanged += new System.EventHandler(this.rimLightCB_CheckedChanged);
+            this.dummyRampCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.dummyRampCB.AutoSize = true;
+            this.dummyRampCB.Location = new System.Drawing.Point(159, 113);
+            this.dummyRampCB.Name = "dummyRampCB";
+            this.dummyRampCB.Size = new System.Drawing.Size(105, 17);
+            this.dummyRampCB.TabIndex = 19;
+            this.dummyRampCB.Text = "Use Dummy Ramp";
+            this.dummyRampCB.UseVisualStyleBackColor = true;
+            this.dummyRampCB.CheckedChanged += new System.EventHandler(this.rimLightCB_CheckedChanged);
             // 
-            // specLightCB
+            // sphereMapCB
             // 
-            this.specLightCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.specLightCB.AutoSize = true;
-            this.specLightCB.Location = new System.Drawing.Point(6, 113);
-            this.specLightCB.Name = "specLightCB";
-            this.specLightCB.Size = new System.Drawing.Size(129, 17);
-            this.specLightCB.TabIndex = 20;
-            this.specLightCB.Text = "Specular Light Switch";
-            this.specLightCB.UseVisualStyleBackColor = true;
-            this.specLightCB.CheckedChanged += new System.EventHandler(this.specLightCB_CheckedChanged);
+            this.sphereMapCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.sphereMapCB.AutoSize = true;
+            this.sphereMapCB.Location = new System.Drawing.Point(6, 113);
+            this.sphereMapCB.Name = "sphereMapCB";
+            this.sphereMapCB.Size = new System.Drawing.Size(129, 17);
+            this.sphereMapCB.TabIndex = 20;
+            this.sphereMapCB.Text = "Use Sphere Map";
+            this.sphereMapCB.UseVisualStyleBackColor = true;
+            this.sphereMapCB.CheckedChanged += new System.EventHandler(this.sphereMapCB_CheckedChanged);
             // 
             // groupBox3
             // 
@@ -1000,8 +1000,8 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.CheckBox specLightCB;
-        private System.Windows.Forms.CheckBox rimLightCB;
+        private System.Windows.Forms.CheckBox sphereMapCB;
+        private System.Windows.Forms.CheckBox dummyRampCB;
         private System.Windows.Forms.CheckBox GlowCB;
         private System.Windows.Forms.CheckBox shadowCB;
         private System.Windows.Forms.TabControl tabControl1;

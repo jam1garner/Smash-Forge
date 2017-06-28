@@ -213,20 +213,20 @@ namespace Smash_Forge
 
             shadowCB.Checked = mat.hasShadow;
             GlowCB.Checked = mat.glow;
-            specLightCB.Checked = mat.useSpecular;
-            rimLightCB.Checked = mat.useRimLight;
+            sphereMapCB.Checked = mat.useSphereMap;
+            dummyRampCB.Checked = mat.useDummyRamp;
             
-            if (mat.highlight) listView1.Items.Add("Specular");
-            if (mat.highlight) listView1.Items.Add("ShineHighlight");
+            //if (mat.spheremap) listView1.Items.Add("Specular");
             if (mat.diffuse) listView1.Items.Add("Diffuse");
             if (mat.stagemap) listView1.Items.Add("StageMap");
             if (mat.cubemap) listView1.Items.Add("Cubemap");
+            if (mat.spheremap) listView1.Items.Add("SphereMap");
             if (mat.diffuse2) listView1.Items.Add("Diffuse2");
             if (mat.aomap) listView1.Items.Add("AO Map");
             if (mat.normalmap) listView1.Items.Add("NormalMap");
             if (mat.ramp) listView1.Items.Add("Ramp");
 
-            if (mat.useRimLight) listView1.Items.Add("Dummy Ramp");
+            if (mat.useDummyRamp) listView1.Items.Add("Dummy Ramp");
 
             while (listView1.Items.Count > mat.textures.Count)
                 listView1.Items.RemoveAt(1);
@@ -907,14 +907,14 @@ namespace Smash_Forge
 
         private void rimLightCB_CheckedChanged(object sender, EventArgs e)
         {
-            material[current].UseRimLight = rimLightCB.Checked;
+            material[current].UseDummyRamp = dummyRampCB.Checked;
             //if(rimLightCB.Checked)specLightCB.Checked = !rimLightCB.Checked;
             FillForm();
         }
 
-        private void specLightCB_CheckedChanged(object sender, EventArgs e)
+        private void sphereMapCB_CheckedChanged(object sender, EventArgs e)
         {
-            material[current].UseSpecular = specLightCB.Checked;
+            material[current].UseSphereMap = sphereMapCB.Checked;
             //if (specLightCB.Checked)rimLightCB.Checked = !specLightCB.Checked;
             FillForm();
         }
