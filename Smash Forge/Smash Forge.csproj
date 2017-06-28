@@ -730,6 +730,7 @@
     <Content Include="lib\SALT.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\UVPattern.png" />
     <None Include="Resources\1.dds.png" />
     <None Include="Resources\cubemap2.bmp" />
     <None Include="Resources\10101000.png" />

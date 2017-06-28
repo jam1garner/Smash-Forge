@@ -86,6 +86,7 @@ namespace Smash_Forge
         public static int defaultTex = -1, userTex;
         public static int cubeTex, cubeTex2;
         public static int defaultRamp;
+        public static int UVTestPattern;
 
         public static int cubeVAO, cubeVBO;
 
@@ -94,6 +95,7 @@ namespace Smash_Forge
             cubeTex = LoadCubeMap(Smash_Forge.Properties.Resources.cubemap);
             cubeTex2 = LoadCubeMap(Smash_Forge.Properties.Resources._10101000);
             defaultRamp = NUT.loadImage(Smash_Forge.Properties.Resources._10080000);
+            UVTestPattern = NUT.loadImage(Smash_Forge.Properties.Resources.UVPattern);
 
             if (defaultTex == -1)
             defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
@@ -1276,15 +1278,17 @@ in vec3 tan;
 in vec3 bit;
 in vec4 vBoneOut;
 in vec4 vWeightOut;
+in vec3 viewNormals;
+
 out vec4 fincol;
 
 //uniform boneIndex;
 
-// Textures 
+// Textures
 uniform sampler2D dif;
 uniform sampler2D dif2;
 uniform sampler2D ramp;
-uniform sampler2D dummyRamp; 
+uniform sampler2D dummyRamp;
 uniform sampler2D nrm;
 uniform sampler2D ao;
 uniform samplerCube cube;
@@ -1400,7 +1404,7 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
-    float closestDepth = texture(shadowMap, projCoords.xy).r; 
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
     float currentDepth = projCoords.z;
     float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 
@@ -1430,8 +1434,8 @@ vec3 RampColor(vec3 col){
 	if(hasRamp == 1)
 	{
 		float rampInputLuminance = luminance(col);
-		rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99); 
-		return pow(texture2D(ramp, vec2(1-rampInputLuminance, 0.50)).rgb, vec3(2.2)); 
+		rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
+		return pow(texture2D(ramp, vec2(1-rampInputLuminance, 0.50)).rgb, vec3(2.2));
 	}
 	else
 		return vec3(1);
@@ -1441,8 +1445,8 @@ vec3 DummyRampColor(vec3 col){
 	if(hasDummyRamp == 1)
 	{
 		float rampInputLuminance = luminance(col);
-		rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99); 
-		return pow(texture2D(dummyRamp, vec2(1-rampInputLuminance, 0.50)).rgb, vec3(2.2)); 
+		rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
+		return pow(texture2D(dummyRamp, vec2(1-rampInputLuminance, 0.50)).rgb, vec3(2.2));
 	}
 	else
 		return vec3(1);
@@ -1450,8 +1454,8 @@ vec3 DummyRampColor(vec3 col){
 
 vec3 SpecRampColor(vec3 col){ // currently just for bayo spec ramp
 	float rampInputLuminance = luminance(col);
-	rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99); 
-	return pow(texture2D(dummyRamp, vec2(1-rampInputLuminance, 0.5)).rgb, vec3(2.2)); 
+	rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
+	return pow(texture2D(dummyRamp, vec2(1-rampInputLuminance, 0.5)).rgb, vec3(2.2));
 }
 
 
@@ -1459,16 +1463,16 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     vec3 I = vec3(0,0,-1) * mat3(eyeview);
     float blendAmount = 0.5;
 	float fresnelBlendAmount = 0.5;
-	
+
     // light direction seems to be (z,x,y) from light_set_param
     vec3 newDiffuseDirection = lightDirection; //normalize(I + diffuseLightDirection);
     vec3 newFresnelDirection = freslightDirection; //normalize(I + fresnelLightDirection);
     vec3 newSpecularDirection = lightDirection; //normalize(I + specularLightDirection);
-   
+
 	//---------------------------------------------------------------------------------------------
 		// diffuse pass
 		vec3 diffuse_pass = vec3(0);
-		
+
 			// lambertian shading
 			float lambertBRDF = clamp((dot(newDiffuseDirection,N)),0,1);
 			vec3 diffuse_color = vec3(0);
@@ -1476,16 +1480,16 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			vec3 ao_blend = vec3(1);
 			float diffuse_luminance = luminance(diffuse_map.xyz);
 			vec3 ramp_contribution = 0.5 * RampColor(vec3(lambertBRDF)) + 0.5 * DummyRampColor(vec3(lambertBRDF));
-			
+
 			//ao_blend = total ambient occlusion term. desaturated to look correct
-			ao_blend = min(((ao_map.aaa) + (minGain.rgb)),1.35); 
+			ao_blend = min(((ao_map.aaa) + (minGain.rgb)),1.35);
 			vec3 c = rgb2hsv(ao_blend.xyz);
-			ao_blend.xyz = hsv2rgb(vec3(c.x, c.y*0.4, c.z)); 
-			
-			//---------------------------------------------------------------------------------------------		
+			ao_blend.xyz = hsv2rgb(vec3(c.x, c.y*0.4, c.z));
+
+			//---------------------------------------------------------------------------------------------
 				// flags based corrections for diffuse
 			//if ((flags & 0x00FF0000u) == 0x00610000u || (flags & 0x00FF0000u) == 0x00440000u) // Color Gain/Offset
-			
+
 			if (hasColorGainOffset == 1)
 			{
 				//diffuse_color = colorOffset.xyz + (luminance(diffuse_map.xyz) * (colorGain.xyz));
@@ -1495,25 +1499,25 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 				ao_blend = vec3(diffuse_luminance);
 				diffuse_pass = (diffuse_color * ambient) + (diffuse_shading * diffuse_intensity);
 			}
-			
+
 			else if ((flags & 0x00420000u) == 0x00420000u) // bayo hair 'diffuse' is weird
 				diffuse_color = colorOffset.xyz + (diffuse_map.xxx * colorGain.xyz);
-				
+
 			else // regular characters
 			{
-				diffuse_color = diffuse_map.xyz * ao_blend * diffuseColor.xyz; 
+				diffuse_color = diffuse_map.xyz * ao_blend * diffuseColor.xyz;
 				diffuse_shading = diffuse_color * colorGain.xyz * ao_blend * ramp_contribution;
 				diffuse_pass = (diffuse_color * ambient) + (diffuse_shading * diffuse_intensity);
 			}
-			
-			
+
+
 			//if ((flags & 0x00810000u) == 0x00810000u) // brighten byte2 81 (jigglypuff, pikachu, etc)
-			//	diffuse_color *= 1.75;	
-			//---------------------------------------------------------------------------------------------		
-		
+			//	diffuse_color *= 1.75;
+			//---------------------------------------------------------------------------------------------
+
 		diffuse_pass = pow(diffuse_pass, vec3(2.2));
 	//---------------------------------------------------------------------------------------------
-	
+
 	//---------------------------------------------------------------------------------------------
 		// Calculate the color tint. input colors are r,g,b,alpha. alpha is color blend amount
 		vec3 spec_tint = calculate_tint_color(diffuse_color, specularColor.w, blendAmount);
@@ -1524,36 +1528,36 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 	//---------------------------------------------------------------------------------------------
 		// specular pass
 		vec3 specular_pass = vec3(0);
-		
+
 			// blinn phong
 			vec3 half_angle = normalize(newSpecularDirection);
 			float blinnPhongSpec = pow(clamp((dot(half_angle, N)), 0, 1), specularParams.y);
 			blinnPhongSpec *= (1-(specularParams.x/100));
-			
-			//---------------------------------------------------------------------------------------------		
+
+			//---------------------------------------------------------------------------------------------
 				// flags based corrections for specular
 			if ((flags & 0x00420000u) == 0x00420000u) // bayo hair mats
-			{ 
+			{
 			vec3 specularContribution = blinnPhongSpec * spec_tint;// * specular_intensity;
 			specularContribution = SpecRampColor(specularContribution); // spec ramp
 			specularContribution *= diffuse_map.zzz*1.35;
 			specular_pass += specularContribution;
 			}
-					
-			else if ((flags & 0x00FF0000u) == 0x00610000u || (flags & 0x00FF0000u) == 0x00440000u) // Color Gain/Offset	
+
+			else if ((flags & 0x00FF0000u) == 0x00610000u || (flags & 0x00FF0000u) == 0x00440000u) // Color Gain/Offset
 				specular_pass += specularColor.xyz* blinnPhongSpec * spec_tint * specular_intensity * ao_blend * (1+specularColorGain.xyz);
-						
+
 			else // default
 				specular_pass += specularColor.xyz* blinnPhongSpec * spec_tint * specular_intensity * ao_blend;
-			//---------------------------------------------------------------------------------------------		
-			
+			//---------------------------------------------------------------------------------------------
+
 		specular_pass = pow(specular_pass, vec3(2.2));
-	//---------------------------------------------------------------------------------------------		
-	
+	//---------------------------------------------------------------------------------------------
+
 	//---------------------------------------------------------------------------------------------
 		// fresnel pass
 		vec3 fresnel_pass = vec3(0);
-	
+
 			// hemisphere fresnel with fresnelParams control
 			vec3 groundColor = vec3(0.3,0.3,0.3);
 			vec3 skyColor = vec3(1.0,1.0,1.0);
@@ -1563,50 +1567,53 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			vec3 F0 = vec3(1);
 			float cosTheta = dot(I, N);
 			vec3 fresnel = clamp((hemiColor * pow(1.0 - cosTheta, 2.0 + fresnelParams.x)), 0, 1);
-			
+
 			fresnel_pass += fresnelColor.xyz * fresnel * fresnel_intensity * fresnel_tint;
-			
+
 		fresnel_pass = pow(fresnel_pass, vec3(2.2));
-	//---------------------------------------------------------------------------------------------	
-	
+	//---------------------------------------------------------------------------------------------
+
 	//---------------------------------------------------------------------------------------------
 		// reflection pass
 		vec3 reflection_pass = vec3(0);
-	
+
 			// cubemap reflection
 			vec3 R = reflect(I, N);
 			R.y *= -1.0;
 			vec3 refColor = texture(stagecube, R).rgb;
-			
-			//---------------------------------------------------------------------------------------------		
+
+			//---------------------------------------------------------------------------------------------
 				// flags based corrections for reflection
 			if (hasCube == 1) // cubemaps from model.nut. currently just uses miiverse cubemap
 				reflection_pass += diffuse_map.www* refColor * reflection_tint* reflection_intensity;
-				
+
 			if ((flags & 0x00000010u) == 0x00000010u) // view-based sphere normal mapping (rosa's stars, sonic eyes, etc)
 			{
 				// calculate view space normals
-				vec3 weirdVector = normal.xyz; 
+				vec3 weirdVector = viewNormals.xyz;
 				//weirdVector *= mat3(inverseEyeView);
-				
+
 				// calculate UVs based on view space normals (UV scale is currently not right)
 				float PI = 3.14159;
 				float uCoord = asin(weirdVector.x)/ PI + 0.5;
 				float vCoord = asin(weirdVector.y)/PI + 0.5;
-			
+
 				vec2 newTexCoord = vec2((uCoord)+0.05,(1-vCoord)+0.05);
-				vec3 weirdReflection = texture2D(spheremap, newTexCoord).xyz; 
+				vec3 weirdReflection = texture2D(spheremap, newTexCoord).xyz;
 				reflection_pass += pow((weirdReflection*reflectionColor.xyz*reflection_tint*reflection_intensity),vec3(2.2));
-			} 
+				//reflection_pass = viewNormals.xxx;
+			}
 			else // stage cubemaps
 				reflection_pass += reflectionColor.xyz* refColor * reflection_tint* reflection_intensity* diffuse_map.www;
-			//---------------------------------------------------------------------------------------------			
-			
+			//---------------------------------------------------------------------------------------------
+
+    reflection_pass *= ao_map.xyz;
 		reflection_pass = pow(reflection_pass, vec3(2.2));
-	//---------------------------------------------------------------------------------------------	
-	
+
+	//---------------------------------------------------------------------------------------------
+
 	vec3 resulting_color = vec3(0);
-	
+
 	if(renderLighting == 1)
 	{
 		if (renderDiffuse == 1)
@@ -1620,13 +1627,13 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 	}
 	else
 		resulting_color = diffuse_pass;
-	
 
-	
+
+
 	resulting_color = pow(resulting_color, vec3(1/2.2)); // gamma correction. gamma correction also done within render passes
-	
-	
-	
+
+
+
     return resulting_color;
 }
 
@@ -1646,11 +1653,16 @@ main()
     {
         fincol = color;
     }
-    else
+    else if (renderType == 6)
+	{
+		fincol = vec4(texcoord.x, texcoord.y, 1, 1);
+	}
+
+	else
     {
         fincol = vec4(0);
         vec4 fc = vec4(0, 0, 0, 0);
-		
+
         // fincol = diffuse map
         if (hasDif == 1)
         {
@@ -1663,24 +1675,25 @@ main()
                 fincol.a = 1.0;
             }
         }
-		
+
         // calcuate final color by mixing with vertex color
         if (renderVertColor == 1) fincol *= color;
         vec3 norm = CalcBumpedNormal();
-		
+
         // Material lighting done in sm4sh shader
         if (renderNormal == 1)
           fincol.xyz = sm4sh_shader(fincol, texture2D(nrm, texcoord).aaaa, norm);
         fincol = fincol * (finalColorGain);
-		
+
         // correct alpha
         float a = fincol.a;
         fincol.a = a;
         fincol.a *= finalColorGain.a;
-	
+
+
 		//if ((flags & 0x00420000u) == 0x00420000u)
 			//fincol.a *= diffuse_map.w;
-		
+
        // fincol.xyz *= vec3(ShadowCalculation(lightPos));
         //gl_FragColor = fincol; // final output color
 		}
