@@ -162,6 +162,8 @@ namespace Smash_Forge
 
     public class Hitbox
     {
+        public int ID { get; set; }
+
         public float Damage { get; set; }
         public float Angle { get; set; }
         public float KnockbackGrowth { get; set; }
@@ -176,6 +178,9 @@ namespace Smash_Forge
         public const int GRABBOX = 1;
         public const int WINDBOX = 2;
         public const int SEARCHBOX = 3;
+
+        public const int RENDER_DAMAGE = 0;
+        public const int RENDER_ID = 1;
 
         public int Bone { get; set; }
         public float Size { get; set; }
@@ -204,7 +209,7 @@ namespace Smash_Forge
         public static readonly float KB_LOWER_THRESHOLD = 100;
         public int getKnockbackBucket(float knockback)
         {
-            float bucketRange = (KB_UPPER_THRESHOLD - KB_LOWER_THRESHOLD) / distinctColors.Count;
+            float bucketRange = (KB_UPPER_THRESHOLD - KB_LOWER_THRESHOLD) / knockbackColors.Count;
             if (knockback < KB_LOWER_THRESHOLD) knockback = KB_LOWER_THRESHOLD;
             if (knockback > KB_UPPER_THRESHOLD) knockback = KB_UPPER_THRESHOLD - 0.001f;
             return (int)Math.Floor((knockback - KB_LOWER_THRESHOLD) / bucketRange);
@@ -234,7 +239,7 @@ namespace Smash_Forge
         //UIntToColor(0xFF593315), //Deep Yellowish Brown
         //UIntToColor(0xFFF13A13), //Vivid Reddish Orange
         //UIntToColor(0xFF232C16), //Dark Olive Green
-        public static readonly List<Color> distinctColors = new List<Color>()
+        public static readonly List<Color> knockbackColors = new List<Color>()
         {
             //Color.FromArgb(0xFF, 0xCE, 0xA2, 0x62), // Grayish yellow
             Color.FromArgb(0xFF, 0x00, 0x7D, 0x34), // Vivid green
@@ -244,11 +249,32 @@ namespace Smash_Forge
             Color.FromArgb(0xFF, 0xC1, 0x0, 0x20),    // Vivid red
         };
 
+        public static readonly List<Color> idColors = new List<Color>()
+        {
+            Color.FromArgb(0xFF, 0xFF, 0xB3, 0x00), // Vivid yellow
+            Color.FromArgb(0xFF, 0x80, 0x3E, 0x75), // Strong purple
+            Color.FromArgb(0xFF, 0xC1, 0x00, 0x20), // Vivid red
+            Color.FromArgb(0xFF, 0xCE, 0xA2, 0x62), // Grayish yellow
+            Color.FromArgb(0xFF, 0x81, 0x70, 0x66), // Medium gray
+            Color.FromArgb(0xFF, 0x00, 0x53, 0x8A), // Strong blue
+            Color.FromArgb(0xFF, 0x59, 0x33, 0x15), // Deep yellowish brown
+        };
+
         public Color GetRegularDisplayColor()
         {
-            // Chooses different colour from distinctColours depending on knockback
-            float kb = GetSimplifiedKnockback(Damage, KnockbackBase, KnockbackGrowth, 160);
-            return distinctColors[getKnockbackBucket(kb)];
+            if (Runtime.hitboxRenderType == RENDER_DAMAGE)
+            {
+                // Chooses different colour from distinctColours depending on knockback
+                // or things like spike angle
+                if (Angle > 245 && Angle < 295)
+                    return Color.FromArgb(0xFF, Color.Black);
+                float kb = GetSimplifiedKnockback(Damage, KnockbackBase, KnockbackGrowth, 160);
+                return knockbackColors[getKnockbackBucket(kb)];
+            }
+            else
+            {
+                return idColors[ID];
+            }
         }
 
         // The colour to fill a Hitbox with when displaying
@@ -259,21 +285,21 @@ namespace Smash_Forge
             {
                 case Hitbox.HITBOX:
                     if (Ignore_Throw)
-                        color = Color.FromArgb(85, Color.Black);
+                        color = Color.FromArgb(130, 0x59, 0x33, 0x15); // Deep yellowish brown
                     else
-                        color = Color.FromArgb(85, GetRegularDisplayColor());
+                        color = Color.FromArgb(130, GetRegularDisplayColor());
                     break;
                 case Hitbox.GRABBOX:
-                    color = Color.FromArgb(85, Color.Purple);
+                    color = Color.FromArgb(130, Color.Purple);
                     break;
                 case Hitbox.WINDBOX:
-                    color = Color.FromArgb(85, Color.Blue);
+                    color = Color.FromArgb(130, Color.Blue);
                     break;
                 case Hitbox.SEARCHBOX:
-                    color = Color.FromArgb(85, Color.DarkOrange);
+                    color = Color.FromArgb(130, Color.DarkOrange);
                     break;
                 default:
-                    color = Color.FromArgb(85, Color.FloralWhite);
+                    color = Color.FromArgb(130, Color.FloralWhite);
                     break;
             }
             return color;

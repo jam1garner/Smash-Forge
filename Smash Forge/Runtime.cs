@@ -70,6 +70,9 @@ namespace Smash_Forge
         public static bool renderHurtboxesZone;
         public static bool renderECB;
         public static bool renderIndicators;
+        public static int hitboxRenderType = Hitbox.RENDER_DAMAGE;
+        //public static int hitboxRenderType = Hitbox.RENDER_ID;
+        public static bool renderHitboxesNoOverlap = true;
 
         public static bool swapScaleXYPlane = false;
         public static bool swapScaleYZPlane = false;

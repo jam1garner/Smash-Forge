@@ -53,8 +53,8 @@ namespace Smash_Forge
             if (script == this.script && !hardReset)
                 return;
 
-            Hitboxes = new SortedList<int, Hitbox>();
-            LastHitboxes = new SortedList<int, Hitbox>();
+            Hitboxes = new SortedList<int, Hitbox>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
+            LastHitboxes = new SortedList<int, Hitbox>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
             InvincibleBones = new List<int>();
             IntangibleBones = new List<int>();
             BodyIntangible = false;
@@ -71,6 +71,7 @@ namespace Smash_Forge
 
         public void addOrOverwriteHitbox(int id, Hitbox newHitbox)
         {
+            newHitbox.ID = id;
             if (Hitboxes.ContainsKey(id))
             {
                 Hitboxes[id] = newHitbox;
@@ -407,7 +408,9 @@ namespace Smash_Forge
         public void processScript()
         {
             LastHitboxes = Hitboxes;
-            Hitboxes = new SortedList<int, Hitbox>();
+            // Hitboxes stored in descending order because lower ID hitboxes take priority
+            // over higher ID ones. Thus, drawing the lower IDs on top makes sense.
+            Hitboxes = new SortedList<int, Hitbox>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
             InvincibleBones = new List<int>();
             IntangibleBones = new List<int>();
             // The next frame the script halts at for execution. Only modified
