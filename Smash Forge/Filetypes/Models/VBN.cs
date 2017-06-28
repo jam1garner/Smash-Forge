@@ -264,17 +264,27 @@ namespace Smash_Forge
         public void update(bool reset = false)
         {
             List<Bone> nodesToProcess = new List<Bone>();
-            // assumption: the first listed bone in a VBN file is the root of the tree,
-            // could be wrong about this
+            // Add all root nodes from the VBN
+            foreach (Bone b in bones)
+                if (b.Parent == null)
+                    nodesToProcess.Add(b);
 
-            // some special processing for the root bone before we start
-            bones[0].transform = Matrix4.CreateScale(bones[0].sca) * Matrix4.CreateFromQuaternion(bones[0].rot) * Matrix4.CreateTranslation(bones[0].pos);
+            // some special processing for the root bones before we start
+            foreach (Bone b in nodesToProcess)
+            {
+                b.transform = Matrix4.CreateScale(b.sca) * Matrix4.CreateFromQuaternion(b.rot) * Matrix4.CreateTranslation(b.pos);
+                // scale down the model in its entirety only when mid-animation (i.e. reset == false)
+                if (!reset && Runtime.model_scale != 1) b.transform *= Matrix4.CreateScale(Runtime.model_scale);
+            }
 
-            // scale down the model in its entirety only when in animations (i.e. reset == false)
-            if (!reset && Runtime.model_scale != 1) bones[0].transform *= Matrix4.CreateScale(Runtime.model_scale);
-
-            // Process as a tree from the root node's children and beyond
-            nodesToProcess.AddRange(bones[0].GetChildren());
+            // Process as a tree from the root node's children and beyond. These
+            // all use the same processing, unlike the root nodes.
+            int numRootNodes = nodesToProcess.Count;
+            for (int i = 0; i < numRootNodes; i++)
+            {
+                nodesToProcess.AddRange(nodesToProcess[0].GetChildren());
+                nodesToProcess.RemoveAt(0);
+            }
             while (nodesToProcess.Count > 0)
             {
                 // DFS
