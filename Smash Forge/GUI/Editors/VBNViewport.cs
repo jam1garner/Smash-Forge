@@ -218,11 +218,10 @@ namespace Smash_Forge
             if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
             {
                 HandleACMD(Runtime.TargetAnimString.Substring(3));
-                if (gameScriptManager != null)
+                if (gameAcmdScript != null)
                 {
-                    if (gameScriptManager.script != null)
-                        gameScriptManager.processScript();
-                    gameScriptManager.processAnimationParams(Runtime.TargetAnimString.Substring(3).Replace(".omo", ""));
+                    gameAcmdScript.processToFrame(0);
+                    gameAcmdScript.processAnimationParams(Runtime.TargetAnimString.Substring(3).Replace(".omo", ""));
                 }
             }
         }
@@ -271,53 +270,49 @@ namespace Smash_Forge
             if (this.nupdFrame.Value >= Runtime.TargetAnim.size())
             {
                 this.nupdFrame.Value = 0;
-                return;
             }
             if (this.nupdFrame.Value < 0)
             {
                 this.nupdFrame.Value = Runtime.TargetAnim.size() - 1;
-                return;
             }
             SetAnimationFrame((int)this.nupdFrame.Value);
         }
 
         public void SetAnimationFrame(int frameNum)
         {
-            Runtime.TargetAnim.setFrame(frameNum);
+            // Process script first in case we have to speed up the animation
+            if (gameAcmdScript != null)
+            {
+                gameAcmdScript.processToFrame(frameNum);
+                gameAcmdScript.processAnimationParams(Runtime.TargetAnimString.Substring(3).Replace(".omo", ""));
+            }
 
+            int animFrameNum = frameNum;
+            if (gameAcmdScript != null && Runtime.useFrameDuration)
+                animFrameNum = gameAcmdScript.animationFrame;// - 1;
+
+            Runtime.TargetAnim.setFrame(animFrameNum);
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
-                Runtime.TargetAnim.setFrame(frameNum);
                 if (m.vbn != null)
                     Runtime.TargetAnim.nextFrame(m.vbn);
 
+                // Deliberately do not ever use ACMD/animFrame to modify these other types of model
                 if (m.dat_melee != null)
                 {
-                    Runtime.TargetAnim.setFrame(frameNum);
                     Runtime.TargetAnim.nextFrame(m.dat_melee.bones);
                 }
                 if (m.bch != null)
                 {
                     foreach (BCH.BCH_Model mod in m.bch.models)
                     {
-                        Runtime.TargetAnim.setFrame(frameNum);
                         if (mod.skeleton != null)
                             Runtime.TargetAnim.nextFrame(mod.skeleton);
                     }
                 }
             }
 
-            Frame = frameNum;
-
-            if (gameScriptManager != null)
-            {
-                gameScriptManager.currentFrame = Frame;
-                if (gameScriptManager.script != null)
-                {
-                    gameScriptManager.processScript();
-                }
-                gameScriptManager.processAnimationParams(Runtime.TargetAnimString.Substring(3).Replace(".omo", ""));
-            }
+            Frame = animFrameNum;
         }
 
         private void nupdSpeed_ValueChanged(object sender, EventArgs e)
@@ -621,7 +616,7 @@ namespace Smash_Forge
         {
             // FAF indicator
             Color color;
-            if (gameScriptManager != null && gameScriptManager.FAFReached)
+            if (gameAcmdScript != null && gameAcmdScript.FAFReached)
                 color = Color.FromKnownColor(KnownColor.Green);
             else
                 color = Color.FromKnownColor(KnownColor.Red);
@@ -634,6 +629,7 @@ namespace Smash_Forge
             float floorStep = Runtime.scaleFloorStep;
             float step = Runtime.scaleWallStep;
             float cubeSize = Runtime.scaleSize;
+            float floorDepth = Runtime.floorDepth;
 
             // No shaders
             GL.UseProgram(0);
@@ -653,7 +649,7 @@ namespace Smash_Forge
             GL.Begin(PrimitiveType.Lines);
                 // XY plane
                 float planePos = Runtime.swapScaleXYPlane ? cubeSize : -cubeSize;
-                for (var h = 0f; h <= cubeSize; h += step)
+                for (var h = floorDepth; h <= cubeSize - floorDepth; h += step)
                 {
                     // Each horizontal line
                     GL.Vertex3(-cubeSize, h, planePos);
@@ -662,13 +658,13 @@ namespace Smash_Forge
                 for (var w = -cubeSize; w <= cubeSize; w += step)
                 {
                     // Each vertical line
-                    GL.Vertex3(w, 0f, planePos);
-                    GL.Vertex3(w, cubeSize, planePos);
+                    GL.Vertex3(w, floorDepth, planePos);
+                    GL.Vertex3(w, cubeSize - floorDepth, planePos);
                 }
 
                 // YZ plane
                 planePos = Runtime.swapScaleYZPlane ? cubeSize : -cubeSize;
-                for (var h = 0f; h <= cubeSize; h += step)
+                for (var h = floorDepth; h <= cubeSize - floorDepth; h += step)
                 {
                     // Each horizontal line
                     GL.Vertex3(planePos, h, -cubeSize);
@@ -677,22 +673,22 @@ namespace Smash_Forge
                 for (var w = -cubeSize; w <= cubeSize; w += step)
                 {
                     // Each vertical line
-                    GL.Vertex3(planePos, 0f, w);
-                    GL.Vertex3(planePos, cubeSize, w);
+                    GL.Vertex3(planePos, floorDepth, w);
+                    GL.Vertex3(planePos, cubeSize - floorDepth, w);
                 }
 
             // XZ plane (floor)
             for (var h = -cubeSize; h <= cubeSize; h += floorStep)
             {
                 // Each horizontal line
-                GL.Vertex3(-cubeSize, 0f, h);
-                GL.Vertex3(cubeSize, 0f, h);
+                GL.Vertex3(-cubeSize, floorDepth, h);
+                GL.Vertex3(cubeSize, floorDepth, h);
             }
             for (var w = -cubeSize; w <= cubeSize; w += floorStep)
             {
                 // Each vertical line
-                GL.Vertex3(w, 0f, -cubeSize);
-                GL.Vertex3(w, 0f, cubeSize);
+                GL.Vertex3(w, floorDepth, -cubeSize);
+                GL.Vertex3(w, floorDepth, cubeSize);
             }
             GL.End();
 
@@ -1560,14 +1556,17 @@ namespace Smash_Forge
 
         public void RenderHitboxes()
         {
-            if (gameScriptManager.script == null || gameScriptManager.Hitboxes.Count <= 0)
+            if (gameAcmdScript == null || gameAcmdScript.Hitboxes.Count <= 0)
                 return;
 
             GL.Enable(EnableCap.Blend);
-
-            foreach (var pair in gameScriptManager.Hitboxes)
+            GL.Disable(EnableCap.CullFace);
+            foreach (var pair in gameAcmdScript.Hitboxes)
             {
                 var h = pair.Value;
+                //if (h.FramesSinceCreation < Hitbox.FRAME_ACTIVATION_THRESHOLD)
+                //    continue;
+
                 Bone b = getBone(h.Bone);
                 h.va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
 
@@ -1593,27 +1592,57 @@ namespace Smash_Forge
                 {
                     RenderTools.drawSphere(h.va, h.Size, 30);
                 }
+
+                // n factorial (n!) algorithm (NOT EFFICIENT) to draw subsequent hitboxes around each other.
+                // Will work fine for the low amounts of hitboxes in smash4.
+                if (Runtime.renderHitboxesNoOverlap)
+                {
+                    // Remove the stencil for the already drawn hitboxes
+                    RenderTools.beginTopLevelAntiStencil();
+                    foreach (var pair2 in gameAcmdScript.Hitboxes.Reverse())
+                    {
+                        if (pair2.Key == pair.Key)
+                            break;  // this only works because the list is sorted
+                        var h2 = pair2.Value;
+                        Bone b2 = getBone(h2.Bone);
+                        var va = Vector3.Transform(new Vector3(h2.X, h2.Y, h2.Z), b2.transform.ClearScale());
+                        if (h2.Extended)
+                        {
+                            var va2 = new Vector3(h2.X2, h2.Y2, h2.Z2);
+                            if (h2.Bone != -1) va2 = Vector3.Transform(va2, b2.transform.ClearScale());
+                            RenderTools.drawCylinder(va, va2, h2.Size);
+                        }
+                        else
+                        {
+                            RenderTools.drawSphere(va, h2.Size, 30);
+                        }
+                    }
+                }
+
                 // End stenciling and draw over all the stenciled bits
                 RenderTools.endTopLevelStencilAndDraw();
             }
             GL.Disable(EnableCap.Blend);
+            GL.Enable(EnableCap.CullFace);
         }
 
         public void RenderInterpolatedHitboxes()
         {
-            if (gameScriptManager.script != null && gameScriptManager.Hitboxes.Count > 0)
+            if (gameAcmdScript != null && gameAcmdScript.Hitboxes.Count > 0)
             {
                 // Interpolation is one colour for all Hitbox types and rendered all
                 // at once to make a giant block. If people want sub-type
                 // interpolation later we can add it.
-                GL.Color4(Color.FromArgb(40, 0xA6, 0xBD, 0xD7));
+                //GL.Color4(Color.FromArgb(40, 0xA6, 0xBD, 0xD7));  // Greyish
+                GL.Color4(Color.FromArgb(40, 0xC1, 0x0, 0x20));  // Vivid red
                 GL.Enable(EnableCap.Blend);
+                GL.Disable(EnableCap.CullFace);
                 // Draw everything to the stencil buffer
                 RenderTools.beginTopLevelStencil();
 
                 // Render the interpolated area between the last frame's set of hitboxes
                 // and the current frame's set of hitboxes
-                foreach (var pair in gameScriptManager.Hitboxes)
+                foreach (var pair in gameAcmdScript.Hitboxes)
                 {
                     var h = pair.Value;
                     Bone b = getBone(h.Bone);
@@ -1621,10 +1650,10 @@ namespace Smash_Forge
 
                     // Draw a cylinder between the last known area and the current one
                     Hitbox lastMatchingHitbox = null;
-                    bool success = gameScriptManager.LastHitboxes.TryGetValue(pair.Key, out lastMatchingHitbox);
-                    if (success)
+                    bool success = gameAcmdScript.LastHitboxes.TryGetValue(pair.Key, out lastMatchingHitbox);
+                    if (success) // && lastMatchingHitbox.FramesSinceCreation - 1 >= Hitbox.FRAME_ACTIVATION_THRESHOLD)
                     {
-                        if (h.Extended)
+                        if (h.Extended && lastMatchingHitbox.Extended)
                         {
                             Vector3 va2 = new Vector3(h.X2, h.Y2, h.Z2);
                             if (h.Bone != -1) va2 = Vector3.Transform(va2, b.transform.ClearScale());
@@ -1641,7 +1670,7 @@ namespace Smash_Forge
 
                 // Now remove the spots for the current frame hitboxes so the colours don't get mixed
                 RenderTools.beginTopLevelAntiStencil();
-                foreach (var pair in gameScriptManager.Hitboxes)
+                foreach (var pair in gameAcmdScript.Hitboxes)
                 {
                     var h = pair.Value;
                     Bone b = getBone(h.Bone);
@@ -1664,6 +1693,7 @@ namespace Smash_Forge
                 // the new hitboxes
                 RenderTools.endTopLevelStencilAndDraw();
                 GL.Disable(EnableCap.Blend);
+                GL.Enable(EnableCap.CullFace);
             }
         }
 
@@ -1675,12 +1705,12 @@ namespace Smash_Forge
                 GL.Enable(EnableCap.DepthTest);
                 GL.Enable(EnableCap.Blend);
 
-                if(gameScriptManager.script != null)
+                if (gameAcmdScript != null)
                 {
-                    if (gameScriptManager.BodyIntangible)
+                    if (gameAcmdScript.BodyIntangible)
                         return;
 
-                    if (Frame + 1 >= Runtime.ParamManager.MovesData[gameScriptManager.scriptId].IntangibilityStart && Frame + 1 < Runtime.ParamManager.MovesData[gameScriptManager.scriptId].IntangibilityEnd)
+                    if (Frame + 1 >= Runtime.ParamManager.MovesData[gameAcmdScript.scriptId].IntangibilityStart && Frame + 1 < Runtime.ParamManager.MovesData[gameAcmdScript.scriptId].IntangibilityEnd)
                         return;
                 }
 
@@ -1690,11 +1720,9 @@ namespace Smash_Forge
                     var va = new Vector3(h.X, h.Y, h.Z);
                     Bone b = getBone(h.Bone);
 
-                    if (gameScriptManager != null)
+                    if (gameAcmdScript != null)
                     {
-                        if (gameScriptManager.BodyIntangible)
-                            continue;
-                        if (gameScriptManager.IntangibleBones.Contains(h.Bone))
+                        if (gameAcmdScript.IntangibleBones.Contains(h.Bone))
                             continue;
                     }
 
@@ -1718,12 +1746,12 @@ namespace Smash_Forge
                         }
                     }
 
-                    if (gameScriptManager != null)
+                    if (gameAcmdScript != null)
                     {
-                        if (gameScriptManager.BodyInvincible)
+                        if (gameAcmdScript.BodyInvincible)
                             GL.Color4(Color.FromArgb(80, Color.White));
 
-                        if(gameScriptManager.InvincibleBones.Contains(h.Bone))
+                        if(gameAcmdScript.InvincibleBones.Contains(h.Bone))
                             GL.Color4(Color.FromArgb(80, Color.White));
                     }
 
@@ -1772,7 +1800,7 @@ namespace Smash_Forge
             }
         }
 
-        ACMDScriptManager gameScriptManager = new ACMDScriptManager();
+        ForgeACMDScript gameAcmdScript = null;
         ACMDScript scr_sound;
 
         int lastFrame = 0;
@@ -1844,7 +1872,7 @@ namespace Smash_Forge
 
             if (Runtime.Moveset == null)
             {
-                gameScriptManager.Reset(null);
+                gameAcmdScript = null;
                 return;
             }
 
@@ -1873,18 +1901,23 @@ namespace Smash_Forge
                 }
                 else
                 {
-                    gameScriptManager.Reset(null);
+                    gameAcmdScript = null;
                     return;
                 }
             }
 
             //Console.WriteLine("Handling " + animname);
             ACMDScript acmdScript = (ACMDScript)Runtime.Moveset.Game.Scripts[crc];
+            // Only update the script if it changed
             if (acmdScript != null)
-                gameScriptManager.Reset(acmdScript, Runtime.Moveset.ScriptsHashList.IndexOf(crc));
+            {
+                if (gameAcmdScript == null || (gameAcmdScript != null && gameAcmdScript.script != acmdScript))
+                {
+                    gameAcmdScript = new ForgeACMDScript(acmdScript, Runtime.Moveset.ScriptsHashList.IndexOf(crc));
+                }
+            }
             else
-                gameScriptManager.Reset(null);
-            //scr_sound = (ACMDScript)Runtime.Moveset.Sound.Scripts[crc];
+                gameAcmdScript = null;
         }
 
         #endregion
@@ -1980,6 +2013,24 @@ namespace Smash_Forge
                 height = 0;
                 lookup = 0.025f;
                 rot = 3.14159f;
+                zoom = -55;
+                Runtime.swapScaleYZPlane = true;
+            }
+            if (e.KeyChar == '\\')
+            {
+                width = 0;
+                height = 0;
+                lookup = 7.853f;  // Half Pi [90degree rotation] * 0.2f
+                rot = 3.14159f;
+                zoom = -55;
+                Runtime.swapScaleYZPlane = true;
+            }
+            if (e.KeyChar == '\'')
+            {
+                width = 0;
+                height = 0;
+                lookup = 0.025f;
+                rot = 0f;
                 zoom = -55;
                 Runtime.swapScaleYZPlane = true;
             }

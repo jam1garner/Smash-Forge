@@ -8,11 +8,27 @@ using System.Threading.Tasks;
 
 namespace Smash_Forge
 {
-    // For processing ACMD files and relaying the state to the GUI
-    class ACMDScriptManager
+    class ForgeACMDScript
     {
+        public class ScriptState
+        {
+            public int commandIndex;
+            public int loopStart;
+            public int loopIterations;
+
+            public ScriptState(int commandIndex, int loopStart, int loopIterations)
+            {
+                this.commandIndex = commandIndex;
+                this.loopStart = loopStart;
+                this.loopIterations = loopIterations;
+            }
+        }
+
         public int scriptId { get; set; }
         public ACMDScript script { get; set; }
+        public List<ACMDScript> subscripts { get; set; }  // For subscript processing, shares currentFrame between all scripts
+
+        // Data processed by script
         public SortedList<int, Hitbox> Hitboxes { get; set; }
         // For interpolation
         public SortedList<int, Hitbox> LastHitboxes { get; set; }
@@ -22,106 +38,278 @@ namespace Smash_Forge
         public bool BodyIntangible { get; set; }
         public bool BodyInvincible { get; set; }
         public bool FAFReached { get; set; }
-        public int currentFrame { get; set; }
 
-        // How fast the current frame is playing in-game. Used to marry up
-        // hitboxes to the animation properly. Essentially
-        // numAnimationFramesPerRealFrame = (1/currentFrameDuration)
-        public float currentFrameDuration { get; set; }
-        // What the current frame is modified by various currentFrameDuration instructions
-        public float realCurrentFrame { get; set; }
-        public int floorRealCurrentFrame { get; set; } // to save computation
-
-        // TODO: these may need to be passed down for proper subscript parsing
-        // if any subscripts are used in loops anywhere.
-        private int setLoop;
-        private int iterations;
-
-        public ACMDScriptManager()
-        {
-            Reset(hardReset: true);
+        // Script processing helpers
+        public int currentGameFrame { get; set; }   // In-game frame # for the move. One in-game frame can skip multiple animation frames.
+        public double currentFrame { get; set; }     // Script frame, can be fractional due to frameSpeed values
+        public double frameSpeed { get; set; }       // Set by Set_Frame_Duration. How many in-game frames maps to an animation frame right now.
+        public List<int> animationFrames;           // Used to track historical animationFrames so that the right one can be returned
+        public int animationFrame                   // The current animation frame to display in-game
+        { 
+            // This getter exists solely to match up what animation frame the ACMD
+            // results should be seen on as it would appear in-game.
+            get
+            {
+                if (animationFrames.Count == 0)
+                    return 0;
+                return animationFrames[animationFrames.Count - 1];
+            }
         }
+        public bool incrementFrameValue;   // Whether to increment the frame value next frame
+        public bool adjustAnimFrames;      // Fixup for anim frames, only happens when frameSpeed <= 1 on first frame
 
-        public ACMDScriptManager(ACMDScript script)
-        {
-            Reset();
-            this.script = script;
-        }
+        public int scriptCommandIndex { get; set; }
+        private int loopStart;
+        private int loopIterations;
+        private double framesSinceSyncTimerStarted;
+        // To track state through subscripts
+        public Stack<ScriptState> scriptStates { get; set; }
 
-        public ACMDScriptManager(ACMDScript script, int scriptId)
+        public ForgeACMDScript(ACMDScript script, int scriptId)
         {
-            Reset();
             this.script = script;
             this.scriptId = scriptId;
+            Reset();
         }
 
-        public void Reset(ACMDScript script = null, int scriptId = -1, bool hardReset = false)
+        public void Reset()
         {
-            // Don't reset on the same script
-            if (script == this.script && !hardReset)
-                return;
+            Hitboxes           = new SortedList<int, Hitbox>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
+            LastHitboxes       = new SortedList<int, Hitbox>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
+            InvincibleBones    = new List<int>();
+            IntangibleBones    = new List<int>();
+            BodyIntangible     = false;
+            BodyInvincible     = false;
+            FAFReached         = false;  // I assume this is for in-game frames
 
-            Hitboxes = new SortedList<int, Hitbox>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
-            LastHitboxes = new SortedList<int, Hitbox>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
-            InvincibleBones = new List<int>();
-            IntangibleBones = new List<int>();
-            BodyIntangible = false;
-            BodyInvincible = false;
-            FAFReached = false;
-            resetFrame();
-            this.scriptId = scriptId;
+            currentGameFrame   = 0;
+            currentFrame       = 0;
+            frameSpeed         = 1;
+            animationFrames    = new List<int>();
+            incrementFrameValue = false;  // First frame has weird stuff going on with this
 
-            currentFrame = 0;
-            this.script = script;
-
-            setLoop = 0;
-            iterations = 0;
-        }
-
-        // Reset the animation frame data
-        public void resetFrame()
-        {
-            currentFrameDuration = 1.0f;
-            realCurrentFrame = -1f;  // starts at same as halt for proper comparison
-            floorRealCurrentFrame = 0;
+            scriptCommandIndex = 0;
+            loopStart          = 0;
+            loopIterations     = 0;
+            framesSinceSyncTimerStarted = -1;
+            subscripts         = new List<ACMDScript>();
+            scriptStates       = new Stack<ScriptState>();
         }
 
         public void addOrOverwriteHitbox(int id, Hitbox newHitbox)
         {
             newHitbox.ID = id;
             if (Hitboxes.ContainsKey(id))
-            {
                 Hitboxes[id] = newHitbox;
-            }
             else
-            {
                 Hitboxes.Add(id, newHitbox);
+        }
+
+        //public void processToInGameFrame(int frame)
+        public void processToFrame(int frame)
+        {
+            if (script == null)
+                return;
+
+            if (frame < currentGameFrame)
+                // Reset script to frame 0 and process from there
+                Reset();
+
+            bool keepProcessing;
+            while (currentGameFrame <= frame)
+            {
+                updateHitboxes(true);  // once per in-game frame
+
+                // ACMD subsystem stuff now
+                if (incrementFrameValue)
+                {
+                    currentFrame += frameSpeed;
+                }
+
+                keepProcessing = true;
+                while (keepProcessing)
+                {
+                    keepProcessing = false;
+
+                    processFrame();
+                    // Weird checks done only on the first frame
+                    if (currentFrame < 1)
+                    {
+                        currentFrame += frameSpeed;
+                        if (currentFrame > 1)
+                        {
+                            // Do not increment frame value next frame, defer processing to next frame
+                            incrementFrameValue = false;
+                            keepProcessing = false;
+                        }
+                        else
+                        {
+                            // Increment frame value next frame, process ACMD at least one more time in this in-game frame
+                            incrementFrameValue = true;
+                            keepProcessing = true;
+                            adjustAnimFrames = true;  // Fixup for animation frames
+                        }
+                    }
+                    else  // Every other frame
+                    {
+                        incrementFrameValue = true;
+                        keepProcessing = false;
+                    }
+                    //Console.WriteLine($"END ACMD FRAME: gameFrame={currentGameFrame} animationFrame={animationFrame} currentFrame={currentFrame}");
+                }
+                int roundedAnimFrame = roundAnimationFrame(currentFrame);
+                //if (adjustAnimFrames)
+                roundedAnimFrame -= 1;
+                animationFrames.Add(roundedAnimFrame);
+                currentGameFrame += 1;
+                //Console.WriteLine($"END GAME FRAME: gameFrame={currentGameFrame} animationFrame={animationFrame} currentFrame={currentFrame}");
             }
         }
 
-        public float processScriptCommandsAtCurrentFrame(ICommand cmd, float halt, ref int scriptCommandIndex)
+        public void processFrame()
+        {
+            bool continueProcessing = true;
+            while (continueProcessing)
+            {
+                // Subscripts take precedence in processing, most deep one first
+                if (subscripts.Count > 0)
+                {
+                    if (scriptCommandIndex < subscripts[subscripts.Count - 1].Count)
+                        continueProcessing = processCommand(subscripts[subscripts.Count - 1][scriptCommandIndex]);
+                    else
+                    {
+                        // We finished the subscript, pop it off and keep processing the parent
+                        ScriptState prevState = scriptStates.Pop();
+                        scriptCommandIndex = prevState.commandIndex;
+                        loopStart = prevState.loopStart;
+                        loopIterations = prevState.loopIterations;
+                        subscripts.RemoveAt(subscripts.Count - 1);
+                    }
+                }
+                else
+                {
+                    if (scriptCommandIndex < script.Count)
+                        continueProcessing = processCommand(script[scriptCommandIndex]);
+                    else
+                        // No script commands left to process, regardless of frame
+                        break;
+                }
+                if (continueProcessing)
+                    scriptCommandIndex++;
+            }
+        }
+
+        public void updateHitboxes(bool updateInterpolation)
+        {
+            //List<int> toDelete = new List<int>();
+            //foreach (KeyValuePair<int, Hitbox> kvp in Hitboxes)
+            //{
+            //    kvp.Value.FramesSinceCreation++;
+            //    if (kvp.Value.FramesSinceDeletion > -1)  // i.e. already marked for deletion
+            //        kvp.Value.FramesSinceDeletion++;
+            //    if (kvp.Value.FramesSinceDeletion >= Hitbox.FRAME_ACTIVATION_THRESHOLD)
+            //        toDelete.Add(kvp.Key);
+            //}
+            //foreach (int i in toDelete)
+            //    Hitboxes.Remove(i);
+
+            // Store the last frame's hitboxes for interpolation reasons
+            LastHitboxes = new SortedList<int, Hitbox>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
+            foreach (KeyValuePair<int, Hitbox> kvp in Hitboxes)
+                LastHitboxes.Add(kvp.Key, (Hitbox)kvp.Value.Clone());
+        }
+
+        public void processAnimationParams(string animname)
+        {
+            if (Runtime.ParamMoveNameIdMapping == null)
+                return;
+
+            int moveId;
+            if (!Runtime.ParamMoveNameIdMapping.TryGetValue(animname, out moveId))
+                return;
+
+            MoveData moveData;
+            if (!Runtime.ParamManager.MovesData.TryGetValue(moveId, out moveData))
+                return;
+
+            // Forge uses 0-index while game data (params) uses 1-index, so convert here
+            if (currentFrame >= moveData.IntangibilityStart - 1 && currentFrame < moveData.IntangibilityEnd - 1)
+                this.BodyIntangible = true;
+            else
+                this.BodyIntangible = false;
+
+            if (currentFrame >= moveData.FAF)
+                this.FAFReached = true;
+            else
+                this.FAFReached = false;
+        }
+
+        /// <summary>
+        /// Process the next ACMD command in the queue.
+        /// </summary>
+        /// <returns>True if we should keep processing, False to stop 
+        /// for the rest of the frame.</returns>
+        public bool processCommand(ICommand cmd)
         {
             Hitbox newHitbox = null;
             switch (cmd.Ident)
             {
-                case 0x42ACFE7D: // Asynchronous Timer (specific frame start for next commands), unaffected by Frame_Duration
+                case 0x42ACFE7D: // Asynchronous Timer, exact animation frame on which next command should run
                     {
-                        int frame = (int)(float)cmd.Parameters[0];
-                        halt = frame >= halt + 2 ? frame - 2 : halt;
+                        float continueOnFrame = (float)cmd.Parameters[0];
+                        if (currentFrame >= continueOnFrame)
+                            return true;  // Timer finished, keep processing
+                        return false;  // Timer hasn't finished yet
+                    }
+                case 0x4B7B6E51: // Synchronous Timer, number of animation frames to wait until next command should run
+                    {
+                        // Formula from ASM is: stopAfterFrames - ((is_active * frameSpeed) + framesSinceSyncTimerStarted) > 0
+                        // THEN the timer has finished.
+                        if (framesSinceSyncTimerStarted < 0)
+                            framesSinceSyncTimerStarted = 0;
+                        else
+                            framesSinceSyncTimerStarted += frameSpeed;
+
+                        float stopAfterFrames = (int)(float)cmd.Parameters[0];
+                        if (stopAfterFrames - framesSinceSyncTimerStarted > 0)
+                            return false;  // Timer hasn't finished yet
+                        // Timer finished, keep processing
+                        framesSinceSyncTimerStarted = -1;
+                        return true;
+                    }
+                case 0x7172A764: // Set_Frame_Duration, sets Frame_Speed such that Arg0 ACMD frames are processed per in-game frame
+                    {
+                        if (Runtime.useFrameDuration)
+                            frameSpeed = 1 / (float)cmd.Parameters[0];
                         break;
                     }
-                case 0x4B7B6E51: // Synchronous Timer (relative frame start for next commands), unaffected by Frame_Duration
+                case 0xB2E91D0C: // Used in bayo scripts to set the Frame_Speed to a specific value
                     {
-                        halt = Math.Max(halt, realCurrentFrame);
-                        //halt += (float)cmd.Parameters[0] * (1 / currentFrameDuration);
-                        halt += (int)(float)cmd.Parameters[0];
+                        if (Runtime.useFrameDuration)
+                            frameSpeed = (float)cmd.Parameters[0];
                         break;
                     }
-                case 0x7172A764: // Set_Frame_Duration (how fast the current frame is playing)
+                case 0x9126EBA2: // Subroutine: call another script
+                case 0xFA1BC28A: // Subroutine1: call another script
+                    // Try and load the other script. If we can't, then just keep going as per normal
+                    uint crc = (uint)int.Parse(cmd.Parameters[0] + "");
+                    if (Runtime.Moveset.Game.Scripts.ContainsKey(crc))
                     {
-                        currentFrameDuration = (float)cmd.Parameters[0];
-                        break;
+                        subscripts.Add((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
+
+                        // Store the return scriptCommandIndex
+                        scriptStates.Push(new ScriptState(
+                            scriptCommandIndex,
+                            loopStart,
+                            loopIterations
+                        ));
+
+                        // Start fresh in the new script
+                        scriptCommandIndex = -1; // This is incremented immediately in the containing loop hence the -1
+                        loopStart = 0;
+                        loopIterations = 0;
                     }
+                    break;
                 case 0xB738EABD: // hitbox 
                     {
                         newHitbox = new Hitbox();
@@ -260,27 +448,31 @@ namespace Smash_Forge
                         break;
                     }
                 case 0x9245E1A8: // clear all hitboxes
+                    foreach (Hitbox h in Hitboxes.Values)
+                        h.FramesSinceDeletion = 0;
                     Hitboxes.Clear();
                     break;
                 case 0xFF379EB6: // delete hitbox
                     if (Hitboxes.ContainsKey((int)cmd.Parameters[0]))
                     {
-                        Hitboxes.Remove((int)cmd.Parameters[0]);
+                        Hitboxes[(int)cmd.Parameters[0]].FramesSinceDeletion = 0;
+                        Hitboxes.RemoveAt((int)cmd.Parameters[0]);
                     }
                     break;
                 case 0x7698BB42: // deactivate previous hitbox
-                    Hitboxes.Remove(Hitboxes.Keys.Max());
+                    // NOT TOTALLY SURE ABOUT WHETHER THIS IS FRAME DELAYED. ASSUMING IT IS.
+                    Hitboxes[Hitboxes.Keys.Max()].FramesSinceDeletion = 0;
+                    Hitboxes.RemoveAt(Hitboxes.Keys.Max());
                     break;
                 case 0xEB375E3: // Set Loop
-                    iterations = int.Parse(cmd.Parameters[0] + "") - 1;
-                    setLoop = scriptCommandIndex;
+                    loopIterations = int.Parse(cmd.Parameters[0] + "") - 1;
+                    loopStart = scriptCommandIndex;
                     break;
                 case 0x38A3EC78: // goto
-                    if (iterations > 0)
+                    if (loopIterations > 0)
                     {
-                        // Can fail if a subscript has a goto with no loop starter
-                        scriptCommandIndex = setLoop;
-                        iterations -= 1;
+                        scriptCommandIndex = loopStart;
+                        loopIterations -= 1;
                     }
                     break;
 
@@ -356,10 +548,6 @@ namespace Smash_Forge
                             Hitboxes.Remove(index);
                         break;
                     }
-                case 0x9126EBA2: // Subroutine: call another script
-                case 0xFA1BC28A: // Subroutine1: call another script
-                    halt = processSubscriptCommandsAtCurrentFrame((uint)int.Parse(cmd.Parameters[0] + ""), halt, scriptCommandIndex);
-                    break;
                 case 0xFAA85333:
                     break;
                 case 0x321297B0:
@@ -374,7 +562,7 @@ namespace Smash_Forge
                     {
                         int bone = VBN.applyBoneThunk((int)cmd.Parameters[0]);
                         int state = (int)cmd.Parameters[1];
-                        switch(state)
+                        switch (state)
                         {
                             case 2:
                                 IntangibleBones.Remove(bone);
@@ -426,119 +614,16 @@ namespace Smash_Forge
             if (newHitbox != null)
             {
                 newHitbox.Bone = VBN.applyBoneThunk(newHitbox.Bone);
+                newHitbox.FramesSinceCreation = 0;
+                newHitbox.FramesSinceDeletion = -1;  // Means not deleted yet
             }
-            return halt;
+            return true;
         }
 
-        public void processScript()
+        private static int roundAnimationFrame(double animFrame)
         {
-            LastHitboxes = Hitboxes;
-            // Hitboxes stored in descending order because lower ID hitboxes take priority
-            // over higher ID ones. Thus, drawing the lower IDs on top makes sense.
-            Hitboxes = new SortedList<int, Hitbox>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
-            InvincibleBones = new List<int>();
-            IntangibleBones = new List<int>();
-            // The next frame the script halts at for execution. Only modified
-            // by timer commands.
-            float halt = -1;
-            int scriptCommandIndex = 0;
-            ICommand cmd = script[scriptCommandIndex];
-            //ProcessANMCMD_SOUND();
-
-            resetFrame();
-            for (int frame = 0; frame <= currentFrame; frame++)
-            {
-                // This block protects us from animating the model too early back in VBNViewport
-                // and from adding to the frame on frame 0
-                //if (frame > 0)
-                //{
-
-                //}
-                while (halt <= realCurrentFrame)
-                {
-                    halt = processScriptCommandsAtCurrentFrame(cmd, halt, ref scriptCommandIndex);
-
-                    scriptCommandIndex++;
-                    if (scriptCommandIndex >= script.Count)
-                        break;
-                    else
-                        cmd = script[scriptCommandIndex];
-
-                    // If the next command is beyond our current anim frame
-                    //if (halt > floorRealCurrentFrame)
-                    //    break;
-                }
-                realCurrentFrame += (1 / currentFrameDuration);
-                floorRealCurrentFrame = (int)Math.Floor(realCurrentFrame);
-            }
-            //while (halt < frame)
-            //{
-            //    halt = processScriptCommandsAtCurrentFrame(cmd, halt, ref scriptCommandIndex);
-
-            //    scriptCommandIndex++;
-            //    if (scriptCommandIndex >= script.Count)
-            //        break;
-            //    else
-            //        cmd = script[scriptCommandIndex];
-
-            //    // If the next command is beyond our current anim frame
-            //    if (halt > currentFrame)
-            //        break;
-            //}
-        }
-
-        public float processSubscriptCommandsAtCurrentFrame(uint crc, float halt, int scriptCommandIndex)
-        {
-            // Try and load the other script, if we can't just keep going
-            ACMDScript subscript;
-            if (Runtime.Moveset.Game.Scripts.ContainsKey(crc))
-                subscript = (ACMDScript)Runtime.Moveset.Game.Scripts[crc];
-            else
-                return halt;
-
-            int subscriptCommandIndex = 0;
-            ICommand cmd = subscript[subscriptCommandIndex];
-            while (halt < currentFrame)
-            {
-                halt = processScriptCommandsAtCurrentFrame(cmd, halt, ref subscriptCommandIndex);
-
-                subscriptCommandIndex++;
-                if (subscriptCommandIndex >= subscript.Count)
-                    break;
-                else
-                    cmd = subscript[subscriptCommandIndex];
-
-                // If the next command is beyond our current anim frame
-                if (halt > currentFrame)
-                    break;
-            }
-
-            return halt;
-        }
-
-        public void processAnimationParams(string animname)
-        {
-            if (Runtime.ParamMoveNameIdMapping == null)
-                return;
-
-            int moveId;
-            if (!Runtime.ParamMoveNameIdMapping.TryGetValue(animname, out moveId))
-                return;
-
-            MoveData moveData;
-            if (!Runtime.ParamManager.MovesData.TryGetValue(moveId, out moveData))
-                return;
-
-            // Forge uses 0-index while game data uses 1-index, so convert here
-            if (currentFrame >= moveData.IntangibilityStart - 1 && currentFrame < moveData.IntangibilityEnd - 1)
-                this.BodyIntangible = true;
-            else
-                this.BodyIntangible = false;
-
-            if (currentFrame >= moveData.FAF)
-                this.FAFReached = true;
-            else
-                this.FAFReached = false;
+            // Modified version of Math.Round to try an approximate in-game behaviour
+            return (int)Math.Floor(animFrame + 0.4);
         }
     }
 }

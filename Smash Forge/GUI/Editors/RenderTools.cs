@@ -600,16 +600,16 @@ namespace Smash_Forge
             GL.LineWidth(2f);
             GL.Color3(Color.DarkGreen);
             GL.Begin(PrimitiveType.Lines);
-            GL.Vertex3(0, 5, 0);
-            GL.Vertex3(0, 0, 0);
+            GL.Vertex3(0, Runtime.floorDepth + 5, 0);
+            GL.Vertex3(0, Runtime.floorDepth, 0);
 
             GL.Color3(Color.DarkRed);
-            GL.Vertex3(0f, 0f, 0);
-            GL.Vertex3(5f, 0f, 0);
+            GL.Vertex3(0f, Runtime.floorDepth, 0);
+            GL.Vertex3(5f, Runtime.floorDepth, 0);
 
             GL.Color3(Color.DarkBlue);
-            GL.Vertex3(0, 0f, 0f);
-            GL.Vertex3(0, 0f, 5f);
+            GL.Vertex3(0, Runtime.floorDepth, 0f);
+            GL.Vertex3(0, Runtime.floorDepth, 5f);
 
             GL.End();
         }

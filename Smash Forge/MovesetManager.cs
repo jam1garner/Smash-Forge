@@ -160,7 +160,7 @@ namespace Smash_Forge
         public ACMDCommand[] Expression;
     }
 
-    public class Hitbox
+    public class Hitbox : ICloneable
     {
         public int ID { get; set; }
 
@@ -191,9 +191,26 @@ namespace Smash_Forge
         public float Y2 { get; set; }
         public float Z2 { get; set; }
 
+        // Important for exactly when the hitboxes become active, used by ACMD
+        public int FramesSinceCreation { get; set; }
+        public int FramesSinceDeletion { get; set; }
+        // Note: I'm not entirely sure how overwriting a hitbox interacts with these values.
+        // I'm inclined to think that it would inherit the same FramesSinceCreation.
+        // To account for the frame difference between ACMD command frames and
+        // in-game rendered animation frames. This refers to # of command frames
+        public static int FRAME_ACTIVATION_THRESHOLD = 1;
+
         // Stuff for interpolation, set during rendering
         // These are *post transform*
         public Vector3 va, va2;
+
+        public Object Clone()
+        {
+            Hitbox h = (Hitbox)this.MemberwiseClone();
+            h.va = new Vector3(va);
+            h.va2 = new Vector3(va2);
+            return h;
+        }
 
         // Just a quick way to generalise this for all cases without opponent weight being involved
         public float GetSimplifiedKnockback(float damage, float knockbackBase,

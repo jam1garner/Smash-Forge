@@ -205,7 +205,7 @@ namespace Smash_Forge
 
                 Bone b = vbn.bones[id];
 
-                if (n.t_type != -1 && !b.isSwingBone)
+                if (n.t_type != -1)// !b.isSwingBone)
                 {
                     b.pos = n.t;
                 }

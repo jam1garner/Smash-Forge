@@ -73,12 +73,14 @@ namespace Smash_Forge
         public static int hitboxRenderType = Hitbox.RENDER_DAMAGE;
         //public static int hitboxRenderType = Hitbox.RENDER_ID;
         public static bool renderHitboxesNoOverlap = true;
+        public static bool useFrameDuration = true;
 
         public static bool swapScaleXYPlane = false;
         public static bool swapScaleYZPlane = false;
         public static float scaleSize = 180f;
         public static float scaleWallStep = 12f;
         public static float scaleFloorStep = 4.5f;
+        public static float floorDepth = 0f;
 
         public static TextureWrapMode floorWrap = TextureWrapMode.MirroredRepeat;
         public static float floorSize = 30f;
