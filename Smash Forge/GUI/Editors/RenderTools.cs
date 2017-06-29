@@ -1186,7 +1186,7 @@ out vec3 normal;
 out vec3 fragpos;
 out vec4 vBoneOut;
 out vec4 vWeightOut;
-
+out vec4 viewNormals;
 
 
 uniform vec4 colorSamplerUV;
@@ -1204,7 +1204,7 @@ uniform int renderType;
 
 vec4 skin(vec3 po, ivec4 index);
 vec3 skinNRM(vec3 po, ivec4 index);
- 
+
 vec4 skin(vec3 po, ivec4 index)
 {
     vec4 oPos = vec4(po.xyz, 1.0);
@@ -1220,7 +1220,7 @@ vec4 skin(vec3 po, ivec4 index)
 vec3 skinNRM(vec3 nr, ivec4 index)
 {
     vec3 nrmPos = vec3(0);
-	
+
     if(vWeight.x != 0.0) nrmPos = mat3(bones_.transforms[index.x]) * nr * vWeight.x;
     if(vWeight.y != 0.0) nrmPos += mat3(bones_.transforms[index.y]) * nr * vWeight.y;
     if(vWeight.z != 0.0) nrmPos += mat3(bones_.transforms[index.z]) * nr * vWeight.z;
@@ -1232,7 +1232,7 @@ vec3 skinNRM(vec3 nr, ivec4 index)
 void main()
 {
     vec4 objPos = vec4(vPosition.xyz, 1.0);
-    ivec4 bi = ivec4(vBone); 
+    ivec4 bi = ivec4(vBone);
 
     if(vBone.x != -1.0) objPos = skin(vPosition, bi);
 
@@ -1247,9 +1247,15 @@ void main()
     color = vec4(vNormal, 1);
     pos = vec3(vPosition * mat3(eyeview));
 
+    // calculate view space normals for sphere map rendering. animations don't change normals?
+    viewNormals = vec4(vNormal.xyz, 0);
+	mat4 matrixThing = transpose(inverse(eyeview));
+	viewNormals = matrixThing * viewNormals;
+
+
 	vBoneOut = vBone;
 	vWeightOut = vWeight;
-	
+
     if(renderType != 1){
 
 	if(renderType == 2){
@@ -1261,7 +1267,7 @@ void main()
 
 	fragpos = objPos.xyz;
 
-	if(vBone.x != -1.0) 
+	if(vBone.x != -1.0)
 		normal = normalize((skinNRM(vNormal.xyz, bi)).xyz) ; //  * -1 * mat3(eyeview)
 	else
 		normal = vNormal ;
@@ -1278,7 +1284,7 @@ in vec3 tan;
 in vec3 bit;
 in vec4 vBoneOut;
 in vec4 vWeightOut;
-in vec3 viewNormals;
+in vec4 viewNormals;
 
 out vec4 fincol;
 
@@ -1587,21 +1593,20 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			if (hasCube == 1) // cubemaps from model.nut. currently just uses miiverse cubemap
 				reflection_pass += diffuse_map.www* refColor * reflection_tint* reflection_intensity;
 
-			if ((flags & 0x00000010u) == 0x00000010u) // view-based sphere normal mapping (rosa's stars, sonic eyes, etc)
+			if ((flags & 0x00000010u) == 0x00000010u) // view-based sphere mapping (rosa's stars, sonic eyes, etc)
 			{
-				// calculate view space normals
-				vec3 weirdVector = viewNormals.xyz;
-				//weirdVector *= mat3(inverseEyeView);
-
 				// calculate UVs based on view space normals (UV scale is currently not right)
 				float PI = 3.14159;
-				float uCoord = asin(weirdVector.x)/ PI + 0.5;
-				float vCoord = asin(weirdVector.y)/PI + 0.5;
+				float uCoord = asin(viewNormals.x)/ PI + 0.5;
+				float vCoord = asin(viewNormals.y)/PI + 0.5;
+
+        // transform UVs to fix scaling. values are abitrary
+        uCoord = uCoord * 2.4 - 0.7;
+        vCoord = vCoord * 2.4 - 0.7;
 
 				vec2 newTexCoord = vec2((uCoord)+0.05,(1-vCoord)+0.05);
 				vec3 weirdReflection = texture2D(spheremap, newTexCoord).xyz;
-				reflection_pass += pow((weirdReflection*reflectionColor.xyz*reflection_tint*reflection_intensity),vec3(2.2));
-				//reflection_pass = viewNormals.xxx;
+				reflection_pass += weirdReflection*reflectionColor.xyz*reflection_tint*reflection_intensity;
 			}
 			else // stage cubemaps
 				reflection_pass += reflectionColor.xyz* refColor * reflection_tint* reflection_intensity* diffuse_map.www;
@@ -1609,7 +1614,6 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
     reflection_pass *= ao_map.xyz;
 		reflection_pass = pow(reflection_pass, vec3(2.2));
-
 	//---------------------------------------------------------------------------------------------
 
 	vec3 resulting_color = vec3(0);
@@ -1628,11 +1632,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 	else
 		resulting_color = diffuse_pass;
 
-
-
-	resulting_color = pow(resulting_color, vec3(1/2.2)); // gamma correction. gamma correction also done within render passes
-
-
+    resulting_color = pow(resulting_color, vec3(1/2.2)); // gamma correction. gamma correction also done within render passes
 
     return resulting_color;
 }
@@ -1645,7 +1645,7 @@ main()
     {
         fincol = vec4(pow(texture2D(nrm, texcoord).xyz, vec3(1)), 1);
     }
-    else if (renderType == 5) // ao
+    else if (renderType == 5) // ambient occlusion
     {
         fincol = vec4(pow(texture2D(nrm, texcoord).aaa, vec3(1/2.2)), 1);
     }
@@ -1653,7 +1653,7 @@ main()
     {
         fincol = color;
     }
-    else if (renderType == 6)
+    else if (renderType == 6) // uv coords
 	{
 		fincol = vec4(texcoord.x, texcoord.y, 1, 1);
 	}
@@ -1663,13 +1663,12 @@ main()
         fincol = vec4(0);
         vec4 fc = vec4(0, 0, 0, 0);
 
-        // fincol = diffuse map
-        if (hasDif == 1)
+        if (hasDif == 1) // 1st diffuse texture
         {
             fc = texture2D(dif, texcoord);
             fincol = fc;
-            if (hasDif2 == 1)
-            { // 2nd diffuse texture
+            if (hasDif2 == 1) // 2nd diffuse texture
+            {
                 fincol = texture2D(dif2, texcoord);
                 fincol = mix(fincol, fc, fc.a);
                 fincol.a = 1.0;
