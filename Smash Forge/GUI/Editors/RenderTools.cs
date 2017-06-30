@@ -1494,32 +1494,28 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
 			//---------------------------------------------------------------------------------------------
 				// flags based corrections for diffuse
-			//if ((flags & 0x00FF0000u) == 0x00610000u || (flags & 0x00FF0000u) == 0x00440000u) // Color Gain/Offset
 
-			if (hasColorGainOffset == 1)
-			{
-				//diffuse_color = colorOffset.xyz + (luminance(diffuse_map.xyz) * (colorGain.xyz));
-				diffuse_color = colorOffset.xyz + diffuse_map.xyz * (colorGain.xyz);
-				diffuse_color *= (1+minGain.xyz) * diffuseColor.xyz;
-				diffuse_shading = diffuse_color * colorGain.xyz * RampColor(vec3(lambertBRDF));
-				ao_blend = vec3(diffuse_luminance);
-				diffuse_pass = (diffuse_color * ambient) + (diffuse_shading * diffuse_intensity);
-			}
+    			if (hasColorGainOffset == 1) // probably a more elegant solution...
+    			{
+    				//diffuse_color = colorOffset.xyz + (luminance(diffuse_map.xyz) * (colorGain.xyz));
+    				diffuse_color = colorOffset.xyz + diffuse_map.xyz * (colorGain.xyz);
+    				diffuse_color *= (1+minGain.xyz) * diffuseColor.xyz;
+    				diffuse_shading = diffuse_color * colorGain.xyz * RampColor(vec3(lambertBRDF));
+    				ao_blend = vec3(diffuse_luminance);
+    				diffuse_pass = (diffuse_color * ambient) + (diffuse_shading * diffuse_intensity);
 
-			else if ((flags & 0x00420000u) == 0x00420000u) // bayo hair 'diffuse' is weird
-				diffuse_color = colorOffset.xyz + (diffuse_map.xxx * colorGain.xyz);
-
-			else // regular characters
-			{
-				diffuse_color = diffuse_map.xyz * ao_blend * diffuseColor.xyz;
-				diffuse_shading = diffuse_color * colorGain.xyz * ao_blend * ramp_contribution;
-				diffuse_pass = (diffuse_color * ambient) + (diffuse_shading * diffuse_intensity);
-			}
-
-
-			//if ((flags & 0x00810000u) == 0x00810000u) // brighten byte2 81 (jigglypuff, pikachu, etc)
-			//	diffuse_color *= 1.75;
-			//---------------------------------------------------------------------------------------------
+                    if ((flags & 0x00420000u) == 0x00420000u) // bayo hair 'diffuse' is weird
+                    {
+                    	diffuse_color = colorOffset.xyz + (diffuse_map.xxx * colorGain.xyz);
+                        diffuse_pass = diffuse_color;
+                    }
+    			}
+    			else // regular characters
+    			{
+    				diffuse_color = diffuse_map.xyz * ao_blend * diffuseColor.xyz;
+    				diffuse_shading = diffuse_color * colorGain.xyz * ao_blend * ramp_contribution;
+    				diffuse_pass = (diffuse_color * ambient) + (diffuse_shading * diffuse_intensity);
+    			}
 
 		diffuse_pass = pow(diffuse_pass, vec3(2.2));
 	//---------------------------------------------------------------------------------------------
@@ -1565,18 +1561,18 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 		vec3 fresnel_pass = vec3(0);
 
 			// hemisphere fresnel with fresnelParams control
-			vec3 groundColor = vec3(0.3,0.3,0.3);
-			vec3 skyColor = vec3(1.0,1.0,1.0);
+			vec3 groundColor = vec3(0.1);
+			vec3 skyColor = vec3(1.0);
 			float hemiBlend = dot(N, vec3(0,1,0));
 			hemiBlend = (hemiBlend * 0.5) + 0.5;
 			vec3 hemiColor = mix(groundColor, skyColor, hemiBlend);
 			vec3 F0 = vec3(1);
 			float cosTheta = dot(I, N);
-			vec3 fresnel = clamp((hemiColor * pow(1.0 - cosTheta, 2.0 + fresnelParams.x)), 0, 1);
+			vec3 fresnel = clamp((hemiColor * pow(1.0 - cosTheta, 2.75 + fresnelParams.x)), 0, 1);
 
 			fresnel_pass += fresnelColor.xyz * fresnel * fresnel_intensity * fresnel_tint;
 
-		fresnel_pass = pow(fresnel_pass, vec3(2.2));
+		fresnel_pass = pow(fresnel_pass, vec3(1));
 	//---------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------
@@ -1600,9 +1596,9 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 				float uCoord = asin(viewNormals.x)/ PI + 0.5;
 				float vCoord = asin(viewNormals.y)/PI + 0.5;
 
-        // transform UVs to fix scaling. values are abitrary
-        uCoord = uCoord * 2.4 - 0.7;
-        vCoord = vCoord * 2.4 - 0.7;
+                // transform UVs to fix scaling. values are abitrary
+                uCoord = uCoord * 2.4 - 0.7;
+                vCoord = vCoord * 2.4 - 0.7;
 
 				vec2 newTexCoord = vec2((uCoord)+0.05,(1-vCoord)+0.05);
 				vec3 weirdReflection = texture2D(spheremap, newTexCoord).xyz;
@@ -1611,8 +1607,9 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			else // stage cubemaps
 				reflection_pass += reflectionColor.xyz* refColor * reflection_tint* reflection_intensity* diffuse_map.www;
 			//---------------------------------------------------------------------------------------------
+            //if (something) ?
+                reflection_pass *= ao_blend.xyz;
 
-    reflection_pass *= ao_map.xyz;
 		reflection_pass = pow(reflection_pass, vec3(2.2));
 	//---------------------------------------------------------------------------------------------
 
@@ -1633,6 +1630,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 		resulting_color = diffuse_pass;
 
     resulting_color = pow(resulting_color, vec3(1/2.2)); // gamma correction. gamma correction also done within render passes
+
 
     return resulting_color;
 }
