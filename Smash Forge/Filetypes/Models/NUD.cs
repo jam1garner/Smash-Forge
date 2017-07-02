@@ -59,7 +59,7 @@ namespace Smash_Forge
             Glow = 0x00000080,
             Shadow = 0x00000040,
             RIM = 0x00000020,
-            UnknownTex = 0x00000010,
+            SphereMap = 0x00000010,
             AOMap = 0x00000008,
             CubeMap = 0x00000004,
             NormalMap = 0x00000002,
@@ -274,6 +274,12 @@ namespace Smash_Forge
                 GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
 
+                GL.ActiveTexture(TextureUnit.Texture10);
+                GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
+                GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
+                
+
+
                 GL.Uniform1(shader.getAttribute("dif"), 0);
                 GL.Uniform1(shader.getAttribute("dif2"), 0);
                 GL.Uniform1(shader.getAttribute("nrm"), 0);
@@ -283,6 +289,10 @@ namespace Smash_Forge
                 GL.Uniform1(shader.getAttribute("ao"), 0);
                 GL.Uniform1(shader.getAttribute("ramp"), 0);
 
+
+
+
+         
                 int texid = 0;
                
                 if (mat.diffuse && texid < mat.textures.Count)

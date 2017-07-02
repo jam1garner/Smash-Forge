@@ -643,7 +643,8 @@
             "Normal Maps",
             "Vertex Color",
             "Ambient Occlusion",
-            "UV coords"});
+            "UV Coords",
+            "UV Test Pattern"});
             this.renderMode.Location = new System.Drawing.Point(87, 134);
             this.renderMode.Name = "renderMode";
             this.renderMode.Size = new System.Drawing.Size(190, 21);
