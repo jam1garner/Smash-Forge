@@ -260,14 +260,12 @@ namespace Smash_Forge
             checkBox1.Checked = mat.unkownWater != 0;
 
             listView1.Items.Clear();
-
-
+            
             shadowCB.Checked = mat.hasShadow;
             GlowCB.Checked = mat.glow;
             sphereMapCB.Checked = mat.useSphereMap;
             dummyRampCB.Checked = mat.useDummyRamp;
             
-            //if (mat.spheremap) listView1.Items.Add("Specular");
             if (mat.diffuse) listView1.Items.Add("Diffuse");
             if (mat.stagemap) listView1.Items.Add("StageMap");
             if (mat.cubemap) listView1.Items.Add("Cubemap");

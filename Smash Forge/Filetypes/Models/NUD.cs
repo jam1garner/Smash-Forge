@@ -650,6 +650,19 @@ namespace Smash_Forge
                     { 0x03, TextureWrapMode.Clamp}
         };
 
+        static Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>(){
+                    { 0x00, TextureMinFilter.LinearMipmapLinear},
+                    { 0x01, TextureMinFilter.Nearest},
+                    { 0x02, TextureMinFilter.Linear},
+                    { 0x03, TextureMinFilter.NearestMipmapLinear},
+        };
+
+        static Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>(){
+                    { 0x00, TextureMagFilter.Linear},
+                    { 0x01, TextureMagFilter.Nearest},
+                    { 0x02, TextureMagFilter.Linear}
+        };
+
         public static int BindTexture(NUD.Mat_Texture tex, int hash, int loc)
         {
             if (hash == 0x10101000)
@@ -684,9 +697,12 @@ namespace Smash_Forge
                     GL.BindTexture(TextureTarget.Texture2D, texid);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[tex.WrapMode1]);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[tex.WrapMode2]);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)wrapmode[tex.minFilter]);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)wrapmode[tex.magFilter]);
-                    GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 4.0f);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minfilter[tex.minFilter]);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magfilter[tex.magFilter]);
+                    GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 0.0f);
+                    if(tex.mipDetail == 0x4 || tex.mipDetail == 0x6)
+                        GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 4.0f);
+                    //GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName.triline), 4.0f);
                     break;
                 }
             }
