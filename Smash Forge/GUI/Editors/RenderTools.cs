@@ -1492,7 +1492,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			vec3 ramp_contribution = 0.5 * RampColor(vec3(lambertBRDF)) + 0.5 * DummyRampColor(vec3(lambertBRDF));
 
 			//ao_blend = total ambient occlusion term. desaturated to look correct
-			ao_blend = min(((ao_map.aaa) + (minGain.rgb)),1.35);
+			ao_blend = min((ao_map.aaa + (minGain.rgb)),1.5);
 			vec3 c = rgb2hsv(ao_blend.rgb);
 			ao_blend.rgb = hsv2rgb(vec3(c.x, c.y*0.4, c.z));
 
@@ -1503,7 +1503,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     			{
     				//diffuse_color = colorOffset.xyz + (luminance(diffuse_map.xyz) * (colorGain.xyz));
     				diffuse_color = colorOffset.rgb + vec3(luminance(diffuse_map.rgb)) * (colorGain.rgb);
-    				ao_blend = min(((1+minGain.rgb) * diffuse_color.rgb),1.35);
+    				ao_map.rgb = min(((1+minGain.rgb) * diffuse_color.rgb),1.35);
     				diffuse_shading = diffuse_color * colorGain.xyz * RampColor(vec3(lambertBRDF));
     				ao_blend = vec3(diffuse_luminance);
     				diffuse_pass = (diffuse_color * ambient) + (diffuse_shading * diffuse_intensity);
@@ -1511,7 +1511,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
                     if ((flags & 0x00420000u) == 0x00420000u) // bayo hair 'diffuse' is weird
                     {
                     	diffuse_color = colorOffset.rgb + (diffuse_map.rrr * colorGain.rgb);
-                        //ao_blend = min(((diffuse_map.ggg) + (minGain.rgb)),1.35);
+                        ao_map.rgb = vec3(1); // don't know bayo ao yet (if it exists)
                         diffuse_pass = diffuse_color;// * ao_blend;
                     }
     			}
@@ -1553,11 +1553,13 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			}
 
 			else if ((flags & 0x00FF0000u) == 0x00610000u || (flags & 0x00FF0000u) == 0x00440000u) // Color Gain/Offset
-				specular_pass += specularColor.rgb* blinnPhongSpec * spec_tint * specular_intensity * ao_blend * (1+specularColorGain.rgb);
+				specular_pass += specularColor.rgb* blinnPhongSpec * spec_tint * specular_intensity * (1+specularColorGain.rgb);
 
 			else // default
-				specular_pass += specularColor.rgb* blinnPhongSpec * spec_tint * specular_intensity * ao_blend;
+				specular_pass += specularColor.rgb* blinnPhongSpec * spec_tint * specular_intensity;
 			//---------------------------------------------------------------------------------------------
+
+            specular_pass *= mix(ao_map.rgb, vec3(1), minGain.a);
 
 		specular_pass = pow(specular_pass, vec3(2.2));
 	//---------------------------------------------------------------------------------------------
@@ -1612,8 +1614,8 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			else // stage cubemaps
 				reflection_pass += reflectionColor.rgb* refColor * reflection_tint* reflection_intensity* diffuse_map.aaa;
 			//---------------------------------------------------------------------------------------------
-            //if (something) ?
-                reflection_pass *= ao_blend.rgb;
+
+            reflection_pass *= mix(ao_map.rgb, vec3(1), minGain.a);
 
 		reflection_pass = pow(reflection_pass, vec3(2.2));
 	//---------------------------------------------------------------------------------------------

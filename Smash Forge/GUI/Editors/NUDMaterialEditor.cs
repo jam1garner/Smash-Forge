@@ -102,7 +102,7 @@ namespace Smash_Forge
             { "NU_colorStepUV", new string[] { "Per Row", "Per Column", "FPT", "Frame Count" } },
             { "NU_finalColorGain", new string[] { "Red", "Green", "Blue", "Intensity" } },
             { "NU_reflectionColor", new string[] { "Red", "Green", "Blue", "Color Blend" } },
-            { "NU_aoMinGain", new string[] { "Red", "Green", "Blue", "Color Blend"} },
+            { "NU_aoMinGain", new string[] { "Red", "Green", "Blue", "AO Mix Factor"} },
             { "NU_reflectionParams", new string[] { "Tex Sharpness", "Cubemap Brightness", "Cubemap Intensity", ""} },
             { "NU_lightMapColorOffset", new string[] { "", "", "", "" } },
             { "NU_specularParams", new string[] { "", "Exponent", "", ""} },
