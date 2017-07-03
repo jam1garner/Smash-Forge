@@ -84,9 +84,9 @@ namespace Smash_Forge
         public static bool renderSpecular = true;
         public static bool renderReflection = true;
         public static float dif_inten = 0.15f;
-        public static float spc_inten = 0.5f;
+        public static float spc_inten = 0.75f;
         public static float frs_inten = 1.00f;
-        public static float ref_inten = 0.75f;
+        public static float ref_inten = 1.00f;
         public static float amb_inten = 0.85f;
         public static float model_scale = 1f;
 
@@ -109,6 +109,8 @@ namespace Smash_Forge
             NormalMap = 3,
             VertColor = 4,
             AmbientOcclusion = 5,
+            UVCoords = 6,
+            UVTestPattern = 7
         }
         public enum FloorStyle
         {

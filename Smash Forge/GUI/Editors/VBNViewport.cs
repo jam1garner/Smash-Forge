@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 
 namespace Smash_Forge
 {
-    public partial class VBNViewport : DockContent
+    public partial class VBNViewport : FormBase
     {
         public static int defaulttex = 0;
 
