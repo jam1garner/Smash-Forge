@@ -94,6 +94,8 @@
             this.label23 = new System.Windows.Forms.Label();
             this.descriptionLabel = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.dummyRampCB = new System.Windows.Forms.CheckBox();
+            this.sphereMapCB = new System.Windows.Forms.CheckBox();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.specLightCB = new System.Windows.Forms.CheckBox();
             this.rimLightCB = new System.Windows.Forms.CheckBox();
@@ -820,7 +822,7 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Textures";
             // 
-            // groupBox7
+            // rimLightCB
             // 
             this.groupBox7.Controls.Add(this.specLightCB);
             this.groupBox7.Controls.Add(this.rimLightCB);
@@ -831,7 +833,7 @@
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "4th Byte";
             // 
-            // specLightCB
+            // sphereMapCB
             // 
             this.specLightCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.specLightCB.AutoSize = true;
@@ -1140,8 +1142,8 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.CheckBox specLightCB;
-        private System.Windows.Forms.CheckBox rimLightCB;
+        private System.Windows.Forms.CheckBox sphereMapCB;
+        private System.Windows.Forms.CheckBox dummyRampCB;
         private System.Windows.Forms.CheckBox GlowCB;
         private System.Windows.Forms.CheckBox shadowCB;
         private System.Windows.Forms.TabControl tabControl1;

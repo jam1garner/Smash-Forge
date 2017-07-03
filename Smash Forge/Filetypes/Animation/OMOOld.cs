@@ -150,7 +150,7 @@ namespace Smash_Forge
                         float y = baseNode[j].t.Y + (baseNode[j].t2.Y * (i2));
                         float z = baseNode[j].t.Z + (baseNode[j].t2.Z * (i3));
 
-                        node.t = new Vector3(x, y, z);
+                        node.t = new Vector3(x, y, z);  // Translation
                     }
                     else
                     {
@@ -184,7 +184,7 @@ namespace Smash_Forge
 
                         float w = (float)Math.Sqrt(Math.Abs(1 - (x * x + y * y + z * z)));
 
-                        node.r = new Quaternion(new Vector3(x, y, z), w);
+                        node.r = new Quaternion(new Vector3(x, y, z), w);  // Rotation
                         node.r.Normalize();
                     }
                     else
@@ -193,10 +193,10 @@ namespace Smash_Forge
                         float y = baseNode[j].rv.Y;
                         float z = baseNode[j].rv.Z;
 
-                        float w = (float)Math.Sqrt(1 - (x * x + y * y + z * z));
+                        float w = (float)Math.Sqrt(Math.Abs(1 - (x * x + y * y + z * z)));
 
                         node.r = new Quaternion(baseNode[j].rv, w);
-
+                        node.r.Normalize();
                     }
 
                     if (baseNode[j].s_type == KeyNode.INTERPOLATED)
@@ -209,7 +209,7 @@ namespace Smash_Forge
                         float y = baseNode[j].s.Y + (baseNode[j].s2.Y * (i2));
                         float z = baseNode[j].s.Z + (baseNode[j].s2.Z * (i3));
 
-                        node.s = new Vector3(x, y, z);
+                        node.s = new Vector3(x, y, z);  // scaling
                     }
                     else
                     {

@@ -196,8 +196,11 @@ namespace Smash_Forge
             {
                 HandleACMD(Runtime.TargetAnimString.Substring(3));
                 if (gameScriptManager != null)
+                {
                     if (gameScriptManager.script != null)
                         gameScriptManager.processScript();
+                    gameScriptManager.processAnimationParams(Runtime.TargetAnimString.Substring(3).Replace(".omo", ""));
+                }
             }
         }
 
@@ -278,10 +281,14 @@ namespace Smash_Forge
 
             Frame = (int)this.nupdFrame.Value;
 
-            if (gameScriptManager.script != null)
+            if (gameScriptManager != null)
             {
                 gameScriptManager.currentFrame = Frame;
-                gameScriptManager.processScript();
+                if (gameScriptManager.script != null)
+                {
+                    gameScriptManager.processScript();
+                }
+                gameScriptManager.processAnimationParams(Runtime.TargetAnimString.Substring(3).Replace(".omo", ""));
             }
         }
         private void nupdSpeed_ValueChanged(object sender, EventArgs e)
@@ -520,7 +527,7 @@ namespace Smash_Forge
             GL.Enable(EnableCap.StencilTest);
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
 
-            GL.Enable(EnableCap.FramebufferSrgb);
+           // GL.Enable(EnableCap.FramebufferSrgb);
 
 
             // draw models
@@ -544,7 +551,7 @@ namespace Smash_Forge
             GL.DepthFunc(DepthFunction.Less);
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
             GL.Disable(EnableCap.CullFace);
-            GL.Disable(EnableCap.FramebufferSrgb);
+            //GL.Disable(EnableCap.FramebufferSrgb);
 
             GL.UseProgram(0);
             // draw path.bin
@@ -808,7 +815,15 @@ namespace Smash_Forge
                 // Render the hitboxes - because of how we disable the depth buffer here,
                 // make sure that everything else is drawn before this!
                 if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
+                {
                     HandleACMD(Runtime.TargetAnimString.Substring(3));
+                }
+
+                // Hurtboxes and ECBs first so they appear under hitboxes
+                if (Runtime.renderHurtboxes)
+                    RenderHurtboxes();
+                if (Runtime.renderECB)
+                    RenderECB();
 
                 if (Runtime.renderHitboxes && Runtime.renderInterpolatedHitboxes)
                     RenderInterpolatedHitboxes();
@@ -816,12 +831,6 @@ namespace Smash_Forge
                 // Must come after interpolated boxes to appear on top
                 if (Runtime.renderHitboxes)
                     RenderHitboxes();
-
-                if (Runtime.renderHurtboxes)
-                    RenderHurtboxes();
-
-                if (Runtime.renderECB)
-                    RenderECB();
             }
         }
 
@@ -1715,6 +1724,14 @@ namespace Smash_Forge
                 return;
             }
 
+            // Try and set up the editor
+            try
+            {
+                if (Runtime.acmdEditor.crc != crc)
+                    Runtime.acmdEditor.SetAnimation(crc);
+            } catch { }
+
+            // Game script specific processing stuff below here
             if (!Runtime.Moveset.Game.Scripts.ContainsKey(crc))
             {
                 //Some characters don't have AttackS[3-4]S and use attacks[3-4] crc32 hash on scripts making forge unable to access the script, thus not visualizing these hitboxes
@@ -1744,9 +1761,6 @@ namespace Smash_Forge
             else
                 gameScriptManager.Reset(null);
             //scr_sound = (ACMDScript)Runtime.Moveset.Sound.Scripts[crc];
-            if (Runtime.acmdEditor.crc != crc)
-                Runtime.acmdEditor.SetAnimation(crc);
-
         }
 
         #endregion
@@ -1806,7 +1820,7 @@ namespace Smash_Forge
         private void VBNViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
             if (e.KeyChar == 'i')
-            {   /*
+            {  /*
                 GL.DeleteProgram(Runtime.shaders["NUD"].programID);
                 shader = new Shader();
                 shader.vertexShader(File.ReadAllText("vert.txt"));
@@ -1830,33 +1844,11 @@ namespace Smash_Forge
             }*/
             if (e.KeyChar == 'r')
             {
-                int width = glControl1.Width;
-                int height = glControl1.Height;
-
-                byte[] pixels = new byte[width*height*4];
-                GL.ReadPixels(0,0,width, height, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
-                File.WriteAllBytes("test.bin", pixels);
-                
-                Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-                BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
-
-                byte[] np = new byte[width*height * 4];
-                // need to flip and rearrange the data
-                for(int h = 0; h < height; h++)
-                    for(int w = 0;  w < width; w++)
-                    {
-                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 2] = pixels[(w + h * bmp.Width) * 4 + 0];
-                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 1] = pixels[(w + h * bmp.Width) * 4 + 1];
-                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 0] = pixels[(w + h * bmp.Width) * 4 + 2];
-                        np[(w + (bmp.Height - h - 1) * bmp.Width) * 4 + 3] = pixels[(w + h * bmp.Width) * 4 + 3];
-                    }
-
-                Marshal.Copy(np, 0, bmpData.Scan0, np.Length);
-                bmp.UnlockBits(bmpData);
-
-                Console.WriteLine("Saving");
-                bmp.Save("Render.png");
+                CaptureScreen(true).Save("Render.png");
+            }
+            if (e.KeyChar == 'p')
+            {
+                CaptureScreen(false).Save("Render.png");
             }
             if (e.KeyChar == 'f')
             {
@@ -2026,6 +2018,33 @@ namespace Smash_Forge
             v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
+        }
+
+        public Bitmap CaptureScreen(bool saveAlpha = false)
+        {
+            int width = glControl1.Width;
+            int height = glControl1.Height;
+
+            byte[] pixels = new byte[width * height * 4];
+            GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
+            // Flip data becausee glReadPixels reads it in from bottom row to top row
+            byte[] fixedPixels = new byte[width * height * 4];
+            for (int h = 0; h < height; h++)
+                for (int w = 0; w < width; w++)
+                {
+                    if (!saveAlpha)
+                        // Remove alpha blending from the end image - we just want the post-render colours
+                        pixels[((w + h * width) * 4) + 3] = 255;
+
+                    // Copy a 4 byte pixel one at a time
+                    Array.Copy(pixels, (w + h * width) * 4, fixedPixels, ((height - h - 1) * width + w) * 4, 4);
+                }
+            // Format and save the data
+            Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bmp.PixelFormat);
+            Marshal.Copy(fixedPixels, 0, bmpData.Scan0, fixedPixels.Length);
+            bmp.UnlockBits(bmpData);
+            return bmp;
         }
     }
 }

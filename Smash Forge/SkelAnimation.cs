@@ -178,7 +178,7 @@ namespace Smash_Forge
             }
 
 			KeyFrame key = frames[frame];
-            
+
             foreach (KeyNode n in key.nodes)
             {
 				//if (n.id == -1)
@@ -205,10 +205,13 @@ namespace Smash_Forge
 
                 Bone b = vbn.bones[id];
 
-                if (n.t_type != -1)
+                if (n.t_type != -1 && !b.isSwingBone)
                 {
                     b.pos = n.t;
                 }
+                // We don't do the same swingBone check on rotation because as of yet
+                // I have not seen an example of the rotation data being garbage, and it's
+                // actually used properly in the animations - Struz
                 if (n.r_type != -1)
                 {
                     if (b.Text.Equals("HeadN"))

@@ -23,6 +23,8 @@ namespace Smash_Forge
         public Quaternion rot = Quaternion.FromMatrix(Matrix3.Zero);
         public Matrix4 transform, invert;
 
+        public bool isSwingBone = false;
+
         public int parentIndex
         {
             set
@@ -261,18 +263,60 @@ namespace Smash_Forge
 
         public void update(bool reset = false)
         {
-            for (int i = 0; i < bones.Count; i++)
+            List<Bone> nodesToProcess = new List<Bone>();
+            // Add all root nodes from the VBN
+            foreach (Bone b in bones)
+                if (b.Parent == null)
+                    nodesToProcess.Add(b);
+
+            // some special processing for the root bones before we start
+            foreach (Bone b in nodesToProcess)
             {
-                bones[i].transform = Matrix4.CreateScale(bones[i].sca) * Matrix4.CreateFromQuaternion(bones[i].rot) * Matrix4.CreateTranslation(bones[i].pos);
+                b.transform = Matrix4.CreateScale(b.sca) * Matrix4.CreateFromQuaternion(b.rot) * Matrix4.CreateTranslation(b.pos);
+                // scale down the model in its entirety only when mid-animation (i.e. reset == false)
+                if (!reset && Runtime.model_scale != 1) b.transform *= Matrix4.CreateScale(Runtime.model_scale);
+            }
 
-                if (i == 0 && !reset && Runtime.model_scale != 1) bones[i].transform *= Matrix4.CreateScale(Runtime.model_scale);
+            // Process as a tree from the root node's children and beyond. These
+            // all use the same processing, unlike the root nodes.
+            int numRootNodes = nodesToProcess.Count;
+            for (int i = 0; i < numRootNodes; i++)
+            {
+                nodesToProcess.AddRange(nodesToProcess[0].GetChildren());
+                nodesToProcess.RemoveAt(0);
+            }
+            while (nodesToProcess.Count > 0)
+            {
+                // DFS
+                Bone currentBone = nodesToProcess[0];
+                nodesToProcess.RemoveAt(0);
+                nodesToProcess.AddRange(currentBone.GetChildren());
 
-                if (bones[i].Parent !=null)
+                // Process this node
+                currentBone.transform = Matrix4.CreateScale(currentBone.sca) * Matrix4.CreateFromQuaternion(currentBone.rot) * Matrix4.CreateTranslation(currentBone.pos);
+                if (currentBone.Parent != null)
                 {
-                    bones[i].transform = bones[i].transform * bones[(int)bones[i].parentIndex].transform;
+                    currentBone.transform = currentBone.transform * ((Bone)currentBone.Parent).transform;
                 }
             }
         }
+
+        //public void updateOld(bool reset = false)
+        //{
+        //    for (int i = 0; i < bones.Count; i++)
+        //    {
+        //        bones[i].transform = Matrix4.CreateScale(bones[i].sca) * Matrix4.CreateFromQuaternion(bones[i].rot) * Matrix4.CreateTranslation(bones[i].pos);
+
+        //        // Scale down the model only when in animations (e.g. reset == false)
+        //        if (i == 0 && !reset && Runtime.model_scale != 1) bones[i].transform *= Matrix4.CreateScale(Runtime.model_scale);
+
+        //        if (bones[i].Parent !=null)
+        //        {
+        //            bones[i].transform = bones[i].transform * bones[(int)bones[i].parentIndex].transform;
+        //        }
+        //    }
+        //}
+
         public void reset()
         {
             for (int i = 0; i < bones.Count; i++)
@@ -329,6 +373,7 @@ namespace Smash_Forge
                     temp.position = new float[3];
                     temp.rotation = new float[3];
                     temp.scale = new float[3];
+                    temp.isSwingBone = temp.Text.Contains("__swing");
                     bones.Add(temp);
                 }
 

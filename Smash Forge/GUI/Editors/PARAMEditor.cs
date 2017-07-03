@@ -104,6 +104,20 @@ namespace Smash_Forge
             return "Entry [" + j + "]";
         }
 
+        // Helper method for drawing some move intangibility
+        public Dictionary<string, int> getMoveNameIdMapping()
+        {
+            Dictionary<string, int> moveNameIdMapping = new Dictionary<string, int>();
+
+            for (int j = 0; j < ((ParamGroup)p.Groups[0]).EntryCount; j++)
+                foreach(IniLabels.Label label in labels.labels)
+                {
+                    if (label.Type == IniLabels.Label.type.Entry && label.group == 0 && label.entry == j)
+                        moveNameIdMapping[label.name] = j;
+                }
+            return moveNameIdMapping;
+        }
+
         private void openParam(string f)
         {
             p = new ParamFile(f);

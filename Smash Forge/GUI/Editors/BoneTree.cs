@@ -49,7 +49,7 @@ namespace Smash_Forge
         public static Bone selectedBone = null;
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            listBox1.SelectedItem = treeView1.SelectedNode.Tag;
+            listBox1.SelectedItem = treeView1.SelectedNode;
             currentNode = treeView1.SelectedNode.Text;
             textBox1.Text = treeView1.SelectedNode.Text;
             tbl = new DataTable();
@@ -139,7 +139,6 @@ namespace Smash_Forge
             {
                 draggedNode.Remove();
                 treeView1.Nodes.Add(draggedNode);
-                //((Bone) draggedNode.Tag).ParentBone = null;
             }
             Runtime.TargetVBN.reset();
         }
@@ -191,7 +190,7 @@ namespace Smash_Forge
 
         private void selectBone(object bone, TreeNode t)
         {
-            if (t.Tag == bone)
+            if (t == bone)
                 treeView1.SelectedNode = t;
             foreach (TreeNode child in t.Nodes)
                 selectBone(bone, child);
@@ -215,7 +214,7 @@ namespace Smash_Forge
         {
             Bone parent = null;
             if (treeView1.SelectedNode != null)
-                parent = (Bone) treeView1.SelectedNode.Tag;
+                parent = (Bone) treeView1.SelectedNode;
             new AddBone(parent).Show();
         }
 
@@ -223,7 +222,16 @@ namespace Smash_Forge
         {
             if (treeView1.SelectedNode == null)
                 return;
-            Runtime.TargetVBN.bones.Remove((Bone) treeView1.SelectedNode.Tag);
+            Runtime.TargetVBN.bones.Remove((Bone) treeView1.SelectedNode);
+            // Reassign sub-bones to their new parent
+            Bone parentBone = (Bone)treeView1.SelectedNode.Parent;
+            if (parentBone != null)
+            {
+                int parentIndex = Runtime.TargetVBN.bones.IndexOf(parentBone);
+                foreach (Bone b in treeView1.SelectedNode.Nodes)
+                    b.parentIndex = parentIndex;
+            }
+            treeView1.SelectedNode.Remove();
             treeRefresh();
         }
     }

@@ -63,6 +63,16 @@ namespace Smash_Forge.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _10080000 {
+            get {
+                object obj = ResourceManager.GetObject("_10080000", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _10101000 {
             get {
                 object obj = ResourceManager.GetObject("_10101000", resourceCulture);
@@ -116,6 +126,16 @@ namespace Smash_Forge.Properties {
         internal static System.Drawing.Bitmap sexy_green_down_arrow {
             get {
                 object obj = ResourceManager.GetObject("sexy_green_down_arrow", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap UVPattern {
+            get {
+                object obj = ResourceManager.GetObject("UVPattern", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

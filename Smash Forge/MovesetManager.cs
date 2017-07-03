@@ -215,8 +215,9 @@ namespace Smash_Forge
         public static readonly List<Color> distinctColors = new List<Color>()
         {
             Color.FromArgb(0xFF, 0xCE, 0xA2, 0x62), // Grayish yellow
-            //Color.FromArgb(0xFF, 0x00, 0x7D, 0x34), // Vivid green
-            Color.FromArgb(0xFF, 0xFF, 0xB3, 0x0),  // Vivid yellow
+            Color.FromArgb(0xFF, 0x00, 0x7D, 0x34), // Vivid green
+            //Color.FromArgb(0xFF, 0xC8, 0xC8, 0x00),   // Vivid Greenish Yellow
+            Color.FromArgb(0xFF, 0xFF, 0xB3, 0x0),    // Vivid yellow
             Color.FromArgb(0xFF, 0xFF, 0x68, 0x00), // Vivid orange
             Color.FromArgb(0xFF, 0xC1, 0x0, 0x20),  // Vivid red
         };

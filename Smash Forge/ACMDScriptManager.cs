@@ -21,7 +21,8 @@ namespace Smash_Forge
         public List<int> InvincibleBones { get; set; }
         public bool BodyIntangible { get; set; }
         public bool BodyInvincible { get; set; }
-        public int currentFrame;
+        public bool FAFReached { get; set; }
+        public int currentFrame { get; set; }
 
         // TODO: these may need to be passed down for proper subscript parsing
         // if any subscripts are used in loops anywhere.
@@ -30,7 +31,7 @@ namespace Smash_Forge
 
         public ACMDScriptManager()
         {
-            Reset();
+            Reset(hardReset: true);
         }
 
         public ACMDScriptManager(ACMDScript script)
@@ -46,10 +47,10 @@ namespace Smash_Forge
             this.scriptId = scriptId;
         }
 
-        public void Reset(ACMDScript script = null, int scriptId = -1)
+        public void Reset(ACMDScript script = null, int scriptId = -1, bool hardReset = false)
         {
-            // Don't reset on the same script, unless it's null
-            if (script != null && script == this.script)
+            // Don't reset on the same script
+            if (script == this.script && !hardReset)
                 return;
 
             Hitboxes = new SortedList<int, Hitbox>();
@@ -58,6 +59,7 @@ namespace Smash_Forge
             IntangibleBones = new List<int>();
             BodyIntangible = false;
             BodyInvincible = false;
+            FAFReached = false;
             this.scriptId = scriptId;
 
             currentFrame = 0;
@@ -435,14 +437,10 @@ namespace Smash_Forge
         {
             // Try and load the other script, if we can't just keep going
             ACMDScript subscript;
-            try
-            {
+            if (Runtime.Moveset.Game.Scripts.ContainsKey(crc))
                 subscript = (ACMDScript)Runtime.Moveset.Game.Scripts[crc];
-            }
-            catch (KeyNotFoundException)
-            {
+            else
                 return halt;
-            }
 
             int subscriptCommandIndex = 0;
             ICommand cmd = subscript[subscriptCommandIndex];
@@ -462,6 +460,31 @@ namespace Smash_Forge
             }
 
             return halt;
+        }
+
+        public void processAnimationParams(string animname)
+        {
+            if (Runtime.ParamMoveNameIdMapping == null)
+                return;
+
+            int moveId;
+            if (!Runtime.ParamMoveNameIdMapping.TryGetValue(animname, out moveId))
+                return;
+
+            MoveData moveData;
+            if (!Runtime.ParamManager.MovesData.TryGetValue(moveId, out moveData))
+                return;
+
+            // Forge uses 0-index while game data uses 1-index, so convert here
+            if (currentFrame >= moveData.IntangibilityStart - 1 && currentFrame < moveData.IntangibilityEnd - 1)
+                this.BodyIntangible = true;
+            else
+                this.BodyIntangible = false;
+
+            if (currentFrame >= moveData.FAF)
+                this.FAFReached = true;
+            else
+                this.FAFReached = false;
         }
     }
 }
