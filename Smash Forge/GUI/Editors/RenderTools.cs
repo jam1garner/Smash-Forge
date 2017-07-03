@@ -90,8 +90,8 @@ namespace Smash_Forge
 
         public static void Setup()
         {
-            cubeTex = LoadCubeMap(Smash_Forge.Properties.Resources.cubemap);
             cubeTex2 = LoadCubeMap(Smash_Forge.Properties.Resources._10101000);
+            cubeTex = LoadCubeMap(Smash_Forge.Properties.Resources.cubemap);
             if(defaultTex == -1)
             defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
             GL.GenBuffers(1, out cubeVAO);
@@ -1017,7 +1017,7 @@ namespace Smash_Forge
             int id;
             GL.GenBuffers(1, out id);
 
-            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.ActiveTexture(0);
             
             GL.BindTexture(TextureTarget.TextureCubeMap, id);
 
