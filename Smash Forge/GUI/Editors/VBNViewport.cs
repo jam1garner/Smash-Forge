@@ -1576,20 +1576,20 @@ namespace Smash_Forge
 
                     //va = Vector3.Transform(va, b.transform);
 
-                    GL.Color4(Color.FromArgb(80, Color.Green));
+                    GL.Color4(Color.FromArgb(80, 0x00, 0x53, 0x8A)); // Strong blue
 
                     if (Runtime.renderHurtboxesZone)
                     {
                         switch (h.Zone)
                         {
                             case Hurtbox.LW_ZONE:
-                                GL.Color4(Color.FromArgb(80, Color.Aqua));
+                                GL.Color4(Color.FromArgb(80, 0x00, 0x53, 0x8A)); // Strong blue
                                 break;
                             case Hurtbox.N_ZONE:
-                                GL.Color4(Color.FromArgb(80, Color.Green));
+                                GL.Color4(Color.FromArgb(80, 0xF6, 0x76, 0x8E)); // //Strong Purplish Pink
                                 break;
                             case Hurtbox.HI_ZONE:
-                                GL.Color4(Color.FromArgb(80, Color.Orange));
+                                GL.Color4(Color.FromArgb(80, 0xFF, 0x8E, 0x00)); //Vivid Orange Yellow
                                 break;
                         }
                     }
