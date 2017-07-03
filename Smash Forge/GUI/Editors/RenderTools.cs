@@ -1502,11 +1502,9 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
     			if (hasColorGainOffset == 1) // probably a more elegant solution...
     			{
-    				//diffuse_color = colorOffset.xyz + (luminance(diffuse_map.xyz) * (colorGain.xyz));
     				diffuse_color = colorOffset.rgb + vec3(luminance(diffuse_map.rgb)) * (colorGain.rgb);
-    				ao_map.rgb = min(((1+minGain.rgb) * diffuse_color.rgb),1.35);
+    				ao_map.rgb = vec3(diffuse_luminance);
     				diffuse_shading = diffuse_color * colorGain.xyz * RampColor(vec3(lambertBRDF));
-    				ao_blend = vec3(diffuse_luminance);
     				diffuse_pass = (diffuse_color * ambient) + (diffuse_shading * diffuse_intensity);
 
                     if ((flags & 0x00420000u) == 0x00420000u) // bayo hair 'diffuse' is weird
@@ -1553,11 +1551,21 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			specular_pass += specularContribution;
 			}
 
-			else if ((flags & 0x00FF0000u) == 0x00610000u || (flags & 0x00FF0000u) == 0x00440000u) // Color Gain/Offset
-				specular_pass += specularColor.rgb* blinnPhongSpec * spec_tint * specular_intensity * (1+specularColorGain.rgb);
+			else if (hasColorGainOffset == 1) // Color Gain/Offset
+            {
+                // bump mapping using heightmap
+                /*float Offset = reflectionParams.z;
+                float A = texture2D(dif, texcoord).x;
+                float B = texture2D(dif, texcoord + vec2(Offset,0)).x;
+                float C = texture2D(dif, texcoord + vec2(0,Offset)).x;
+                vec3 weirdNormal = vec3(B-A,C-A,reflectionParams.x);
+                normalize(weirdNormal);*/
+
+			    specular_pass += specularColor.rgb * blinnPhongSpec * spec_tint * specular_intensity * (specularColorGain.rgb);
+            }
 
 			else // default
-				specular_pass += specularColor.rgb* blinnPhongSpec * spec_tint * specular_intensity;
+				specular_pass += specularColor.rgb * blinnPhongSpec * spec_tint * specular_intensity;
 			//---------------------------------------------------------------------------------------------
 
             specular_pass *= mix(ao_map.rgb, vec3(1), minGain.a);
