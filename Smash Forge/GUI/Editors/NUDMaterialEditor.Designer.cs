@@ -97,8 +97,8 @@
             this.dummyRampCB = new System.Windows.Forms.CheckBox();
             this.sphereMapCB = new System.Windows.Forms.CheckBox();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.specLightCB = new System.Windows.Forms.CheckBox();
-            this.rimLightCB = new System.Windows.Forms.CheckBox();
+            //this.specLightCB = new System.Windows.Forms.CheckBox();
+            //this.rimLightCB = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
@@ -824,8 +824,8 @@
             // 
             // rimLightCB
             // 
-            this.groupBox7.Controls.Add(this.specLightCB);
-            this.groupBox7.Controls.Add(this.rimLightCB);
+            //this.groupBox7.Controls.Add(this.specLightCB);
+            //this.groupBox7.Controls.Add(this.rimLightCB);
             this.groupBox7.Location = new System.Drawing.Point(5, 366);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(262, 100);
@@ -835,7 +835,7 @@
             // 
             // sphereMapCB
             // 
-            this.specLightCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            /*this.specLightCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.specLightCB.AutoSize = true;
             this.specLightCB.Location = new System.Drawing.Point(7, 19);
             this.specLightCB.Name = "specLightCB";
@@ -843,11 +843,11 @@
             this.specLightCB.TabIndex = 20;
             this.specLightCB.Text = "Reflection Map";
             this.specLightCB.UseVisualStyleBackColor = true;
-            this.specLightCB.CheckedChanged += new System.EventHandler(this.specLightCB_CheckedChanged);
+            this.specLightCB.CheckedChanged += new System.EventHandler(this.specLightCB_CheckedChanged);*/
             // 
             // rimLightCB
             // 
-            this.rimLightCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            /*this.rimLightCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.rimLightCB.AutoSize = true;
             this.rimLightCB.Location = new System.Drawing.Point(7, 42);
             this.rimLightCB.Name = "rimLightCB";
@@ -855,7 +855,7 @@
             this.rimLightCB.TabIndex = 19;
             this.rimLightCB.Text = "Ramp Light Switch";
             this.rimLightCB.UseVisualStyleBackColor = true;
-            this.rimLightCB.CheckedChanged += new System.EventHandler(this.rimLightCB_CheckedChanged);
+            this.rimLightCB.CheckedChanged += new System.EventHandler(this.rimLightCB_CheckedChanged);*/
             // 
             // groupBox3
             // 
