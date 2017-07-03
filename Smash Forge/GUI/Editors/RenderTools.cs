@@ -1502,9 +1502,8 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     			if (hasColorGainOffset == 1) // probably a more elegant solution...
     			{
     				//diffuse_color = colorOffset.xyz + (luminance(diffuse_map.xyz) * (colorGain.xyz));
-    				diffuse_color = colorOffset.rgb + diffuse_map.rgb * (colorGain.rgb);
+    				diffuse_color = colorOffset.rgb + vec3(luminance(diffuse_map.rgb)) * (colorGain.rgb);
     				ao_blend = min(((1+minGain.rgb) * diffuse_color.rgb),1.35);
-                    diffuse_color *= ao_blend;
     				diffuse_shading = diffuse_color * colorGain.xyz * RampColor(vec3(lambertBRDF));
     				ao_blend = vec3(diffuse_luminance);
     				diffuse_pass = (diffuse_color * ambient) + (diffuse_shading * diffuse_intensity);
