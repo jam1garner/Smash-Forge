@@ -1314,6 +1314,7 @@ uniform int hasNrm;
 uniform int hasRamp;
 uniform int hasDummyRamp;
 uniform int hasColorGainOffset;
+uniform int hasSpecularParams;
 
 // Da Flags
 uniform uint flags;
@@ -1366,10 +1367,10 @@ uniform sampler2D shadowMap;
 
 // Tools
 // ------------------------------------------------------
-vec3 lerp(float v, vec3 from, vec3 to)
+/*vec3 lerp(float v, vec3 from, vec3 to)
 {
     return from + (to - from) * v;
-}
+}*/
 
 vec3 rgb2hsv(vec3 c)
 {
@@ -1502,7 +1503,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
     			if (hasColorGainOffset == 1) // probably a more elegant solution...
     			{
-    				diffuse_color = colorOffset.rgb + vec3(luminance(diffuse_map.rgb)) * (colorGain.rgb);
+    				diffuse_color = colorOffset.rgb + (vec3(luminance(diffuse_map.rgb)) * (colorGain.rgb));
     				ao_map.rgb = vec3(diffuse_luminance);
     				diffuse_shading = diffuse_color * colorGain.xyz * RampColor(vec3(lambertBRDF));
     				diffuse_pass = (diffuse_color * ambient) + (diffuse_shading * diffuse_intensity);
@@ -1535,11 +1536,24 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 	//---------------------------------------------------------------------------------------------
 		// specular pass
 		vec3 specular_pass = vec3(0);
+            //---------------------------------------------------------------------------------------------
+		        // blinn phong with anisotropy
+    			vec3 half_angle = normalize(newSpecularDirection);
+                // tangent plane vectors
+                vec3 X = normalize(tan.xyz);
+                vec3 Y = normalize(cross(tan.xyz, normal.xyz));
+                // ax: anisotropic width. ay: anisotropic height
+                float ax = reflectionParams.z;
+                float ay = reflectionParams.w;
+                float xComponent = max(pow((dot(half_angle, X)/ax),2),0);
+                float yComponent = max(pow((dot(half_angle, Y)/ay),2),0);
+                // only use anisotropy for mats without specularparams
+                float exponent = xComponent + yComponent;
+                if (hasSpecularParams == 1)
+                    exponent = specularParams.y;
 
-			// blinn phong
-			vec3 half_angle = normalize(newSpecularDirection);
-			float blinnPhongSpec = pow(clamp((dot(half_angle, N)), 0, 1), specularParams.y);
-			blinnPhongSpec *= (1-(specularParams.x/100));
+            float blinnPhongSpec = pow(clamp((dot(half_angle, N)), 0, 1), exponent);
+            //---------------------------------------------------------------------------------------------
 
 			//---------------------------------------------------------------------------------------------
 				// flags based corrections for specular
@@ -1553,15 +1567,8 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
 			else if (hasColorGainOffset == 1) // Color Gain/Offset
             {
-                // bump mapping using heightmap
-                /*float Offset = reflectionParams.z;
-                float A = texture2D(dif, texcoord).x;
-                float B = texture2D(dif, texcoord + vec2(Offset,0)).x;
-                float C = texture2D(dif, texcoord + vec2(0,Offset)).x;
-                vec3 weirdNormal = vec3(B-A,C-A,reflectionParams.x);
-                normalize(weirdNormal);*/
-
-			    specular_pass += specularColor.rgb * blinnPhongSpec * spec_tint * specular_intensity * (specularColorGain.rgb);
+			    //specular_pass += specularColor.rgb * blinnPhongSpec * spec_tint * specular_intensity * (specularColorGain.rgb);
+                specular_pass += specularColor.rgb * blinnPhongSpec * (specularColorGain.rgb) * specular_intensity;
             }
 
 			else // default
@@ -1645,8 +1652,8 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 	else
 		resulting_color = diffuse_pass;
 
-
     resulting_color = pow(resulting_color, vec3(1/2.2)); // gamma correction. gamma correction also done within render passes
+
     return resulting_color;
 }
 

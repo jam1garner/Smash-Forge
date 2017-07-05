@@ -271,6 +271,14 @@ namespace Smash_Forge
                 GL.Uniform1(shader.getAttribute("hasDummyRamp"), mat.useDummyRamp ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasColorGainOffset"), mat.useColorGainOffset ? 1 : 0);
 
+                //mat.entries.TryGetValue("NU_specularParams", out pa);
+                // specular params seems to override reflectionParams for specular
+                bool hasSpecularParams = false;
+                if (mat.anims.ContainsKey("NU_specularParams"))
+                    hasSpecularParams = true;
+                GL.Uniform1(shader.getAttribute("hasSpecParams"), hasSpecularParams ? 1 : 0);
+
+
                 GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
 
@@ -397,7 +405,13 @@ namespace Smash_Forge
                     float[] pa;
                     mat.entries.TryGetValue("NU_specularParams", out pa);
                     if (mat.anims.ContainsKey("NU_specularParams")) pa = mat.anims["NU_specularParams"];
-                    if (pa == null) pa = new float[] { 0, 4, 0, 0 };
+                   
+                    // specularparams seems to override reflectionparams for specular
+                    int hasSpecParams = 1;
+                    if (pa == null) hasSpecParams = 0;
+                    GL.Uniform1(shader.getAttribute("hasSpecularParams"), hasSpecParams);
+
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
                     GL.Uniform4(shader.getAttribute("specularParams"), pa[0], pa[1], pa[2], pa[3]);
                 }
                 {
@@ -425,7 +439,7 @@ namespace Smash_Forge
                     float[] pa;
                     mat.entries.TryGetValue("NU_reflectionParams", out pa);
                     if (mat.anims.ContainsKey("NU_reflectionParams")) pa = mat.anims["NU_reflectionParams"];
-                    if (pa == null) pa = new float[] { 0, 0, 0, 1 };
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
                     GL.Uniform4(shader.getAttribute("reflectionParams"), pa[0], pa[1], pa[2], pa[3]);
                 }
 

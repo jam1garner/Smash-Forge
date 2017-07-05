@@ -1825,7 +1825,7 @@ namespace Smash_Forge
                 shader = new Shader();
                 shader.vertexShader(File.ReadAllText("vert.txt"));
                 shader.fragmentShader(File.ReadAllText("frag.txt"));
-                Runtime.shaders["NUD"] = shader; */
+                Runtime.shaders["NUD"] = shader;*/
             }
 
             /*if (e.KeyChar == 'w')
