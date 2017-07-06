@@ -1442,6 +1442,7 @@ namespace Smash_Forge
                 return;
 
             GL.Enable(EnableCap.Blend);
+            GL.Disable(EnableCap.CullFace);
 
             foreach (var pair in gameScriptManager.Hitboxes)
             {
@@ -1474,6 +1475,7 @@ namespace Smash_Forge
                 // End stenciling and draw over all the stenciled bits
                 RenderTools.endTopLevelStencilAndDraw();
             }
+            GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
         }
 
@@ -1486,6 +1488,7 @@ namespace Smash_Forge
                 // interpolation later we can add it.
                 GL.Color4(Color.FromArgb(40, 0xA6, 0xBD, 0xD7));
                 GL.Enable(EnableCap.Blend);
+                GL.Disable(EnableCap.CullFace);
                 // Draw everything to the stencil buffer
                 RenderTools.beginTopLevelStencil();
 
@@ -1541,6 +1544,7 @@ namespace Smash_Forge
                 // which will now be the entire interpolated area minus
                 // the new hitboxes
                 RenderTools.endTopLevelStencilAndDraw();
+                GL.Enable(EnableCap.CullFace);
                 GL.Disable(EnableCap.Blend);
             }
         }
