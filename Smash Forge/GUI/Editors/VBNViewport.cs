@@ -25,6 +25,8 @@ namespace Smash_Forge
     {
         public static int defaulttex = 0;
 
+        public int scriptId = -1;
+
         public VBNViewport()
         {
             InitializeComponent();
@@ -1556,9 +1558,12 @@ namespace Smash_Forge
                     if (gameScriptManager.BodyIntangible)
                         return;
 
-                    if (Frame + 1 >= Runtime.ParamManager.MovesData[gameScriptManager.scriptId].IntangibilityStart && Frame + 1 < Runtime.ParamManager.MovesData[gameScriptManager.scriptId].IntangibilityEnd)
-                        return;
+                    
                 }
+
+                if (scriptId != -1)
+                    if (Frame + 1 >= Runtime.ParamManager.MovesData[scriptId].IntangibilityStart && Frame + 1 < Runtime.ParamManager.MovesData[scriptId].IntangibilityEnd)
+                        return;
 
                 foreach (var pair in Runtime.ParamManager.Hurtboxes)
                 {
@@ -1718,6 +1723,8 @@ namespace Smash_Forge
             //Console.WriteLine("Handling " + animname);
             var crc = Crc32.Compute(animname.Replace(".omo", "").ToLower());
 
+            scriptId = -1;
+
             if (Runtime.Moveset == null)
             {
                 gameScriptManager.Reset(null);
@@ -1731,6 +1738,10 @@ namespace Smash_Forge
                     Runtime.acmdEditor.SetAnimation(crc);
             } catch { }
 
+            //Putting scriptId here to get intangibility of the animation, previous method only did it for animations that had game scripts
+            if(Runtime.Moveset.ScriptsHashList.Contains(crc))
+                scriptId = Runtime.Moveset.ScriptsHashList.IndexOf(crc);
+
             // Game script specific processing stuff below here
             if (!Runtime.Moveset.Game.Scripts.ContainsKey(crc))
             {
@@ -1739,6 +1750,17 @@ namespace Smash_Forge
                 if (animname == "AttackS4S.omo" || animname == "AttackS3S.omo")
                 {
                     HandleACMD(animname.Replace("S.omo", ".omo"));
+                    return;
+                }
+                //Ryu ftilts
+                if (animname == "AttackS3Ss.omo")
+                {
+                    HandleACMD(animname.Replace("Ss.omo", "s.omo"));
+                    return;
+                }
+                if(animname == "AttackS3Sw.omo")
+                {
+                    HandleACMD(animname.Replace("Sw.omo", "w.omo"));
                     return;
                 }
                 //Rapid Jab Finisher
@@ -1754,10 +1776,12 @@ namespace Smash_Forge
                 }
             }
 
+            
+
             //Console.WriteLine("Handling " + animname);
             ACMDScript acmdScript = (ACMDScript)Runtime.Moveset.Game.Scripts[crc];
             if (acmdScript != null)
-                gameScriptManager.Reset(acmdScript, Runtime.Moveset.ScriptsHashList.IndexOf(crc));
+                gameScriptManager.Reset(acmdScript);
             else
                 gameScriptManager.Reset(null);
             //scr_sound = (ACMDScript)Runtime.Moveset.Sound.Scripts[crc];

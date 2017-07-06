@@ -59,6 +59,7 @@ namespace Smash_Forge
             Runtime.renderBackGround = true;
             Runtime.renderHitboxes = true;
             Runtime.renderInterpolatedHitboxes = true;
+            Runtime.renderHitboxesColorByKb = true;
             Runtime.renderModel = true;
             Runtime.renderPath = true;
             Runtime.renderCollisions = true;

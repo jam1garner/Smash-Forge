@@ -55,6 +55,7 @@ namespace Smash_Forge
         public static bool renderCollisionNormals;
         public static bool renderHitboxes;
         public static bool renderInterpolatedHitboxes;
+        public static bool renderHitboxesColorByKb;
         public static bool renderFloor;
         public static bool renderBackGround;
         public static bool renderPath;
@@ -222,6 +223,7 @@ namespace Smash_Forge
                         case "render_collision_normals": bool.TryParse(node.InnerText, out renderCollisionNormals); break;
                         case "render_hitboxes": bool.TryParse(node.InnerText, out renderHitboxes); break;
                         case "render_interpolated_hitboxes": bool.TryParse(node.InnerText, out renderInterpolatedHitboxes); break;
+                        case "render_hitboxes_kb": bool.TryParse(node.InnerText, out renderHitboxesColorByKb); break;
                         case "render_hurtboxes": bool.TryParse(node.InnerText, out renderHurtboxes); break;
                         case "render_hurtboxes_zone": bool.TryParse(node.InnerText, out renderHurtboxesZone); break;
                         case "render_ECB": bool.TryParse(node.InnerText, out renderECB); break;
@@ -400,6 +402,7 @@ for changing default texure
             renderNode.AppendChild(createNode(doc, "render_hurtboxes_zone", renderHurtboxesZone.ToString()));
             renderNode.AppendChild(createNode(doc, "render_hitboxes", renderHitboxes.ToString()));
             renderNode.AppendChild(createNode(doc, "render_interpolated_hitboxes", renderInterpolatedHitboxes.ToString()));
+            renderNode.AppendChild(createNode(doc, "render_hitboxes_kb", renderHitboxesColorByKb.ToString()));
             renderNode.AppendChild(createNode(doc, "render_ECB", renderECB.ToString()));
             renderNode.AppendChild(createNode(doc, "render_path", renderPath.ToString()));
             {

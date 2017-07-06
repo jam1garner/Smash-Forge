@@ -242,7 +242,10 @@ namespace Smash_Forge
                     if (Ignore_Throw)
                         color = Color.FromArgb(130, 0x59, 0x33, 0x15); // Deep yellowish brown
                     else
-                        color = Color.FromArgb(130, GetRegularDisplayColor());
+                        if (Runtime.renderHitboxesColorByKb)
+                            color = Color.FromArgb(130, GetRegularDisplayColor());
+                        else
+                            color = Color.FromArgb(130, Color.Red);
                     break;
                 case Hitbox.GRABBOX:
                     color = Color.FromArgb(130, Color.Purple);

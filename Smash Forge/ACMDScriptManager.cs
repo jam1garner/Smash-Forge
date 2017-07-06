@@ -331,7 +331,8 @@ namespace Smash_Forge
                             Hitboxes.Remove(index);
                         break;
                     }
-                case 0xFA1BC28A: //Subroutine1: call another script
+                case 0xFA1BC28A: //External Subroutine: call another script
+                case 0x9126EBA2: //Subroutine
                     halt = processSubscriptCommandsAtCurrentFrame((uint)int.Parse(cmd.Parameters[0] + ""), halt, scriptCommandIndex);
                     break;
                 case 0xFAA85333:
