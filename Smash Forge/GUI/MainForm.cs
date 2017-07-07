@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Threading;
 using Microsoft.VisualBasic.Devices;
+using Smash_Forge.GUI.Menus;
 
 namespace Smash_Forge
 {
@@ -259,6 +260,7 @@ namespace Smash_Forge
         public NUTEditor nutEditor = null;
         public NUS3BANKEditor nusEditor = null;
         public _3DSTexEditor texEditor = null;
+        public CameraPosition cameraPosForm = null;
 
         #endregion
 
@@ -1988,6 +1990,16 @@ namespace Smash_Forge
         private void saveConfigToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Runtime.SaveConfig();
+        }
+
+        private void cameraToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (cameraPosForm == null || cameraPosForm.IsDisposed)
+            {
+                cameraPosForm = new CameraPosition(viewports[0]);
+                viewports[0].cameraPosForm = cameraPosForm;
+            }
+            cameraPosForm.Show();
         }
     }
 }

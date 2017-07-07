@@ -66,18 +66,19 @@ namespace Smash_Forge
                 GL.Viewport(glControl1.ClientRectangle);
 
 
-                v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 500.0f);
+                v = Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 500.0f);
             }
         }
 
         #region Members
         Matrix4 v;
-        float rot = 0;
-        float x = 0;
-        float lookup = 0;
-        float height = 1.5f;
-        float width = 0;
-        float zoom = -25f, nzoom = 0;
+        public float rot = 0;
+        public float x = 0;
+        public float lookup = 0;
+        public float height = 1.5f;
+        public float width = 0;
+        public float zoom = -25f, nzoom = 0;
+        public GUI.Menus.CameraPosition cameraPosForm = null;
         float mouseXLast = 0;
         float mouseYLast = 0;
         float mouseSLast = 0;
@@ -303,7 +304,10 @@ namespace Smash_Forge
         {
             if (!freezeCamera)
                 if (!fpsView)
+                {
                     UpdateMousePosition();
+                    UpdateCameraPositionControl();
+                }
             if (_LastPoint != e.Location) // can add some slack by checking the distance
             {
                 dbdistance = 0;
@@ -370,7 +374,7 @@ namespace Smash_Forge
             int w = Width;
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
-            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
+            v = Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
 
@@ -487,6 +491,7 @@ namespace Smash_Forge
                     FPSCamera();
                 else
                     UpdateMousePosition();
+                UpdateCameraPositionControl();
             }
             mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
 
@@ -579,6 +584,12 @@ namespace Smash_Forge
             glControl1.SwapBuffers();
         }
 
+        public void UpdateCameraPositionControl()
+        {
+            if (cameraPosForm != null && !cameraPosForm.IsDisposed)
+                cameraPosForm.updatePosition();
+        }
+
         public void UpdateMousePosition()
         {
             float zoomscale = Runtime.zoomspeed;
@@ -590,8 +601,8 @@ namespace Smash_Forge
             }
             if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
             {
-                rot += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                lookup += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                rot += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                lookup += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
             }
 
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
@@ -607,7 +618,7 @@ namespace Smash_Forge
 
             zoom += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale;
 
-            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
+            v = Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
@@ -1832,6 +1843,7 @@ namespace Smash_Forge
             mouseYLast = 0;
             mouseSLast = 0;
             UpdateMousePosition();
+            UpdateCameraPositionControl();
         }
 
         public void loadMTA(MTA m)
@@ -2037,13 +2049,13 @@ namespace Smash_Forge
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.S))
                 zoom -= 0.2f;
 
-            rot += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-            lookup += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+            rot += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+            lookup += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
 
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
-            v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) 
+            v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
