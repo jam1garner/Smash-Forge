@@ -26,7 +26,7 @@ using System.Threading;
 
 namespace Smash_Forge
 {
-    public partial class VBNViewport : DockContent
+    public partial class VBNViewport : FormBase
     {
         public static int defaulttex = 0;
 
@@ -69,18 +69,19 @@ namespace Smash_Forge
                 GL.Viewport(glControl1.ClientRectangle);
 
 
-                v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 500.0f);
+                v = Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 500.0f);
             }
         }
 
         #region Members
         Matrix4 v, vi;
-        float rot = 0;
-        float x = 0;
-        float lookup = 0;
-        float height = 1.5f;
-        float width = 0;
-        float zoom = -25f, nzoom = 0;
+        public float rot = 0;
+        public float x = 0;
+        public float lookup = 0;
+        public float height = 1.5f;
+        public float width = 0;
+        public float zoom = -25f, nzoom = 0;
+        public GUI.Menus.CameraPosition cameraPosForm = null;
         float mouseXLast = 0;
         float mouseYLast = 0;
         float mouseSLast = 0;
@@ -217,7 +218,11 @@ namespace Smash_Forge
             loadAnimation(Runtime.TargetAnim);
             if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
             {
-                HandleACMD(Runtime.TargetAnimString.Substring(3));
+                if (Runtime.gameScriptManager != null)
+                {
+                    //Remove manual crc flag
+                    Runtime.acmdEditor.manualCrc = false;
+                    HandleACMD(Runtime.TargetAnimString.Substring(3));
                 if (gameAcmdScript != null)
                 {
                     gameAcmdScript.processToFrame(0);
@@ -330,7 +335,10 @@ namespace Smash_Forge
         {
             if (!freezeCamera)
                 if (!fpsView)
+                {
                     UpdateMousePosition();
+                    UpdateCameraPositionControl();
+                }
             if (_LastPoint != e.Location) // can add some slack by checking the distance
             {
                 dbdistance = 0;
@@ -397,7 +405,7 @@ namespace Smash_Forge
             int w = Width;
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
-            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom)
+            v = Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
 
@@ -514,6 +522,7 @@ namespace Smash_Forge
                     FPSCamera();
                 else
                     UpdateMousePosition();
+                UpdateCameraPositionControl();
             }
             mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
 
@@ -555,7 +564,7 @@ namespace Smash_Forge
             GL.Enable(EnableCap.StencilTest);
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
 
-            GL.Enable(EnableCap.FramebufferSrgb);
+           // GL.Enable(EnableCap.FramebufferSrgb);
 
             // Draw scale lines, useful for comparing animations
             if (Runtime.renderScale)
@@ -583,7 +592,7 @@ namespace Smash_Forge
             GL.DepthFunc(DepthFunction.Less);
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
             GL.Disable(EnableCap.CullFace);
-            GL.Disable(EnableCap.FramebufferSrgb);
+            //GL.Disable(EnableCap.FramebufferSrgb);
 
             GL.UseProgram(0);
             // draw path.bin
@@ -610,6 +619,12 @@ namespace Smash_Forge
             // Clean up
             GL.PopAttrib();
             glControl1.SwapBuffers();
+        }
+        
+        public void UpdateCameraPositionControl()
+        {
+            if (cameraPosForm != null && !cameraPosForm.IsDisposed)
+                cameraPosForm.updatePosition();
         }
 
         public void DrawIndicators()
@@ -708,8 +723,8 @@ namespace Smash_Forge
             }
             if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
             {
-                rot += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                lookup += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                rot += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                lookup += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
             }
 
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
@@ -725,7 +740,7 @@ namespace Smash_Forge
 
             zoom += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale;
 
-            v = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
+            v = Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
@@ -1636,6 +1651,7 @@ namespace Smash_Forge
                 // End stenciling and draw over all the stenciled bits
                 RenderTools.endTopLevelStencilAndDraw();
             }
+            GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
             GL.Enable(EnableCap.CullFace);
         }
@@ -1706,6 +1722,7 @@ namespace Smash_Forge
                 // which will now be the entire interpolated area minus
                 // the new hitboxes
                 RenderTools.endTopLevelStencilAndDraw();
+                GL.Enable(EnableCap.CullFace);
                 GL.Disable(EnableCap.Blend);
                 GL.Enable(EnableCap.CullFace);
             }
@@ -1724,9 +1741,12 @@ namespace Smash_Forge
                     if (gameAcmdScript.BodyIntangible)
                         return;
 
+                    
+                }
+
+                if (Runtime.scriptId != -1)
                     if (Frame + 1 >= Runtime.ParamManager.MovesData[gameAcmdScript.scriptId].IntangibilityStart && Frame + 1 < Runtime.ParamManager.MovesData[gameAcmdScript.scriptId].IntangibilityEnd)
                         return;
-                }
 
                 foreach (var pair in Runtime.ParamManager.Hurtboxes)
                 {
@@ -1813,7 +1833,7 @@ namespace Smash_Forge
                 GL.Disable(EnableCap.Blend);
             }
         }
-
+        
         ForgeACMDScript gameAcmdScript = null;
         ACMDScript scr_sound;
 
@@ -1881,8 +1901,13 @@ namespace Smash_Forge
 
         public void HandleACMD(string animname)
         {
+            if (Runtime.acmdEditor.manualCrc)
+                return;
+
             //Console.WriteLine("Handling " + animname);
             var crc = Crc32.Compute(animname.Replace(".omo", "").ToLower());
+
+            Runtime.scriptId = -1;
 
             if (Runtime.Moveset == null)
             {
@@ -1898,6 +1923,10 @@ namespace Smash_Forge
             } catch { }
 
             // Game script specific processing stuff below here
+            if(Runtime.Moveset.ScriptsHashList.Contains(crc))
+                Runtime.scriptId = Runtime.Moveset.ScriptsHashList.IndexOf(crc);
+
+            // Game script specific processing stuff below here
             if (!Runtime.Moveset.Game.Scripts.ContainsKey(crc))
             {
                 //Some characters don't have AttackS[3-4]S and use attacks[3-4] crc32 hash on scripts making forge unable to access the script, thus not visualizing these hitboxes
@@ -1905,6 +1934,17 @@ namespace Smash_Forge
                 if (animname == "AttackS4S.omo" || animname == "AttackS3S.omo")
                 {
                     HandleACMD(animname.Replace("S.omo", ".omo"));
+                    return;
+                }
+                //Ryu ftilts
+                else if (animname == "AttackS3Ss.omo")
+                {
+                    HandleACMD(animname.Replace("Ss.omo", "s.omo"));
+                    return;
+                }
+                else if(animname == "AttackS3Sw.omo")
+                {
+                    HandleACMD(animname.Replace("Sw.omo", "w.omo"));
                     return;
                 }
                 //Rapid Jab Finisher
@@ -1918,6 +1958,7 @@ namespace Smash_Forge
                     HandleACMD(animname.Replace("ZeldaPhantomMainPhantom", ""));
                     return;
                 }
+                }
                 else
                 {
                     gameAcmdScript = null;
@@ -1925,11 +1966,14 @@ namespace Smash_Forge
                 }
             }
 
+            
+
             //Console.WriteLine("Handling " + animname);
             ACMDScript acmdScript = (ACMDScript)Runtime.Moveset.Game.Scripts[crc];
             // Only update the script if it changed
             if (acmdScript != null)
             {
+                // If script wasn't set, or it was set and it changed, load the new script
                 if (gameAcmdScript == null || (gameAcmdScript != null && gameAcmdScript.script != acmdScript))
                 {
                     gameAcmdScript = new ForgeACMDScript(acmdScript, Runtime.Moveset.ScriptsHashList.IndexOf(crc));
@@ -1980,6 +2024,7 @@ namespace Smash_Forge
             mouseYLast = 0;
             mouseSLast = 0;
             UpdateMousePosition();
+            UpdateCameraPositionControl();
         }
 
         public void loadMTA(MTA m)
@@ -1996,12 +2041,12 @@ namespace Smash_Forge
         private void VBNViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
             if (e.KeyChar == 'i')
-            {   /*
+            {  /*
                 GL.DeleteProgram(Runtime.shaders["NUD"].programID);
                 shader = new Shader();
                 shader.vertexShader(File.ReadAllText("vert.txt"));
                 shader.fragmentShader(File.ReadAllText("frag.txt"));
-                Runtime.shaders["NUD"] = shader; */
+                Runtime.shaders["NUD"] = shader;*/
             }
 
             /*if (e.KeyChar == 'w')
@@ -2222,15 +2267,42 @@ namespace Smash_Forge
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.S))
                 zoom -= 0.2f;
 
-            rot += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-            lookup += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+            rot += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+            lookup += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
 
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
-            v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) 
+            v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
+        }
+
+        public Bitmap CaptureScreen(bool saveAlpha = false)
+        {
+            int width = glControl1.Width;
+            int height = glControl1.Height;
+
+            byte[] pixels = new byte[width * height * 4];
+            GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
+            // Flip data becausee glReadPixels reads it in from bottom row to top row
+            byte[] fixedPixels = new byte[width * height * 4];
+            for (int h = 0; h < height; h++)
+                for (int w = 0; w < width; w++)
+                {
+                    if (!saveAlpha)
+                        // Remove alpha blending from the end image - we just want the post-render colours
+                        pixels[((w + h * width) * 4) + 3] = 255;
+
+                    // Copy a 4 byte pixel one at a time
+                    Array.Copy(pixels, (w + h * width) * 4, fixedPixels, ((height - h - 1) * width + w) * 4, 4);
+                }
+            // Format and save the data
+            Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bmp.PixelFormat);
+            Marshal.Copy(fixedPixels, 0, bmpData.Scan0, fixedPixels.Length);
+            bmp.UnlockBits(bmpData);
+            return bmp;
         }
 
         public Bitmap CaptureScreen()

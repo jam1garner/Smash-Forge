@@ -48,12 +48,13 @@
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.vertColorDivCB = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(117, 345);
+            this.button1.Location = new System.Drawing.Point(117, 372);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 0;
@@ -64,7 +65,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(38, 9);
+            this.label1.Location = new System.Drawing.Point(37, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(239, 13);
             this.label1.TabIndex = 1;
@@ -83,6 +84,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.vertColorDivCB);
             this.panel1.Controls.Add(this.stagematCB);
             this.panel1.Controls.Add(this.label5);
             this.panel1.Controls.Add(this.scaleTB);
@@ -100,13 +102,13 @@
             this.panel1.Controls.Add(this.flipUVCB);
             this.panel1.Location = new System.Drawing.Point(15, 55);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(278, 284);
+            this.panel1.Size = new System.Drawing.Size(278, 311);
             this.panel1.TabIndex = 3;
             // 
             // stagematCB
             // 
             this.stagematCB.AutoSize = true;
-            this.stagematCB.Location = new System.Drawing.Point(4, 143);
+            this.stagematCB.Location = new System.Drawing.Point(4, 166);
             this.stagematCB.Name = "stagematCB";
             this.stagematCB.Size = new System.Drawing.Size(116, 17);
             this.stagematCB.TabIndex = 14;
@@ -116,7 +118,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 169);
+            this.label5.Location = new System.Drawing.Point(3, 196);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(34, 13);
             this.label5.TabIndex = 13;
@@ -124,7 +126,7 @@
             // 
             // scaleTB
             // 
-            this.scaleTB.Location = new System.Drawing.Point(43, 166);
+            this.scaleTB.Location = new System.Drawing.Point(43, 193);
             this.scaleTB.Name = "scaleTB";
             this.scaleTB.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.scaleTB.Size = new System.Drawing.Size(42, 20);
@@ -134,7 +136,7 @@
             // smoothCB
             // 
             this.smoothCB.AutoSize = true;
-            this.smoothCB.Location = new System.Drawing.Point(4, 119);
+            this.smoothCB.Location = new System.Drawing.Point(4, 142);
             this.smoothCB.Name = "smoothCB";
             this.smoothCB.Size = new System.Drawing.Size(103, 17);
             this.smoothCB.TabIndex = 11;
@@ -144,14 +146,14 @@
             // vbnFileLabel
             // 
             this.vbnFileLabel.AutoSize = true;
-            this.vbnFileLabel.Location = new System.Drawing.Point(85, 197);
+            this.vbnFileLabel.Location = new System.Drawing.Point(85, 224);
             this.vbnFileLabel.Name = "vbnFileLabel";
             this.vbnFileLabel.Size = new System.Drawing.Size(0, 13);
             this.vbnFileLabel.TabIndex = 10;
             // 
             // vbnButton
             // 
-            this.vbnButton.Location = new System.Drawing.Point(4, 192);
+            this.vbnButton.Location = new System.Drawing.Point(4, 219);
             this.vbnButton.Name = "vbnButton";
             this.vbnButton.Size = new System.Drawing.Size(75, 23);
             this.vbnButton.TabIndex = 9;
@@ -162,7 +164,7 @@
             // vertcolorCB
             // 
             this.vertcolorCB.AutoSize = true;
-            this.vertcolorCB.Location = new System.Drawing.Point(5, 96);
+            this.vertcolorCB.Location = new System.Drawing.Point(4, 96);
             this.vertcolorCB.Name = "vertcolorCB";
             this.vertcolorCB.Size = new System.Drawing.Size(195, 17);
             this.vertcolorCB.TabIndex = 8;
@@ -183,7 +185,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 251);
+            this.label4.Location = new System.Drawing.Point(3, 278);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(59, 13);
             this.label4.TabIndex = 5;
@@ -193,7 +195,7 @@
             // 
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(76, 248);
+            this.comboBox2.Location = new System.Drawing.Point(76, 275);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(199, 21);
             this.comboBox2.TabIndex = 6;
@@ -201,7 +203,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 224);
+            this.label3.Location = new System.Drawing.Point(3, 251);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(53, 13);
             this.label3.TabIndex = 5;
@@ -211,7 +213,7 @@
             // 
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(76, 221);
+            this.comboBox1.Location = new System.Drawing.Point(76, 248);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(199, 21);
             this.comboBox1.TabIndex = 5;
@@ -245,11 +247,22 @@
             this.label2.TabIndex = 4;
             this.label2.Text = "Import Options";
             // 
+            // vertColorDivCB
+            // 
+            this.vertColorDivCB.AutoSize = true;
+            this.vertColorDivCB.Location = new System.Drawing.Point(4, 119);
+            this.vertColorDivCB.Name = "vertColorDivCB";
+            this.vertColorDivCB.Size = new System.Drawing.Size(128, 17);
+            this.vertColorDivCB.TabIndex = 15;
+            this.vertColorDivCB.Text = "Divide Vert Color by 2";
+            this.vertColorDivCB.UseVisualStyleBackColor = true;
+            this.vertColorDivCB.CheckedChanged += new System.EventHandler(this.vertColorDivCB_CheckedChanged);
+            // 
             // DAEImportSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(305, 376);
+            this.ClientSize = new System.Drawing.Size(305, 405);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label1);
@@ -285,5 +298,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox scaleTB;
         public System.Windows.Forms.CheckBox stagematCB;
+        private System.Windows.Forms.CheckBox vertColorDivCB;
     }
 }

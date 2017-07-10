@@ -21,6 +21,50 @@ namespace Smash_Forge
         public NUD.Polygon poly;
         public List<NUD.Material> material;
         int current = 0;
+        public static Dictionary<string, MatParam> propList;
+        
+        public void trackchange(object sender, EventArgs e)
+        {
+            Console.WriteLine(((TrackBar)sender).Value);
+        }
+
+        public class MatParam
+        {
+            public string name = "";
+            public string description = "";
+            public string[] ps = new string[4];
+            public int min = -1, max = -1;
+            public List<string> op1, op2, op3, op4;
+            public Control control1 = null;
+            public Control control2 = null;
+            public Control control3 = null;
+            public Control control4 = null;
+
+            public MatParam()
+            {
+            }
+            public void trackchange(object sender, EventArgs e)
+            {
+                Console.WriteLine(((TrackBar)sender).Value);
+            }
+
+            public void CreateTrackBar(int param)
+            {
+                Control control = new TrackBar();
+                if (param == 1) { control1 = control;} 
+                if (param == 2) control2 = control;
+                if (param == 3) control3 = control;
+                if (param == 4) control4 = control;
+                control = new TrackBar();
+                control.Dock = DockStyle.Fill;
+                control.MaximumSize = new Size(control.MaximumSize.Width, 16);
+                ((TrackBar)control).Minimum = 0;
+                ((TrackBar)control).Maximum = 100;
+                ((TrackBar)control).TickStyle = TickStyle.Both;
+                ((TrackBar)control).TickFrequency = 5;
+                ((TrackBar)control).ValueChanged += trackchange;
+            }
+        }
 
         public static Dictionary<int, string> dstFactor = new Dictionary<int, string>(){
                     { 0x00, "Nothing"},
@@ -89,34 +133,6 @@ namespace Smash_Forge
                     { 0x06, "4 mip levels, trilinear on, anisotropic on"}
                 };
 
-        Dictionary<string, string[]> propList = new Dictionary<string, string[]>()
-        {
-            { "NU_colorSamplerUV", new string[] { "X Scale", "Y Scale", "X Trans", "Y Trans"} },
-            { "NU_fresnelColor", new string[] { "Red", "Green", "Blue", "Color Blend"} },
-            { "NU_blinkColor", new string[] { "Red", "Green", "Blue", "Alpha"} },
-            { "NU_specularColor", new string[] { "Red", "Green", "Blue", "Color Blend"} },
-            { "NU_diffuseColor", new string[] { "Red", "Green", "Blue", "Alpha"} },
-            { "NU_colorGain", new string[] { "Red", "Green", "Blue", "Intensity" } },
-            { "NU_colorOffset", new string[] { "Red", "Green", "Blue", "who knows" } },
-            { "NU_specularColorGain", new string[] { "Red", "Green", "Blue", "" } },
-            { "NU_colorStepUV", new string[] { "Per Row", "Per Column", "FPT", "Frame Count" } },
-            { "NU_finalColorGain", new string[] { "Red", "Green", "Blue", "Intensity" } },
-            { "NU_reflectionColor", new string[] { "Red", "Green", "Blue", "Color Blend" } },
-            { "NU_aoMinGain", new string[] { "Red", "Green", "Blue", ""} },
-            { "NU_reflectionParams", new string[] { "Tex Sharpness", "Cubemap Brightness", "Cubemap Intensity", ""} },
-            { "NU_lightMapColorOffset", new string[] { "", "", "", "" } },
-            { "NU_specularParams", new string[] { "", "Exponent", "", ""} },
-            { "NU_fresnelParams", new string[] { "Exponent", "", "", ""} },
-            { "NU_alphaBlendParams", new string[] { "", "", "", "" } },
-            { "NU_fogParams", new string[] { "Distance", "", "", "Intensity" } },
-            { "NU_fogColor", new string[] { "Red", "Green", "Blue", "Alpha"} },
-            { "NU_effRotUV", new string[] { "what", "is", "this", "for" } },
-            { "NU_effScaleUV", new string[] { "X Scale", "Y Scale", "X Trans", "Y Trans" } },
-            { "NU_effTransUV", new string[] { "", "", "", "" } },
-            { "NU_effColorGain", new string[] { "", "", "", "" } },
-            { "NU_materialHash", new string[] { "Hash", "Nothing", "Nothing", "Nothing"} }
-        };
-
         public NUDMaterialEditor()
         {
             InitializeComponent();
@@ -130,6 +146,40 @@ namespace Smash_Forge
             Init();
             FillForm();
             comboBox1.SelectedIndex = 0;
+        }
+
+        public void InitPropList()
+        {
+            propList = new Dictionary<string, MatParam>();
+            if (File.Exists("param_labels\\material_params.ini"))
+            {
+                try
+                {
+                    MatParam p = new MatParam();
+                    using (StreamReader sr = new StreamReader("param_labels\\material_params.ini"))
+                    {
+                        while (!sr.EndOfStream)
+                        {
+                            string[] args = sr.ReadLine().Split('=');
+                            string line = args[0];
+                            switch (line)
+                            {
+                                case "[Param]": if (!p.name.Equals("") && !propList.ContainsKey(p.name)) propList.Add(p.name, p); p = new MatParam(); break;
+                                case "name": p.name = args[1]; Console.WriteLine(p.name); break;
+                                case "description": p.description = args[1]; break;
+                                case "param1": p.ps[0] = args[1]; break;
+                                case "param2": p.ps[1] = args[1]; break;
+                                case "param3": p.ps[2] = args[1]; break;
+                                case "param4": p.ps[3] = args[1]; break;
+                            }
+                        }
+                    }
+                    if (!p.name.Equals("") && !propList.ContainsKey(p.name)) propList.Add(p.name, p);
+                }
+                catch (Exception)
+                {
+                }
+            }
         }
 
         private void NUDMaterialEditor_Load(object sender, EventArgs e)
@@ -160,7 +210,8 @@ namespace Smash_Forge
             tableLayoutPanel2.Enabled = false;
 
             comboBox7.Items.Clear();
-            foreach(string s in propList.Keys)
+            if (propList == null) InitPropList();
+            foreach (string s in propList.Keys)
                 comboBox7.Items.Add(s);
 
             if (comboBox10.Items.Count == 0)
@@ -209,24 +260,22 @@ namespace Smash_Forge
             checkBox1.Checked = mat.unkownWater != 0;
 
             listView1.Items.Clear();
-
-
+            
             shadowCB.Checked = mat.hasShadow;
             GlowCB.Checked = mat.glow;
-            specLightCB.Checked = mat.useSpecular;
-            rimLightCB.Checked = mat.useRimLight;
+            sphereMapCB.Checked = mat.useSphereMap;
+            dummyRampCB.Checked = mat.useDummyRamp;
             
-            if (mat.highlight) listView1.Items.Add("Specular");
-            if (mat.highlight) listView1.Items.Add("ShineHighlight");
             if (mat.diffuse) listView1.Items.Add("Diffuse");
             if (mat.stagemap) listView1.Items.Add("StageMap");
             if (mat.cubemap) listView1.Items.Add("Cubemap");
+            if (mat.spheremap) listView1.Items.Add("SphereMap");
             if (mat.diffuse2) listView1.Items.Add("Diffuse2");
             if (mat.aomap) listView1.Items.Add("AO Map");
             if (mat.normalmap) listView1.Items.Add("NormalMap");
             if (mat.ramp) listView1.Items.Add("Ramp");
 
-            if (mat.useRimLight) listView1.Items.Add("Dummy Ramp");
+            if (mat.useDummyRamp) listView1.Items.Add("Dummy Ramp");
 
             while (listView1.Items.Count > mat.textures.Count)
                 listView1.Items.RemoveAt(1);
@@ -369,8 +418,13 @@ namespace Smash_Forge
             {
                 index = listView1.Items.IndexOf(listView1.SelectedItems[0]);
                 tableLayoutPanel2.Enabled = true;
+                textBox10.Enabled = true;
             }
-            else tableLayoutPanel2.Enabled = false;
+            else
+            {
+                tableLayoutPanel2.Enabled = false;
+                textBox10.Enabled = false;
+            }
             if(index >= material[current].textures.Count)
             {
                 MessageBox.Show("Texture doesn't exist");
@@ -571,15 +625,28 @@ namespace Smash_Forge
         // property change
         private void textBox11_TextChanged(object sender, EventArgs e)
         {
-            string[] labels = null;
+            MatParam labels = null;
             propList.TryGetValue(textBox11.Text, out labels);
-            
+            descriptionLabel.Text = "Description:\n";
+            tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 0));
+            tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 1));
+            tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 2));
+            tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 3));
             if (labels != null)
             {
-                label20.Text = labels[0].Equals("") ? "Param1" : labels[0];
-                label21.Text = labels[1].Equals("") ? "Param2" : labels[1];
-                label22.Text = labels[2].Equals("") ? "Param3" : labels[2];
-                label23.Text = labels[3].Equals("") ? "Param4" : labels[3];
+                descriptionLabel.Text += labels.description;
+                label20.Text = labels.ps[0].Equals("") ? "Param1" : labels.ps[0];
+                label21.Text = labels.ps[1].Equals("") ? "Param2" : labels.ps[1];
+                label22.Text = labels.ps[2].Equals("") ? "Param3" : labels.ps[2];
+                label23.Text = labels.ps[3].Equals("") ? "Param4" : labels.ps[3];
+                if(labels.control1 != null)
+                    paramGB.Controls.Add(labels.control1, 2, 0);
+                if (labels.control2 != null)
+                    paramGB.Controls.Add(labels.control2, 2, 1);
+                if (labels.control3 != null)
+                    paramGB.Controls.Add(labels.control3, 2, 2);
+                if (labels.control4 != null)
+                    paramGB.Controls.Add(labels.control4, 2, 3);
             } else
             {
                 label20.Text = "Param1";
@@ -907,14 +974,14 @@ namespace Smash_Forge
 
         private void rimLightCB_CheckedChanged(object sender, EventArgs e)
         {
-            material[current].UseRimLight = rimLightCB.Checked;
+            material[current].UseDummyRamp = dummyRampCB.Checked;
             //if(rimLightCB.Checked)specLightCB.Checked = !rimLightCB.Checked;
             FillForm();
         }
 
-        private void specLightCB_CheckedChanged(object sender, EventArgs e)
+        private void sphereMapCB_CheckedChanged(object sender, EventArgs e)
         {
-            material[current].UseSpecular = specLightCB.Checked;
+            material[current].UseSphereMap = sphereMapCB.Checked;
             //if (specLightCB.Checked)rimLightCB.Checked = !specLightCB.Checked;
             FillForm();
         }

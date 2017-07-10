@@ -323,6 +323,12 @@
     <Compile Include="GUI\Editors\VBNViewport.Designer.cs">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Menus\CameraPosition.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\CameraPosition.Designer.cs">
+      <DependentUpon>CameraPosition.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Menus\MaterialSelector.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -492,6 +498,9 @@
     <EmbeddedResource Include="GUI\Editors\VBNViewport.resx">
       <DependentUpon>VBNViewport.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\CameraPosition.resx">
+      <DependentUpon>CameraPosition.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\MaterialSelector.resx">
       <DependentUpon>MaterialSelector.cs</DependentUpon>
     </EmbeddedResource>
@@ -575,6 +584,12 @@
     <None Include="materials\Character Mats\Mat13 [Metal NUD Mat2].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="materials\Character Mats\Mat14 [Street Fighter Clothing Mat].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Character Mats\Mat15 [Reflectivity Map Mat].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="materials\Stage Mats\Mat01 [Regular].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -620,6 +635,9 @@
     <None Include="materials\Stage Mats\Mat15 [Cubemap+Norm+Char Reflection].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="param_labels\allstar_param_cafe.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="param_labels\event_param.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -638,7 +656,13 @@
     <None Include="param_labels\fighter_param_vl_xxx.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="param_labels\global_parameter_menu.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="param_labels\item_assist_gen_param.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\item_pokemon_gen_param.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\item_stage_gen_param.ini">
@@ -650,7 +674,16 @@
     <None Include="param_labels\light_set_param.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="param_labels\material_params.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="param_labels\render_param.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\simple_cafe_param.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\simple_character_db_cafe.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\stage_param.ini">
@@ -660,6 +693,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\ui_character_db.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\ui_figure_db.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\ui_movie_db.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\ui_soft_db.ini">
@@ -726,10 +765,12 @@
     <Content Include="lib\SALT.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\UVPattern.png" />
     <Content Include="YamlDotNet.dll" />
     <None Include="Resources\1.dds.png" />
     <None Include="Resources\cubemap2.bmp" />
     <None Include="Resources\10101000.png" />
+    <Content Include="Resources\10080000.png" />
     <Content Include="Resources\forge.ico" />
     <Content Include="lib\FITC.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

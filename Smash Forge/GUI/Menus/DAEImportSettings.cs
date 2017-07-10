@@ -135,10 +135,13 @@ namespace Smash_Forge
                                 for (int i = 0; i < v.tx.Count; i++)
                                     v.tx[i] = new Vector2(v.tx[i].X, 1 - v.tx[i].Y);
 
-                            if (vertcolorCB.Checked)
+                        if (vertColorDivCB.Checked)
+                            v.col = v.col / 2;
+
+                        if (vertcolorCB.Checked)
                                 v.col = new Vector4(0x7F, 0x7F, 0x7F, 0x7F);
 
-                            if (checkBox4.Checked)
+                        if (checkBox4.Checked)
                             {
                                 v.pos = Vector3.Transform(v.pos, rot);
                                 v.nrm = Vector3.Transform(v.nrm, rot);
@@ -216,6 +219,11 @@ namespace Smash_Forge
                     vbnFileLabel.Text = ofd.FileName;
                 }
             }
+        }
+
+        private void vertColorDivCB_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

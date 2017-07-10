@@ -18,6 +18,8 @@ namespace Smash_Forge
             OpenedFiles = new SortedList<string, FileBase>();
             MaterialAnimations = new Dictionary<string, MTA>();
             ParamManager = new CharacterParamManager();
+            gameScriptManager = new ACMDScriptManager();
+            Animnames = new Dictionary<uint, string>();
         }
 
         public static Dictionary<string, Shader> shaders = new Dictionary<string, Shader>();
@@ -55,6 +57,7 @@ namespace Smash_Forge
         public static bool renderCollisionNormals;
         public static bool renderHitboxes;
         public static bool renderInterpolatedHitboxes;
+        public static bool renderHitboxesColorByKb;
         public static bool renderFloor;
         public static bool renderScale;
         public static bool renderBackGround;
@@ -97,9 +100,9 @@ namespace Smash_Forge
         public static bool renderSpecular = true;
         public static bool renderReflection = true;
         public static float dif_inten = 0.15f;
-        public static float spc_inten = 0.5f;
-        public static float frs_inten = 0.75f;
-        public static float ref_inten = 0.75f;
+        public static float spc_inten = 0.75f;
+        public static float frs_inten = 1.00f;
+        public static float ref_inten = 1.00f;
         public static float amb_inten = 0.85f;
         public static float model_scale = 1f;
 
@@ -122,6 +125,8 @@ namespace Smash_Forge
             NormalMap = 3,
             VertColor = 4,
             AmbientOcclusion = 5,
+            UVCoords = 6,
+            UVTestPattern = 7
         }
         public enum FloorStyle
         {
@@ -141,6 +146,9 @@ namespace Smash_Forge
         public static PARAMEditor ParamManagerHelper { get; set; }
         public static Dictionary<string, int> ParamMoveNameIdMapping { get; set; }
         public static ACMDPreviewEditor acmdEditor;
+        public static ACMDScriptManager gameScriptManager;
+        public static Dictionary<uint, string> Animnames { get; set; }
+        public static int scriptId = -1;
 
         public static string CanonicalizePath(string path)
         {
@@ -252,6 +260,7 @@ namespace Smash_Forge
                         case "render_collision_normals": bool.TryParse(node.InnerText, out renderCollisionNormals); break;
                         case "render_hitboxes": bool.TryParse(node.InnerText, out renderHitboxes); break;
                         case "render_interpolated_hitboxes": bool.TryParse(node.InnerText, out renderInterpolatedHitboxes); break;
+                        case "render_hitboxes_kb": bool.TryParse(node.InnerText, out renderHitboxesColorByKb); break;
                         case "render_hurtboxes": bool.TryParse(node.InnerText, out renderHurtboxes); break;
                         case "render_hurtboxes_zone": bool.TryParse(node.InnerText, out renderHurtboxesZone); break;
                         case "render_ECB": bool.TryParse(node.InnerText, out renderECB); break;
@@ -462,6 +471,7 @@ for changing default texure
             renderNode.AppendChild(createNode(doc, "render_hurtboxes_zone", renderHurtboxesZone.ToString()));
             renderNode.AppendChild(createNode(doc, "render_hitboxes", renderHitboxes.ToString()));
             renderNode.AppendChild(createNode(doc, "render_interpolated_hitboxes", renderInterpolatedHitboxes.ToString()));
+            renderNode.AppendChild(createNode(doc, "render_hitboxes_kb", renderHitboxesColorByKb.ToString()));
             renderNode.AppendChild(createNode(doc, "render_ECB", renderECB.ToString()));
             renderNode.AppendChild(createNode(doc, "render_path", renderPath.ToString()));
             renderNode.AppendChild(createNode(doc, "render_indicators", renderIndicators.ToString()));

@@ -124,6 +124,9 @@
   <data name="sexy_green_down_arrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\sexy_green_down_arrow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="_10080000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\10080000.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="_10101000" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\10101000.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -135,5 +138,8 @@
   </data>
   <data name="icon_polygon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\icon_polygon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="UVPattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\UVPattern.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

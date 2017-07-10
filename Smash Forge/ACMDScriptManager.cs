@@ -9,9 +9,8 @@ using System.Threading.Tasks;
 namespace Smash_Forge
 {
     // For processing ACMD files and relaying the state to the GUI
-    class ACMDScriptManager
+    public class ACMDScriptManager
     {
-        public int scriptId { get; set; }
         public ACMDScript script { get; set; }
         public SortedList<int, Hitbox> Hitboxes { get; set; }
         // For interpolation
@@ -48,15 +47,11 @@ namespace Smash_Forge
             this.script = script;
         }
 
-        public ACMDScriptManager(ACMDScript script, int scriptId)
+        public void Reset(ACMDScript script = null, bool hardReset = false)
         {
-            Reset();
-            this.script = script;
-            this.scriptId = scriptId;
-        }
-
+            // Don't reset on the same script
+            if (script == this.script && !hardReset)
         public void Reset(ACMDScript script = null, int scriptId = -1, bool hardReset = false)
-        {
             // Don't reset on the same script
             if (script == this.script && !hardReset)
                 return;
@@ -69,7 +64,6 @@ namespace Smash_Forge
             BodyInvincible = false;
             FAFReached = false;
             resetFrame();
-            this.scriptId = scriptId;
 
             currentFrame = 0;
             this.script = script;
@@ -356,8 +350,8 @@ namespace Smash_Forge
                             Hitboxes.Remove(index);
                         break;
                     }
-                case 0x9126EBA2: // Subroutine: call another script
-                case 0xFA1BC28A: // Subroutine1: call another script
+                case 0xFA1BC28A: //External Subroutine: call another script
+                case 0x9126EBA2: //Subroutine
                     halt = processSubscriptCommandsAtCurrentFrame((uint)int.Parse(cmd.Parameters[0] + ""), halt, scriptCommandIndex);
                     break;
                 case 0xFAA85333:

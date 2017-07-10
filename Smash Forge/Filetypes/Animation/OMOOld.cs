@@ -196,7 +196,7 @@ namespace Smash_Forge
                         float w = (float)Math.Sqrt(Math.Abs(1 - (x * x + y * y + z * z)));
 
                         node.r = new Quaternion(baseNode[j].rv, w);
-                        //node.r.Normalize();
+                        node.r.Normalize();
                     }
 
                     if (baseNode[j].s_type == KeyNode.INTERPOLATED)
