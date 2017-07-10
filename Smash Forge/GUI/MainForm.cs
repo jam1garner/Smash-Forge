@@ -673,7 +673,8 @@ namespace Smash_Forge
             Runtime.killWorkspace = true;
             Runtime.ParamManager.Reset();
             Runtime.Animnames.Clear();
-            Runtime.Moveset.ScriptsHashList.Clear();
+            if(Runtime.Moveset!=null)
+                Runtime.Moveset.ScriptsHashList.Clear();
             Runtime.acmdEditor.updateCrcList();
         }
 
