@@ -251,16 +251,6 @@ namespace Smash_Forge
             }
         }
 
-        public static int applyBoneThunk(int boneId)
-        {
-            // Bone index thunk if we're in the base joint table.
-            // Secondary joint tables do not require this thunk and it breaks
-            // hitbox visualization if applied.
-            if (boneId < 1000)
-                boneId -= 1;
-            return boneId.Clamp(0, int.MaxValue);
-        }
-
         public void update(bool reset = false)
         {
             List<Bone> nodesToProcess = new List<Bone>();

@@ -1428,15 +1428,29 @@ namespace Smash_Forge
                                 b = m.vbn.bones[bid];
                             else
                             {
-                                if (jtbIndex < m.vbn.jointTable.Count)
+                                if (jtbIndex == 0)
                                 {
+                                    // Special rule for table 0, index 0 is *always* TransN, and index 1 counts as index 0
+                                    if (bid <= 0)
+                                    {
+                                        b = m.vbn.bones.Find(item => item.Name == "TransN");
+                                        if (b == null)
+                                            b = m.vbn.bones[0];
+                                    }
+                                    else  // Index 2 counts as index 1, etc
+                                        b = m.vbn.bones[m.vbn.jointTable[jtbIndex][bid - 1]];
+                                }
+                                else if (jtbIndex < m.vbn.jointTable.Count)
+                                {
+                                    // Extra joint tables don't have the TransN rule
                                     b = m.vbn.bones[m.vbn.jointTable[jtbIndex][bid]];
                                 }
                                 else
                                 {
                                     //If there is no jointTable but bone is >1000 then don't look into a another joint table
                                     //This makes some weapons like Luma have hitboxes visualized
-                                    b = m.vbn.bones[bid];
+                                    //b = m.vbn.bones[bid];
+                                    b = m.vbn.bones[m.vbn.jointTable[m.vbn.jointTable.Count - 1][bid]];
                                 }
                             }
                         }

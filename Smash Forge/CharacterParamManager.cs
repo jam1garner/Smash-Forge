@@ -45,7 +45,7 @@ namespace Smash_Forge
                 {
                     ECB ecb = new ECB();
                     ecb.ID = id;
-                    ecb.Bone = VBN.applyBoneThunk(Convert.ToInt32(((ParamGroup)param.Groups[3])[id][0].Value));
+                    ecb.Bone = Convert.ToInt32(((ParamGroup)param.Groups[3])[id][0].Value);
                     ecb.X = Convert.ToSingle(((ParamGroup)param.Groups[3])[id][1].Value);
                     ecb.Y = Convert.ToSingle(((ParamGroup)param.Groups[3])[id][2].Value);
                     ecb.Z = Convert.ToSingle(((ParamGroup)param.Groups[3])[id][3].Value);
@@ -67,7 +67,7 @@ namespace Smash_Forge
                     hurtbox.Z2 = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][5].Value);
 
                     hurtbox.Size = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][6].Value);
-                    hurtbox.Bone = VBN.applyBoneThunk(Convert.ToInt32(((ParamGroup)param.Groups[4])[id][7].Value));
+                    hurtbox.Bone = Convert.ToInt32(((ParamGroup)param.Groups[4])[id][7].Value);
                     hurtbox.Part = Convert.ToInt32(((ParamGroup)param.Groups[4])[id][8].Value);
                     hurtbox.Zone = Convert.ToInt32(((ParamGroup)param.Groups[4])[id][9].Value);
 
