@@ -596,8 +596,10 @@ namespace Smash_Forge
             mtaNode.Nodes.Clear();
             Runtime.SoundContainers.Clear();
             Runtime.Animations.Clear();
+            Runtime.Animnames.Clear();
             Runtime.MaterialAnimations.Clear();
             Runtime.TargetVBN.reset();
+            Runtime.acmdEditor.updateCrcList();
         }
 
         private void importToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -607,6 +609,7 @@ namespace Smash_Forge
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     Runtime.Moveset = new MovesetManager(ofd.FileName);
+                    Runtime.acmdEditor.updateCrcList();
                 }
             }
         }
@@ -669,6 +672,9 @@ namespace Smash_Forge
         {
             Runtime.killWorkspace = true;
             Runtime.ParamManager.Reset();
+            Runtime.Animnames.Clear();
+            Runtime.Moveset.ScriptsHashList.Clear();
+            Runtime.acmdEditor.updateCrcList();
         }
 
         private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -726,6 +732,7 @@ namespace Smash_Forge
                             {
                                 //openFile(s + "\\animcmd\\body\\motion.mtable");
                                 Runtime.Moveset = new MovesetManager(s + "\\animcmd\\body\\motion.mtable");
+                                Runtime.acmdEditor.updateCrcList();
                             }
                         }
                     }
@@ -1023,6 +1030,8 @@ namespace Smash_Forge
                                 animNode.Nodes.Add(AnimName);
                                 Runtime.Animations.Add(AnimName, anim);
                             }
+
+                            AddAnimName(AnimName.Substring(3).Replace(".omo",""));
                         }
                         else
                         {
@@ -1034,6 +1043,7 @@ namespace Smash_Forge
                                 Runtime.Animations.Add(pair.Key, anim);
                             }
                         }
+                        Runtime.acmdEditor.updateCrcList();
                     }
                     else if (pair.Key.EndsWith(".mta"))
                     {
@@ -1508,6 +1518,7 @@ namespace Smash_Forge
             {
                 //project.openACMD(filename);
                 Runtime.Moveset = new MovesetManager(filename);
+                Runtime.acmdEditor.updateCrcList();
             }
             if (filename.EndsWith(".atkd"))
             {
@@ -2000,6 +2011,15 @@ namespace Smash_Forge
                 viewports[0].cameraPosForm = cameraPosForm;
             }
             cameraPosForm.Show();
+        }
+
+        private void AddAnimName(string AnimName)
+        {
+            uint crc = Crc32.Compute(AnimName.ToLower());
+            if (Runtime.Animnames.ContainsValue(AnimName) || Runtime.Animnames.ContainsKey(crc))
+                return;
+
+            Runtime.Animnames.Add(crc, AnimName);
         }
     }
 }

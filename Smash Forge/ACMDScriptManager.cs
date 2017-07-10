@@ -9,9 +9,8 @@ using System.Threading.Tasks;
 namespace Smash_Forge
 {
     // For processing ACMD files and relaying the state to the GUI
-    class ACMDScriptManager
+    public class ACMDScriptManager
     {
-        public int scriptId { get; set; }
         public ACMDScript script { get; set; }
         public SortedList<int, Hitbox> Hitboxes { get; set; }
         // For interpolation
@@ -40,14 +39,7 @@ namespace Smash_Forge
             this.script = script;
         }
 
-        public ACMDScriptManager(ACMDScript script, int scriptId)
-        {
-            Reset();
-            this.script = script;
-            this.scriptId = scriptId;
-        }
-
-        public void Reset(ACMDScript script = null, int scriptId = -1, bool hardReset = false)
+        public void Reset(ACMDScript script = null, bool hardReset = false)
         {
             // Don't reset on the same script
             if (script == this.script && !hardReset)
@@ -60,7 +52,6 @@ namespace Smash_Forge
             BodyIntangible = false;
             BodyInvincible = false;
             FAFReached = false;
-            this.scriptId = scriptId;
 
             currentFrame = 0;
             this.script = script;

@@ -2095,7 +2095,17 @@ namespace Smash_Forge
                 mat.entries.Add("NU_materialHash", new float[] { FileData.toFloat(0x7E538F65), 0, 0, 0 });
                 materials.Add(mat);
 
-                mat.textures.Add(makeDefault());
+                // don't load 10080000 as default diffuse textureID to avoid displaying ramp as diffuse for imports
+                Mat_Texture defaultDif = new Mat_Texture();
+                defaultDif.WrapMode1 = 1;
+                defaultDif.WrapMode2 = 1;
+                defaultDif.minFilter = 3;
+                defaultDif.magFilter = 2;
+                defaultDif.mipDetail = 1;
+                defaultDif.mipDetail = 6;
+                defaultDif.hash = 0x10000000;
+
+                mat.textures.Add(defaultDif);
                 mat.textures.Add(makeDefault());
             }
 

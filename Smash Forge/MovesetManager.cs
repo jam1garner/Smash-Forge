@@ -54,7 +54,6 @@ namespace Smash_Forge
             if (MotionTable != null)
                 ScriptsHashList.AddRange(MotionTable.ToList());
 
-
         }
 
         public Dictionary<int, Hitbox> Hitboxes { get; set; }
