@@ -372,7 +372,7 @@ namespace Smash_Forge
                     break;
                 case 0xF13BFE8D: //Bone collision state (intangibility/invincibility)
                     {
-                        int bone = VBN.applyBoneThunk((int)cmd.Parameters[0]);
+                        int bone = (int)cmd.Parameters[0];
                         int state = (int)cmd.Parameters[1];
                         switch(state)
                         {
@@ -421,11 +421,6 @@ namespace Smash_Forge
                         break;
                     }
 
-            }
-
-            if (newHitbox != null)
-            {
-                newHitbox.Bone = VBN.applyBoneThunk(newHitbox.Bone);
             }
             return halt;
         }
