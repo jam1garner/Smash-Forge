@@ -219,6 +219,7 @@ namespace Smash_Forge
                 LastHitboxes.Add(kvp.Key, (Hitbox)kvp.Value.Clone());
         }
 
+        // TODO: store anim name with script
         public void processAnimationParams(string animname)
         {
             if (Runtime.ParamMoveNameIdMapping == null)
@@ -560,7 +561,7 @@ namespace Smash_Forge
                     break;
                 case 0xF13BFE8D: //Bone collision state (intangibility/invincibility)
                     {
-                        int bone = VBN.applyBoneThunk((int)cmd.Parameters[0]);
+                        int bone = (int)cmd.Parameters[0];
                         int state = (int)cmd.Parameters[1];
                         switch (state)
                         {
@@ -613,7 +614,6 @@ namespace Smash_Forge
 
             if (newHitbox != null)
             {
-                newHitbox.Bone = VBN.applyBoneThunk(newHitbox.Bone);
                 newHitbox.FramesSinceCreation = 0;
                 newHitbox.FramesSinceDeletion = -1;  // Means not deleted yet
             }

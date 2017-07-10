@@ -1913,6 +1913,11 @@ namespace Smash_Forge
                     HandleACMD("Attack100End.omo");
                     return;
                 }
+                else if (animname.Contains("ZeldaPhantomMainPhantom"))
+                {
+                    HandleACMD(animname.Replace("ZeldaPhantomMainPhantom", ""));
+                    return;
+                }
                 else
                 {
                     gameAcmdScript = null;
@@ -2290,6 +2295,8 @@ namespace Smash_Forge
             this.gifMaker.currentFrame = 0;
             this.gifMaker.currentFrameCaptured = false;
             this.gifMaker.keyframes = new List<Image>();
+            if (String.IsNullOrWhiteSpace(Runtime.ModelContainers[0].name))
+                Runtime.ModelContainers[0].name = "undefined";
             System.IO.Directory.CreateDirectory(Runtime.ModelContainers[0].name);
             this.gifMaker.gifName = $"{Runtime.ModelContainers[0].name}\\{Runtime.TargetAnimString.Replace(".omo", "").Substring(3)}";
         }
