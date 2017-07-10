@@ -60,7 +60,10 @@ namespace Smash_Forge
             Runtime.renderBackGround = true;
             Runtime.renderHitboxes = true;
             Runtime.renderInterpolatedHitboxes = true;
-            Runtime.renderHitboxesColorByKb = true;
+            Runtime.hitboxRenderMode = Hitbox.RENDER_KNOCKBACK;
+            Runtime.hitboxAlpha = 130;
+            Runtime.hitboxKnockbackColors = new List<System.Drawing.Color>();
+            Runtime.hitboxIdColors = new List<System.Drawing.Color>();
             Runtime.renderModel = true;
             Runtime.renderPath = true;
             Runtime.renderCollisions = true;

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Smash_Forge
 {
-    class ForgeACMDScript
+    public class ForgeACMDScript
     {
         public class ScriptState
         {
@@ -57,6 +57,9 @@ namespace Smash_Forge
         }
         public bool incrementFrameValue;   // Whether to increment the frame value next frame
         public bool adjustAnimFrames;      // Fixup for anim frames, only happens when frameSpeed <= 1 on first frame
+
+        // Trying to emulate float comparison with the smash engine
+        public static double Epsilon = 0.000000000001;
 
         public int scriptCommandIndex { get; set; }
         private int loopStart;
@@ -111,9 +114,13 @@ namespace Smash_Forge
             if (script == null)
                 return;
 
+            bool wasReset = false;
             if (frame < currentGameFrame)
+            {
                 // Reset script to frame 0 and process from there
                 Reset();
+                wasReset = true;
+            }
 
             bool keepProcessing;
             while (currentGameFrame <= frame)
@@ -164,6 +171,12 @@ namespace Smash_Forge
                 currentGameFrame += 1;
                 //Console.WriteLine($"END GAME FRAME: gameFrame={currentGameFrame} animationFrame={animationFrame} currentFrame={currentFrame}");
             }
+
+            // Avoid weird interpolations showing if going back a frame
+            // Ultimately we want to tie this to the animation eventually so that
+            // we aren't relying on the render loop to calculate hitbox positions.
+            if (wasReset)
+                LastHitboxes.Clear();
         }
 
         public void processFrame()
@@ -201,48 +214,15 @@ namespace Smash_Forge
 
         public void updateHitboxes(bool updateInterpolation)
         {
-            //List<int> toDelete = new List<int>();
-            //foreach (KeyValuePair<int, Hitbox> kvp in Hitboxes)
-            //{
-            //    kvp.Value.FramesSinceCreation++;
-            //    if (kvp.Value.FramesSinceDeletion > -1)  // i.e. already marked for deletion
-            //        kvp.Value.FramesSinceDeletion++;
-            //    if (kvp.Value.FramesSinceDeletion >= Hitbox.FRAME_ACTIVATION_THRESHOLD)
-            //        toDelete.Add(kvp.Key);
-            //}
-            //foreach (int i in toDelete)
-            //    Hitboxes.Remove(i);
-
             // Store the last frame's hitboxes for interpolation reasons
             LastHitboxes = new SortedList<int, Hitbox>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
             foreach (KeyValuePair<int, Hitbox> kvp in Hitboxes)
                 LastHitboxes.Add(kvp.Key, (Hitbox)kvp.Value.Clone());
         }
 
-        // TODO: store anim name with script
-        public void processAnimationParams(string animname)
+        public static bool doubleEquals(double d1, double d2)
         {
-            if (Runtime.ParamMoveNameIdMapping == null)
-                return;
-
-            int moveId;
-            if (!Runtime.ParamMoveNameIdMapping.TryGetValue(animname, out moveId))
-                return;
-
-            MoveData moveData;
-            if (!Runtime.ParamManager.MovesData.TryGetValue(moveId, out moveData))
-                return;
-
-            // Forge uses 0-index while game data (params) uses 1-index, so convert here
-            if (currentFrame >= moveData.IntangibilityStart - 1 && currentFrame < moveData.IntangibilityEnd - 1)
-                this.BodyIntangible = true;
-            else
-                this.BodyIntangible = false;
-
-            if (currentFrame >= moveData.FAF)
-                this.FAFReached = true;
-            else
-                this.FAFReached = false;
+            return (Math.Abs(d1 - d2) < Epsilon);
         }
 
         /// <summary>
@@ -258,23 +238,31 @@ namespace Smash_Forge
                 case 0x42ACFE7D: // Asynchronous Timer, exact animation frame on which next command should run
                     {
                         float continueOnFrame = (float)cmd.Parameters[0];
-                        if (currentFrame >= continueOnFrame)
-                            return true;  // Timer finished, keep processing
+                        // A way of saying strictly greater than or equal to (>=) with better precision
+                        if (doubleEquals(currentFrame, continueOnFrame) || currentFrame > continueOnFrame)
+                            return true;  // Timer finished, keep processing ACMD commands
                         return false;  // Timer hasn't finished yet
                     }
                 case 0x4B7B6E51: // Synchronous Timer, number of animation frames to wait until next command should run
                     {
                         // Formula from ASM is: stopAfterFrames - ((is_active * frameSpeed) + framesSinceSyncTimerStarted) > 0
                         // THEN the timer has finished.
+
                         if (framesSinceSyncTimerStarted < 0)
+                            // Interesting to note that the first encounter sets the frames to 0
+                            // in the game's code, while subsequent timer encounters increment it.
+                            // Thus a Synchronous_Timer(Frames=0) would always instantly finish.
                             framesSinceSyncTimerStarted = 0;
                         else
                             framesSinceSyncTimerStarted += frameSpeed;
 
                         float stopAfterFrames = (int)(float)cmd.Parameters[0];
-                        if (stopAfterFrames - framesSinceSyncTimerStarted > 0)
+                        double framesPassed = stopAfterFrames - framesSinceSyncTimerStarted;
+                        // A way of saying strictly greater than (>) with better precision
+                        if (!doubleEquals(framesPassed, 0d) && framesPassed > 0)
                             return false;  // Timer hasn't finished yet
-                        // Timer finished, keep processing
+
+                        // Timer finished, keep processing ACMD commands
                         framesSinceSyncTimerStarted = -1;
                         return true;
                     }
@@ -285,6 +273,12 @@ namespace Smash_Forge
                         break;
                     }
                 case 0xB2E91D0C: // Used in bayo scripts to set the Frame_Speed to a specific value
+                    {
+                        if (Runtime.useFrameDuration)
+                            frameSpeed = (float)cmd.Parameters[0];
+                        break;
+                    }
+                case 0xA546845C: // Frame_Speed_Multiplier, sets Frame_Speed = Arg0
                     {
                         if (Runtime.useFrameDuration)
                             frameSpeed = (float)cmd.Parameters[0];
@@ -449,20 +443,15 @@ namespace Smash_Forge
                         break;
                     }
                 case 0x9245E1A8: // clear all hitboxes
-                    foreach (Hitbox h in Hitboxes.Values)
-                        h.FramesSinceDeletion = 0;
                     Hitboxes.Clear();
                     break;
                 case 0xFF379EB6: // delete hitbox
                     if (Hitboxes.ContainsKey((int)cmd.Parameters[0]))
                     {
-                        Hitboxes[(int)cmd.Parameters[0]].FramesSinceDeletion = 0;
                         Hitboxes.RemoveAt((int)cmd.Parameters[0]);
                     }
                     break;
                 case 0x7698BB42: // deactivate previous hitbox
-                    // NOT TOTALLY SURE ABOUT WHETHER THIS IS FRAME DELAYED. ASSUMING IT IS.
-                    Hitboxes[Hitboxes.Keys.Max()].FramesSinceDeletion = 0;
                     Hitboxes.RemoveAt(Hitboxes.Keys.Max());
                     break;
                 case 0xEB375E3: // Set Loop
@@ -610,12 +599,6 @@ namespace Smash_Forge
                         break;
                     }
 
-            }
-
-            if (newHitbox != null)
-            {
-                newHitbox.FramesSinceCreation = 0;
-                newHitbox.FramesSinceDeletion = -1;  // Means not deleted yet
             }
             return true;
         }

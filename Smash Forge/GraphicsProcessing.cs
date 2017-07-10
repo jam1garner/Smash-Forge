@@ -95,7 +95,7 @@ namespace Smash_Forge
                 // 60fps for now, can speed up in gfycat
                 // TODO: in the future support a list of FPS and output them all
                 // this should be fast since the quantization only happens once
-                encoder.FrameDelay = TimeSpan.FromMilliseconds(1000 / 30);
+                encoder.FrameDelay = TimeSpan.FromMilliseconds(1000 / 15);
                 foreach (Bitmap frame in gifMaker.keyframes)
                 {
                     encoder.AddFrame(frame);

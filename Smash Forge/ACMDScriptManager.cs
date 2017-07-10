@@ -47,11 +47,8 @@ namespace Smash_Forge
             this.script = script;
         }
 
-        public void Reset(ACMDScript script = null, bool hardReset = false)
-        {
-            // Don't reset on the same script
-            if (script == this.script && !hardReset)
         public void Reset(ACMDScript script = null, int scriptId = -1, bool hardReset = false)
+        {
             // Don't reset on the same script
             if (script == this.script && !hardReset)
                 return;

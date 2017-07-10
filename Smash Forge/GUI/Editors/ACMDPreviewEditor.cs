@@ -58,9 +58,9 @@ namespace Smash_Forge
                 set = true;
 
                 //HighlightSyntax();
-                //Update ACMDScriptManager
-                Runtime.gameScriptManager.Reset((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
-                Runtime.gameScriptManager.processScript();
+                //Update game script
+                Runtime.gameAcmdScript = new ForgeACMDScript((ACMDScript)Runtime.Moveset.Game.Scripts[crc], Runtime.scriptId);
+                Runtime.gameAcmdScript.processToFrame(0);
             }
             else
             {
@@ -107,7 +107,6 @@ namespace Smash_Forge
 
                 //HighlightSyntax();
             }
-            }
             ignoreTextChangedEvent = false;
         }
 
@@ -139,9 +138,9 @@ namespace Smash_Forge
 
                     if (manualCrc)
                     {
-                        //Crc was set manually, update gamescriptmanager to process script
-                        Runtime.gameScriptManager.Reset(script);
-                        Runtime.gameScriptManager.processScript();
+                        //Crc was set manually, update gameScript to process script
+                        Runtime.gameAcmdScript = new ForgeACMDScript(script, Runtime.Moveset.ScriptsHashList.IndexOf(crc));
+                        Runtime.gameAcmdScript.processToFrame(0);
                     }
                 } catch (Exception)
                 {

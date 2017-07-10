@@ -178,8 +178,9 @@ namespace Smash_Forge
         public const int WINDBOX = 2;
         public const int SEARCHBOX = 3;
 
-        public const int RENDER_DAMAGE = 0;
-        public const int RENDER_ID = 1;
+        public const int RENDER_NORMAL = 0;
+        public const int RENDER_KNOCKBACK = 1;
+        public const int RENDER_ID = 2;
 
         public int Bone { get; set; }
         public float Size { get; set; }
@@ -189,15 +190,6 @@ namespace Smash_Forge
         public float X2 { get; set; }
         public float Y2 { get; set; }
         public float Z2 { get; set; }
-
-        // Important for exactly when the hitboxes become active, used by ACMD
-        public int FramesSinceCreation { get; set; }
-        public int FramesSinceDeletion { get; set; }
-        // Note: I'm not entirely sure how overwriting a hitbox interacts with these values.
-        // I'm inclined to think that it would inherit the same FramesSinceCreation.
-        // To account for the frame difference between ACMD command frames and
-        // in-game rendered animation frames. This refers to # of command frames
-        public static int FRAME_ACTIVATION_THRESHOLD = 1;
 
         // Stuff for interpolation, set during rendering
         // These are *post transform*
@@ -209,6 +201,13 @@ namespace Smash_Forge
             h.va = new Vector3(va);
             h.va2 = new Vector3(va2);
             return h;
+        }
+
+        public bool IsSphere()
+        {
+            if (Extended)
+                return (X2 == X && Y2 == Y && Z2 == Z);
+            return true;
         }
 
         // Just a quick way to generalise this for all cases without opponent weight being involved
@@ -225,75 +224,30 @@ namespace Smash_Forge
         public static readonly float KB_LOWER_THRESHOLD = 100;
         public int getKnockbackBucket(float knockback)
         {
-            float bucketRange = (KB_UPPER_THRESHOLD - KB_LOWER_THRESHOLD) / knockbackColors.Count;
+            float bucketRange = (KB_UPPER_THRESHOLD - KB_LOWER_THRESHOLD) / Runtime.hitboxKnockbackColors.Count;
             if (knockback < KB_LOWER_THRESHOLD) knockback = KB_LOWER_THRESHOLD;
             if (knockback > KB_UPPER_THRESHOLD) knockback = KB_UPPER_THRESHOLD - 0.001f;
             return (int)Math.Floor((knockback - KB_LOWER_THRESHOLD) / bucketRange);
         }
 
-        // See https://stackoverflow.com/questions/470690/how-to-automatically-generate-n-distinct-colors
-        // for a really good overview of how to use distinct colours.
-        //UIntToColor(0xFFFFB300), //Vivid Yellow
-        //UIntToColor(0xFF803E75), //Strong Purple
-        //UIntToColor(0xFFFF6800), //Vivid Orange
-        //UIntToColor(0xFFA6BDD7), //Very Light Blue
-        //UIntToColor(0xFFC10020), //Vivid Red
-        //UIntToColor(0xFFCEA262), //Grayish Yellow
-        //UIntToColor(0xFF817066), //Medium Gray
-
-        ////The following will not be good for people with defective color vision
-        //UIntToColor(0xFF007D34), //Vivid Green
-        //UIntToColor(0xFFF6768E), //Strong Purplish Pink
-        //UIntToColor(0xFF00538A), //Strong Blue
-        //UIntToColor(0xFFFF7A5C), //Strong Yellowish Pink
-        //UIntToColor(0xFF53377A), //Strong Violet
-        //UIntToColor(0xFFFF8E00), //Vivid Orange Yellow
-        //UIntToColor(0xFFB32851), //Strong Purplish Red
-        //UIntToColor(0xFFF4C800), //Vivid Greenish Yellow
-        //UIntToColor(0xFF7F180D), //Strong Reddish Brown
-        //UIntToColor(0xFF93AA00), //Vivid Yellowish Green
-        //UIntToColor(0xFF593315), //Deep Yellowish Brown
-        //UIntToColor(0xFFF13A13), //Vivid Reddish Orange
-        //UIntToColor(0xFF232C16), //Dark Olive Green
-        public static readonly List<Color> knockbackColors = new List<Color>()
-        {
-            //Color.FromArgb(0xFF, 0xCE, 0xA2, 0x62), // Grayish yellow
-            Color.FromArgb(0xFF, 0x00, 0x7D, 0x34), // Vivid green
-            //Color.FromArgb(0xFF, 0xC8, 0xC8, 0x00),   // Vivid Greenish Yellow
-            Color.FromArgb(0xFF, 0xFF, 0xB3, 0x0),    // Vivid yellow
-            Color.FromArgb(0xFF, 0xFF, 0x68, 0x00),   // Vivid orange
-            Color.FromArgb(0xFF, 0xC1, 0x0, 0x20),    // Vivid red
-        };
-
-        public static readonly List<Color> idColors = new List<Color>()
-        {
-            Color.FromArgb(0xFF, 0xFF, 0xB3, 0x00), // Vivid yellow
-            Color.FromArgb(0xFF, 0x80, 0x3E, 0x75), // Strong purple
-            Color.FromArgb(0xFF, 0xC1, 0x00, 0x20), // Vivid red
-            Color.FromArgb(0xFF, 0xCE, 0xA2, 0x62), // Grayish yellow
-            Color.FromArgb(0xFF, 0x81, 0x70, 0x66), // Medium gray
-            Color.FromArgb(0xFF, 0x00, 0x53, 0x8A), // Strong blue
-            Color.FromArgb(0xFF, 0x59, 0x33, 0x15), // Deep yellowish brown
-        };
-
         public Color GetRegularDisplayColor()
         {
-            if (Runtime.hitboxRenderType == RENDER_DAMAGE)
+            if (Runtime.hitboxRenderMode == RENDER_KNOCKBACK)
             {
-                // Chooses different colour from distinctColours depending on knockback
+                // Chooses different color from distinctColours depending on knockback
                 // or things like spike angle
                 if (Angle > 245 && Angle < 295)
                     return Color.FromArgb(0xFF, Color.Black);
                 float kb = GetSimplifiedKnockback(Damage, KnockbackBase, KnockbackGrowth, 160);
-                return knockbackColors[getKnockbackBucket(kb)];
+                return Runtime.hitboxKnockbackColors[getKnockbackBucket(kb)];
             }
             else
             {
-                return idColors[ID];
+                return Runtime.hitboxIdColors[ID];
             }
         }
 
-        // The colour to fill a Hitbox with when displaying
+        // The color to fill a Hitbox with when displaying
         public Color GetDisplayColor()
         {
             Color color;
@@ -301,24 +255,24 @@ namespace Smash_Forge
             {
                 case Hitbox.HITBOX:
                     if (Ignore_Throw)
-                        color = Color.FromArgb(130, 0x59, 0x33, 0x15); // Deep yellowish brown
+                        color = Color.FromArgb(Runtime.hitboxAlpha, 0x59, 0x33, 0x15); // Deep yellowish brown
                     else
-                        if (Runtime.renderHitboxesColorByKb)
-                            color = Color.FromArgb(130, GetRegularDisplayColor());
+                        if (Runtime.hitboxRenderMode == Hitbox.RENDER_NORMAL)
+                            color = Color.FromArgb(Runtime.hitboxAlpha, Color.Red);
                         else
-                            color = Color.FromArgb(130, Color.Red);
+                            color = Color.FromArgb(Runtime.hitboxAlpha, GetRegularDisplayColor());
                     break;
                 case Hitbox.GRABBOX:
-                    color = Color.FromArgb(130, Color.Purple);
+                    color = Color.FromArgb(Runtime.hitboxAlpha, Color.Purple);
                     break;
                 case Hitbox.WINDBOX:
-                    color = Color.FromArgb(130, Color.Blue);
+                    color = Color.FromArgb(Runtime.hitboxAlpha, Color.Blue);
                     break;
                 case Hitbox.SEARCHBOX:
-                    color = Color.FromArgb(130, Color.DarkOrange);
+                    color = Color.FromArgb(Runtime.hitboxAlpha, Color.DarkOrange);
                     break;
                 default:
-                    color = Color.FromArgb(130, Color.FloralWhite);
+                    color = Color.FromArgb(Runtime.hitboxAlpha, Color.FloralWhite);
                     break;
             }
             return color;
