@@ -17,14 +17,68 @@ namespace Smash_Forge
     {
         public uint crc;
         public bool set = false;
+        public bool manualCrc = false;
+        private bool ignoreTextChangedEvent = false;
+        private Dictionary<uint, string> crcDict = new Dictionary<uint, string>();
 
         public ACMDPreviewEditor()
         {
             InitializeComponent();
         }
 
+        public void SetManualScript(uint crc)
+        {
+            bool changed = false;
+            if (cb_section.Text.Equals("GAME") && Runtime.Moveset.Game.Scripts.ContainsKey(crc))
+            {
+                richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
+                changed = true;
+            }
+            if (cb_section.Text.Equals("SOUND") && Runtime.Moveset.Sound.Scripts.ContainsKey(crc))
+            {
+                richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Sound.Scripts[crc]);
+                changed = true;
+            }
+            if (cb_section.Text.Equals("EXPRESSION") && Runtime.Moveset.Expression.Scripts.ContainsKey(crc))
+            {
+                richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Expression.Scripts[crc]);
+                changed = true;
+            }
+            if (cb_section.Text.Equals("EFFECT") && Runtime.Moveset.Effect.Scripts.ContainsKey(crc))
+            {
+                richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Effect.Scripts[crc]);
+                changed = true;
+            }
+
+            this.crc = crc;
+            if (Runtime.Moveset.ScriptsHashList.Contains(crc))
+                Runtime.scriptId = Runtime.Moveset.ScriptsHashList.IndexOf(crc);
+            if (changed)
+            {
+                set = true;
+
+                //HighlightSyntax();
+                //Update ACMDScriptManager
+                Runtime.gameScriptManager.Reset((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
+                Runtime.gameScriptManager.processScript();
+            }
+            else
+            {
+                richTextBox1.Text = "";
+            }
+        }
+
         public void SetAnimation(uint crc)
         {
+            //If manually set the crc ignore viewport handleACMD
+            if (manualCrc)
+                return;
+
+            //Activate flag to ignore selectedIndexChanged event when updating Text
+            ignoreTextChangedEvent = true;
+            if (crcDict.ContainsKey(crc))
+                cb_crc.Text = crcDict[crc];
+
             bool changed = false;
             if (cb_section.Text.Equals("GAME") && Runtime.Moveset.Game.Scripts.ContainsKey(crc))
             {
@@ -50,13 +104,15 @@ namespace Smash_Forge
             {
                 set = true;
                 this.crc = crc;
+
                 //HighlightSyntax();
             }
+            ignoreTextChangedEvent = false;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if(Runtime.Moveset != null && Runtime.Moveset.Game.Scripts.ContainsKey(crc))
+            if(Runtime.Moveset != null)
             {
                 // need to split into lines
                 string[] line = richTextBox1.Text.Split('\n');
@@ -76,7 +132,16 @@ namespace Smash_Forge
                         index++;
                     }
 
-                    Runtime.Moveset.Game.Scripts[crc] = script;
+                    //Update script if it already exists
+                    if (Runtime.Moveset.Game.Scripts.ContainsKey(crc))
+                        Runtime.Moveset.Game.Scripts[crc] = script;
+
+                    if (manualCrc)
+                    {
+                        //Crc was set manually, update gamescriptmanager to process script
+                        Runtime.gameScriptManager.Reset(script);
+                        Runtime.gameScriptManager.processScript();
+                    }
                 } catch (Exception)
                 {
                     HighlightLine(richTextBox1, index, Color.Red);
@@ -140,6 +205,45 @@ namespace Smash_Forge
         private void richTextBox1_KeyPress(object sender, KeyPressEventArgs e)
         {
             //HighlightSyntax();
+        }
+
+        public void updateCrcList()
+        {
+            cb_crc.Items.Clear();
+            crcDict.Clear();
+            List<uint> crcs = new List<uint>();
+            List<string> list = new List<string>();
+            if (Runtime.Moveset != null)
+            {
+                //Get unique crc
+                crcs = Runtime.Moveset.ScriptsHashList.Distinct().ToList();
+                for (int i = 0; i < crcs.Count; i++)
+                {
+                    string s = "";
+                    if (Runtime.Animnames.ContainsKey(crcs[i]))
+                        s = Runtime.Animnames[crcs[i]] + " - ";
+
+                    s += $"0x{crcs[i].ToString("X8")}";
+
+                    if (!crcDict.ContainsKey(crcs[i]))
+                        crcDict.Add(crcs[i], s);
+
+                    cb_crc.Items.Add(s);
+                }
+            }
+        }
+
+        private void updateCrc(object sender, EventArgs e)
+        {
+            //Ignore if this was done by setAnmation
+            if (ignoreTextChangedEvent)
+                return;
+
+            manualCrc = true;
+            string temp = cb_crc.Text.Substring(cb_crc.Text.Length - 8);
+            uint ncrc = uint.Parse(cb_crc.Text.Substring(cb_crc.Text.Length-8), System.Globalization.NumberStyles.HexNumber);
+            if (ncrc != crc)
+                SetManualScript(ncrc);
         }
     }
 }

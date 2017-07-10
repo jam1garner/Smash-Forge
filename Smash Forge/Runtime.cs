@@ -18,6 +18,8 @@ namespace Smash_Forge
             OpenedFiles = new SortedList<string, FileBase>();
             MaterialAnimations = new Dictionary<string, MTA>();
             ParamManager = new CharacterParamManager();
+            gameScriptManager = new ACMDScriptManager();
+            Animnames = new Dictionary<uint, string>();
         }
 
         public static Dictionary<string, Shader> shaders = new Dictionary<string, Shader>();
@@ -131,6 +133,9 @@ namespace Smash_Forge
         public static PARAMEditor ParamManagerHelper { get; set; }
         public static Dictionary<string, int> ParamMoveNameIdMapping { get; set; }
         public static ACMDPreviewEditor acmdEditor;
+        public static ACMDScriptManager gameScriptManager;
+        public static Dictionary<uint, string> Animnames { get; set; }
+        public static int scriptId = -1;
 
         public static string CanonicalizePath(string path)
         {
