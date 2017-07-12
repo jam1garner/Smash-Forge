@@ -22,6 +22,7 @@ namespace Smash_Forge
         public bool BodyInvincible { get; set; }
         public bool FAFReached { get; set; }
         public int currentFrame { get; set; }
+        public bool SuperArmor { get; set; }
 
         // TODO: these may need to be passed down for proper subscript parsing
         // if any subscripts are used in loops anywhere.
@@ -51,6 +52,7 @@ namespace Smash_Forge
             IntangibleBones = new List<int>();
             BodyIntangible = false;
             BodyInvincible = false;
+            SuperArmor = false;
             FAFReached = false;
 
             currentFrame = 0;
@@ -386,6 +388,15 @@ namespace Smash_Forge
                         }
                         break;
                     }
+                case 0x2A25155D:
+                    {
+                        int state = (int)cmd.Parameters[0];
+                        if (state == 1)
+                            SuperArmor = true;
+                        else
+                            SuperArmor = false;
+                        break;
+                    }
 
             }
             return halt;
@@ -397,6 +408,7 @@ namespace Smash_Forge
             Hitboxes = new SortedList<int, Hitbox>();
             InvincibleBones = new List<int>();
             IntangibleBones = new List<int>();
+            SuperArmor = false;
             // The next frame the script halts at for execution. Only modified
             // by timer commands.
             int halt = -1;

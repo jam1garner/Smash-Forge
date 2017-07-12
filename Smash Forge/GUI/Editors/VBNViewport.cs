@@ -1630,6 +1630,9 @@ namespace Smash_Forge
 
                     if (Runtime.gameScriptManager != null)
                     {
+                        if(Runtime.gameScriptManager.SuperArmor)
+                            GL.Color4(Color.FromArgb(80, 0x73, 0x0a, 0x43));
+
                         if (Runtime.gameScriptManager.BodyInvincible)
                             GL.Color4(Color.FromArgb(80, Color.White));
 
@@ -1660,7 +1663,7 @@ namespace Smash_Forge
         {
             if (Runtime.ParamManager.ECBs.Count > 0)
             {
-                GL.Color4(Color.FromArgb(80, Color.DarkRed));
+                GL.Color4(Color.FromArgb(160, Color.DarkRed));
                 GL.Enable(EnableCap.Blend);
 
                 foreach (var pair in Runtime.ParamManager.ECBs)
