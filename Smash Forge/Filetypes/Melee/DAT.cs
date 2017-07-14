@@ -1658,7 +1658,7 @@ main()
                                         value = d.readByte();
                                         break;
                                     case GXAttrType.GX_INDEX16:
-                                        value = (short)d.readShort();
+                                        value = (short)d.readShort()&0xFFFF;
                                         break;
                                     default:
                                         break;
