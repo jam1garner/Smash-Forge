@@ -1658,7 +1658,7 @@ main()
                                         value = d.readByte();
                                         break;
                                     case GXAttrType.GX_INDEX16:
-                                        value = (short)d.readShort();
+                                        value = (short)d.readShort()&0xFFFF;
                                         break;
                                     default:
                                         break;
@@ -1763,6 +1763,17 @@ main()
                                         v.tx1 = Vector2.Divide(v.tx0, (float)Math.Pow(2, att.scale));
                                         d.seek(temp);
                                         break;
+                                    case GXAttr.GX_VA_CLR0:
+                                        if(att.dataOffset + att.vtxStride * value != 0) { 
+                                        temp = d.pos();
+                                        d.seek(att.dataOffset + att.vtxStride * value);
+                                        v.clr = readGXClr(d, att.compType);
+                                        d.seek(temp);
+                                        }
+                                        break;
+                                    /*default:
+                                        Console.WriteLine("vtxAttr:0x{0}\t0x{1}",att.vtxAttr.ToString("X4"),(att.dataOffset + att.vtxStride * value).ToString("X4"));
+                                        break;*/
                                 }
                             }
                         }

@@ -53,14 +53,19 @@ namespace Smash_Forge
             this.crc = crc;
             if (Runtime.Moveset.ScriptsHashList.Contains(crc))
                 Runtime.scriptId = Runtime.Moveset.ScriptsHashList.IndexOf(crc);
+
+            if (Runtime.Moveset.Game.Scripts.ContainsKey(crc))
+            {
+                Runtime.gameAcmdScript = new ForgeACMDScript((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
+            }
+
             if (changed)
             {
                 set = true;
 
                 //HighlightSyntax();
                 //Update game script
-                Runtime.gameAcmdScript = new ForgeACMDScript((ACMDScript)Runtime.Moveset.Game.Scripts[crc], Runtime.scriptId);
-                Runtime.gameAcmdScript.processToFrame(0);
+                
             }
             else
             {
@@ -112,7 +117,7 @@ namespace Smash_Forge
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if(Runtime.Moveset != null)
+            if(Runtime.Moveset != null && cb_section.SelectedIndex >= 0)
             {
                 // need to split into lines
                 string[] line = richTextBox1.Text.Split('\n');
@@ -139,7 +144,7 @@ namespace Smash_Forge
                     if (manualCrc)
                     {
                         //Crc was set manually, update gameScript to process script
-                        Runtime.gameAcmdScript = new ForgeACMDScript(script, Runtime.Moveset.ScriptsHashList.IndexOf(crc));
+                        Runtime.gameAcmdScript = new ForgeACMDScript(script);
                         Runtime.gameAcmdScript.processToFrame(0);
                     }
                 } catch (Exception)

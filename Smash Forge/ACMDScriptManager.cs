@@ -22,6 +22,7 @@ namespace Smash_Forge
         public bool BodyInvincible { get; set; }
         public bool FAFReached { get; set; }
         public int currentFrame { get; set; }
+        public bool SuperArmor { get; set; }
 
         // How fast the current frame is playing in-game. Used to marry up
         // hitboxes to the animation properly. Essentially
@@ -59,6 +60,7 @@ namespace Smash_Forge
             IntangibleBones = new List<int>();
             BodyIntangible = false;
             BodyInvincible = false;
+            SuperArmor = false;
             FAFReached = false;
             resetFrame();
 
@@ -411,6 +413,15 @@ namespace Smash_Forge
                         }
                         break;
                     }
+                case 0x2A25155D:
+                    {
+                        int state = (int)cmd.Parameters[0];
+                        if (state == 1)
+                            SuperArmor = true;
+                        else
+                            SuperArmor = false;
+                        break;
+                    }
 
             }
             return halt;
@@ -424,6 +435,7 @@ namespace Smash_Forge
             Hitboxes = new SortedList<int, Hitbox>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
             InvincibleBones = new List<int>();
             IntangibleBones = new List<int>();
+            SuperArmor = false;
             // The next frame the script halts at for execution. Only modified
             // by timer commands.
             float halt = -1;

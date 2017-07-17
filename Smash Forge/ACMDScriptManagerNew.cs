@@ -37,7 +37,7 @@ namespace Smash_Forge
         public List<int> InvincibleBones { get; set; }
         public bool BodyIntangible { get; set; }
         public bool BodyInvincible { get; set; }
-        public bool FAFReached { get; set; }
+        public bool SuperArmor { get; set; }
 
         // Script processing helpers
         public int currentGameFrame { get; set; }   // In-game frame # for the move. One in-game frame can skip multiple animation frames.
@@ -68,10 +68,9 @@ namespace Smash_Forge
         // To track state through subscripts
         public Stack<ScriptState> scriptStates { get; set; }
 
-        public ForgeACMDScript(ACMDScript script, int scriptId)
+        public ForgeACMDScript(ACMDScript script)
         {
             this.script = script;
-            this.scriptId = scriptId;
             Reset();
         }
 
@@ -83,7 +82,7 @@ namespace Smash_Forge
             IntangibleBones    = new List<int>();
             BodyIntangible     = false;
             BodyInvincible     = false;
-            FAFReached         = false;  // I assume this is for in-game frames
+            SuperArmor         = false;
 
             currentGameFrame   = 0;
             currentFrame       = 0;
@@ -596,6 +595,15 @@ namespace Smash_Forge
                                 BodyIntangible = false;
                                 break;
                         }
+                        break;
+                    }
+                case 0x2A25155D: // Set_armor - super armor
+                    {
+                        int state = (int)cmd.Parameters[0];
+                        if (state == 1)
+                            SuperArmor = true;
+                        else
+                            SuperArmor = false;
                         break;
                     }
 

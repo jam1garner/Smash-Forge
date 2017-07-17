@@ -1764,7 +1764,10 @@ namespace Smash_Forge
 
                     if (Runtime.gameAcmdScript != null)
                     {
-                        if (Runtime.gameAcmdScript.BodyInvincible)
+                        if(Runtime.gameAcmdScript.SuperArmor)
+                            GL.Color4(Color.FromArgb(80, 0x73, 0x0a, 0x43));
+
+                        if(Runtime.gameAcmdScript.BodyInvincible)
                             GL.Color4(Color.FromArgb(80, Color.White));
 
                         if(Runtime.gameAcmdScript.InvincibleBones.Contains(h.Bone))
@@ -1794,7 +1797,7 @@ namespace Smash_Forge
         {
             if (Runtime.ParamManager.ECBs.Count > 0)
             {
-                GL.Color4(Color.FromArgb(80, Color.DarkRed));
+                GL.Color4(Color.FromArgb(160, Color.DarkRed));
                 GL.Enable(EnableCap.Blend);
 
                 foreach (var pair in Runtime.ParamManager.ECBs)
@@ -1954,7 +1957,7 @@ namespace Smash_Forge
                 // If script wasn't set, or it was set and it changed, load the new script
                 if (Runtime.gameAcmdScript == null || (Runtime.gameAcmdScript != null && Runtime.gameAcmdScript.script != acmdScript))
                 {
-                    Runtime.gameAcmdScript = new ForgeACMDScript(acmdScript, Runtime.Moveset.ScriptsHashList.IndexOf(crc));
+                    Runtime.gameAcmdScript = new ForgeACMDScript(acmdScript);
                 }
             }
             else
