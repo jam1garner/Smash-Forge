@@ -248,7 +248,7 @@
             // checkBox15
             // 
             this.checkBox15.AutoSize = true;
-            this.checkBox15.Location = new System.Drawing.Point(6, 419);
+            this.checkBox15.Location = new System.Drawing.Point(5, 425);
             this.checkBox15.Name = "checkBox15";
             this.checkBox15.Size = new System.Drawing.Size(196, 17);
             this.checkBox15.TabIndex = 25;
@@ -259,7 +259,7 @@
             // checkBox14
             // 
             this.checkBox14.AutoSize = true;
-            this.checkBox14.Location = new System.Drawing.Point(38, 285);
+            this.checkBox14.Location = new System.Drawing.Point(37, 291);
             this.checkBox14.Name = "checkBox14";
             this.checkBox14.Size = new System.Drawing.Size(145, 17);
             this.checkBox14.TabIndex = 24;
@@ -270,7 +270,7 @@
             // checkBox13
             // 
             this.checkBox13.AutoSize = true;
-            this.checkBox13.Location = new System.Drawing.Point(6, 264);
+            this.checkBox13.Location = new System.Drawing.Point(5, 270);
             this.checkBox13.Name = "checkBox13";
             this.checkBox13.Size = new System.Drawing.Size(112, 17);
             this.checkBox13.TabIndex = 23;
@@ -774,7 +774,7 @@
             // 
             // pbHurtboxColorLw
             // 
-            this.pbHurtboxColorLw.Location = new System.Drawing.Point(160, 397);
+            this.pbHurtboxColorLw.Location = new System.Drawing.Point(159, 403);
             this.pbHurtboxColorLw.Name = "pbHurtboxColorLw";
             this.pbHurtboxColorLw.Size = new System.Drawing.Size(16, 16);
             this.pbHurtboxColorLw.TabIndex = 47;
@@ -784,7 +784,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(34, 400);
+            this.label16.Location = new System.Drawing.Point(33, 406);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(95, 13);
             this.label16.TabIndex = 46;
@@ -792,7 +792,7 @@
             // 
             // pbHurtboxColorMed
             // 
-            this.pbHurtboxColorMed.Location = new System.Drawing.Point(160, 375);
+            this.pbHurtboxColorMed.Location = new System.Drawing.Point(159, 381);
             this.pbHurtboxColorMed.Name = "pbHurtboxColorMed";
             this.pbHurtboxColorMed.Size = new System.Drawing.Size(16, 16);
             this.pbHurtboxColorMed.TabIndex = 45;
@@ -802,7 +802,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(34, 378);
+            this.label15.Location = new System.Drawing.Point(33, 384);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(99, 13);
             this.label15.TabIndex = 44;
@@ -810,7 +810,7 @@
             // 
             // pbHurtboxColorHi
             // 
-            this.pbHurtboxColorHi.Location = new System.Drawing.Point(160, 353);
+            this.pbHurtboxColorHi.Location = new System.Drawing.Point(159, 359);
             this.pbHurtboxColorHi.Name = "pbHurtboxColorHi";
             this.pbHurtboxColorHi.Size = new System.Drawing.Size(16, 16);
             this.pbHurtboxColorHi.TabIndex = 43;
@@ -820,7 +820,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(35, 356);
+            this.label14.Location = new System.Drawing.Point(34, 362);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(87, 13);
             this.label14.TabIndex = 42;
@@ -828,7 +828,7 @@
             // 
             // pbHurtboxColor
             // 
-            this.pbHurtboxColor.Location = new System.Drawing.Point(160, 331);
+            this.pbHurtboxColor.Location = new System.Drawing.Point(159, 337);
             this.pbHurtboxColor.Name = "pbHurtboxColor";
             this.pbHurtboxColor.Size = new System.Drawing.Size(16, 16);
             this.pbHurtboxColor.TabIndex = 41;
@@ -838,7 +838,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(34, 334);
+            this.label13.Location = new System.Drawing.Point(33, 340);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(117, 13);
             this.label13.TabIndex = 40;
@@ -847,7 +847,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(35, 310);
+            this.label12.Location = new System.Drawing.Point(34, 316);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(73, 13);
             this.label12.TabIndex = 39;
@@ -855,7 +855,7 @@
             // 
             // nudHurtboxAlpha
             // 
-            this.nudHurtboxAlpha.Location = new System.Drawing.Point(110, 308);
+            this.nudHurtboxAlpha.Location = new System.Drawing.Point(109, 314);
             this.nudHurtboxAlpha.Maximum = new decimal(new int[] {
             255,
             0,
@@ -891,7 +891,7 @@
             // btnRemoveColor
             // 
             this.btnRemoveColor.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnRemoveColor.Location = new System.Drawing.Point(260, 188);
+            this.btnRemoveColor.Location = new System.Drawing.Point(259, 194);
             this.btnRemoveColor.Name = "btnRemoveColor";
             this.btnRemoveColor.Size = new System.Drawing.Size(32, 32);
             this.btnRemoveColor.TabIndex = 35;
@@ -903,7 +903,7 @@
             // btnAddColor
             // 
             this.btnAddColor.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAddColor.Location = new System.Drawing.Point(260, 155);
+            this.btnAddColor.Location = new System.Drawing.Point(259, 161);
             this.btnAddColor.Name = "btnAddColor";
             this.btnAddColor.Size = new System.Drawing.Size(32, 32);
             this.btnAddColor.TabIndex = 34;
@@ -913,7 +913,7 @@
             // 
             // btnColorDown
             // 
-            this.btnColorDown.Location = new System.Drawing.Point(260, 226);
+            this.btnColorDown.Location = new System.Drawing.Point(259, 232);
             this.btnColorDown.Name = "btnColorDown";
             this.btnColorDown.Size = new System.Drawing.Size(32, 32);
             this.btnColorDown.TabIndex = 33;
@@ -923,7 +923,7 @@
             // 
             // btnColorUp
             // 
-            this.btnColorUp.Location = new System.Drawing.Point(260, 117);
+            this.btnColorUp.Location = new System.Drawing.Point(259, 123);
             this.btnColorUp.Name = "btnColorUp";
             this.btnColorUp.Size = new System.Drawing.Size(32, 32);
             this.btnColorUp.TabIndex = 32;
@@ -955,7 +955,7 @@
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
             listViewItem1,
             listViewItem2});
-            this.listViewKbColors.Location = new System.Drawing.Point(38, 117);
+            this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
             this.listViewKbColors.Size = new System.Drawing.Size(216, 141);
@@ -971,7 +971,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(35, 93);
+            this.label10.Location = new System.Drawing.Point(34, 99);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(101, 13);
             this.label10.TabIndex = 29;
@@ -985,7 +985,7 @@
             "Red hitboxes",
             "Color based on KB",
             "Color based on ID"});
-            this.comboBox1.Location = new System.Drawing.Point(142, 90);
+            this.comboBox1.Location = new System.Drawing.Point(141, 96);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(112, 21);
             this.comboBox1.TabIndex = 28;
@@ -994,7 +994,7 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(6, 444);
+            this.label17.Location = new System.Drawing.Point(5, 450);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(80, 13);
             this.label17.TabIndex = 48;
@@ -1002,14 +1002,14 @@
             // 
             // textParamDir
             // 
-            this.textParamDir.Location = new System.Drawing.Point(92, 441);
+            this.textParamDir.Location = new System.Drawing.Point(91, 447);
             this.textParamDir.Name = "textParamDir";
             this.textParamDir.Size = new System.Drawing.Size(402, 20);
             this.textParamDir.TabIndex = 49;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(500, 439);
+            this.button1.Location = new System.Drawing.Point(499, 445);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(50, 23);
             this.button1.TabIndex = 50;

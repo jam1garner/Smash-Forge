@@ -487,9 +487,9 @@ for changing default texure
             renderNode.AppendChild(createNode(doc, "hitbox_alpha", hitboxAlpha.ToString()));
             renderNode.AppendChild(createNode(doc, "hurtbox_alpha", hurtboxAlpha.ToString()));
             renderNode.AppendChild(createNode(doc, "hurtbox_color", hurtboxColor.ToString()));
-            renderNode.AppendChild(createNode(doc, "hurtbox_color_hi", hurtboxColorHi.ToString()));
-            renderNode.AppendChild(createNode(doc, "hurtbox_color_med", hurtboxColorMed.ToString()));
-            renderNode.AppendChild(createNode(doc, "hurtbox_color_low", hurtboxColorLow.ToString()));
+            renderNode.AppendChild(createNode(doc, "hurtbox_color_hi", System.Drawing.ColorTranslator.ToHtml(hurtboxColorHi)));
+            renderNode.AppendChild(createNode(doc, "hurtbox_color_med", System.Drawing.ColorTranslator.ToHtml(hurtboxColorMed)));
+            renderNode.AppendChild(createNode(doc, "hurtbox_color_low", System.Drawing.ColorTranslator.ToHtml(hurtboxColorLow)));
             {
                 XmlNode node = doc.CreateElement("hitbox_kb_colors");
                 renderNode.AppendChild(node);
