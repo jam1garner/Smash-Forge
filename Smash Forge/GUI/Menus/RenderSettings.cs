@@ -74,6 +74,8 @@ namespace Smash_Forge.GUI
             pbHurtboxColorHi.BackColor = Runtime.hurtboxColorHi;
             pbHurtboxColorMed.BackColor = Runtime.hurtboxColorMed;
             pbHurtboxColorLw.BackColor = Runtime.hurtboxColorLow;
+
+            textParamDir.Text = Runtime.paramDir;
             disableRuntimeUpdates = false;
         }
 
@@ -428,6 +430,11 @@ namespace Smash_Forge.GUI
                 Runtime.hurtboxColorHi = Color.FromArgb(0xFF, hurtboxColorDialog.Color);
                 pbHurtboxColor.BackColor = Runtime.hurtboxColorHi;
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Runtime.paramDir = textParamDir.Text;
         }
     }
 }

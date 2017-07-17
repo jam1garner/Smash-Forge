@@ -156,7 +156,7 @@ namespace Smash_Forge
 
         // ETC
         public static string fighterDir = "";
-        public static string paramDir = "";
+        public static string paramDir;
 
         public enum RenderTypes
         {
@@ -518,6 +518,11 @@ for changing default texure
                 node.AppendChild(createNode(doc, "render_general_points", renderGeneralPoints.ToString()));
                 node.AppendChild(createNode(doc, "render_otherLVDEntries", renderOtherLVDEntries.ToString()));
                 node.AppendChild(createNode(doc, "render_swag", renderSwag.ToString()));
+            }
+            {
+                XmlNode etcNode = doc.CreateElement("ETC");
+                mainNode.AppendChild(etcNode);
+                etcNode.AppendChild(createNode(doc, "param_dir", paramDir));
             }
 
             doc.Save("config.xml");

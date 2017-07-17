@@ -87,6 +87,7 @@ namespace Smash_Forge
             Runtime.renderECB = false;
             Runtime.renderIndicators = false;
             Runtime.renderType = Runtime.RenderTypes.Texture;
+            Runtime.paramDir = "";
             //Pichu.MakePichu();
             //meshList.refresh();
             //ReadChimeraLucas();
