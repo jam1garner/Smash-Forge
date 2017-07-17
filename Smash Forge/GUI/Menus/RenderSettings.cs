@@ -69,6 +69,11 @@ namespace Smash_Forge.GUI
             cb_normals.Checked = Runtime.renderNormals;
             cb_vertcolor.Checked = Runtime.renderVertColor;
             renderMode.SelectedIndex = (int)Runtime.renderType;
+
+            pbHurtboxColor.BackColor = Runtime.hurtboxColor;
+            pbHurtboxColorHi.BackColor = Runtime.hurtboxColorHi;
+            pbHurtboxColorMed.BackColor = Runtime.hurtboxColorMed;
+            pbHurtboxColorLw.BackColor = Runtime.hurtboxColorLow;
             disableRuntimeUpdates = false;
         }
 
@@ -382,6 +387,46 @@ namespace Smash_Forge.GUI
             if (!disableRuntimeUpdates)
             {
                 Runtime.hurtboxAlpha = (int)nudHurtboxAlpha.Value;
+            }
+        }
+
+        private void pbHurtboxColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog hurtboxColorDialog = new ColorDialog();
+            if (hurtboxColorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.hurtboxColor = Color.FromArgb(0xFF, hurtboxColorDialog.Color);
+                pbHurtboxColor.BackColor = Runtime.hurtboxColor;
+            }
+        }
+
+        private void pbHurtboxColorLw_Click(object sender, EventArgs e)
+        {
+            ColorDialog hurtboxColorDialog = new ColorDialog();
+            if (hurtboxColorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.hurtboxColorLow = Color.FromArgb(0xFF, hurtboxColorDialog.Color);
+                pbHurtboxColor.BackColor = Runtime.hurtboxColorLow;
+            }
+        }
+
+        private void pbHurtboxColorMed_Click(object sender, EventArgs e)
+        {
+            ColorDialog hurtboxColorDialog = new ColorDialog();
+            if (hurtboxColorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.hurtboxColorMed = Color.FromArgb(0xFF, hurtboxColorDialog.Color);
+                pbHurtboxColor.BackColor = Runtime.hurtboxColorMed;
+            }
+        }
+
+        private void pbHurtboxColorHi_Click(object sender, EventArgs e)
+        {
+            ColorDialog hurtboxColorDialog = new ColorDialog();
+            if (hurtboxColorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.hurtboxColorHi = Color.FromArgb(0xFF, hurtboxColorDialog.Color);
+                pbHurtboxColor.BackColor = Runtime.hurtboxColorHi;
             }
         }
     }

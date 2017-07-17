@@ -63,6 +63,10 @@ namespace Smash_Forge
             Runtime.hitboxRenderMode = Hitbox.RENDER_KNOCKBACK;
             Runtime.hitboxAlpha = 130;
             Runtime.hurtboxAlpha = 80;
+            Runtime.hurtboxColor = System.Drawing.Color.FromArgb(0x00, 0x53, 0x8A);     // Strong blue
+            Runtime.hurtboxColorHi = System.Drawing.Color.FromArgb(0xFF, 0x8E, 0x00);  //Vivid Orange Yellow
+            Runtime.hurtboxColorMed = System.Drawing.Color.FromArgb(0xF6, 0x76, 0x8E);  //Strong Purplish Pink
+            Runtime.hurtboxColorLow = System.Drawing.Color.FromArgb(0x00, 0x53, 0x8A);  // Strong blue
             Runtime.useFrameDuration = false;
             Runtime.hitboxKnockbackColors = new List<System.Drawing.Color>();
             Runtime.hitboxIdColors = new List<System.Drawing.Color>();

@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("test2");
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
@@ -97,6 +97,14 @@
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.nudHurtboxAlpha = new System.Windows.Forms.NumericUpDown();
+            this.label13 = new System.Windows.Forms.Label();
+            this.pbHurtboxColor = new System.Windows.Forms.PictureBox();
+            this.pbHurtboxColorHi = new System.Windows.Forms.PictureBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.pbHurtboxColorMed = new System.Windows.Forms.PictureBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.pbHurtboxColorLw = new System.Windows.Forms.PictureBox();
+            this.label16 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -107,6 +115,10 @@
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudHurtboxAlpha)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColor)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColorHi)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColorMed)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColorLw)).BeginInit();
             this.SuspendLayout();
             // 
             // checkBox1
@@ -233,7 +245,7 @@
             // checkBox15
             // 
             this.checkBox15.AutoSize = true;
-            this.checkBox15.Location = new System.Drawing.Point(6, 372);
+            this.checkBox15.Location = new System.Drawing.Point(6, 481);
             this.checkBox15.Name = "checkBox15";
             this.checkBox15.Size = new System.Drawing.Size(196, 17);
             this.checkBox15.TabIndex = 25;
@@ -722,6 +734,14 @@
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage2.Controls.Add(this.pbHurtboxColorLw);
+            this.tabPage2.Controls.Add(this.label16);
+            this.tabPage2.Controls.Add(this.pbHurtboxColorMed);
+            this.tabPage2.Controls.Add(this.label15);
+            this.tabPage2.Controls.Add(this.pbHurtboxColorHi);
+            this.tabPage2.Controls.Add(this.label14);
+            this.tabPage2.Controls.Add(this.pbHurtboxColor);
+            this.tabPage2.Controls.Add(this.label13);
             this.tabPage2.Controls.Add(this.label12);
             this.tabPage2.Controls.Add(this.nudHurtboxAlpha);
             this.tabPage2.Controls.Add(this.label11);
@@ -811,8 +831,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem5,
-            listViewItem6});
+            listViewItem7,
+            listViewItem8});
             this.listViewKbColors.Location = new System.Drawing.Point(6, 154);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -893,6 +913,78 @@
             this.nudHurtboxAlpha.TabIndex = 38;
             this.nudHurtboxAlpha.ValueChanged += new System.EventHandler(this.nudHurtboxAlpha_ValueChanged);
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(34, 376);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(117, 13);
+            this.label13.TabIndex = 40;
+            this.label13.Text = "Hurtbox color (no zone)";
+            // 
+            // pbHurtboxColor
+            // 
+            this.pbHurtboxColor.Location = new System.Drawing.Point(160, 373);
+            this.pbHurtboxColor.Name = "pbHurtboxColor";
+            this.pbHurtboxColor.Size = new System.Drawing.Size(16, 16);
+            this.pbHurtboxColor.TabIndex = 41;
+            this.pbHurtboxColor.TabStop = false;
+            this.pbHurtboxColor.Click += new System.EventHandler(this.pbHurtboxColor_Click);
+            // 
+            // pbHurtboxColorHi
+            // 
+            this.pbHurtboxColorHi.Location = new System.Drawing.Point(160, 395);
+            this.pbHurtboxColorHi.Name = "pbHurtboxColorHi";
+            this.pbHurtboxColorHi.Size = new System.Drawing.Size(16, 16);
+            this.pbHurtboxColorHi.TabIndex = 43;
+            this.pbHurtboxColorHi.TabStop = false;
+            this.pbHurtboxColorHi.Click += new System.EventHandler(this.pbHurtboxColorHi_Click);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(34, 400);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(87, 13);
+            this.label14.TabIndex = 42;
+            this.label14.Text = "Hurtbox color (hi)";
+            // 
+            // pbHurtboxColorMed
+            // 
+            this.pbHurtboxColorMed.Location = new System.Drawing.Point(160, 419);
+            this.pbHurtboxColorMed.Name = "pbHurtboxColorMed";
+            this.pbHurtboxColorMed.Size = new System.Drawing.Size(16, 16);
+            this.pbHurtboxColorMed.TabIndex = 45;
+            this.pbHurtboxColorMed.TabStop = false;
+            this.pbHurtboxColorMed.Click += new System.EventHandler(this.pbHurtboxColorMed_Click);
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(34, 424);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(99, 13);
+            this.label15.TabIndex = 44;
+            this.label15.Text = "Hurtbox color (med)";
+            // 
+            // pbHurtboxColorLw
+            // 
+            this.pbHurtboxColorLw.Location = new System.Drawing.Point(160, 444);
+            this.pbHurtboxColorLw.Name = "pbHurtboxColorLw";
+            this.pbHurtboxColorLw.Size = new System.Drawing.Size(16, 16);
+            this.pbHurtboxColorLw.TabIndex = 47;
+            this.pbHurtboxColorLw.TabStop = false;
+            this.pbHurtboxColorLw.Click += new System.EventHandler(this.pbHurtboxColorLw_Click);
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(34, 447);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(95, 13);
+            this.label16.TabIndex = 46;
+            this.label16.Text = "Hurtbox color (low)";
+            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -917,6 +1009,10 @@
             this.tabPage2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudHurtboxAlpha)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColor)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColorHi)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColorMed)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColorLw)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -990,5 +1086,13 @@
         private System.Windows.Forms.NumericUpDown nudHurtboxAlpha;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.NumericUpDown nudHitboxAlpha;
+        private System.Windows.Forms.PictureBox pbHurtboxColor;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.PictureBox pbHurtboxColorLw;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.PictureBox pbHurtboxColorMed;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.PictureBox pbHurtboxColorHi;
+        private System.Windows.Forms.Label label14;
     }
 }
