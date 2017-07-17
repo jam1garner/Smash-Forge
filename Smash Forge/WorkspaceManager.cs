@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Windows.Forms;
-using SALT.Scripting;
-using SALT.Scripting.AnimCMD;
-using SALT.Scripting.MSC;
+using SALT.Moveset;
+using SALT.Moveset.AnimCMD;
+using SALT.Moveset.MSC;
 using System.Xml;
 using SALT.PARAMS;
 

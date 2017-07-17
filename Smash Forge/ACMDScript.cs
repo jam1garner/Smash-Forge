@@ -1,5 +1,5 @@
-﻿using SALT.Scripting;
-using SALT.Scripting.AnimCMD;
+﻿using SALT.Moveset;
+using SALT.Moveset.AnimCMD;
 using System;
 using System.Collections.Generic;
 using System.Linq;

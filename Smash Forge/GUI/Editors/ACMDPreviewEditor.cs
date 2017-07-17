@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
-using SALT.Scripting.AnimCMD;
+using SALT.Moveset.AnimCMD;
 using System.Text.RegularExpressions;
 
 namespace Smash_Forge
@@ -31,22 +31,22 @@ namespace Smash_Forge
             bool changed = false;
             if (cb_section.Text.Equals("GAME") && Runtime.Moveset.Game.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
+                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("SOUND") && Runtime.Moveset.Sound.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Sound.Scripts[crc]);
+                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Runtime.Moveset.Sound.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("EXPRESSION") && Runtime.Moveset.Expression.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Expression.Scripts[crc]);
+                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Runtime.Moveset.Expression.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("EFFECT") && Runtime.Moveset.Effect.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Effect.Scripts[crc]);
+                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Runtime.Moveset.Effect.Scripts[crc]);
                 changed = true;
             }
 
@@ -87,22 +87,22 @@ namespace Smash_Forge
             bool changed = false;
             if (cb_section.Text.Equals("GAME") && Runtime.Moveset.Game.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
+                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("SOUND") && Runtime.Moveset.Sound.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Sound.Scripts[crc]);
+                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Runtime.Moveset.Sound.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("EXPRESSION") && Runtime.Moveset.Expression.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Expression.Scripts[crc]);
+                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Runtime.Moveset.Expression.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("EFFECT") && Runtime.Moveset.Effect.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.Decompile((ACMDScript)Runtime.Moveset.Effect.Scripts[crc]);
+                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Runtime.Moveset.Effect.Scripts[crc]);
                 changed = true;
             }
             if (changed)

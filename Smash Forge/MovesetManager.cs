@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SALT.Scripting.AnimCMD;
+using SALT.Moveset.AnimCMD;
 using System.IO;
 using System.Security.Cryptography;
 using OpenTK;

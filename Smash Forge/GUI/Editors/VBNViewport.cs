@@ -11,7 +11,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK;
 using OpenTK.Input;
 using System.Security.Cryptography;
-using SALT.Scripting.AnimCMD;
+using SALT.Moveset.AnimCMD;
 using OpenTK.Graphics;
 using System.Diagnostics;
 using WeifenLuo.WinFormsUI.Docking;
