@@ -113,7 +113,7 @@ namespace Smash_Forge
                 foreach(IniLabels.Label label in labels.labels)
                 {
                     if (label.Type == IniLabels.Label.type.Entry && label.group == 0 && label.entry == j)
-                        moveNameIdMapping[label.name] = j;
+                        moveNameIdMapping[label.name.Split(' ')[0]] = j;
                 }
             return moveNameIdMapping;
         }

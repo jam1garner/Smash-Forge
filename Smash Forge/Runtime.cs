@@ -18,7 +18,7 @@ namespace Smash_Forge
             OpenedFiles = new SortedList<string, FileBase>();
             MaterialAnimations = new Dictionary<string, MTA>();
             ParamManager = new CharacterParamManager();
-            gameScriptManager = new ACMDScriptManager();
+            gameAcmdScript = null;
             Animnames = new Dictionary<uint, string>();
         }
 
@@ -71,6 +71,60 @@ namespace Smash_Forge
         public static bool renderHurtboxes;
         public static bool renderHurtboxesZone;
         public static bool renderECB;
+        public static bool renderIndicators;
+        public static int hitboxRenderMode;
+        public static int hitboxAlpha;
+        public static int hurtboxAlpha;
+        public static Color hurtboxColor;
+        public static Color hurtboxColorHi;
+        public static Color hurtboxColorMed;
+        public static Color hurtboxColorLow;
+        public static bool renderHitboxesNoOverlap;
+        public static bool useFrameDuration = true;
+
+        // See https://stackoverflow.com/questions/470690/how-to-automatically-generate-n-distinct-colors
+        // for a really good overview of how to use distinct colors.
+        //UIntToColor(0xFFFFB300), //Vivid Yellow
+        //UIntToColor(0xFF803E75), //Strong Purple
+        //UIntToColor(0xFFFF6800), //Vivid Orange
+        //UIntToColor(0xFFA6BDD7), //Very Light Blue
+        //UIntToColor(0xFFC10020), //Vivid Red
+        //UIntToColor(0xFFCEA262), //Grayish Yellow
+        //UIntToColor(0xFF817066), //Medium Gray
+
+        ////The following will not be good for people with defective color vision
+        //UIntToColor(0xFF007D34), //Vivid Green
+        //UIntToColor(0xFFF6768E), //Strong Purplish Pink
+        //UIntToColor(0xFF00538A), //Strong Blue
+        //UIntToColor(0xFFFF7A5C), //Strong Yellowish Pink
+        //UIntToColor(0xFF53377A), //Strong Violet
+        //UIntToColor(0xFFFF8E00), //Vivid Orange Yellow
+        //UIntToColor(0xFFB32851), //Strong Purplish Red
+        //UIntToColor(0xFFF4C800), //Vivid Greenish Yellow
+        //UIntToColor(0xFF7F180D), //Strong Reddish Brown
+        //UIntToColor(0xFF93AA00), //Vivid Yellowish Green
+        //UIntToColor(0xFF593315), //Deep Yellowish Brown
+        //UIntToColor(0xFFF13A13), //Vivid Reddish Orange
+        //UIntToColor(0xFF232C16), //Dark Olive Green
+        public static List<Color> hitboxKnockbackColors;
+        public static readonly List<Color> defaultHitboxKnockbackColors = new List<Color>()
+        {
+            Color.FromArgb(0xFF, 0x00, 0x7D, 0x34), // Vivid green
+            Color.FromArgb(0xFF, 0xFF, 0xB3, 0x0),    // Vivid yellow
+            Color.FromArgb(0xFF, 0xFF, 0x68, 0x00),   // Vivid orange
+            Color.FromArgb(0xFF, 0xC1, 0x0, 0x20),    // Vivid red
+        };
+        public static List<Color> hitboxIdColors;
+        public static readonly List<Color> defaultHitboxIdColors = new List<Color>()
+        {
+            Color.FromArgb(0xFF, 0xFF, 0xB3, 0x00), // Vivid yellow
+            Color.FromArgb(0xFF, 0x80, 0x3E, 0x75), // Strong purple
+            Color.FromArgb(0xFF, 0xC1, 0x00, 0x20), // Vivid red
+            Color.FromArgb(0xFF, 0xCE, 0xA2, 0x62), // Grayish yellow
+            Color.FromArgb(0xFF, 0x81, 0x70, 0x66), // Medium gray
+            Color.FromArgb(0xFF, 0x00, 0x53, 0x8A), // Strong blue
+            Color.FromArgb(0xFF, 0x59, 0x33, 0x15), // Deep yellowish brown
+        };
 
         public static TextureWrapMode floorWrap = TextureWrapMode.MirroredRepeat;
         public static float floorSize = 30f;
@@ -133,7 +187,7 @@ namespace Smash_Forge
         public static PARAMEditor ParamManagerHelper { get; set; }
         public static Dictionary<string, int> ParamMoveNameIdMapping { get; set; }
         public static ACMDPreviewEditor acmdEditor;
-        public static ACMDScriptManager gameScriptManager;
+        public static ForgeACMDScript gameAcmdScript;
         public static Dictionary<uint, string> Animnames { get; set; }
         public static int scriptId = -1;
 
@@ -228,7 +282,8 @@ namespace Smash_Forge
                         case "render_collision_normals": bool.TryParse(node.InnerText, out renderCollisionNormals); break;
                         case "render_hitboxes": bool.TryParse(node.InnerText, out renderHitboxes); break;
                         case "render_interpolated_hitboxes": bool.TryParse(node.InnerText, out renderInterpolatedHitboxes); break;
-                        case "render_hitboxes_kb": bool.TryParse(node.InnerText, out renderHitboxesColorByKb); break;
+                        case "render_hitboxes_no_overlap": bool.TryParse(node.InnerText, out renderHitboxesNoOverlap); break;
+                        case "render_hitboxes_mode": int.TryParse(node.InnerText, out hitboxRenderMode); break;
                         case "render_hurtboxes": bool.TryParse(node.InnerText, out renderHurtboxes); break;
                         case "render_hurtboxes_zone": bool.TryParse(node.InnerText, out renderHurtboxesZone); break;
                         case "render_ECB": bool.TryParse(node.InnerText, out renderECB); break;
@@ -242,6 +297,13 @@ namespace Smash_Forge
                         case "render_swag": bool.TryParse(node.InnerText, out renderSwag); break;
                         case "fighter_dir": fighterDir = node.InnerText; break;
                         case "param_dir": paramDir = node.InnerText; break;
+                        case "render_indicators": bool.TryParse(node.InnerText, out renderIndicators); break;
+                        case "hitbox_alpha": int.TryParse(node.InnerText, out hitboxAlpha); break;
+                        case "hurtbox_alpha": int.TryParse(node.InnerText, out hurtboxAlpha); break;
+                        case "hurtbox_color": try { Runtime.hurtboxColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                        case "hurtbox_color_hi": try { Runtime.hurtboxColorHi = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                        case "hurtbox_color_med": try { Runtime.hurtboxColorMed = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                        case "hurtbox_color_low": try { Runtime.hurtboxColorLow = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
 
                         case "enabled":
                             if (node.ParentNode != null)
@@ -277,6 +339,8 @@ namespace Smash_Forge
                                 switch (node.ParentNode.Name)
                                 {
                                     case "floor": try { floorColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                                    case "hitbox_kb_colors": try { hitboxKnockbackColors.Add(ColorTranslator.FromHtml(node.InnerText)); } catch (Exception) { } break;
+                                    case "hitbox_id_colors": try { hitboxIdColors.Add(ColorTranslator.FromHtml(node.InnerText)); } catch (Exception) { } break;
                                 }
                             }
                             break;
@@ -294,13 +358,23 @@ namespace Smash_Forge
                             break;
                     }
                 }
-
+                EnsureHitboxColors();
             }
+        }
+
+        public static void EnsureHitboxColors()
+        {
+            if (Runtime.hitboxKnockbackColors.Count <= 0)
+                Runtime.hitboxKnockbackColors = new List<Color>(Runtime.defaultHitboxKnockbackColors);
+            if (Runtime.hitboxIdColors.Count <= 0)
+                Runtime.hitboxIdColors = new List<Color>(Runtime.defaultHitboxIdColors);
         }
 
 
         public static void SaveConfig()
         {
+            EnsureHitboxColors();
+
             XmlDocument doc = new XmlDocument();
 
             string comment = @"
@@ -403,13 +477,34 @@ for changing default texure
                 node.AppendChild(createNode(doc, "render_bounding_boxes", renderBoundingBox.ToString()));
             }
 
+            renderNode.AppendChild(createNode(doc, "render_ECB", renderECB.ToString()));
             renderNode.AppendChild(createNode(doc, "render_hurtboxes", renderHurtboxes.ToString()));
             renderNode.AppendChild(createNode(doc, "render_hurtboxes_zone", renderHurtboxesZone.ToString()));
             renderNode.AppendChild(createNode(doc, "render_hitboxes", renderHitboxes.ToString()));
             renderNode.AppendChild(createNode(doc, "render_interpolated_hitboxes", renderInterpolatedHitboxes.ToString()));
-            renderNode.AppendChild(createNode(doc, "render_hitboxes_kb", renderHitboxesColorByKb.ToString()));
-            renderNode.AppendChild(createNode(doc, "render_ECB", renderECB.ToString()));
+            renderNode.AppendChild(createNode(doc, "render_hitboxes_no_overlap", renderHitboxesNoOverlap.ToString()));
+            renderNode.AppendChild(createNode(doc, "render_hitboxes_mode", hitboxRenderMode.ToString()));
+            renderNode.AppendChild(createNode(doc, "hitbox_alpha", hitboxAlpha.ToString()));
+            renderNode.AppendChild(createNode(doc, "hurtbox_alpha", hurtboxAlpha.ToString()));
+            renderNode.AppendChild(createNode(doc, "hurtbox_color", hurtboxColor.ToString()));
+            renderNode.AppendChild(createNode(doc, "hurtbox_color_hi", hurtboxColorHi.ToString()));
+            renderNode.AppendChild(createNode(doc, "hurtbox_color_med", hurtboxColorMed.ToString()));
+            renderNode.AppendChild(createNode(doc, "hurtbox_color_low", hurtboxColorLow.ToString()));
+            {
+                XmlNode node = doc.CreateElement("hitbox_kb_colors");
+                renderNode.AppendChild(node);
+                foreach (Color c in Runtime.hitboxKnockbackColors)
+                    node.AppendChild(createNode(doc, "color", System.Drawing.ColorTranslator.ToHtml(c)));
+            }
+            {
+                XmlNode node = doc.CreateElement("hitbox_id_colors");
+                renderNode.AppendChild(node);
+                foreach (Color c in Runtime.hitboxIdColors)
+                    node.AppendChild(createNode(doc, "color", System.Drawing.ColorTranslator.ToHtml(c)));
+            }
+
             renderNode.AppendChild(createNode(doc, "render_path", renderPath.ToString()));
+            renderNode.AppendChild(createNode(doc, "render_indicators", renderIndicators.ToString()));
             {
                 XmlNode node = doc.CreateElement("render_LVD");
                 renderNode.AppendChild(node);

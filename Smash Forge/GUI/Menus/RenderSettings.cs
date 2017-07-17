@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,9 +13,16 @@ namespace Smash_Forge.GUI
 {
     public partial class RenderSettings : Form
     {
+        private bool disableRuntimeUpdates;
+        private List<Color> hitboxColors;
+
         public RenderSettings()
         {
             InitializeComponent();
+
+            disableRuntimeUpdates = true;
+            nudHitboxAlpha.Value = Runtime.hitboxAlpha;
+            nudHurtboxAlpha.Value = Runtime.hurtboxAlpha;
 
             checkBox1.Checked = Runtime.renderModel;
             checkBox2.Checked = Runtime.renderBones;
@@ -33,7 +41,7 @@ namespace Smash_Forge.GUI
             checkBox14.Checked = Runtime.renderHurtboxesZone;
             checkBox15.Checked = Runtime.renderECB;
             checkBox16.Checked = Runtime.renderInterpolatedHitboxes;
-            checkBox17.Checked = Runtime.renderHitboxesColorByKb;
+            checkBox18.Checked = Runtime.renderHitboxesNoOverlap;
             swagViewing.Checked = Runtime.renderSwag;
             lightCheckBox.Checked = Runtime.renderLighting;
             useNormCB.Checked = Runtime.useNormalMap;
@@ -61,6 +69,12 @@ namespace Smash_Forge.GUI
             cb_normals.Checked = Runtime.renderNormals;
             cb_vertcolor.Checked = Runtime.renderVertColor;
             renderMode.SelectedIndex = (int)Runtime.renderType;
+
+            pbHurtboxColor.BackColor = Runtime.hurtboxColor;
+            pbHurtboxColorHi.BackColor = Runtime.hurtboxColorHi;
+            pbHurtboxColorMed.BackColor = Runtime.hurtboxColorMed;
+            pbHurtboxColorLw.BackColor = Runtime.hurtboxColorLow;
+            disableRuntimeUpdates = false;
         }
 
         private void checkBox6_CheckedChanged(object sender, EventArgs e)
@@ -77,23 +91,26 @@ namespace Smash_Forge.GUI
 
         private void checkChanged()
         {
-            Runtime.renderModel = checkBox1.Checked;
-            Runtime.renderBones = checkBox2.Checked;
-            Runtime.renderHitboxes = checkBox4.Checked;
-            Runtime.renderPath = checkBox3.Checked;
-            Runtime.renderFloor = checkBox5.Checked;
-            Runtime.renderLVD = checkBox6.Checked;
-            Runtime.renderCollisions = checkBox7.Checked;
-            Runtime.renderSpawns = checkBox8.Checked;
-            Runtime.renderRespawns = checkBox9.Checked;
-            Runtime.renderItemSpawners = checkBox10.Checked;
-            Runtime.renderGeneralPoints = checkBox11.Checked;
-            Runtime.renderCollisionNormals = checkBox12.Checked;
-            Runtime.renderHurtboxes = checkBox13.Checked;
-            Runtime.renderHurtboxesZone = checkBox14.Checked;
-            Runtime.renderECB = checkBox15.Checked;
-            Runtime.renderInterpolatedHitboxes = checkBox16.Checked;
-            Runtime.renderHitboxesColorByKb = checkBox17.Checked;
+            if (!disableRuntimeUpdates)
+            {
+                Runtime.renderModel = checkBox1.Checked;
+                Runtime.renderBones = checkBox2.Checked;
+                Runtime.renderHitboxes = checkBox4.Checked;
+                Runtime.renderPath = checkBox3.Checked;
+                Runtime.renderFloor = checkBox5.Checked;
+                Runtime.renderLVD = checkBox6.Checked;
+                Runtime.renderCollisions = checkBox7.Checked;
+                Runtime.renderSpawns = checkBox8.Checked;
+                Runtime.renderRespawns = checkBox9.Checked;
+                Runtime.renderItemSpawners = checkBox10.Checked;
+                Runtime.renderGeneralPoints = checkBox11.Checked;
+                Runtime.renderCollisionNormals = checkBox12.Checked;
+                Runtime.renderHurtboxes = checkBox13.Checked;
+                Runtime.renderHurtboxesZone = checkBox14.Checked;
+                Runtime.renderECB = checkBox15.Checked;
+                Runtime.renderInterpolatedHitboxes = checkBox16.Checked;
+                Runtime.renderHitboxesNoOverlap = checkBox18.Checked;
+            }
             checkBox12.Enabled = checkBox6.Checked && checkBox7.Checked;
             wireframeCB.Enabled = checkBox1.Checked;
             modelSelectCB.Enabled = checkBox1.Checked;
@@ -104,9 +121,43 @@ namespace Smash_Forge.GUI
             checkChanged();
         }
 
+        private void populateColorsFromRuntime()
+        {
+            listViewKbColors.Items.Clear();
+            
+            switch (Runtime.hitboxRenderMode)
+            {
+                case Hitbox.RENDER_NORMAL:
+                    // disable controls
+                    hitboxColors = new List<Color>();
+                    break;
+                case Hitbox.RENDER_KNOCKBACK:
+                    // enable controls
+                    hitboxColors = Runtime.hitboxKnockbackColors;
+                    break;
+                case Hitbox.RENDER_ID:
+                    // enable controls
+                    hitboxColors = Runtime.hitboxIdColors;
+                    break;
+            }
+            // Populate
+            foreach (Color c in hitboxColors)
+            {
+                ListViewItem color = new ListViewItem(System.Drawing.ColorTranslator.ToHtml(c));
+                color.BackColor = Color.FromArgb(Runtime.hitboxAlpha, c);
+                listViewKbColors.Items.Add(color);
+            }
+
+            // Ensure columns resize
+            listViewKbColors.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            // Disable horizontal scroll bar
+            listViewKbColors.Columns[0].Width = listViewKbColors.Columns[0].Width - 4;
+        }
+
         private void RenderSettings_Load(object sender, EventArgs e)
         {
-
+            comboBox1.SelectedIndex = Runtime.hitboxRenderMode;
+            populateColorsFromRuntime();
         }
 
         private void depthSlider_ValueChanged(object sender, EventArgs e)
@@ -269,6 +320,114 @@ namespace Smash_Forge.GUI
             }
             else
                 modelscaleTB.BackColor = Color.Red;
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBox cb = (ComboBox)sender;
+            Runtime.hitboxRenderMode = cb.SelectedIndex;
+            populateColorsFromRuntime();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            ColorDialog hitboxColorDialog = new ColorDialog();
+            if (hitboxColorDialog.ShowDialog() == DialogResult.OK)
+            {
+                hitboxColors.Add(hitboxColorDialog.Color);
+                populateColorsFromRuntime();
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (listViewKbColors.Items.Count <= 1)
+                return;  // don't allow no colours for hitboxes
+            int index = listViewKbColors.SelectedIndices[0];
+            hitboxColors.RemoveAt(index);
+            populateColorsFromRuntime();
+            int newSelectionIndex = index - 1 <= 0 ? 0 : index - 1;
+            listViewKbColors.Items[newSelectionIndex].Selected = true;
+        }
+
+        private void btnColorUp_Click(object sender, EventArgs e)
+        {
+            int index = listViewKbColors.SelectedIndices[0];
+            if (index < 1)
+                return;
+            Color color = hitboxColors.ElementAt(index);
+            hitboxColors.RemoveAt(index);
+            hitboxColors.Insert(index - 1, color);
+            populateColorsFromRuntime();
+            listViewKbColors.Items[index - 1].Selected = true;
+        }
+
+        private void btnColorDown_Click(object sender, EventArgs e)
+        {
+            int index = listViewKbColors.SelectedIndices[0];
+            if (index >= listViewKbColors.Items.Count - 1)
+                return;
+            Color color = hitboxColors.ElementAt(index);
+            hitboxColors.RemoveAt(index);
+            hitboxColors.Insert(index + 1, color);
+            populateColorsFromRuntime();
+            listViewKbColors.Items[index + 1].Selected = true;
+        }
+
+        private void nudHitboxAlpha_ValueChanged(object sender, EventArgs e)
+        {
+            if (!disableRuntimeUpdates)
+            {
+                Runtime.hitboxAlpha = (int)nudHitboxAlpha.Value;
+            }
+        }
+
+        private void nudHurtboxAlpha_ValueChanged(object sender, EventArgs e)
+        {
+            if (!disableRuntimeUpdates)
+            {
+                Runtime.hurtboxAlpha = (int)nudHurtboxAlpha.Value;
+            }
+        }
+
+        private void pbHurtboxColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog hurtboxColorDialog = new ColorDialog();
+            if (hurtboxColorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.hurtboxColor = Color.FromArgb(0xFF, hurtboxColorDialog.Color);
+                pbHurtboxColor.BackColor = Runtime.hurtboxColor;
+            }
+        }
+
+        private void pbHurtboxColorLw_Click(object sender, EventArgs e)
+        {
+            ColorDialog hurtboxColorDialog = new ColorDialog();
+            if (hurtboxColorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.hurtboxColorLow = Color.FromArgb(0xFF, hurtboxColorDialog.Color);
+                pbHurtboxColor.BackColor = Runtime.hurtboxColorLow;
+            }
+        }
+
+        private void pbHurtboxColorMed_Click(object sender, EventArgs e)
+        {
+            ColorDialog hurtboxColorDialog = new ColorDialog();
+            if (hurtboxColorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.hurtboxColorMed = Color.FromArgb(0xFF, hurtboxColorDialog.Color);
+                pbHurtboxColor.BackColor = Runtime.hurtboxColorMed;
+            }
+        }
+
+        private void pbHurtboxColorHi_Click(object sender, EventArgs e)
+        {
+            ColorDialog hurtboxColorDialog = new ColorDialog();
+            if (hurtboxColorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.hurtboxColorHi = Color.FromArgb(0xFF, hurtboxColorDialog.Color);
+                pbHurtboxColor.BackColor = Runtime.hurtboxColorHi;
+            }
         }
     }
 }

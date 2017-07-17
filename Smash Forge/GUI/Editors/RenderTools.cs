@@ -232,9 +232,30 @@ namespace Smash_Forge
 
             GL.StencilMask(0xFF);
             GL.Clear(ClearBufferMask.StencilBufferBit);
-            GL.Enable(EnableCap.StencilTest);
+            GL.Disable(EnableCap.StencilTest);
             GL.Enable(EnableCap.DepthTest);
             //GL.Enable(EnableCap.CullFace);
+        }
+
+        public static void resetStencil()
+        {
+            GL.Enable(EnableCap.StencilTest);
+
+            GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
+            GL.StencilMask(0xFF);
+            GL.Disable(EnableCap.DepthTest);
+            GL.Clear(ClearBufferMask.StencilBufferBit);
+            GL.ColorMask(false, false, false, false);
+
+            GL.ColorMask(true, true, true, true);
+            GL.StencilFunc(StencilFunction.Equal, 1, 0xFF);
+            GL.StencilMask(0x00);
+            //GL.Disable(EnableCap.CullFace);
+
+            GL.StencilMask(0xFF);
+            GL.Clear(ClearBufferMask.StencilBufferBit);
+            GL.Disable(EnableCap.StencilTest);
+            GL.Enable(EnableCap.DepthTest);
         }
 
         public static void drawSphereTransformedVisible(Vector3 center, float radius, uint precision, Matrix4 transform)
@@ -579,6 +600,44 @@ namespace Smash_Forge
             GL.PopMatrix();
         }
 
+        public static void draw2DCircle(float x, float y, float radius, Color color, int screenWidth, int screenHeight)
+        {
+
+            // No shaders
+            GL.UseProgram(0);
+
+            // Go to 2D
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.PushMatrix();
+            GL.LoadIdentity();
+            GL.Ortho(0.0f, screenWidth, screenHeight, 0.0f, -1.0f, 10.0f);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.PushMatrix();
+            GL.LoadIdentity();
+
+            // Allow transparency
+            GL.Enable(EnableCap.Blend);
+
+            // Draw over everything
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            // Draw here
+            GL.Color4(color);
+            uint precision = 30;  // force particular method overload
+            drawCircle(new Vector3(x, y, -1f), radius, precision);
+
+            GL.Enable(EnableCap.CullFace);
+            GL.Enable(EnableCap.DepthTest);
+
+            // Back to 3D
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.PopMatrix();
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.PopMatrix();
+        }
+
         public static void drawFloor()
         {
             bool solid = Runtime.floorStyle == Runtime.FloorStyle.Solid;
@@ -881,7 +940,6 @@ namespace Smash_Forge
 
             GL.End();
         }
-
 
         public static bool intersectCircle(Vector3 pos, float r, int smooth, Vector3 vA, Vector3 vB)
         {

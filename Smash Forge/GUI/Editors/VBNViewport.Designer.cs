@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.cbUseFrameSpeed = new System.Windows.Forms.CheckBox();
             this.button1 = new System.Windows.Forms.Button();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
@@ -43,7 +44,7 @@
             this.btnLastFrame = new System.Windows.Forms.Button();
             this.btnPrevFrame = new System.Windows.Forms.Button();
             this.btnFirstFrame = new System.Windows.Forms.Button();
-            this.glControl1 = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(32, 24, 8, 16));
+            this.glControl1 = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(8, 8, 8, 8), 24, 8, 16));
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nupdFrameRate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nupdFrame)).BeginInit();
@@ -52,6 +53,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.cbUseFrameSpeed);
             this.groupBox2.Controls.Add(this.button1);
             this.groupBox2.Controls.Add(this.checkBox2);
             this.groupBox2.Controls.Add(this.checkBox1);
@@ -67,11 +69,23 @@
             this.groupBox2.Controls.Add(this.btnPrevFrame);
             this.groupBox2.Controls.Add(this.btnFirstFrame);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox2.Location = new System.Drawing.Point(0, 407);
+            this.groupBox2.Location = new System.Drawing.Point(0, 385);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(624, 91);
+            this.groupBox2.Size = new System.Drawing.Size(624, 113);
             this.groupBox2.TabIndex = 8;
             this.groupBox2.TabStop = false;
+            // 
+            // cbUseFrameSpeed
+            // 
+            this.cbUseFrameSpeed.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.cbUseFrameSpeed.AutoSize = true;
+            this.cbUseFrameSpeed.Location = new System.Drawing.Point(487, 40);
+            this.cbUseFrameSpeed.Name = "cbUseFrameSpeed";
+            this.cbUseFrameSpeed.Size = new System.Drawing.Size(131, 17);
+            this.cbUseFrameSpeed.TabIndex = 13;
+            this.cbUseFrameSpeed.Text = "Frame speed modifiers";
+            this.cbUseFrameSpeed.UseVisualStyleBackColor = true;
+            this.cbUseFrameSpeed.CheckedChanged += new System.EventHandler(this.cbUseFrameSpeed_CheckedChanged);
             // 
             // button1
             // 
@@ -188,7 +202,7 @@
             // 
             this.btnPlay.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPlay.Location = new System.Drawing.Point(94, 40);
+            this.btnPlay.Location = new System.Drawing.Point(94, 62);
             this.btnPlay.Name = "btnPlay";
             this.btnPlay.Size = new System.Drawing.Size(433, 44);
             this.btnPlay.TabIndex = 4;
@@ -199,7 +213,7 @@
             // btnNextFrame
             // 
             this.btnNextFrame.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnNextFrame.Location = new System.Drawing.Point(533, 40);
+            this.btnNextFrame.Location = new System.Drawing.Point(533, 62);
             this.btnNextFrame.Name = "btnNextFrame";
             this.btnNextFrame.Size = new System.Drawing.Size(35, 44);
             this.btnNextFrame.TabIndex = 3;
@@ -210,7 +224,7 @@
             // btnLastFrame
             // 
             this.btnLastFrame.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnLastFrame.Location = new System.Drawing.Point(575, 40);
+            this.btnLastFrame.Location = new System.Drawing.Point(575, 62);
             this.btnLastFrame.Name = "btnLastFrame";
             this.btnLastFrame.Size = new System.Drawing.Size(35, 44);
             this.btnLastFrame.TabIndex = 2;
@@ -220,7 +234,7 @@
             // 
             // btnPrevFrame
             // 
-            this.btnPrevFrame.Location = new System.Drawing.Point(53, 40);
+            this.btnPrevFrame.Location = new System.Drawing.Point(53, 62);
             this.btnPrevFrame.Name = "btnPrevFrame";
             this.btnPrevFrame.Size = new System.Drawing.Size(35, 44);
             this.btnPrevFrame.TabIndex = 1;
@@ -230,16 +244,16 @@
             // 
             // btnFirstFrame
             // 
-            this.btnFirstFrame.Location = new System.Drawing.Point(12, 40);
+            this.btnFirstFrame.Location = new System.Drawing.Point(12, 62);
             this.btnFirstFrame.Name = "btnFirstFrame";
             this.btnFirstFrame.Size = new System.Drawing.Size(35, 44);
             this.btnFirstFrame.TabIndex = 0;
             this.btnFirstFrame.Text = "|<";
             this.btnFirstFrame.UseVisualStyleBackColor = true;
             this.btnFirstFrame.Click += new System.EventHandler(this.btnFirstFrame_Click);
-            // 
+            //
             // glControl1
-            // 
+            //
             this.glControl1.BackColor = System.Drawing.Color.Black;
             this.glControl1.CausesValidation = false;
             this.glControl1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -288,5 +302,6 @@
         private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.Button button1;
         public System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.CheckBox cbUseFrameSpeed;
     }
 }

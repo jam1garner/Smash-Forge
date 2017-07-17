@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("test2");
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
@@ -79,19 +81,49 @@
             this.cb_vertcolor = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.checkBox11 = new System.Windows.Forms.CheckBox();
-            this.checkBox17 = new System.Windows.Forms.CheckBox();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.btnRemoveColor = new System.Windows.Forms.Button();
+            this.btnAddColor = new System.Windows.Forms.Button();
+            this.btnColorDown = new System.Windows.Forms.Button();
+            this.btnColorUp = new System.Windows.Forms.Button();
+            this.checkBox18 = new System.Windows.Forms.CheckBox();
+            this.listViewKbColors = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.label10 = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.nudHitboxAlpha = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.nudHurtboxAlpha = new System.Windows.Forms.NumericUpDown();
+            this.label13 = new System.Windows.Forms.Label();
+            this.pbHurtboxColor = new System.Windows.Forms.PictureBox();
+            this.pbHurtboxColorHi = new System.Windows.Forms.PictureBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.pbHurtboxColorMed = new System.Windows.Forms.PictureBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.pbHurtboxColorLw = new System.Windows.Forms.PictureBox();
+            this.label16 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fovSlider)).BeginInit();
             this.groupBox2.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudHurtboxAlpha)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColor)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColorHi)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColorMed)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColorLw)).BeginInit();
             this.SuspendLayout();
             // 
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox1.Location = new System.Drawing.Point(16, 22);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(93, 17);
@@ -103,8 +135,6 @@
             // checkBox2
             // 
             this.checkBox2.AutoSize = true;
-            this.checkBox2.Checked = true;
-            this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox2.Location = new System.Drawing.Point(16, 91);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(94, 17);
@@ -116,9 +146,7 @@
             // checkBox3
             // 
             this.checkBox3.AutoSize = true;
-            this.checkBox3.Checked = true;
-            this.checkBox3.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox3.Location = new System.Drawing.Point(16, 265);
+            this.checkBox3.Location = new System.Drawing.Point(16, 135);
             this.checkBox3.Name = "checkBox3";
             this.checkBox3.Size = new System.Drawing.Size(125, 17);
             this.checkBox3.TabIndex = 2;
@@ -129,9 +157,7 @@
             // checkBox4
             // 
             this.checkBox4.AutoSize = true;
-            this.checkBox4.Checked = true;
-            this.checkBox4.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox4.Location = new System.Drawing.Point(16, 135);
+            this.checkBox4.Location = new System.Drawing.Point(6, 11);
             this.checkBox4.Name = "checkBox4";
             this.checkBox4.Size = new System.Drawing.Size(105, 17);
             this.checkBox4.TabIndex = 3;
@@ -142,9 +168,7 @@
             // checkBox5
             // 
             this.checkBox5.AutoSize = true;
-            this.checkBox5.Checked = true;
-            this.checkBox5.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox5.Location = new System.Drawing.Point(16, 288);
+            this.checkBox5.Location = new System.Drawing.Point(16, 158);
             this.checkBox5.Name = "checkBox5";
             this.checkBox5.Size = new System.Drawing.Size(87, 17);
             this.checkBox5.TabIndex = 4;
@@ -155,9 +179,7 @@
             // checkBox6
             // 
             this.checkBox6.AutoSize = true;
-            this.checkBox6.Checked = true;
-            this.checkBox6.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox6.Location = new System.Drawing.Point(16, 361);
+            this.checkBox6.Location = new System.Drawing.Point(16, 231);
             this.checkBox6.Name = "checkBox6";
             this.checkBox6.Size = new System.Drawing.Size(85, 17);
             this.checkBox6.TabIndex = 5;
@@ -168,9 +190,7 @@
             // checkBox7
             // 
             this.checkBox7.AutoSize = true;
-            this.checkBox7.Checked = true;
-            this.checkBox7.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox7.Location = new System.Drawing.Point(48, 384);
+            this.checkBox7.Location = new System.Drawing.Point(48, 254);
             this.checkBox7.Name = "checkBox7";
             this.checkBox7.Size = new System.Drawing.Size(107, 17);
             this.checkBox7.TabIndex = 6;
@@ -181,9 +201,7 @@
             // checkBox8
             // 
             this.checkBox8.AutoSize = true;
-            this.checkBox8.Checked = true;
-            this.checkBox8.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox8.Location = new System.Drawing.Point(48, 430);
+            this.checkBox8.Location = new System.Drawing.Point(48, 300);
             this.checkBox8.Name = "checkBox8";
             this.checkBox8.Size = new System.Drawing.Size(102, 17);
             this.checkBox8.TabIndex = 7;
@@ -194,9 +212,7 @@
             // checkBox9
             // 
             this.checkBox9.AutoSize = true;
-            this.checkBox9.Checked = true;
-            this.checkBox9.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox9.Location = new System.Drawing.Point(48, 453);
+            this.checkBox9.Location = new System.Drawing.Point(48, 323);
             this.checkBox9.Name = "checkBox9";
             this.checkBox9.Size = new System.Drawing.Size(114, 17);
             this.checkBox9.TabIndex = 8;
@@ -207,9 +223,7 @@
             // checkBox10
             // 
             this.checkBox10.AutoSize = true;
-            this.checkBox10.Checked = true;
-            this.checkBox10.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox10.Location = new System.Drawing.Point(48, 476);
+            this.checkBox10.Location = new System.Drawing.Point(48, 346);
             this.checkBox10.Name = "checkBox10";
             this.checkBox10.Size = new System.Drawing.Size(134, 17);
             this.checkBox10.TabIndex = 9;
@@ -220,7 +234,7 @@
             // checkBox12
             // 
             this.checkBox12.AutoSize = true;
-            this.checkBox12.Location = new System.Drawing.Point(77, 407);
+            this.checkBox12.Location = new System.Drawing.Point(77, 277);
             this.checkBox12.Name = "checkBox12";
             this.checkBox12.Size = new System.Drawing.Size(158, 17);
             this.checkBox12.TabIndex = 11;
@@ -231,7 +245,7 @@
             // checkBox15
             // 
             this.checkBox15.AutoSize = true;
-            this.checkBox15.Location = new System.Drawing.Point(16, 242);
+            this.checkBox15.Location = new System.Drawing.Point(6, 481);
             this.checkBox15.Name = "checkBox15";
             this.checkBox15.Size = new System.Drawing.Size(196, 17);
             this.checkBox15.TabIndex = 25;
@@ -242,9 +256,7 @@
             // checkBox14
             // 
             this.checkBox14.AutoSize = true;
-            this.checkBox14.Checked = true;
-            this.checkBox14.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox14.Location = new System.Drawing.Point(48, 218);
+            this.checkBox14.Location = new System.Drawing.Point(38, 322);
             this.checkBox14.Name = "checkBox14";
             this.checkBox14.Size = new System.Drawing.Size(145, 17);
             this.checkBox14.TabIndex = 24;
@@ -255,9 +267,7 @@
             // checkBox13
             // 
             this.checkBox13.AutoSize = true;
-            this.checkBox13.Checked = true;
-            this.checkBox13.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox13.Location = new System.Drawing.Point(16, 197);
+            this.checkBox13.Location = new System.Drawing.Point(6, 301);
             this.checkBox13.Name = "checkBox13";
             this.checkBox13.Size = new System.Drawing.Size(112, 17);
             this.checkBox13.TabIndex = 23;
@@ -268,9 +278,7 @@
             // checkBox16
             // 
             this.checkBox16.AutoSize = true;
-            this.checkBox16.Checked = true;
-            this.checkBox16.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox16.Location = new System.Drawing.Point(48, 153);
+            this.checkBox16.Location = new System.Drawing.Point(38, 29);
             this.checkBox16.Name = "checkBox16";
             this.checkBox16.Size = new System.Drawing.Size(164, 17);
             this.checkBox16.TabIndex = 25;
@@ -303,7 +311,7 @@
             // boundingCB
             // 
             this.boundingCB.AutoSize = true;
-            this.boundingCB.Location = new System.Drawing.Point(16, 335);
+            this.boundingCB.Location = new System.Drawing.Point(16, 205);
             this.boundingCB.Name = "boundingCB";
             this.boundingCB.Size = new System.Drawing.Size(141, 17);
             this.boundingCB.TabIndex = 20;
@@ -314,7 +322,7 @@
             // backgroundCB
             // 
             this.backgroundCB.AutoSize = true;
-            this.backgroundCB.Location = new System.Drawing.Point(16, 311);
+            this.backgroundCB.Location = new System.Drawing.Point(16, 181);
             this.backgroundCB.Name = "backgroundCB";
             this.backgroundCB.Size = new System.Drawing.Size(122, 17);
             this.backgroundCB.TabIndex = 19;
@@ -371,9 +379,9 @@
             this.groupBox1.Controls.Add(this.cb_vertcolor);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.depthSlider);
-            this.groupBox1.Location = new System.Drawing.Point(301, 12);
+            this.groupBox1.Location = new System.Drawing.Point(256, 6);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(283, 522);
+            this.groupBox1.Size = new System.Drawing.Size(283, 500);
             this.groupBox1.TabIndex = 15;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model Render Settings";
@@ -407,7 +415,7 @@
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.label9, 0, 5);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 323);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 327);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 6;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -416,7 +424,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(277, 196);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(277, 170);
             this.tableLayoutPanel1.TabIndex = 31;
             // 
             // modelscaleTB
@@ -668,14 +676,9 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.checkBox17);
-            this.groupBox2.Controls.Add(this.checkBox16);
             this.groupBox2.Controls.Add(this.checkBox11);
-            this.groupBox2.Controls.Add(this.checkBox15);
             this.groupBox2.Controls.Add(this.checkBox1);
-            this.groupBox2.Controls.Add(this.checkBox14);
             this.groupBox2.Controls.Add(this.checkBox7);
-            this.groupBox2.Controls.Add(this.checkBox13);
             this.groupBox2.Controls.Add(this.checkBox6);
             this.groupBox2.Controls.Add(this.wireframeCB);
             this.groupBox2.Controls.Add(this.checkBox8);
@@ -685,14 +688,13 @@
             this.groupBox2.Controls.Add(this.swagViewing);
             this.groupBox2.Controls.Add(this.backgroundCB);
             this.groupBox2.Controls.Add(this.checkBox9);
-            this.groupBox2.Controls.Add(this.checkBox4);
             this.groupBox2.Controls.Add(this.checkBox12);
             this.groupBox2.Controls.Add(this.checkBox10);
             this.groupBox2.Controls.Add(this.checkBox2);
             this.groupBox2.Controls.Add(this.checkBox3);
-            this.groupBox2.Location = new System.Drawing.Point(1, 12);
+            this.groupBox2.Location = new System.Drawing.Point(6, 6);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(300, 522);
+            this.groupBox2.Size = new System.Drawing.Size(244, 500);
             this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Display Settings";
@@ -700,33 +702,295 @@
             // checkBox11
             // 
             this.checkBox11.AutoSize = true;
-            this.checkBox11.Location = new System.Drawing.Point(48, 500);
+            this.checkBox11.Location = new System.Drawing.Point(48, 370);
             this.checkBox11.Name = "checkBox11";
             this.checkBox11.Size = new System.Drawing.Size(133, 17);
             this.checkBox11.TabIndex = 26;
             this.checkBox11.Text = "Render General Points";
             this.checkBox11.UseVisualStyleBackColor = true;
             // 
-            // checkBox17
+            // tabControl1
             // 
-            this.checkBox17.AutoSize = true;
-            this.checkBox17.Checked = true;
-            this.checkBox17.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox17.Location = new System.Drawing.Point(48, 174);
-            this.checkBox17.Name = "checkBox17";
-            this.checkBox17.Size = new System.Drawing.Size(184, 17);
-            this.checkBox17.TabIndex = 27;
-            this.checkBox17.Text = "Render Hitbox color based on KB";
-            this.checkBox17.UseVisualStyleBackColor = true;
-            this.checkBox17.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Location = new System.Drawing.Point(12, 12);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(564, 541);
+            this.tabControl1.TabIndex = 17;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage1.Controls.Add(this.groupBox2);
+            this.tabPage1.Controls.Add(this.groupBox1);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(556, 515);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "General";
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage2.Controls.Add(this.pbHurtboxColorLw);
+            this.tabPage2.Controls.Add(this.label16);
+            this.tabPage2.Controls.Add(this.pbHurtboxColorMed);
+            this.tabPage2.Controls.Add(this.label15);
+            this.tabPage2.Controls.Add(this.pbHurtboxColorHi);
+            this.tabPage2.Controls.Add(this.label14);
+            this.tabPage2.Controls.Add(this.pbHurtboxColor);
+            this.tabPage2.Controls.Add(this.label13);
+            this.tabPage2.Controls.Add(this.label12);
+            this.tabPage2.Controls.Add(this.nudHurtboxAlpha);
+            this.tabPage2.Controls.Add(this.label11);
+            this.tabPage2.Controls.Add(this.nudHitboxAlpha);
+            this.tabPage2.Controls.Add(this.btnRemoveColor);
+            this.tabPage2.Controls.Add(this.btnAddColor);
+            this.tabPage2.Controls.Add(this.btnColorDown);
+            this.tabPage2.Controls.Add(this.btnColorUp);
+            this.tabPage2.Controls.Add(this.checkBox18);
+            this.tabPage2.Controls.Add(this.listViewKbColors);
+            this.tabPage2.Controls.Add(this.label10);
+            this.tabPage2.Controls.Add(this.comboBox1);
+            this.tabPage2.Controls.Add(this.checkBox4);
+            this.tabPage2.Controls.Add(this.checkBox13);
+            this.tabPage2.Controls.Add(this.checkBox15);
+            this.tabPage2.Controls.Add(this.checkBox14);
+            this.tabPage2.Controls.Add(this.checkBox16);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(556, 515);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Hit/Hurt boxes";
+            // 
+            // btnRemoveColor
+            // 
+            this.btnRemoveColor.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnRemoveColor.Location = new System.Drawing.Point(228, 225);
+            this.btnRemoveColor.Name = "btnRemoveColor";
+            this.btnRemoveColor.Size = new System.Drawing.Size(32, 32);
+            this.btnRemoveColor.TabIndex = 35;
+            this.btnRemoveColor.Text = "–";
+            this.btnRemoveColor.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.btnRemoveColor.UseVisualStyleBackColor = true;
+            this.btnRemoveColor.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // btnAddColor
+            // 
+            this.btnAddColor.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAddColor.Location = new System.Drawing.Point(228, 192);
+            this.btnAddColor.Name = "btnAddColor";
+            this.btnAddColor.Size = new System.Drawing.Size(32, 32);
+            this.btnAddColor.TabIndex = 34;
+            this.btnAddColor.Text = "+";
+            this.btnAddColor.UseVisualStyleBackColor = true;
+            this.btnAddColor.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // btnColorDown
+            // 
+            this.btnColorDown.Location = new System.Drawing.Point(228, 263);
+            this.btnColorDown.Name = "btnColorDown";
+            this.btnColorDown.Size = new System.Drawing.Size(32, 32);
+            this.btnColorDown.TabIndex = 33;
+            this.btnColorDown.Text = "▼";
+            this.btnColorDown.UseVisualStyleBackColor = true;
+            this.btnColorDown.Click += new System.EventHandler(this.btnColorDown_Click);
+            // 
+            // btnColorUp
+            // 
+            this.btnColorUp.Location = new System.Drawing.Point(228, 154);
+            this.btnColorUp.Name = "btnColorUp";
+            this.btnColorUp.Size = new System.Drawing.Size(32, 32);
+            this.btnColorUp.TabIndex = 32;
+            this.btnColorUp.Text = "▲";
+            this.btnColorUp.UseVisualStyleBackColor = true;
+            this.btnColorUp.Click += new System.EventHandler(this.btnColorUp_Click);
+            // 
+            // checkBox18
+            // 
+            this.checkBox18.AutoSize = true;
+            this.checkBox18.Checked = true;
+            this.checkBox18.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox18.Location = new System.Drawing.Point(38, 52);
+            this.checkBox18.Name = "checkBox18";
+            this.checkBox18.Size = new System.Drawing.Size(201, 17);
+            this.checkBox18.TabIndex = 31;
+            this.checkBox18.Text = "Render higher priority hitboxes on top";
+            this.checkBox18.UseVisualStyleBackColor = true;
+            this.checkBox18.CheckedChanged += new System.EventHandler(this.checkChanged);
+            // 
+            // listViewKbColors
+            // 
+            this.listViewKbColors.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1});
+            this.listViewKbColors.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listViewKbColors.FullRowSelect = true;
+            this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listViewKbColors.HideSelection = false;
+            this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem7,
+            listViewItem8});
+            this.listViewKbColors.Location = new System.Drawing.Point(6, 154);
+            this.listViewKbColors.MultiSelect = false;
+            this.listViewKbColors.Name = "listViewKbColors";
+            this.listViewKbColors.Size = new System.Drawing.Size(216, 141);
+            this.listViewKbColors.TabIndex = 30;
+            this.listViewKbColors.UseCompatibleStateImageBehavior = false;
+            this.listViewKbColors.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Hitbox Colors";
+            this.columnHeader1.Width = 207;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(3, 130);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(101, 13);
+            this.label10.TabIndex = 29;
+            this.label10.Text = "Hitbox display mode";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "Red hitboxes",
+            "Color based on KB",
+            "Color based on ID"});
+            this.comboBox1.Location = new System.Drawing.Point(110, 127);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(112, 21);
+            this.comboBox1.TabIndex = 28;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
+            // nudHitboxAlpha
+            // 
+            this.nudHitboxAlpha.Location = new System.Drawing.Point(110, 101);
+            this.nudHitboxAlpha.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.nudHitboxAlpha.Name = "nudHitboxAlpha";
+            this.nudHitboxAlpha.Size = new System.Drawing.Size(66, 20);
+            this.nudHitboxAlpha.TabIndex = 36;
+            this.nudHitboxAlpha.ValueChanged += new System.EventHandler(this.nudHitboxAlpha_ValueChanged);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(35, 103);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(66, 13);
+            this.label11.TabIndex = 37;
+            this.label11.Text = "Hitbox alpha";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(35, 347);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(73, 13);
+            this.label12.TabIndex = 39;
+            this.label12.Text = "Hurtbox alpha";
+            // 
+            // nudHurtboxAlpha
+            // 
+            this.nudHurtboxAlpha.Location = new System.Drawing.Point(110, 345);
+            this.nudHurtboxAlpha.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.nudHurtboxAlpha.Name = "nudHurtboxAlpha";
+            this.nudHurtboxAlpha.Size = new System.Drawing.Size(66, 20);
+            this.nudHurtboxAlpha.TabIndex = 38;
+            this.nudHurtboxAlpha.ValueChanged += new System.EventHandler(this.nudHurtboxAlpha_ValueChanged);
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(34, 376);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(117, 13);
+            this.label13.TabIndex = 40;
+            this.label13.Text = "Hurtbox color (no zone)";
+            // 
+            // pbHurtboxColor
+            // 
+            this.pbHurtboxColor.Location = new System.Drawing.Point(160, 373);
+            this.pbHurtboxColor.Name = "pbHurtboxColor";
+            this.pbHurtboxColor.Size = new System.Drawing.Size(16, 16);
+            this.pbHurtboxColor.TabIndex = 41;
+            this.pbHurtboxColor.TabStop = false;
+            this.pbHurtboxColor.Click += new System.EventHandler(this.pbHurtboxColor_Click);
+            // 
+            // pbHurtboxColorHi
+            // 
+            this.pbHurtboxColorHi.Location = new System.Drawing.Point(160, 395);
+            this.pbHurtboxColorHi.Name = "pbHurtboxColorHi";
+            this.pbHurtboxColorHi.Size = new System.Drawing.Size(16, 16);
+            this.pbHurtboxColorHi.TabIndex = 43;
+            this.pbHurtboxColorHi.TabStop = false;
+            this.pbHurtboxColorHi.Click += new System.EventHandler(this.pbHurtboxColorHi_Click);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(34, 400);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(87, 13);
+            this.label14.TabIndex = 42;
+            this.label14.Text = "Hurtbox color (hi)";
+            // 
+            // pbHurtboxColorMed
+            // 
+            this.pbHurtboxColorMed.Location = new System.Drawing.Point(160, 419);
+            this.pbHurtboxColorMed.Name = "pbHurtboxColorMed";
+            this.pbHurtboxColorMed.Size = new System.Drawing.Size(16, 16);
+            this.pbHurtboxColorMed.TabIndex = 45;
+            this.pbHurtboxColorMed.TabStop = false;
+            this.pbHurtboxColorMed.Click += new System.EventHandler(this.pbHurtboxColorMed_Click);
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(34, 424);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(99, 13);
+            this.label15.TabIndex = 44;
+            this.label15.Text = "Hurtbox color (med)";
+            // 
+            // pbHurtboxColorLw
+            // 
+            this.pbHurtboxColorLw.Location = new System.Drawing.Point(160, 444);
+            this.pbHurtboxColorLw.Name = "pbHurtboxColorLw";
+            this.pbHurtboxColorLw.Size = new System.Drawing.Size(16, 16);
+            this.pbHurtboxColorLw.TabIndex = 47;
+            this.pbHurtboxColorLw.TabStop = false;
+            this.pbHurtboxColorLw.Click += new System.EventHandler(this.pbHurtboxColorLw_Click);
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(34, 447);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(95, 13);
+            this.label16.TabIndex = 46;
+            this.label16.Text = "Hurtbox color (low)";
             // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(588, 546);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.ClientSize = new System.Drawing.Size(588, 560);
+            this.Controls.Add(this.tabControl1);
             this.Icon = global::Smash_Forge.Resources.Resources.forge2;
             this.Name = "RenderSettings";
             this.Text = "Render Settings";
@@ -739,6 +1003,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.fovSlider)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudHurtboxAlpha)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColor)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColorHi)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColorMed)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColorLw)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -796,6 +1070,29 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox checkBox11;
         private System.Windows.Forms.CheckBox checkBox16;
-        private System.Windows.Forms.CheckBox checkBox17;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ListView listViewKbColors;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.CheckBox checkBox18;
+        private System.Windows.Forms.Button btnRemoveColor;
+        private System.Windows.Forms.Button btnAddColor;
+        private System.Windows.Forms.Button btnColorDown;
+        private System.Windows.Forms.Button btnColorUp;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.NumericUpDown nudHurtboxAlpha;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.NumericUpDown nudHitboxAlpha;
+        private System.Windows.Forms.PictureBox pbHurtboxColor;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.PictureBox pbHurtboxColorLw;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.PictureBox pbHurtboxColorMed;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.PictureBox pbHurtboxColorHi;
+        private System.Windows.Forms.Label label14;
     }
 }

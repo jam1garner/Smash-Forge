@@ -38,6 +38,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="nQuant.Core">
+      <HintPath>lib\nQuant.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Octokit, Version=0.23.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Octokit.dll</HintPath>
@@ -68,9 +71,13 @@
     <Reference Include="WeifenLuo.WinFormsUI.Docking">
       <HintPath>WeifenLuo.WinFormsUI.Docking.dll</HintPath>
     </Reference>
+    <Reference Include="YamlDotNet, Version=4.2.1.0, Culture=neutral, PublicKeyToken=ec19458f3c15af5e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\YamlDotNet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ACMDScriptManager.cs" />
+    <Compile Include="ACMDScript.cs" />
     <Compile Include="CharacterParamManager.cs" />
     <Compile Include="Filetypes\Animation\OMO.cs" />
     <Compile Include="Filetypes\ATKD.cs" />

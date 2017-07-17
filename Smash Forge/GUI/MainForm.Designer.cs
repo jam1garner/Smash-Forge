@@ -137,7 +137,7 @@
             this.saveConfigToolStripMenuItem,
             this.clearWorkspaceToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(94, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // openVBNToolStripMenuItem
