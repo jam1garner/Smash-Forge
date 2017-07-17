@@ -37,7 +37,7 @@ namespace Smash_Forge
                             f.writeInt(0);
                             f.writeInt(0x30 + rom.Length);
                             f.writeInt(0x30);
-                            f.writeInt(0x20 + rom.Length);
+                            f.writeInt(0x10 + rom.Length);
                             f.writeInt(0x30 + rom.Length);
                             f.writeInt(0);
                             f.writeInt(0x1B + rom.Length);
@@ -45,6 +45,7 @@ namespace Smash_Forge
                             f.writeString("JAM WAS HERE");
                             f.writeInt(0);
                             f.writeBytes(rom);
+                            f.writeHex("3C00000000001000090002080000000100000000000000000000000000000000");
                             f.save(sfd.FileName);
                         }
                     }
@@ -66,7 +67,7 @@ namespace Smash_Forge
                         {
                             byte[] rom = File.ReadAllBytes(ofd.FileName);
                             FileOutput f = new FileOutput();
-                            for (int i = 0x30; i < rom.Length; i++)
+                            for (int i = 0x30; i < rom.Length - 0x20; i++)
                                 f.writeByte(rom[i]);
                             f.save(sfd.FileName);
                         }
