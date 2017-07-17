@@ -21,6 +21,9 @@ namespace Smash_Forge.GUI
             InitializeComponent();
 
             disableRuntimeUpdates = true;
+            nudHitboxAlpha.Value = Runtime.hitboxAlpha;
+            nudHurtboxAlpha.Value = Runtime.hurtboxAlpha;
+
             checkBox1.Checked = Runtime.renderModel;
             checkBox2.Checked = Runtime.renderBones;
             checkBox3.Checked = Runtime.renderPath;
@@ -323,12 +326,23 @@ namespace Smash_Forge.GUI
 
         private void button3_Click(object sender, EventArgs e)
         {
-
+            ColorDialog hitboxColorDialog = new ColorDialog();
+            if (hitboxColorDialog.ShowDialog() == DialogResult.OK)
+            {
+                hitboxColors.Add(hitboxColorDialog.Color);
+                populateColorsFromRuntime();
+            }
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-
+            if (listViewKbColors.Items.Count <= 1)
+                return;  // don't allow no colours for hitboxes
+            int index = listViewKbColors.SelectedIndices[0];
+            hitboxColors.RemoveAt(index);
+            populateColorsFromRuntime();
+            int newSelectionIndex = index - 1 <= 0 ? 0 : index - 1;
+            listViewKbColors.Items[newSelectionIndex].Selected = true;
         }
 
         private void btnColorUp_Click(object sender, EventArgs e)
@@ -353,6 +367,22 @@ namespace Smash_Forge.GUI
             hitboxColors.Insert(index + 1, color);
             populateColorsFromRuntime();
             listViewKbColors.Items[index + 1].Selected = true;
+        }
+
+        private void nudHitboxAlpha_ValueChanged(object sender, EventArgs e)
+        {
+            if (!disableRuntimeUpdates)
+            {
+                Runtime.hitboxAlpha = (int)nudHitboxAlpha.Value;
+            }
+        }
+
+        private void nudHurtboxAlpha_ValueChanged(object sender, EventArgs e)
+        {
+            if (!disableRuntimeUpdates)
+            {
+                Runtime.hurtboxAlpha = (int)nudHurtboxAlpha.Value;
+            }
         }
     }
 }

@@ -243,7 +243,9 @@ namespace Smash_Forge
             }
             else
             {
-                return Runtime.hitboxIdColors[ID];
+                if (ID < Runtime.hitboxIdColors.Count)
+                    return Runtime.hitboxIdColors[ID];
+                return Runtime.hitboxIdColors[0];  // confusing sure, but better than a runtime error
             }
         }
 

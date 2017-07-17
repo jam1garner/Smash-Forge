@@ -1678,7 +1678,7 @@ namespace Smash_Forge
                     if (success)
                     {
                         // Don't interpolate extended hitboxes - there is data to suggest they don't interpolate
-                        if (h.IsSphere())
+                        if (!h.Extended)
                             RenderTools.drawCylinder(va, lastMatchingHitbox.va, lastMatchingHitbox.Size);
                     }
                 }
@@ -1744,20 +1744,20 @@ namespace Smash_Forge
 
                     //va = Vector3.Transform(va, b.transform);
 
-                    GL.Color4(Color.FromArgb(80, 0x00, 0x53, 0x8A)); // Strong blue
+                    GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, 0x00, 0x53, 0x8A)); // Strong blue
 
                     if (Runtime.renderHurtboxesZone)
                     {
                         switch (h.Zone)
                         {
                             case Hurtbox.LW_ZONE:
-                                GL.Color4(Color.FromArgb(80, 0x00, 0x53, 0x8A)); // Strong blue
+                                GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, 0x00, 0x53, 0x8A)); // Strong blue
                                 break;
                             case Hurtbox.N_ZONE:
-                                GL.Color4(Color.FromArgb(80, 0xF6, 0x76, 0x8E)); // //Strong Purplish Pink
+                                GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, 0xF6, 0x76, 0x8E)); // //Strong Purplish Pink
                                 break;
                             case Hurtbox.HI_ZONE:
-                                GL.Color4(Color.FromArgb(80, 0xFF, 0x8E, 0x00)); //Vivid Orange Yellow
+                                GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, 0xFF, 0x8E, 0x00)); //Vivid Orange Yellow
                                 break;
                         }
                     }
@@ -1765,13 +1765,13 @@ namespace Smash_Forge
                     if (Runtime.gameAcmdScript != null)
                     {
                         if(Runtime.gameAcmdScript.SuperArmor)
-                            GL.Color4(Color.FromArgb(80, 0x73, 0x0a, 0x43));
+                            GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, 0x73, 0x0a, 0x43));
 
                         if(Runtime.gameAcmdScript.BodyInvincible)
-                            GL.Color4(Color.FromArgb(80, Color.White));
+                            GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Color.White));
 
                         if(Runtime.gameAcmdScript.InvincibleBones.Contains(h.Bone))
-                            GL.Color4(Color.FromArgb(80, Color.White));
+                            GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Color.White));
                     }
 
                     var va2 = new Vector3(h.X2, h.Y2, h.Z2);
@@ -1989,8 +1989,17 @@ namespace Smash_Forge
                 if (m.vbn != null)
                     Runtime.TargetAnim.nextFrame(m.vbn);
             }
-            nupdMaxFrame.Value = a.size() > 1 ? a.size() - 1 : a.size();
+            setAnimMaxFrames(a);
             nupdFrame.Value = 0;
+        }
+
+        public void setAnimMaxFrames(SkelAnimation a)
+        {
+            int totalAnimFrames = a.size() > 1 ? a.size() - 1 : a.size();
+            if (Runtime.useFrameDuration && Runtime.gameAcmdScript != null)
+                nupdMaxFrame.Value = (int)Runtime.gameAcmdScript.calculateTotalFrames(totalAnimFrames);
+            else
+                nupdMaxFrame.Value = totalAnimFrames;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -2238,6 +2247,16 @@ namespace Smash_Forge
                 p2 = p1 - (va - (va + vb)).Xyz * 100;
 
                 freezeCamera = (RenderTools.intersectCircle(new Vector3(6, 6, 6), 5, 90, p1, p2));
+            }
+        }
+
+        private void cbUseFrameSpeed_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.useFrameDuration = cbUseFrameSpeed.Checked;
+
+            if (Runtime.TargetAnim != null)
+            {
+                setAnimMaxFrames(Runtime.TargetAnim);
             }
         }
 

@@ -107,7 +107,22 @@ namespace Smash_Forge
                 Hitboxes.Add(id, newHitbox);
         }
 
-        //public void processToInGameFrame(int frame)
+        // Get the total number of in-game frames this move goes for, including
+        // modified frame speed
+        public int calculateTotalFrames(int totalAnimFrames)
+        {
+            ForgeACMDScript script = new ForgeACMDScript(this.script);
+            // Calculate frames
+            Reset();
+            int gameFrame = -1;
+            while (script.animationFrame < totalAnimFrames)
+            {
+                gameFrame++;
+                script.processToFrame(gameFrame);
+            }
+            return gameFrame;
+        }
+
         public void processToFrame(int frame)
         {
             if (script == null)
@@ -447,7 +462,7 @@ namespace Smash_Forge
                 case 0xFF379EB6: // delete hitbox
                     if (Hitboxes.ContainsKey((int)cmd.Parameters[0]))
                     {
-                        Hitboxes.RemoveAt((int)cmd.Parameters[0]);
+                        Hitboxes.Remove((int)cmd.Parameters[0]);
                     }
                     break;
                 case 0x7698BB42: // deactivate previous hitbox

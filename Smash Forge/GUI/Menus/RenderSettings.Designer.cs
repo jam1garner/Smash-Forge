@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("test2");
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
@@ -84,15 +84,19 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.btnRemoveColor = new System.Windows.Forms.Button();
+            this.btnAddColor = new System.Windows.Forms.Button();
+            this.btnColorDown = new System.Windows.Forms.Button();
+            this.btnColorUp = new System.Windows.Forms.Button();
             this.checkBox18 = new System.Windows.Forms.CheckBox();
             this.listViewKbColors = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label10 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.btnColorUp = new System.Windows.Forms.Button();
-            this.btnColorDown = new System.Windows.Forms.Button();
-            this.btnAddColor = new System.Windows.Forms.Button();
-            this.btnRemoveColor = new System.Windows.Forms.Button();
+            this.nudHitboxAlpha = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.nudHurtboxAlpha = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -101,6 +105,8 @@
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudHurtboxAlpha)).BeginInit();
             this.SuspendLayout();
             // 
             // checkBox1
@@ -227,7 +233,7 @@
             // checkBox15
             // 
             this.checkBox15.AutoSize = true;
-            this.checkBox15.Location = new System.Drawing.Point(6, 346);
+            this.checkBox15.Location = new System.Drawing.Point(6, 372);
             this.checkBox15.Name = "checkBox15";
             this.checkBox15.Size = new System.Drawing.Size(196, 17);
             this.checkBox15.TabIndex = 25;
@@ -716,6 +722,10 @@
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage2.Controls.Add(this.label12);
+            this.tabPage2.Controls.Add(this.nudHurtboxAlpha);
+            this.tabPage2.Controls.Add(this.label11);
+            this.tabPage2.Controls.Add(this.nudHitboxAlpha);
             this.tabPage2.Controls.Add(this.btnRemoveColor);
             this.tabPage2.Controls.Add(this.btnAddColor);
             this.tabPage2.Controls.Add(this.btnColorDown);
@@ -735,6 +745,49 @@
             this.tabPage2.Size = new System.Drawing.Size(556, 515);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Hit/Hurt boxes";
+            // 
+            // btnRemoveColor
+            // 
+            this.btnRemoveColor.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnRemoveColor.Location = new System.Drawing.Point(228, 225);
+            this.btnRemoveColor.Name = "btnRemoveColor";
+            this.btnRemoveColor.Size = new System.Drawing.Size(32, 32);
+            this.btnRemoveColor.TabIndex = 35;
+            this.btnRemoveColor.Text = "–";
+            this.btnRemoveColor.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.btnRemoveColor.UseVisualStyleBackColor = true;
+            this.btnRemoveColor.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // btnAddColor
+            // 
+            this.btnAddColor.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAddColor.Location = new System.Drawing.Point(228, 192);
+            this.btnAddColor.Name = "btnAddColor";
+            this.btnAddColor.Size = new System.Drawing.Size(32, 32);
+            this.btnAddColor.TabIndex = 34;
+            this.btnAddColor.Text = "+";
+            this.btnAddColor.UseVisualStyleBackColor = true;
+            this.btnAddColor.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // btnColorDown
+            // 
+            this.btnColorDown.Location = new System.Drawing.Point(228, 263);
+            this.btnColorDown.Name = "btnColorDown";
+            this.btnColorDown.Size = new System.Drawing.Size(32, 32);
+            this.btnColorDown.TabIndex = 33;
+            this.btnColorDown.Text = "▼";
+            this.btnColorDown.UseVisualStyleBackColor = true;
+            this.btnColorDown.Click += new System.EventHandler(this.btnColorDown_Click);
+            // 
+            // btnColorUp
+            // 
+            this.btnColorUp.Location = new System.Drawing.Point(228, 154);
+            this.btnColorUp.Name = "btnColorUp";
+            this.btnColorUp.Size = new System.Drawing.Size(32, 32);
+            this.btnColorUp.TabIndex = 32;
+            this.btnColorUp.Text = "▲";
+            this.btnColorUp.UseVisualStyleBackColor = true;
+            this.btnColorUp.Click += new System.EventHandler(this.btnColorUp_Click);
             // 
             // checkBox18
             // 
@@ -758,8 +811,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2});
+            listViewItem5,
+            listViewItem6});
             this.listViewKbColors.Location = new System.Drawing.Point(6, 154);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -796,48 +849,49 @@
             this.comboBox1.TabIndex = 28;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
-            // btnColorUp
+            // nudHitboxAlpha
             // 
-            this.btnColorUp.Location = new System.Drawing.Point(228, 154);
-            this.btnColorUp.Name = "btnColorUp";
-            this.btnColorUp.Size = new System.Drawing.Size(32, 32);
-            this.btnColorUp.TabIndex = 32;
-            this.btnColorUp.Text = "▲";
-            this.btnColorUp.UseVisualStyleBackColor = true;
-            this.btnColorUp.Click += new System.EventHandler(this.btnColorUp_Click);
+            this.nudHitboxAlpha.Location = new System.Drawing.Point(110, 101);
+            this.nudHitboxAlpha.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.nudHitboxAlpha.Name = "nudHitboxAlpha";
+            this.nudHitboxAlpha.Size = new System.Drawing.Size(66, 20);
+            this.nudHitboxAlpha.TabIndex = 36;
+            this.nudHitboxAlpha.ValueChanged += new System.EventHandler(this.nudHitboxAlpha_ValueChanged);
             // 
-            // btnColorDown
+            // label11
             // 
-            this.btnColorDown.Location = new System.Drawing.Point(228, 263);
-            this.btnColorDown.Name = "btnColorDown";
-            this.btnColorDown.Size = new System.Drawing.Size(32, 32);
-            this.btnColorDown.TabIndex = 33;
-            this.btnColorDown.Text = "▼";
-            this.btnColorDown.UseVisualStyleBackColor = true;
-            this.btnColorDown.Click += new System.EventHandler(this.btnColorDown_Click);
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(35, 103);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(66, 13);
+            this.label11.TabIndex = 37;
+            this.label11.Text = "Hitbox alpha";
             // 
-            // btnAddColor
+            // label12
             // 
-            this.btnAddColor.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAddColor.Location = new System.Drawing.Point(228, 192);
-            this.btnAddColor.Name = "btnAddColor";
-            this.btnAddColor.Size = new System.Drawing.Size(32, 32);
-            this.btnAddColor.TabIndex = 34;
-            this.btnAddColor.Text = "+";
-            this.btnAddColor.UseVisualStyleBackColor = true;
-            this.btnAddColor.Click += new System.EventHandler(this.button3_Click);
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(35, 347);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(73, 13);
+            this.label12.TabIndex = 39;
+            this.label12.Text = "Hurtbox alpha";
             // 
-            // btnRemoveColor
+            // nudHurtboxAlpha
             // 
-            this.btnRemoveColor.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnRemoveColor.Location = new System.Drawing.Point(228, 225);
-            this.btnRemoveColor.Name = "btnRemoveColor";
-            this.btnRemoveColor.Size = new System.Drawing.Size(32, 32);
-            this.btnRemoveColor.TabIndex = 35;
-            this.btnRemoveColor.Text = "–";
-            this.btnRemoveColor.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.btnRemoveColor.UseVisualStyleBackColor = true;
-            this.btnRemoveColor.Click += new System.EventHandler(this.button4_Click);
+            this.nudHurtboxAlpha.Location = new System.Drawing.Point(110, 345);
+            this.nudHurtboxAlpha.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.nudHurtboxAlpha.Name = "nudHurtboxAlpha";
+            this.nudHurtboxAlpha.Size = new System.Drawing.Size(66, 20);
+            this.nudHurtboxAlpha.TabIndex = 38;
+            this.nudHurtboxAlpha.ValueChanged += new System.EventHandler(this.nudHurtboxAlpha_ValueChanged);
             // 
             // RenderSettings
             // 
@@ -861,6 +915,8 @@
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudHurtboxAlpha)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -930,5 +986,9 @@
         private System.Windows.Forms.Button btnAddColor;
         private System.Windows.Forms.Button btnColorDown;
         private System.Windows.Forms.Button btnColorUp;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.NumericUpDown nudHurtboxAlpha;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.NumericUpDown nudHitboxAlpha;
     }
 }

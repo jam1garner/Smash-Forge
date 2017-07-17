@@ -75,6 +75,7 @@ namespace Smash_Forge
         public static bool renderIndicators;
         public static int hitboxRenderMode;
         public static int hitboxAlpha;
+        public static int hurtboxAlpha;
         public static bool renderHitboxesNoOverlap;
         public static bool useFrameDuration = true;
 
@@ -320,6 +321,8 @@ namespace Smash_Forge
                         case "fighter_dir": fighterDir = node.InnerText; break;
                         case "param_dir": paramDir = node.InnerText; break;
                         case "render_indicators": bool.TryParse(node.InnerText, out renderIndicators); break;
+                        case "hitbox_alpha": int.TryParse(node.InnerText, out hitboxAlpha); break;
+                        case "hurtbox_alpha": int.TryParse(node.InnerText, out hurtboxAlpha); break;
 
                         case "enabled":
                             if (node.ParentNode != null)
@@ -534,6 +537,7 @@ for changing default texure
             renderNode.AppendChild(createNode(doc, "render_hitboxes_no_overlap", renderHitboxesNoOverlap.ToString()));
             renderNode.AppendChild(createNode(doc, "render_hitboxes_mode", hitboxRenderMode.ToString()));
             renderNode.AppendChild(createNode(doc, "hitbox_alpha", hitboxAlpha.ToString()));
+            renderNode.AppendChild(createNode(doc, "hurtbox_alpha", hurtboxAlpha.ToString()));
             {
                 XmlNode node = doc.CreateElement("hitbox_kb_colors");
                 renderNode.AppendChild(node);

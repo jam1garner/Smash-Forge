@@ -62,6 +62,8 @@ namespace Smash_Forge
             Runtime.renderInterpolatedHitboxes = true;
             Runtime.hitboxRenderMode = Hitbox.RENDER_KNOCKBACK;
             Runtime.hitboxAlpha = 130;
+            Runtime.hurtboxAlpha = 80;
+            Runtime.useFrameDuration = false;
             Runtime.hitboxKnockbackColors = new List<System.Drawing.Color>();
             Runtime.hitboxIdColors = new List<System.Drawing.Color>();
             Runtime.renderModel = true;
