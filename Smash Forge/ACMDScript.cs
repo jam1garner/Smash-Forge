@@ -111,14 +111,14 @@ namespace Smash_Forge
         // modified frame speed
         public int calculateTotalFrames(int totalAnimFrames)
         {
-            ForgeACMDScript script = new ForgeACMDScript(this.script);
+            ForgeACMDScript tempScript = new ForgeACMDScript(this.script);
+
             // Calculate frames
-            Reset();
             int gameFrame = -1;
-            while (script.animationFrame < totalAnimFrames)
+            while (tempScript.animationFrame < totalAnimFrames)
             {
                 gameFrame++;
-                script.processToFrame(gameFrame);
+                tempScript.processToFrame(gameFrame);
             }
             return gameFrame;
         }
