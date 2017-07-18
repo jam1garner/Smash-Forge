@@ -59,7 +59,7 @@ namespace Smash_Forge
         public bool adjustAnimFrames;      // Fixup for anim frames, only happens when frameSpeed <= 1 on first frame
 
         // Trying to emulate float comparison with the smash engine
-        public static double Epsilon = 0.000000000001;
+        public static double Epsilon = 0.001;
 
         public int scriptCommandIndex { get; set; }
         private int loopStart;
@@ -179,7 +179,6 @@ namespace Smash_Forge
                     //Console.WriteLine($"END ACMD FRAME: gameFrame={currentGameFrame} animationFrame={animationFrame} currentFrame={currentFrame}");
                 }
                 int roundedAnimFrame = roundAnimationFrame(currentFrame);
-                //if (adjustAnimFrames)
                 roundedAnimFrame -= 1;
                 animationFrames.Add(roundedAnimFrame);
                 currentGameFrame += 1;
@@ -468,6 +467,43 @@ namespace Smash_Forge
                 case 0x7698BB42: // deactivate previous hitbox
                     Hitboxes.RemoveAt(Hitboxes.Keys.Max());
                     break;
+                case 0x684264C9: // Change_Hitbox_Size
+                    {
+                        int id = (int)cmd.Parameters[0];
+                        float size = (float)cmd.Parameters[1];
+                        Hitbox hitboxToChange = null;
+                        if (Hitboxes.TryGetValue(id, out hitboxToChange))
+                            hitboxToChange.Size = size;
+                        else
+                            Console.WriteLine($"Could not find hitbox with ID={id} to change size");
+                        break;
+                    }
+                case 0xDFA4517A: // Change_Hitbox_Damage
+                    {
+                        int id = (int)cmd.Parameters[0];
+                        float damage = (float)cmd.Parameters[1];
+                        Hitbox hitboxToChange = null;
+                        if (Hitboxes.TryGetValue(id, out hitboxToChange))
+                            hitboxToChange.Damage = damage;
+                        else
+                            Console.WriteLine($"Could not find hitbox with ID={id} to change damage");
+                        break;
+                    }
+                case 0x1AFDA8E6: // Move_Hitbox
+                    {
+                        int id = (int)cmd.Parameters[0];
+                        Hitbox hitboxToChange = null;
+                        if (Hitboxes.TryGetValue(id, out hitboxToChange))
+                        {
+                            hitboxToChange.Bone = (int)cmd.Parameters[1];
+                            hitboxToChange.X = (float)cmd.Parameters[2];
+                            hitboxToChange.Y = (float)cmd.Parameters[3];
+                            hitboxToChange.Z = (float)cmd.Parameters[4];
+                        }
+                        else
+                            Console.WriteLine($"Could not find hitbox with ID={id} to move position");
+                        break;
+                    }
                 case 0xEB375E3: // Set Loop
                     loopIterations = int.Parse(cmd.Parameters[0] + "") - 1;
                     loopStart = scriptCommandIndex;

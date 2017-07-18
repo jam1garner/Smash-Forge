@@ -179,7 +179,7 @@ namespace Smash_Forge
                         }
                         else
                         {
-                            nupdFrame.Value = 0;
+                            nupdFrame.Value = 1;
                         }
                     }
                 }
@@ -211,17 +211,17 @@ namespace Smash_Forge
 
         private void btnFirstFrame_Click(object sender, EventArgs e)
         {
-            this.nupdFrame.Value = 0;
+            this.nupdFrame.Value = 1;
         }
         private void btnPrevFrame_Click(object sender, EventArgs e)
         {
-            if (this.nupdFrame.Value - 1 >= 0)
+            if (this.nupdFrame.Value - 1 >= 1)
                 this.nupdFrame.Value -= 1;
         }
         private void btnLastFrame_Click(object sender, EventArgs e)
         {
             if (Runtime.TargetAnim != null)
-                this.nupdFrame.Value = Runtime.TargetAnim.size() - 1;
+                this.nupdFrame.Value = Runtime.TargetAnim.size();
         }
         private void btnNextFrame_Click(object sender, EventArgs e)
         {
@@ -233,7 +233,7 @@ namespace Smash_Forge
             // If we're already at final frame and we hit play again
             // start from the beginning of the anim
             if (nupdMaxFrame.Value == nupdFrame.Value)
-                nupdFrame.Value = 0;
+                nupdFrame.Value = 1;
 
             isPlaying = !isPlaying;
             if (isPlaying)
@@ -250,15 +250,15 @@ namespace Smash_Forge
             if (Runtime.TargetAnim == null)
                 return;
 
-            if (this.nupdFrame.Value >= Runtime.TargetAnim.size())
+            if (this.nupdFrame.Value > Runtime.TargetAnim.size())
             {
-                this.nupdFrame.Value = 0;
+                this.nupdFrame.Value = 1;
             }
-            if (this.nupdFrame.Value < 0)
+            if (this.nupdFrame.Value < 1)
             {
-                this.nupdFrame.Value = Runtime.TargetAnim.size() - 1;
+                this.nupdFrame.Value = Runtime.TargetAnim.size();
             }
-            SetAnimationFrame((int)this.nupdFrame.Value);
+            SetAnimationFrame((int)this.nupdFrame.Value - 1);
         }
 
         public void SetAnimationFrame(int frameNum)
@@ -802,10 +802,10 @@ namespace Smash_Forge
                     m.nud.clearMTA();//Clear animated materials
 
                     if (m.mta != null)
-                        m.nud.applyMTA(m.mta, (int)nupdFrame.Value);//Apply base mta
+                        m.nud.applyMTA(m.mta, (int)nupdFrame.Value - 1);//Apply base mta
                     if (Runtime.TargetMTA != null)
                         foreach(MTA mta in Runtime.TargetMTA)
-                        m.nud.applyMTA(mta, (int)nupdFrame.Value);//Apply additional mta (can override base)
+                        m.nud.applyMTA(mta, (int)nupdFrame.Value - 1);//Apply additional mta (can override base)
 
                     m.nud.Render(shader);
                     shader.disableAttrib();
@@ -1862,7 +1862,7 @@ namespace Smash_Forge
 
                 if (m.dat_melee != null)
                 {
-                    Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value);
+                    Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value - 1);
                     Runtime.TargetAnim.nextFrame(m.dat_melee.bones);
                 }
             }
@@ -1876,12 +1876,12 @@ namespace Smash_Forge
                     Runtime.TargetAnim.nextFrame(m.vbn);
             }
             setAnimMaxFrames(a);
-            nupdFrame.Value = 0;
+            nupdFrame.Value = 1;
         }
 
         public void setAnimMaxFrames(SkelAnimation a)
         {
-            int totalAnimFrames = a.size() > 1 ? a.size() - 1 : a.size();
+            int totalAnimFrames = a.size() > 1 ? a.size() : 1;
             if (Runtime.useFrameDuration && Runtime.gameAcmdScript != null)
                 nupdMaxFrame.Value = (int)Runtime.gameAcmdScript.calculateTotalFrames(totalAnimFrames);
             else
@@ -1907,7 +1907,7 @@ namespace Smash_Forge
         {
             Console.WriteLine("MTA Loaded");
             Frame = 0;
-            nupdFrame.Value = 0;
+            nupdFrame.Value = 1;
             nupdMaxFrame.Value = m.numFrames;
             //Console.WriteLine(m.numFrames);
             Runtime.TargetMTA.Clear();
