@@ -319,7 +319,9 @@ namespace Smash_Forge
                 else
                     newVert = new Vector2D();
                 ((Collision)currentEntry).verts.Add(newVert);
-                vertices.Nodes.Add(new TreeNode("New Vertex") { Tag = newVert });
+                TreeNode newNode = new TreeNode("New Vertex") { Tag = newVert };
+                vertices.Nodes.Add(newNode);
+                vertices.SelectedNode = newNode;
                 if (((Collision)currentEntry).verts.Count > ((Collision)currentEntry).normals.Count + 1)
                 {
                     CollisionMat newMat = new CollisionMat();
@@ -334,6 +336,7 @@ namespace Smash_Forge
                 Vector2D newVert = new Vector2D() { x = currentVert.x, y = currentVert.y };
                 ((Collision)currentEntry).verts.Insert(vertices.SelectedNode.Index, newVert);
                 vertices.Nodes.Insert(vertices.SelectedNode.Index, new TreeNode("New Vertex") { Tag = newVert });
+                
                 if (((Collision)currentEntry).verts.Count > ((Collision)currentEntry).normals.Count + 1)
                 {
                     object[] t = { new Vector2D() { x = 1, y = 0 }, new CollisionMat() };
