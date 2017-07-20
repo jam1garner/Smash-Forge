@@ -943,8 +943,17 @@ namespace Smash_Forge
                 NUD nud = (NUD)treeView1.SelectedNode.Tag;
 
                 NUD.Mesh m = new NUD.Mesh();
-
-                m.Text = "Blank Mesh";
+                
+                int i = 0;
+                bool foundName = false;
+                while (!foundName)
+                {
+                    m.Text = $"Blank Mesh {i++}";
+                    foundName = true;
+                    foreach (NUD.Mesh mesh in nud.mesh)
+                        if (mesh.Text.Equals(m.Text))
+                            foundName = false;
+                }
 
                 nud.mesh.Add(m);
 
