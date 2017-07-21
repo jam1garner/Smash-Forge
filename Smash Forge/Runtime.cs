@@ -30,6 +30,7 @@ namespace Smash_Forge
 
         public static SortedList<string, FileBase> OpenedFiles { get; set; }
 
+        public static VBNViewport vbnViewport { get; set; }
         public static VBN TargetVBN { get; set; }
         public static NUD TargetNUD { get; set; }
         public static LVD TargetLVD { get; set; }

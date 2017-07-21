@@ -33,6 +33,7 @@ namespace Smash_Forge
             Application.Idle += Application_Idle;
             Runtime.AnimationChanged += Runtime_AnimationChanged;
             timeSinceSelected.Start();
+            Runtime.vbnViewport = this;
         }
 
         // Explicitly unsubscribe from the static event to 
@@ -221,7 +222,7 @@ namespace Smash_Forge
         private void btnLastFrame_Click(object sender, EventArgs e)
         {
             if (Runtime.TargetAnim != null)
-                this.nupdFrame.Value = Runtime.TargetAnim.size();
+                this.nupdFrame.Value = this.nupdMaxFrame.Value;
         }
         private void btnNextFrame_Click(object sender, EventArgs e)
         {
@@ -250,13 +251,13 @@ namespace Smash_Forge
             if (Runtime.TargetAnim == null)
                 return;
 
-            if (this.nupdFrame.Value > Runtime.TargetAnim.size())
+            if (this.nupdFrame.Value > this.nupdMaxFrame.Value)
             {
                 this.nupdFrame.Value = 1;
             }
             if (this.nupdFrame.Value < 1)
             {
-                this.nupdFrame.Value = Runtime.TargetAnim.size();
+                this.nupdFrame.Value = this.nupdMaxFrame.Value;
             }
             SetAnimationFrame((int)this.nupdFrame.Value - 1);
         }

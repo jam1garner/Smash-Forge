@@ -57,6 +57,8 @@ namespace Smash_Forge
             if (Runtime.Moveset.Game.Scripts.ContainsKey(crc))
             {
                 Runtime.gameAcmdScript = new ForgeACMDScript((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
+                if (Runtime.vbnViewport != null && Runtime.TargetAnim != null)
+                    Runtime.vbnViewport.setAnimMaxFrames(Runtime.TargetAnim);
             }
 
             if (changed)
