@@ -50,7 +50,6 @@ namespace Smash_Forge
                 changed = true;
             }
 
-            this.crc = crc;
             if (Runtime.Moveset.ScriptsHashList.Contains(crc))
                 Runtime.scriptId = Runtime.Moveset.ScriptsHashList.IndexOf(crc);
 
@@ -63,6 +62,7 @@ namespace Smash_Forge
 
             if (changed)
             {
+                this.crc = crc;
                 set = true;
 
                 //HighlightSyntax();
@@ -139,13 +139,22 @@ namespace Smash_Forge
                         index++;
                     }
 
-                    //Update script if it already exists
-                    if (Runtime.Moveset.Game.Scripts.ContainsKey(crc))
-                        Runtime.Moveset.Game.Scripts[crc] = script;
+                    SortedList<uint, SALT.Moveset.IScript> scriptList = null;
+                    if (cb_section.Text.Equals("GAME"))
+                        scriptList = Runtime.Moveset.Game.Scripts;
+                    else if (cb_section.Text.Equals("SOUND"))
+                        scriptList = Runtime.Moveset.Sound.Scripts;
+                    else if (cb_section.Text.Equals("EXPRESSION"))
+                        scriptList = Runtime.Moveset.Expression.Scripts;
+                    else if (cb_section.Text.Equals("EFFECT"))
+                        scriptList = Runtime.Moveset.Effect.Scripts;
 
-                    if (manualCrc)
+                    //Update script if it already exists
+                    if (scriptList.ContainsKey(crc))
+                        scriptList[crc] = script;
+
+                    if (cb_section.Text.Equals("GAME"))
                     {
-                        //Crc was set manually, update gameScript to process script
                         Runtime.gameAcmdScript = new ForgeACMDScript(script);
                         Runtime.gameAcmdScript.processToFrame(0);
                     }
