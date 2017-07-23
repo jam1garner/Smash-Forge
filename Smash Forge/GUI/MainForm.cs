@@ -684,9 +684,7 @@ namespace Smash_Forge
             Runtime.killWorkspace = true;
             Runtime.ParamManager.Reset();
             Runtime.Animnames.Clear();
-            if(Runtime.Moveset!=null)
-                Runtime.Moveset.ScriptsHashList.Clear();
-            Runtime.acmdEditor.updateCrcList();
+            Runtime.clearMoveset();
         }
 
         private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2033,6 +2031,11 @@ namespace Smash_Forge
                 return;
 
             Runtime.Animnames.Add(crc, AnimName);
+        }
+
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            Runtime.clearMoveset();
         }
     }
 }

@@ -197,6 +197,12 @@ namespace Smash_Forge
             return path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
         }
 
+        public static void clearMoveset()
+        {
+            Moveset = null;
+            acmdEditor.updateCrcList();
+        }
+
         public static void StartupFromConfig(string config)
         {
             if (!File.Exists(config)) SaveConfig();
