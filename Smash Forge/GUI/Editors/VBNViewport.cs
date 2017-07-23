@@ -207,7 +207,8 @@ namespace Smash_Forge
                     //Remove manual crc flag
                     Runtime.acmdEditor.manualCrc = false;
                     HandleACMD(Runtime.TargetAnimString.Substring(3));
-                    Runtime.gameAcmdScript.processToFrame(0);
+                    if(Runtime.gameAcmdScript != null)
+                        Runtime.gameAcmdScript.processToFrame(0);
 
                 }
             }
