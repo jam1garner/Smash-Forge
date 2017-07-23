@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.cbFAFanimation = new System.Windows.Forms.CheckBox();
             this.cbUseFrameSpeed = new System.Windows.Forms.CheckBox();
             this.button1 = new System.Windows.Forms.Button();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
@@ -53,6 +54,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.cbFAFanimation);
             this.groupBox2.Controls.Add(this.cbUseFrameSpeed);
             this.groupBox2.Controls.Add(this.button1);
             this.groupBox2.Controls.Add(this.checkBox2);
@@ -75,11 +77,23 @@
             this.groupBox2.TabIndex = 8;
             this.groupBox2.TabStop = false;
             // 
+            // cbFAFanimation
+            // 
+            this.cbFAFanimation.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.cbFAFanimation.AutoSize = true;
+            this.cbFAFanimation.Location = new System.Drawing.Point(479, 39);
+            this.cbFAFanimation.Name = "cbFAFanimation";
+            this.cbFAFanimation.Size = new System.Drawing.Size(139, 17);
+            this.cbFAFanimation.TabIndex = 14;
+            this.cbFAFanimation.Text = "FAF as animation length";
+            this.cbFAFanimation.UseVisualStyleBackColor = true;
+            this.cbFAFanimation.CheckedChanged += new System.EventHandler(this.cbFAFanimation_CheckedChanged);
+            // 
             // cbUseFrameSpeed
             // 
             this.cbUseFrameSpeed.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.cbUseFrameSpeed.AutoSize = true;
-            this.cbUseFrameSpeed.Location = new System.Drawing.Point(487, 40);
+            this.cbUseFrameSpeed.Location = new System.Drawing.Point(342, 39);
             this.cbUseFrameSpeed.Name = "cbUseFrameSpeed";
             this.cbUseFrameSpeed.Size = new System.Drawing.Size(131, 17);
             this.cbUseFrameSpeed.TabIndex = 13;
@@ -251,9 +265,9 @@
             this.btnFirstFrame.Text = "|<";
             this.btnFirstFrame.UseVisualStyleBackColor = true;
             this.btnFirstFrame.Click += new System.EventHandler(this.btnFirstFrame_Click);
-            //
+            // 
             // glControl1
-            //
+            // 
             this.glControl1.BackColor = System.Drawing.Color.Black;
             this.glControl1.CausesValidation = false;
             this.glControl1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -303,5 +317,6 @@
         private System.Windows.Forms.Button button1;
         public System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox cbUseFrameSpeed;
+        private System.Windows.Forms.CheckBox cbFAFanimation;
     }
 }

@@ -123,6 +123,20 @@ namespace Smash_Forge
             return gameFrame;
         }
 
+        public int calculateFAF(int FAF)
+        {
+            ForgeACMDScript tempScript = new ForgeACMDScript(this.script);
+
+            int gameFrame = -1;
+            while (tempScript.currentFrame < FAF)
+            {
+                gameFrame++;
+                tempScript.processToFrame(gameFrame);
+            }
+
+            return tempScript.currentGameFrame;
+        }
+
         public void processToFrame(int frame)
         {
             if (script == null)

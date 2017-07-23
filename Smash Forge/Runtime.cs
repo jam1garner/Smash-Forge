@@ -82,6 +82,7 @@ namespace Smash_Forge
         public static Color hurtboxColorLow;
         public static bool renderHitboxesNoOverlap;
         public static bool useFrameDuration = true;
+        public static bool useFAFasAnimationLength = false;
 
         // See https://stackoverflow.com/questions/470690/how-to-automatically-generate-n-distinct-colors
         // for a really good overview of how to use distinct colors.
