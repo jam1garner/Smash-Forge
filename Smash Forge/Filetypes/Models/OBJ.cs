@@ -77,15 +77,15 @@ namespace Smash_Forge
                         g.v.Add(int.Parse(args[3].Split('/')[0]) - 1);
                         if(args[1].Split('/').Length > 1)
                         {
-                            g.vt.Add(int.Parse(args[1].Split('/')[2]) - 1);
-                            g.vt.Add(int.Parse(args[2].Split('/')[2]) - 1);
-                            g.vt.Add(int.Parse(args[3].Split('/')[2]) - 1);
+                            g.vt.Add(int.Parse(args[1].Split('/')[1]) - 1);
+                            g.vt.Add(int.Parse(args[2].Split('/')[1]) - 1);
+                            g.vt.Add(int.Parse(args[3].Split('/')[1]) - 1);
                         }
                         if (args[1].Split('/').Length > 2)
                         {
-                            g.vn.Add(int.Parse(args[1].Split('/')[1]) - 1);
-                            g.vn.Add(int.Parse(args[2].Split('/')[1]) - 1);
-                            g.vn.Add(int.Parse(args[3].Split('/')[1]) - 1);
+                            g.vn.Add(int.Parse(args[1].Split('/')[2]) - 1);
+                            g.vn.Add(int.Parse(args[2].Split('/')[2]) - 1);
+                            g.vn.Add(int.Parse(args[3].Split('/')[2]) - 1);
                         }
                         break;
                     case "o":
@@ -145,7 +145,7 @@ namespace Smash_Forge
                         if (g.v.Count > i)
                             v.pos = this.v[g.v[i]] + Vector3.Zero;
                         if (g.vn.Count > i)
-                            v.nrm = vn[g.vn[i]] + Vector3.Zero; ;
+                            v.nrm = vn[g.vn[i]] + Vector3.Zero; 
                         if (g.vt.Count > i)
                             v.tx.Add(vt[g.vt[i]] + Vector2.Zero);
                     }

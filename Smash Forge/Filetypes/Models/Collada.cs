@@ -1086,6 +1086,7 @@ namespace Smash_Forge
                     skin.weights = weights;
 
                     // JOINT
+                    
                     {
                         ColladaSource src = new ColladaSource();
                         skin.sources.Add(src);
@@ -1095,31 +1096,53 @@ namespace Smash_Forge
                         skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT });
                         weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT, offset = 0 });
                         List<string> d = new List<string>();
-                        foreach (Bone b in con.vbn.bones)
+                        if (con.vbn != null) { 
+                            foreach (Bone b in con.vbn.bones)
                             d.Add(b.Text);
+                        }
+                        else
+                        {
+                            d.Add("ROOT");
+                        }
                         src.accessor.Add("JOINT");
                         src.data = d.ToArray();
                         src.count = d.Count;
                     }
                     // INVTRANSFORM
+                    
                     {
                         ColladaSource src = new ColladaSource();
                         skin.sources.Add(src);
                         src.id = control.id + "_trans";
                         skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.INV_BIND_MATRIX });
                         List<string> d = new List<string>();
-                        foreach (Bone b in con.vbn.bones)
+                        if (con.vbn != null)
                         {
-                            d.Add(b.invert.M11 + " " + b.invert.M21 + " " + b.invert.M31 + " " + b.invert.M41 + " "
-                                + b.invert.M12 + " " + b.invert.M22 + " " + b.invert.M32 + " " + b.invert.M42 + " "
-                                + b.invert.M13 + " " + b.invert.M23 + " " + b.invert.M33 + " " + b.invert.M43 + " "
-                                + b.invert.M14 + " " + b.invert.M24 + " " + b.invert.M34 + " " + b.invert.M44);
+
+
+                            foreach (Bone b in con.vbn.bones)
+                            {
+                                d.Add(b.invert.M11 + " " + b.invert.M21 + " " + b.invert.M31 + " " + b.invert.M41 + " "
+                                    + b.invert.M12 + " " + b.invert.M22 + " " + b.invert.M32 + " " + b.invert.M42 + " "
+                                    + b.invert.M13 + " " + b.invert.M23 + " " + b.invert.M33 + " " + b.invert.M43 + " "
+                                    + b.invert.M14 + " " + b.invert.M24 + " " + b.invert.M34 + " " + b.invert.M44);
+                            }
                         }
+                        else
+                        {
+                            Bone b = new Bone(new VBN());
+                            d.Add(b.invert.M11 + " " + b.invert.M21 + " " + b.invert.M31 + " " + b.invert.M41 + " "
+                                    + b.invert.M12 + " " + b.invert.M22 + " " + b.invert.M32 + " " + b.invert.M42 + " "
+                                    + b.invert.M13 + " " + b.invert.M23 + " " + b.invert.M33 + " " + b.invert.M43 + " "
+                                    + b.invert.M14 + " " + b.invert.M24 + " " + b.invert.M34 + " " + b.invert.M44);
+                        }
+
                         src.accessor.Add("TRANSFORM");
                         src.data = d.ToArray();
                         src.count = d.Count * 16;
                     }
                     // WEIGHT
+                    
                     {
                         ColladaSource src = new ColladaSource();
                         skin.sources.Add(src);
