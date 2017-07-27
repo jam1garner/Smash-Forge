@@ -42,6 +42,7 @@ namespace Smash_Forge
         // Script processing helpers
         public int currentGameFrame { get; set; }   // In-game frame # for the move. One in-game frame can skip multiple animation frames.
         public double currentFrame { get; set; }     // Script frame, can be fractional due to frameSpeed values
+        public double currentAnimationFrame { get; set; }     // Script frame, can be fractional due to frameSpeed values
         public double frameSpeed { get; set; }       // Set by Set_Frame_Duration. How many in-game frames maps to an animation frame right now.
         public List<int> animationFrames;           // Used to track historical animationFrames so that the right one can be returned
         public int animationFrame                   // The current animation frame to display in-game
@@ -86,6 +87,7 @@ namespace Smash_Forge
 
             currentGameFrame   = 0;
             currentFrame       = 0;
+            currentAnimationFrame = 0;
             frameSpeed         = 1;
             animationFrames    = new List<int>();
             incrementFrameValue = false;  // First frame has weird stuff going on with this
@@ -146,6 +148,8 @@ namespace Smash_Forge
                 {
                     currentFrame += frameSpeed;
                 }
+                // Theory: actual animation frame keeps processing regardless
+                currentAnimationFrame += frameSpeed;
 
                 keepProcessing = true;
                 while (keepProcessing)
@@ -176,13 +180,13 @@ namespace Smash_Forge
                         incrementFrameValue = true;
                         keepProcessing = false;
                     }
-                    //Console.WriteLine($"END ACMD FRAME: gameFrame={currentGameFrame} animationFrame={animationFrame} currentFrame={currentFrame}");
+                    //Console.WriteLine($"END ACMD FRAME: gameFrame={currentGameFrame} animationFrame={animationFrame} currentFrame={currentFrame} currentAnimationFrame={currentAnimationFrame}");
                 }
-                int roundedAnimFrame = roundAnimationFrame(currentFrame);
+                int roundedAnimFrame = roundAnimationFrame(currentAnimationFrame);
                 roundedAnimFrame -= 1;
                 animationFrames.Add(roundedAnimFrame);
                 currentGameFrame += 1;
-                //Console.WriteLine($"END GAME FRAME: gameFrame={currentGameFrame} animationFrame={animationFrame} currentFrame={currentFrame}");
+                //Console.WriteLine($"END GAME FRAME: gameFrame={currentGameFrame} animationFrame={animationFrame} currentFrame={currentFrame} currentAnimationFrame={currentAnimationFrame}");
             }
 
             // Avoid weird interpolations showing if going back a frame
