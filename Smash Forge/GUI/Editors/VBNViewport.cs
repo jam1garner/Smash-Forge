@@ -196,7 +196,10 @@ namespace Smash_Forge
 
         private void Runtime_AnimationChanged(object sender, EventArgs e)
         {
-            loadAnimation(Runtime.TargetAnim);
+            //If moveset is loaded then initialize with null script so handleACMD loads script for frame speed modifiers and FAF (if parameters are imported)
+            if(Runtime.Moveset != null && Runtime.gameAcmdScript == null)
+                Runtime.gameAcmdScript = new ForgeACMDScript(null);
+
             if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
             {
                 if (Runtime.gameAcmdScript != null)
@@ -204,10 +207,13 @@ namespace Smash_Forge
                     //Remove manual crc flag
                     Runtime.acmdEditor.manualCrc = false;
                     HandleACMD(Runtime.TargetAnimString.Substring(3));
-                    if (Runtime.gameAcmdScript != null)
+                    if(Runtime.gameAcmdScript != null)
                         Runtime.gameAcmdScript.processToFrame(0);
+
                 }
             }
+
+            loadAnimation(Runtime.TargetAnim);
         }
 
         private void btnFirstFrame_Click(object sender, EventArgs e)
@@ -1883,10 +1889,25 @@ namespace Smash_Forge
         public void setAnimMaxFrames(SkelAnimation a)
         {
             int totalAnimFrames = a.size() > 1 ? a.size() : 1;
-            if (Runtime.useFrameDuration && Runtime.gameAcmdScript != null)
-                nupdMaxFrame.Value = (int)Runtime.gameAcmdScript.calculateTotalFrames(totalAnimFrames);
+            if (Runtime.ParamManager.MovesData.Count > 0 && Runtime.scriptId >= 0)
+                if (Runtime.useFAFasAnimationLength)
+                    totalAnimFrames = Runtime.ParamManager.MovesData[Runtime.scriptId].FAF > 0 ? Runtime.ParamManager.MovesData[Runtime.scriptId].FAF : totalAnimFrames;
+
+
+            if (Runtime.useFAFasAnimationLength)
+            {
+                if (Runtime.useFrameDuration && Runtime.gameAcmdScript != null)
+                    nupdMaxFrame.Value = (int)Runtime.gameAcmdScript.calculateFAF(totalAnimFrames);
+                else
+                    nupdMaxFrame.Value = totalAnimFrames;
+            }
             else
-                nupdMaxFrame.Value = totalAnimFrames;
+            {
+                if (Runtime.useFrameDuration && Runtime.gameAcmdScript != null)
+                    nupdMaxFrame.Value = (int)Runtime.gameAcmdScript.calculateTotalFrames(totalAnimFrames);
+                else
+                    nupdMaxFrame.Value = totalAnimFrames;
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -2063,6 +2084,16 @@ namespace Smash_Forge
             dbdistance += 1;
             if (dbdistance >= selected.Count) dbdistance = 0;
             _LastPoint = e.Location;
+        }
+
+        private void cbFAFanimation_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.useFAFasAnimationLength = cbFAFanimation.Checked;
+
+            if (Runtime.TargetAnim != null)
+            {
+                setAnimMaxFrames(Runtime.TargetAnim);
+            }
         }
 
         private void glControl1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
