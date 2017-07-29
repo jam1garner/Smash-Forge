@@ -1762,6 +1762,14 @@ main()
     {
         fincol = vec4(texture2D(UVTestPattern, texcoord).rgb, 1);
     }
+     else if (renderType == 8)
+    {
+        fincol = vec4(tan.xyz, 1);
+    }
+    else if (renderType == 9)
+    {
+        fincol = vec4(bit.xyz, 1);
+    }
 
 	else
     {

@@ -169,7 +169,9 @@ namespace Smash_Forge
             VertColor = 4,
             AmbientOcclusion = 5,
             UVCoords = 6,
-            UVTestPattern = 7
+            UVTestPattern = 7,
+            Tangents = 8,
+            Bitangents = 9
         }
         public enum FloorStyle
         {
