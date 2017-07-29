@@ -142,7 +142,7 @@ namespace Smash_Forge
         public static bool renderFresnel = true;
         public static bool renderSpecular = true;
         public static bool renderReflection = true;
-        public static float dif_inten = 0.15f;
+        public static float dif_inten = 1.00f;
         public static float spc_inten = 0.75f;
         public static float frs_inten = 1.00f;
         public static float ref_inten = 1.00f;
