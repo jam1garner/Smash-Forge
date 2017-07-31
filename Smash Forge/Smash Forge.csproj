@@ -179,6 +179,12 @@
     <Compile Include="GUI\Editors\DAT_TreeView.Designer.cs">
       <DependentUpon>DAT_TreeView.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\HurtboxList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\HurtboxList.Designer.cs">
+      <DependentUpon>HurtboxList.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\LVD Editor\LVDEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -427,6 +433,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\DAT_TreeView.resx">
       <DependentUpon>DAT_TreeView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\HurtboxList.resx">
+      <DependentUpon>HurtboxList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\LVD Editor\LVDEditor.resx">
       <DependentUpon>LVDEditor.cs</DependentUpon>

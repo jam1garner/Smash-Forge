@@ -84,6 +84,9 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
+            this.textParamDir = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
             this.pbHurtboxColorLw = new System.Windows.Forms.PictureBox();
             this.label16 = new System.Windows.Forms.Label();
             this.pbHurtboxColorMed = new System.Windows.Forms.PictureBox();
@@ -105,9 +108,8 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label10 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.textParamDir = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.pbHurtboxColorSelected = new System.Windows.Forms.PictureBox();
+            this.label18 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -122,6 +124,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudHurtboxAlpha)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColorSelected)).BeginInit();
             this.SuspendLayout();
             // 
             // checkBox1
@@ -248,7 +251,7 @@
             // checkBox15
             // 
             this.checkBox15.AutoSize = true;
-            this.checkBox15.Location = new System.Drawing.Point(5, 425);
+            this.checkBox15.Location = new System.Drawing.Point(5, 452);
             this.checkBox15.Name = "checkBox15";
             this.checkBox15.Size = new System.Drawing.Size(196, 17);
             this.checkBox15.TabIndex = 25;
@@ -739,6 +742,8 @@
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage2.Controls.Add(this.pbHurtboxColorSelected);
+            this.tabPage2.Controls.Add(this.label18);
             this.tabPage2.Controls.Add(this.button1);
             this.tabPage2.Controls.Add(this.textParamDir);
             this.tabPage2.Controls.Add(this.label17);
@@ -773,6 +778,32 @@
             this.tabPage2.Size = new System.Drawing.Size(556, 515);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Hit/Hurt boxes";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(499, 472);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(50, 23);
+            this.button1.TabIndex = 50;
+            this.button1.Text = "Set";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // textParamDir
+            // 
+            this.textParamDir.Location = new System.Drawing.Point(91, 474);
+            this.textParamDir.Name = "textParamDir";
+            this.textParamDir.Size = new System.Drawing.Size(402, 20);
+            this.textParamDir.TabIndex = 49;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(5, 477);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(80, 13);
+            this.label17.TabIndex = 48;
+            this.label17.Text = "Param directory";
             // 
             // pbHurtboxColorLw
             // 
@@ -993,31 +1024,23 @@
             this.comboBox1.TabIndex = 28;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
-            // label17
+            // pbHurtboxColorSelected
             // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(5, 450);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(80, 13);
-            this.label17.TabIndex = 48;
-            this.label17.Text = "Param directory";
+            this.pbHurtboxColorSelected.Location = new System.Drawing.Point(159, 425);
+            this.pbHurtboxColorSelected.Name = "pbHurtboxColorSelected";
+            this.pbHurtboxColorSelected.Size = new System.Drawing.Size(16, 16);
+            this.pbHurtboxColorSelected.TabIndex = 52;
+            this.pbHurtboxColorSelected.TabStop = false;
+            this.pbHurtboxColorSelected.Click += new System.EventHandler(this.pbHurtboxColorSelected_Click);
             // 
-            // textParamDir
+            // label18
             // 
-            this.textParamDir.Location = new System.Drawing.Point(91, 447);
-            this.textParamDir.Name = "textParamDir";
-            this.textParamDir.Size = new System.Drawing.Size(402, 20);
-            this.textParamDir.TabIndex = 49;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(499, 445);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(50, 23);
-            this.button1.TabIndex = 50;
-            this.button1.Text = "Set";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(33, 428);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(119, 13);
+            this.label18.TabIndex = 51;
+            this.label18.Text = "Hurtbox color (selected)";
             // 
             // RenderSettings
             // 
@@ -1047,6 +1070,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudHurtboxAlpha)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHurtboxColorSelected)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1131,5 +1155,7 @@
         private System.Windows.Forms.TextBox textParamDir;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.PictureBox pbHurtboxColorSelected;
+        private System.Windows.Forms.Label label18;
     }
 }

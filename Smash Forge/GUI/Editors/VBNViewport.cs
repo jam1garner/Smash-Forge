@@ -1626,6 +1626,9 @@ namespace Smash_Forge
                 foreach (var pair in Runtime.ParamManager.Hurtboxes)
                 {
                     var h = pair.Value;
+                    if (!h.Visible)
+                        continue;
+
                     var va = new Vector3(h.X, h.Y, h.Z);
                     Bone b = getBone(h.Bone);
 
@@ -1678,6 +1681,18 @@ namespace Smash_Forge
                     else
                     {
                         RenderTools.drawReducedCylinderTransformed(va, va2, h.Size, b.transform);
+                    }
+                    if (h.Selected)
+                    {
+                        GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColorSelected));
+                        if (h.isSphere)
+                        {
+                            RenderTools.drawWireframeSphereTransformedVisible(va, h.Size, 20, b.transform);
+                        }
+                        else
+                        {
+                            RenderTools.drawWireframeCylinderTransformed(va, va2, h.Size, b.transform);
+                        }
                     }
                 }
 

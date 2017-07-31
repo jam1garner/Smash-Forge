@@ -110,6 +110,14 @@ namespace Smash_Forge
             LedgeGrabboxes = new SortedList<int, LedgeGrabbox>();
             ECBs = new SortedList<int, ECB>();
         }
+
+        public void UnselectHurtboxes()
+        {
+            foreach(Hurtbox h in Hurtboxes.Values)
+            {
+                h.Selected = false;
+            }
+        }
     }
 
     public class Hurtbox
@@ -130,6 +138,10 @@ namespace Smash_Forge
         public const int HI_ZONE = 2;
 
         public int Part { get; set; }
+
+        //Forge vars
+        public bool Visible { get; set; } = true;
+        public bool Selected { get; set; } = false;
     }
 
     public class MoveData

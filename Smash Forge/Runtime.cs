@@ -80,6 +80,7 @@ namespace Smash_Forge
         public static Color hurtboxColorHi;
         public static Color hurtboxColorMed;
         public static Color hurtboxColorLow;
+        public static Color hurtboxColorSelected;
         public static bool renderHitboxesNoOverlap;
         public static bool useFrameDuration = true;
         public static bool useFAFasAnimationLength = false;
@@ -314,6 +315,7 @@ namespace Smash_Forge
                         case "hurtbox_color_hi": try { Runtime.hurtboxColorHi = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
                         case "hurtbox_color_med": try { Runtime.hurtboxColorMed = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
                         case "hurtbox_color_low": try { Runtime.hurtboxColorLow = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                        case "hurtbox_color_selected": try { Runtime.hurtboxColorSelected = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
 
                         case "enabled":
                             if (node.ParentNode != null)
@@ -496,10 +498,11 @@ for changing default texure
             renderNode.AppendChild(createNode(doc, "render_hitboxes_mode", hitboxRenderMode.ToString()));
             renderNode.AppendChild(createNode(doc, "hitbox_alpha", hitboxAlpha.ToString()));
             renderNode.AppendChild(createNode(doc, "hurtbox_alpha", hurtboxAlpha.ToString()));
-            renderNode.AppendChild(createNode(doc, "hurtbox_color", hurtboxColor.ToString()));
+            renderNode.AppendChild(createNode(doc, "hurtbox_color", System.Drawing.ColorTranslator.ToHtml(hurtboxColor)));
             renderNode.AppendChild(createNode(doc, "hurtbox_color_hi", System.Drawing.ColorTranslator.ToHtml(hurtboxColorHi)));
             renderNode.AppendChild(createNode(doc, "hurtbox_color_med", System.Drawing.ColorTranslator.ToHtml(hurtboxColorMed)));
             renderNode.AppendChild(createNode(doc, "hurtbox_color_low", System.Drawing.ColorTranslator.ToHtml(hurtboxColorLow)));
+            renderNode.AppendChild(createNode(doc, "hurtbox_color_selected", System.Drawing.ColorTranslator.ToHtml(hurtboxColorSelected)));
             {
                 XmlNode node = doc.CreateElement("hitbox_kb_colors");
                 renderNode.AppendChild(node);
