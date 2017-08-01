@@ -384,7 +384,7 @@ namespace Smash_Forge
                 GL.GenBuffers(1, out ubo_bones);
                 GL.GenBuffers(1, out ubo_bonesIT);
             }
-
+            
             int h = Height - groupBox2.ClientRectangle.Top;
             int w = Width;
             GL.LoadIdentity();
@@ -398,7 +398,7 @@ namespace Smash_Forge
             GL.GenTextures(1, out depthmap);
 
             GL.BindTexture(TextureTarget.Texture2D, depthmap);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent24
                 , sw, sh, 0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Nearest);
@@ -406,31 +406,37 @@ namespace Smash_Forge
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
-            GL.FramebufferTexture2D(FramebufferTarget.FramebufferExt, FramebufferAttachment.DepthAttachmentExt,
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachmentExt,
                 TextureTarget.Texture2D, depthmap, 0);
             GL.DrawBuffer(DrawBufferMode.None);
-            GL.ReadBuffer(ReadBufferMode.None);
-            Console.WriteLine(GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer));
+          //  GL.ReadBuffer(ReadBufferMode.None);
+            Debug.WriteLine(GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer));
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+          
             CalculateLightSource();
+
+   
+
+
 
         }
 
 
         int cf = 0;
         //Matrix4 v2;
-        int sfb, sw=1024, sh=1024, depthmap;
+        int sfb, sw=2048, sh=2048, depthmap;
         Matrix4 lightMatrix;
 
         public void CalculateLightSource()
-        {
+        { // fix this stuff
+            
             Matrix4 lightProjection;
-            Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 500f, out lightProjection);
+            Matrix4.CreateOrthographicOffCenter(-100.0f, 100.0f, -100.0f, 100.0f, -100.0f, 100.0f, out lightProjection);
             Matrix4 lightView = Matrix4.LookAt(Vector3.Transform(Vector3.Zero, v).Normalized(), //new Vector3(0.5f, 1f, 1f),
                 new Vector3(0),
                 new Vector3(0, 1, 0));
-
-            lightMatrix = lightProjection * lightView.Inverted();
+            lightView = Matrix4.LookAt(-2.0f, 4.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+            lightMatrix = lightProjection * lightView;
             //Console.WriteLine(v.ExtractTranslation().ToString());
         }
 
@@ -440,30 +446,13 @@ namespace Smash_Forge
                 return;
 
             glControl1.MakeCurrent();
-
-            // shadow frame buffer
-            /*GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
-            GL.Viewport(0, 0, sw, sh);
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-
-            CalculateLightSource();
-            GL.Enable(EnableCap.DepthTest);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadMatrix(ref lightMatrix);
-            RenderTools.drawFloor();
+            
+            //RenderTools.drawFloor();
+            /*
             RenderTools.drawSphere(Vector3.Zero, 1, 5);
             {
-                //draw
-                foreach(ModelContainer c in Runtime.ModelContainers)
-                {
-                    if(c.nud != null)
-                    {
-                        c.nud.RenderShadow(lightMatrix);
-                    }
-                }
-            }
+          
             GL.Disable(EnableCap.DepthTest);
-
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);*/
 
             GL.Viewport(glControl1.ClientRectangle);
@@ -490,12 +479,16 @@ namespace Smash_Forge
                 GL.Vertex2(1.0, -1.0);
                 GL.End();
             }
-            
+
+           // GL.Disable(EnableCap.DepthTest);
+           // DrawScreenQuad();
+            //GL.Enable(EnableCap.DepthTest);
+
             //RenderTools.RenderCubeMap(v);
 
             //GL.DepthFunc(DepthFunction.Never);
             GL.Enable(EnableCap.DepthTest);
-            GL.ClearDepth(1.0);
+            //GL.ClearDepth(1.0);
 
             // set up the viewport projection and send it to GPU
             GL.MatrixMode(MatrixMode.Projection);
@@ -518,8 +511,9 @@ namespace Smash_Forge
             RenderTools.drawFloor();
             RenderTools.drawSphere(Vector3.Zero, 1, 5);*/
             GL.LoadMatrix(ref v);
-            
+
             GL.UseProgram(0);
+
 
             // drawing floor---------------------------
             if (Runtime.renderFloor)
@@ -548,24 +542,55 @@ namespace Smash_Forge
             GL.Enable(EnableCap.StencilTest);
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
 
-           // GL.Enable(EnableCap.FramebufferSrgb);
+            
+            CalculateLightSource();
+            //GL.Enable(EnableCap.DepthTest);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref lightMatrix);
 
+           
 
-            // draw models
-            //RenderTools.drawHitboxCircle(new Vector3(3, 3, 3), 5, 30, v.ClearTranslation().Inverted());
+            GL.ClearColor(0.1f, 0.1f, 0.1f, 0.0f);
 
-            if (Runtime.renderModel) DrawModels();
-            /*{
+            GL.Viewport(0, 0, sw, sh);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+            {
                 //draw
                 foreach (ModelContainer c in Runtime.ModelContainers)
                 {
                     if (c.nud != null)
                     {
-                        c.nud.RenderShadow(v);
-                        c.nud.RenderShadow(lightMatrix);
+                       // c.nud.RenderShadow(v);
+                        c.nud.RenderShadow(lightMatrix, v);
                     }
                 }
-            }*/
+            }
+
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            // GL.UseProgram(0);
+            GL.LoadMatrix(ref v);
+            GL.UseProgram(0);
+
+            ///////
+
+
+            GL.Viewport(glControl1.ClientRectangle);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            // draw models
+            //RenderTools.drawHitboxCircle(new Vector3(3, 3, 3), 5, 30, v.ClearTranslation().Inverted());
+
+
+            GL.ActiveTexture(TextureUnit.Texture11);
+            GL.BindTexture(TextureTarget.Texture2D, depthmap);
+            
+
+            if (Runtime.renderModel) DrawModels();
+
+            GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
 
 
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
@@ -575,6 +600,14 @@ namespace Smash_Forge
             //GL.Disable(EnableCap.FramebufferSrgb);
 
             GL.UseProgram(0);
+
+
+           GL.Disable(EnableCap.DepthTest);
+           DrawScreenQuad(); //full screen quad for post processing
+
+            //RenderTools.drawFloor();
+            
+
             // draw path.bin
             if (Runtime.renderPath)
                 DrawPathDisplay();
@@ -668,8 +701,9 @@ namespace Smash_Forge
 
         private void DrawModels()
         {
+           
             // Bounding Box Render
-            if(Runtime.renderBoundingBox)
+            if (Runtime.renderBoundingBox)
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
                 if (m.nud != null)
@@ -694,6 +728,8 @@ namespace Smash_Forge
                 if (Runtime.renderVertColor)
                     rt = rt | (0x20);
             }
+            
+            
             GL.Uniform1(shader.getAttribute("renderType"), rt);
             GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
@@ -710,11 +746,9 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("fresnel_intensity"), Runtime.frs_inten);
             GL.Uniform1(shader.getAttribute("reflection_intensity"), Runtime.ref_inten);
 
-            GL.ActiveTexture(TextureUnit.Texture11);
-            GL.BindTexture(TextureTarget.Texture2D, depthmap);
-            GL.Uniform1(shader.getAttribute("shadowmap"), 11);
 
-
+     
+         
             // send lighting to Shader
             // Miiverse Params
             /*float specRotZ = -0.2254f;
@@ -769,6 +803,11 @@ namespace Smash_Forge
                     GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex);
                     GL.Uniform1(shader.getAttribute("cmap"), 2);
                     GL.UniformMatrix4(shader.getAttribute("eyeview"), false, ref v);
+                   
+
+                    GL.ActiveTexture(TextureUnit.Texture11);
+                    GL.BindTexture(TextureTarget.Texture2D, depthmap);
+                    GL.Uniform1(shader.getAttribute("shadowMap"), 11);
 
                     if (m.vbn != null)
                     {
@@ -818,6 +857,26 @@ namespace Smash_Forge
                     shader.disableAttrib();
                 }
             }
+        }
+        private void DrawScreenQuad() // draw a full screen quad for fbo debugging and post processing
+        {
+            shader = Runtime.shaders["QUAD"];
+            GL.UseProgram(shader.programID);
+
+            GL.ActiveTexture(TextureUnit.Texture11);
+            GL.BindTexture(TextureTarget.Texture2D, depthmap);
+            GL.Uniform1(shader.getAttribute("ShadowMap"), 11);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
+            GL.Uniform1(shader.getAttribute("Background"), 0);
+
+
+
+
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // just use a big triangle instead
+            GL.BindVertexArray(0);
+      
         }
 
         private void DrawBones()

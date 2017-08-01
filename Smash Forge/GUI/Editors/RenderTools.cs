@@ -1876,23 +1876,61 @@ void main()
 
         public static string vs_Shadow = @"#version 330
 in vec3 vPosition;
-
 uniform mat4 lightSpaceMatrix;
+uniform mat4 eyeview; // modelview matrix
 
 void main()
 {
-    gl_Position = lightSpaceMatrix * vec4(vPosition, 1.0f);
+    gl_Position = eyeview * vec4(vPosition, 1.0f);//lightSpaceMatrix * eyeview * vec4(vPosition, 1.0f);
 }";
         public static string fs_Shadow = @"#version 330
+void main()
+{             
+}  ";
+
+
+        #endregion
+
+        #region Quad Shader 
+  
+        public static string vs_quad = @"#version 330
+
+out vec2 texCoord;
+ 
+void main()
+{
+    float x = -1.0 + float((gl_VertexID & 1) << 2);
+    float y = -1.0 + float((gl_VertexID & 2) << 1);
+    texCoord.x = (x+1.0)*0.5;
+    texCoord.y = (y+1.0)*0.5;
+    gl_Position = vec4(x, y, 0, 1);
+}";
+        public static string fs_quad = @"#version 330
+in vec2 texCoord;
+out vec4 outColor;
+
+uniform sampler2D ShadowMap;
+uniform sampler2D Background;
+float LinearizeDepth(float depth)
+{   float near_plane = -10.0;
+    float far_plane = 10.0;
+    float z = depth * 2.0 - 1.0; // Back to NDC 
+    return (2.0 * near_plane * far_plane) / (far_plane + near_plane - z * (far_plane - near_plane));
+}
 
 void main()
 {             
-    gl_FragDepth = gl_FragCoord.z;
-gl_FragColor = vec4(1);
-}  ";
-        
+    float depth = texture2D(ShadowMap, texCoord).r;
+    depth = LinearizeDepth(depth);
+    vec3 backgroundColor = texture2D(Background, vec2(1)-texCoord).rgb;
+    outColor = vec4(vec3(depth),1);
+    outColor = vec4(backgroundColor, 1);
+
+}";
+
 
         #endregion
+
 
         #endregion
 
