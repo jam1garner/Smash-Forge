@@ -1876,17 +1876,24 @@ void main()
 
         public static string vs_Shadow = @"#version 330
 in vec3 vPosition;
+out vec4 outPosition;
 uniform mat4 lightSpaceMatrix;
 uniform mat4 eyeview; // modelview matrix
 
 void main()
 {
-    gl_Position = eyeview * vec4(vPosition, 1.0f);//lightSpaceMatrix * eyeview * vec4(vPosition, 1.0f);
+    gl_Position = eyeview * vec4(vPosition, 1.0f); //lightSpaceMatrix * eyeview * vec4(vPosition, 1.0f);
+    outPosition = gl_Position;
 }";
         public static string fs_Shadow = @"#version 330
+//out vec4 outColor;
+in vec4 outPosition;
 void main()
-{             
-}  ";
+{   
+    float depth = outPosition.z;
+    depth *= 0.01;
+    //outColor = vec4(vec3(depth), 1);
+}";
 
 
         #endregion
@@ -1910,27 +1917,26 @@ in vec2 texCoord;
 out vec4 outColor;
 
 uniform sampler2D ShadowMap;
-uniform sampler2D Background;
+uniform sampler2D ScreenRender;
+
 float LinearizeDepth(float depth)
-{   float near_plane = -10.0;
-    float far_plane = 10.0;
+{   float near_plane = -100.0;
+    float far_plane = 100.0;
     float z = depth * 2.0 - 1.0; // Back to NDC 
     return (2.0 * near_plane * far_plane) / (far_plane + near_plane - z * (far_plane - near_plane));
 }
 
 void main()
 {             
-    float depth = texture2D(ShadowMap, texCoord).r;
-    depth = LinearizeDepth(depth);
-    vec3 backgroundColor = texture2D(Background, vec2(1)-texCoord).rgb;
-    outColor = vec4(vec3(depth),1);
-    outColor = vec4(backgroundColor, 1);
-
+    vec3 screenColor = texture2D(ScreenRender, texCoord).rgb;
+    float test = texture2D(ShadowMap, texCoord).r;
+    vec3 depthVector = vec3(test);
+    outColor = vec4(1,0,1,1);
+    outColor = vec4(depthVector, 1);
 }";
 
 
         #endregion
-
 
         #endregion
 

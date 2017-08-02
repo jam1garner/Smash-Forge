@@ -120,7 +120,7 @@ namespace Smash_Forge
             Shader quad = new Shader();
             quad.vertexShader(RenderTools.vs_quad);
             quad.fragmentShader(RenderTools.fs_quad);
-            Runtime.shaders.Add("QUAD", quad);
+            Runtime.shaders.Add("Quad", quad);
 
 
 
@@ -1975,8 +1975,8 @@ namespace Smash_Forge
 
         private void exportErrorLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // Runtime.shaders["NUD"].SaveErrorLog();
-            Runtime.shaders["Shadow"].SaveErrorLog();
+            Runtime.shaders["Quad"].SaveErrorLog();
+            //Runtime.shaders["Shadow"].SaveErrorLog();
             MessageBox.Show("Saved to Forge directory");
         }
 
