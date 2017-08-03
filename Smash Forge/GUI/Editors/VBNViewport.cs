@@ -459,11 +459,11 @@ namespace Smash_Forge
         { // fix this stuff
             
             Matrix4 lightProjection;
-            Matrix4.CreateOrthographicOffCenter(-100.0f, 100.0f, -100.0f, 100.0f, -100.0f, 100.0f, out lightProjection);
+            Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f, out lightProjection);
             Matrix4 lightView = Matrix4.LookAt(Vector3.Transform(Vector3.Zero, v).Normalized(), //new Vector3(0.5f, 1f, 1f),
                 new Vector3(0),
                 new Vector3(0, 1, 0));
-            //lightView = Matrix4.LookAt(0.0f, 4.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+            lightView = Matrix4.LookAt(0.1f, -10.0f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
             lightMatrix = lightProjection * lightView.Inverted();
             //Console.WriteLine(v.ExtractTranslation().ToString());
         }
@@ -549,8 +549,43 @@ namespace Smash_Forge
                 RenderTools.drawFloor();
             }*/ // should probably move to hdr buffer but idk
 
+            
+            
+            CalculateLightSource();
+            //GL.Enable(EnableCap.DepthTest);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref lightMatrix);
+
+
+
+
+            // render shadow map
+            //------------------------------------------------------------
+            GL.Enable(EnableCap.DepthTest);
+            GL.Viewport(0, 0, sw, sh);
+            
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
+         
+            GL.Clear(ClearBufferMask.DepthBufferBit); // critical to have
+            {
+                //draw
+                foreach (ModelContainer c in Runtime.ModelContainers)
+                {
+                    if (c.nud != null)
+                    {
+                        c.nud.RenderShadow(lightMatrix, v);
+                    }
+                }
+            }
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            GL.LoadMatrix(ref v);
+            GL.Viewport(glControl1.ClientRectangle);
+
+
             //GL.Enable(EnableCap.LineSmooth); // This is Optional 
-            GL.Enable(EnableCap.Normalize);  // These is critical to have
+            GL.Enable(EnableCap.Normalize);  // This is critical to have
             GL.Enable(EnableCap.RescaleNormal);
 
             GL.Enable(EnableCap.Blend);
@@ -570,48 +605,11 @@ namespace Smash_Forge
             GL.Enable(EnableCap.StencilTest);
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
 
-            
-            CalculateLightSource();
-            //GL.Enable(EnableCap.DepthTest);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadMatrix(ref lightMatrix);
-
-
-
-
-            // render shadow map
-            //------------------------------------------------------------
-            GL.Enable(EnableCap.DepthTest);
-            GL.Viewport(0, 0, sw, sh);
-            
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
-            //GL.ClearDepth(0); // currently the only value being written to depth buffer?
-            GL.Clear(ClearBufferMask.DepthBufferBit); // critical to have
-            {
-                //draw
-                foreach (ModelContainer c in Runtime.ModelContainers) // the depth buffer is being rendered to texture, but the fragment depth is not for some reason
-                {
-                    if (c.nud != null)
-                    {
-                        c.nud.RenderShadow(lightMatrix, v);
-                    }
-                }
-            }
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-
-           
-            GL.LoadMatrix(ref v);
-     
-
-           
-            GL.Viewport(glControl1.ClientRectangle);
-            //GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
 
             // draw models
             //RenderTools.drawHitboxCircle(new Vector3(3, 3, 3), 5, 30, v.ClearTranslation().Inverted());
 
-            
+
             // render models into hdr buffer
             //------------------------------------------------------------
 

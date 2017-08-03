@@ -1882,7 +1882,7 @@ uniform mat4 eyeview; // modelview matrix
 
 void main()
 {
-    gl_Position = eyeview * vec4(vPosition, 1.0f); //lightSpaceMatrix * eyeview * vec4(vPosition, 1.0f);
+    gl_Position = lightSpaceMatrix * eyeview * vec4(vPosition, 1.0f); //lightSpaceMatrix * eyeview * vec4(vPosition, 1.0f);
     outPosition = gl_Position;
 }";
         public static string fs_Shadow = @"#version 330
@@ -1932,7 +1932,7 @@ void main()
     float test = texture2D(ShadowMap, texCoord).r;
     vec3 depthVector = vec3(test);
     outColor = vec4(1,0,1,1);
-    outColor = vec4(depthVector, 1);
+    outColor = vec4(screenColor, 1);
 }";
 
 
