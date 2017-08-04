@@ -1978,11 +1978,11 @@ namespace Smash_Forge
             }*/
             if (e.KeyChar == 'r')
             {
-                CaptureScreen(true).Save("Render.png");
+                CaptureScreen(true).Save(MainForm.executableDir + "\\Render.png");
             }
             if (e.KeyChar == 'p')
             {
-                CaptureScreen(false).Save("Render.png");
+                CaptureScreen(false).Save(MainForm.executableDir + "\\Render.png");
             }
             if (e.KeyChar == ']')
             {
