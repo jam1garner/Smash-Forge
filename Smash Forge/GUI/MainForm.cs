@@ -2050,5 +2050,29 @@ namespace Smash_Forge
         {
             Runtime.clearMoveset();
         }
+
+        private void exportParamsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.ParamManager.param == null)
+                return;
+
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.FileName = "fighter_param_vl_";
+                sfd.Filter = "Fighter parameter file (*.bin)|*.bin|" +
+                             "All Files (*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        Runtime.ParamManager.param.Export(sfd.FileName);
+                    }catch
+                    {
+                        
+                    }
+                }
+            }
+        }
     }
 }
