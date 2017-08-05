@@ -538,7 +538,7 @@ for changing default texure
                 etcNode.AppendChild(createNode(doc, "param_dir", paramDir));
             }
 
-            doc.Save("config.xml");
+            doc.Save(MainForm.executableDir + "\\config.xml");
         }
 
         public static XmlNode createNode(XmlDocument doc, string el, string v)

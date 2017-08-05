@@ -96,7 +96,7 @@ namespace Smash_Forge
             viewportWindowToolStripMenuItem.Checked = true;
             openFiles();
 
-            Runtime.StartupFromConfig("config.xml");
+            Runtime.StartupFromConfig(MainForm.executableDir + "\\config.xml");
 
             // load up the shaders
             Shader cub = new Shader();
