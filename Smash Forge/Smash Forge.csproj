@@ -179,6 +179,12 @@
     <Compile Include="GUI\Editors\DAT_TreeView.Designer.cs">
       <DependentUpon>DAT_TreeView.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\HitboxList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\HitboxList.Designer.cs">
+      <DependentUpon>HitboxList.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\HurtboxList.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -292,6 +298,12 @@
     </Compile>
     <Compile Include="GUI\Editors\UIPreview.Designer.cs">
       <DependentUpon>UIPreview.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\VariableList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\VariableList.Designer.cs">
+      <DependentUpon>VariableList.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\FolderSelectDialog.cs">
       <SubType>Component</SubType>
@@ -434,6 +446,9 @@
     <EmbeddedResource Include="GUI\Editors\DAT_TreeView.resx">
       <DependentUpon>DAT_TreeView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\HitboxList.resx">
+      <DependentUpon>HitboxList.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\HurtboxList.resx">
       <DependentUpon>HurtboxList.cs</DependentUpon>
     </EmbeddedResource>
@@ -487,6 +502,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\UIPreview.resx">
       <DependentUpon>UIPreview.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\VariableList.resx">
+      <DependentUpon>VariableList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

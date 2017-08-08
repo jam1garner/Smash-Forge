@@ -65,7 +65,7 @@ namespace Smash_Forge.GUI.Editors
                 hurtboxData.Rows.Add("Z Stretch", hurtbox.Z2);
                 hurtboxData.Rows.Add("Zone", hurtbox.Zone == Hurtbox.LW_ZONE ? "Low" : hurtbox.Zone == Hurtbox.HI_ZONE ? "High" : "Mid");
 
-                hurtbox.Selected = true;
+                Runtime.SelectedHurtboxID = hurtbox.ID;
             }
         }
 
@@ -122,6 +122,11 @@ namespace Smash_Forge.GUI.Editors
                 Runtime.ParamManager.SaveHurtboxes();
 
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Runtime.ParamManager.UnselectHurtboxes();
         }
     }
 }

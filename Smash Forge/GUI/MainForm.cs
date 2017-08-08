@@ -50,6 +50,8 @@ namespace Smash_Forge
                 boneTreeToolStripMenuItem.Checked = true;
 
             Runtime.acmdEditor = new ACMDPreviewEditor() { ShowHint = DockState.DockRight };
+            Runtime.hitboxList = new HitboxList() { ShowHint = DockState.DockLeft };
+            Runtime.variableViewer = new VariableList() { ShowHint = DockState.DockLeft };
 
             allViewsPreset(new Object(), new EventArgs());
 
@@ -253,6 +255,16 @@ namespace Smash_Forge
             {
                 hurtboxList = new HurtboxList();
                 hurtboxList.refresh();
+            }
+            if (Runtime.hitboxList.IsDisposed)
+            {
+                Runtime.hitboxList = new HitboxList();
+                Runtime.hitboxList.refresh();
+            }
+            if (Runtime.variableViewer.IsDisposed)
+            {
+                Runtime.variableViewer = new VariableList();
+                Runtime.variableViewer.refresh();
             }
             if (Runtime.acmdEditor != null && Runtime.acmdEditor.IsDisposed)
             {
@@ -1871,11 +1883,16 @@ namespace Smash_Forge
             lvdEditor.ShowHint = DockState.DockRight;
             Runtime.acmdEditor.ShowHint = DockState.DockLeft;
             meshList.ShowHint = DockState.DockRight;
+            Runtime.hitboxList.ShowHint = DockState.DockLeft;
+            Runtime.variableViewer.ShowHint = DockState.DockLeft;
+            
             AddDockedControl(Runtime.acmdEditor);
             AddDockedControl(boneTreePanel);
             AddDockedControl(animList);
             AddDockedControl(lvdEditor);
             AddDockedControl(lvdList);
+            AddDockedControl(Runtime.variableViewer);
+            AddDockedControl(Runtime.hitboxList);
             AddDockedControl(hurtboxList);
             AddDockedControl(project);
             AddDockedControl(meshList);

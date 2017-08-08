@@ -39,6 +39,11 @@ namespace Smash_Forge
         public bool BodyInvincible { get; set; }
         public bool SuperArmor { get; set; }
 
+        // Script variables
+        public List<uint> ActiveFlags { get; set; }
+        public SortedList<uint, bool> IfVariableList { get; set; } = new SortedList<uint, bool>();
+
+
         // Script processing helpers
         public int currentGameFrame { get; set; }   // In-game frame # for the move. One in-game frame can skip multiple animation frames.
         public double currentFrame { get; set; }     // Script frame, can be fractional due to frameSpeed values
@@ -69,10 +74,28 @@ namespace Smash_Forge
         // To track state through subscripts
         public Stack<ScriptState> scriptStates { get; set; }
 
+        //Conditionals
+        public int TrueFalseSkipLength = 0;
+        public bool readTrue = true;
+
+        //Ledge grab
+        public bool LedgeGrabDisallowed = false;
+        public bool FrontLedgeGrabAllowed = false;
+        public bool ReverseLedgeGrabAllowed = false;
+
         public ForgeACMDScript(ACMDScript script)
         {
             this.script = script;
             Reset();
+
+
+            //Get all If events variables for BitVariableList
+            IfVariableList = new SortedList<uint, bool>();
+
+            if (script != null)
+            {
+                getIfs();
+            }
         }
 
         public void Reset()
@@ -84,6 +107,10 @@ namespace Smash_Forge
             BodyIntangible     = false;
             BodyInvincible     = false;
             SuperArmor         = false;
+            ActiveFlags        = new List<uint>();
+
+            //Reset hidden hitboxes so all hitboxes are visible
+            Runtime.HiddenHitboxes.Clear();
 
             currentGameFrame   = 0;
             currentFrame       = 0;
@@ -98,6 +125,11 @@ namespace Smash_Forge
             framesSinceSyncTimerStarted = -1;
             subscripts         = new List<ACMDScript>();
             scriptStates       = new Stack<ScriptState>();
+
+            TrueFalseSkipLength = 0;
+            LedgeGrabDisallowed = false;
+            FrontLedgeGrabAllowed = false;
+            ReverseLedgeGrabAllowed = false;
         }
 
         public void addOrOverwriteHitbox(int id, Hitbox newHitbox)
@@ -208,6 +240,11 @@ namespace Smash_Forge
             // we aren't relying on the render loop to calculate hitbox positions.
             if (wasReset)
                 LastHitboxes.Clear();
+
+            if (Runtime.hitboxList != null)
+                Runtime.hitboxList.refresh();
+            if (Runtime.variableViewer != null)
+                Runtime.variableViewer.refresh();
         }
 
         public void processFrame()
@@ -264,6 +301,12 @@ namespace Smash_Forge
         public bool processCommand(ICommand cmd)
         {
             Hitbox newHitbox = null;
+            if(TrueFalseSkipLength > 0)
+            {
+                //Skip command since its on a true/false block and the variable is set to the other value
+                TrueFalseSkipLength -= cmd.Parameters.Count + 1;
+                return true;
+            }
             switch (cmd.Ident)
             {
                 case 0x42ACFE7D: // Asynchronous Timer, exact animation frame on which next command should run
@@ -341,11 +384,12 @@ namespace Smash_Forge
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
                         newHitbox.Type = Hitbox.HITBOX;
+                        newHitbox.Part = (int)cmd.Parameters[1];
                         newHitbox.Bone = (int)cmd.Parameters[2];
                         newHitbox.Damage = (float)cmd.Parameters[3];
                         newHitbox.Angle = (int)cmd.Parameters[4];
                         newHitbox.KnockbackGrowth = (int)cmd.Parameters[5];
-                        //FKB = (float)cmd.Parameters[6]
+                        newHitbox.WeightBasedKnockback = (int)cmd.Parameters[6];
                         newHitbox.KnockbackBase = (int)cmd.Parameters[7];
                         newHitbox.Size = (float)cmd.Parameters[8];
                         newHitbox.X = (float)cmd.Parameters[9];
@@ -359,12 +403,13 @@ namespace Smash_Forge
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
                         newHitbox.Type = Hitbox.HITBOX;
+                        newHitbox.Part = (int)cmd.Parameters[1];
                         newHitbox.Extended = true;
                         newHitbox.Bone = (int)cmd.Parameters[2];
                         newHitbox.Damage = (float)cmd.Parameters[3];
                         newHitbox.Angle = (int)cmd.Parameters[4];
                         newHitbox.KnockbackGrowth = (int)cmd.Parameters[5];
-                        //FKB = (float)cmd.Parameters[6]
+                        newHitbox.WeightBasedKnockback = (int)cmd.Parameters[6];
                         newHitbox.KnockbackBase = (int)cmd.Parameters[7];
                         newHitbox.Size = (float)cmd.Parameters[8];
                         newHitbox.X = (float)cmd.Parameters[9];
@@ -381,11 +426,12 @@ namespace Smash_Forge
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
                         newHitbox.Type = Hitbox.HITBOX;
+                        newHitbox.Part = (int)cmd.Parameters[1];
                         newHitbox.Bone = (int)cmd.Parameters[2];
                         newHitbox.Damage = (float)cmd.Parameters[3];
                         newHitbox.Angle = (int)cmd.Parameters[4];
                         newHitbox.KnockbackGrowth = (int)cmd.Parameters[5];
-                        //FKB = (float)cmd.Parameters[6]
+                        newHitbox.WeightBasedKnockback = (int)cmd.Parameters[6];
                         newHitbox.KnockbackBase = (int)cmd.Parameters[7];
                         newHitbox.Size = (float)cmd.Parameters[8];
                         newHitbox.X = (float)cmd.Parameters[9];
@@ -407,11 +453,12 @@ namespace Smash_Forge
                         int id = (int)cmd.Parameters[0];
                         newHitbox.Type = Hitbox.HITBOX;
                         newHitbox.Extended = true;
+                        newHitbox.Part = (int)cmd.Parameters[1];
                         newHitbox.Bone = (int)cmd.Parameters[2];
                         newHitbox.Damage = (float)cmd.Parameters[3];
                         newHitbox.Angle = (int)cmd.Parameters[4];
                         newHitbox.KnockbackGrowth = (int)cmd.Parameters[5];
-                        //FKB = (float)cmd.Parameters[6]
+                        newHitbox.WeightBasedKnockback = (int)cmd.Parameters[6];
                         newHitbox.KnockbackBase = (int)cmd.Parameters[7];
                         newHitbox.Size = (float)cmd.Parameters[8];
                         newHitbox.X = (float)cmd.Parameters[9];
@@ -432,11 +479,12 @@ namespace Smash_Forge
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
                         newHitbox.Type = Hitbox.HITBOX;
+                        newHitbox.Part = (int)cmd.Parameters[1];
                         newHitbox.Bone = (int)cmd.Parameters[2];
                         newHitbox.Damage = (float)cmd.Parameters[3];
                         newHitbox.Angle = (int)cmd.Parameters[4];
                         newHitbox.KnockbackGrowth = (int)cmd.Parameters[5];
-                        //FKB = (float)cmd.Parameters[6]
+                        newHitbox.WeightBasedKnockback = (int)cmd.Parameters[6];
                         newHitbox.KnockbackBase = (int)cmd.Parameters[7];
                         newHitbox.Size = (float)cmd.Parameters[8];
                         newHitbox.X = (float)cmd.Parameters[9];
@@ -454,11 +502,12 @@ namespace Smash_Forge
                         int id = (int)cmd.Parameters[0];
                         newHitbox.Type = Hitbox.HITBOX;
                         newHitbox.Extended = true;
+                        newHitbox.Part = (int)cmd.Parameters[1];
                         newHitbox.Bone = (int)cmd.Parameters[2];
                         newHitbox.Damage = (float)cmd.Parameters[3];
                         newHitbox.Angle = (int)cmd.Parameters[4];
                         newHitbox.KnockbackGrowth = (int)cmd.Parameters[5];
-                        //FKB = (float)cmd.Parameters[6]
+                        newHitbox.WeightBasedKnockback = (int)cmd.Parameters[6];
                         newHitbox.KnockbackBase = (int)cmd.Parameters[7];
                         newHitbox.Size = (float)cmd.Parameters[8];
                         newHitbox.X = (float)cmd.Parameters[9];
@@ -612,10 +661,6 @@ namespace Smash_Forge
                     break;
                 case 0x7640AEEB:
                     break;
-                case 0xA5BD4F32: // TRUE
-                    break;
-                case 0x895B9275: // FALSE
-                    break;
                 case 0xF13BFE8D: //Bone collision state (intangibility/invincibility)
                     {
                         int bone = (int)cmd.Parameters[0];
@@ -675,9 +720,106 @@ namespace Smash_Forge
                             SuperArmor = false;
                         break;
                     }
+                case 0x661B30DA: // Bit_Variable_Set
+                    {
+                        uint flag = (uint)((int)cmd.Parameters[0]);
+                        if (!ActiveFlags.Contains(flag))
+                            ActiveFlags.Add(flag);
+                        break;
+                    }
+                case 0x17232732: // Bit_Variable_Clear
+                    {
+                        uint flag = (uint)((int)cmd.Parameters[0]);
+                        ActiveFlags.Remove(flag);
+                        break;
+                    }
+                case 0x34BCD3F7: //If_Compare
+                case 0xA21BC6EA: //If_Bit_Is_Set
+                    {
+                        if (IfVariableList.ContainsKey((uint)(int)cmd.Parameters[0]))
+                            readTrue = IfVariableList[(uint)(int)cmd.Parameters[0]];
+                        break;
+                    }
+                case 0xA5BD4F32: // TRUE
+                    {
+                        if (!readTrue)
+                            TrueFalseSkipLength = (int)cmd.Parameters[0] - 4;
+                        break;
+                    }
+                case 0x895B9275: // FALSE
+                    {
+                        if(readTrue)
+                            TrueFalseSkipLength = (int)cmd.Parameters[0] - 2;
+                        break;
+                    }
+                case 0x0F39EC70: // Allow/Disallow Ledgegrab
+                    {
+                        int type = (int)cmd.Parameters[0];
+                        switch (type)
+                        {
+                            case 0:
+                                LedgeGrabDisallowed = true;
+                                FrontLedgeGrabAllowed = false;
+                                ReverseLedgeGrabAllowed = false;
+                                break;
+                            case 1:
+                                LedgeGrabDisallowed = false;
+                                FrontLedgeGrabAllowed = true;
+                                break;
+                            case 2:
+                                LedgeGrabDisallowed = false;
+                                ReverseLedgeGrabAllowed = true;
+                                break;
+                        }
+                        break;
+                    }
 
             }
             return true;
+        }
+
+        public void getIfs()
+        {
+            int index = 0;
+            while (true)
+            {
+                // Subscripts take precedence in processing, most deep one first
+                if (subscripts.Count > 0)
+                {
+                    if (index < subscripts[subscripts.Count - 1].Count)
+                        processAndGetIfs(subscripts[subscripts.Count - 1][index]);
+                    else
+                    {
+                        // We finished the subscript, pop it off and keep processing the parent
+                        ScriptState prevState = scriptStates.Pop();
+                        index = prevState.commandIndex;
+                        loopStart = prevState.loopStart;
+                        loopIterations = prevState.loopIterations;
+                        subscripts.RemoveAt(subscripts.Count - 1);
+                    }
+                }
+                else
+                {
+                    if (index < script.Count)
+                        processAndGetIfs(script[index]);
+                    else
+                        // No script commands left to process, regardless of frame
+                        break;
+                }
+                index++;
+            }
+        }
+
+        public void processAndGetIfs(ICommand cmd)
+        {
+            switch (cmd.Ident)
+            {
+                case 0x34BCD3F7: //If_Compare
+                case 0xA21BC6EA: //If_Bit_Is_Set
+                    if (!IfVariableList.ContainsKey((uint)(int)cmd.Parameters[0]))
+                        IfVariableList.Add((uint)(int)cmd.Parameters[0], true);
+                    break;
+            }
         }
 
         private static int roundAnimationFrame(double animFrame)

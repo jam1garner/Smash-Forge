@@ -59,6 +59,7 @@ namespace Smash_Forge
                 for (int id = 0; id < ((ParamGroup)param.Groups[4]).Chunks.Length; id++)
                 {
                     Hurtbox hurtbox = new Hurtbox();
+                    hurtbox.ID = id;
                     hurtbox.X = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][0].Value);
                     hurtbox.Y = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][1].Value);
                     hurtbox.Z = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][2].Value);
@@ -115,10 +116,7 @@ namespace Smash_Forge
 
         public void UnselectHurtboxes()
         {
-            foreach(Hurtbox h in Hurtboxes.Values)
-            {
-                h.Selected = false;
-            }
+            Runtime.SelectedHurtboxID = -1;
         }
 
         public void SaveHurtboxes()
@@ -146,6 +144,7 @@ namespace Smash_Forge
 
     public class Hurtbox
     {
+        public int ID { get; set; }
         public int Bone { get; set; }
         public float Size { get; set; }
         public float X { get; set; }
@@ -165,7 +164,6 @@ namespace Smash_Forge
 
         //Forge vars
         public bool Visible { get; set; } = true;
-        public bool Selected { get; set; } = false;
     }
 
     public class MoveData
