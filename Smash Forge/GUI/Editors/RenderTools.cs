@@ -1878,11 +1878,12 @@ void main()
 in vec3 vPosition;
 out vec4 outPosition;
 uniform mat4 lightSpaceMatrix;
+uniform mat4 modelMatrix;
 uniform mat4 eyeview; // modelview matrix
 
 void main()
 {
-    gl_Position = lightSpaceMatrix * eyeview * vec4(vPosition, 1.0f); //lightSpaceMatrix * eyeview * vec4(vPosition, 1.0f);
+    gl_Position = lightSpaceMatrix * modelMatrix * vec4(vPosition, 1.0f); //lightSpaceMatrix * eyeview * vec4(vPosition, 1.0f);
     outPosition = gl_Position;
 }";
         public static string fs_Shadow = @"#version 330
@@ -1920,25 +1921,97 @@ uniform sampler2D ShadowMap;
 uniform sampler2D ScreenRender;
 
 float LinearizeDepth(float depth)
-{   float near_plane = -100.0;
-    float far_plane = 100.0;
+{   float near_plane = 1.0;
+    float far_plane = 500.0;
     float z = depth * 2.0 - 1.0; // Back to NDC 
     return (2.0 * near_plane * far_plane) / (far_plane + near_plane - z * (far_plane - near_plane));
 }
 
 void main()
 {             
-    vec3 screenColor = texture2D(ScreenRender, texCoord).rgb;
+    vec4 screenColor = texture2D(ScreenRender, texCoord).rgba;
+    vec4 backgroundColor = mix(vec4(0), vec4(1), texCoord.y);
+    //backgroundColor = vec4(1);
     float test = texture2D(ShadowMap, texCoord).r;
+   // test = LinearizeDepth(test);
     vec3 depthVector = vec3(test);
-    outColor = vec4(1,0,1,1);
-    outColor = vec4(screenColor, 1);
+    //outColor = mix(backgroundColor, vec4(depthVector,1), screenColor.a);
+    
+    
+    // horizontal guassian blur
+    float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
+    vec2 tex_offset = 1.0 / textureSize(ScreenRender, 0); // gets size of single texel
+    vec3 result = texture2D(ScreenRender, texCoord).rgb * weight[0]; // current fragment's contribution
+ 
+        for(int i = 1; i < 5; ++i)
+        {
+            result += texture2D(ScreenRender, texCoord + vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
+            result += texture2D(ScreenRender, texCoord - vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
+        }
+    //screenColor.rgb = result;
+
+    result = screenColor.rgb;
+
+    //outColor.rgb = mix(backgroundColor.rgb, screenColor.rgb, screenColor.a);
+    outColor = vec4(result,1);
 }";
 
 
         #endregion
 
+        #region blur shader
+        // basically identical to "quad" shader but with guassian blur
+        public static string vs_blur = @"#version 330
+
+out vec2 TexCoords;
+ 
+void main()
+{
+    float x = -1.0 + float((gl_VertexID & 1) << 2);
+    float y = -1.0 + float((gl_VertexID & 2) << 1);
+    TexCoords.x = (x+1.0)*0.5;
+    TexCoords.y = (y+1.0)*0.5;
+    gl_Position = vec4(x, y, 0, 1);
+}";
+        public static string fs_blur = @"#version 330 core
+out vec4 FragColor;
+  
+in vec2 TexCoords;
+
+uniform sampler2D image;
+  
+uniform bool horizontal;
+uniform float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
+
+void main()
+{             
+    vec2 tex_offset = 1.0 / textureSize(image, 0); // gets size of single texel
+    vec3 result = texture(image, TexCoords).rgb * weight[0]; // current fragment's contribution
+    if(horizontal)
+    {
+        for(int i = 1; i < 5; ++i)
+        {
+            result += texture(image, TexCoords + vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
+            result += texture(image, TexCoords - vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
+        }
+    }
+    else
+    {
+        for(int i = 1; i < 5; ++i)
+        {
+            result += texture(image, TexCoords + vec2(0.0, tex_offset.y * i)).rgb * weight[i];
+            result += texture(image, TexCoords - vec2(0.0, tex_offset.y * i)).rgb * weight[i];
+        }
+    }
+    FragColor = vec4(result, 1.0);
+}";
+
         #endregion
+
+
+
+        #endregion
+
 
     }
 }

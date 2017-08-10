@@ -122,6 +122,10 @@ namespace Smash_Forge
             quad.fragmentShader(RenderTools.fs_quad);
             Runtime.shaders.Add("Quad", quad);
 
+            Shader blur = new Shader();
+            blur.vertexShader(RenderTools.vs_blur);
+            blur.fragmentShader(RenderTools.fs_blur);
+            Runtime.shaders.Add("Blur", blur);
 
 
             RenderTools.Setup();

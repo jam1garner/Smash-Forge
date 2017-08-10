@@ -443,11 +443,14 @@ namespace Smash_Forge
                     GL.Uniform4(shader.getAttribute("reflectionParams"), pa[0], pa[1], pa[2], pa[3]);
                 }
 
+
+                
                 GL.Enable(EnableCap.Blend);
 
-                GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
-                    dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
-
+                GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
+                //GL.BlendFuncSeparate(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha, BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcAlpha);
+                //GL.BlendEquationSeparate(BlendEquationMode.FuncAdd, BlendEquationMode.FuncAdd);
+                
                 if (mat.srcFactor == 0 && mat.dstFactor == 0) GL.Disable(EnableCap.Blend);
                 
                 GL.Enable(EnableCap.AlphaTest);
@@ -468,7 +471,7 @@ namespace Smash_Forge
                     case 0x6:
                         GL.AlphaFunc(AlphaFunction.Gequal, 255f / 255f);
                         break;
-                }
+                } 
                
                 GL.Enable(EnableCap.CullFace);
                 GL.CullFace(CullFaceMode.Front);
@@ -556,7 +559,7 @@ namespace Smash_Forge
         }
 
         // simple passthrough vertex render for shadow mapping
-        public void RenderShadow(Matrix4 lightMatrix, Matrix4 view)
+        public void RenderShadow(Matrix4 lightMatrix, Matrix4 view, Matrix4 modelMatrix)
         {
             Shader shader = Runtime.shaders["Shadow"];
 
@@ -564,6 +567,7 @@ namespace Smash_Forge
 
             GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
             GL.UniformMatrix4(shader.getAttribute("eyeview"), false, ref view);
+            GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
 
             shader.enableAttrib();
             foreach(Mesh m in mesh)
