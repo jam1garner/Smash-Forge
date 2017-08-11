@@ -29,10 +29,10 @@ namespace Smash_Forge
 
         public void populate()
         {
-            if (Directory.Exists("materials\\"))
+            if (Directory.Exists(MainForm.executableDir + "\\materials"))
             {
-                Console.WriteLine(Path.GetFullPath("materials\\"));
-                foreach (string folder in Directory.EnumerateDirectories(Path.GetFullPath("materials\\")))
+                Console.WriteLine(Path.GetFullPath(MainForm.executableDir + "\\materials"));
+                foreach (string folder in Directory.EnumerateDirectories(Path.GetFullPath(MainForm.executableDir + "\\materials")))
                 {
                     DirectoryInfo dir = new DirectoryInfo(folder);
                     TreeNode folderNode = new TreeNode(dir.Name) { Tag = "folder" };
