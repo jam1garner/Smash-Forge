@@ -50,6 +50,8 @@ namespace Smash_Forge
                 boneTreeToolStripMenuItem.Checked = true;
 
             Runtime.acmdEditor = new ACMDPreviewEditor() { ShowHint = DockState.DockRight };
+            Runtime.hitboxList = new HitboxList() { ShowHint = DockState.DockLeft };
+            Runtime.variableViewer = new VariableList() { ShowHint = DockState.DockLeft };
 
             allViewsPreset(new Object(), new EventArgs());
 
@@ -96,7 +98,7 @@ namespace Smash_Forge
             viewportWindowToolStripMenuItem.Checked = true;
             openFiles();
 
-            Runtime.StartupFromConfig("config.xml");
+            Runtime.StartupFromConfig(MainForm.executableDir + "\\config.xml");
 
             // load up the shaders
             Shader cub = new Shader();
@@ -253,6 +255,16 @@ namespace Smash_Forge
             {
                 hurtboxList = new HurtboxList();
                 hurtboxList.refresh();
+            }
+            if (Runtime.hitboxList.IsDisposed)
+            {
+                Runtime.hitboxList = new HitboxList();
+                Runtime.hitboxList.refresh();
+            }
+            if (Runtime.variableViewer.IsDisposed)
+            {
+                Runtime.variableViewer = new VariableList();
+                Runtime.variableViewer.refresh();
             }
             if (Runtime.acmdEditor != null && Runtime.acmdEditor.IsDisposed)
             {
@@ -1871,11 +1883,16 @@ namespace Smash_Forge
             lvdEditor.ShowHint = DockState.DockRight;
             Runtime.acmdEditor.ShowHint = DockState.DockLeft;
             meshList.ShowHint = DockState.DockRight;
+            Runtime.hitboxList.ShowHint = DockState.DockLeft;
+            Runtime.variableViewer.ShowHint = DockState.DockLeft;
+            
             AddDockedControl(Runtime.acmdEditor);
             AddDockedControl(boneTreePanel);
             AddDockedControl(animList);
             AddDockedControl(lvdEditor);
             AddDockedControl(lvdList);
+            AddDockedControl(Runtime.variableViewer);
+            AddDockedControl(Runtime.hitboxList);
             AddDockedControl(hurtboxList);
             AddDockedControl(project);
             AddDockedControl(meshList);
@@ -2049,6 +2066,30 @@ namespace Smash_Forge
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
             Runtime.clearMoveset();
+        }
+
+        private void exportParamsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.ParamManager.param == null)
+                return;
+
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.FileName = "fighter_param_vl_";
+                sfd.Filter = "Fighter parameter file (*.bin)|*.bin|" +
+                             "All Files (*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        Runtime.ParamManager.param.Export(sfd.FileName);
+                    }catch
+                    {
+                        
+                    }
+                }
+            }
         }
     }
 }

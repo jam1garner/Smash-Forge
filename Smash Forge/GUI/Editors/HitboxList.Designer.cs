@@ -1,6 +1,6 @@
 ﻿namespace Smash_Forge.GUI.Editors
 {
-    partial class HurtboxList
+    partial class HitboxList
     {
         /// <summary>
         /// Required designer variable.
@@ -96,11 +96,11 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(198, 23);
             this.button1.TabIndex = 2;
-            this.button1.Text = "Remove hurtbox selection";
+            this.button1.Text = "Remove hitbox selection";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // HurtboxList
+            // HitboxList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -109,8 +109,8 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Name = "HurtboxList";
-            this.Text = "HurtboxList";
+            this.Name = "HitboxList";
+            this.Text = "HitboxList";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);

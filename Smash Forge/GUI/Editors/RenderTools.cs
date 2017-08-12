@@ -198,6 +198,61 @@ namespace Smash_Forge
             }
         }
 
+        public static void drawWireframeSphere(Vector3 center, float radius, uint precision)
+        {
+
+            if (radius < 0.0f)
+                radius = -radius;
+
+            if (radius == 0.0f)
+                throw new DivideByZeroException("DrawSphere: Radius cannot be zero.");
+
+            if (precision == 0)
+                throw new DivideByZeroException("DrawSphere: Precision of 8 or greater is required.");
+
+            float halfPI = (float)(Math.PI * 0.5);
+            float oneThroughPrecision = 1.0f / precision;
+            float twoPIThroughPrecision = (float)(Math.PI * 2.0 * oneThroughPrecision);
+
+            float theta1, theta2, theta3;
+            Vector3 norm = new Vector3(), pos = new Vector3();
+
+            for (uint j = 0; j < precision / 2; j++)
+            {
+                theta1 = (j * twoPIThroughPrecision) - halfPI;
+                theta2 = ((j + 1) * twoPIThroughPrecision) - halfPI;
+
+                GL.Begin(PrimitiveType.LineStrip);
+                for (uint i = 0; i <= precision; i++)
+                {
+                    theta3 = i * twoPIThroughPrecision;
+
+                    norm.X = (float)(Math.Cos(theta2) * Math.Cos(theta3));
+                    norm.Y = (float)Math.Sin(theta2);
+                    norm.Z = (float)(Math.Cos(theta2) * Math.Sin(theta3));
+                    pos.X = center.X + radius * norm.X;
+                    pos.Y = center.Y + radius * norm.Y;
+                    pos.Z = center.Z + radius * norm.Z;
+
+                    GL.Normal3(norm.X, norm.Y, norm.Z);
+                    GL.TexCoord2(i * oneThroughPrecision, 2.0f * (j + 1) * oneThroughPrecision);
+                    GL.Vertex3(pos.X, pos.Y, pos.Z);
+
+                    norm.X = (float)(Math.Cos(theta1) * Math.Cos(theta3));
+                    norm.Y = (float)Math.Sin(theta1);
+                    norm.Z = (float)(Math.Cos(theta1) * Math.Sin(theta3));
+                    pos.X = center.X + radius * norm.X;
+                    pos.Y = center.Y + radius * norm.Y;
+                    pos.Z = center.Z + radius * norm.Z;
+
+                    GL.Normal3(norm.X, norm.Y, norm.Z);
+                    GL.TexCoord2(i * oneThroughPrecision, 2.0f * j * oneThroughPrecision);
+                    GL.Vertex3(pos.X, pos.Y, pos.Z);
+                }
+                GL.End();
+            }
+        }
+
         public static void beginTopLevelStencil()
         {
             GL.Enable(EnableCap.StencilTest);
@@ -669,6 +724,75 @@ namespace Smash_Forge
             GL.End();
 
             GL.PopMatrix ();
+        }
+
+        public static void drawWireframeCylinder(Vector3 p1, Vector3 p2, float R)
+        {
+            int q = 8, p = 20;
+
+            Vector3 yAxis = new Vector3(0, 1, 0);
+            Vector3 d = p2 - p1;
+            float height = (float)Math.Sqrt(d.X * d.X + d.Y * d.Y + d.Z * d.Z) / 2;
+
+            Vector3 mid = (p1 + p2) / 2;
+
+            Vector3 axis = Vector3.Cross(d, yAxis);
+            float angle = (float)Math.Acos(Vector3.Dot(d.Normalized(), yAxis));
+
+            GL.PushMatrix();
+            GL.Translate(p1);
+            GL.Rotate(-(float)((angle) * (180 / Math.PI)), axis);
+            for (int j = 0; j < q; j++)
+            {
+                GL.Begin(PrimitiveType.LineStrip);
+                for (int i = 0; i <= p; i++)
+                {
+                    GL.Vertex3(R * Math.Cos((float)(j + 1) / q * Math.PI / 2.0) * Math.Cos(2.0 * (float)i / p * Math.PI),
+                        -R * Math.Sin((float)(j + 1) / q * Math.PI / 2.0),
+                        R * Math.Cos((float)(j + 1) / q * Math.PI / 2.0) * Math.Sin(2.0 * (float)i / p * Math.PI));
+                    GL.Vertex3(R * Math.Cos((float)j / q * Math.PI / 2.0) * Math.Cos(2.0 * (float)i / p * Math.PI),
+                        -R * Math.Sin((float)j / q * Math.PI / 2.0),
+                        R * Math.Cos((float)j / q * Math.PI / 2.0) * Math.Sin(2.0 * (float)i / p * Math.PI));
+                }
+                GL.End();
+            }
+            GL.PopMatrix();
+
+            GL.PushMatrix();
+            GL.Translate(p2);
+            GL.Rotate(-(float)(angle * (180 / Math.PI)), axis);
+            for (int j = 0; j < q; j++)
+            {
+                GL.Begin(PrimitiveType.LineStrip);
+                for (int i = 0; i <= p; i++)
+                {
+                    GL.Vertex3(R * Math.Cos((float)(j + 1) / q * Math.PI / 2.0) * Math.Cos(2.0 * (float)i / p * Math.PI),
+                        R * Math.Sin((float)(j + 1) / q * Math.PI / 2.0),
+                        R * Math.Cos((float)(j + 1) / q * Math.PI / 2.0) * Math.Sin(2.0 * (float)i / p * Math.PI));
+                    GL.Vertex3(R * Math.Cos((float)j / q * Math.PI / 2.0) * Math.Cos(2.0 * (float)i / p * Math.PI),
+                        R * Math.Sin((float)j / q * Math.PI / 2.0),
+                        R * Math.Cos((float)j / q * Math.PI / 2.0) * Math.Sin(2.0 * (float)i / p * Math.PI));
+                }
+                GL.End();
+            }
+            GL.PopMatrix();
+
+
+            /*  sides */
+            GL.PushMatrix();
+
+            GL.Translate(mid);
+            GL.Rotate(-(float)(angle * (180 / Math.PI)), axis);
+
+            GL.Begin(PrimitiveType.LineStrip);
+            for (int j = 0; j <= 45; j += 1)
+            {
+                GL.Vertex3((float)Math.Cos(j) * R, +height, (float)Math.Sin(j) * R);
+                GL.Vertex3((float)Math.Cos(j) * R, -height, (float)Math.Sin(j) * R);
+            }
+            GL.End();
+
+            GL.PopMatrix();
         }
 
         //Alternate drawCylinder method that tries to keep opacity uniform by reducing sides iterations, used for hurtboxes so model can still be visible

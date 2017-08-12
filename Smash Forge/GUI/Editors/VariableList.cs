@@ -1,0 +1,71 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using WeifenLuo.WinFormsUI.Docking;
+
+namespace Smash_Forge.GUI.Editors
+{
+    public partial class VariableList : DockContent
+    {
+        public VariableList()
+        {
+            InitializeComponent();
+        }
+
+        public void refresh()
+        {
+            listBox1.BeginUpdate();
+            listBox1.Items.Clear();
+            if (Runtime.gameAcmdScript != null)
+            {
+                foreach (uint flag in Runtime.gameAcmdScript.ActiveFlags)
+                {
+                    listBox1.Items.Add($"Flag 0x{flag.ToString("X8")}");
+                }
+                if (Runtime.gameAcmdScript.LedgeGrabDisallowed)
+                    listBox1.Items.Add("Ledge grab disallowed");
+                if (Runtime.gameAcmdScript.FrontLedgeGrabAllowed)
+                    listBox1.Items.Add("Front Ledge grab allowed");
+                if (Runtime.gameAcmdScript.ReverseLedgeGrabAllowed)
+                    listBox1.Items.Add("Reverse Ledge grab allowed");
+            }
+            listBox1.EndUpdate();
+
+            treeView1.BeginUpdate();
+            treeView1.Nodes.Clear();
+            if(Runtime.gameAcmdScript != null)
+            {
+                foreach(var pair in Runtime.gameAcmdScript.IfVariableList)
+                {
+                    TreeNode node = new TreeNode($"Variable {pair.Key.ToString("X8")}") { Tag = pair.Key, Checked = pair.Value };
+
+                    treeView1.Nodes.Add(node);
+                }
+            }
+            treeView1.EndUpdate();
+        }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (treeView1.SelectedNode.Index > -1)
+            {
+                
+            }
+        }
+
+        private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            if (e.Node.Index > -1)
+            {
+                Runtime.gameAcmdScript.IfVariableList[(uint)e.Node.Tag] = e.Node.Checked;
+            }
+        }
+
+    }
+}

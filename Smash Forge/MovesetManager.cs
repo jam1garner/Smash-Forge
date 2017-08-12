@@ -167,6 +167,7 @@ namespace Smash_Forge
         public float Angle { get; set; }
         public float KnockbackGrowth { get; set; }
         public float KnockbackBase { get; set; }
+        public float WeightBasedKnockback { get; set; }
 
         public int Type { get; set; }
 
@@ -182,6 +183,7 @@ namespace Smash_Forge
         public const int RENDER_KNOCKBACK = 1;
         public const int RENDER_ID = 2;
 
+        public int Part { get; set; } = 0;
         public int Bone { get; set; }
         public float Size { get; set; }
         public float X { get; set; }
@@ -278,6 +280,23 @@ namespace Smash_Forge
                     break;
             }
             return color;
+        }
+
+        public string GetHitboxType()
+        {
+            switch (Type)
+            {
+                case Hitbox.HITBOX:
+                    return "Hitbox";
+                case Hitbox.GRABBOX:
+                    return "Grabbox";
+                case Hitbox.SEARCHBOX:
+                    return "Searchbox";
+                case Hitbox.WINDBOX:
+                    return "Windbox";
+                default:
+                    return "Hitbox";
+            }
         }
     }
 }

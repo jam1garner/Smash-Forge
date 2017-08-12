@@ -40,6 +40,13 @@ namespace Smash_Forge
         public static Object LVDSelection { get; set; }
         public static SkelAnimation TargetAnim { get { return _targetAnim; } set { _targetAnim = value; OnAnimationChanged(); } }
         private static SkelAnimation _targetAnim;
+        public static GUI.Editors.HitboxList hitboxList { get; set; }
+        public static GUI.Editors.VariableList variableViewer { get; set; }
+
+        public static int SelectedHitboxID { get; set; } = -1;
+        public static int SelectedHurtboxID { get; set; } = -1;
+        //Hitboxes can be removed halfway on an animation and set again multiple times, this list contains the IDs of the hitboxes that aren't visible
+        public static List<int> HiddenHitboxes { get; set; } = new List<int>();
 
         public enum ViewportModes
         {
@@ -538,7 +545,7 @@ for changing default texure
                 etcNode.AppendChild(createNode(doc, "param_dir", paramDir));
             }
 
-            doc.Save("config.xml");
+            doc.Save(MainForm.executableDir + "\\config.xml");
         }
 
         public static XmlNode createNode(XmlDocument doc, string el, string v)
