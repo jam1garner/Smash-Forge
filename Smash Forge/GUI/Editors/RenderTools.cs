@@ -2122,7 +2122,7 @@ main()
         float fresnelBlend = 1-dot(I,norm);
         float angleFadeAmount = mix(normalFadeAmount, edgeFadeAmount, fresnelBlend);
         angleFadeAmount = max((1-angleFadeAmount),0);
-        fincol.a *= angleFadeAmount;
+        //fincol.a *= angleFadeAmount;
 
         //fincol.rgb = norm;
 	}
