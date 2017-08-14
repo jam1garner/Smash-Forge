@@ -188,7 +188,7 @@
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(66, 13);
             this.label5.TabIndex = 7;
-            this.label5.Text = "Draw Priority";
+            this.label5.Text = "Ref Alpha";
             // 
             // label2
             // 

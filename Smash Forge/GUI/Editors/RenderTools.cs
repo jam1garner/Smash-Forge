@@ -1635,7 +1635,7 @@ uniform int hasDummyRamp;
 uniform int hasColorGainOffset;
 uniform int hasSpecularParams;
 uniform int useDiffuseBlend;
-
+uniform int hasDualNormal;
 // Da Flags
 uniform uint flags;
 
@@ -1745,13 +1745,15 @@ vec3 CalcBumpedNormal(vec3 inputNormal)
 	   return inputNormal;
 
     float normalIntensity = normalParams.x;
-    vec3 Normal = normalize(normal);
-    vec3 BumpMapNormal = texture2D(nrm, texcoord).xyz;
+    vec3 BumpMapNormal = texture2D(nrm, normaltexcoord).xyz;
     vec3 BumpMapNormal2 = texture2D(nrm, vec2(normaltexcoord.x + dualNormalScrollParams.x, normaltexcoord.y + dualNormalScrollParams.y)).xyz;
-    //BumpMapNormal = normalize(BumpMapNormal + BumpMapNormal2);
+    if(hasDualNormal == 1)
+        BumpMapNormal = normalize(BumpMapNormal + BumpMapNormal2);
     BumpMapNormal = mix(vec3(0.5, 0.5, 1), BumpMapNormal, normalIntensity); // probably a better way to do this
     BumpMapNormal = 2.0 * BumpMapNormal - vec3(1);
+
     vec3 NewNormal;
+    vec3 Normal = normalize(normal);
     mat3 TBN = mat3(tangent, bitangent, Normal);
     NewNormal = TBN * BumpMapNormal;
     NewNormal = normalize(NewNormal);
@@ -2037,6 +2039,10 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     float fogIntensity = mix(fogParams.z, fogParams.w, depth);
     resulting_color = mix(resulting_color, stageFogColor, fogIntensity);
 
+
+    //resulting_color = texture2D(dif, offsetTexCoord).rgb;
+
+
     return resulting_color;
 }
 
@@ -2078,13 +2084,21 @@ main()
 
         vec4 fc = vec4(0, 0, 0, 0);
 
+        // similar to du dv but uses just the normal map
+        float offsetIntensity = 0;
+        if(useNormalMap == 1)
+            offsetIntensity = normalParams.z;
+        vec2 textureOffset = 1-texture2D(nrm, normaltexcoord).xy;
+        textureOffset = (textureOffset * 2) -1; // remap to -1 to 1?
+        vec2 offsetTexCoord = texcoord + (textureOffset * offsetIntensity);
+
         if (hasDif == 1) // 1st diffuse texture
         {
-            fc = texture2D(dif, texcoord);
+            fc = texture2D(dif, offsetTexCoord);
             fincol = fc;
             if (hasDif2 == 1) // 2nd diffuse texture
             {
-                fincol = texture2D(dif2, texcoord);
+                fincol = texture2D(dif2, offsetTexCoord);
                 fincol = mix(fincol, fc, fc.a);
                 fincol.a = 1.0;
             }
@@ -2092,7 +2106,7 @@ main()
         else
             fincol = vec4(diffuseColor);
 
-        vec3 diffuse2Texture = texture2D(ao, texcoord).rgb;
+        vec3 diffuse2Texture = texture2D(ao, offsetTexCoord).rgb;
                     //resulting_color = diffuseTexture;
 
         if (hasAo == 1) // should be named differently
@@ -2101,30 +2115,24 @@ main()
         // calcuate final color by mixing with vertex color
         if (renderVertColor == 1) fincol *= vertexColor;
 
-
-
         // Material lighting done in sm4sh shader
         if (renderNormal == 1)
             fincol.rgb = sm4sh_shader(fincol, texture2D(nrm, texcoord).aaaa, norm);
         fincol.rgb *= finalColorGain.rgb;
         fincol.rgb *= effColorGain.rgb;
 
-
-
         // correct alpha
         fincol.a *= finalColorGain.a;
         fincol.a *= effColorGain.a;
 
-        // angleFadeParams alpha correction
+        // angleFadeParams alpha correction. currently doesn't work for nvidia users
         float normalFadeAmount = angleFadeParams.x;
         float edgeFadeAmount = angleFadeParams.y;
         vec3 I = vec3(0,0,-1) * mat3(eyeview);
         float fresnelBlend = 1-dot(I,norm);
         float angleFadeAmount = mix(normalFadeAmount, edgeFadeAmount, fresnelBlend);
         angleFadeAmount = max((1-angleFadeAmount),0);
-        //fincol.a *= angleFadeAmount;
-
-        //fincol.rgb = norm;
+        fincol.a *= angleFadeAmount;
 	}
 
 }";

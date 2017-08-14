@@ -211,6 +211,7 @@ namespace Smash_Forge
                     //if (p.isTransparent)
                     //    trans.Add(p);
                     //else
+
                 }
             }
 
@@ -489,6 +490,11 @@ namespace Smash_Forge
                     float[] pa;
                     mat.entries.TryGetValue("NU_dualNormalScrollParams", out pa);
                     if (mat.anims.ContainsKey("NU_dualNormalScrollParams")) pa = mat.anims["NU_dualNormalScrollParams"];
+
+                    int hasDualNormal = 1;
+                    if (pa == null) hasDualNormal = 0;
+                    GL.Uniform1(shader.getAttribute("hasDualNormal"), hasDualNormal);
+
                     if (pa == null) pa = new float[] { 0, 0, 0, 0 };
                     GL.Uniform4(shader.getAttribute("dualNormalScrollParams"), pa[0], pa[1], pa[2], pa[3]);
                 }
@@ -508,22 +514,30 @@ namespace Smash_Forge
                 if (mat.srcFactor == 0 && mat.dstFactor == 0) GL.Disable(EnableCap.Blend);
                 
                 GL.Enable(EnableCap.AlphaTest);
-                if (mat.ref0 == 0 && mat.ref1 == 0) GL.Disable(EnableCap.AlphaTest);
+                if (mat.ref1 == 0) GL.Disable(EnableCap.AlphaTest);
+
+                float refAlpha = mat.drawPriority / 255f; // gequal used because fragcolor.a of 0 is refalpha of 1
 
                 GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
                 switch (mat.ref1)
                 {
                     case 0x2:
-                        GL.AlphaFunc(AlphaFunction.Lequal, 255f / 255f);
+                        //GL.AlphaFunc(AlphaFunction.Lequal, 255f / 255f);
                         break;
                 }
                 switch (mat.ref0)
                 {
+                    case 0x0:
+                        //GL.AlphaFunc(AlphaFunction.Gequal, 128f / 255f);
+                        GL.AlphaFunc(AlphaFunction.Never, refAlpha);
+                        break;
                     case 0x4:
-                        GL.AlphaFunc(AlphaFunction.Gequal, 128f / 255f);
+                        //GL.AlphaFunc(AlphaFunction.Gequal, 128f / 255f);
+                        GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
                         break;
                     case 0x6:
-                        GL.AlphaFunc(AlphaFunction.Gequal, 255f / 255f);
+                        //GL.AlphaFunc(AlphaFunction.Gequal, 255f / 255f);
+                        GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
                         break;
                 }
                

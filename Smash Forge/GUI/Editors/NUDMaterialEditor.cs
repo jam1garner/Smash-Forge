@@ -91,14 +91,14 @@ namespace Smash_Forge
                 };
 
         public static Dictionary<int, string> ref1 = new Dictionary<int, string>(){
-                    { 0x00, "Nothing"},
-                    { 0x02, "LessOrEqual + 255"},
+                    { 0x00, "No Alpha Test"},
+                    { 0x02, "Alpha Test Lequal"},
                 };
 
         public static Dictionary<int, string> ref0 = new Dictionary<int, string>(){
-                    { 0x00, "Nothing"},
-                    { 0x04, "GreaterOrEqual + 128"},
-                    { 0x06, "GreaterOrEqual + 255"}
+                    { 0x00, "Never"},
+                    { 0x04, "Ref Alpha"},
+                    { 0x06, "Ref Alpha"}
                 };
 
         public static Dictionary<int, string> mapmode = new Dictionary<int, string>(){
