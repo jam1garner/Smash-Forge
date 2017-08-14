@@ -76,6 +76,10 @@ namespace Smash_Forge
                         node.t_type = KeyNode.CONSTANT;
                         node.t = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                     }
+                    else if (tFlag == 0x4)
+                    {
+                        node.t_type = 2;  // entire Vector3 provided in keyframe data i.e. ABSOLUTE type
+                    }
                 }
                 if (hasRot)
                 {
@@ -152,9 +156,17 @@ namespace Smash_Forge
 
                         node.t = new Vector3(x, y, z);  // Translation
                     }
-                    else
+                    else if (baseNode[j].t_type == KeyNode.CONSTANT)
                     {
                         node.t = baseNode[j].t;
+                    }
+                    else if (baseNode[j].t_type == 2)
+                    {
+                        float x = d.readFloat();
+                        float y = d.readFloat();
+                        float z = d.readFloat();
+
+                        node.t = new Vector3(x, y, z);
                     }
 
                     if (baseNode[j].r_type == 3)
