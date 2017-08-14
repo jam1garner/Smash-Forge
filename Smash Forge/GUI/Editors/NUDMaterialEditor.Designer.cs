@@ -41,12 +41,12 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.comboBox3 = new System.Windows.Forms.ComboBox();
-            this.ref1CB = new System.Windows.Forms.ComboBox();
+            this.AlphaTestCB = new System.Windows.Forms.ComboBox();
             this.textBox8 = new System.Windows.Forms.TextBox();
             this.comboBox6 = new System.Windows.Forms.ComboBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.ref0CB = new System.Windows.Forms.ComboBox();
+            this.AlphaFuncCB = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.textBox7 = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
@@ -179,7 +179,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(34, 13);
             this.label4.TabIndex = 6;
-            this.label4.Text = "REF1";
+            this.label4.Text = "AlphaTest";
             // 
             // label5
             // 
@@ -214,12 +214,12 @@
             this.tableLayoutPanel1.Controls.Add(this.label3, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.comboBox3, 2, 2);
-            this.tableLayoutPanel1.Controls.Add(this.ref1CB, 2, 3);
+            this.tableLayoutPanel1.Controls.Add(this.AlphaTestCB, 2, 3);
             this.tableLayoutPanel1.Controls.Add(this.textBox8, 2, 7);
             this.tableLayoutPanel1.Controls.Add(this.comboBox6, 2, 6);
             this.tableLayoutPanel1.Controls.Add(this.textBox6, 2, 5);
             this.tableLayoutPanel1.Controls.Add(this.label7, 0, 7);
-            this.tableLayoutPanel1.Controls.Add(this.ref0CB, 2, 4);
+            this.tableLayoutPanel1.Controls.Add(this.AlphaFuncCB, 2, 4);
             this.tableLayoutPanel1.Controls.Add(this.label6, 0, 6);
             this.tableLayoutPanel1.Controls.Add(this.textBox7, 1, 6);
             this.tableLayoutPanel1.Controls.Add(this.label5, 0, 5);
@@ -283,14 +283,14 @@
             this.comboBox3.TabIndex = 15;
             this.comboBox3.SelectedIndexChanged += new System.EventHandler(this.comboBox3_SelectedIndexChanged_1);
             // 
-            // ref1CB
+            // AlphaTestCB
             // 
-            this.ref1CB.FormattingEnabled = true;
-            this.ref1CB.Location = new System.Drawing.Point(125, 57);
-            this.ref1CB.Name = "ref1CB";
-            this.ref1CB.Size = new System.Drawing.Size(121, 21);
-            this.ref1CB.TabIndex = 16;
-            this.ref1CB.SelectedIndexChanged += new System.EventHandler(this.comboBox4_SelectedIndexChanged);
+            this.AlphaTestCB.FormattingEnabled = true;
+            this.AlphaTestCB.Location = new System.Drawing.Point(125, 57);
+            this.AlphaTestCB.Name = "AlphaTestCB";
+            this.AlphaTestCB.Size = new System.Drawing.Size(121, 21);
+            this.AlphaTestCB.TabIndex = 16;
+            this.AlphaTestCB.SelectedIndexChanged += new System.EventHandler(this.comboBox4_SelectedIndexChanged);
             // 
             // textBox8
             // 
@@ -326,14 +326,14 @@
             this.label7.TabIndex = 9;
             this.label7.Text = "z-Buffer Offset";
             // 
-            // ref0CB
+            // AlphaFuncCB
             // 
-            this.ref0CB.FormattingEnabled = true;
-            this.ref0CB.Location = new System.Drawing.Point(125, 84);
-            this.ref0CB.Name = "ref0CB";
-            this.ref0CB.Size = new System.Drawing.Size(121, 21);
-            this.ref0CB.TabIndex = 19;
-            this.ref0CB.SelectedIndexChanged += new System.EventHandler(this.ref0CB_SelectedIndexChanged);
+            this.AlphaFuncCB.FormattingEnabled = true;
+            this.AlphaFuncCB.Location = new System.Drawing.Point(125, 84);
+            this.AlphaFuncCB.Name = "AlphaFuncCB";
+            this.AlphaFuncCB.Size = new System.Drawing.Size(121, 21);
+            this.AlphaFuncCB.TabIndex = 19;
+            this.AlphaFuncCB.SelectedIndexChanged += new System.EventHandler(this.AlphaFuncCB_SelectedIndexChanged);
             // 
             // label6
             // 
@@ -359,7 +359,7 @@
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(34, 13);
             this.label9.TabIndex = 20;
-            this.label9.Text = "REF0";
+            this.label9.Text = "AlphaFunc";
             // 
             // textBox2
             // 
@@ -1110,7 +1110,7 @@
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.ComboBox comboBox3;
-        private System.Windows.Forms.ComboBox ref1CB;
+        private System.Windows.Forms.ComboBox AlphaTestCB;
         private System.Windows.Forms.ComboBox comboBox6;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.Label label21;
@@ -1151,7 +1151,7 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.ComboBox ref0CB;
+        private System.Windows.Forms.ComboBox AlphaFuncCB;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.GroupBox groupBox8;

@@ -774,8 +774,8 @@ namespace Smash_Forge
                         { XmlAttribute flags = doc.CreateAttribute("flags"); flags.Value = mat.flags.ToString("x"); matnode.Attributes.Append(flags); }
                         { XmlAttribute a = doc.CreateAttribute("srcFactor"); a.Value = mat.srcFactor.ToString(); matnode.Attributes.Append(a); }
                         { XmlAttribute a = doc.CreateAttribute("dstFactor"); a.Value = mat.dstFactor.ToString(); matnode.Attributes.Append(a); }
-                        { XmlAttribute a = doc.CreateAttribute("REF0"); a.Value = mat.ref0.ToString(); matnode.Attributes.Append(a); }
-                        { XmlAttribute a = doc.CreateAttribute("REF1"); a.Value = mat.ref1.ToString(); matnode.Attributes.Append(a); }
+                        { XmlAttribute a = doc.CreateAttribute("AlphaFunc"); a.Value = mat.AlphaFunc.ToString(); matnode.Attributes.Append(a); }
+                        { XmlAttribute a = doc.CreateAttribute("AlphaTest"); a.Value = mat.AlphaTest.ToString(); matnode.Attributes.Append(a); }
                         { XmlAttribute a = doc.CreateAttribute("cullmode"); a.Value = mat.cullMode.ToString("x"); matnode.Attributes.Append(a); }
                         { XmlAttribute a = doc.CreateAttribute("zbuffoff"); a.Value = mat.zBufferOffset.ToString(); matnode.Attributes.Append(a); }
 
@@ -868,8 +868,8 @@ namespace Smash_Forge
                                             case "flags": uint f = 0; if (uint.TryParse(a.Value, NumberStyles.HexNumber, null, out f)) { mat.flags = f; }; break;
                                             case "srcFactor": int.TryParse(a.Value, out mat.srcFactor); break;
                                             case "dstFactor": int.TryParse(a.Value, out mat.dstFactor); break;
-                                            case "REF0": int.TryParse(a.Value, out mat.ref0); break;
-                                            case "REF1": int.TryParse(a.Value, out mat.ref1); break;
+                                            case "AlphaFunc": int.TryParse(a.Value, out mat.AlphaFunc); break;
+                                            case "AlphaTest": int.TryParse(a.Value, out mat.AlphaTest); break;
                                             case "cullmode": int cm = 0; if (int.TryParse(a.Value, NumberStyles.HexNumber, null, out cm)) { mat.cullMode = cm; }; break;
                                             case "zbuffoff": int.TryParse(a.Value, out mat.zBufferOffset); break;
                                         }

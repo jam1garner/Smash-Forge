@@ -90,15 +90,15 @@ namespace Smash_Forge
                     { 0x0405, "Cull Inside"}
                 };
 
-        public static Dictionary<int, string> ref1 = new Dictionary<int, string>(){
-                    { 0x00, "No Alpha Test"},
-                    { 0x02, "Alpha Test Lequal"},
+        public static Dictionary<int, string> AlphaTest = new Dictionary<int, string>(){
+                    { 0x00, "Alpha Test Disabled"},
+                    { 0x02, "Alpha Test Enabled"},
                 };
 
-        public static Dictionary<int, string> ref0 = new Dictionary<int, string>(){
+        public static Dictionary<int, string> AlphaFunc = new Dictionary<int, string>(){
                     { 0x00, "Never"},
-                    { 0x04, "Ref Alpha"},
-                    { 0x06, "Ref Alpha"}
+                    { 0x04, "Lequal Ref Alpha + ??"},
+                    { 0x06, "Lequal Ref Alpha + ???"}
                 };
 
         public static Dictionary<int, string> mapmode = new Dictionary<int, string>(){
@@ -222,10 +222,10 @@ namespace Smash_Forge
                     comboBox3.Items.Add(dstFactor[i]);
                 foreach (int i in cullmode.Keys)
                     comboBox6.Items.Add(cullmode[i]);
-                foreach (int i in ref1.Keys)
-                    ref1CB.Items.Add(ref1[i]);
-                foreach (int i in ref0.Keys)
-                    ref0CB.Items.Add(ref0[i]);
+                foreach (int i in AlphaTest.Keys)
+                    AlphaTestCB.Items.Add(AlphaTest[i]);
+                foreach (int i in AlphaFunc.Keys)
+                    AlphaFuncCB.Items.Add(AlphaFunc[i]);
 
                 foreach (int i in wrapmode.Keys)
                 {
@@ -251,9 +251,9 @@ namespace Smash_Forge
             textBox1.Text = mat.flags.ToString("X") + "";
             textBox3.Text = mat.srcFactor + "";
             textBox4.Text = mat.dstFactor + "";
-            ref1CB.SelectedItem = ref1[mat.ref1];
-            ref0CB.SelectedItem = ref0[mat.ref0];
-            textBox6.Text = mat.drawPriority + "";
+            AlphaTestCB.SelectedItem = AlphaTest[mat.AlphaTest];
+            AlphaFuncCB.SelectedItem = AlphaFunc[mat.AlphaFunc];
+            textBox6.Text = mat.RefAlpha + "";
             textBox7.Text = mat.cullMode + "";
             textBox8.Text = mat.zBufferOffset + "";
 
@@ -366,8 +366,8 @@ namespace Smash_Forge
         #region alpha function
         private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (int i in ref1.Keys)
-                if (ref1[i].Equals(ref1CB.SelectedItem))
+            foreach (int i in AlphaTest.Keys)
+                if (AlphaTest[i].Equals(AlphaTestCB.SelectedItem))
                 {
                     textBox5.Text = i + "";
                     break;
@@ -376,26 +376,26 @@ namespace Smash_Forge
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            int.TryParse(textBox5.Text, out material[current].ref1);
+            int.TryParse(textBox5.Text, out material[current].AlphaTest);
             //setValue(textBox5, comboBox4, afunc, out material[current].alphaFunc);
         }
         
-        private void ref0CB_SelectedIndexChanged(object sender, EventArgs e)
+        private void AlphaFuncCB_SelectedIndexChanged(object sender, EventArgs e)
         {
 
-            foreach (int i in ref0.Keys)
-                if (ref0[i].Equals(ref0CB.SelectedItem))
+            foreach (int i in AlphaFunc.Keys)
+                if (AlphaFunc[i].Equals(AlphaFuncCB.SelectedItem))
                 {
-                    Console.WriteLine(ref0[i] + " " + i);
+                    Console.WriteLine(AlphaFunc[i] + " " + i);
                     textBox2.Text = i + "";
-                    material[current].ref0 = i;
+                    material[current].AlphaFunc = i;
                     break;
                 }
         }
         
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            int.TryParse(textBox2.Text, out material[current].ref0);
+            int.TryParse(textBox2.Text, out material[current].AlphaFunc);
         }
 
 
@@ -467,7 +467,7 @@ namespace Smash_Forge
             int.TryParse(textBox6.Text, out n);
             if (n != -1)
             {
-                material[current].drawPriority = n;
+                material[current].RefAlpha = n;
             } else
             {
                 textBox6.Text = "0";

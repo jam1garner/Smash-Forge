@@ -514,29 +514,20 @@ namespace Smash_Forge
                 if (mat.srcFactor == 0 && mat.dstFactor == 0) GL.Disable(EnableCap.Blend);
                 
                 GL.Enable(EnableCap.AlphaTest);
-                if (mat.ref1 == 0) GL.Disable(EnableCap.AlphaTest);
+                if (mat.AlphaTest == 0) GL.Disable(EnableCap.AlphaTest);
 
-                float refAlpha = mat.drawPriority / 255f; // gequal used because fragcolor.a of 0 is refalpha of 1
+                float refAlpha = mat.RefAlpha / 255f; // gequal used because fragcolor.a of 0 is refalpha of 1
 
                 GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-                switch (mat.ref1)
-                {
-                    case 0x2:
-                        //GL.AlphaFunc(AlphaFunction.Lequal, 255f / 255f);
-                        break;
-                }
-                switch (mat.ref0)
+                switch (mat.AlphaFunc)
                 {
                     case 0x0:
-                        //GL.AlphaFunc(AlphaFunction.Gequal, 128f / 255f);
                         GL.AlphaFunc(AlphaFunction.Never, refAlpha);
                         break;
                     case 0x4:
-                        //GL.AlphaFunc(AlphaFunction.Gequal, 128f / 255f);
                         GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
                         break;
                     case 0x6:
-                        //GL.AlphaFunc(AlphaFunction.Gequal, 255f / 255f);
                         GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
                         break;
                 }
@@ -1042,11 +1033,11 @@ namespace Smash_Forge
                 m.srcFactor = d.readShort();
                 int propCount = d.readShort();
                 m.dstFactor = d.readShort();
-                m.ref1 = d.readByte();
-                m.ref0 = d.readByte();
+                m.AlphaTest = d.readByte();
+                m.AlphaFunc = d.readByte();
 
                 d.skip(1); // unknown
-                m.drawPriority = d.readByte();
+                m.RefAlpha = d.readByte();
                 m.cullMode = d.readShort();
                 d.skip(4); // padding
                 m.unkownWater = d.readInt();
@@ -1671,10 +1662,10 @@ namespace Smash_Forge
                 d.writeShort(mat.srcFactor);
                 d.writeShort(mat.textures.Count);
                 d.writeShort(mat.dstFactor);
-                d.writeByte(mat.ref1);
-                d.writeByte(mat.ref0);
+                d.writeByte(mat.AlphaTest);
+                d.writeByte(mat.AlphaFunc);
                 d.writeByte(0); // unknown padding?
-                d.writeByte(mat.drawPriority);
+                d.writeByte(mat.RefAlpha);
                 d.writeShort(mat.cullMode);
                 d.writeInt(0); // padding
                 d.writeInt(mat.unkownWater); 
@@ -1859,9 +1850,9 @@ namespace Smash_Forge
             public int blendMode = 0;
             public int dstFactor = 0;
             public int srcFactor = 0;
-            public int ref1 = 0;
-            public int ref0 = 0;
-            public int drawPriority = 0;
+            public int AlphaTest = 0;
+            public int AlphaFunc = 0;
+            public int RefAlpha = 0;
             public int cullMode = 0;
             public int displayTexId = -1;
 
@@ -1922,9 +1913,9 @@ namespace Smash_Forge
                 m.blendMode = blendMode;
                 m.dstFactor = dstFactor;
                 m.srcFactor = srcFactor;
-                m.ref1 = ref1;
-                m.ref0 = ref0;
-                m.drawPriority = drawPriority;
+                m.AlphaTest = AlphaTest;
+                m.AlphaFunc = AlphaFunc;
+                m.RefAlpha = RefAlpha;
                 m.cullMode = cullMode;
                 m.displayTexId = displayTexId;
 
