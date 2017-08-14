@@ -1486,6 +1486,9 @@ namespace Smash_Forge
             {
                 var h = pair.Value;
 
+                if (Runtime.HiddenHitboxes.Contains(h.ID))
+                    continue;
+
                 Bone b = getBone(h.Bone);
                 h.va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
 
@@ -1523,18 +1526,36 @@ namespace Smash_Forge
                         if (pair2.Key == pair.Key)
                             break;  // this only works because the list is sorted
                         var h2 = pair2.Value;
-                        Bone b2 = getBone(h2.Bone);
-                        var va = Vector3.Transform(new Vector3(h2.X, h2.Y, h2.Z), b2.transform.ClearScale());
-                        if (!h2.IsSphere())
+
+                        if (Runtime.HiddenHitboxes.Contains(h2.ID))
                         {
-                            var va2 = new Vector3(h2.X2, h2.Y2, h2.Z2);
-                            if (h2.Bone != -1) va2 = Vector3.Transform(va2, b2.transform.ClearScale());
-                            RenderTools.drawCylinder(va, va2, h2.Size);
+
+                            Bone b2 = getBone(h2.Bone);
+                            var va = Vector3.Transform(new Vector3(h2.X, h2.Y, h2.Z), b2.transform.ClearScale());
+                            if (!h2.IsSphere())
+                            {
+                                var va2 = new Vector3(h2.X2, h2.Y2, h2.Z2);
+                                if (h2.Bone != -1) va2 = Vector3.Transform(va2, b2.transform.ClearScale());
+                                RenderTools.drawCylinder(va, va2, h2.Size);
+                            }
+                            else
+                            {
+                                RenderTools.drawSphere(va, h2.Size, 30);
+                            }
                         }
-                        else
-                        {
-                            RenderTools.drawSphere(va, h2.Size, 30);
-                        }
+                    }
+                }
+
+                if (Runtime.SelectedHitboxID == h.ID)
+                {
+                    GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColorSelected));
+                    if (!h.IsSphere())
+                    {
+                        RenderTools.drawWireframeCylinder(h.va, h.va2, h.Size);
+                    }
+                    else
+                    {
+                        RenderTools.drawWireframeSphere(h.va, h.Size, 10);
                     }
                 }
 
@@ -1563,6 +1584,10 @@ namespace Smash_Forge
                 foreach (var pair in Runtime.gameAcmdScript.Hitboxes)
                 {
                     var h = pair.Value;
+
+                    if (Runtime.HiddenHitboxes.Contains(h.ID))
+                        continue;
+
                     Bone b = getBone(h.Bone);
                     Vector3 va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
 
@@ -1582,6 +1607,10 @@ namespace Smash_Forge
                 foreach (var pair in Runtime.gameAcmdScript.Hitboxes)
                 {
                     var h = pair.Value;
+
+                    if (Runtime.HiddenHitboxes.Contains(h.ID))
+                        continue;
+
                     Bone b = getBone(h.Bone);
                     Vector3 va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
 
@@ -1626,6 +1655,9 @@ namespace Smash_Forge
                 foreach (var pair in Runtime.ParamManager.Hurtboxes)
                 {
                     var h = pair.Value;
+                    if (!h.Visible)
+                        continue;
+
                     var va = new Vector3(h.X, h.Y, h.Z);
                     Bone b = getBone(h.Bone);
 
@@ -1678,6 +1710,18 @@ namespace Smash_Forge
                     else
                     {
                         RenderTools.drawReducedCylinderTransformed(va, va2, h.Size, b.transform);
+                    }
+                    if (Runtime.SelectedHurtboxID == h.ID)
+                    {
+                        GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColorSelected));
+                        if (h.isSphere)
+                        {
+                            RenderTools.drawWireframeSphereTransformedVisible(va, h.Size, 20, b.transform);
+                        }
+                        else
+                        {
+                            RenderTools.drawWireframeCylinderTransformed(va, va2, h.Size, b.transform);
+                        }
                     }
                 }
 
@@ -1838,6 +1882,8 @@ namespace Smash_Forge
                 else
                 {
                     Runtime.gameAcmdScript = null;
+                    Runtime.hitboxList.refresh();
+                    Runtime.variableViewer.refresh();
                     return;
                 }
             }
@@ -1963,11 +2009,11 @@ namespace Smash_Forge
             }*/
             if (e.KeyChar == 'r')
             {
-                CaptureScreen(true).Save("Render.png");
+                CaptureScreen(true).Save(MainForm.executableDir + "\\Render.png");
             }
             if (e.KeyChar == 'p')
             {
-                CaptureScreen(false).Save("Render.png");
+                CaptureScreen(false).Save(MainForm.executableDir + "\\Render.png");
             }
             if (e.KeyChar == ']')
             {

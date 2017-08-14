@@ -179,6 +179,18 @@
     <Compile Include="GUI\Editors\DAT_TreeView.Designer.cs">
       <DependentUpon>DAT_TreeView.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\HitboxList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\HitboxList.Designer.cs">
+      <DependentUpon>HitboxList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\HurtboxList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\HurtboxList.Designer.cs">
+      <DependentUpon>HurtboxList.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\LVD Editor\LVDEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -286,6 +298,12 @@
     </Compile>
     <Compile Include="GUI\Editors\UIPreview.Designer.cs">
       <DependentUpon>UIPreview.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\VariableList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\VariableList.Designer.cs">
+      <DependentUpon>VariableList.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\FolderSelectDialog.cs">
       <SubType>Component</SubType>
@@ -428,6 +446,12 @@
     <EmbeddedResource Include="GUI\Editors\DAT_TreeView.resx">
       <DependentUpon>DAT_TreeView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\HitboxList.resx">
+      <DependentUpon>HitboxList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\HurtboxList.resx">
+      <DependentUpon>HurtboxList.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\LVD Editor\LVDEditor.resx">
       <DependentUpon>LVDEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -478,6 +502,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\UIPreview.resx">
       <DependentUpon>UIPreview.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\VariableList.resx">
+      <DependentUpon>VariableList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -539,49 +566,40 @@
     <None Include="lib\Skapon.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Mat01 [Bowser Orig].nmt">
+    <None Include="materials\Character Mats\Mat01 [Beginners Material].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Mat08 [Metal NUD Mat1].nmt">
+    <None Include="materials\Character Mats\Mat02 [Standard Nrm Map].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Mat02 [cell-shade].nmt">
+    <None Include="materials\Character Mats\Mat03 [Skin Ramp].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Mat03 [JoeTE Glow].nmt">
+    <None Include="materials\Character Mats\Mat04 [Metal NUD].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Mat04 [Nano Metal].nmt">
+    <None Include="materials\Character Mats\Mat05 [Metal Ganon Armor].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Mat05 [Smash64 Look].nmt">
+    <None Include="materials\Character Mats\Mat06 [Metal Reflectivity Map].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Mat06 [Skin Ramp Mat1].nmt">
+    <None Include="materials\Character Mats\Mat07 [Cel-Shade].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Mat07 [Ganon Armor].nmt">
+    <None Include="materials\Character Mats\Mat08 [Material Colored Hair].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Mat09 [Beginners Material].nmt">
+    <None Include="materials\Character Mats\Mat09 [Satin Material].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Mat10 [Satin Material].nmt">
+    <None Include="materials\Character Mats\Mat10 [Smash64 Look].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Mat11 [Leather Armor].nmt">
+    <None Include="materials\Character Mats\Mat11 [JoeTE Glow].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Character Mats\Mat12 [Skin Ramp Mat2].nmt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="materials\Character Mats\Mat13 [Metal NUD Mat2].nmt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="materials\Character Mats\Mat14 [Street Fighter Clothing Mat].nmt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="materials\Character Mats\Mat15 [Reflectivity Map Mat].nmt">
+    <None Include="materials\Character Mats\Mat12 [Bayo Hair Spec Ramp].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="materials\Stage Mats\Mat01 [Regular].nmt">
@@ -641,6 +659,9 @@
     <None Include="param_labels\fighter_param_common.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="param_labels\fighter_param_vl_lizardon.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="param_labels\fighter_param_vl_luigi.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -683,6 +704,54 @@
     <None Include="param_labels\stage_param.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="param_labels\stdat_Cave.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\stdat_DKReturns.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\stdat_DxOnett.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\stdat_Gw3.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\stdat_Hyrule64_f.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\stdat_Kalos.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\stdat_PikminU.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\stdat_Pupupuland64_f.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\stdat_Windyhill.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\stdat_XDonkey.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\stdat_XEmblem.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\stdat_XMansion.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\stdat_XOldin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\stdat_XPalutena.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\stdat_XPirates_f.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\stdat_YoshiU.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="param_labels\ui_button_sequence.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -702,6 +771,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\ui_stage_db.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\worldsmash_param.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Properties\Settings.settings">

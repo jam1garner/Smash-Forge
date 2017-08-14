@@ -9,6 +9,7 @@ namespace Smash_Forge
 {
     public class CharacterParamManager
     {
+        public ParamFile param { get; set; }
         public SortedList<int, MoveData> MovesData { get; set; }
         public SortedList<int, ECB> ECBs { get; set; }
         public SortedList<int, Hurtbox> Hurtboxes { get; set; }
@@ -24,7 +25,7 @@ namespace Smash_Forge
             Reset();
             try
             {
-                ParamFile param = new ParamFile(file);
+                param = new ParamFile(file);
 
                 //Move data (FAF, Intangibility)
 
@@ -58,6 +59,7 @@ namespace Smash_Forge
                 for (int id = 0; id < ((ParamGroup)param.Groups[4]).Chunks.Length; id++)
                 {
                     Hurtbox hurtbox = new Hurtbox();
+                    hurtbox.ID = id;
                     hurtbox.X = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][0].Value);
                     hurtbox.Y = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][1].Value);
                     hurtbox.Z = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][2].Value);
@@ -109,11 +111,40 @@ namespace Smash_Forge
             MovesData = new SortedList<int, MoveData>();
             LedgeGrabboxes = new SortedList<int, LedgeGrabbox>();
             ECBs = new SortedList<int, ECB>();
+            param = null;
+        }
+
+        public void UnselectHurtboxes()
+        {
+            Runtime.SelectedHurtboxID = -1;
+        }
+
+        public void SaveHurtboxes()
+        {
+            if (param == null)
+                return;
+
+            for (int id = 0; id < ((ParamGroup)param.Groups[4]).Chunks.Length; id++)
+            {
+                ((ParamGroup)param.Groups[4])[id][0].Value = Convert.ToSingle(Hurtboxes[id].X);
+                ((ParamGroup)param.Groups[4])[id][1].Value = Convert.ToSingle(Hurtboxes[id].Y);
+                ((ParamGroup)param.Groups[4])[id][2].Value = Convert.ToSingle(Hurtboxes[id].Z);
+
+                ((ParamGroup)param.Groups[4])[id][3].Value = Convert.ToSingle(Hurtboxes[id].X2);
+                ((ParamGroup)param.Groups[4])[id][4].Value = Convert.ToSingle(Hurtboxes[id].Y2);
+                ((ParamGroup)param.Groups[4])[id][5].Value = Convert.ToSingle(Hurtboxes[id].Z2);
+
+                ((ParamGroup)param.Groups[4])[id][6].Value = Convert.ToSingle(Hurtboxes[id].Size);
+                ((ParamGroup)param.Groups[4])[id][7].Value = Convert.ToUInt32(Hurtboxes[id].Bone);
+                //((ParamGroup)param.Groups[4])[id][8].Value = Convert.ToUInt32(Hurtboxes[id].Part);
+                ((ParamGroup)param.Groups[4])[id][9].Value = Convert.ToUInt32(Hurtboxes[id].Zone);
+            }
         }
     }
 
     public class Hurtbox
     {
+        public int ID { get; set; }
         public int Bone { get; set; }
         public float Size { get; set; }
         public float X { get; set; }
@@ -130,6 +161,9 @@ namespace Smash_Forge
         public const int HI_ZONE = 2;
 
         public int Part { get; set; }
+
+        //Forge vars
+        public bool Visible { get; set; } = true;
     }
 
     public class MoveData

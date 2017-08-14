@@ -13,6 +13,7 @@ using System.Drawing.Imaging;
 using System.Threading;
 using Microsoft.VisualBasic.Devices;
 using Smash_Forge.GUI.Menus;
+using Smash_Forge.GUI.Editors;
 
 namespace Smash_Forge
 {
@@ -49,6 +50,8 @@ namespace Smash_Forge
                 boneTreeToolStripMenuItem.Checked = true;
 
             Runtime.acmdEditor = new ACMDPreviewEditor() { ShowHint = DockState.DockRight };
+            Runtime.hitboxList = new HitboxList() { ShowHint = DockState.DockLeft };
+            Runtime.variableViewer = new VariableList() { ShowHint = DockState.DockLeft };
 
             allViewsPreset(new Object(), new EventArgs());
 
@@ -67,6 +70,7 @@ namespace Smash_Forge
             Runtime.hurtboxColorHi = System.Drawing.Color.FromArgb(0xFF, 0x8E, 0x00);  //Vivid Orange Yellow
             Runtime.hurtboxColorMed = System.Drawing.Color.FromArgb(0xF6, 0x76, 0x8E);  //Strong Purplish Pink
             Runtime.hurtboxColorLow = System.Drawing.Color.FromArgb(0x00, 0x53, 0x8A);  // Strong blue
+            Runtime.hurtboxColorSelected = System.Drawing.Color.FromArgb(0xFF, 0xFF, 0xFF); //White
             Runtime.useFrameDuration = false;
             Runtime.hitboxKnockbackColors = new List<System.Drawing.Color>();
             Runtime.hitboxIdColors = new List<System.Drawing.Color>();
@@ -94,7 +98,7 @@ namespace Smash_Forge
             viewportWindowToolStripMenuItem.Checked = true;
             openFiles();
 
-            Runtime.StartupFromConfig("config.xml");
+            Runtime.StartupFromConfig(MainForm.executableDir + "\\config.xml");
 
             // load up the shaders
             Shader cub = new Shader();
@@ -247,6 +251,21 @@ namespace Smash_Forge
                 meshList = new MeshList();
                 meshList.refresh();
             }
+            if (hurtboxList.IsDisposed)
+            {
+                hurtboxList = new HurtboxList();
+                hurtboxList.refresh();
+            }
+            if (Runtime.hitboxList.IsDisposed)
+            {
+                Runtime.hitboxList = new HitboxList();
+                Runtime.hitboxList.refresh();
+            }
+            if (Runtime.variableViewer.IsDisposed)
+            {
+                Runtime.variableViewer = new VariableList();
+                Runtime.variableViewer.refresh();
+            }
             if (Runtime.acmdEditor != null && Runtime.acmdEditor.IsDisposed)
             {
                 Runtime.acmdEditor = new ACMDPreviewEditor();
@@ -267,6 +286,7 @@ namespace Smash_Forge
         public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() { };
         public List<SwagEditor> SwagEditors = new List<SwagEditor>() { };
         public MeshList meshList = new MeshList() { ShowHint = DockState.DockRight };
+        public HurtboxList hurtboxList = new HurtboxList() { ShowHint = DockState.DockLeft };
         public List<VBNViewport> viewports = new List<VBNViewport>() { new VBNViewport() }; // Default viewport (may mess up with more or less?)
         public NUTEditor nutEditor = null;
         public NUS3BANKEditor nusEditor = null;
@@ -683,6 +703,7 @@ namespace Smash_Forge
         {
             Runtime.killWorkspace = true;
             Runtime.ParamManager.Reset();
+            hurtboxList.refresh();
             Runtime.Animnames.Clear();
             Runtime.clearMoveset();
         }
@@ -755,6 +776,7 @@ namespace Smash_Forge
                         try
                         {
                             Runtime.ParamManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
+                            hurtboxList.refresh();
                             Runtime.ParamManagerHelper = new PARAMEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
                             Runtime.ParamMoveNameIdMapping = Runtime.ParamManagerHelper.getMoveNameIdMapping();
                             Runtime.ModelContainers[0].name = fighterName;
@@ -1861,11 +1883,17 @@ namespace Smash_Forge
             lvdEditor.ShowHint = DockState.DockRight;
             Runtime.acmdEditor.ShowHint = DockState.DockLeft;
             meshList.ShowHint = DockState.DockRight;
+            Runtime.hitboxList.ShowHint = DockState.DockLeft;
+            Runtime.variableViewer.ShowHint = DockState.DockLeft;
+            
             AddDockedControl(Runtime.acmdEditor);
             AddDockedControl(boneTreePanel);
             AddDockedControl(animList);
             AddDockedControl(lvdEditor);
             AddDockedControl(lvdList);
+            AddDockedControl(Runtime.variableViewer);
+            AddDockedControl(Runtime.hitboxList);
+            AddDockedControl(hurtboxList);
             AddDockedControl(project);
             AddDockedControl(meshList);
         }
@@ -1990,6 +2018,7 @@ namespace Smash_Forge
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     Runtime.ParamManager = new CharacterParamManager(ofd.FileName);
+                    hurtboxList.refresh();
                 }
             }
         }
@@ -1997,6 +2026,7 @@ namespace Smash_Forge
         private void clearParamsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Runtime.ParamManager.Reset();
+            hurtboxList.refresh();
         }
 
         private void openDATTextureEditorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2036,6 +2066,30 @@ namespace Smash_Forge
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
             Runtime.clearMoveset();
+        }
+
+        private void exportParamsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runtime.ParamManager.param == null)
+                return;
+
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.FileName = "fighter_param_vl_";
+                sfd.Filter = "Fighter parameter file (*.bin)|*.bin|" +
+                             "All Files (*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        Runtime.ParamManager.param.Export(sfd.FileName);
+                    }catch
+                    {
+                        
+                    }
+                }
+            }
         }
     }
 }

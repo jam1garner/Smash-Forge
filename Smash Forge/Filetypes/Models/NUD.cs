@@ -270,6 +270,7 @@ namespace Smash_Forge
                 GL.Uniform1(shader.getAttribute("hasRamp"), mat.ramp ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasDummyRamp"), mat.useDummyRamp ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasColorGainOffset"), mat.useColorGainOffset ? 1 : 0);
+                GL.Uniform1(shader.getAttribute("useDiffuseBlend"), mat.useDiffuseBlend ? 1 : 0);
 
                 //mat.entries.TryGetValue("NU_specularParams", out pa);
                 // specular params seems to override reflectionParams for specular
@@ -441,6 +442,62 @@ namespace Smash_Forge
                     if (mat.anims.ContainsKey("NU_reflectionParams")) pa = mat.anims["NU_reflectionParams"];
                     if (pa == null) pa = new float[] { 0, 0, 0, 0 };
                     GL.Uniform4(shader.getAttribute("reflectionParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_fogColor", out pa);
+                    if (mat.anims.ContainsKey("NU_fogColor")) pa = mat.anims["NU_fogColor"];
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("fogColor"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_fogParams", out pa);
+                    if (mat.anims.ContainsKey("NU_fogParams")) pa = mat.anims["NU_fogParams"];
+                    if (pa == null) pa = new float[] { 0, 1, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("fogParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_normalParams", out pa);
+                    if (mat.anims.ContainsKey("NU_normalParams")) pa = mat.anims["NU_normalParams"];
+                    if (pa == null) pa = new float[] { 1, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("normalParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_zOffset", out pa);
+                    if (mat.anims.ContainsKey("NU_zOffset")) pa = mat.anims["NU_zOffset"];
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("zOffset"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_effColorGain", out pa);
+                    if (mat.anims.ContainsKey("NU_effColorGain")) pa = mat.anims["NU_effColorGain"];
+                    if (pa == null) pa = new float[] { 1, 1, 1, 1 };
+                    GL.Uniform4(shader.getAttribute("effColorGain"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_angleFadeParams", out pa);
+                    if (mat.anims.ContainsKey("NU_angleFadeParams")) pa = mat.anims["NU_angleFadeParams"];
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("angleFadeParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_dualNormalScrollParams", out pa);
+                    if (mat.anims.ContainsKey("NU_dualNormalScrollParams")) pa = mat.anims["NU_dualNormalScrollParams"];
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("dualNormalScrollParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_normalSamplerAUV", out pa);
+                    if (mat.anims.ContainsKey("NU_normalSamplerAUV")) pa = mat.anims["NU_normalSamplerAUV"];
+                    if (pa == null) pa = new float[] { 1, 1, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("normalSamplerAUV"), pa[0], pa[1], pa[2], pa[3]);
                 }
 
                 GL.Enable(EnableCap.Blend);
@@ -1802,6 +1859,7 @@ namespace Smash_Forge
             public bool glow = false;
             public bool hasShadow = false;
             public bool useColorGainOffset = false;
+            public bool useDiffuseBlend = false;
             public bool useDummyRamp = false;
             public bool UseDummyRamp
             {
@@ -1910,6 +1968,9 @@ namespace Smash_Forge
                 flag = ((int)flags);
                 useColorGainOffset = (flag & 0x0C000000) == 0x0C000000 && (flag & 0x000000FF) == 0x00000061 && 
                 ((flag & 0x00FF0000) == 0x00610000 || (flag & 0x00FF0000) == 0x00420000 || (flag & 0x00FF0000) == 0x00440000);
+
+                useDiffuseBlend = (flag & 0xD0090000) == 0xD0090000 || (flag & 0x90005000) == 0x90005000;
+
 
             }
 

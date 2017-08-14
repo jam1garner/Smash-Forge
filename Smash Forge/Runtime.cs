@@ -40,6 +40,13 @@ namespace Smash_Forge
         public static Object LVDSelection { get; set; }
         public static SkelAnimation TargetAnim { get { return _targetAnim; } set { _targetAnim = value; OnAnimationChanged(); } }
         private static SkelAnimation _targetAnim;
+        public static GUI.Editors.HitboxList hitboxList { get; set; }
+        public static GUI.Editors.VariableList variableViewer { get; set; }
+
+        public static int SelectedHitboxID { get; set; } = -1;
+        public static int SelectedHurtboxID { get; set; } = -1;
+        //Hitboxes can be removed halfway on an animation and set again multiple times, this list contains the IDs of the hitboxes that aren't visible
+        public static List<int> HiddenHitboxes { get; set; } = new List<int>();
 
         public enum ViewportModes
         {
@@ -80,6 +87,7 @@ namespace Smash_Forge
         public static Color hurtboxColorHi;
         public static Color hurtboxColorMed;
         public static Color hurtboxColorLow;
+        public static Color hurtboxColorSelected;
         public static bool renderHitboxesNoOverlap;
         public static bool useFrameDuration = true;
         public static bool useFAFasAnimationLength = false;
@@ -142,7 +150,7 @@ namespace Smash_Forge
         public static bool renderFresnel = true;
         public static bool renderSpecular = true;
         public static bool renderReflection = true;
-        public static float dif_inten = 0.15f;
+        public static float dif_inten = 1.00f;
         public static float spc_inten = 0.75f;
         public static float frs_inten = 1.00f;
         public static float ref_inten = 1.00f;
@@ -169,7 +177,9 @@ namespace Smash_Forge
             VertColor = 4,
             AmbientOcclusion = 5,
             UVCoords = 6,
-            UVTestPattern = 7
+            UVTestPattern = 7,
+            Tangents = 8,
+            Bitangents = 9
         }
         public enum FloorStyle
         {
@@ -312,6 +322,7 @@ namespace Smash_Forge
                         case "hurtbox_color_hi": try { Runtime.hurtboxColorHi = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
                         case "hurtbox_color_med": try { Runtime.hurtboxColorMed = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
                         case "hurtbox_color_low": try { Runtime.hurtboxColorLow = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                        case "hurtbox_color_selected": try { Runtime.hurtboxColorSelected = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
 
                         case "enabled":
                             if (node.ParentNode != null)
@@ -494,10 +505,11 @@ for changing default texure
             renderNode.AppendChild(createNode(doc, "render_hitboxes_mode", hitboxRenderMode.ToString()));
             renderNode.AppendChild(createNode(doc, "hitbox_alpha", hitboxAlpha.ToString()));
             renderNode.AppendChild(createNode(doc, "hurtbox_alpha", hurtboxAlpha.ToString()));
-            renderNode.AppendChild(createNode(doc, "hurtbox_color", hurtboxColor.ToString()));
+            renderNode.AppendChild(createNode(doc, "hurtbox_color", System.Drawing.ColorTranslator.ToHtml(hurtboxColor)));
             renderNode.AppendChild(createNode(doc, "hurtbox_color_hi", System.Drawing.ColorTranslator.ToHtml(hurtboxColorHi)));
             renderNode.AppendChild(createNode(doc, "hurtbox_color_med", System.Drawing.ColorTranslator.ToHtml(hurtboxColorMed)));
             renderNode.AppendChild(createNode(doc, "hurtbox_color_low", System.Drawing.ColorTranslator.ToHtml(hurtboxColorLow)));
+            renderNode.AppendChild(createNode(doc, "hurtbox_color_selected", System.Drawing.ColorTranslator.ToHtml(hurtboxColorSelected)));
             {
                 XmlNode node = doc.CreateElement("hitbox_kb_colors");
                 renderNode.AppendChild(node);
@@ -533,7 +545,7 @@ for changing default texure
                 etcNode.AppendChild(createNode(doc, "param_dir", paramDir));
             }
 
-            doc.Save("config.xml");
+            doc.Save(MainForm.executableDir + "\\config.xml");
         }
 
         public static XmlNode createNode(XmlDocument doc, string el, string v)
