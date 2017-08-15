@@ -398,22 +398,22 @@
     <Compile Include="GUI\Nodes\ModelNode.cs" />
     <Compile Include="GUI\Nodes\ProjectNode.cs" />
     <Compile Include="IO\FileBase.cs" />
-    <Compile Include="lib\GIFEncoder\AnimatedGifEncoder.cs" />
-    <Compile Include="lib\GIFEncoder\GIFProgress.cs">
+    <Compile Include="GUI\GIFEncoder\AnimatedGifEncoder.cs" />
+    <Compile Include="GUI\GIFEncoder\GIFProgress.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="lib\GIFEncoder\GIFProgress.Designer.cs">
+    <Compile Include="GUI\GIFEncoder\GIFProgress.Designer.cs">
       <DependentUpon>GIFProgress.cs</DependentUpon>
     </Compile>
-    <Compile Include="lib\GIFEncoder\GIFSettings.cs">
+    <Compile Include="GUI\GIFEncoder\GIFSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="lib\GIFEncoder\GIFSettings.Designer.cs">
+    <Compile Include="GUI\GIFEncoder\GIFSettings.Designer.cs">
       <DependentUpon>GIFSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="lib\GIFEncoder\LZWEncoder.cs" />
-    <Compile Include="lib\GIFEncoder\NeuQuant.cs" />
-    <Compile Include="lib\GIFEncoder\UnsafeBuffer.cs" />
+    <Compile Include="GUI\GIFEncoder\LZWEncoder.cs" />
+    <Compile Include="GUI\GIFEncoder\NeuQuant.cs" />
+    <Compile Include="GUI\GIFEncoder\UnsafeBuffer.cs" />
     <Compile Include="lib\NintacoAPI.cs" />
     <Compile Include="MovesetManager.cs" />
     <Compile Include="Program.cs" />
@@ -559,10 +559,10 @@
     <EmbeddedResource Include="GUI\ModelViewport.resx">
       <DependentUpon>ModelViewport.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="lib\GIFEncoder\GIFProgress.resx">
+    <EmbeddedResource Include="GUI\GIFEncoder\GIFProgress.resx">
       <DependentUpon>GIFProgress.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="lib\GIFEncoder\GIFSettings.resx">
+    <EmbeddedResource Include="GUI\GIFEncoder\GIFSettings.resx">
       <DependentUpon>GIFSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
