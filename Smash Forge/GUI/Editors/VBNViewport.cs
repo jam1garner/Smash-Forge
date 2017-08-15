@@ -19,7 +19,7 @@ using System.IO;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Gif.Components;
+//using Gif.Components;
 
 namespace Smash_Forge
 {
@@ -2018,57 +2018,57 @@ namespace Smash_Forge
             }
             if (e.KeyChar == 'g')
             {
-                if (Runtime.TargetAnim == null)
-                    return;
+                //if (Runtime.TargetAnim == null)
+                //    return;
 
-                isPlaying = false;
-                btnPlay.Text = "Play";
+                //isPlaying = false;
+                //btnPlay.Text = "Play";
 
-                GIFSettings settings = new GIFSettings((int)this.nupdMaxFrame.Value);
-                settings.ShowDialog();
+                //GIFSettings settings = new GIFSettings((int)this.nupdMaxFrame.Value);
+                //settings.ShowDialog();
 
-                if (!settings.OK)
-                    return;
+                //if (!settings.OK)
+                //    return;
 
-                int cFrame = (int)this.nupdFrame.Value; //Get current frame so at the end of capturing all frames of the animation it goes back to this frame
-                //Disable controls
-                this.Enabled = false;
+                //int cFrame = (int)this.nupdFrame.Value; //Get current frame so at the end of capturing all frames of the animation it goes back to this frame
+                ////Disable controls
+                //this.Enabled = false;
 
-                List<Bitmap> images = new List<Bitmap>();
-                for (int i = settings.StartFrame; i <= settings.EndFrame + 1; i++)
-                {
-                    this.nupdFrame.Value = i;
-                    this.nupdFrame.Refresh(); //Refresh the frame counter control
-                    Render();
+                //List<Bitmap> images = new List<Bitmap>();
+                //for (int i = settings.StartFrame; i <= settings.EndFrame + 1; i++)
+                //{
+                //    this.nupdFrame.Value = i;
+                //    this.nupdFrame.Refresh(); //Refresh the frame counter control
+                //    Render();
 
-                    if (i != settings.StartFrame) //On i=StartFrame it captures the frame the user had before setting frame to it so ignore that one, the +1 on the for makes it so the last frame is captured
-                    {
-                        Bitmap cs = CaptureScreen(false);
-                        images.Add(new Bitmap(cs, new Size((int)(cs.Width / settings.ScaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
-                        cs.Dispose();
-                    }
-                }
+                //    if (i != settings.StartFrame) //On i=StartFrame it captures the frame the user had before setting frame to it so ignore that one, the +1 on the for makes it so the last frame is captured
+                //    {
+                //        Bitmap cs = CaptureScreen(false);
+                //        images.Add(new Bitmap(cs, new Size((int)(cs.Width / settings.ScaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
+                //        cs.Dispose();
+                //    }
+                //}
 
 
-                if (images.Count > 0)
-                {
-                    SaveFileDialog sf = new SaveFileDialog();
+                //if (images.Count > 0)
+                //{
+                //    SaveFileDialog sf = new SaveFileDialog();
                     
-                    sf.FileName = "Render.gif";
-                    sf.Filter = "GIF file (*.gif)|*.gif";
+                //    sf.FileName = "Render.gif";
+                //    sf.Filter = "GIF file (*.gif)|*.gif";
 
-                    if(sf.ShowDialog() == DialogResult.OK)
-                    {
-                        GIFProgress g = new GIFProgress(images, sf.FileName, AnimationSpeed, settings.Repeat, settings.Quality);
-                        g.Show();
-                    }
+                //    if(sf.ShowDialog() == DialogResult.OK)
+                //    {
+                //        GIFProgress g = new GIFProgress(images, sf.FileName, AnimationSpeed, settings.Repeat, settings.Quality);
+                //        g.Show();
+                //    }
 
                     
-                }
-                //Enable controls
-                this.Enabled = true;
+                //}
+                ////Enable controls
+                //this.Enabled = true;
 
-                this.nupdFrame.Value = cFrame;
+                //this.nupdFrame.Value = cFrame;
 
 
             }
