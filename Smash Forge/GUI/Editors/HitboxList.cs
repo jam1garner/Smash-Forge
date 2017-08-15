@@ -57,6 +57,7 @@ namespace Smash_Forge.GUI.Editors
                     hitboxData.Rows.Add("Part", hitbox.Part);
                 hitboxData.Rows.Add("Bone", hitbox.Bone);
                 hitboxData.Rows.Add("Damage", hitbox.Damage);
+                hitboxData.Rows.Add("Angle", hitbox.Angle);
                 hitboxData.Rows.Add("BKB", hitbox.KnockbackBase);
                 hitboxData.Rows.Add("WBKB", hitbox.WeightBasedKnockback);
                 hitboxData.Rows.Add("KBG", hitbox.KnockbackGrowth);

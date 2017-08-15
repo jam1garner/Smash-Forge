@@ -19,6 +19,7 @@ using System.IO;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Gif.Components;
 
 namespace Smash_Forge
 {
@@ -1527,7 +1528,7 @@ namespace Smash_Forge
                             break;  // this only works because the list is sorted
                         var h2 = pair2.Value;
 
-                        if (Runtime.HiddenHitboxes.Contains(h2.ID))
+                        if (!Runtime.HiddenHitboxes.Contains(h2.ID))
                         {
 
                             Bone b2 = getBone(h2.Bone);
@@ -2014,6 +2015,62 @@ namespace Smash_Forge
             if (e.KeyChar == 'p')
             {
                 CaptureScreen(false).Save(MainForm.executableDir + "\\Render.png");
+            }
+            if (e.KeyChar == 'g')
+            {
+                if (Runtime.TargetAnim == null)
+                    return;
+
+                isPlaying = false;
+                btnPlay.Text = "Play";
+
+                GIFSettings settings = new GIFSettings((int)this.nupdMaxFrame.Value);
+                settings.ShowDialog();
+
+                if (!settings.OK)
+                    return;
+
+                int cFrame = (int)this.nupdFrame.Value; //Get current frame so at the end of capturing all frames of the animation it goes back to this frame
+                //Disable controls
+                this.Enabled = false;
+
+                List<Bitmap> images = new List<Bitmap>();
+                for (int i = settings.StartFrame; i <= settings.EndFrame + 1; i++)
+                {
+                    this.nupdFrame.Value = i;
+                    this.nupdFrame.Refresh(); //Refresh the frame counter control
+                    Render();
+
+                    if (i != settings.StartFrame) //On i=StartFrame it captures the frame the user had before setting frame to it so ignore that one, the +1 on the for makes it so the last frame is captured
+                    {
+                        Bitmap cs = CaptureScreen(false);
+                        images.Add(new Bitmap(cs, new Size((int)(cs.Width / settings.ScaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
+                        cs.Dispose();
+                    }
+                }
+
+
+                if (images.Count > 0)
+                {
+                    SaveFileDialog sf = new SaveFileDialog();
+                    
+                    sf.FileName = "Render.gif";
+                    sf.Filter = "GIF file (*.gif)|*.gif";
+
+                    if(sf.ShowDialog() == DialogResult.OK)
+                    {
+                        GIFProgress g = new GIFProgress(images, sf.FileName, AnimationSpeed, settings.Repeat, settings.Quality);
+                        g.Show();
+                    }
+
+                    
+                }
+                //Enable controls
+                this.Enabled = true;
+
+                this.nupdFrame.Value = cFrame;
+
+
             }
             if (e.KeyChar == ']')
             {
