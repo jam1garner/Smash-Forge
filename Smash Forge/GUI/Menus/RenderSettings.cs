@@ -44,6 +44,7 @@ namespace Smash_Forge.GUI
             checkBox18.Checked = Runtime.renderHitboxesNoOverlap;
             swagViewing.Checked = Runtime.renderSwag;
             lightCheckBox.Checked = Runtime.renderLighting;
+            FogCB.Checked = Runtime.renderFog;
             useNormCB.Checked = Runtime.useNormalMap;
             boundingCB.Checked = Runtime.renderBoundingBox;
             wireframeCB.Checked = Runtime.renderModelWireframe;
@@ -64,7 +65,28 @@ namespace Smash_Forge.GUI
             spcTB.Text = Runtime.spc_inten + "";
             frsTB.Text = Runtime.frs_inten + "";
             refTB.Text = Runtime.ref_inten + "";
+            diffuseHue.Text = Runtime.dif_hue + "";
+            diffuseSaturation.Text = Runtime.dif_saturation + "";
+            diffuseIntensity.Text = Runtime.dif_intensity + "";
+            ambientHue.Text = Runtime.amb_hue + "";
+            ambientSaturation.Text = Runtime.amb_saturation + "";
+            ambientIntensity.Text = Runtime.amb_intensity + "";
             modelscaleTB.Text = Runtime.model_scale + "";
+            fresnelGroundHue.Text = Runtime.fres_ground_hue + "";
+            fresnelGroundSaturation.Text = Runtime.fres_ground_saturation + "";
+            fresnelGroundIntensity.Text = Runtime.fres_ground_intensity + "";
+            fresnelSkyHue.Text = Runtime.fres_sky_hue + "";
+            fresnelSkySaturation.Text = Runtime.fres_sky_saturation + "";
+            fresnelSkyIntensity.Text = Runtime.fres_sky_intensity + "";
+            fogHue.Text = Runtime.fog_hue + "";
+            fogSaturation.Text = Runtime.fog_saturation + "";
+            fogIntensity.Text = Runtime.fog_intensity + "";
+            specularHue.Text = Runtime.specular_hue + "";
+            specularSaturation.Text = Runtime.specular_saturation + "";
+            specularIntensity.Text = Runtime.specular_intensity + "";
+            reflectionHue.Text = Runtime.reflection_hue + "";
+            reflectionSaturation.Text = Runtime.reflection_saturation + "";
+            reflectionIntensity.Text = Runtime.reflection_intensity + "";
 
             cb_normals.Checked = Runtime.renderNormals;
             cb_vertcolor.Checked = Runtime.renderVertColor;
@@ -446,6 +468,287 @@ namespace Smash_Forge.GUI
                 Runtime.hurtboxColorSelected = Color.FromArgb(0xFF, hurtboxColorDialog.Color);
                 pbHurtboxColorSelected.BackColor = Runtime.hurtboxColorSelected;
             }
+        }
+
+
+        private void diffuseHue_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(diffuseHue.Text, out i))
+            {
+                diffuseHue.BackColor = Color.White;
+                Runtime.dif_hue = i ;
+            }
+            else
+                diffuseHue.BackColor = Color.Red;
+        }
+
+        private void diffuseSaturation_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(diffuseSaturation.Text, out i))
+            {
+                diffuseSaturation.BackColor = Color.White;
+                Runtime.dif_saturation = i;
+            }
+            else
+                diffuseSaturation.BackColor = Color.Red;
+        }
+
+        private void label20_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void diffuseIntensity_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(diffuseIntensity.Text, out i))
+            {
+                diffuseIntensity.BackColor = Color.White;
+                Runtime.dif_intensity = i;
+            }
+            else
+                diffuseIntensity.BackColor = Color.Red;
+        }
+
+        private void ambientHue_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(ambientHue.Text, out i))
+            {
+                ambientHue.BackColor = Color.White;
+                Runtime.amb_hue = i ;
+            }
+            else
+                ambientHue.BackColor = Color.Red;
+        }
+
+        private void ambientSaturation_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(ambientSaturation.Text, out i))
+            {
+                ambientSaturation.BackColor = Color.White;
+                Runtime.amb_saturation = i;
+            }
+            else
+                ambientSaturation.BackColor = Color.Red;
+        }
+
+        private void ambientIntensity_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(ambientIntensity.Text, out i))
+            {
+                ambientIntensity.BackColor = Color.White;
+                Runtime.amb_intensity = i;
+            }
+            else
+                ambientIntensity.BackColor = Color.Red;
+        }
+
+        private void fresnelGroundHue_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fresnelGroundHue.Text, out i))
+            {
+                fresnelGroundHue.BackColor = Color.White;
+                Runtime.fres_ground_hue = i ;
+            }
+            else
+                fresnelGroundHue.BackColor = Color.Red;
+        }
+
+        private void fresnelGroundSaturation_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fresnelGroundSaturation.Text, out i))
+            {
+                fresnelGroundSaturation.BackColor = Color.White;
+                Runtime.fres_ground_saturation = i;
+            }
+            else
+                fresnelGroundSaturation.BackColor = Color.Red;
+        }
+
+        private void fresnelGroundIntensity_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fresnelGroundIntensity.Text, out i))
+            {
+                fresnelGroundIntensity.BackColor = Color.White;
+                Runtime.fres_ground_intensity = i;
+            }
+            else
+                fresnelGroundIntensity.BackColor = Color.Red;
+        }
+
+        private void FogCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderFog = FogCB.Checked;
+            label31.Enabled = FogCB.Checked;
+            label32.Enabled = FogCB.Checked;
+            label33.Enabled = FogCB.Checked;
+            fogHue.Enabled = FogCB.Checked;
+            fogSaturation.Enabled = FogCB.Checked;
+            fogIntensity.Enabled = FogCB.Checked;
+
+        }
+
+        private void fogHue_TextChanged(object sender, EventArgs e)
+        {
+
+            float i = 0;
+            if (float.TryParse(fogHue.Text, out i))
+            {
+                fogHue.BackColor = Color.White;
+                Runtime.fog_hue = i ;
+            }
+            else
+                fogHue.BackColor = Color.Red;
+        }
+
+        private void fogSaturation_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fogSaturation.Text, out i))
+            {
+                fogSaturation.BackColor = Color.White;
+                Runtime.fog_saturation = i;
+            }
+            else
+                fogSaturation.BackColor = Color.Red;
+        }
+
+        private void fogIntensity_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fogIntensity.Text, out i))
+            {
+                fogIntensity.BackColor = Color.White;
+                Runtime.fog_intensity = i;
+            }
+            else
+                fogIntensity.BackColor = Color.Red;
+        }
+
+        private void label35_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void fresnelSkyHue_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fresnelSkyHue.Text, out i))
+            {
+                fresnelSkyHue.BackColor = Color.White;
+                Runtime.fres_sky_hue = i ;
+            }
+            else
+                fresnelSkyHue.BackColor = Color.Red;
+        }
+
+        private void fresnelSkySaturation_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fresnelSkySaturation.Text, out i))
+            {
+                fresnelSkySaturation.BackColor = Color.White;
+                Runtime.fres_sky_saturation = i;
+            }
+            else
+                fresnelSkySaturation.BackColor = Color.Red;
+        }
+
+        private void fresnelSkyIntensity_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fresnelSkyIntensity.Text, out i))
+            {
+                fresnelSkyIntensity.BackColor = Color.White;
+                Runtime.fres_sky_intensity = i;
+            }
+            else
+                fresnelSkyIntensity.BackColor = Color.Red;
+        }
+
+        private void label33_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void specularHue_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(specularHue.Text, out i))
+            {
+                specularHue.BackColor = Color.White;
+                Runtime.specular_hue = i;
+            }
+            else
+                specularHue.BackColor = Color.Red;
+        }
+
+        private void specularSaturation_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(specularSaturation.Text, out i))
+            {
+                specularSaturation.BackColor = Color.White;
+                Runtime.specular_saturation = i;
+            }
+            else
+                specularSaturation.BackColor = Color.Red;
+        }
+
+        private void specularIntensity_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(specularIntensity.Text, out i))
+            {
+                specularIntensity.BackColor = Color.White;
+                Runtime.specular_intensity = i;
+            }
+            else
+                specularIntensity.BackColor = Color.Red;
+        }
+
+        private void reflectionHue_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(reflectionHue.Text, out i))
+            {
+                reflectionHue.BackColor = Color.White;
+                Runtime.reflection_hue = i;
+            }
+            else
+                reflectionHue.BackColor = Color.Red;
+        }
+
+        private void reflectionSaturation_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(reflectionSaturation.Text, out i))
+            {
+                reflectionSaturation.BackColor = Color.White;
+                Runtime.reflection_saturation = i;
+            }
+            else
+                reflectionSaturation.BackColor = Color.Red;
+        }
+
+        private void reflectionIntensity_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(reflectionIntensity.Text, out i))
+            {
+                reflectionIntensity.BackColor = Color.White;
+                Runtime.reflection_intensity = i;
+            }
+            else
+                reflectionIntensity.BackColor = Color.Red;
         }
     }
 }

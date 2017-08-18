@@ -150,12 +150,41 @@ namespace Smash_Forge
         public static bool renderFresnel = true;
         public static bool renderSpecular = true;
         public static bool renderReflection = true;
+        public static bool renderFog = false;
         public static float dif_inten = 1.00f;
-        public static float spc_inten = 0.75f;
+        public static float spc_inten = 1.00f;
         public static float frs_inten = 1.00f;
         public static float ref_inten = 1.00f;
-        public static float amb_inten = 0.85f;
+        public static float amb_inten = 1.00f;
         public static float model_scale = 1f;
+
+        public static float dif_hue = 360.0f;
+        public static float dif_saturation = 0.00f;
+        public static float dif_intensity = 1.00f;
+
+        public static float amb_hue = 360.0f;
+        public static float amb_saturation = 0.00f;
+        public static float amb_intensity = 0.85f;
+
+        public static float fres_ground_hue = 360.0f;
+        public static float fres_ground_saturation = 0.00f;
+        public static float fres_ground_intensity = 0.00f;
+
+        public static float fres_sky_hue = 360.0f;
+        public static float fres_sky_saturation = 0.00f;
+        public static float fres_sky_intensity = 1.00f;
+
+        public static float fog_hue = 360.0f;
+        public static float fog_saturation = 0.00f;
+        public static float fog_intensity = 0.00f;
+
+        public static float specular_hue = 360.0f;
+        public static float specular_saturation = 0.0f;
+        public static float specular_intensity = 0.75f;
+
+        public static float reflection_hue = 360.0f;
+        public static float reflection_saturation = 0.0f;
+        public static float reflection_intensity = 1.0f;
 
         public static float renderDepth;
         public static bool renderNormals;

@@ -703,6 +703,7 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
             GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
 
             GL.Uniform1(shader.getAttribute("ambient"), Runtime.amb_inten);
@@ -710,6 +711,35 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("specular_intensity"), Runtime.spc_inten);
             GL.Uniform1(shader.getAttribute("fresnel_intensity"), Runtime.frs_inten);
             GL.Uniform1(shader.getAttribute("reflection_intensity"), Runtime.ref_inten);
+
+            // stage lighting
+            GL.Uniform1(shader.getAttribute("diffuseHue"), Runtime.dif_hue);
+            GL.Uniform1(shader.getAttribute("diffuseSaturation"), Runtime.dif_saturation);
+            GL.Uniform1(shader.getAttribute("diffuseIntensity"), Runtime.dif_intensity);
+
+            GL.Uniform1(shader.getAttribute("ambientHue"), Runtime.amb_hue);
+            GL.Uniform1(shader.getAttribute("ambientSaturation"), Runtime.amb_saturation);
+            GL.Uniform1(shader.getAttribute("ambientIntensity"), Runtime.amb_intensity);
+
+            GL.Uniform1(shader.getAttribute("fresnelGroundHue"), Runtime.fres_ground_hue);
+            GL.Uniform1(shader.getAttribute("fresnelGroundSaturation"), Runtime.fres_ground_saturation);
+            GL.Uniform1(shader.getAttribute("fresnelGroundIntensity"), Runtime.fres_ground_intensity);
+
+            GL.Uniform1(shader.getAttribute("fresnelSkyHue"), Runtime.fres_sky_hue);
+            GL.Uniform1(shader.getAttribute("fresnelSkySaturation"), Runtime.fres_sky_saturation);
+            GL.Uniform1(shader.getAttribute("fresnelSkyIntensity"), Runtime.fres_sky_intensity);
+
+            GL.Uniform1(shader.getAttribute("specularHue"), Runtime.specular_hue);
+            GL.Uniform1(shader.getAttribute("specularSaturation"), Runtime.specular_saturation);
+            GL.Uniform1(shader.getAttribute("specularIntensity"), Runtime.specular_intensity);
+
+            GL.Uniform1(shader.getAttribute("fogHue"), Runtime.fog_hue);
+            GL.Uniform1(shader.getAttribute("fogSaturation"), Runtime.fog_saturation);
+            GL.Uniform1(shader.getAttribute("fogIntensity"), Runtime.fog_intensity);
+
+            GL.Uniform1(shader.getAttribute("reflectionHue"), Runtime.reflection_hue);
+            GL.Uniform1(shader.getAttribute("reflectionSaturation"), Runtime.reflection_saturation);
+            GL.Uniform1(shader.getAttribute("reflectionIntensity"), Runtime.reflection_intensity);
 
             GL.ActiveTexture(TextureUnit.Texture11);
             GL.BindTexture(TextureTarget.Texture2D, depthmap);

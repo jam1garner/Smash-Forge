@@ -1676,11 +1676,35 @@ uniform int renderDiffuse;
 uniform int renderSpecular;
 uniform int renderFresnel;
 uniform int renderReflection;
+uniform int renderFog;
 uniform float diffuse_intensity;
 uniform float ambient;
 uniform float specular_intensity;
 uniform float fresnel_intensity;
 uniform float reflection_intensity;
+
+// stage lighting
+uniform float diffuseHue;
+uniform float diffuseSaturation;
+uniform float diffuseIntensity;
+uniform float ambientHue;
+uniform float ambientSaturation;
+uniform float ambientIntensity;
+uniform float fresnelGroundHue;
+uniform float fresnelGroundSaturation;
+uniform float fresnelGroundIntensity;
+uniform float fresnelSkyHue;
+uniform float fresnelSkySaturation;
+uniform float fresnelSkyIntensity;
+uniform float fogHue;
+uniform float fogSaturation;
+uniform float fogIntensity;
+uniform float specularHue;
+uniform float specularSaturation;
+uniform float specularIntensity;
+uniform float reflectionHue;
+uniform float reflectionSaturation;
+uniform float reflectionIntensity;
 
 uniform int useNormalMap;
 
@@ -1834,27 +1858,10 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
             }
 
 
-            // light_set_param.ini values.
-            // stages could maybe use identical values for diffuse and ambient intensity and 0 for fresnel intensities for simplicity
-            // saturation = light_set_param value / 360
-            float fresnelSkyHue = 0.0;
-            float fresnelSkySaturation = 0.0;
-            float fresnelSkyIntensity = 1.0;
 
-            float fresnelGroundHue = 0.0;
-            float fresnelGroundSaturation = 0.0;
-            float fresnelGroundIntensity = 0.0;
 
-            float diffuseHue = 0.0;
-            float diffuseSaturation = 0.0;
-            float diffuseIntensity = diffuse_intensity;
-
-            float ambientHue = 0.0;
-            float ambientSaturation = 0.0;
-            float ambientIntensity = ambient;
-
-            vec3 ambientLightColor = hsv2rgb(vec3(ambientHue, ambientSaturation, ambientIntensity));// * ambient;
-            vec3 diffuseLightColor = hsv2rgb(vec3(diffuseHue, diffuseSaturation, diffuseIntensity));// * diffuse_intensity;
+            vec3 ambientLightColor = hsv2rgb(vec3(ambientHue/360, ambientSaturation, ambientIntensity));// * ambient;
+            vec3 diffuseLightColor = hsv2rgb(vec3(diffuseHue/360, diffuseSaturation, diffuseIntensity));// * diffuse_intensity;
 
 
 			//---------------------------------------------------------------------------------------------
@@ -1943,6 +1950,8 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
 			//---------------------------------------------------------------------------------------------
             specular_pass *= mix(ao_map.rgb, vec3(1), aoMixIntensity);
+            vec3 specularLightColor = hsv2rgb(vec3(specularHue/360, specularSaturation, specularIntensity));
+            specular_pass *= specularLightColor;
 
 		specular_pass = pow(specular_pass, vec3(2.2));
 	//---------------------------------------------------------------------------------------------
@@ -1953,9 +1962,9 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
 			// hemisphere fresnel with fresnelParams control
 			vec3 groundColor = vec3(0);
-            groundColor = hsv2rgb(vec3(fresnelGroundHue, fresnelGroundSaturation, fresnelGroundIntensity));
+            groundColor = hsv2rgb(vec3(fresnelGroundHue/360, fresnelGroundSaturation, fresnelGroundIntensity));
 			vec3 skyColor = vec3(1);
-            skyColor = hsv2rgb(vec3(fresnelSkyHue, fresnelSkySaturation, fresnelSkyIntensity));
+            skyColor = hsv2rgb(vec3(fresnelSkyHue/360, fresnelSkySaturation, fresnelSkyIntensity));
 
 			float hemiBlend = dot(N, vec3(0,1,0));
 			hemiBlend = (hemiBlend * 0.5) + 0.5;
@@ -1999,21 +2008,15 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 				vec3 weirdReflection = texture2D(spheremap, newTexCoord).xyz;
 				reflection_pass += weirdReflection*reflectionColor.xyz*reflection_tint*reflection_intensity;
 			}
-            /*else if ((flags & 0x00090000u) == 0x00090000u) // refraction?
-            {
-                float mediumIOR = 1.0;
-                float materialIOR = 1.1;
-                float ratio = mediumIOR / materialIOR;
-                vec3 RefractionVector = refract(I,N,ratio);
-                vec3 refractionColor = texture(stagecube, RefractionVector).rgb;
-                reflection_pass += reflectionColor.rgb * refractionColor * reflection_tint * reflection_intensity;
-            }*/
+
 
 			else // stage cubemaps
 				reflection_pass += reflectionColor.rgb * refColor * reflection_tint * reflection_intensity * diffuse_map.aaa;
 			//---------------------------------------------------------------------------------------------
 
             reflection_pass *= mix(ao_map.rgb, vec3(1), aoMixIntensity);
+            vec3 refLightColor = hsv2rgb(vec3(reflectionHue/360, reflectionSaturation, reflectionIntensity));
+            reflection_pass *= refLightColor;
 
 		reflection_pass = pow(reflection_pass, vec3(2.2));
 	//---------------------------------------------------------------------------------------------
@@ -2033,11 +2036,12 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     resulting_color = pow(resulting_color, vec3(1/2.2)); // gamma correction. gamma correction also done within render passes
 
     // light_set fog calculations
-    vec3 stageFogColor = hsv2rgb(vec3(0.083,0.3,0.2));
+    vec3 stageFogColor = hsv2rgb(vec3(fogHue/360,fogSaturation,fogIntensity));
     float depth = pos.z;
     depth = min((depth / fogParams.y),1);
-    float fogIntensity = mix(fogParams.z, fogParams.w, depth);
-    resulting_color = mix(resulting_color, stageFogColor, fogIntensity);
+    float fog_Intensity = mix(fogParams.z, fogParams.w, depth);
+    if(renderFog == 1)
+      resulting_color = mix(resulting_color, stageFogColor, fog_Intensity);
 
 
     //resulting_color = texture2D(dif, offsetTexCoord).rgb;

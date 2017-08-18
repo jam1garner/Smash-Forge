@@ -120,11 +120,13 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
             GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
 
-            GL.Uniform1(shader.getAttribute("ambient"), Runtime.amb_inten);
+           /* GL.Uniform1(shader.getAttribute("ambient"), Runtime.amb_inten);
             GL.Uniform1(shader.getAttribute("diffuse_intensity"), Runtime.dif_inten);
             GL.Uniform1(shader.getAttribute("specular_intensity"), Runtime.spc_inten);
             GL.Uniform1(shader.getAttribute("fresnel_intensity"), Runtime.frs_inten);
-            GL.Uniform1(shader.getAttribute("reflection_intensity"), Runtime.ref_inten);
+            GL.Uniform1(shader.getAttribute("reflection_intensity"), Runtime.ref_inten);*/
+
+
 
             if (Runtime.CameraLight)
             {
