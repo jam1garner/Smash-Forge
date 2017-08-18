@@ -1919,6 +1919,7 @@ out vec4 outColor;
 
 uniform sampler2D ShadowMap;
 uniform sampler2D ScreenRender;
+uniform sampler2D ScreenRenderBlur;
 
 float LinearizeDepth(float depth)
 {   float near_plane = 1.0;
@@ -1929,7 +1930,7 @@ float LinearizeDepth(float depth)
 
 void main()
 {             
-    vec4 screenColor = texture2D(ScreenRender, texCoord).rgba;
+    vec4 screenColor = texture2D(ScreenRenderBlur, texCoord).rgba;
     vec4 backgroundColor = mix(vec4(0), vec4(1), texCoord.y);
     //backgroundColor = vec4(1);
     float test = texture2D(ShadowMap, texCoord).r;
@@ -1980,14 +1981,14 @@ in vec2 TexCoords;
 
 uniform sampler2D image;
   
-uniform bool horizontal;
+uniform int horizontal;
 uniform float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
 
 void main()
 {             
     vec2 tex_offset = 1.0 / textureSize(image, 0); // gets size of single texel
     vec3 result = texture(image, TexCoords).rgb * weight[0]; // current fragment's contribution
-    if(horizontal)
+    if(horizontal == 1)
     {
         for(int i = 1; i < 5; ++i)
         {
@@ -2003,7 +2004,9 @@ void main()
             result += texture(image, TexCoords - vec2(0.0, tex_offset.y * i)).rgb * weight[i];
         }
     }
+    result = texture(image, TexCoords).rgb;
     FragColor = vec4(result, 1.0);
+    //FragColor = vec4(TexCoords.x, TexCoords.y, 1, 1);
 }";
 
         #endregion

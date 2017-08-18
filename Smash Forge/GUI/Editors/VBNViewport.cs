@@ -679,12 +679,25 @@ namespace Smash_Forge
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
             GL.Disable(EnableCap.CullFace);
 
-         
+            // render gaussian blur stuff
+            //------------------------------------------------------------
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Disable(EnableCap.DepthTest);
+            bool horizontal = true;
+            bool first_iteration = true;
+            int blur_amount = 10;
+            DrawScreenQuadBlur(blur_amount, horizontal, first_iteration);
+            
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+
+
+
 
             // render full screen quad
             //------------------------------------------------------------
             //full screen quad for post processing
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            /*GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, colorTexture1);
 
@@ -692,7 +705,8 @@ namespace Smash_Forge
             GL.BindTexture(TextureTarget.Texture2D, depthmap);
 
             GL.Disable(EnableCap.DepthTest);
-            DrawScreenQuad();
+            DrawScreenQuad();*/
+           
 
 
 
@@ -959,21 +973,75 @@ namespace Smash_Forge
             GL.BindTexture(TextureTarget.Texture2D, colorTexture1);
             GL.Uniform1(shader.getAttribute("ScreenRender"), 0);
 
+            GL.ActiveTexture(TextureUnit.Texture1);
+            GL.BindTexture(TextureTarget.Texture2D, pingPongColorTexture1);
+            GL.Uniform1(shader.getAttribute("ScreenRenderBlur"), 1);
+
+
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // just use a big triangle instead
             GL.BindVertexArray(0);
       
         }
 
-        private void DrawScreenQuadBlur() // draw a full screen quad for guassian blur. could probably be combined with above DrawScreenQuad()
+        // draw a full screen quad for fbo debugging and post processing
+        private void DrawScreenQuadBlur(int blur_amount, bool horizontal, bool first_iteration) 
         {
             shader = Runtime.shaders["Blur"];
             GL.UseProgram(shader.programID);
-
+            
             GL.ActiveTexture(TextureUnit.Texture0);// should I bind a texture here
-            GL.Uniform1(shader.getAttribute("Image"), 0);
+            GL.Uniform1(shader.getAttribute("image"), 0);
 
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // just use a big triangle instead
-            GL.BindVertexArray(0);
+            for (int i = 0; i < blur_amount; i++)
+            {
+                
+                if (horizontal)
+                {
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, pingPongFBO1);
+                    //Debug.WriteLine("pingPongFBO1");
+                }
+    
+                else
+                {
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, pingPongFBO2);
+                    //Debug.WriteLine("pingPongFBO2");
+                }
+                 
+
+                GL.Uniform1(shader.getAttribute("horizontal"), horizontal ? 1 : 0);
+
+                if (first_iteration)
+                {
+                    GL.BindTexture(TextureTarget.Texture2D, colorTexture2);
+                    Debug.WriteLine("First Iteration");
+                }
+                   
+                else
+                {
+
+                    if (horizontal)
+                    {
+                        Debug.WriteLine("ColorTexture1");
+                        GL.BindTexture(TextureTarget.Texture2D, pingPongColorTexture1);
+                    }
+
+                    else if (!horizontal)
+                    {
+                        Debug.WriteLine("ColorTexture2");
+                        GL.BindTexture(TextureTarget.Texture2D, pingPongColorTexture2);
+                    }
+               
+                }
+            
+                // render screen quad
+                GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // just use a big triangle instead
+                GL.BindVertexArray(0);
+       
+                horizontal = !horizontal;
+                if (first_iteration)
+                    first_iteration = false;
+
+            }
 
         }
 
