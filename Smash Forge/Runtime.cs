@@ -145,7 +145,7 @@ namespace Smash_Forge
         public static Color back2 = Color.FromArgb((255 << 24) | (77 << 16) | (77 << 8) | (77));
         public static float fov = 0.8f;
         public static float zoomspeed = 0.8f;
-        public static bool CameraLight = true;
+        public static bool CameraLight = false;
         public static bool renderDiffuse = true;
         public static bool renderFresnel = true;
         public static bool renderSpecular = true;
@@ -161,6 +161,9 @@ namespace Smash_Forge
         public static float dif_hue = 360.0f;
         public static float dif_saturation = 0.00f;
         public static float dif_intensity = 1.00f;
+        public static float dif_rotX = 0.0f;
+        public static float dif_rotY = 0.0f;
+        public static float dif_rotZ = 0.0f;
 
         public static float amb_hue = 360.0f;
         public static float amb_saturation = 0.00f;
@@ -181,6 +184,11 @@ namespace Smash_Forge
         public static float specular_hue = 360.0f;
         public static float specular_saturation = 0.0f;
         public static float specular_intensity = 0.75f;
+        public static float specular_rotX = 0.0f;
+        public static float specular_rotY = 0.0f;
+        public static float specular_rotZ = 0.0f;
+
+
 
         public static float reflection_hue = 360.0f;
         public static float reflection_saturation = 0.0f;

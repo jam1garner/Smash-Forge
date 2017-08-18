@@ -746,38 +746,43 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("shadowmap"), 11);
 
 
-            // send lighting to Shader
-            // Miiverse Params
-            /*float specRotZ = -0.2254f;
-            float specRotY = 0f;
-            float specRotX = 0f;
+            // light_set_param xyz rotation to vector for lighting calculations
+            float difRotX = -1 * Runtime.dif_rotX * ((float)Math.PI / 180f);
+            float difRotY = Runtime.dif_rotY * ((float)Math.PI / 180f);
+            float difRotZ = -1 * Runtime.dif_rotZ * ((float)Math.PI / 180f);
+
+            float specRotX = -1 * Runtime.specular_rotX * ((float)Math.PI / 180f);
+            float specRotY = Runtime.specular_rotY * ((float)Math.PI / 180f);
+            float specRotZ = -1 * Runtime.specular_rotZ * ((float)Math.PI / 180f);
 
             Matrix4 specrot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, specRotX)
                  * Matrix4.CreateFromAxisAngle(Vector3.UnitY, specRotY)
-                 * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, specRotZ);*/
+                 * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, specRotZ);
 
+            Matrix4 difrot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, difRotX)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, difRotY)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, difRotZ);
 
-            Vector3 specDir = new Vector3(0f, 0f, -1f);// Vector3.Transform(new Vector3(0f, 0f, -1f), specrot);
-            GL.Uniform3(shader.getAttribute("freslightDirection"), Vector3.TransformNormal(specDir, v.Inverted()).Normalized());
-            GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, v));
+            Vector3 lightDirection= new Vector3(0f, 0f, 1f);
+            lightDirection = Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized();
+
+            Vector3 specDir = new Vector3(0f, 0f, 1f);// Vector3.Transform(new Vector3(0f, 0f, -1f), specrot);
+            Vector3 difDir = new Vector3(0f, 0f, 1f);
+
             if (Runtime.CameraLight)
             {
-                GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(specDir, v.Inverted()).Normalized());
-            } else
+                GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
+            }
+            else
             {
+                GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.Transform(specDir, specrot).Normalized());
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.Transform(difDir, difrot).Normalized());
+                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, v));
                 GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
             }
 
-            /*float fresRotX = 0.45f;
-            float fresRotY = 1.32f;
-            float fresRotZ = 0f;
-
-            Matrix4 fresrot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, fresRotX)
-                 * Matrix4.CreateFromAxisAngle(Vector3.UnitY, fresRotY)
-                 * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, fresRotZ);
-
-            Vector3 fresDir = new Vector3(0f, 0f, -1f);// Vector3.Transform(new Vector3(1f, 0f, 0f), fresrot);
-            GL.Uniform3(shader.getAttribute("fresLightDir"), Vector3.TransformNormal(fresDir, v.Inverted()).Normalized());*/
 
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
@@ -2016,7 +2021,7 @@ namespace Smash_Forge
         private void VBNViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
             if (e.KeyChar == 'i')
-            {  /*
+            {   /*
                 GL.DeleteProgram(Runtime.shaders["NUD"].programID);
                 shader = new Shader();
                 shader.vertexShader(File.ReadAllText("vert.txt"));

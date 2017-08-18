@@ -68,6 +68,9 @@ namespace Smash_Forge.GUI
             diffuseHue.Text = Runtime.dif_hue + "";
             diffuseSaturation.Text = Runtime.dif_saturation + "";
             diffuseIntensity.Text = Runtime.dif_intensity + "";
+            difRotX.Text = Runtime.dif_rotX + "";
+            difRotY.Text = Runtime.dif_rotY + "";
+            difRotZ.Text = Runtime.dif_rotZ + "";
             ambientHue.Text = Runtime.amb_hue + "";
             ambientSaturation.Text = Runtime.amb_saturation + "";
             ambientIntensity.Text = Runtime.amb_intensity + "";
@@ -84,6 +87,9 @@ namespace Smash_Forge.GUI
             specularHue.Text = Runtime.specular_hue + "";
             specularSaturation.Text = Runtime.specular_saturation + "";
             specularIntensity.Text = Runtime.specular_intensity + "";
+            specRotX.Text = Runtime.specular_rotX + "";
+            specRotY.Text = Runtime.specular_rotY + "";
+            specRotZ.Text = Runtime.specular_rotZ + "";
             reflectionHue.Text = Runtime.reflection_hue + "";
             reflectionSaturation.Text = Runtime.reflection_saturation + "";
             reflectionIntensity.Text = Runtime.reflection_intensity + "";
@@ -750,5 +756,71 @@ namespace Smash_Forge.GUI
             else
                 reflectionIntensity.BackColor = Color.Red;
         }
+
+        private void label47_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void specRotX_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(specRotX.Text, out i))
+            {
+                specRotX.BackColor = Color.White;
+                Runtime.specular_rotX = i;
+            }
+            else
+                specRotX.BackColor = Color.Red;
+        }
+
+        private void specRotY_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(specRotY.Text, out i))
+            {
+                specRotY.BackColor = Color.White;
+                Runtime.specular_rotY = i;
+            }
+            else
+                specRotY.BackColor = Color.Red;
+        }
+
+        private void difRotX_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(difRotX.Text, out i))
+            {
+                difRotX.BackColor = Color.White;
+                Runtime.dif_rotX = i;
+            }
+            else
+                difRotX.BackColor = Color.Red;
+        }
+
+        private void difRotY_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(difRotY.Text, out i))
+            {
+                difRotY.BackColor = Color.White;
+                Runtime.dif_rotY = i;
+            }
+            else
+                difRotY.BackColor = Color.Red;
+        }
+
+        private void difRotZ_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(difRotZ.Text, out i))
+            {
+                difRotZ.BackColor = Color.White;
+                Runtime.dif_rotZ = i;
+            }
+            else
+                difRotZ.BackColor = Color.Red;
+        }
     }
+    
 }

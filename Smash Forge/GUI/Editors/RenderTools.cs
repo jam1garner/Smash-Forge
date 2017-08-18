@@ -1712,7 +1712,8 @@ uniform mat4 eyeview;
 
 uniform vec3 lightPosition;
 uniform vec3 lightDirection;
-uniform vec3 freslightDirection;
+uniform vec3 difLightDirection;
+uniform vec3 specLightDirection;
 
 uniform sampler2D shadowMap;
 
@@ -1827,9 +1828,10 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     float reflectionBlendAmount = 0.5;
 
     // light direction seems to be (z,x,y) from light_set_param
-    vec3 newDiffuseDirection = lightDirection; //normalize(I + diffuseLightDirection);
-    vec3 newFresnelDirection = freslightDirection; //normalize(I + fresnelLightDirection);
-    vec3 newSpecularDirection = lightDirection; //normalize(I + specularLightDirection);
+    vec3 newDiffuseDirection = difLightDirection; //normalize(I + diffuseLightDirection);
+    vec3 newFresnelDirection = lightDirection; //normalize(I + fresnelLightDirection);
+    vec3 newSpecularDirection = specLightDirection; //normalize(I + specularLightDirection);
+
 
 	//---------------------------------------------------------------------------------------------
 		// diffuse pass
@@ -1850,18 +1852,14 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			ao_blend.rgb = hsv2rgb(vec3(c.x, c.y*0.75, c.z));
             float aoMixIntensity = minGain.a;
 
-
             if (useDiffuseBlend == 1) // aomingain but no ao map (mainly for trophies)
             {
                 ao_map.rgb = vec3(luminance(diffuse_map.rgb)); // should this use color? party ball is not saturated enough
                 aoMixIntensity = 0;
             }
 
-
-
-
-            vec3 ambientLightColor = hsv2rgb(vec3(ambientHue/360, ambientSaturation, ambientIntensity));// * ambient;
-            vec3 diffuseLightColor = hsv2rgb(vec3(diffuseHue/360, diffuseSaturation, diffuseIntensity));// * diffuse_intensity;
+            vec3 ambientLightColor = hsv2rgb(vec3(ambientHue/360, ambientSaturation, ambientIntensity * ambient));// * ambient;
+            vec3 diffuseLightColor = hsv2rgb(vec3(diffuseHue/360, diffuseSaturation, diffuseIntensity * diffuse_intensity));// * diffuse_intensity;
 
 
 			//---------------------------------------------------------------------------------------------
@@ -1887,7 +1885,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
                 diffuse_pass = mix(ambientLightColor, diffuseLightColor, halfLambert) * diffuse_color; // gradient based lighting
 
                 vec3 ramp_contribution = 0.5 * pow((RampColor(vec3(halfLambert)) * DummyRampColor(vec3(halfLambert)) * diffuse_color), vec3(2.2));
-                diffuse_pass = ScreenBlend(diffuse_pass, ramp_contribution);
+                diffuse_pass = ScreenBlend(diffuse_pass, ramp_contribution) * diffuse_intensity;
 
 		diffuse_pass = pow(diffuse_pass, vec3(2.2));
 	//---------------------------------------------------------------------------------------------
@@ -1934,23 +1932,23 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
 			else if (hasColorGainOffset == 1) // how does specularColorGain work?
             {
-                specular_pass += specularColor.rgb * blinnPhongSpec * (specularColorGain.rgb) * specular_intensity;
+                specular_pass += specularColor.rgb * blinnPhongSpec * (specularColorGain.rgb);
                 //specular_pass += specularColor.rgb * blinnPhongSpec * specular_intensity;// + (specularColorGain.rgb * diffuse_map.rgb);
             }
             else if ((flags & 0x00E10000u) == 0x00E10000u) // not sure how this works. specular works differently for eye mats
             {
-                specular_pass += specularColor.rgb * blinnPhongSpec * spec_tint * specular_intensity * 0;
+                specular_pass += specularColor.rgb * blinnPhongSpec * spec_tint * 0;
             }
 			else // default
             {
-                specular_pass += specularColor.rgb * blinnPhongSpec * spec_tint * specular_intensity;
+                specular_pass += specularColor.rgb * blinnPhongSpec * spec_tint;
                 //if (hasRamp == 1) // do ramps affect specular?
                 //    specular_pass = RampColor(specular_pass);
             }
 
 			//---------------------------------------------------------------------------------------------
             specular_pass *= mix(ao_map.rgb, vec3(1), aoMixIntensity);
-            vec3 specularLightColor = hsv2rgb(vec3(specularHue/360, specularSaturation, specularIntensity));
+            vec3 specularLightColor = hsv2rgb(vec3(specularHue/360, specularSaturation, specularIntensity * specular_intensity));
             specular_pass *= specularLightColor;
 
 		specular_pass = pow(specular_pass, vec3(2.2));

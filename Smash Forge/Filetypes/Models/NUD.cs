@@ -120,26 +120,6 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
             GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
 
-           /* GL.Uniform1(shader.getAttribute("ambient"), Runtime.amb_inten);
-            GL.Uniform1(shader.getAttribute("diffuse_intensity"), Runtime.dif_inten);
-            GL.Uniform1(shader.getAttribute("specular_intensity"), Runtime.spc_inten);
-            GL.Uniform1(shader.getAttribute("fresnel_intensity"), Runtime.frs_inten);
-            GL.Uniform1(shader.getAttribute("reflection_intensity"), Runtime.ref_inten);*/
-
-
-
-            if (Runtime.CameraLight)
-            {
-                Vector3 specDir = new Vector3(0f, 0f, -1f);
-                GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(specDir, view.Inverted()).Normalized());
-                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, view));
-            }
-            else
-            {
-                GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
-                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, view));
-            }
-
             {
 
                 GL.ActiveTexture(TextureUnit.Texture10);
