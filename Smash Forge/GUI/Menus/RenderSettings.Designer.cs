@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("test2");
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
@@ -111,6 +111,18 @@
             this.label10 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.label49 = new System.Windows.Forms.Label();
+            this.label50 = new System.Windows.Forms.Label();
+            this.label51 = new System.Windows.Forms.Label();
+            this.difRotY = new System.Windows.Forms.TextBox();
+            this.difRotX = new System.Windows.Forms.TextBox();
+            this.difRotZ = new System.Windows.Forms.TextBox();
+            this.label48 = new System.Windows.Forms.Label();
+            this.label47 = new System.Windows.Forms.Label();
+            this.label38 = new System.Windows.Forms.Label();
+            this.specRotY = new System.Windows.Forms.TextBox();
+            this.specRotX = new System.Windows.Forms.TextBox();
+            this.specRotZ = new System.Windows.Forms.TextBox();
             this.label43 = new System.Windows.Forms.Label();
             this.label44 = new System.Windows.Forms.Label();
             this.specularIntensity = new System.Windows.Forms.TextBox();
@@ -129,13 +141,6 @@
             this.label36 = new System.Windows.Forms.Label();
             this.label35 = new System.Windows.Forms.Label();
             this.label34 = new System.Windows.Forms.Label();
-            this.label31 = new System.Windows.Forms.Label();
-            this.fogIntensity = new System.Windows.Forms.TextBox();
-            this.label32 = new System.Windows.Forms.Label();
-            this.label33 = new System.Windows.Forms.Label();
-            this.fogSaturation = new System.Windows.Forms.TextBox();
-            this.fogHue = new System.Windows.Forms.TextBox();
-            this.FogCB = new System.Windows.Forms.CheckBox();
             this.label28 = new System.Windows.Forms.Label();
             this.fresnelSkyIntensity = new System.Windows.Forms.TextBox();
             this.label29 = new System.Windows.Forms.Label();
@@ -160,18 +165,66 @@
             this.label19 = new System.Windows.Forms.Label();
             this.diffuseSaturation = new System.Windows.Forms.TextBox();
             this.diffuseHue = new System.Windows.Forms.TextBox();
-            this.specRotZ = new System.Windows.Forms.TextBox();
-            this.specRotX = new System.Windows.Forms.TextBox();
-            this.specRotY = new System.Windows.Forms.TextBox();
-            this.label38 = new System.Windows.Forms.Label();
-            this.label47 = new System.Windows.Forms.Label();
-            this.label48 = new System.Windows.Forms.Label();
-            this.label49 = new System.Windows.Forms.Label();
-            this.label50 = new System.Windows.Forms.Label();
-            this.label51 = new System.Windows.Forms.Label();
-            this.difRotY = new System.Windows.Forms.TextBox();
-            this.difRotX = new System.Windows.Forms.TextBox();
-            this.difRotZ = new System.Windows.Forms.TextBox();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.stageLight3CB = new System.Windows.Forms.CheckBox();
+            this.stageLight4CB = new System.Windows.Forms.CheckBox();
+            this.stageLight2CB = new System.Windows.Forms.CheckBox();
+            this.stageLight1CB = new System.Windows.Forms.CheckBox();
+            this.label73 = new System.Windows.Forms.Label();
+            this.label74 = new System.Windows.Forms.Label();
+            this.label75 = new System.Windows.Forms.Label();
+            this.stage3RotY = new System.Windows.Forms.TextBox();
+            this.stage3RotX = new System.Windows.Forms.TextBox();
+            this.stage3RotZ = new System.Windows.Forms.TextBox();
+            this.label77 = new System.Windows.Forms.Label();
+            this.stage3Intensity = new System.Windows.Forms.TextBox();
+            this.label78 = new System.Windows.Forms.Label();
+            this.label79 = new System.Windows.Forms.Label();
+            this.stage3Saturation = new System.Windows.Forms.TextBox();
+            this.stage3Hue = new System.Windows.Forms.TextBox();
+            this.label66 = new System.Windows.Forms.Label();
+            this.label67 = new System.Windows.Forms.Label();
+            this.label68 = new System.Windows.Forms.Label();
+            this.stage4RotY = new System.Windows.Forms.TextBox();
+            this.stage4RotX = new System.Windows.Forms.TextBox();
+            this.stage4RotZ = new System.Windows.Forms.TextBox();
+            this.label70 = new System.Windows.Forms.Label();
+            this.stage4Intensity = new System.Windows.Forms.TextBox();
+            this.label71 = new System.Windows.Forms.Label();
+            this.label72 = new System.Windows.Forms.Label();
+            this.stage4Saturation = new System.Windows.Forms.TextBox();
+            this.stage4Hue = new System.Windows.Forms.TextBox();
+            this.label59 = new System.Windows.Forms.Label();
+            this.label60 = new System.Windows.Forms.Label();
+            this.label61 = new System.Windows.Forms.Label();
+            this.stage2RotY = new System.Windows.Forms.TextBox();
+            this.stage2RotX = new System.Windows.Forms.TextBox();
+            this.stage2RotZ = new System.Windows.Forms.TextBox();
+            this.label63 = new System.Windows.Forms.Label();
+            this.stage2Intensity = new System.Windows.Forms.TextBox();
+            this.label64 = new System.Windows.Forms.Label();
+            this.label65 = new System.Windows.Forms.Label();
+            this.stage2Saturation = new System.Windows.Forms.TextBox();
+            this.stage2Hue = new System.Windows.Forms.TextBox();
+            this.label52 = new System.Windows.Forms.Label();
+            this.label53 = new System.Windows.Forms.Label();
+            this.label54 = new System.Windows.Forms.Label();
+            this.stage1RotY = new System.Windows.Forms.TextBox();
+            this.stage1RotX = new System.Windows.Forms.TextBox();
+            this.stage1RotZ = new System.Windows.Forms.TextBox();
+            this.label56 = new System.Windows.Forms.Label();
+            this.stage1Intensity = new System.Windows.Forms.TextBox();
+            this.label57 = new System.Windows.Forms.Label();
+            this.label58 = new System.Windows.Forms.Label();
+            this.stage1Saturation = new System.Windows.Forms.TextBox();
+            this.stage1Hue = new System.Windows.Forms.TextBox();
+            this.label31 = new System.Windows.Forms.Label();
+            this.fogIntensity = new System.Windows.Forms.TextBox();
+            this.label32 = new System.Windows.Forms.Label();
+            this.label33 = new System.Windows.Forms.Label();
+            this.fogSaturation = new System.Windows.Forms.TextBox();
+            this.fogHue = new System.Windows.Forms.TextBox();
+            this.FogCB = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -188,6 +241,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudHurtboxAlpha)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).BeginInit();
             this.tabPage3.SuspendLayout();
+            this.tabPage4.SuspendLayout();
             this.SuspendLayout();
             // 
             // checkBox1
@@ -785,6 +839,7 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -798,7 +853,7 @@
             this.tabPage1.Controls.Add(this.groupBox1);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(556, 515);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
@@ -838,7 +893,7 @@
             this.tabPage2.Controls.Add(this.checkBox16);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(556, 515);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Hit/Hurt boxes";
@@ -1068,8 +1123,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem7,
-            listViewItem8});
+            listViewItem1,
+            listViewItem2});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -1138,13 +1193,6 @@
             this.tabPage3.Controls.Add(this.label36);
             this.tabPage3.Controls.Add(this.label35);
             this.tabPage3.Controls.Add(this.label34);
-            this.tabPage3.Controls.Add(this.label31);
-            this.tabPage3.Controls.Add(this.fogIntensity);
-            this.tabPage3.Controls.Add(this.label32);
-            this.tabPage3.Controls.Add(this.label33);
-            this.tabPage3.Controls.Add(this.fogSaturation);
-            this.tabPage3.Controls.Add(this.fogHue);
-            this.tabPage3.Controls.Add(this.FogCB);
             this.tabPage3.Controls.Add(this.label28);
             this.tabPage3.Controls.Add(this.fresnelSkyIntensity);
             this.tabPage3.Controls.Add(this.label29);
@@ -1170,543 +1218,12 @@
             this.tabPage3.Controls.Add(this.diffuseSaturation);
             this.tabPage3.Controls.Add(this.diffuseHue);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage3.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(2);
             this.tabPage3.Size = new System.Drawing.Size(556, 515);
             this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Stage Lighting";
-            // 
-            // label43
-            // 
-            this.label43.AutoSize = true;
-            this.label43.Location = new System.Drawing.Point(215, 192);
-            this.label43.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(49, 13);
-            this.label43.TabIndex = 49;
-            this.label43.Text = "Specular";
-            // 
-            // label44
-            // 
-            this.label44.AutoSize = true;
-            this.label44.Location = new System.Drawing.Point(247, 256);
-            this.label44.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label44.Name = "label44";
-            this.label44.Size = new System.Drawing.Size(46, 13);
-            this.label44.TabIndex = 48;
-            this.label44.Text = "Intensity";
-            // 
-            // specularIntensity
-            // 
-            this.specularIntensity.Location = new System.Drawing.Point(314, 255);
-            this.specularIntensity.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.specularIntensity.Name = "specularIntensity";
-            this.specularIntensity.Size = new System.Drawing.Size(52, 20);
-            this.specularIntensity.TabIndex = 47;
-            this.specularIntensity.TextChanged += new System.EventHandler(this.specularIntensity_TextChanged);
-            // 
-            // label45
-            // 
-            this.label45.AutoSize = true;
-            this.label45.Location = new System.Drawing.Point(247, 234);
-            this.label45.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label45.Name = "label45";
-            this.label45.Size = new System.Drawing.Size(55, 13);
-            this.label45.TabIndex = 46;
-            this.label45.Text = "Saturation";
-            // 
-            // label46
-            // 
-            this.label46.AutoSize = true;
-            this.label46.Location = new System.Drawing.Point(247, 211);
-            this.label46.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label46.Name = "label46";
-            this.label46.Size = new System.Drawing.Size(27, 13);
-            this.label46.TabIndex = 45;
-            this.label46.Text = "Hue";
-            // 
-            // specularSaturation
-            // 
-            this.specularSaturation.Location = new System.Drawing.Point(314, 232);
-            this.specularSaturation.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.specularSaturation.Name = "specularSaturation";
-            this.specularSaturation.Size = new System.Drawing.Size(52, 20);
-            this.specularSaturation.TabIndex = 44;
-            this.specularSaturation.TextChanged += new System.EventHandler(this.specularSaturation_TextChanged);
-            // 
-            // specularHue
-            // 
-            this.specularHue.Location = new System.Drawing.Point(314, 210);
-            this.specularHue.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.specularHue.Name = "specularHue";
-            this.specularHue.Size = new System.Drawing.Size(52, 20);
-            this.specularHue.TabIndex = 43;
-            this.specularHue.TextChanged += new System.EventHandler(this.specularHue_TextChanged);
-            // 
-            // label39
-            // 
-            this.label39.AutoSize = true;
-            this.label39.Location = new System.Drawing.Point(214, 101);
-            this.label39.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(55, 13);
-            this.label39.TabIndex = 42;
-            this.label39.Text = "Reflection";
-            // 
-            // label40
-            // 
-            this.label40.AutoSize = true;
-            this.label40.Location = new System.Drawing.Point(246, 165);
-            this.label40.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label40.Name = "label40";
-            this.label40.Size = new System.Drawing.Size(46, 13);
-            this.label40.TabIndex = 41;
-            this.label40.Text = "Intensity";
-            // 
-            // reflectionIntensity
-            // 
-            this.reflectionIntensity.Location = new System.Drawing.Point(314, 164);
-            this.reflectionIntensity.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.reflectionIntensity.Name = "reflectionIntensity";
-            this.reflectionIntensity.Size = new System.Drawing.Size(52, 20);
-            this.reflectionIntensity.TabIndex = 40;
-            this.reflectionIntensity.TextChanged += new System.EventHandler(this.reflectionIntensity_TextChanged);
-            // 
-            // label41
-            // 
-            this.label41.AutoSize = true;
-            this.label41.Location = new System.Drawing.Point(246, 143);
-            this.label41.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(55, 13);
-            this.label41.TabIndex = 39;
-            this.label41.Text = "Saturation";
-            // 
-            // label42
-            // 
-            this.label42.AutoSize = true;
-            this.label42.Location = new System.Drawing.Point(246, 121);
-            this.label42.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label42.Name = "label42";
-            this.label42.Size = new System.Drawing.Size(27, 13);
-            this.label42.TabIndex = 38;
-            this.label42.Text = "Hue";
-            // 
-            // reflectionSaturation
-            // 
-            this.reflectionSaturation.Location = new System.Drawing.Point(314, 141);
-            this.reflectionSaturation.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.reflectionSaturation.Name = "reflectionSaturation";
-            this.reflectionSaturation.Size = new System.Drawing.Size(52, 20);
-            this.reflectionSaturation.TabIndex = 37;
-            this.reflectionSaturation.TextChanged += new System.EventHandler(this.reflectionSaturation_TextChanged);
-            // 
-            // reflectionHue
-            // 
-            this.reflectionHue.Location = new System.Drawing.Point(314, 119);
-            this.reflectionHue.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.reflectionHue.Name = "reflectionHue";
-            this.reflectionHue.Size = new System.Drawing.Size(52, 20);
-            this.reflectionHue.TabIndex = 36;
-            this.reflectionHue.TextChanged += new System.EventHandler(this.reflectionHue_TextChanged);
-            // 
-            // label37
-            // 
-            this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(9, 285);
-            this.label37.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(62, 13);
-            this.label37.TabIndex = 34;
-            this.label37.Text = "Fresnel Sky";
-            // 
-            // label36
-            // 
-            this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(9, 375);
-            this.label36.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(79, 13);
-            this.label36.TabIndex = 33;
-            this.label36.Text = "Fresnel Ground";
-            // 
-            // label35
-            // 
-            this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(9, 192);
-            this.label35.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(45, 13);
-            this.label35.TabIndex = 32;
-            this.label35.Text = "Ambient";
-            this.label35.Click += new System.EventHandler(this.label35_Click);
-            // 
-            // label34
-            // 
-            this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(9, 10);
-            this.label34.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(40, 13);
-            this.label34.TabIndex = 31;
-            this.label34.Text = "Diffuse";
-            // 
-            // label31
-            // 
-            this.label31.AutoSize = true;
-            this.label31.Enabled = false;
-            this.label31.Location = new System.Drawing.Point(250, 74);
-            this.label31.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(46, 13);
-            this.label31.TabIndex = 30;
-            this.label31.Text = "Intensity";
-            // 
-            // fogIntensity
-            // 
-            this.fogIntensity.Enabled = false;
-            this.fogIntensity.Location = new System.Drawing.Point(313, 72);
-            this.fogIntensity.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.fogIntensity.Name = "fogIntensity";
-            this.fogIntensity.Size = new System.Drawing.Size(52, 20);
-            this.fogIntensity.TabIndex = 29;
-            this.fogIntensity.TextChanged += new System.EventHandler(this.fogIntensity_TextChanged);
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.Enabled = false;
-            this.label32.Location = new System.Drawing.Point(250, 51);
-            this.label32.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(55, 13);
-            this.label32.TabIndex = 28;
-            this.label32.Text = "Saturation";
-            // 
-            // label33
-            // 
-            this.label33.AutoSize = true;
-            this.label33.Enabled = false;
-            this.label33.Location = new System.Drawing.Point(250, 29);
-            this.label33.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(27, 13);
-            this.label33.TabIndex = 27;
-            this.label33.Text = "Hue";
-            this.label33.Click += new System.EventHandler(this.label33_Click);
-            // 
-            // fogSaturation
-            // 
-            this.fogSaturation.Enabled = false;
-            this.fogSaturation.Location = new System.Drawing.Point(313, 50);
-            this.fogSaturation.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.fogSaturation.Name = "fogSaturation";
-            this.fogSaturation.Size = new System.Drawing.Size(52, 20);
-            this.fogSaturation.TabIndex = 26;
-            this.fogSaturation.TextChanged += new System.EventHandler(this.fogSaturation_TextChanged);
-            // 
-            // fogHue
-            // 
-            this.fogHue.Enabled = false;
-            this.fogHue.Location = new System.Drawing.Point(313, 28);
-            this.fogHue.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.fogHue.Name = "fogHue";
-            this.fogHue.Size = new System.Drawing.Size(52, 20);
-            this.fogHue.TabIndex = 25;
-            this.fogHue.TextChanged += new System.EventHandler(this.fogHue_TextChanged);
-            // 
-            // FogCB
-            // 
-            this.FogCB.AutoSize = true;
-            this.FogCB.Location = new System.Drawing.Point(217, 10);
-            this.FogCB.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.FogCB.Name = "FogCB";
-            this.FogCB.Size = new System.Drawing.Size(82, 17);
-            this.FogCB.TabIndex = 24;
-            this.FogCB.Text = "Render Fog";
-            this.FogCB.UseVisualStyleBackColor = true;
-            this.FogCB.CheckedChanged += new System.EventHandler(this.FogCB_CheckedChanged);
-            // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(41, 347);
-            this.label28.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(46, 13);
-            this.label28.TabIndex = 23;
-            this.label28.Text = "Intensity";
-            // 
-            // fresnelSkyIntensity
-            // 
-            this.fresnelSkyIntensity.Location = new System.Drawing.Point(108, 346);
-            this.fresnelSkyIntensity.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.fresnelSkyIntensity.Name = "fresnelSkyIntensity";
-            this.fresnelSkyIntensity.Size = new System.Drawing.Size(52, 20);
-            this.fresnelSkyIntensity.TabIndex = 22;
-            this.fresnelSkyIntensity.TextChanged += new System.EventHandler(this.fresnelSkyIntensity_TextChanged);
-            // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(41, 325);
-            this.label29.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(55, 13);
-            this.label29.TabIndex = 21;
-            this.label29.Text = "Saturation";
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(41, 303);
-            this.label30.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(27, 13);
-            this.label30.TabIndex = 20;
-            this.label30.Text = "Hue";
-            // 
-            // fresnelSkySaturation
-            // 
-            this.fresnelSkySaturation.Location = new System.Drawing.Point(108, 323);
-            this.fresnelSkySaturation.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.fresnelSkySaturation.Name = "fresnelSkySaturation";
-            this.fresnelSkySaturation.Size = new System.Drawing.Size(52, 20);
-            this.fresnelSkySaturation.TabIndex = 19;
-            this.fresnelSkySaturation.TextChanged += new System.EventHandler(this.fresnelSkySaturation_TextChanged);
-            // 
-            // fresnelSkyHue
-            // 
-            this.fresnelSkyHue.Location = new System.Drawing.Point(108, 301);
-            this.fresnelSkyHue.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.fresnelSkyHue.Name = "fresnelSkyHue";
-            this.fresnelSkyHue.Size = new System.Drawing.Size(52, 20);
-            this.fresnelSkyHue.TabIndex = 18;
-            this.fresnelSkyHue.TextChanged += new System.EventHandler(this.fresnelSkyHue_TextChanged);
-            // 
-            // label25
-            // 
-            this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(41, 435);
-            this.label25.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(46, 13);
-            this.label25.TabIndex = 17;
-            this.label25.Text = "Intensity";
-            // 
-            // fresnelGroundIntensity
-            // 
-            this.fresnelGroundIntensity.Location = new System.Drawing.Point(108, 433);
-            this.fresnelGroundIntensity.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.fresnelGroundIntensity.Name = "fresnelGroundIntensity";
-            this.fresnelGroundIntensity.Size = new System.Drawing.Size(52, 20);
-            this.fresnelGroundIntensity.TabIndex = 16;
-            this.fresnelGroundIntensity.TextChanged += new System.EventHandler(this.fresnelGroundIntensity_TextChanged);
-            // 
-            // label26
-            // 
-            this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(41, 412);
-            this.label26.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(55, 13);
-            this.label26.TabIndex = 15;
-            this.label26.Text = "Saturation";
-            // 
-            // label27
-            // 
-            this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(41, 390);
-            this.label27.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(27, 13);
-            this.label27.TabIndex = 14;
-            this.label27.Text = "Hue";
-            // 
-            // fresnelGroundSaturation
-            // 
-            this.fresnelGroundSaturation.Location = new System.Drawing.Point(108, 411);
-            this.fresnelGroundSaturation.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.fresnelGroundSaturation.Name = "fresnelGroundSaturation";
-            this.fresnelGroundSaturation.Size = new System.Drawing.Size(52, 20);
-            this.fresnelGroundSaturation.TabIndex = 13;
-            this.fresnelGroundSaturation.TextChanged += new System.EventHandler(this.fresnelGroundSaturation_TextChanged);
-            // 
-            // fresnelGroundHue
-            // 
-            this.fresnelGroundHue.Location = new System.Drawing.Point(108, 388);
-            this.fresnelGroundHue.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.fresnelGroundHue.Name = "fresnelGroundHue";
-            this.fresnelGroundHue.Size = new System.Drawing.Size(52, 20);
-            this.fresnelGroundHue.TabIndex = 12;
-            this.fresnelGroundHue.TextChanged += new System.EventHandler(this.fresnelGroundHue_TextChanged);
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(42, 258);
-            this.label22.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(46, 13);
-            this.label22.TabIndex = 11;
-            this.label22.Text = "Intensity";
-            // 
-            // ambientIntensity
-            // 
-            this.ambientIntensity.Location = new System.Drawing.Point(108, 256);
-            this.ambientIntensity.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.ambientIntensity.Name = "ambientIntensity";
-            this.ambientIntensity.Size = new System.Drawing.Size(52, 20);
-            this.ambientIntensity.TabIndex = 10;
-            this.ambientIntensity.TextChanged += new System.EventHandler(this.ambientIntensity_TextChanged);
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(42, 236);
-            this.label23.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(55, 13);
-            this.label23.TabIndex = 9;
-            this.label23.Text = "Saturation";
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(42, 215);
-            this.label24.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(27, 13);
-            this.label24.TabIndex = 8;
-            this.label24.Text = "Hue";
-            // 
-            // ambientSaturation
-            // 
-            this.ambientSaturation.Location = new System.Drawing.Point(108, 234);
-            this.ambientSaturation.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.ambientSaturation.Name = "ambientSaturation";
-            this.ambientSaturation.Size = new System.Drawing.Size(52, 20);
-            this.ambientSaturation.TabIndex = 7;
-            this.ambientSaturation.TextChanged += new System.EventHandler(this.ambientSaturation_TextChanged);
-            // 
-            // ambientHue
-            // 
-            this.ambientHue.Location = new System.Drawing.Point(108, 212);
-            this.ambientHue.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.ambientHue.Name = "ambientHue";
-            this.ambientHue.Size = new System.Drawing.Size(52, 20);
-            this.ambientHue.TabIndex = 6;
-            this.ambientHue.TextChanged += new System.EventHandler(this.ambientHue_TextChanged);
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(41, 74);
-            this.label21.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(46, 13);
-            this.label21.TabIndex = 5;
-            this.label21.Text = "Intensity";
-            // 
-            // diffuseIntensity
-            // 
-            this.diffuseIntensity.Location = new System.Drawing.Point(108, 72);
-            this.diffuseIntensity.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.diffuseIntensity.Name = "diffuseIntensity";
-            this.diffuseIntensity.Size = new System.Drawing.Size(52, 20);
-            this.diffuseIntensity.TabIndex = 4;
-            this.diffuseIntensity.TextChanged += new System.EventHandler(this.diffuseIntensity_TextChanged);
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(41, 51);
-            this.label20.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(55, 13);
-            this.label20.TabIndex = 3;
-            this.label20.Text = "Saturation";
-            this.label20.Click += new System.EventHandler(this.label20_Click);
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(41, 29);
-            this.label19.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(27, 13);
-            this.label19.TabIndex = 2;
-            this.label19.Text = "Hue";
-            // 
-            // diffuseSaturation
-            // 
-            this.diffuseSaturation.Location = new System.Drawing.Point(108, 50);
-            this.diffuseSaturation.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.diffuseSaturation.Name = "diffuseSaturation";
-            this.diffuseSaturation.Size = new System.Drawing.Size(52, 20);
-            this.diffuseSaturation.TabIndex = 1;
-            this.diffuseSaturation.TextChanged += new System.EventHandler(this.diffuseSaturation_TextChanged);
-            // 
-            // diffuseHue
-            // 
-            this.diffuseHue.Location = new System.Drawing.Point(108, 28);
-            this.diffuseHue.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.diffuseHue.Name = "diffuseHue";
-            this.diffuseHue.Size = new System.Drawing.Size(52, 20);
-            this.diffuseHue.TabIndex = 0;
-            this.diffuseHue.TextChanged += new System.EventHandler(this.diffuseHue_TextChanged);
-            // 
-            // specRotZ
-            // 
-            this.specRotZ.Location = new System.Drawing.Point(314, 324);
-            this.specRotZ.Name = "specRotZ";
-            this.specRotZ.Size = new System.Drawing.Size(53, 20);
-            this.specRotZ.TabIndex = 50;
-            // 
-            // specRotX
-            // 
-            this.specRotX.Location = new System.Drawing.Point(314, 278);
-            this.specRotX.Name = "specRotX";
-            this.specRotX.Size = new System.Drawing.Size(53, 20);
-            this.specRotX.TabIndex = 51;
-            this.specRotX.TextChanged += new System.EventHandler(this.specRotX_TextChanged);
-            // 
-            // specRotY
-            // 
-            this.specRotY.Location = new System.Drawing.Point(314, 301);
-            this.specRotY.Name = "specRotY";
-            this.specRotY.Size = new System.Drawing.Size(53, 20);
-            this.specRotY.TabIndex = 52;
-            this.specRotY.TextChanged += new System.EventHandler(this.specRotY_TextChanged);
-            // 
-            // label38
-            // 
-            this.label38.AutoSize = true;
-            this.label38.Location = new System.Drawing.Point(247, 282);
-            this.label38.Name = "label38";
-            this.label38.Size = new System.Drawing.Size(34, 13);
-            this.label38.TabIndex = 53;
-            this.label38.Text = "Rot X";
-            // 
-            // label47
-            // 
-            this.label47.AutoSize = true;
-            this.label47.Location = new System.Drawing.Point(247, 305);
-            this.label47.Name = "label47";
-            this.label47.Size = new System.Drawing.Size(34, 13);
-            this.label47.TabIndex = 54;
-            this.label47.Text = "Rot Y";
-            this.label47.Click += new System.EventHandler(this.label47_Click);
-            // 
-            // label48
-            // 
-            this.label48.AutoSize = true;
-            this.label48.Location = new System.Drawing.Point(247, 328);
-            this.label48.Name = "label48";
-            this.label48.Size = new System.Drawing.Size(34, 13);
-            this.label48.TabIndex = 55;
-            this.label48.Text = "Rot Z";
+            this.tabPage3.Text = "Character Lighting";
             // 
             // label49
             // 
@@ -1759,6 +1276,1108 @@
             this.difRotZ.TabIndex = 56;
             this.difRotZ.TextChanged += new System.EventHandler(this.difRotZ_TextChanged);
             // 
+            // label48
+            // 
+            this.label48.AutoSize = true;
+            this.label48.Location = new System.Drawing.Point(246, 146);
+            this.label48.Name = "label48";
+            this.label48.Size = new System.Drawing.Size(34, 13);
+            this.label48.TabIndex = 55;
+            this.label48.Text = "Rot Z";
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.Location = new System.Drawing.Point(246, 123);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(34, 13);
+            this.label47.TabIndex = 54;
+            this.label47.Text = "Rot Y";
+            this.label47.Click += new System.EventHandler(this.label47_Click);
+            // 
+            // label38
+            // 
+            this.label38.AutoSize = true;
+            this.label38.Location = new System.Drawing.Point(246, 100);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(34, 13);
+            this.label38.TabIndex = 53;
+            this.label38.Text = "Rot X";
+            // 
+            // specRotY
+            // 
+            this.specRotY.Location = new System.Drawing.Point(313, 119);
+            this.specRotY.Name = "specRotY";
+            this.specRotY.Size = new System.Drawing.Size(53, 20);
+            this.specRotY.TabIndex = 52;
+            this.specRotY.TextChanged += new System.EventHandler(this.specRotY_TextChanged);
+            // 
+            // specRotX
+            // 
+            this.specRotX.Location = new System.Drawing.Point(313, 96);
+            this.specRotX.Name = "specRotX";
+            this.specRotX.Size = new System.Drawing.Size(53, 20);
+            this.specRotX.TabIndex = 51;
+            this.specRotX.TextChanged += new System.EventHandler(this.specRotX_TextChanged);
+            // 
+            // specRotZ
+            // 
+            this.specRotZ.Location = new System.Drawing.Point(313, 142);
+            this.specRotZ.Name = "specRotZ";
+            this.specRotZ.Size = new System.Drawing.Size(53, 20);
+            this.specRotZ.TabIndex = 50;
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Location = new System.Drawing.Point(214, 10);
+            this.label43.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(49, 13);
+            this.label43.TabIndex = 49;
+            this.label43.Text = "Specular";
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(246, 74);
+            this.label44.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(46, 13);
+            this.label44.TabIndex = 48;
+            this.label44.Text = "Intensity";
+            // 
+            // specularIntensity
+            // 
+            this.specularIntensity.Location = new System.Drawing.Point(313, 73);
+            this.specularIntensity.Margin = new System.Windows.Forms.Padding(2);
+            this.specularIntensity.Name = "specularIntensity";
+            this.specularIntensity.Size = new System.Drawing.Size(52, 20);
+            this.specularIntensity.TabIndex = 47;
+            this.specularIntensity.TextChanged += new System.EventHandler(this.specularIntensity_TextChanged);
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(246, 52);
+            this.label45.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(55, 13);
+            this.label45.TabIndex = 46;
+            this.label45.Text = "Saturation";
+            // 
+            // label46
+            // 
+            this.label46.AutoSize = true;
+            this.label46.Location = new System.Drawing.Point(246, 29);
+            this.label46.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(27, 13);
+            this.label46.TabIndex = 45;
+            this.label46.Text = "Hue";
+            // 
+            // specularSaturation
+            // 
+            this.specularSaturation.Location = new System.Drawing.Point(313, 50);
+            this.specularSaturation.Margin = new System.Windows.Forms.Padding(2);
+            this.specularSaturation.Name = "specularSaturation";
+            this.specularSaturation.Size = new System.Drawing.Size(52, 20);
+            this.specularSaturation.TabIndex = 44;
+            this.specularSaturation.TextChanged += new System.EventHandler(this.specularSaturation_TextChanged);
+            // 
+            // specularHue
+            // 
+            this.specularHue.Location = new System.Drawing.Point(313, 28);
+            this.specularHue.Margin = new System.Windows.Forms.Padding(2);
+            this.specularHue.Name = "specularHue";
+            this.specularHue.Size = new System.Drawing.Size(52, 20);
+            this.specularHue.TabIndex = 43;
+            this.specularHue.TextChanged += new System.EventHandler(this.specularHue_TextChanged);
+            // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Location = new System.Drawing.Point(208, 192);
+            this.label39.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(55, 13);
+            this.label39.TabIndex = 42;
+            this.label39.Text = "Reflection";
+            // 
+            // label40
+            // 
+            this.label40.AutoSize = true;
+            this.label40.Location = new System.Drawing.Point(240, 256);
+            this.label40.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(46, 13);
+            this.label40.TabIndex = 41;
+            this.label40.Text = "Intensity";
+            // 
+            // reflectionIntensity
+            // 
+            this.reflectionIntensity.Location = new System.Drawing.Point(308, 255);
+            this.reflectionIntensity.Margin = new System.Windows.Forms.Padding(2);
+            this.reflectionIntensity.Name = "reflectionIntensity";
+            this.reflectionIntensity.Size = new System.Drawing.Size(52, 20);
+            this.reflectionIntensity.TabIndex = 40;
+            this.reflectionIntensity.TextChanged += new System.EventHandler(this.reflectionIntensity_TextChanged);
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(240, 234);
+            this.label41.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(55, 13);
+            this.label41.TabIndex = 39;
+            this.label41.Text = "Saturation";
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(240, 212);
+            this.label42.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(27, 13);
+            this.label42.TabIndex = 38;
+            this.label42.Text = "Hue";
+            // 
+            // reflectionSaturation
+            // 
+            this.reflectionSaturation.Location = new System.Drawing.Point(308, 232);
+            this.reflectionSaturation.Margin = new System.Windows.Forms.Padding(2);
+            this.reflectionSaturation.Name = "reflectionSaturation";
+            this.reflectionSaturation.Size = new System.Drawing.Size(52, 20);
+            this.reflectionSaturation.TabIndex = 37;
+            this.reflectionSaturation.TextChanged += new System.EventHandler(this.reflectionSaturation_TextChanged);
+            // 
+            // reflectionHue
+            // 
+            this.reflectionHue.Location = new System.Drawing.Point(308, 210);
+            this.reflectionHue.Margin = new System.Windows.Forms.Padding(2);
+            this.reflectionHue.Name = "reflectionHue";
+            this.reflectionHue.Size = new System.Drawing.Size(52, 20);
+            this.reflectionHue.TabIndex = 36;
+            this.reflectionHue.TextChanged += new System.EventHandler(this.reflectionHue_TextChanged);
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Location = new System.Drawing.Point(9, 285);
+            this.label37.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(62, 13);
+            this.label37.TabIndex = 34;
+            this.label37.Text = "Fresnel Sky";
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(9, 375);
+            this.label36.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(79, 13);
+            this.label36.TabIndex = 33;
+            this.label36.Text = "Fresnel Ground";
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(9, 192);
+            this.label35.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(45, 13);
+            this.label35.TabIndex = 32;
+            this.label35.Text = "Ambient";
+            this.label35.Click += new System.EventHandler(this.label35_Click);
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(9, 10);
+            this.label34.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(40, 13);
+            this.label34.TabIndex = 31;
+            this.label34.Text = "Diffuse";
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(41, 347);
+            this.label28.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(46, 13);
+            this.label28.TabIndex = 23;
+            this.label28.Text = "Intensity";
+            // 
+            // fresnelSkyIntensity
+            // 
+            this.fresnelSkyIntensity.Location = new System.Drawing.Point(108, 346);
+            this.fresnelSkyIntensity.Margin = new System.Windows.Forms.Padding(2);
+            this.fresnelSkyIntensity.Name = "fresnelSkyIntensity";
+            this.fresnelSkyIntensity.Size = new System.Drawing.Size(52, 20);
+            this.fresnelSkyIntensity.TabIndex = 22;
+            this.fresnelSkyIntensity.TextChanged += new System.EventHandler(this.fresnelSkyIntensity_TextChanged);
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(41, 325);
+            this.label29.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(55, 13);
+            this.label29.TabIndex = 21;
+            this.label29.Text = "Saturation";
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(41, 303);
+            this.label30.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(27, 13);
+            this.label30.TabIndex = 20;
+            this.label30.Text = "Hue";
+            // 
+            // fresnelSkySaturation
+            // 
+            this.fresnelSkySaturation.Location = new System.Drawing.Point(108, 323);
+            this.fresnelSkySaturation.Margin = new System.Windows.Forms.Padding(2);
+            this.fresnelSkySaturation.Name = "fresnelSkySaturation";
+            this.fresnelSkySaturation.Size = new System.Drawing.Size(52, 20);
+            this.fresnelSkySaturation.TabIndex = 19;
+            this.fresnelSkySaturation.TextChanged += new System.EventHandler(this.fresnelSkySaturation_TextChanged);
+            // 
+            // fresnelSkyHue
+            // 
+            this.fresnelSkyHue.Location = new System.Drawing.Point(108, 301);
+            this.fresnelSkyHue.Margin = new System.Windows.Forms.Padding(2);
+            this.fresnelSkyHue.Name = "fresnelSkyHue";
+            this.fresnelSkyHue.Size = new System.Drawing.Size(52, 20);
+            this.fresnelSkyHue.TabIndex = 18;
+            this.fresnelSkyHue.TextChanged += new System.EventHandler(this.fresnelSkyHue_TextChanged);
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(41, 435);
+            this.label25.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(46, 13);
+            this.label25.TabIndex = 17;
+            this.label25.Text = "Intensity";
+            // 
+            // fresnelGroundIntensity
+            // 
+            this.fresnelGroundIntensity.Location = new System.Drawing.Point(108, 433);
+            this.fresnelGroundIntensity.Margin = new System.Windows.Forms.Padding(2);
+            this.fresnelGroundIntensity.Name = "fresnelGroundIntensity";
+            this.fresnelGroundIntensity.Size = new System.Drawing.Size(52, 20);
+            this.fresnelGroundIntensity.TabIndex = 16;
+            this.fresnelGroundIntensity.TextChanged += new System.EventHandler(this.fresnelGroundIntensity_TextChanged);
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(41, 412);
+            this.label26.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(55, 13);
+            this.label26.TabIndex = 15;
+            this.label26.Text = "Saturation";
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(41, 390);
+            this.label27.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(27, 13);
+            this.label27.TabIndex = 14;
+            this.label27.Text = "Hue";
+            // 
+            // fresnelGroundSaturation
+            // 
+            this.fresnelGroundSaturation.Location = new System.Drawing.Point(108, 411);
+            this.fresnelGroundSaturation.Margin = new System.Windows.Forms.Padding(2);
+            this.fresnelGroundSaturation.Name = "fresnelGroundSaturation";
+            this.fresnelGroundSaturation.Size = new System.Drawing.Size(52, 20);
+            this.fresnelGroundSaturation.TabIndex = 13;
+            this.fresnelGroundSaturation.TextChanged += new System.EventHandler(this.fresnelGroundSaturation_TextChanged);
+            // 
+            // fresnelGroundHue
+            // 
+            this.fresnelGroundHue.Location = new System.Drawing.Point(108, 388);
+            this.fresnelGroundHue.Margin = new System.Windows.Forms.Padding(2);
+            this.fresnelGroundHue.Name = "fresnelGroundHue";
+            this.fresnelGroundHue.Size = new System.Drawing.Size(52, 20);
+            this.fresnelGroundHue.TabIndex = 12;
+            this.fresnelGroundHue.TextChanged += new System.EventHandler(this.fresnelGroundHue_TextChanged);
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(42, 258);
+            this.label22.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(46, 13);
+            this.label22.TabIndex = 11;
+            this.label22.Text = "Intensity";
+            // 
+            // ambientIntensity
+            // 
+            this.ambientIntensity.Location = new System.Drawing.Point(108, 256);
+            this.ambientIntensity.Margin = new System.Windows.Forms.Padding(2);
+            this.ambientIntensity.Name = "ambientIntensity";
+            this.ambientIntensity.Size = new System.Drawing.Size(52, 20);
+            this.ambientIntensity.TabIndex = 10;
+            this.ambientIntensity.TextChanged += new System.EventHandler(this.ambientIntensity_TextChanged);
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(42, 236);
+            this.label23.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(55, 13);
+            this.label23.TabIndex = 9;
+            this.label23.Text = "Saturation";
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(42, 215);
+            this.label24.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(27, 13);
+            this.label24.TabIndex = 8;
+            this.label24.Text = "Hue";
+            // 
+            // ambientSaturation
+            // 
+            this.ambientSaturation.Location = new System.Drawing.Point(108, 234);
+            this.ambientSaturation.Margin = new System.Windows.Forms.Padding(2);
+            this.ambientSaturation.Name = "ambientSaturation";
+            this.ambientSaturation.Size = new System.Drawing.Size(52, 20);
+            this.ambientSaturation.TabIndex = 7;
+            this.ambientSaturation.TextChanged += new System.EventHandler(this.ambientSaturation_TextChanged);
+            // 
+            // ambientHue
+            // 
+            this.ambientHue.Location = new System.Drawing.Point(108, 212);
+            this.ambientHue.Margin = new System.Windows.Forms.Padding(2);
+            this.ambientHue.Name = "ambientHue";
+            this.ambientHue.Size = new System.Drawing.Size(52, 20);
+            this.ambientHue.TabIndex = 6;
+            this.ambientHue.TextChanged += new System.EventHandler(this.ambientHue_TextChanged);
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(41, 74);
+            this.label21.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(46, 13);
+            this.label21.TabIndex = 5;
+            this.label21.Text = "Intensity";
+            // 
+            // diffuseIntensity
+            // 
+            this.diffuseIntensity.Location = new System.Drawing.Point(108, 72);
+            this.diffuseIntensity.Margin = new System.Windows.Forms.Padding(2);
+            this.diffuseIntensity.Name = "diffuseIntensity";
+            this.diffuseIntensity.Size = new System.Drawing.Size(52, 20);
+            this.diffuseIntensity.TabIndex = 4;
+            this.diffuseIntensity.TextChanged += new System.EventHandler(this.diffuseIntensity_TextChanged);
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(41, 51);
+            this.label20.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(55, 13);
+            this.label20.TabIndex = 3;
+            this.label20.Text = "Saturation";
+            this.label20.Click += new System.EventHandler(this.label20_Click);
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(41, 29);
+            this.label19.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(27, 13);
+            this.label19.TabIndex = 2;
+            this.label19.Text = "Hue";
+            // 
+            // diffuseSaturation
+            // 
+            this.diffuseSaturation.Location = new System.Drawing.Point(108, 50);
+            this.diffuseSaturation.Margin = new System.Windows.Forms.Padding(2);
+            this.diffuseSaturation.Name = "diffuseSaturation";
+            this.diffuseSaturation.Size = new System.Drawing.Size(52, 20);
+            this.diffuseSaturation.TabIndex = 1;
+            this.diffuseSaturation.TextChanged += new System.EventHandler(this.diffuseSaturation_TextChanged);
+            // 
+            // diffuseHue
+            // 
+            this.diffuseHue.Location = new System.Drawing.Point(108, 28);
+            this.diffuseHue.Margin = new System.Windows.Forms.Padding(2);
+            this.diffuseHue.Name = "diffuseHue";
+            this.diffuseHue.Size = new System.Drawing.Size(52, 20);
+            this.diffuseHue.TabIndex = 0;
+            this.diffuseHue.TextChanged += new System.EventHandler(this.diffuseHue_TextChanged);
+            // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.stageLight3CB);
+            this.tabPage4.Controls.Add(this.stageLight4CB);
+            this.tabPage4.Controls.Add(this.stageLight2CB);
+            this.tabPage4.Controls.Add(this.stageLight1CB);
+            this.tabPage4.Controls.Add(this.label73);
+            this.tabPage4.Controls.Add(this.label74);
+            this.tabPage4.Controls.Add(this.label75);
+            this.tabPage4.Controls.Add(this.stage3RotY);
+            this.tabPage4.Controls.Add(this.stage3RotX);
+            this.tabPage4.Controls.Add(this.stage3RotZ);
+            this.tabPage4.Controls.Add(this.label77);
+            this.tabPage4.Controls.Add(this.stage3Intensity);
+            this.tabPage4.Controls.Add(this.label78);
+            this.tabPage4.Controls.Add(this.label79);
+            this.tabPage4.Controls.Add(this.stage3Saturation);
+            this.tabPage4.Controls.Add(this.stage3Hue);
+            this.tabPage4.Controls.Add(this.label66);
+            this.tabPage4.Controls.Add(this.label67);
+            this.tabPage4.Controls.Add(this.label68);
+            this.tabPage4.Controls.Add(this.stage4RotY);
+            this.tabPage4.Controls.Add(this.stage4RotX);
+            this.tabPage4.Controls.Add(this.stage4RotZ);
+            this.tabPage4.Controls.Add(this.label70);
+            this.tabPage4.Controls.Add(this.stage4Intensity);
+            this.tabPage4.Controls.Add(this.label71);
+            this.tabPage4.Controls.Add(this.label72);
+            this.tabPage4.Controls.Add(this.stage4Saturation);
+            this.tabPage4.Controls.Add(this.stage4Hue);
+            this.tabPage4.Controls.Add(this.label59);
+            this.tabPage4.Controls.Add(this.label60);
+            this.tabPage4.Controls.Add(this.label61);
+            this.tabPage4.Controls.Add(this.stage2RotY);
+            this.tabPage4.Controls.Add(this.stage2RotX);
+            this.tabPage4.Controls.Add(this.stage2RotZ);
+            this.tabPage4.Controls.Add(this.label63);
+            this.tabPage4.Controls.Add(this.stage2Intensity);
+            this.tabPage4.Controls.Add(this.label64);
+            this.tabPage4.Controls.Add(this.label65);
+            this.tabPage4.Controls.Add(this.stage2Saturation);
+            this.tabPage4.Controls.Add(this.stage2Hue);
+            this.tabPage4.Controls.Add(this.label52);
+            this.tabPage4.Controls.Add(this.label53);
+            this.tabPage4.Controls.Add(this.label54);
+            this.tabPage4.Controls.Add(this.stage1RotY);
+            this.tabPage4.Controls.Add(this.stage1RotX);
+            this.tabPage4.Controls.Add(this.stage1RotZ);
+            this.tabPage4.Controls.Add(this.label56);
+            this.tabPage4.Controls.Add(this.stage1Intensity);
+            this.tabPage4.Controls.Add(this.label57);
+            this.tabPage4.Controls.Add(this.label58);
+            this.tabPage4.Controls.Add(this.stage1Saturation);
+            this.tabPage4.Controls.Add(this.stage1Hue);
+            this.tabPage4.Controls.Add(this.label31);
+            this.tabPage4.Controls.Add(this.fogIntensity);
+            this.tabPage4.Controls.Add(this.label32);
+            this.tabPage4.Controls.Add(this.label33);
+            this.tabPage4.Controls.Add(this.fogSaturation);
+            this.tabPage4.Controls.Add(this.fogHue);
+            this.tabPage4.Controls.Add(this.FogCB);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(556, 515);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "Stage Lighting";
+            // 
+            // stageLight3CB
+            // 
+            this.stageLight3CB.AutoSize = true;
+            this.stageLight3CB.Location = new System.Drawing.Point(230, 4);
+            this.stageLight3CB.Name = "stageLight3CB";
+            this.stageLight3CB.Size = new System.Drawing.Size(94, 17);
+            this.stageLight3CB.TabIndex = 117;
+            this.stageLight3CB.Text = "Diffuse Light 3";
+            this.stageLight3CB.UseVisualStyleBackColor = true;
+            this.stageLight3CB.CheckedChanged += new System.EventHandler(this.stageLight3CB_CheckedChanged);
+            // 
+            // stageLight4CB
+            // 
+            this.stageLight4CB.AutoSize = true;
+            this.stageLight4CB.Location = new System.Drawing.Point(230, 161);
+            this.stageLight4CB.Name = "stageLight4CB";
+            this.stageLight4CB.Size = new System.Drawing.Size(94, 17);
+            this.stageLight4CB.TabIndex = 116;
+            this.stageLight4CB.Text = "Diffuse Light 4";
+            this.stageLight4CB.UseVisualStyleBackColor = true;
+            this.stageLight4CB.CheckedChanged += new System.EventHandler(this.stageLight4CB_CheckedChanged);
+            // 
+            // stageLight2CB
+            // 
+            this.stageLight2CB.AutoSize = true;
+            this.stageLight2CB.Checked = true;
+            this.stageLight2CB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.stageLight2CB.Location = new System.Drawing.Point(8, 161);
+            this.stageLight2CB.Name = "stageLight2CB";
+            this.stageLight2CB.Size = new System.Drawing.Size(94, 17);
+            this.stageLight2CB.TabIndex = 115;
+            this.stageLight2CB.Text = "Diffuse Light 2";
+            this.stageLight2CB.UseVisualStyleBackColor = true;
+            this.stageLight2CB.CheckedChanged += new System.EventHandler(this.stageLight2CB_CheckedChanged);
+            // 
+            // stageLight1CB
+            // 
+            this.stageLight1CB.AutoSize = true;
+            this.stageLight1CB.Checked = true;
+            this.stageLight1CB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.stageLight1CB.Location = new System.Drawing.Point(8, 4);
+            this.stageLight1CB.Name = "stageLight1CB";
+            this.stageLight1CB.Size = new System.Drawing.Size(94, 17);
+            this.stageLight1CB.TabIndex = 114;
+            this.stageLight1CB.Text = "Diffuse Light 1";
+            this.stageLight1CB.UseVisualStyleBackColor = true;
+            this.stageLight1CB.CheckedChanged += new System.EventHandler(this.stageLight1CB_CheckedChanged);
+            // 
+            // label73
+            // 
+            this.label73.AutoSize = true;
+            this.label73.Enabled = false;
+            this.label73.Location = new System.Drawing.Point(259, 137);
+            this.label73.Name = "label73";
+            this.label73.Size = new System.Drawing.Size(34, 13);
+            this.label73.TabIndex = 113;
+            this.label73.Text = "Rot Z";
+            // 
+            // label74
+            // 
+            this.label74.AutoSize = true;
+            this.label74.Enabled = false;
+            this.label74.Location = new System.Drawing.Point(259, 114);
+            this.label74.Name = "label74";
+            this.label74.Size = new System.Drawing.Size(34, 13);
+            this.label74.TabIndex = 112;
+            this.label74.Text = "Rot Y";
+            // 
+            // label75
+            // 
+            this.label75.AutoSize = true;
+            this.label75.Enabled = false;
+            this.label75.Location = new System.Drawing.Point(259, 91);
+            this.label75.Name = "label75";
+            this.label75.Size = new System.Drawing.Size(34, 13);
+            this.label75.TabIndex = 111;
+            this.label75.Text = "Rot X";
+            // 
+            // stage3RotY
+            // 
+            this.stage3RotY.Enabled = false;
+            this.stage3RotY.Location = new System.Drawing.Point(326, 110);
+            this.stage3RotY.Name = "stage3RotY";
+            this.stage3RotY.Size = new System.Drawing.Size(53, 20);
+            this.stage3RotY.TabIndex = 110;
+            this.stage3RotY.TextChanged += new System.EventHandler(this.stage3RotY_TextChanged);
+            // 
+            // stage3RotX
+            // 
+            this.stage3RotX.Enabled = false;
+            this.stage3RotX.Location = new System.Drawing.Point(326, 87);
+            this.stage3RotX.Name = "stage3RotX";
+            this.stage3RotX.Size = new System.Drawing.Size(53, 20);
+            this.stage3RotX.TabIndex = 109;
+            this.stage3RotX.TextChanged += new System.EventHandler(this.stage3RotX_TextChanged);
+            // 
+            // stage3RotZ
+            // 
+            this.stage3RotZ.Enabled = false;
+            this.stage3RotZ.Location = new System.Drawing.Point(326, 133);
+            this.stage3RotZ.Name = "stage3RotZ";
+            this.stage3RotZ.Size = new System.Drawing.Size(53, 20);
+            this.stage3RotZ.TabIndex = 108;
+            this.stage3RotZ.TextChanged += new System.EventHandler(this.stage3RotZ_TextChanged);
+            // 
+            // label77
+            // 
+            this.label77.AutoSize = true;
+            this.label77.Enabled = false;
+            this.label77.Location = new System.Drawing.Point(259, 67);
+            this.label77.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label77.Name = "label77";
+            this.label77.Size = new System.Drawing.Size(46, 13);
+            this.label77.TabIndex = 106;
+            this.label77.Text = "Intensity";
+            // 
+            // stage3Intensity
+            // 
+            this.stage3Intensity.Enabled = false;
+            this.stage3Intensity.Location = new System.Drawing.Point(326, 65);
+            this.stage3Intensity.Margin = new System.Windows.Forms.Padding(2);
+            this.stage3Intensity.Name = "stage3Intensity";
+            this.stage3Intensity.Size = new System.Drawing.Size(52, 20);
+            this.stage3Intensity.TabIndex = 105;
+            this.stage3Intensity.TextChanged += new System.EventHandler(this.stage3Intensity_TextChanged);
+            // 
+            // label78
+            // 
+            this.label78.AutoSize = true;
+            this.label78.Enabled = false;
+            this.label78.Location = new System.Drawing.Point(259, 44);
+            this.label78.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label78.Name = "label78";
+            this.label78.Size = new System.Drawing.Size(55, 13);
+            this.label78.TabIndex = 104;
+            this.label78.Text = "Saturation";
+            // 
+            // label79
+            // 
+            this.label79.AutoSize = true;
+            this.label79.Enabled = false;
+            this.label79.Location = new System.Drawing.Point(259, 22);
+            this.label79.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label79.Name = "label79";
+            this.label79.Size = new System.Drawing.Size(27, 13);
+            this.label79.TabIndex = 103;
+            this.label79.Text = "Hue";
+            // 
+            // stage3Saturation
+            // 
+            this.stage3Saturation.Enabled = false;
+            this.stage3Saturation.Location = new System.Drawing.Point(326, 43);
+            this.stage3Saturation.Margin = new System.Windows.Forms.Padding(2);
+            this.stage3Saturation.Name = "stage3Saturation";
+            this.stage3Saturation.Size = new System.Drawing.Size(52, 20);
+            this.stage3Saturation.TabIndex = 102;
+            this.stage3Saturation.TextChanged += new System.EventHandler(this.stage3Saturation_TextChanged);
+            // 
+            // stage3Hue
+            // 
+            this.stage3Hue.Enabled = false;
+            this.stage3Hue.Location = new System.Drawing.Point(326, 21);
+            this.stage3Hue.Margin = new System.Windows.Forms.Padding(2);
+            this.stage3Hue.Name = "stage3Hue";
+            this.stage3Hue.Size = new System.Drawing.Size(52, 20);
+            this.stage3Hue.TabIndex = 101;
+            this.stage3Hue.TextChanged += new System.EventHandler(this.stage3Hue_TextChanged);
+            // 
+            // label66
+            // 
+            this.label66.AutoSize = true;
+            this.label66.Enabled = false;
+            this.label66.Location = new System.Drawing.Point(259, 295);
+            this.label66.Name = "label66";
+            this.label66.Size = new System.Drawing.Size(34, 13);
+            this.label66.TabIndex = 100;
+            this.label66.Text = "Rot Z";
+            // 
+            // label67
+            // 
+            this.label67.AutoSize = true;
+            this.label67.Enabled = false;
+            this.label67.Location = new System.Drawing.Point(259, 272);
+            this.label67.Name = "label67";
+            this.label67.Size = new System.Drawing.Size(34, 13);
+            this.label67.TabIndex = 99;
+            this.label67.Text = "Rot Y";
+            // 
+            // label68
+            // 
+            this.label68.AutoSize = true;
+            this.label68.Enabled = false;
+            this.label68.Location = new System.Drawing.Point(259, 249);
+            this.label68.Name = "label68";
+            this.label68.Size = new System.Drawing.Size(34, 13);
+            this.label68.TabIndex = 98;
+            this.label68.Text = "Rot X";
+            // 
+            // stage4RotY
+            // 
+            this.stage4RotY.Enabled = false;
+            this.stage4RotY.Location = new System.Drawing.Point(326, 268);
+            this.stage4RotY.Name = "stage4RotY";
+            this.stage4RotY.Size = new System.Drawing.Size(53, 20);
+            this.stage4RotY.TabIndex = 97;
+            this.stage4RotY.TextChanged += new System.EventHandler(this.stage4RotY_TextChanged_1);
+            // 
+            // stage4RotX
+            // 
+            this.stage4RotX.Enabled = false;
+            this.stage4RotX.Location = new System.Drawing.Point(326, 245);
+            this.stage4RotX.Name = "stage4RotX";
+            this.stage4RotX.Size = new System.Drawing.Size(53, 20);
+            this.stage4RotX.TabIndex = 96;
+            this.stage4RotX.TextChanged += new System.EventHandler(this.stage4RotX_TextChanged_1);
+            // 
+            // stage4RotZ
+            // 
+            this.stage4RotZ.Enabled = false;
+            this.stage4RotZ.Location = new System.Drawing.Point(326, 291);
+            this.stage4RotZ.Name = "stage4RotZ";
+            this.stage4RotZ.Size = new System.Drawing.Size(53, 20);
+            this.stage4RotZ.TabIndex = 95;
+            this.stage4RotZ.TextChanged += new System.EventHandler(this.stage4RotZ_TextChanged_1);
+            // 
+            // label70
+            // 
+            this.label70.AutoSize = true;
+            this.label70.Enabled = false;
+            this.label70.Location = new System.Drawing.Point(259, 225);
+            this.label70.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label70.Name = "label70";
+            this.label70.Size = new System.Drawing.Size(46, 13);
+            this.label70.TabIndex = 93;
+            this.label70.Text = "Intensity";
+            // 
+            // stage4Intensity
+            // 
+            this.stage4Intensity.Enabled = false;
+            this.stage4Intensity.Location = new System.Drawing.Point(326, 223);
+            this.stage4Intensity.Margin = new System.Windows.Forms.Padding(2);
+            this.stage4Intensity.Name = "stage4Intensity";
+            this.stage4Intensity.Size = new System.Drawing.Size(52, 20);
+            this.stage4Intensity.TabIndex = 92;
+            this.stage4Intensity.TextChanged += new System.EventHandler(this.stage4Intensity_TextChanged_1);
+            // 
+            // label71
+            // 
+            this.label71.AutoSize = true;
+            this.label71.Enabled = false;
+            this.label71.Location = new System.Drawing.Point(259, 202);
+            this.label71.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label71.Name = "label71";
+            this.label71.Size = new System.Drawing.Size(55, 13);
+            this.label71.TabIndex = 91;
+            this.label71.Text = "Saturation";
+            // 
+            // label72
+            // 
+            this.label72.AutoSize = true;
+            this.label72.Enabled = false;
+            this.label72.Location = new System.Drawing.Point(259, 180);
+            this.label72.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label72.Name = "label72";
+            this.label72.Size = new System.Drawing.Size(27, 13);
+            this.label72.TabIndex = 90;
+            this.label72.Text = "Hue";
+            // 
+            // stage4Saturation
+            // 
+            this.stage4Saturation.Enabled = false;
+            this.stage4Saturation.Location = new System.Drawing.Point(326, 201);
+            this.stage4Saturation.Margin = new System.Windows.Forms.Padding(2);
+            this.stage4Saturation.Name = "stage4Saturation";
+            this.stage4Saturation.Size = new System.Drawing.Size(52, 20);
+            this.stage4Saturation.TabIndex = 89;
+            this.stage4Saturation.TextChanged += new System.EventHandler(this.stage4Saturation_TextChanged_1);
+            // 
+            // stage4Hue
+            // 
+            this.stage4Hue.Enabled = false;
+            this.stage4Hue.Location = new System.Drawing.Point(326, 179);
+            this.stage4Hue.Margin = new System.Windows.Forms.Padding(2);
+            this.stage4Hue.Name = "stage4Hue";
+            this.stage4Hue.Size = new System.Drawing.Size(52, 20);
+            this.stage4Hue.TabIndex = 88;
+            this.stage4Hue.TextChanged += new System.EventHandler(this.stage4Hue_TextChanged);
+            // 
+            // label59
+            // 
+            this.label59.AutoSize = true;
+            this.label59.Location = new System.Drawing.Point(37, 295);
+            this.label59.Name = "label59";
+            this.label59.Size = new System.Drawing.Size(34, 13);
+            this.label59.TabIndex = 87;
+            this.label59.Text = "Rot Z";
+            // 
+            // label60
+            // 
+            this.label60.AutoSize = true;
+            this.label60.Location = new System.Drawing.Point(37, 272);
+            this.label60.Name = "label60";
+            this.label60.Size = new System.Drawing.Size(34, 13);
+            this.label60.TabIndex = 86;
+            this.label60.Text = "Rot Y";
+            // 
+            // label61
+            // 
+            this.label61.AutoSize = true;
+            this.label61.Location = new System.Drawing.Point(37, 249);
+            this.label61.Name = "label61";
+            this.label61.Size = new System.Drawing.Size(34, 13);
+            this.label61.TabIndex = 85;
+            this.label61.Text = "Rot X";
+            // 
+            // stage2RotY
+            // 
+            this.stage2RotY.Location = new System.Drawing.Point(104, 268);
+            this.stage2RotY.Name = "stage2RotY";
+            this.stage2RotY.Size = new System.Drawing.Size(53, 20);
+            this.stage2RotY.TabIndex = 84;
+            this.stage2RotY.TextChanged += new System.EventHandler(this.stage2RotY_TextChanged);
+            // 
+            // stage2RotX
+            // 
+            this.stage2RotX.Location = new System.Drawing.Point(104, 245);
+            this.stage2RotX.Name = "stage2RotX";
+            this.stage2RotX.Size = new System.Drawing.Size(53, 20);
+            this.stage2RotX.TabIndex = 83;
+            this.stage2RotX.TextChanged += new System.EventHandler(this.stage2RotX_TextChanged);
+            // 
+            // stage2RotZ
+            // 
+            this.stage2RotZ.Location = new System.Drawing.Point(104, 291);
+            this.stage2RotZ.Name = "stage2RotZ";
+            this.stage2RotZ.Size = new System.Drawing.Size(53, 20);
+            this.stage2RotZ.TabIndex = 82;
+            this.stage2RotZ.TextChanged += new System.EventHandler(this.stage2RotZ_TextChanged);
+            // 
+            // label63
+            // 
+            this.label63.AutoSize = true;
+            this.label63.Location = new System.Drawing.Point(37, 225);
+            this.label63.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label63.Name = "label63";
+            this.label63.Size = new System.Drawing.Size(46, 13);
+            this.label63.TabIndex = 80;
+            this.label63.Text = "Intensity";
+            // 
+            // stage2Intensity
+            // 
+            this.stage2Intensity.Location = new System.Drawing.Point(104, 223);
+            this.stage2Intensity.Margin = new System.Windows.Forms.Padding(2);
+            this.stage2Intensity.Name = "stage2Intensity";
+            this.stage2Intensity.Size = new System.Drawing.Size(52, 20);
+            this.stage2Intensity.TabIndex = 79;
+            this.stage2Intensity.TextChanged += new System.EventHandler(this.stage2Intensity_TextChanged);
+            // 
+            // label64
+            // 
+            this.label64.AutoSize = true;
+            this.label64.Location = new System.Drawing.Point(37, 202);
+            this.label64.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label64.Name = "label64";
+            this.label64.Size = new System.Drawing.Size(55, 13);
+            this.label64.TabIndex = 78;
+            this.label64.Text = "Saturation";
+            // 
+            // label65
+            // 
+            this.label65.AutoSize = true;
+            this.label65.Location = new System.Drawing.Point(37, 180);
+            this.label65.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label65.Name = "label65";
+            this.label65.Size = new System.Drawing.Size(27, 13);
+            this.label65.TabIndex = 77;
+            this.label65.Text = "Hue";
+            // 
+            // stage2Saturation
+            // 
+            this.stage2Saturation.Location = new System.Drawing.Point(104, 201);
+            this.stage2Saturation.Margin = new System.Windows.Forms.Padding(2);
+            this.stage2Saturation.Name = "stage2Saturation";
+            this.stage2Saturation.Size = new System.Drawing.Size(52, 20);
+            this.stage2Saturation.TabIndex = 76;
+            this.stage2Saturation.TextChanged += new System.EventHandler(this.stage2Saturation_TextChanged);
+            // 
+            // stage2Hue
+            // 
+            this.stage2Hue.Location = new System.Drawing.Point(104, 179);
+            this.stage2Hue.Margin = new System.Windows.Forms.Padding(2);
+            this.stage2Hue.Name = "stage2Hue";
+            this.stage2Hue.Size = new System.Drawing.Size(52, 20);
+            this.stage2Hue.TabIndex = 75;
+            this.stage2Hue.TextChanged += new System.EventHandler(this.stage2Hue_TextChanged);
+            // 
+            // label52
+            // 
+            this.label52.AutoSize = true;
+            this.label52.Location = new System.Drawing.Point(37, 137);
+            this.label52.Name = "label52";
+            this.label52.Size = new System.Drawing.Size(34, 13);
+            this.label52.TabIndex = 74;
+            this.label52.Text = "Rot Z";
+            // 
+            // label53
+            // 
+            this.label53.AutoSize = true;
+            this.label53.Location = new System.Drawing.Point(37, 114);
+            this.label53.Name = "label53";
+            this.label53.Size = new System.Drawing.Size(34, 13);
+            this.label53.TabIndex = 73;
+            this.label53.Text = "Rot Y";
+            // 
+            // label54
+            // 
+            this.label54.AutoSize = true;
+            this.label54.Location = new System.Drawing.Point(37, 91);
+            this.label54.Name = "label54";
+            this.label54.Size = new System.Drawing.Size(34, 13);
+            this.label54.TabIndex = 72;
+            this.label54.Text = "Rot X";
+            // 
+            // stage1RotY
+            // 
+            this.stage1RotY.Location = new System.Drawing.Point(104, 110);
+            this.stage1RotY.Name = "stage1RotY";
+            this.stage1RotY.Size = new System.Drawing.Size(53, 20);
+            this.stage1RotY.TabIndex = 71;
+            this.stage1RotY.TextChanged += new System.EventHandler(this.stage1RotY_TextChanged);
+            // 
+            // stage1RotX
+            // 
+            this.stage1RotX.Location = new System.Drawing.Point(104, 87);
+            this.stage1RotX.Name = "stage1RotX";
+            this.stage1RotX.Size = new System.Drawing.Size(53, 20);
+            this.stage1RotX.TabIndex = 70;
+            this.stage1RotX.TextChanged += new System.EventHandler(this.stage1RotX_TextChanged);
+            // 
+            // stage1RotZ
+            // 
+            this.stage1RotZ.Location = new System.Drawing.Point(104, 133);
+            this.stage1RotZ.Name = "stage1RotZ";
+            this.stage1RotZ.Size = new System.Drawing.Size(53, 20);
+            this.stage1RotZ.TabIndex = 69;
+            this.stage1RotZ.TextChanged += new System.EventHandler(this.stage1RotZ_TextChanged);
+            // 
+            // label56
+            // 
+            this.label56.AutoSize = true;
+            this.label56.Location = new System.Drawing.Point(37, 67);
+            this.label56.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label56.Name = "label56";
+            this.label56.Size = new System.Drawing.Size(46, 13);
+            this.label56.TabIndex = 67;
+            this.label56.Text = "Intensity";
+            // 
+            // stage1Intensity
+            // 
+            this.stage1Intensity.Location = new System.Drawing.Point(104, 65);
+            this.stage1Intensity.Margin = new System.Windows.Forms.Padding(2);
+            this.stage1Intensity.Name = "stage1Intensity";
+            this.stage1Intensity.Size = new System.Drawing.Size(52, 20);
+            this.stage1Intensity.TabIndex = 66;
+            this.stage1Intensity.TextChanged += new System.EventHandler(this.stage1Intensity_TextChanged);
+            // 
+            // label57
+            // 
+            this.label57.AutoSize = true;
+            this.label57.Location = new System.Drawing.Point(37, 44);
+            this.label57.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label57.Name = "label57";
+            this.label57.Size = new System.Drawing.Size(55, 13);
+            this.label57.TabIndex = 65;
+            this.label57.Text = "Saturation";
+            // 
+            // label58
+            // 
+            this.label58.AutoSize = true;
+            this.label58.Location = new System.Drawing.Point(37, 22);
+            this.label58.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label58.Name = "label58";
+            this.label58.Size = new System.Drawing.Size(27, 13);
+            this.label58.TabIndex = 64;
+            this.label58.Text = "Hue";
+            // 
+            // stage1Saturation
+            // 
+            this.stage1Saturation.Location = new System.Drawing.Point(104, 43);
+            this.stage1Saturation.Margin = new System.Windows.Forms.Padding(2);
+            this.stage1Saturation.Name = "stage1Saturation";
+            this.stage1Saturation.Size = new System.Drawing.Size(52, 20);
+            this.stage1Saturation.TabIndex = 63;
+            this.stage1Saturation.TextChanged += new System.EventHandler(this.stage1Saturation_TextChanged);
+            // 
+            // stage1Hue
+            // 
+            this.stage1Hue.Location = new System.Drawing.Point(104, 21);
+            this.stage1Hue.Margin = new System.Windows.Forms.Padding(2);
+            this.stage1Hue.Name = "stage1Hue";
+            this.stage1Hue.Size = new System.Drawing.Size(52, 20);
+            this.stage1Hue.TabIndex = 62;
+            this.stage1Hue.TextChanged += new System.EventHandler(this.stage1Hue_TextChanged);
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Enabled = false;
+            this.label31.Location = new System.Drawing.Point(41, 395);
+            this.label31.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(46, 13);
+            this.label31.TabIndex = 37;
+            this.label31.Text = "Intensity";
+            // 
+            // fogIntensity
+            // 
+            this.fogIntensity.Enabled = false;
+            this.fogIntensity.Location = new System.Drawing.Point(104, 393);
+            this.fogIntensity.Margin = new System.Windows.Forms.Padding(2);
+            this.fogIntensity.Name = "fogIntensity";
+            this.fogIntensity.Size = new System.Drawing.Size(52, 20);
+            this.fogIntensity.TabIndex = 36;
+            this.fogIntensity.TextChanged += new System.EventHandler(this.fogIntensity_TextChanged_1);
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Enabled = false;
+            this.label32.Location = new System.Drawing.Point(41, 372);
+            this.label32.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(55, 13);
+            this.label32.TabIndex = 35;
+            this.label32.Text = "Saturation";
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Enabled = false;
+            this.label33.Location = new System.Drawing.Point(41, 350);
+            this.label33.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(27, 13);
+            this.label33.TabIndex = 34;
+            this.label33.Text = "Hue";
+            // 
+            // fogSaturation
+            // 
+            this.fogSaturation.Enabled = false;
+            this.fogSaturation.Location = new System.Drawing.Point(104, 371);
+            this.fogSaturation.Margin = new System.Windows.Forms.Padding(2);
+            this.fogSaturation.Name = "fogSaturation";
+            this.fogSaturation.Size = new System.Drawing.Size(52, 20);
+            this.fogSaturation.TabIndex = 33;
+            this.fogSaturation.TextChanged += new System.EventHandler(this.fogSaturation_TextChanged_1);
+            // 
+            // fogHue
+            // 
+            this.fogHue.Enabled = false;
+            this.fogHue.Location = new System.Drawing.Point(104, 349);
+            this.fogHue.Margin = new System.Windows.Forms.Padding(2);
+            this.fogHue.Name = "fogHue";
+            this.fogHue.Size = new System.Drawing.Size(52, 20);
+            this.fogHue.TabIndex = 32;
+            this.fogHue.TextChanged += new System.EventHandler(this.fogHue_TextChanged_1);
+            // 
+            // FogCB
+            // 
+            this.FogCB.AutoSize = true;
+            this.FogCB.Location = new System.Drawing.Point(8, 331);
+            this.FogCB.Margin = new System.Windows.Forms.Padding(2);
+            this.FogCB.Name = "FogCB";
+            this.FogCB.Size = new System.Drawing.Size(82, 17);
+            this.FogCB.TabIndex = 31;
+            this.FogCB.Text = "Render Fog";
+            this.FogCB.UseVisualStyleBackColor = true;
+            this.FogCB.CheckedChanged += new System.EventHandler(this.FogCB_CheckedChanged_1);
+            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1790,6 +2409,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
+            this.tabPage4.ResumeLayout(false);
+            this.tabPage4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1901,13 +2522,6 @@
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.TextBox fresnelGroundSaturation;
         private System.Windows.Forms.TextBox fresnelGroundHue;
-        private System.Windows.Forms.CheckBox FogCB;
-        private System.Windows.Forms.Label label31;
-        private System.Windows.Forms.TextBox fogIntensity;
-        private System.Windows.Forms.Label label32;
-        private System.Windows.Forms.Label label33;
-        private System.Windows.Forms.TextBox fogSaturation;
-        private System.Windows.Forms.TextBox fogHue;
         private System.Windows.Forms.Label label35;
         private System.Windows.Forms.Label label34;
         private System.Windows.Forms.Label label37;
@@ -1938,5 +2552,65 @@
         private System.Windows.Forms.TextBox difRotY;
         private System.Windows.Forms.TextBox difRotX;
         private System.Windows.Forms.TextBox difRotZ;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.Label label31;
+        private System.Windows.Forms.TextBox fogIntensity;
+        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.TextBox fogSaturation;
+        private System.Windows.Forms.TextBox fogHue;
+        private System.Windows.Forms.CheckBox FogCB;
+        private System.Windows.Forms.Label label73;
+        private System.Windows.Forms.Label label74;
+        private System.Windows.Forms.Label label75;
+        private System.Windows.Forms.TextBox stage3RotY;
+        private System.Windows.Forms.TextBox stage3RotX;
+        private System.Windows.Forms.TextBox stage3RotZ;
+        private System.Windows.Forms.Label label77;
+        private System.Windows.Forms.TextBox stage3Intensity;
+        private System.Windows.Forms.Label label78;
+        private System.Windows.Forms.Label label79;
+        private System.Windows.Forms.TextBox stage3Saturation;
+        private System.Windows.Forms.TextBox stage3Hue;
+        private System.Windows.Forms.Label label66;
+        private System.Windows.Forms.Label label67;
+        private System.Windows.Forms.Label label68;
+        private System.Windows.Forms.TextBox stage4RotY;
+        private System.Windows.Forms.TextBox stage4RotX;
+        private System.Windows.Forms.TextBox stage4RotZ;
+        private System.Windows.Forms.Label label70;
+        private System.Windows.Forms.TextBox stage4Intensity;
+        private System.Windows.Forms.Label label71;
+        private System.Windows.Forms.Label label72;
+        private System.Windows.Forms.TextBox stage4Saturation;
+        private System.Windows.Forms.TextBox stage4Hue;
+        private System.Windows.Forms.Label label59;
+        private System.Windows.Forms.Label label60;
+        private System.Windows.Forms.Label label61;
+        private System.Windows.Forms.TextBox stage2RotY;
+        private System.Windows.Forms.TextBox stage2RotX;
+        private System.Windows.Forms.TextBox stage2RotZ;
+        private System.Windows.Forms.Label label63;
+        private System.Windows.Forms.TextBox stage2Intensity;
+        private System.Windows.Forms.Label label64;
+        private System.Windows.Forms.Label label65;
+        private System.Windows.Forms.TextBox stage2Saturation;
+        private System.Windows.Forms.TextBox stage2Hue;
+        private System.Windows.Forms.Label label52;
+        private System.Windows.Forms.Label label53;
+        private System.Windows.Forms.Label label54;
+        private System.Windows.Forms.TextBox stage1RotY;
+        private System.Windows.Forms.TextBox stage1RotX;
+        private System.Windows.Forms.TextBox stage1RotZ;
+        private System.Windows.Forms.Label label56;
+        private System.Windows.Forms.TextBox stage1Intensity;
+        private System.Windows.Forms.Label label57;
+        private System.Windows.Forms.Label label58;
+        private System.Windows.Forms.TextBox stage1Saturation;
+        private System.Windows.Forms.TextBox stage1Hue;
+        private System.Windows.Forms.CheckBox stageLight3CB;
+        private System.Windows.Forms.CheckBox stageLight4CB;
+        private System.Windows.Forms.CheckBox stageLight2CB;
+        private System.Windows.Forms.CheckBox stageLight1CB;
     }
 }

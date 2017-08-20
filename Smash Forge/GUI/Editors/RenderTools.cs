@@ -1676,14 +1676,14 @@ uniform int renderDiffuse;
 uniform int renderSpecular;
 uniform int renderFresnel;
 uniform int renderReflection;
-uniform int renderFog;
+
 uniform float diffuse_intensity;
 uniform float ambient;
 uniform float specular_intensity;
 uniform float fresnel_intensity;
 uniform float reflection_intensity;
 
-// stage lighting
+// character lighting
 uniform float diffuseHue;
 uniform float diffuseSaturation;
 uniform float diffuseIntensity;
@@ -1705,15 +1705,38 @@ uniform float specularIntensity;
 uniform float reflectionHue;
 uniform float reflectionSaturation;
 uniform float reflectionIntensity;
-
-uniform int useNormalMap;
-
-uniform mat4 eyeview;
-
-uniform vec3 lightPosition;
-uniform vec3 lightDirection;
 uniform vec3 difLightDirection;
 uniform vec3 specLightDirection;
+
+
+// stage lighting
+uniform vec3 stageLight1Direction;
+uniform vec3 stageLight2Direction;
+uniform vec3 stageLight3Direction;
+uniform vec3 stageLight4Direction;
+uniform float stage1Hue;
+uniform float stage1Saturation;
+uniform float stage1Intensity;
+uniform float stage2Hue;
+uniform float stage2Saturation;
+uniform float stage2Intensity;
+uniform float stage3Hue;
+uniform float stage3Saturation;
+uniform float stage3Intensity;
+uniform float stage4Hue;
+uniform float stage4Saturation;
+uniform float stage4Intensity;
+uniform int renderFog;
+uniform int renderStageLight1;
+uniform int renderStageLight2;
+uniform int renderStageLight3;
+uniform int renderStageLight4;
+
+uniform int useNormalMap;
+uniform mat4 eyeview;
+uniform vec3 lightPosition;
+uniform vec3 lightDirection;
+
 
 uniform sampler2D shadowMap;
 
@@ -1882,7 +1905,23 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     			{
     				diffuse_color = diffuse_map.rgb * ao_blend * diffuseColor.rgb;
     			}
-                diffuse_pass = mix(ambientLightColor, diffuseLightColor, halfLambert) * diffuse_color; // gradient based lighting
+
+            //---------------------------------------------------------------------------------------------
+                // stage lighting
+                vec3 lighting = vec3(1);
+                if ((flags & 0xF0000000u) == 0xA0000000u) // stage lighting. should actually be based on xmb in future
+                {
+                    vec3 stageLight1Color = hsv2rgb(vec3(stage1Hue/360, stage1Saturation, stage1Intensity)) * max((dot(N, stageLight1Direction)),0);
+                    vec3 stageLight2Color = hsv2rgb(vec3(stage2Hue/360, stage2Saturation, stage2Intensity)) * max((dot(N, stageLight2Direction)),0);
+                    vec3 stageLight3Color = hsv2rgb(vec3(stage3Hue/360, stage3Saturation, stage3Intensity)) * max((dot(N, stageLight3Direction)),0);
+                    vec3 stageLight4Color = hsv2rgb(vec3(stage4Hue/360, stage4Saturation, stage4Intensity)) * max((dot(N, stageLight4Direction)),0);
+                    lighting = (stageLight1Color*renderStageLight1) + (stageLight2Color * renderStageLight2) + (stageLight3Color * renderStageLight3) + (stageLight4Color * renderStageLight4);
+                }
+                else // character lighting
+                    lighting = mix(ambientLightColor, diffuseLightColor, halfLambert); // gradient based lighting
+
+                diffuse_pass = diffuse_color * lighting;
+            //---------------------------------------------------------------------------------------------
 
                 vec3 ramp_contribution = 0.5 * pow((RampColor(vec3(halfLambert)) * DummyRampColor(vec3(halfLambert)) * diffuse_color), vec3(2.2));
                 diffuse_pass = ScreenBlend(diffuse_pass, ramp_contribution) * diffuse_intensity;
@@ -2039,11 +2078,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     depth = min((depth / fogParams.y),1);
     float fog_Intensity = mix(fogParams.z, fogParams.w, depth);
     if(renderFog == 1)
-      resulting_color = mix(resulting_color, stageFogColor, fog_Intensity);
-
-
-    //resulting_color = texture2D(dif, offsetTexCoord).rgb;
-
+        resulting_color = mix(resulting_color, stageFogColor, fog_Intensity);
 
     return resulting_color;
 }

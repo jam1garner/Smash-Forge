@@ -703,7 +703,7 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
+          
             GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
 
             GL.Uniform1(shader.getAttribute("ambient"), Runtime.amb_inten);
@@ -712,7 +712,8 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("fresnel_intensity"), Runtime.frs_inten);
             GL.Uniform1(shader.getAttribute("reflection_intensity"), Runtime.ref_inten);
 
-            // stage lighting
+            #region character lighting color uniforms
+            // could use 1/3 the number of uniforms calculating hsv2rgb on cpu (probably faster too)
             GL.Uniform1(shader.getAttribute("diffuseHue"), Runtime.dif_hue);
             GL.Uniform1(shader.getAttribute("diffuseSaturation"), Runtime.dif_saturation);
             GL.Uniform1(shader.getAttribute("diffuseIntensity"), Runtime.dif_intensity);
@@ -733,47 +734,115 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("specularSaturation"), Runtime.specular_saturation);
             GL.Uniform1(shader.getAttribute("specularIntensity"), Runtime.specular_intensity);
 
-            GL.Uniform1(shader.getAttribute("fogHue"), Runtime.fog_hue);
-            GL.Uniform1(shader.getAttribute("fogSaturation"), Runtime.fog_saturation);
-            GL.Uniform1(shader.getAttribute("fogIntensity"), Runtime.fog_intensity);
-
             GL.Uniform1(shader.getAttribute("reflectionHue"), Runtime.reflection_hue);
             GL.Uniform1(shader.getAttribute("reflectionSaturation"), Runtime.reflection_saturation);
             GL.Uniform1(shader.getAttribute("reflectionIntensity"), Runtime.reflection_intensity);
+            #endregion
+
+            #region stage lighting color uniforms
+            // could use 1/3 the number of uniforms calculating hsv2rgb on cpu (probably faster too)
+            GL.Uniform1(shader.getAttribute("renderStageLight1"), Runtime.renderStageLight1 ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("stage1Hue"), Runtime.stagelight1_hue);
+            GL.Uniform1(shader.getAttribute("stage1Saturation"), Runtime.stagelight1_saturation);
+            GL.Uniform1(shader.getAttribute("stage1Intensity"), Runtime.stagelight1_intensity);
+
+            GL.Uniform1(shader.getAttribute("renderStageLight2"), Runtime.renderStageLight2 ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("stage2Hue"), Runtime.stagelight2_hue);
+            GL.Uniform1(shader.getAttribute("stage2Saturation"), Runtime.stagelight2_saturation);
+            GL.Uniform1(shader.getAttribute("stage2Intensity"), Runtime.stagelight2_intensity);
+
+            GL.Uniform1(shader.getAttribute("renderStageLight3"), Runtime.renderStageLight3 ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("stage3Hue"), Runtime.stagelight3_hue);
+            GL.Uniform1(shader.getAttribute("stage3Saturation"), Runtime.stagelight3_saturation);
+            GL.Uniform1(shader.getAttribute("stage3Intensity"), Runtime.stagelight3_intensity);
+
+            GL.Uniform1(shader.getAttribute("renderStageLight4"), Runtime.renderStageLight4 ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("stage4Hue"), Runtime.stagelight4_hue);
+            GL.Uniform1(shader.getAttribute("stage4Saturation"), Runtime.stagelight4_saturation);
+            GL.Uniform1(shader.getAttribute("stage4Intensity"), Runtime.stagelight4_intensity);
+
+            GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("fogHue"), Runtime.fog_hue);
+            GL.Uniform1(shader.getAttribute("fogSaturation"), Runtime.fog_saturation);
+            GL.Uniform1(shader.getAttribute("fogIntensity"), Runtime.fog_intensity);
+            #endregion
+
 
             GL.ActiveTexture(TextureUnit.Texture11);
             GL.BindTexture(TextureTarget.Texture2D, depthmap);
             GL.Uniform1(shader.getAttribute("shadowmap"), 11);
 
+            #region light rotation data uniforms
+            // light_set_param xyz rotation to vector for lighting calculations. Current matrices aren't correct!
 
-            // light_set_param xyz rotation to vector for lighting calculations
-            float difRotX = -1 * Runtime.dif_rotX * ((float)Math.PI / 180f);
+
+            // convert to radians
+            float difRotX = Runtime.dif_rotX * ((float)Math.PI / 180f);
             float difRotY = Runtime.dif_rotY * ((float)Math.PI / 180f);
-            float difRotZ = -1 * Runtime.dif_rotZ * ((float)Math.PI / 180f);
-
-            float specRotX = -1 * Runtime.specular_rotX * ((float)Math.PI / 180f);
-            float specRotY = Runtime.specular_rotY * ((float)Math.PI / 180f);
-            float specRotZ = -1 * Runtime.specular_rotZ * ((float)Math.PI / 180f);
-
-            Matrix4 specrot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, specRotX)
-                 * Matrix4.CreateFromAxisAngle(Vector3.UnitY, specRotY)
-                 * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, specRotZ);
+            float difRotZ = Runtime.dif_rotZ * ((float)Math.PI / 180f);
 
             Matrix4 difrot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, difRotX)
              * Matrix4.CreateFromAxisAngle(Vector3.UnitY, difRotY)
              * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, difRotZ);
 
+
+            float specRotX = Runtime.specular_rotX * ((float)Math.PI / 180f);
+            float specRotY = Runtime.specular_rotY * ((float)Math.PI / 180f);
+            float specRotZ = Runtime.specular_rotZ * ((float)Math.PI / 180f);
+
+            Matrix4 specrot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, specRotX)
+              * Matrix4.CreateFromAxisAngle(Vector3.UnitY, specRotY)
+              * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, specRotZ);
+
+
+            float stageLight1RotX = Runtime.stagelight1_rotX * ((float)Math.PI / 180f);
+            float stageLight1RotY = Runtime.stagelight1_rotY * ((float)Math.PI / 180f);
+            float stageLight1RotZ = Runtime.stagelight1_rotZ * ((float)Math.PI / 180f);
+
+            Matrix4 stagelight1rot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, stageLight1RotX)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, stageLight1RotY)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight1RotZ);
+
+            float stageLight2RotX = Runtime.stagelight2_rotX * ((float)Math.PI / 180f);
+            float stageLight2RotY = Runtime.stagelight2_rotY * ((float)Math.PI / 180f);
+            float stageLight2RotZ = Runtime.stagelight2_rotZ * ((float)Math.PI / 180f);
+
+            Matrix4 stagelight2rot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, stageLight2RotX)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, stageLight2RotY)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight2RotZ);
+
+            float stageLight3RotX = Runtime.stagelight3_rotX * ((float)Math.PI / 180f);
+            float stageLight3RotY = Runtime.stagelight3_rotY * ((float)Math.PI / 180f);
+            float stageLight3RotZ = Runtime.stagelight3_rotZ * ((float)Math.PI / 180f);
+
+            Matrix4 stagelight3rot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, stageLight3RotX)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, stageLight3RotY)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight3RotZ);
+
+            float stageLight4RotX = Runtime.stagelight4_rotX * ((float)Math.PI / 180f);
+            float stageLight4RotY = Runtime.stagelight4_rotY * ((float)Math.PI / 180f);
+            float stageLight4RotZ = Runtime.stagelight4_rotZ * ((float)Math.PI / 180f);
+
+            Matrix4 stagelight4rot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, stageLight4RotX)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, stageLight4RotY)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight4RotZ);
+
             Vector3 lightDirection= new Vector3(0f, 0f, 1f);
             lightDirection = Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized();
 
-            Vector3 specDir = new Vector3(0f, 0f, 1f);// Vector3.Transform(new Vector3(0f, 0f, -1f), specrot);
             Vector3 difDir = new Vector3(0f, 0f, 1f);
+            Vector3 specDir = new Vector3(0f, 0f, 1f);
+            Vector3 stageLight1Dir = new Vector3(0f, 0f, 1f);
+            Vector3 stageLight2Dir = new Vector3(0f, 0f, 1f);
+            Vector3 stageLight3Dir = new Vector3(0f, 0f, 1f);
+            Vector3 stageLight4Dir = new Vector3(0f, 0f, 1f);
 
             if (Runtime.CameraLight)
             {
                 GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
                 GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
                 GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, v));
             }
             else
             {
@@ -781,7 +850,18 @@ namespace Smash_Forge
                 GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.Transform(difDir, difrot).Normalized());
                 GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, v));
                 GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
+
+              
             }
+
+            GL.Uniform3(shader.getAttribute("stageLight1Direction"), Vector3.Transform(stageLight1Dir, stagelight1rot).Normalized());
+            GL.Uniform3(shader.getAttribute("stageLight2Direction"), Vector3.Transform(stageLight2Dir, stagelight2rot).Normalized());
+            GL.Uniform3(shader.getAttribute("stageLight3Direction"), Vector3.Transform(stageLight3Dir, stagelight3rot).Normalized());
+            GL.Uniform3(shader.getAttribute("stageLight4Direction"), Vector3.Transform(stageLight4Dir, stagelight4rot).Normalized());
+
+            #endregion
+
+
 
 
             foreach (ModelContainer m in Runtime.ModelContainers)
@@ -855,6 +935,7 @@ namespace Smash_Forge
                 }
             }
         }
+
 
         private void DrawBones()
         {
