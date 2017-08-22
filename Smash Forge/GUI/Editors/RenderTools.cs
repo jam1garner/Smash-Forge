@@ -1987,7 +1987,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
                 float edgeL = 0.5 - (softLightingParams.z / 2);
                 float edgeR = 0.5 + (softLightingParams.z / 2);
                 float softLight = smoothstep(edgeL, edgeR, lambert);
-                float softLightDarken = (-0.3 * softLightingParams.y) + 1;
+                float softLightDarken = max(((-0.3 * softLightingParams.y) + 1), 0);
                 vec3 softLightAmbient = diffuse_color * softLightDarken * ambientLightColor;
                 softLightAmbient = rgb2hsv(softLightAmbient);
                 softLightAmbient = hsv2rgb(vec3(softLightAmbient.x, (softLightAmbient.y + (0.0561 * softLightingParams.x)), softLightAmbient.z));
@@ -1995,25 +1995,22 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
                 diffuse_pass = mix(softLightAmbient, softLightDiffuse, softLight); // byte2 81 makes it brighter/more saturated?
             }
-            /*else if (hasCustomSoftLight == 1) // probably not identical to softlightingparams. just used for cloud hair
+            else if (hasCustomSoftLight == 1) // nearly identical to softlightingparams. just used for cloud hair
             {
                 float edgeL = 0.5 - (customSoftLightParams.z / 2);
                 float edgeR = 0.5 + (customSoftLightParams.z / 2);
                 float softLight = smoothstep(edgeL, edgeR, lambert);
-                float softLightDarken = (-0.3 * customSoftLightParams.y) + 1;
-                vec3 softLightAmbient = diffuse_color * softLightDarken * ambientLightColor;
+                float softLightDarken = max(((-0.3 * customSoftLightParams.y) + 1), 0);
+                vec3 softLightAmbient = diffuse_color * ambientLightColor * softLightDarken;
                 softLightAmbient = rgb2hsv(softLightAmbient);
-                softLightAmbient = hsv2rgb(vec3(softLightAmbient.x, (softLightAmbient.y + (0.0561 * customSoftLightParams.x)), softLightAmbient.z));
+                softLightAmbient = hsv2rgb(vec3(softLightAmbient.x, (softLightAmbient.y + (0.114 * customSoftLightParams.x)), softLightAmbient.z));
                 vec3 softLightDiffuse = diffuse_color * diffuseLightColor;
 
                 diffuse_pass = mix(softLightAmbient, softLightDiffuse, softLight); // byte2 81 makes it brighter/more saturated?
-            }*/
+            }
 
-
-
-
-            if ((flags & 0x00FF0000u) == 0x00810000u) // close enough
-                diffuse_pass *= 1.55;
+            if ((flags & 0x00FF0000u) == 0x00810000u || (flags & 0xFFFF0000u) == 0xFA600000u) // used with softlightingparams and customSoftLightParams, respectively
+                diffuse_pass *= 1.5;
 
                 vec3 ramp_contribution = 0.5 * pow((RampColor(vec3(halfLambert)) * DummyRampColor(vec3(halfLambert)) * diffuse_color), vec3(2.2));
                 diffuse_pass = ScreenBlend(diffuse_pass, ramp_contribution) * diffuse_intensity;
