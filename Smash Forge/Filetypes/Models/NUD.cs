@@ -487,6 +487,37 @@ namespace Smash_Forge
                     if (pa == null) pa = new float[] { 1, 1, 0, 0 };
                     GL.Uniform4(shader.getAttribute("normalSamplerAUV"), pa[0], pa[1], pa[2], pa[3]);
                 }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_alphaBlendParams", out pa);
+                    if (mat.anims.ContainsKey("NU_alphaBlendParams")) pa = mat.anims["NU_alphaBlendParams"];
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("alphaBlendParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_softLightingParams", out pa);
+                    if (mat.anims.ContainsKey("NU_softLightingParams")) pa = mat.anims["NU_softLightingParams"];
+
+                    int hasSoftLight = 1;
+                    if (pa == null) hasSoftLight = 0;
+                    GL.Uniform1(shader.getAttribute("hasSoftLight"), hasSoftLight);
+
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("softLightingParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_customSoftLightParams", out pa);
+                    if (mat.anims.ContainsKey("NU_customSoftLightParams")) pa = mat.anims["NU_customSoftLightParams"];
+
+                    int hasCustomSoftLight = 1;
+                    if (pa == null) hasCustomSoftLight = 0;
+                    GL.Uniform1(shader.getAttribute("hasCustomSoftLight"), hasCustomSoftLight);
+
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("customSoftLightParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
 
                 GL.Enable(EnableCap.Blend);
 
@@ -705,7 +736,7 @@ namespace Smash_Forge
         static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>(){
                     { 0x01, TextureWrapMode.Repeat},
                     { 0x02, TextureWrapMode.MirroredRepeat},
-                    { 0x03, TextureWrapMode.Clamp}
+                    { 0x03, TextureWrapMode.ClampToEdge}
         };
 
         static Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>(){

@@ -1636,6 +1636,9 @@ uniform int hasColorGainOffset;
 uniform int hasSpecularParams;
 uniform int useDiffuseBlend;
 uniform int hasDualNormal;
+uniform int hasSoftLight;
+uniform int hasCustomSoftLight;
+
 // Da Flags
 uniform uint flags;
 
@@ -1644,7 +1647,6 @@ uniform vec4 colorSamplerUV;
 uniform vec4 normalSamplerAUV;
 uniform vec4 colorOffset;
 uniform vec4 minGain;
-
 uniform vec4 fresnelColor;
 uniform vec4 specularColor;
 uniform vec4 specularColorGain;
@@ -1665,6 +1667,9 @@ uniform vec4 fogParams;
 uniform vec4 normalParams;
 uniform vec4 angleFadeParams;
 uniform vec4 dualNormalScrollParams;
+uniform vec4 alphaBlendParams;
+uniform vec4 softLightingParams;
+uniform vec4 customSoftLightParams;
 
 uniform int renderType;
 uniform int renderLighting;
@@ -1839,8 +1844,55 @@ vec3 DummyRampColor(vec3 col){
 vec3 SpecRampColor(vec3 col){ // currently just for bayo spec ramp
 	float rampInputLuminance = luminance(col);
 	rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
-	return texture2D(dummyRamp, vec2(1-rampInputLuminance, 0.5)).rgb;
+
+    vec3 ramp_contribution = texture2D(dummyRamp, vec2(1-rampInputLuminance, 0.5)).rgb;
+	return ramp_contribution;
 }
+
+// adapted from 2004 ati ruby demo
+vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift)
+{
+    vec3 shiftedT = tangent + shift * normal;
+    return normalize(shiftedT);
+}
+
+float StrandSpecular(vec3 tangent, vec3 V, vec3 L, float exponent)
+{
+    vec3 H = normalize(L + V);
+    float dotTH = dot(tangent, H);
+    float sinTH = sqrt(1.0 - dotTH * dotTH);
+    float dirAtten = smoothstep(-1.0, 0.0, dot(tangent, H));
+    return dirAtten * pow(sinTH, exponent);
+}
+
+vec3 BayoHairSpecular(vec3 diffuse_map, vec3 I, float xComponent, float yComponent)
+{
+    float shiftTex = diffuse_map.g; // vertical component of ramp?
+    shiftTex = 0;
+
+    float primaryShift = 0;
+    float secondaryShift = 0;
+
+    vec3 t1 = ShiftTangent(tangent.xyz, normal.xyz, primaryShift + shiftTex);
+    //vec3 t2 = ShiftTangent(tangent.xyz, normal.xyz, secondaryShift + shiftTex);
+    vec3 t2 = ShiftTangent(bitangent.xyz, normal.xyz, secondaryShift + shiftTex);
+
+    float specExp1 = reflectionParams.z;
+    float specExp2 = reflectionParams.w;
+
+    vec3 hairSpecular =  vec3(1);// * StrandSpecular(t1, I, lightDirection, specExp1);
+    float specMask = diffuse_map.b; // what channel should this be?
+    hairSpecular += vec3(.75,.75,1) * specMask * StrandSpecular(t2, I, lightDirection, specExp2);
+
+    vec3 half_angle = normalize(I + lightDirection);
+    float test = dot(t2, half_angle)/reflectionParams.w;
+    test = (test +1) /2;
+    float test2 = diffuse_map.g;
+
+    hairSpecular = texture2D(dummyRamp, vec2(test, test2)).rgb * diffuse_map.b * alphaBlendParams.z * 0.1;// * diffuse_map.b;
+    return (hairSpecular) * diffuse_map.r * 20;
+}
+
 
 
 vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
@@ -1850,30 +1902,35 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     float specularBlendAmount = 0.5;
     float reflectionBlendAmount = 0.5;
 
+
     // light direction seems to be (z,x,y) from light_set_param
     vec3 newDiffuseDirection = difLightDirection; //normalize(I + diffuseLightDirection);
     vec3 newFresnelDirection = lightDirection; //normalize(I + fresnelLightDirection);
     vec3 newSpecularDirection = specLightDirection; //normalize(I + specularLightDirection);
-
 
 	//---------------------------------------------------------------------------------------------
 		// diffuse pass
 		vec3 diffuse_pass = vec3(0);
 
 			// lambertian shading
+            float lambert = clamp((dot(newDiffuseDirection,N)),0,1);
 			float halfLambert = clamp((dot(newDiffuseDirection,N)),0,1);
             halfLambert = dot(newDiffuseDirection,N);
             halfLambert = (halfLambert + 1) / 2; // remap [-1,1] to [0,1]. not clamped because of ramp functions
 			vec3 diffuse_color = vec3(0);
 			vec3 diffuse_shading = vec3(0);
-			vec3 ao_blend = vec3(1);
+
 			float diffuse_luminance = luminance(diffuse_map.rgb);
 
-			//ao_blend = total ambient occlusion term. desaturated to look correct
-			ao_blend = min((ao_map.aaa + (minGain.rgb)),1.2);
-			vec3 c = rgb2hsv(ao_blend.rgb);
-			ao_blend.rgb = hsv2rgb(vec3(c.x, c.y*0.75, c.z));
+			//ao_blend = total ambient occlusion term. brightness is just addition. hue/saturation is ???
+            vec3 ao_blend = vec3(1);
+            ao_blend = min((ao_map.aaa + minGain.rgb),vec3(1.15));
+            vec3 aoGain = min((ao_map.aaa * (1+minGain.rgb)),vec3(1.15));
+			vec3 c1 = rgb2hsv(ao_blend);
+            vec3 c2 = rgb2hsv(aoGain);
+			ao_blend.rgb = hsv2rgb(vec3(c1.x, c2.y, c1.z));
             float aoMixIntensity = minGain.a;
+
 
             if (useDiffuseBlend == 1) // aomingain but no ao map (mainly for trophies)
             {
@@ -1886,7 +1943,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
 
 			//---------------------------------------------------------------------------------------------
-				// flags based corrections for diffuse
+				// flags based corrections for diffuse color
 
     			if (hasColorGainOffset == 1) // probably a more elegant solution...
     			{
@@ -1906,6 +1963,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     				diffuse_color = diffuse_map.rgb * ao_blend * diffuseColor.rgb;
     			}
 
+
             //---------------------------------------------------------------------------------------------
                 // stage lighting
                 vec3 lighting = vec3(1);
@@ -1922,6 +1980,40 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
                 diffuse_pass = diffuse_color * lighting;
             //---------------------------------------------------------------------------------------------
+
+
+            if (hasSoftLight == 1)
+            {
+                float edgeL = 0.5 - (softLightingParams.z / 2);
+                float edgeR = 0.5 + (softLightingParams.z / 2);
+                float softLight = smoothstep(edgeL, edgeR, lambert);
+                float softLightDarken = (-0.3 * softLightingParams.y) + 1;
+                vec3 softLightAmbient = diffuse_color * softLightDarken * ambientLightColor;
+                softLightAmbient = rgb2hsv(softLightAmbient);
+                softLightAmbient = hsv2rgb(vec3(softLightAmbient.x, (softLightAmbient.y + (0.0561 * softLightingParams.x)), softLightAmbient.z));
+                vec3 softLightDiffuse = diffuse_color * diffuseLightColor;
+
+                diffuse_pass = mix(softLightAmbient, softLightDiffuse, softLight); // byte2 81 makes it brighter/more saturated?
+            }
+            /*else if (hasCustomSoftLight == 1) // probably not identical to softlightingparams. just used for cloud hair
+            {
+                float edgeL = 0.5 - (customSoftLightParams.z / 2);
+                float edgeR = 0.5 + (customSoftLightParams.z / 2);
+                float softLight = smoothstep(edgeL, edgeR, lambert);
+                float softLightDarken = (-0.3 * customSoftLightParams.y) + 1;
+                vec3 softLightAmbient = diffuse_color * softLightDarken * ambientLightColor;
+                softLightAmbient = rgb2hsv(softLightAmbient);
+                softLightAmbient = hsv2rgb(vec3(softLightAmbient.x, (softLightAmbient.y + (0.0561 * customSoftLightParams.x)), softLightAmbient.z));
+                vec3 softLightDiffuse = diffuse_color * diffuseLightColor;
+
+                diffuse_pass = mix(softLightAmbient, softLightDiffuse, softLight); // byte2 81 makes it brighter/more saturated?
+            }*/
+
+
+
+
+            if ((flags & 0x00FF0000u) == 0x00810000u) // close enough
+                diffuse_pass *= 1.55;
 
                 vec3 ramp_contribution = 0.5 * pow((RampColor(vec3(halfLambert)) * DummyRampColor(vec3(halfLambert)) * diffuse_color), vec3(2.2));
                 diffuse_pass = ScreenBlend(diffuse_pass, ramp_contribution) * diffuse_intensity;
@@ -1961,12 +2053,10 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
 			//---------------------------------------------------------------------------------------------
 				// flags based corrections for specular
-			if ((flags & 0x00420000u) == 0x00420000u) // bayo hair mats
+			if ((flags & 0x00FF0000u) == 0x00420000u) // bayo hair mats. rework this section
 			{
-			vec3 specularContribution = blinnPhongSpec * spec_tint;// * specular_intensity;
-			specularContribution = SpecRampColor(specularContribution); // spec ramp
-			specularContribution *= diffuse_map.bbb*1.35;
-			specular_pass += specularContribution;
+                specular_pass = BayoHairSpecular(diffuse_map.rgb, I, xComponent, yComponent);
+
 			}
 
 			else if (hasColorGainOffset == 1) // how does specularColorGain work?
@@ -2011,7 +2101,8 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			vec3 fresnel = clamp((hemiColor * pow(1.0 - cosTheta, 2.75 + fresnelParams.x)), 0, 1);
 			fresnel_pass += fresnelColor.rgb * fresnel * fresnel_intensity * fresnel_tint;
 
-
+            //if((flags & 0x00120000u) == 0x00120000u)
+            //fresnel_pass *= mix(vec3(1),ao_map.rgb,fresnelParams.w);
 
 		fresnel_pass = pow(fresnel_pass, vec3(1));
 	//---------------------------------------------------------------------------------------------
@@ -2045,7 +2136,6 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 				vec3 weirdReflection = texture2D(spheremap, newTexCoord).xyz;
 				reflection_pass += weirdReflection*reflectionColor.xyz*reflection_tint*reflection_intensity;
 			}
-
 
 			else // stage cubemaps
 				reflection_pass += reflectionColor.rgb * refColor * reflection_tint * reflection_intensity * diffuse_map.aaa;
@@ -2170,6 +2260,8 @@ main()
         float angleFadeAmount = mix(normalFadeAmount, edgeFadeAmount, fresnelBlend);
         angleFadeAmount = max((1-angleFadeAmount),0);
         fincol.a *= angleFadeAmount;
+
+        fincol.a += alphaBlendParams.x;
 	}
 
 }";
