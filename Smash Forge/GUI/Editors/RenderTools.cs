@@ -2342,9 +2342,43 @@ void main()
     gl_FragDepth = gl_FragCoord.z;
 gl_FragColor = vec4(1);
 }  ";
-        
+
 
         #endregion
+
+
+        #region texture shader
+        public static string texture_vs = @"#version 330
+
+out vec2 texCoord;
+ 
+void main()
+{
+    float x = -1.0 + float((gl_VertexID & 1) << 2);
+    float y = -1.0 + float((gl_VertexID & 2) << 1);
+    texCoord.x = (x+1.0)*0.5;
+    texCoord.y = (y+1.0)*0.5;
+    gl_Position = vec4(x, y, 0, 1);
+}";
+
+        public static string texture_fs = @"#version 330
+in vec2 texCoord;
+
+uniform sampler2D texture;
+uniform int renderAlpha;
+
+out vec4 outColor;
+
+void main()
+{   outColor = vec4(1);    
+    vec4 textureColor = texture2D(texture, vec2(texCoord.x, 1-texCoord.y)).rgba;
+    outColor.rgb = textureColor.rgb;
+    if (renderAlpha == 1)
+        outColor.rgb = textureColor.aaa;
+}";
+
+        #endregion
+
 
         #endregion
 

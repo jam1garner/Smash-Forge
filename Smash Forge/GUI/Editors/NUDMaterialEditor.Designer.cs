@@ -94,11 +94,9 @@
             this.label23 = new System.Windows.Forms.Label();
             this.descriptionLabel = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.dummyRampCB = new System.Windows.Forms.CheckBox();
             this.sphereMapCB = new System.Windows.Forms.CheckBox();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            //this.specLightCB = new System.Windows.Forms.CheckBox();
-            //this.rimLightCB = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
@@ -114,13 +112,13 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.glControl2 = new OpenTK.GLControl();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox8.SuspendLayout();
             this.paramGB.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.groupBox7.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -177,7 +175,7 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(3, 54);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(34, 13);
+            this.label4.Size = new System.Drawing.Size(55, 13);
             this.label4.TabIndex = 6;
             this.label4.Text = "AlphaTest";
             // 
@@ -186,7 +184,7 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(3, 108);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(66, 13);
+            this.label5.Size = new System.Drawing.Size(54, 13);
             this.label5.TabIndex = 7;
             this.label5.Text = "Ref Alpha";
             // 
@@ -357,7 +355,7 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(3, 81);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(34, 13);
+            this.label9.Size = new System.Drawing.Size(58, 13);
             this.label9.TabIndex = 20;
             this.label9.Text = "AlphaFunc";
             // 
@@ -808,6 +806,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.glControl2);
             this.groupBox2.Controls.Add(this.groupBox7);
             this.groupBox2.Controls.Add(this.listView1);
             this.groupBox2.Controls.Add(this.glControl1);
@@ -822,10 +821,8 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Textures";
             // 
-            // rimLightCB
+            // groupBox7
             // 
-            //this.groupBox7.Controls.Add(this.specLightCB);
-            //this.groupBox7.Controls.Add(this.rimLightCB);
             this.groupBox7.Location = new System.Drawing.Point(5, 366);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(262, 100);
@@ -833,29 +830,19 @@
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "4th Byte";
             // 
+            // dummyRampCB
+            // 
+            this.dummyRampCB.Location = new System.Drawing.Point(0, 0);
+            this.dummyRampCB.Name = "dummyRampCB";
+            this.dummyRampCB.Size = new System.Drawing.Size(104, 24);
+            this.dummyRampCB.TabIndex = 0;
+            // 
             // sphereMapCB
             // 
-            /*this.specLightCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.specLightCB.AutoSize = true;
-            this.specLightCB.Location = new System.Drawing.Point(7, 19);
-            this.specLightCB.Name = "specLightCB";
-            this.specLightCB.Size = new System.Drawing.Size(98, 17);
-            this.specLightCB.TabIndex = 20;
-            this.specLightCB.Text = "Reflection Map";
-            this.specLightCB.UseVisualStyleBackColor = true;
-            this.specLightCB.CheckedChanged += new System.EventHandler(this.specLightCB_CheckedChanged);*/
-            // 
-            // rimLightCB
-            // 
-            /*this.rimLightCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.rimLightCB.AutoSize = true;
-            this.rimLightCB.Location = new System.Drawing.Point(7, 42);
-            this.rimLightCB.Name = "rimLightCB";
-            this.rimLightCB.Size = new System.Drawing.Size(115, 17);
-            this.rimLightCB.TabIndex = 19;
-            this.rimLightCB.Text = "Ramp Light Switch";
-            this.rimLightCB.UseVisualStyleBackColor = true;
-            this.rimLightCB.CheckedChanged += new System.EventHandler(this.rimLightCB_CheckedChanged);*/
+            this.sphereMapCB.Location = new System.Drawing.Point(0, 0);
+            this.sphereMapCB.Name = "sphereMapCB";
+            this.sphereMapCB.Size = new System.Drawing.Size(104, 24);
+            this.sphereMapCB.TabIndex = 0;
             // 
             // groupBox3
             // 
@@ -1034,6 +1021,16 @@
             this.panel1.Size = new System.Drawing.Size(284, 69);
             this.panel1.TabIndex = 26;
             // 
+            // glControl2
+            // 
+            this.glControl2.BackColor = System.Drawing.Color.Black;
+            this.glControl2.Location = new System.Drawing.Point(145, 19);
+            this.glControl2.Name = "glControl2";
+            this.glControl2.Size = new System.Drawing.Size(116, 112);
+            this.glControl2.TabIndex = 25;
+            this.glControl2.VSync = false;
+            this.glControl2.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl2_Paint);
+            // 
             // NUDMaterialEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1061,8 +1058,6 @@
             this.paramGB.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox6.ResumeLayout(false);
@@ -1167,5 +1162,6 @@
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.TextBox textBox15;
         private System.Windows.Forms.TableLayoutPanel paramGB;
+        private OpenTK.GLControl glControl2;
     }
 }

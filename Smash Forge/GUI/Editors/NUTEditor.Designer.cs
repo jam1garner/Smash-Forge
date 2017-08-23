@@ -262,7 +262,7 @@
             this.exportAsDDSToolStripMenuItem1,
             this.replaceToolStripMenuItem});
             this.textureToolStripMenuItem.Name = "textureToolStripMenuItem";
-            this.textureToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
+            this.textureToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
             this.textureToolStripMenuItem.Text = "Texture";
             // 
             // importToolStripMenuItem

@@ -440,6 +440,7 @@ namespace Smash_Forge
             comboBox12.SelectedItem = magfilter[tex.magFilter];
             comboBox13.SelectedItem = mip[tex.mipDetail];
             RenderTexture();
+            RenderTextureAlpha();
         }
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
@@ -814,7 +815,7 @@ namespace Smash_Forge
             if (!tabControl1.SelectedTab.Text.Equals("Textures")) return;
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
-            GL.ClearColor(Color.Red);
+            GL.ClearColor(Color.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.MatrixMode(MatrixMode.Modelview);
@@ -854,22 +855,112 @@ namespace Smash_Forge
             }
             if (float.IsInfinity(h)) h = 1;
             Console.WriteLine(w + " " + h);
+
+            Shader shader = Runtime.shaders["Texture"];
+            GL.UseProgram(shader.programID);
+
+
+            GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, rt);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
-            GL.Begin(PrimitiveType.Quads);
-            GL.TexCoord2(w, h);
-            GL.Vertex2(1, -1);
-            GL.TexCoord2(0, h);
-            GL.Vertex2(-1, -1);
-            GL.TexCoord2(0, 0);
-            GL.Vertex2(-1, 1);
-            GL.TexCoord2(w, 0);
-            GL.Vertex2(1, 1);
-            GL.End();
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.Uniform1(shader.getAttribute("texture"), 0);
+
+            int renderAlpha = 0;
+
+            GL.Uniform1(shader.getAttribute("renderAlpha"), renderAlpha);
+
+            /*GL.Begin(PrimitiveType.Quads);
+             GL.TexCoord2(w, h);
+             GL.Vertex2(1, -1);
+             GL.TexCoord2(0, h);
+             GL.Vertex2(-1, -1);
+             GL.TexCoord2(0, 0);
+             GL.Vertex2(-1, 1);
+             GL.TexCoord2(w, 0);
+             GL.Vertex2(1, 1);
+             GL.End();*/
+
+            GL.Disable(EnableCap.DepthTest);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // draw full screen "quad" (big triangle)
+            GL.BindVertexArray(0);
+
 
             glControl1.SwapBuffers();
         }
+
+
+        private void RenderTextureAlpha()
+        {
+            if (!tabControl1.SelectedTab.Text.Equals("Textures")) return;
+            glControl2.MakeCurrent();
+            GL.Viewport(glControl2.ClientRectangle);
+            GL.ClearColor(Color.White);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+
+            GL.Enable(EnableCap.Texture2D);
+
+            NUT.NUD_Texture tex = null;
+            int rt = 0;
+            if (material[current].entries.ContainsKey("NU_materialHash") && listView1.SelectedIndices.Count > 0)
+            {
+                int hash = material[current].textures[listView1.SelectedIndices[0]].hash;
+
+                foreach (NUT n in Runtime.TextureContainers)
+                    if (n.draw.ContainsKey(hash))
+                    {
+                        n.getTextureByID(hash, out tex);
+                        rt = n.draw[hash];
+                        break;
+                    }
+            }
+            float h = 1f, w = 1f;
+            if (tex != null)
+            {
+                float texureRatioW = tex.width / tex.height;
+                float widthPre = texureRatioW * glControl2.Height;
+                w = glControl2.Width / widthPre;
+                if (texureRatioW > glControl2.AspectRatio)
+                {
+                    w = 1f;
+                    float texureRatioH = tex.height / tex.width;
+                    float HeightPre = texureRatioH * glControl2.Width;
+                    h = glControl2.Height / HeightPre;
+                }
+            }
+            if (float.IsInfinity(h)) h = 1;
+            Console.WriteLine(w + " " + h);
+
+            Shader shader = Runtime.shaders["Texture"];
+            GL.UseProgram(shader.programID);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, rt);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.Uniform1(shader.getAttribute("texture"), 0);
+
+            int renderAlpha = 1;
+
+            GL.Uniform1(shader.getAttribute("renderAlpha"), renderAlpha);
+
+            GL.Disable(EnableCap.DepthTest);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // draw full screen "quad" (big triangle)
+            GL.BindVertexArray(0);
+
+
+            glControl2.SwapBuffers();
+        }
+
 
         private void glControl1_Click(object sender, EventArgs e)
         {
@@ -1012,6 +1103,12 @@ namespace Smash_Forge
         {
 
             RenderTexture();
+        }
+
+        private void glControl2_Paint(object sender, PaintEventArgs e)
+        {
+
+            RenderTextureAlpha();
         }
 
         private void listView2_KeyDown(object sender, KeyEventArgs e)

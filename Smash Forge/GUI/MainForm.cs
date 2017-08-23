@@ -121,6 +121,12 @@ namespace Smash_Forge
             nud.fragmentShader(RenderTools.nud_fs);
             Runtime.shaders.Add("NUD", nud);
 
+            Shader texture = new Shader();
+            texture.vertexShader(RenderTools.texture_vs);
+            texture.fragmentShader(RenderTools.texture_fs);
+            Runtime.shaders.Add("Texture", texture);
+
+
             RenderTools.Setup();
 
             /*openFile("C:\\s\\Smash\\extract\\data\\fighter\\kamui\\model\\body\\c00\\model.vbn");
@@ -1996,7 +2002,7 @@ namespace Smash_Forge
 
         private void exportErrorLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Runtime.shaders["NUD"].SaveErrorLog();
+            Runtime.shaders["Texture"].SaveErrorLog();
             MessageBox.Show("Saved to Forge directory");
         }
 
