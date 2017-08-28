@@ -88,6 +88,9 @@ namespace Smash_Forge
         public static Color hurtboxColorMed;
         public static Color hurtboxColorLow;
         public static Color hurtboxColorSelected;
+        public static Color windboxColor;
+        public static Color grabboxColor;
+        public static Color searchboxColor;
         public static bool renderHitboxesNoOverlap;
         public static bool useFrameDuration = true;
         public static bool useFAFasAnimationLength = false;
@@ -399,6 +402,9 @@ namespace Smash_Forge
                         case "hurtbox_color_med": try { Runtime.hurtboxColorMed = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
                         case "hurtbox_color_low": try { Runtime.hurtboxColorLow = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
                         case "hurtbox_color_selected": try { Runtime.hurtboxColorSelected = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                        case "windbox_color": try { Runtime.windboxColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                        case "grabbox_color": try { Runtime.grabboxColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                        case "searchbox_color": try { Runtime.searchboxColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
 
                         case "enabled":
                             if (node.ParentNode != null)
@@ -586,6 +592,9 @@ for changing default texure
             renderNode.AppendChild(createNode(doc, "hurtbox_color_med", System.Drawing.ColorTranslator.ToHtml(hurtboxColorMed)));
             renderNode.AppendChild(createNode(doc, "hurtbox_color_low", System.Drawing.ColorTranslator.ToHtml(hurtboxColorLow)));
             renderNode.AppendChild(createNode(doc, "hurtbox_color_selected", System.Drawing.ColorTranslator.ToHtml(hurtboxColorSelected)));
+            renderNode.AppendChild(createNode(doc, "windbox_color", System.Drawing.ColorTranslator.ToHtml(windboxColor)));
+            renderNode.AppendChild(createNode(doc, "grabbox_color", System.Drawing.ColorTranslator.ToHtml(grabboxColor)));
+            renderNode.AppendChild(createNode(doc, "searchbox_color", System.Drawing.ColorTranslator.ToHtml(searchboxColor)));
             {
                 XmlNode node = doc.CreateElement("hitbox_kb_colors");
                 renderNode.AppendChild(node);

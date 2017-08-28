@@ -134,6 +134,9 @@ namespace Smash_Forge.GUI
             pbHurtboxColorMed.BackColor = Runtime.hurtboxColorMed;
             pbHurtboxColorLw.BackColor = Runtime.hurtboxColorLow;
             pbHurtboxColorSelected.BackColor = Runtime.hurtboxColorSelected;
+            pbWindboxColor.BackColor = Runtime.windboxColor;
+            pbGrabboxColor.BackColor = Runtime.grabboxColor;
+            pbSearchboxColor.BackColor = Runtime.searchboxColor;
 
             textParamDir.Text = Runtime.paramDir;
             disableRuntimeUpdates = false;
@@ -1218,6 +1221,36 @@ namespace Smash_Forge.GUI
             }
             else
                 stage4RotZ.BackColor = Color.Red;
+        }
+
+        private void pbWindboxColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.windboxColor = Color.FromArgb(0xFF, colorDialog.Color);
+                pbWindboxColor.BackColor = Runtime.windboxColor;
+            }
+        }
+
+        private void pbGrabboxColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.grabboxColor = Color.FromArgb(0xFF, colorDialog.Color);
+                pbGrabboxColor.BackColor = Runtime.grabboxColor;
+            }
+        }
+
+        private void pbSearchboxColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.searchboxColor = Color.FromArgb(0xFF, colorDialog.Color);
+                pbSearchboxColor.BackColor = Runtime.searchboxColor;
+            }
         }
     }
     
