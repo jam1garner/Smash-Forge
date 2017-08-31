@@ -118,7 +118,7 @@ namespace Smash_Forge
 
             TreeNode targetNode = treeView1.GetNodeAt(targetPoint);
 
-            TreeNode draggedNode = (TreeNode)e.Data.GetData(typeof(TreeNode));
+            TreeNode draggedNode = (TreeNode)e.Data.GetData(typeof(Bone));
 
             if (!draggedNode.Equals(targetNode) && targetNode != null && !isAChildOfB(targetNode, draggedNode))
             {
