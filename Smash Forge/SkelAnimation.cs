@@ -57,12 +57,14 @@ namespace Smash_Forge
     {
         public const int INTERPOLATED = 0;
         public const int CONSTANT = 1;
+        public const int KEYFRAME = 2;
+        public const int COMPRESSED = 3;
 
         public int id = -1;
 		public uint hash = 0;
         public int t_type, r_type, s_type;
-        public Vector3 t, s = new Vector3(1f, 1f, 1f);
-        public Quaternion r;
+        public Vector3 t, s = new Vector3(1f, 1f, 1f);  // Trans / scale
+        public Quaternion r;  // Rotation
 
         public Vector3 t2, s2, rv, rv2;
         public Quaternion r2;

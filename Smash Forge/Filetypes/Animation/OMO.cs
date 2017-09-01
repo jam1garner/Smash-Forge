@@ -78,6 +78,7 @@ namespace Smash_Forge
             for (int i = 0; i < header.frameCount; i++)
             {
                 OMOFrame frame = new OMOFrame();
+                // /2 because size of short
                 for (int j = 0; j < header.frameSize / 2; j++)
                     frame.keys.Add((ushort)d.readShort());
                 Frames.Add(frame);
