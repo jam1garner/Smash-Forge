@@ -1349,7 +1349,7 @@ namespace Smash_Forge
             }
         }
 
-        public static void DrawTexturedQuad(int texture, bool renderR, bool renderG, bool renderB, bool renderAlpha) // draw RGB or alpha channel of texture to screen quad
+        public static void DrawTexturedQuad(int texture, bool renderR, bool renderG, bool renderB, bool renderAlpha, bool alphaOverride) // draw RGB or alpha channel of texture to screen quad
         {
             Shader shader = Runtime.shaders["Texture"];
             GL.UseProgram(shader.programID);
@@ -1366,6 +1366,7 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderG"), renderG ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderB"), renderB ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderAlpha"), renderAlpha ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("alphaOverride"), alphaOverride ? 1 : 0);
 
             GL.Disable(EnableCap.DepthTest);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // draw full screen "quad" (big triangle)
@@ -2394,6 +2395,7 @@ uniform int renderR;
 uniform int renderG;
 uniform int renderB;
 uniform int renderAlpha;
+uniform int alphaOverride;
 
 out vec4 outColor;
 
@@ -2409,6 +2411,8 @@ void main()
         outColor.b = textureColor.b;
     if (renderAlpha == 1)
         outColor.a = textureColor.a;
+    if (alphaOverride == 1)
+        outColor.rgb = textureColor.aaa;
 }";
 
         #endregion

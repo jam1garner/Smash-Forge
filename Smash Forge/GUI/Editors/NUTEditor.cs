@@ -144,7 +144,7 @@ namespace Smash_Forge
                 h = glControl1.Height / HeightPre;
             }
 
-            RenderTools.DrawTexturedQuad(rt, renderR, renderG, renderB, renderAlpha);
+            RenderTools.DrawTexturedQuad(rt, renderR, renderG, renderB, renderAlpha, false);
 
             glControl1.SwapBuffers();
         }

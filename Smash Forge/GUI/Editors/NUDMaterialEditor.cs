@@ -865,7 +865,7 @@ namespace Smash_Forge
             if (float.IsInfinity(h)) h = 1;
             Console.WriteLine(w + " " + h);
 
-            RenderTools.DrawTexturedQuad(rt, true, true, true, false);
+            RenderTools.DrawTexturedQuad(rt, true, true, true, false, false);
 
             glControl1.SwapBuffers();
         }
@@ -917,7 +917,7 @@ namespace Smash_Forge
             if (float.IsInfinity(h)) h = 1;
             Console.WriteLine(w + " " + h);
 
-            RenderTools.DrawTexturedQuad(rt, true, true, true, true);
+            RenderTools.DrawTexturedQuad(rt, false, false, false, true, true);
             glControl2.SwapBuffers();
         }
 
