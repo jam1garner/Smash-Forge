@@ -263,9 +263,18 @@ namespace Smash_Forge
             
             shadowCB.Checked = mat.hasShadow;
             GlowCB.Checked = mat.glow;
-            sphereMapCB.Checked = mat.useSphereMap;
-            dummyRampCB.Checked = mat.useDummyRamp;
-            
+            //sphereMapCB.Checked = mat.useSphereMap;
+            dummy_rampCB.Checked = mat.useDummyRamp;
+            AOCB.Checked = mat.aomap;
+            diffuseCB.Checked = mat.diffuse;
+            diffuse2CB.Checked = mat.diffuse2;
+            normalCB.Checked = mat.normalmap;
+            sphere_mapCB.Checked = mat.useSphereMap;
+            cubemapCB.Checked = mat.cubemap;
+            stageMapCB.Checked = mat.stagemap;
+            rampCB.Checked = mat.ramp;
+
+
             if (mat.diffuse) listView1.Items.Add("Diffuse");
             if (mat.stagemap) listView1.Items.Add("StageMap");
             if (mat.cubemap) listView1.Items.Add("Cubemap");
@@ -856,37 +865,7 @@ namespace Smash_Forge
             if (float.IsInfinity(h)) h = 1;
             Console.WriteLine(w + " " + h);
 
-            Shader shader = Runtime.shaders["Texture"];
-            GL.UseProgram(shader.programID);
-
-
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, rt);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.Uniform1(shader.getAttribute("texture"), 0);
-
-            int renderAlpha = 0;
-
-            GL.Uniform1(shader.getAttribute("renderAlpha"), renderAlpha);
-
-            /*GL.Begin(PrimitiveType.Quads);
-             GL.TexCoord2(w, h);
-             GL.Vertex2(1, -1);
-             GL.TexCoord2(0, h);
-             GL.Vertex2(-1, -1);
-             GL.TexCoord2(0, 0);
-             GL.Vertex2(-1, 1);
-             GL.TexCoord2(w, 0);
-             GL.Vertex2(1, 1);
-             GL.End();*/
-
-            GL.Disable(EnableCap.DepthTest);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // draw full screen "quad" (big triangle)
-            GL.BindVertexArray(0);
-
+            RenderTools.DrawTexturedQuad(rt, true, true, true, false);
 
             glControl1.SwapBuffers();
         }
@@ -938,26 +917,7 @@ namespace Smash_Forge
             if (float.IsInfinity(h)) h = 1;
             Console.WriteLine(w + " " + h);
 
-            Shader shader = Runtime.shaders["Texture"];
-            GL.UseProgram(shader.programID);
-
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, rt);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.Uniform1(shader.getAttribute("texture"), 0);
-
-            int renderAlpha = 1;
-
-            GL.Uniform1(shader.getAttribute("renderAlpha"), renderAlpha);
-
-            GL.Disable(EnableCap.DepthTest);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // draw full screen "quad" (big triangle)
-            GL.BindVertexArray(0);
-
-
+            RenderTools.DrawTexturedQuad(rt, true, true, true, true);
             glControl2.SwapBuffers();
         }
 
@@ -1122,6 +1082,60 @@ namespace Smash_Forge
                 }
                 e.Handled = true;
             }
+        }
+
+        private void diffuseCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].diffuse = diffuseCB.Checked;
+            FillForm();
+        }
+
+        private void dummy_rampCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].UseDummyRamp = dummy_rampCB.Checked;
+            FillForm();
+        }
+
+        private void diffuse2CB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].diffuse2 = diffuse2CB.Checked;
+            FillForm();
+        }
+
+        private void normalCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].normalmap = normalCB.Checked;
+            FillForm();
+        }
+
+        private void sphere_mapCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].useSphereMap = sphere_mapCB.Checked;
+            FillForm();
+        }
+
+        private void rampCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].ramp = rampCB.Checked;
+            FillForm();
+        }
+
+        private void AOCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].aomap = AOCB.Checked;
+            FillForm();
+        }
+
+        private void stageMapCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].stagemap = stageMapCB.Checked;
+            FillForm();
+        }
+
+        private void cubemapCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].cubemap = cubemapCB.Checked;
+            FillForm();
         }
     }
 }

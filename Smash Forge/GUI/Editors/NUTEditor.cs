@@ -25,6 +25,11 @@ namespace Smash_Forge
         private Dictionary<NUT.NUD_Texture,string> fileFromTexture = new Dictionary<NUT.NUD_Texture, string>();
         private Dictionary<string,NUT.NUD_Texture> textureFromFile = new Dictionary<string, NUT.NUD_Texture>();
         private bool dontModify;
+        private bool renderR = true;
+        private bool renderG = true;
+        private bool renderB = true;
+        private bool renderAlpha = true;
+
 
         public NUTEditor()
         {
@@ -139,20 +144,7 @@ namespace Smash_Forge
                 h = glControl1.Height / HeightPre;
             }
 
-            GL.BindTexture(TextureTarget.Texture2D, rt);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
-            GL.Color3(Color.White);
-            GL.Begin(PrimitiveType.Quads);
-            GL.TexCoord2(w, h);
-            GL.Vertex2(1, -1);
-            GL.TexCoord2(0, h);
-            GL.Vertex2(-1, -1);
-            GL.TexCoord2(0, 0);
-            GL.Vertex2(-1, 1);
-            GL.TexCoord2(w, 0);
-            GL.Vertex2(1, 1);
-            GL.End();
+            RenderTools.DrawTexturedQuad(rt, renderR, renderG, renderB, renderAlpha);
 
             glControl1.SwapBuffers();
         }
@@ -765,6 +757,77 @@ namespace Smash_Forge
                         listBox1.SelectedItem = listBox1.SelectedItem;
                     }
                 }
+        }
+
+
+        private void renderChannelA_Click(object sender, EventArgs e)
+        {
+            if (renderAlpha)
+            {
+                renderAlpha = false;
+                renderChannelA.ForeColor = Color.DarkGray;
+            }
+                
+            else
+            {
+                renderAlpha = true;
+                renderChannelA.ForeColor = Color.Black;
+            }
+           
+            RenderTexture(); // Uniforms need to be udpated.
+        }
+
+      
+        private void renderChannelB_Click(object sender, EventArgs e)
+        {
+            if (renderB)
+            {
+                renderB = false;
+                renderChannelB.ForeColor = Color.DarkGray;
+            }
+               
+            else
+            {
+                renderB = true;
+                renderChannelB.ForeColor = Color.Blue;
+            }
+               
+
+            RenderTexture(); // Uniforms need to be udpated.
+        }
+
+        private void renderChannelR_Click(object sender, EventArgs e)
+        {
+            if (renderR)
+            {
+                renderR = false;
+                renderChannelR.ForeColor = Color.DarkGray;
+            }
+                
+            else
+            {
+                renderR = true;
+                renderChannelR.ForeColor = Color.Red;
+            }
+               
+            RenderTexture(); // Uniforms need to be udpated.
+        }
+
+        private void renderChannelG_Click_1(object sender, EventArgs e)
+        {
+            if (renderG)
+            {
+                renderG = false;
+                renderChannelG.ForeColor = Color.DarkGray;
+            }
+            else
+            {
+                renderG = true;
+                renderChannelG.ForeColor = Color.Green;
+            }
+               
+           
+            RenderTexture(); // Uniforms need to be udpated.
         }
     }
 }

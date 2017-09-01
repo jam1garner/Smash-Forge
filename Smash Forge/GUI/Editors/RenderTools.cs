@@ -4,6 +4,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing.Imaging;
+using System.Diagnostics;
 
 namespace Smash_Forge
 {
@@ -1348,6 +1349,29 @@ namespace Smash_Forge
             }
         }
 
+        public static void DrawTexturedQuad(int texture, bool renderR, bool renderG, bool renderB, bool renderAlpha) // draw RGB or alpha channel of texture to screen quad
+        {
+            Shader shader = Runtime.shaders["Texture"];
+            GL.UseProgram(shader.programID);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.Uniform1(shader.getAttribute("texture"), 0);
+
+            GL.Uniform1(shader.getAttribute("renderR"), renderR ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderG"), renderG ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderB"), renderB ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderAlpha"), renderAlpha ? 1 : 0);
+
+            GL.Disable(EnableCap.DepthTest);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // draw full screen "quad" (big triangle)
+            GL.BindVertexArray(0);
+        }
+
         #endregion
         
         #region Other
@@ -2365,20 +2389,29 @@ void main()
 in vec2 texCoord;
 
 uniform sampler2D texture;
+
+uniform int renderR;
+uniform int renderG;
+uniform int renderB;
 uniform int renderAlpha;
 
 out vec4 outColor;
 
 void main()
-{   outColor = vec4(1);    
+{   outColor = vec4(0,0,0,1);    
     vec4 textureColor = texture2D(texture, vec2(texCoord.x, 1-texCoord.y)).rgba;
-    outColor.rgb = textureColor.rgb;
+    //outColor.rgb = textureColor.rgb;
+    if (renderR == 1)
+        outColor.r = textureColor.r;
+    if (renderG == 1)
+        outColor.g = textureColor.g;
+    if (renderB == 1)
+        outColor.b = textureColor.b;
     if (renderAlpha == 1)
-        outColor.rgb = textureColor.aaa;
+        outColor.a = textureColor.a;
 }";
 
         #endregion
-
 
         #endregion
 

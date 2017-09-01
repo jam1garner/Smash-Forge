@@ -94,7 +94,17 @@
             this.label23 = new System.Windows.Forms.Label();
             this.descriptionLabel = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.glControl2 = new OpenTK.GLControl();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.cubemapCB = new System.Windows.Forms.CheckBox();
+            this.stageMapCB = new System.Windows.Forms.CheckBox();
+            this.dummy_rampCB = new System.Windows.Forms.CheckBox();
+            this.rampCB = new System.Windows.Forms.CheckBox();
+            this.AOCB = new System.Windows.Forms.CheckBox();
+            this.sphere_mapCB = new System.Windows.Forms.CheckBox();
+            this.normalCB = new System.Windows.Forms.CheckBox();
+            this.diffuse2CB = new System.Windows.Forms.CheckBox();
+            this.diffuseCB = new System.Windows.Forms.CheckBox();
             this.dummyRampCB = new System.Windows.Forms.CheckBox();
             this.sphereMapCB = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -112,13 +122,13 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.glControl2 = new OpenTK.GLControl();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox8.SuspendLayout();
             this.paramGB.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -821,14 +831,141 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Textures";
             // 
+            // glControl2
+            // 
+            this.glControl2.BackColor = System.Drawing.Color.Black;
+            this.glControl2.Location = new System.Drawing.Point(145, 19);
+            this.glControl2.Name = "glControl2";
+            this.glControl2.Size = new System.Drawing.Size(116, 112);
+            this.glControl2.TabIndex = 25;
+            this.glControl2.VSync = false;
+            this.glControl2.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl2_Paint);
+            // 
             // groupBox7
             // 
+            this.groupBox7.Controls.Add(this.cubemapCB);
+            this.groupBox7.Controls.Add(this.stageMapCB);
+            this.groupBox7.Controls.Add(this.dummy_rampCB);
+            this.groupBox7.Controls.Add(this.rampCB);
+            this.groupBox7.Controls.Add(this.AOCB);
+            this.groupBox7.Controls.Add(this.sphere_mapCB);
+            this.groupBox7.Controls.Add(this.normalCB);
+            this.groupBox7.Controls.Add(this.diffuse2CB);
+            this.groupBox7.Controls.Add(this.diffuseCB);
             this.groupBox7.Location = new System.Drawing.Point(5, 366);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(262, 100);
             this.groupBox7.TabIndex = 24;
             this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "4th Byte";
+            this.groupBox7.Text = "4th Byte (experimental WIP)";
+            // 
+            // cubemapCB
+            // 
+            this.cubemapCB.AutoSize = true;
+            this.cubemapCB.Enabled = false;
+            this.cubemapCB.Location = new System.Drawing.Point(165, 66);
+            this.cubemapCB.Name = "cubemapCB";
+            this.cubemapCB.Size = new System.Drawing.Size(71, 17);
+            this.cubemapCB.TabIndex = 8;
+            this.cubemapCB.Text = "Cubemap";
+            this.cubemapCB.UseVisualStyleBackColor = true;
+            this.cubemapCB.CheckedChanged += new System.EventHandler(this.cubemapCB_CheckedChanged);
+            // 
+            // stageMapCB
+            // 
+            this.stageMapCB.AutoSize = true;
+            this.stageMapCB.Enabled = false;
+            this.stageMapCB.Location = new System.Drawing.Point(165, 42);
+            this.stageMapCB.Name = "stageMapCB";
+            this.stageMapCB.Size = new System.Drawing.Size(78, 17);
+            this.stageMapCB.TabIndex = 7;
+            this.stageMapCB.Text = "Stage Map";
+            this.stageMapCB.UseVisualStyleBackColor = true;
+            this.stageMapCB.CheckedChanged += new System.EventHandler(this.stageMapCB_CheckedChanged);
+            // 
+            // dummy_rampCB
+            // 
+            this.dummy_rampCB.AutoSize = true;
+            this.dummy_rampCB.Enabled = false;
+            this.dummy_rampCB.Location = new System.Drawing.Point(165, 18);
+            this.dummy_rampCB.Name = "dummy_rampCB";
+            this.dummy_rampCB.Size = new System.Drawing.Size(92, 17);
+            this.dummy_rampCB.TabIndex = 6;
+            this.dummy_rampCB.Text = "Dummy Ramp";
+            this.dummy_rampCB.UseVisualStyleBackColor = true;
+            this.dummy_rampCB.CheckedChanged += new System.EventHandler(this.dummy_rampCB_CheckedChanged);
+            // 
+            // rampCB
+            // 
+            this.rampCB.AutoSize = true;
+            this.rampCB.Enabled = false;
+            this.rampCB.Location = new System.Drawing.Point(78, 66);
+            this.rampCB.Name = "rampCB";
+            this.rampCB.Size = new System.Drawing.Size(54, 17);
+            this.rampCB.TabIndex = 5;
+            this.rampCB.Text = "Ramp";
+            this.rampCB.UseVisualStyleBackColor = true;
+            this.rampCB.CheckedChanged += new System.EventHandler(this.rampCB_CheckedChanged);
+            // 
+            // AOCB
+            // 
+            this.AOCB.AutoSize = true;
+            this.AOCB.Enabled = false;
+            this.AOCB.Location = new System.Drawing.Point(78, 42);
+            this.AOCB.Name = "AOCB";
+            this.AOCB.Size = new System.Drawing.Size(41, 17);
+            this.AOCB.TabIndex = 4;
+            this.AOCB.Text = "AO";
+            this.AOCB.UseVisualStyleBackColor = true;
+            this.AOCB.CheckedChanged += new System.EventHandler(this.AOCB_CheckedChanged);
+            // 
+            // sphere_mapCB
+            // 
+            this.sphere_mapCB.AutoSize = true;
+            this.sphere_mapCB.Enabled = false;
+            this.sphere_mapCB.Location = new System.Drawing.Point(78, 18);
+            this.sphere_mapCB.Name = "sphere_mapCB";
+            this.sphere_mapCB.Size = new System.Drawing.Size(84, 17);
+            this.sphere_mapCB.TabIndex = 3;
+            this.sphere_mapCB.Text = "Sphere Map";
+            this.sphere_mapCB.UseVisualStyleBackColor = true;
+            this.sphere_mapCB.CheckedChanged += new System.EventHandler(this.sphere_mapCB_CheckedChanged);
+            // 
+            // normalCB
+            // 
+            this.normalCB.AutoSize = true;
+            this.normalCB.Enabled = false;
+            this.normalCB.Location = new System.Drawing.Point(7, 68);
+            this.normalCB.Name = "normalCB";
+            this.normalCB.Size = new System.Drawing.Size(59, 17);
+            this.normalCB.TabIndex = 2;
+            this.normalCB.Text = "Normal";
+            this.normalCB.UseVisualStyleBackColor = true;
+            this.normalCB.CheckedChanged += new System.EventHandler(this.normalCB_CheckedChanged);
+            // 
+            // diffuse2CB
+            // 
+            this.diffuse2CB.AutoSize = true;
+            this.diffuse2CB.Enabled = false;
+            this.diffuse2CB.Location = new System.Drawing.Point(7, 44);
+            this.diffuse2CB.Name = "diffuse2CB";
+            this.diffuse2CB.Size = new System.Drawing.Size(65, 17);
+            this.diffuse2CB.TabIndex = 1;
+            this.diffuse2CB.Text = "Diffuse2";
+            this.diffuse2CB.UseVisualStyleBackColor = true;
+            this.diffuse2CB.CheckedChanged += new System.EventHandler(this.diffuse2CB_CheckedChanged);
+            // 
+            // diffuseCB
+            // 
+            this.diffuseCB.AutoSize = true;
+            this.diffuseCB.Enabled = false;
+            this.diffuseCB.Location = new System.Drawing.Point(7, 20);
+            this.diffuseCB.Name = "diffuseCB";
+            this.diffuseCB.Size = new System.Drawing.Size(59, 17);
+            this.diffuseCB.TabIndex = 0;
+            this.diffuseCB.Text = "Diffuse";
+            this.diffuseCB.UseVisualStyleBackColor = true;
+            this.diffuseCB.CheckedChanged += new System.EventHandler(this.diffuseCB_CheckedChanged);
             // 
             // dummyRampCB
             // 
@@ -1021,16 +1158,6 @@
             this.panel1.Size = new System.Drawing.Size(284, 69);
             this.panel1.TabIndex = 26;
             // 
-            // glControl2
-            // 
-            this.glControl2.BackColor = System.Drawing.Color.Black;
-            this.glControl2.Location = new System.Drawing.Point(145, 19);
-            this.glControl2.Name = "glControl2";
-            this.glControl2.Size = new System.Drawing.Size(116, 112);
-            this.glControl2.TabIndex = 25;
-            this.glControl2.VSync = false;
-            this.glControl2.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl2_Paint);
-            // 
             // NUDMaterialEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1058,6 +1185,8 @@
             this.paramGB.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox6.ResumeLayout(false);
@@ -1163,5 +1292,14 @@
         private System.Windows.Forms.TextBox textBox15;
         private System.Windows.Forms.TableLayoutPanel paramGB;
         private OpenTK.GLControl glControl2;
+        private System.Windows.Forms.CheckBox cubemapCB;
+        private System.Windows.Forms.CheckBox stageMapCB;
+        private System.Windows.Forms.CheckBox dummy_rampCB;
+        private System.Windows.Forms.CheckBox rampCB;
+        private System.Windows.Forms.CheckBox AOCB;
+        private System.Windows.Forms.CheckBox sphere_mapCB;
+        private System.Windows.Forms.CheckBox normalCB;
+        private System.Windows.Forms.CheckBox diffuse2CB;
+        private System.Windows.Forms.CheckBox diffuseCB;
     }
 }

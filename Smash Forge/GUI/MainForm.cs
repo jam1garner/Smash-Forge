@@ -2015,7 +2015,7 @@ namespace Smash_Forge
 
         private void exportErrorLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Runtime.shaders["Texture"].SaveErrorLog();
+            Runtime.shaders["NUD"].SaveErrorLog();
             MessageBox.Show("Saved to Forge directory");
         }
 
