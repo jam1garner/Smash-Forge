@@ -10,9 +10,33 @@ namespace Smash_Forge
         public static int flagsused = 0;
 
         // For a specific type of rotation data
+        public static float epsilon = 1.0e-12f;
+        public static float rot6CalculateW(float x, float y, float z)
+        {
+            // float cumulative = (float)Math.Sqrt(Math.Abs(1 - (x * x + y * y + z * z)));
+            float cumulative = 1 - (x * x + y * y + z * z);
+            float f12 = (float)(1 / Math.Sqrt((double)cumulative));
+            float sqrt_cumulative = (cumulative - epsilon) < 0 ? 0f : f12;
+
+            float f7 = (0.5f * cumulative) * sqrt_cumulative;
+            float f8 = 1.5f - (f7 * sqrt_cumulative);
+            float f0 = f8 * sqrt_cumulative;
+            float f9 = (0.5f * cumulative) * f0;
+            float f10 = 1.5f - (f9 * f0);
+            f0 = f0 * f10;
+            float f11 = (0.5f * cumulative) * f0;
+            float f13 = 1.5f - (f11 * f0);
+            f0 = f0 * f13;
+            f7 = cumulative * f0;
+
+            return f7;
+        }
+
+
+        // For a specific type of rotation data
         public static float scale1 = 1 / (float)Math.Sqrt(2f);
         public static float scale2 = (scale1 * 2) / 1048575f;
-        public static float floatToQuaternionComponent(float toConvert)
+        public static float encodedRot10ToQuaternionComponent(float toConvert)
         {
             return (toConvert * scale2) - scale1;
         }
@@ -110,12 +134,18 @@ namespace Smash_Forge
                         node.rv = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                         node.rv2 = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                     }
-                    if ((rFlag & 0xF0) == 0x70 || (rFlag & 0xF0) == 0x60)
-                    { // constant
+
+                    if ((rFlag & 0xF0) == 0x60)
+                    {
+                        node.r_type = KeyNode.KEYFRAME;
+                        node.rv = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
+                        node.r_extra = d.readFloat() / 65535;
+                    }
+
+                    if ((rFlag & 0xF0) == 0x70)
+                    {
                         node.r_type = KeyNode.CONSTANT;
                         node.rv = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
-                        if ((rFlag & 0xF0) == 0x60)
-                            d.skip(4);
                     }
                 }
 
@@ -127,6 +157,7 @@ namespace Smash_Forge
                         node.s = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                         node.s2 = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                     }
+                    // TODO: investigate the difference between these
                     if ((rFlag & 0x0F) == 0x02 || (rFlag & 0x0F) == 0x03)
                     { // constant
                         node.s_type = KeyNode.CONSTANT;
@@ -208,30 +239,30 @@ namespace Smash_Forge
                         switch (flags)
                         {
                             case 0:  // y, z, w provided
-                                node.r.Y = floatToQuaternionComponent(f1);
-                                node.r.Z = floatToQuaternionComponent(f2);
-                                node.r.W = floatToQuaternionComponent(f3);
+                                node.r.Y = encodedRot10ToQuaternionComponent(f1);
+                                node.r.Z = encodedRot10ToQuaternionComponent(f2);
+                                node.r.W = encodedRot10ToQuaternionComponent(f3);
 
                                 node.r.X = (float)Math.Sqrt(Math.Abs(1 - (node.r.Y * node.r.Y + node.r.Z * node.r.Z + node.r.W * node.r.W)));
                                 break;
                             case 1:  // x, z, w provided
-                                node.r.X = floatToQuaternionComponent(f1);
-                                node.r.Z = floatToQuaternionComponent(f2);
-                                node.r.W = floatToQuaternionComponent(f3);
+                                node.r.X = encodedRot10ToQuaternionComponent(f1);
+                                node.r.Z = encodedRot10ToQuaternionComponent(f2);
+                                node.r.W = encodedRot10ToQuaternionComponent(f3);
 
                                 node.r.Y = (float)Math.Sqrt(Math.Abs(1 - (node.r.X * node.r.X + node.r.Z * node.r.Z + node.r.W * node.r.W)));
                                 break;
                             case 2:  // x, y, w provided
-                                node.r.X = floatToQuaternionComponent(f1);
-                                node.r.Y = floatToQuaternionComponent(f2);
-                                node.r.W = floatToQuaternionComponent(f3);
+                                node.r.X = encodedRot10ToQuaternionComponent(f1);
+                                node.r.Y = encodedRot10ToQuaternionComponent(f2);
+                                node.r.W = encodedRot10ToQuaternionComponent(f3);
 
                                 node.r.Z = (float)Math.Sqrt(Math.Abs(1 - (node.r.X * node.r.X + node.r.Y * node.r.Y + node.r.W * node.r.W)));
                                 break;
                             case 3:  // x, y, z, provided
-                                node.r.X = floatToQuaternionComponent(f1);
-                                node.r.Y = floatToQuaternionComponent(f2);
-                                node.r.Z = floatToQuaternionComponent(f3);
+                                node.r.X = encodedRot10ToQuaternionComponent(f1);
+                                node.r.Y = encodedRot10ToQuaternionComponent(f2);
+                                node.r.Z = encodedRot10ToQuaternionComponent(f3);
 
                                 node.r.W = (float)Math.Sqrt(Math.Abs(1 - (node.r.X * node.r.X + node.r.Y * node.r.Y + node.r.Z * node.r.Z)));
                                 break;
@@ -255,12 +286,21 @@ namespace Smash_Forge
                         node.r = new Quaternion(new Vector3(x, y, z), w);
                         node.r.Normalize();
                     }
+                    else if (baseNode[j].r_type == KeyNode.KEYFRAME)
+                    {
+                        float scale = d.readShort() * baseNode[j].r_extra;
+                        float x = baseNode[j].rv.X;
+                        float y = baseNode[j].rv.Y;
+                        float z = baseNode[j].rv.Z + scale;
+                        float w = rot6CalculateW(x, y, z);
+
+                        node.r = new Quaternion(x, y, z, w);
+                    }
                     else
                     {
                         float x = baseNode[j].rv.X;
                         float y = baseNode[j].rv.Y;
                         float z = baseNode[j].rv.Z;
-
                         float w = (float)Math.Sqrt(Math.Abs(1 - (x * x + y * y + z * z)));
 
                         node.r = new Quaternion(baseNode[j].rv, w);

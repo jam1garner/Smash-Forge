@@ -69,6 +69,8 @@ namespace Smash_Forge
         public Vector3 t2, s2, rv, rv2;
         public Quaternion r2;
 
+        public float r_extra;
+
         public KeyNode()
         {
             t_type = -1;
