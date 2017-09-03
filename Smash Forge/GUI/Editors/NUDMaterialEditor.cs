@@ -274,16 +274,17 @@ namespace Smash_Forge
             stageMapCB.Checked = mat.stagemap;
             rampCB.Checked = mat.ramp;
 
-
+   
             if (mat.diffuse) listView1.Items.Add("Diffuse");
+            if (mat.diffuse2) listView1.Items.Add("Diffuse2");
+            if (mat.diffuse3) listView1.Items.Add("Diffuse3");
             if (mat.stagemap) listView1.Items.Add("StageMap");
             if (mat.cubemap) listView1.Items.Add("Cubemap");
             if (mat.spheremap) listView1.Items.Add("SphereMap");
-            if (mat.diffuse2) listView1.Items.Add("Diffuse2");
+            //if (mat.diffuse2) listView1.Items.Add("Diffuse2");
             if (mat.aomap) listView1.Items.Add("AO Map");
             if (mat.normalmap) listView1.Items.Add("NormalMap");
             if (mat.ramp) listView1.Items.Add("Ramp");
-
             if (mat.useDummyRamp) listView1.Items.Add("Dummy Ramp");
 
             while (listView1.Items.Count > mat.textures.Count)

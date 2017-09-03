@@ -827,8 +827,8 @@ namespace Smash_Forge
              * Matrix4.CreateFromAxisAngle(Vector3.UnitY, stageLight4RotY)
              * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight4RotZ);
 
-            Vector3 lightDirection= new Vector3(0f, 0f, 1f);
-            lightDirection = Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized();
+            Vector3 lightDirection= new Vector3(0f, 0f, -1f);
+            //lightDirection = Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized();
 
             Vector3 difDir = new Vector3(0f, 0f, 1f);
             Vector3 specDir = new Vector3(0f, 0f, 1f);
@@ -850,8 +850,6 @@ namespace Smash_Forge
                 GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.Transform(difDir, difrot).Normalized());
                 GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, v));
                 GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
-
-              
             }
 
             GL.Uniform3(shader.getAttribute("stageLight1Direction"), Vector3.Transform(stageLight1Dir, stagelight1rot).Normalized());
