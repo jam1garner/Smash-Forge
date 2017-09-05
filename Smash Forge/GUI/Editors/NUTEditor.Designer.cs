@@ -56,6 +56,10 @@
             this.extractAndPickAProgramToEditWithToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importEditedFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.texIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.renderChannelA = new System.Windows.Forms.Button();
+            this.renderChannelB = new System.Windows.Forms.Button();
+            this.renderChannelG = new System.Windows.Forms.Button();
+            this.renderChannelR = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -157,6 +161,8 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 15F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(236, 59);
             this.tableLayoutPanel1.TabIndex = 8;
             // 
@@ -332,11 +338,62 @@
             this.texIDToolStripMenuItem.Text = "TexID";
             this.texIDToolStripMenuItem.Click += new System.EventHandler(this.texIDToolStripMenuItem_Click);
             // 
+            // renderChannelA
+            // 
+            this.renderChannelA.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.renderChannelA.Location = new System.Drawing.Point(396, 307);
+            this.renderChannelA.Name = "renderChannelA";
+            this.renderChannelA.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelA.TabIndex = 14;
+            this.renderChannelA.Text = "A";
+            this.renderChannelA.UseVisualStyleBackColor = true;
+            this.renderChannelA.Click += new System.EventHandler(this.renderChannelA_Click);
+            // 
+            // renderChannelB
+            // 
+            this.renderChannelB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.renderChannelB.ForeColor = System.Drawing.Color.Blue;
+            this.renderChannelB.Location = new System.Drawing.Point(370, 307);
+            this.renderChannelB.Name = "renderChannelB";
+            this.renderChannelB.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelB.TabIndex = 12;
+            this.renderChannelB.Text = "B";
+            this.renderChannelB.UseVisualStyleBackColor = true;
+            this.renderChannelB.Click += new System.EventHandler(this.renderChannelB_Click);
+            // 
+            // renderChannelG
+            // 
+            this.renderChannelG.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.renderChannelG.ForeColor = System.Drawing.Color.Green;
+            this.renderChannelG.Location = new System.Drawing.Point(344, 307);
+            this.renderChannelG.Name = "renderChannelG";
+            this.renderChannelG.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelG.TabIndex = 13;
+            this.renderChannelG.Text = "G";
+            this.renderChannelG.UseVisualStyleBackColor = true;
+            this.renderChannelG.Click += new System.EventHandler(this.renderChannelG_Click_1);
+            // 
+            // renderChannelR
+            // 
+            this.renderChannelR.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.renderChannelR.ForeColor = System.Drawing.Color.Red;
+            this.renderChannelR.Location = new System.Drawing.Point(318, 307);
+            this.renderChannelR.Name = "renderChannelR";
+            this.renderChannelR.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelR.TabIndex = 10;
+            this.renderChannelR.Text = "R";
+            this.renderChannelR.UseVisualStyleBackColor = true;
+            this.renderChannelR.Click += new System.EventHandler(this.renderChannelR_Click);
+            // 
             // NUTEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(440, 353);
+            this.Controls.Add(this.renderChannelR);
+            this.Controls.Add(this.renderChannelA);
+            this.Controls.Add(this.renderChannelG);
+            this.Controls.Add(this.renderChannelB);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.listBox2);
             this.Controls.Add(this.label2);
@@ -388,5 +445,9 @@
         private System.Windows.Forms.ToolStripMenuItem importNUTFromFolderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveNUTZLIBToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem texIDToolStripMenuItem;
+        private System.Windows.Forms.Button renderChannelA;
+        private System.Windows.Forms.Button renderChannelB;
+        private System.Windows.Forms.Button renderChannelG;
+        private System.Windows.Forms.Button renderChannelR;
     }
 }

@@ -74,6 +74,16 @@ namespace Smash_Forge
 				return ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF);
 		}
 
+        public short readSignedShort()
+        {
+            if (Endian == Endianness.Little)
+            {
+                return (short) ((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8));
+            }
+            else
+                return (short) (((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
+        }
+
 		public int readByte()
 		{
 			return (b[p++] & 0xFF);

@@ -4,6 +4,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing.Imaging;
+using System.Diagnostics;
 
 namespace Smash_Forge
 {
@@ -1348,6 +1349,30 @@ namespace Smash_Forge
             }
         }
 
+        public static void DrawTexturedQuad(int texture, bool renderR, bool renderG, bool renderB, bool renderAlpha, bool alphaOverride) // draw RGB or alpha channel of texture to screen quad
+        {
+            Shader shader = Runtime.shaders["Texture"];
+            GL.UseProgram(shader.programID);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.Uniform1(shader.getAttribute("texture"), 0);
+
+            GL.Uniform1(shader.getAttribute("renderR"), renderR ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderG"), renderG ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderB"), renderB ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderAlpha"), renderAlpha ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("alphaOverride"), alphaOverride ? 1 : 0);
+
+            GL.Disable(EnableCap.DepthTest);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // draw full screen "quad" (big triangle)
+            GL.BindVertexArray(0);
+        }
+
         #endregion
         
         #region Other
@@ -1505,8 +1530,12 @@ out vec3 pos;
 out vec3 tangent;
 out vec3 bitangent;
 out vec4 vertexColor;
+
 out vec2 texcoord;
+out vec2 texcoord2;
+out vec2 texcoord3;
 out vec2 normaltexcoord;
+
 out vec3 normal;
 out vec3 fragpos;
 out vec4 vBoneOut;
@@ -1514,6 +1543,8 @@ out vec4 vWeightOut;
 out vec4 viewNormals;
 
 uniform vec4 colorSamplerUV;
+uniform vec4 colorSampler2UV;
+uniform vec4 colorSampler3UV;
 uniform vec4 normalSamplerAUV;
 uniform mat4 eyeview;
 uniform uint flags;
@@ -1599,6 +1630,8 @@ void main()
 
 in vec3 pos;
 in vec2 texcoord;
+in vec2 texcoord2;
+in vec2 texcoord3;
 in vec2 normaltexcoord;
 in vec4 vertexColor;
 in vec3 normal;
@@ -1613,6 +1646,7 @@ out vec4 fincol;
 // Textures
 uniform sampler2D dif;
 uniform sampler2D dif2;
+uniform sampler2D dif3;
 uniform sampler2D ramp;
 uniform sampler2D dummyRamp;
 uniform sampler2D nrm;
@@ -1626,6 +1660,7 @@ uniform sampler2D UVTestPattern;
 // flags tests
 uniform int hasDif;
 uniform int hasDif2;
+uniform int hasDif3;
 uniform int hasStage;
 uniform int hasCube;
 uniform int hasNrm;
@@ -1656,7 +1691,6 @@ uniform vec4 finalColorGain;
 uniform vec4 reflectionColor;
 uniform vec4 fogColor;
 uniform vec4 effColorGain;
-
 uniform vec4 zOffset;
 
 // params
@@ -1671,16 +1705,17 @@ uniform vec4 alphaBlendParams;
 uniform vec4 softLightingParams;
 uniform vec4 customSoftLightParams;
 
-uniform int renderType;
-uniform int renderLighting;
-uniform int renderVertColor;
-uniform int renderNormal;
 
 // render settings
 uniform int renderDiffuse;
 uniform int renderSpecular;
 uniform int renderFresnel;
 uniform int renderReflection;
+uniform int renderType;
+uniform int renderLighting;
+uniform int renderVertColor;
+uniform int renderNormal;
+uniform int useNormalMap;
 
 uniform float diffuse_intensity;
 uniform float ambient;
@@ -1692,59 +1727,63 @@ uniform float reflection_intensity;
 uniform float diffuseHue;
 uniform float diffuseSaturation;
 uniform float diffuseIntensity;
+uniform vec3 difLightDirection;
+
 uniform float ambientHue;
 uniform float ambientSaturation;
 uniform float ambientIntensity;
+
 uniform float fresnelGroundHue;
 uniform float fresnelGroundSaturation;
 uniform float fresnelGroundIntensity;
+
 uniform float fresnelSkyHue;
 uniform float fresnelSkySaturation;
 uniform float fresnelSkyIntensity;
-uniform float fogHue;
-uniform float fogSaturation;
-uniform float fogIntensity;
+
 uniform float specularHue;
 uniform float specularSaturation;
 uniform float specularIntensity;
+uniform vec3 specLightDirection;
+
 uniform float reflectionHue;
 uniform float reflectionSaturation;
 uniform float reflectionIntensity;
-uniform vec3 difLightDirection;
-uniform vec3 specLightDirection;
-
 
 // stage lighting
-uniform vec3 stageLight1Direction;
-uniform vec3 stageLight2Direction;
-uniform vec3 stageLight3Direction;
-uniform vec3 stageLight4Direction;
+uniform int renderStageLight1;
 uniform float stage1Hue;
 uniform float stage1Saturation;
 uniform float stage1Intensity;
+uniform vec3 stageLight1Direction;
+
+uniform int renderStageLight2;
 uniform float stage2Hue;
 uniform float stage2Saturation;
 uniform float stage2Intensity;
+uniform vec3 stageLight2Direction;
+
+uniform int renderStageLight3;
 uniform float stage3Hue;
 uniform float stage3Saturation;
 uniform float stage3Intensity;
+uniform vec3 stageLight3Direction;
+
+uniform int renderStageLight4;
 uniform float stage4Hue;
 uniform float stage4Saturation;
 uniform float stage4Intensity;
-uniform int renderFog;
-uniform int renderStageLight1;
-uniform int renderStageLight2;
-uniform int renderStageLight3;
-uniform int renderStageLight4;
+uniform vec3 stageLight4Direction;
 
-uniform int useNormalMap;
+uniform int renderFog;
+uniform float fogHue;
+uniform float fogSaturation;
+uniform float fogIntensity;
+
 uniform mat4 eyeview;
 uniform vec3 lightPosition;
 uniform vec3 lightDirection;
-
-
 uniform sampler2D shadowMap;
-
 
 // Tools
 vec3 rgb2hsv(vec3 c)
@@ -1771,9 +1810,9 @@ float luminance(vec3 rgb)
     return dot(rgb, W);
 }
 
-vec3 calculate_tint_color(vec3 inputColor, float color_alpha, float blendAmount)
+vec3 calculate_tint_color(vec3 inputColor, float colorAlpha)
 {
-    float intensity = color_alpha * 0.4;
+    float intensity = colorAlpha * 0.4;
     vec3 inputHSV = rgb2hsv(inputColor);
     float outSaturation = min((inputHSV.y * intensity),1); // can't have color with saturation > 1
     vec3 outColorTint = hsv2rgb(vec3(inputHSV.x,outSaturation,1));
@@ -1849,14 +1888,13 @@ vec3 SpecRampColor(vec3 col){ // currently just for bayo spec ramp
 	return ramp_contribution;
 }
 
-// adapted from 2004 ati ruby demo
-vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift)
+vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift) // probably not needed
 {
     vec3 shiftedT = tangent + shift * normal;
     return normalize(shiftedT);
 }
 
-float StrandSpecular(vec3 tangent, vec3 V, vec3 L, float exponent)
+float StrandSpecular(vec3 tangent, vec3 V, vec3 L, float exponent) // also not needed
 {
     vec3 H = normalize(L + V);
     float dotTH = dot(tangent, H);
@@ -1886,7 +1924,7 @@ vec3 BayoHairSpecular(vec3 diffuse_map, vec3 I, float xComponent, float yCompone
 
     vec3 half_angle = normalize(I + lightDirection);
     float test = dot(t2, half_angle)/reflectionParams.w;
-    test = (test +1) /2;
+    test = (test + 1) / 2;
     float test2 = diffuse_map.g;
 
     hairSpecular = texture2D(dummyRamp, vec2(test, test2)).rgb * diffuse_map.b * alphaBlendParams.z * 0.1;// * diffuse_map.b;
@@ -1894,19 +1932,13 @@ vec3 BayoHairSpecular(vec3 diffuse_map, vec3 I, float xComponent, float yCompone
 }
 
 
-
 vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     vec3 I = vec3(0,0,-1) * mat3(eyeview);
-    float blendAmount = 1;
-	float fresnelBlendAmount = 0.5;
-    float specularBlendAmount = 0.5;
-    float reflectionBlendAmount = 0.5;
 
-
-    // light direction seems to be (z,x,y) from light_set_param
-    vec3 newDiffuseDirection = difLightDirection; //normalize(I + diffuseLightDirection);
-    vec3 newFresnelDirection = lightDirection; //normalize(I + fresnelLightDirection);
-    vec3 newSpecularDirection = specLightDirection; //normalize(I + specularLightDirection);
+    // light directions
+    vec3 newDiffuseDirection = difLightDirection;
+    vec3 newFresnelDirection = lightDirection;
+    vec3 newSpecularDirection = specLightDirection;
 
 	//---------------------------------------------------------------------------------------------
 		// diffuse pass
@@ -1924,8 +1956,8 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
 			//ao_blend = total ambient occlusion term. brightness is just addition. hue/saturation is ???
             vec3 ao_blend = vec3(1);
-            ao_blend = min((ao_map.aaa + minGain.rgb),vec3(1.15));
-            vec3 aoGain = min((ao_map.aaa * (1+minGain.rgb)),vec3(1.15));
+            ao_blend = min((ao_map.aaa + minGain.rgb),vec3(1.20));
+            vec3 aoGain = min((ao_map.aaa * (1+minGain.rgb)),vec3(1.0));
 			vec3 c1 = rgb2hsv(ao_blend);
             vec3 c2 = rgb2hsv(aoGain);
 			ao_blend.rgb = hsv2rgb(vec3(c1.x, c2.y, c1.z));
@@ -1967,7 +1999,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
             //---------------------------------------------------------------------------------------------
                 // stage lighting
                 vec3 lighting = vec3(1);
-                if ((flags & 0xF0000000u) == 0xA0000000u) // stage lighting. should actually be based on xmb in future
+                if ((flags & 0xF0000000u) == 0xA0000000u) // stage lighting. should actually be based on xmb in future. would be faster to do on CPU
                 {
                     vec3 stageLight1Color = hsv2rgb(vec3(stage1Hue/360, stage1Saturation, stage1Intensity)) * max((dot(N, stageLight1Direction)),0);
                     vec3 stageLight2Color = hsv2rgb(vec3(stage2Hue/360, stage2Saturation, stage2Intensity)) * max((dot(N, stageLight2Direction)),0);
@@ -1995,7 +2027,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
                 diffuse_pass = mix(softLightAmbient, softLightDiffuse, softLight); // byte2 81 makes it brighter/more saturated?
             }
-            else if (hasCustomSoftLight == 1) // nearly identical to softlightingparams. just used for cloud hair
+            else if (hasCustomSoftLight == 1) // nearly identical to softlightingparams. just used for cloud hair. could be combined with sotflight and just use different values
             {
                 float edgeL = 0.5 - (customSoftLightParams.z / 2);
                 float edgeR = 0.5 + (customSoftLightParams.z / 2);
@@ -2020,9 +2052,9 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
 	//---------------------------------------------------------------------------------------------
 		// Calculate the color tint. input colors are r,g,b,alpha. alpha is color blend amount
-		vec3 spec_tint = calculate_tint_color(diffuse_color, specularColor.a, specularBlendAmount);
-		vec3 fresnel_tint = calculate_tint_color(diffuse_color, fresnelColor.a, fresnelBlendAmount);
-		vec3 reflection_tint = calculate_tint_color(diffuse_color, reflectionColor.a, reflectionBlendAmount);
+		vec3 spec_tint = calculate_tint_color(diffuse_color, specularColor.a);
+		vec3 fresnel_tint = calculate_tint_color(diffuse_color, fresnelColor.a);
+		vec3 reflection_tint = calculate_tint_color(diffuse_color, reflectionColor.a);
 	//---------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------
@@ -2100,7 +2132,8 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
             //if((flags & 0x00120000u) == 0x00120000u)
             //fresnel_pass *= mix(vec3(1),ao_map.rgb,fresnelParams.w);
-
+            if ((flags & 0x0000FF00u) == 0x00003000u)
+                fresnel_pass *= diffuse_map.rgb;
 		fresnel_pass = pow(fresnel_pass, vec3(1));
 	//---------------------------------------------------------------------------------------------
 
@@ -2206,7 +2239,7 @@ main()
 	else
     {
 
-        vec4 fc = vec4(0, 0, 0, 0);
+
 
         // similar to du dv but uses just the normal map
         float offsetIntensity = 0;
@@ -2216,14 +2249,17 @@ main()
         textureOffset = (textureOffset * 2) -1; // remap to -1 to 1?
         vec2 offsetTexCoord = texcoord + (textureOffset * offsetIntensity);
 
+        vec4 diffuse1 = vec4(0);
+        vec4 diffuse2 = vec4(0);
+        vec4 diffuse3 = texture2D(dif3, texcoord);
         if (hasDif == 1) // 1st diffuse texture
         {
-            fc = texture2D(dif, offsetTexCoord);
-            fincol = fc;
-            if (hasDif2 == 1) // 2nd diffuse texture
+            diffuse1 = texture2D(dif, offsetTexCoord);
+            fincol = diffuse1;
+            if (hasDif2 == 1 && hasDif3 != 1) // 2nd diffuse texture. doesn't work properly with stages
             {
-                fincol = texture2D(dif2, offsetTexCoord);
-                fincol = mix(fincol, fc, fc.a);
+                diffuse2 = texture2D(dif2, offsetTexCoord);
+                fincol = mix(diffuse2, diffuse1, diffuse1.a);
                 fincol.a = 1.0;
             }
         }
@@ -2245,6 +2281,12 @@ main()
         fincol.rgb *= finalColorGain.rgb;
         fincol.rgb *= effColorGain.rgb;
 
+
+        //fincol.rgb = mix(diffuse2.rgb, diffuse1.rgb, vertexColor.r); // umbraf stage vertex color blending
+        //fincol.rgb *= mix(diffuse3.rgb, vec3(1), 0.5);
+
+
+
         // correct alpha
         fincol.a *= finalColorGain.a;
         fincol.a *= effColorGain.a;
@@ -2258,7 +2300,9 @@ main()
         angleFadeAmount = max((1-angleFadeAmount),0);
         fincol.a *= angleFadeAmount;
 
-        fincol.a += alphaBlendParams.x;
+        if ((flags & 0xF0FF0000u) != 0xF0640000u) // ryu works differently. need to research this more
+            fincol.a += alphaBlendParams.x;
+
 	}
 
 }";
@@ -2365,20 +2409,32 @@ void main()
 in vec2 texCoord;
 
 uniform sampler2D texture;
+
+uniform int renderR;
+uniform int renderG;
+uniform int renderB;
 uniform int renderAlpha;
+uniform int alphaOverride;
 
 out vec4 outColor;
 
 void main()
-{   outColor = vec4(1);    
+{   outColor = vec4(0,0,0,1);    
     vec4 textureColor = texture2D(texture, vec2(texCoord.x, 1-texCoord.y)).rgba;
-    outColor.rgb = textureColor.rgb;
+    if (renderR == 1)
+        outColor.r = textureColor.r;
+    if (renderG == 1)
+        outColor.g = textureColor.g;
+    if (renderB == 1)
+        outColor.b = textureColor.b;
     if (renderAlpha == 1)
-        outColor.rgb = textureColor.aaa;
+        outColor.a = textureColor.a;
+    if (alphaOverride == 1)
+        outColor = vec4(textureColor.aaa, 1);
+        
 }";
 
         #endregion
-
 
         #endregion
 

@@ -246,6 +246,7 @@ namespace Smash_Forge
              
                 GL.Uniform1(shader.getAttribute("hasDif"), mat.diffuse ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasDif2"), mat.diffuse2 ? 1 : 0);
+                GL.Uniform1(shader.getAttribute("hasDif3"), mat.diffuse3 ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasStage"), mat.stagemap ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasCube"), mat.cubemap ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasAo"), mat.aomap ? 1 : 0);
@@ -327,6 +328,11 @@ namespace Smash_Forge
                     GL.Uniform1(shader.getAttribute("dummyRamp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
                 }
 
+                if (mat.diffuse3 && texid < mat.textures.Count)
+                {
+                    GL.Uniform1(shader.getAttribute("dif3"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                }
+
 
                 {
                     float[] ao;
@@ -342,6 +348,20 @@ namespace Smash_Forge
                     if (mat.anims.ContainsKey("NU_colorSamplerUV")) pa = mat.anims["NU_colorSamplerUV"];
                     if (pa == null) pa = new float[] { 1, 1, 0, 0 };
                     GL.Uniform4(shader.getAttribute("colorSamplerUV"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_colorSampler2UV", out pa);
+                    if (mat.anims.ContainsKey("NU_colorSampler2UV")) pa = mat.anims["NU_colorSampler2UV"];
+                    if (pa == null) pa = new float[] { 1, 1, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("colorSampler2UV"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_colorSampler3UV", out pa);
+                    if (mat.anims.ContainsKey("NU_colorSampler3UV")) pa = mat.anims["NU_colorSampler3UV"];
+                    if (pa == null) pa = new float[] { 1, 1, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("colorSampler3UV"), pa[0], pa[1], pa[2], pa[3]);
                 }
                 {
                     float[] pa;
@@ -1908,6 +1928,7 @@ namespace Smash_Forge
             public bool diffuse = false;
             public bool normalmap = false;
             public bool diffuse2 = false;
+            public bool diffuse3 = false;
             public bool aomap = false;
             public bool stagemap = false;
             public bool cubemap = false;
@@ -1989,6 +2010,7 @@ namespace Smash_Forge
 
                 useDiffuseBlend = (flag & 0xD0090000) == 0xD0090000 || (flag & 0x90005000) == 0x90005000;
 
+                
 
             }
 
@@ -2001,11 +2023,15 @@ namespace Smash_Forge
                 cubemap = (flag & 0x04) > 0 && (!useDummyRamp) && (!useSphereMap);//(!useRimLight || (useRimLight && useSphereMap));// && !useRimLight;
                 ramp = (flag & 0x04) > 0 && useDummyRamp; //&& !useSpecular 
 
-                diffuse2 = (flag & 0x04) > 0 && (flag & 0x02) == 0 && useDummyRamp;
+
+                diffuse3 = (flag & 0x00009000) == 0x00009000; // mostly correct (I hope)
+                diffuse2 = (flag & 0x04) > 0 && (flag & 0x02) == 0 && useDummyRamp || diffuse3;
                 normalmap = (flag & 0x02) > 0;
 
                 diffuse = (flag & 0x01) > 0;
                 spheremap = (flag & 0x01) > 0 && useSphereMap;
+
+                
             }
         }
 
