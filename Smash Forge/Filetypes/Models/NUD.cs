@@ -1896,6 +1896,7 @@ namespace Smash_Forge
             //flags
             public bool glow = false;
             public bool hasShadow = false;
+            public bool useVertexColor = false;
             public bool useColorGainOffset = false;
             public bool useDiffuseBlend = false;
             public bool useDummyRamp = false;
@@ -2010,7 +2011,7 @@ namespace Smash_Forge
 
                 useDiffuseBlend = (flag & 0xD0090000) == 0xD0090000 || (flag & 0x90005000) == 0x90005000;
 
-                
+                useVertexColor = (flag & 0x0F000000) == 0x02000000 || (flag & 0x0F000000) == 0x04000000 || (flag & 0x0F000000) == 0x06000000 || (flag & 0xF0000000) == 0x90000000; // characters, stages with certain flags
 
             }
 
@@ -2023,12 +2024,14 @@ namespace Smash_Forge
                 cubemap = (flag & 0x04) > 0 && (!useDummyRamp) && (!useSphereMap);//(!useRimLight || (useRimLight && useSphereMap));// && !useRimLight;
                 ramp = (flag & 0x04) > 0 && useDummyRamp; //&& !useSpecular 
 
+                diffuse = (flag & 0x01) > 0;
+                // mostly correct (I hope)
+                diffuse3 = (flag & 0x00009100) == 0x00009100 || (flag & 0x00009600) == 0x00009600 || (flag & 0x00009900) == 0x00009900; 
 
-                diffuse3 = (flag & 0x00009000) == 0x00009000; // mostly correct (I hope)
                 diffuse2 = (flag & 0x04) > 0 && (flag & 0x02) == 0 && useDummyRamp || diffuse3;
                 normalmap = (flag & 0x02) > 0;
 
-                diffuse = (flag & 0x01) > 0;
+   
                 spheremap = (flag & 0x01) > 0 && useSphereMap;
 
                 

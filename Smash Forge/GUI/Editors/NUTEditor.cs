@@ -378,6 +378,9 @@ namespace Smash_Forge
 
         private void NUTEditor_Resize(object sender, EventArgs e)
         {
+
+            glControl1.Width = glControl1.Height;
+
             RenderTexture();
             
         }
@@ -761,60 +764,24 @@ namespace Smash_Forge
         }
 
 
-        private void renderChannelA_Click(object sender, EventArgs e)
-        {
-            if (renderAlpha)
-            {
-                renderAlpha = false;
-                renderChannelA.ForeColor = Color.DarkGray;
-            }
-                
-            else
-            {
-                renderAlpha = true;
-                renderChannelA.ForeColor = Color.Black;
-            }
-           
-            RenderTexture(); // Uniforms need to be udpated.
-        }
-
-      
-        private void renderChannelB_Click(object sender, EventArgs e)
-        {
-            if (renderB)
-            {
-                renderB = false;
-                renderChannelB.ForeColor = Color.DarkGray;
-            }
-               
-            else
-            {
-                renderB = true;
-                renderChannelB.ForeColor = Color.Blue;
-            }
-               
-
-            RenderTexture(); // Uniforms need to be udpated.
-        }
-
-        private void renderChannelR_Click(object sender, EventArgs e)
+        private void renderChannelR_Click_1(object sender, EventArgs e)
         {
             if (renderR)
             {
                 renderR = false;
                 renderChannelR.ForeColor = Color.DarkGray;
             }
-                
+
             else
             {
                 renderR = true;
                 renderChannelR.ForeColor = Color.Red;
             }
-               
+
             RenderTexture(); // Uniforms need to be udpated.
         }
 
-        private void renderChannelG_Click_1(object sender, EventArgs e)
+        private void renderChannelG_Click(object sender, EventArgs e)
         {
             if (renderG)
             {
@@ -826,8 +793,43 @@ namespace Smash_Forge
                 renderG = true;
                 renderChannelG.ForeColor = Color.Green;
             }
-               
-           
+
+
+            RenderTexture(); // Uniforms need to be udpated.
+        }
+
+        private void renderChannelB_Click_1(object sender, EventArgs e)
+        {
+            if (renderB)
+            {
+                renderB = false;
+                renderChannelB.ForeColor = Color.DarkGray;
+            }
+
+            else
+            {
+                renderB = true;
+                renderChannelB.ForeColor = Color.Blue;
+            }
+
+
+            RenderTexture(); // Uniforms need to be udpated.
+        }
+
+        private void renderChannelA_Click_1(object sender, EventArgs e)
+        {
+            if (renderAlpha)
+            {
+                renderAlpha = false;
+                renderChannelA.ForeColor = Color.DarkGray;
+            }
+
+            else
+            {
+                renderAlpha = true;
+                renderChannelA.ForeColor = Color.Black;
+            }
+
             RenderTexture(); // Uniforms need to be udpated.
         }
     }

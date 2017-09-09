@@ -87,6 +87,9 @@ namespace Smash_Forge
         bool isPlaying = false;
         bool fpsView = false;
         public Stopwatch timeSinceSelected = new Stopwatch();
+
+        public Stopwatch renderTime = new Stopwatch();
+
         Shader shader;
         #endregion
 
@@ -415,6 +418,7 @@ namespace Smash_Forge
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             CalculateLightSource();
 
+
         }
 
 
@@ -549,13 +553,21 @@ namespace Smash_Forge
             GL.Enable(EnableCap.StencilTest);
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
 
-           // GL.Enable(EnableCap.FramebufferSrgb);
+            // GL.Enable(EnableCap.FramebufferSrgb);
 
 
             // draw models
             //RenderTools.drawHitboxCircle(new Vector3(3, 3, 3), 5, 30, v.ClearTranslation().Inverted());
+            
+            renderTime.Start();
 
             if (Runtime.renderModel) DrawModels();
+
+            renderTime.Stop();
+            double fps = 1000 / (renderTime.ElapsedMilliseconds + 0.0001);
+            Debug.WriteLine(renderTime.ElapsedMilliseconds.ToString()); // render time for NUD shader in milliseconds
+            renderTime.Reset();
+
             /*{
                 //draw
                 foreach (ModelContainer c in Runtime.ModelContainers)
@@ -712,67 +724,73 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("fresnel_intensity"), Runtime.frs_inten);
             GL.Uniform1(shader.getAttribute("reflection_intensity"), Runtime.ref_inten);
 
-            #region character lighting color uniforms
-            // could use 1/3 the number of uniforms calculating hsv2rgb on cpu (probably faster too)
-            GL.Uniform1(shader.getAttribute("diffuseHue"), Runtime.dif_hue);
-            GL.Uniform1(shader.getAttribute("diffuseSaturation"), Runtime.dif_saturation);
-            GL.Uniform1(shader.getAttribute("diffuseIntensity"), Runtime.dif_intensity);
-
-            GL.Uniform1(shader.getAttribute("ambientHue"), Runtime.amb_hue);
-            GL.Uniform1(shader.getAttribute("ambientSaturation"), Runtime.amb_saturation);
-            GL.Uniform1(shader.getAttribute("ambientIntensity"), Runtime.amb_intensity);
-
-            GL.Uniform1(shader.getAttribute("fresnelGroundHue"), Runtime.fres_ground_hue);
-            GL.Uniform1(shader.getAttribute("fresnelGroundSaturation"), Runtime.fres_ground_saturation);
-            GL.Uniform1(shader.getAttribute("fresnelGroundIntensity"), Runtime.fres_ground_intensity);
-
-            GL.Uniform1(shader.getAttribute("fresnelSkyHue"), Runtime.fres_sky_hue);
-            GL.Uniform1(shader.getAttribute("fresnelSkySaturation"), Runtime.fres_sky_saturation);
-            GL.Uniform1(shader.getAttribute("fresnelSkyIntensity"), Runtime.fres_sky_intensity);
-
-            GL.Uniform1(shader.getAttribute("specularHue"), Runtime.specular_hue);
-            GL.Uniform1(shader.getAttribute("specularSaturation"), Runtime.specular_saturation);
-            GL.Uniform1(shader.getAttribute("specularIntensity"), Runtime.specular_intensity);
-
-            GL.Uniform1(shader.getAttribute("reflectionHue"), Runtime.reflection_hue);
-            GL.Uniform1(shader.getAttribute("reflectionSaturation"), Runtime.reflection_saturation);
-            GL.Uniform1(shader.getAttribute("reflectionIntensity"), Runtime.reflection_intensity);
-            #endregion
-
-            #region stage lighting color uniforms
-            // could use 1/3 the number of uniforms calculating hsv2rgb on cpu (probably faster too)
-            GL.Uniform1(shader.getAttribute("renderStageLight1"), Runtime.renderStageLight1 ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("stage1Hue"), Runtime.stagelight1_hue);
-            GL.Uniform1(shader.getAttribute("stage1Saturation"), Runtime.stagelight1_saturation);
-            GL.Uniform1(shader.getAttribute("stage1Intensity"), Runtime.stagelight1_intensity);
-
-            GL.Uniform1(shader.getAttribute("renderStageLight2"), Runtime.renderStageLight2 ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("stage2Hue"), Runtime.stagelight2_hue);
-            GL.Uniform1(shader.getAttribute("stage2Saturation"), Runtime.stagelight2_saturation);
-            GL.Uniform1(shader.getAttribute("stage2Intensity"), Runtime.stagelight2_intensity);
-
-            GL.Uniform1(shader.getAttribute("renderStageLight3"), Runtime.renderStageLight3 ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("stage3Hue"), Runtime.stagelight3_hue);
-            GL.Uniform1(shader.getAttribute("stage3Saturation"), Runtime.stagelight3_saturation);
-            GL.Uniform1(shader.getAttribute("stage3Intensity"), Runtime.stagelight3_intensity);
-
-            GL.Uniform1(shader.getAttribute("renderStageLight4"), Runtime.renderStageLight4 ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("stage4Hue"), Runtime.stagelight4_hue);
-            GL.Uniform1(shader.getAttribute("stage4Saturation"), Runtime.stagelight4_saturation);
-            GL.Uniform1(shader.getAttribute("stage4Intensity"), Runtime.stagelight4_intensity);
-
-            GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("fogHue"), Runtime.fog_hue);
-            GL.Uniform1(shader.getAttribute("fogSaturation"), Runtime.fog_saturation);
-            GL.Uniform1(shader.getAttribute("fogIntensity"), Runtime.fog_intensity);
-            #endregion
-
-
             GL.ActiveTexture(TextureUnit.Texture11);
             GL.BindTexture(TextureTarget.Texture2D, depthmap);
             GL.Uniform1(shader.getAttribute("shadowmap"), 11);
 
-            #region light rotation data uniforms
+            #region character lighting color uniforms
+
+            float difR, difG, difB = 1.0f;
+            RenderTools.HSV2RGB(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity, out difR, out difG, out difB);
+            GL.Uniform3(shader.getAttribute("difLightColor"), difR, difG, difB);
+
+            float ambR, ambG, ambB = 1.0f;
+            RenderTools.HSV2RGB(Runtime.amb_hue, Runtime.amb_saturation, Runtime.amb_intensity, out ambR, out ambG, out ambB);
+            GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
+
+            float fresGroundR, fresGroundG, fresGroundB = 1.0f;
+            RenderTools.HSV2RGB(Runtime.fres_ground_hue, Runtime.fres_ground_saturation, Runtime.fres_ground_intensity, out fresGroundR, out fresGroundG, out fresGroundB);
+            GL.Uniform3(shader.getAttribute("fresGroundColor"), fresGroundR, fresGroundG, fresGroundB);
+
+            float fresSkyR, fresSkyG, fresSkyB = 1.0f;
+            RenderTools.HSV2RGB(Runtime.fres_sky_hue, Runtime.fres_sky_saturation, Runtime.fres_sky_intensity, out fresSkyR, out fresSkyG, out fresSkyB);
+            GL.Uniform3(shader.getAttribute("fresSkyColor"), fresSkyR, fresSkyG, fresSkyB);
+
+            float specR, specG, specB = 1.0f;
+            RenderTools.HSV2RGB(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity, out specR, out specG, out specB);
+            GL.Uniform3(shader.getAttribute("specLightColor"), specR, specG, specB);
+
+            float refR, refG, refB = 1.0f;
+            RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
+            GL.Uniform3(shader.getAttribute("refLightColor"), refR, refG, refB);
+     
+            #endregion
+
+            #region stage lighting color uniforms
+
+            // stage light 1
+            GL.Uniform1(shader.getAttribute("renderStageLight1"), Runtime.renderStageLight1 ? 1 : 0);
+            float stage1R, stage1G, stage1B = 1.0f;
+            RenderTools.HSV2RGB(Runtime.stagelight1_hue, Runtime.stagelight1_saturation, Runtime.stagelight1_intensity, out stage1R, out stage1G, out stage1B);
+            GL.Uniform3(shader.getAttribute("stageLight1Color"), stage1R, stage1G, stage1B);
+
+            // stage light 2
+            GL.Uniform1(shader.getAttribute("renderStageLight2"), Runtime.renderStageLight2 ? 1 : 0);
+            float stage2R, stage2G, stage2B = 1.0f;
+            RenderTools.HSV2RGB(Runtime.stagelight2_hue, Runtime.stagelight2_saturation, Runtime.stagelight2_intensity, out stage2R, out stage2G, out stage2B);
+            GL.Uniform3(shader.getAttribute("stageLight2Color"), stage2R, stage2G, stage2B);
+            
+            // stage light 3
+            GL.Uniform1(shader.getAttribute("renderStageLight3"), Runtime.renderStageLight3 ? 1 : 0);
+            float stage3R, stage3G, stage3B = 1.0f;
+            RenderTools.HSV2RGB(Runtime.stagelight3_hue, Runtime.stagelight3_saturation, Runtime.stagelight3_intensity, out stage3R, out stage3G, out stage3B);
+            GL.Uniform3(shader.getAttribute("stageLight3Color"), stage3R, stage3G, stage3B);
+
+            // stage light 4. colors don't work properly
+            GL.Uniform1(shader.getAttribute("renderStageLight4"), Runtime.renderStageLight4 ? 1 : 0);
+            float stage4R, stage4G, stage4B = 1.0f;
+            RenderTools.HSV2RGB(Runtime.stagelight4_hue, Runtime.stagelight4_saturation, Runtime.stagelight4_intensity, out stage4R, out stage4G, out stage4B);
+            GL.Uniform3(shader.getAttribute("stageLight4Color"), stage4R, stage4G, stage4B);
+
+
+            GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
+            float stageFogR, stageFogG, stageFogB = 1.0f;
+            RenderTools.HSV2RGB(Runtime.fog_hue, Runtime.fog_saturation, Runtime.fog_intensity, out stageFogR, out stageFogG, out stageFogB);
+            GL.Uniform3(shader.getAttribute("stageFogColor"), stageFogR, stageFogG, stageFogB);
+
+            #endregion
+
+            #region light_set rotation data uniforms
             // light_set_param xyz rotation to vector for lighting calculations. Current matrices aren't correct!
 
 
@@ -828,8 +846,6 @@ namespace Smash_Forge
              * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight4RotZ);
 
             Vector3 lightDirection= new Vector3(0f, 0f, -1f);
-            //lightDirection = Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized();
-
             Vector3 difDir = new Vector3(0f, 0f, 1f);
             Vector3 specDir = new Vector3(0f, 0f, 1f);
             Vector3 stageLight1Dir = new Vector3(0f, 0f, 1f);
@@ -858,8 +874,6 @@ namespace Smash_Forge
             GL.Uniform3(shader.getAttribute("stageLight4Direction"), Vector3.Transform(stageLight4Dir, stagelight4rot).Normalized());
 
             #endregion
-
-
 
 
             foreach (ModelContainer m in Runtime.ModelContainers)
@@ -2105,7 +2119,7 @@ namespace Smash_Forge
                 shader = new Shader();
                 shader.vertexShader(File.ReadAllText("vert.txt"));
                 shader.fragmentShader(File.ReadAllText("frag.txt"));
-                Runtime.shaders["NUD"] = shader;*/
+                Runtime.shaders["NUD"] = shader; */
             }
 
             /*if (e.KeyChar == 'w')
