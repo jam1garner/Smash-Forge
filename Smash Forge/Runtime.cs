@@ -88,6 +88,9 @@ namespace Smash_Forge
         public static Color hurtboxColorMed;
         public static Color hurtboxColorLow;
         public static Color hurtboxColorSelected;
+        public static Color windboxColor;
+        public static Color grabboxColor;
+        public static Color searchboxColor;
         public static bool renderHitboxesNoOverlap;
         public static bool useFrameDuration = true;
         public static bool useFAFasAnimationLength = false;
@@ -145,28 +148,111 @@ namespace Smash_Forge
         public static Color back2 = Color.FromArgb((255 << 24) | (77 << 16) | (77 << 8) | (77));
         public static float fov = 0.8f;
         public static float zoomspeed = 0.8f;
-        public static bool CameraLight = true;
+        public static bool CameraLight = false;
+
         public static bool renderDiffuse = true;
         public static bool renderFresnel = true;
         public static bool renderSpecular = true;
         public static bool renderReflection = true;
+
         public static float dif_inten = 1.00f;
-        public static float spc_inten = 0.75f;
+        public static float spc_inten = 1.00f;
         public static float frs_inten = 1.00f;
         public static float ref_inten = 1.00f;
-        public static float amb_inten = 0.85f;
+        public static float amb_inten = 1.00f;
         public static float model_scale = 1f;
+        public static float zScale = 1.0f;
+
+        #region character lighting
+        public static float dif_hue = 360.0f;
+        public static float dif_saturation = 0.00f;
+        public static float dif_intensity = 1.00f;
+        public static float dif_rotX = 0.0f;
+        public static float dif_rotY = 0.0f;
+        public static float dif_rotZ = 0.0f;
+
+        public static float amb_hue = 360.0f;
+        public static float amb_saturation = 0.00f;
+        public static float amb_intensity = 0.85f;
+
+        // shared with stages for now (may be correct but idk)
+        public static float fres_ground_hue = 360.0f;
+        public static float fres_ground_saturation = 0.00f;
+        public static float fres_ground_intensity = 0.00f;
+
+        public static float fres_sky_hue = 360.0f;
+        public static float fres_sky_saturation = 0.00f;
+        public static float fres_sky_intensity = 1.00f;
+
+        public static float specular_hue = 360.0f;
+        public static float specular_saturation = 0.0f;
+        public static float specular_intensity = 0.75f;
+        public static float specular_rotX = 0.0f;
+        public static float specular_rotY = 0.0f;
+        public static float specular_rotZ = 0.0f;
+
+        public static float reflection_hue = 360.0f;
+        public static float reflection_saturation = 0.0f;
+        public static float reflection_intensity = 1.0f;
+        #endregion
+
+        #region stage lighting
+        public static bool renderStageLight1 = true;
+        public static bool renderStageLight2 = true;
+        public static bool renderStageLight3 = false;
+        public static bool renderStageLight4 = false;
+
+        public static float stagelight1_hue = 360.0f;
+        public static float stagelight1_saturation = 0.0f;
+        public static float stagelight1_intensity = 1.00f;
+        public static float stagelight1_rotX = -90.0f;
+        public static float stagelight1_rotY = 0.0f;
+        public static float stagelight1_rotZ = 0.0f;
+
+        public static float stagelight2_hue = 360.0f;
+        public static float stagelight2_saturation = 0.0f;
+        public static float stagelight2_intensity = 1.00f;
+        public static float stagelight2_rotX = 0.0f;
+        public static float stagelight2_rotY = 0.0f;
+        public static float stagelight2_rotZ = 0.0f;
+
+        public static float stagelight3_hue = 360.0f;
+        public static float stagelight3_saturation = 0.0f;
+        public static float stagelight3_intensity = 1.00f;
+        public static float stagelight3_rotX = 0.0f;
+        public static float stagelight3_rotY = 0.0f;
+        public static float stagelight3_rotZ = 0.0f;
+
+        public static float stagelight4_hue = 360.0f;
+        public static float stagelight4_saturation = 0.0f;
+        public static float stagelight4_intensity = 1.00f;
+        public static float stagelight4_rotX = 0.0f;
+        public static float stagelight4_rotY = 0.0f;
+        public static float stagelight4_rotZ = 0.0f;
+
+        public static bool renderFog = false;
+        public static float fog_hue = 360.0f;
+        public static float fog_saturation = 0.00f;
+        public static float fog_intensity = 0.00f;
+
+        #endregion
 
         public static float renderDepth;
         public static bool renderNormals;
         public static bool renderVertColor;
         public static bool renderLighting;
         public static bool useNormalMap;
+        public static bool useDepthTest = true;
         public static RenderTypes renderType;
 
         // ETC
         public static string fighterDir = "";
         public static string paramDir;
+
+
+        public static string renderer = "";
+        public static string openGLVersion = "";
+        public static string GLSLVersion = "";
 
         public enum RenderTypes
         {
@@ -323,6 +409,9 @@ namespace Smash_Forge
                         case "hurtbox_color_med": try { Runtime.hurtboxColorMed = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
                         case "hurtbox_color_low": try { Runtime.hurtboxColorLow = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
                         case "hurtbox_color_selected": try { Runtime.hurtboxColorSelected = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                        case "windbox_color": try { Runtime.windboxColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                        case "grabbox_color": try { Runtime.grabboxColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                        case "searchbox_color": try { Runtime.searchboxColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
 
                         case "enabled":
                             if (node.ParentNode != null)
@@ -510,6 +599,9 @@ for changing default texure
             renderNode.AppendChild(createNode(doc, "hurtbox_color_med", System.Drawing.ColorTranslator.ToHtml(hurtboxColorMed)));
             renderNode.AppendChild(createNode(doc, "hurtbox_color_low", System.Drawing.ColorTranslator.ToHtml(hurtboxColorLow)));
             renderNode.AppendChild(createNode(doc, "hurtbox_color_selected", System.Drawing.ColorTranslator.ToHtml(hurtboxColorSelected)));
+            renderNode.AppendChild(createNode(doc, "windbox_color", System.Drawing.ColorTranslator.ToHtml(windboxColor)));
+            renderNode.AppendChild(createNode(doc, "grabbox_color", System.Drawing.ColorTranslator.ToHtml(grabboxColor)));
+            renderNode.AppendChild(createNode(doc, "searchbox_color", System.Drawing.ColorTranslator.ToHtml(searchboxColor)));
             {
                 XmlNode node = doc.CreateElement("hitbox_kb_colors");
                 renderNode.AppendChild(node);

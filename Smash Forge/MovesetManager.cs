@@ -267,13 +267,13 @@ namespace Smash_Forge
                             color = Color.FromArgb(Runtime.hitboxAlpha, GetRegularDisplayColor());
                     break;
                 case Hitbox.GRABBOX:
-                    color = Color.FromArgb(Runtime.hitboxAlpha, Color.Purple);
+                    color = Color.FromArgb(Runtime.hitboxAlpha, Runtime.grabboxColor);
                     break;
                 case Hitbox.WINDBOX:
-                    color = Color.FromArgb(Runtime.hitboxAlpha, Color.Blue);
+                    color = Color.FromArgb(Runtime.hitboxAlpha, Runtime.windboxColor);
                     break;
                 case Hitbox.SEARCHBOX:
-                    color = Color.FromArgb(Runtime.hitboxAlpha, Color.DarkOrange);
+                    color = Color.FromArgb(Runtime.hitboxAlpha, Runtime.searchboxColor);
                     break;
                 default:
                     color = Color.FromArgb(Runtime.hitboxAlpha, Color.FloralWhite);

@@ -100,7 +100,7 @@ namespace Smash_Forge
                         NUD.Material m = new NUD.Material();
                         poly.materials.Add(m);
                         m.flags = 0xA4011041;
-                        m.drawPriority = 128;
+                        m.RefAlpha = 128;
                         m.cullMode = 1029;
 
                         m.textures.Clear();

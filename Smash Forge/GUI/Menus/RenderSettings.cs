@@ -16,6 +16,29 @@ namespace Smash_Forge.GUI
         private bool disableRuntimeUpdates;
         private List<Color> hitboxColors;
 
+        float difR = 0.0f;
+        float difG = 0.0f;
+        float difB = 0.0f;
+
+        float ambR = 0.0f;
+        float ambG = 0.0f;
+        float ambB = 0.0f;
+
+        float fresSkyR = 0.0f;
+        float fresSkyG = 0.0f;
+        float fresSkyB = 0.0f;
+        float fresGroundR = 0.0f;
+        float fresGroundG = 0.0f;
+        float fresGroundB = 0.0f;
+
+        float specR = 0.0f;
+        float specG = 0.0f;
+        float specB = 0.0f;
+
+        float refR = 0.0f;
+        float refG = 0.0f;
+        float refB = 0.0f;
+
         public RenderSettings()
         {
             InitializeComponent();
@@ -44,6 +67,7 @@ namespace Smash_Forge.GUI
             checkBox18.Checked = Runtime.renderHitboxesNoOverlap;
             swagViewing.Checked = Runtime.renderSwag;
             lightCheckBox.Checked = Runtime.renderLighting;
+            FogCB.Checked = Runtime.renderFog;
             useNormCB.Checked = Runtime.useNormalMap;
             boundingCB.Checked = Runtime.renderBoundingBox;
             wireframeCB.Checked = Runtime.renderModelWireframe;
@@ -64,7 +88,70 @@ namespace Smash_Forge.GUI
             spcTB.Text = Runtime.spc_inten + "";
             frsTB.Text = Runtime.frs_inten + "";
             refTB.Text = Runtime.ref_inten + "";
+            diffuseHue.Text = Runtime.dif_hue + "";
+            diffuseSaturation.Text = Runtime.dif_saturation + "";
+            diffuseIntensity.Text = Runtime.dif_intensity + "";
+            difRotX.Text = Runtime.dif_rotX + "";
+            difRotY.Text = Runtime.dif_rotY + "";
+            difRotZ.Text = Runtime.dif_rotZ + "";
+            ambientHue.Text = Runtime.amb_hue + "";
+            ambientSaturation.Text = Runtime.amb_saturation + "";
+            ambientIntensity.Text = Runtime.amb_intensity + "";
             modelscaleTB.Text = Runtime.model_scale + "";
+            fresnelGroundHue.Text = Runtime.fres_ground_hue + "";
+            fresnelGroundSaturation.Text = Runtime.fres_ground_saturation + "";
+            fresnelGroundIntensity.Text = Runtime.fres_ground_intensity + "";
+            fresnelSkyHue.Text = Runtime.fres_sky_hue + "";
+            fresnelSkySaturation.Text = Runtime.fres_sky_saturation + "";
+            fresnelSkyIntensity.Text = Runtime.fres_sky_intensity + "";
+            fogHue.Text = Runtime.fog_hue + "";
+            fogSaturation.Text = Runtime.fog_saturation + "";
+            fogIntensity.Text = Runtime.fog_intensity + "";
+
+            specularHue.Text = Runtime.specular_hue + "";
+            specularSaturation.Text = Runtime.specular_saturation + "";
+            specularIntensity.Text = Runtime.specular_intensity + "";
+            specRotX.Text = Runtime.specular_rotX + "";
+            specRotY.Text = Runtime.specular_rotY + "";
+            specRotZ.Text = Runtime.specular_rotZ + "";
+
+            reflectionHue.Text = Runtime.reflection_hue + "";
+            reflectionSaturation.Text = Runtime.reflection_saturation + "";
+            reflectionIntensity.Text = Runtime.reflection_intensity + "";
+
+            stage1Hue.Text = Runtime.stagelight1_hue + "";
+            stage1Saturation.Text = Runtime.stagelight1_saturation + "";
+            stage1Intensity.Text = Runtime.stagelight1_intensity + "";
+            stage1RotX.Text = Runtime.stagelight1_rotX + "";
+            stage1RotY.Text = Runtime.stagelight1_rotY + "";
+            stage1RotZ.Text = Runtime.stagelight1_rotZ + "";
+
+            stage2Hue.Text = Runtime.stagelight2_hue + "";
+            stage2Saturation.Text = Runtime.stagelight2_saturation + "";
+            stage2Intensity.Text = Runtime.stagelight2_intensity + "";
+            stage2RotX.Text = Runtime.stagelight2_rotX + "";
+            stage2RotY.Text = Runtime.stagelight2_rotY + "";
+            stage2RotZ.Text = Runtime.stagelight2_rotZ + "";
+
+            stage3Hue.Text = Runtime.stagelight3_hue + "";
+            stage3Saturation.Text = Runtime.stagelight3_saturation + "";
+            stage3Intensity.Text = Runtime.stagelight3_intensity + "";
+            stage3RotX.Text = Runtime.stagelight3_rotX + "";
+            stage3RotY.Text = Runtime.stagelight3_rotY + "";
+            stage3RotZ.Text = Runtime.stagelight3_rotZ + "";
+
+            stage4Hue.Text = Runtime.stagelight4_hue + "";
+            stage4Saturation.Text = Runtime.stagelight4_saturation + "";
+            stage4Intensity.Text = Runtime.stagelight4_intensity + "";
+            stage4RotX.Text = Runtime.stagelight4_rotX + "";
+            stage4RotY.Text = Runtime.stagelight4_rotY + "";
+            stage4RotZ.Text = Runtime.stagelight4_rotZ + "";
+
+            RendererLabel.Text = "Renderer: " + Runtime.renderer;
+            OpenGLVersionLabel.Text = "OpenGL Version: " + Runtime.GLSLVersion;
+
+            depthTestCB.Checked = Runtime.useDepthTest;
+            zScaleTB.Text = Runtime.zScale + "";
 
             cb_normals.Checked = Runtime.renderNormals;
             cb_vertcolor.Checked = Runtime.renderVertColor;
@@ -75,9 +162,13 @@ namespace Smash_Forge.GUI
             pbHurtboxColorMed.BackColor = Runtime.hurtboxColorMed;
             pbHurtboxColorLw.BackColor = Runtime.hurtboxColorLow;
             pbHurtboxColorSelected.BackColor = Runtime.hurtboxColorSelected;
+            pbWindboxColor.BackColor = Runtime.windboxColor;
+            pbGrabboxColor.BackColor = Runtime.grabboxColor;
+            pbSearchboxColor.BackColor = Runtime.searchboxColor;
 
             textParamDir.Text = Runtime.paramDir;
             disableRuntimeUpdates = false;
+
         }
 
         private void checkBox6_CheckedChanged(object sender, EventArgs e)
@@ -447,5 +538,824 @@ namespace Smash_Forge.GUI
                 pbHurtboxColorSelected.BackColor = Runtime.hurtboxColorSelected;
             }
         }
+
+
+
+        private void diffuseHue_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(diffuseHue.Text, out i))
+            {
+                diffuseHue.BackColor = Color.White;
+                Runtime.dif_hue = i ;
+            }
+            else
+                diffuseHue.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity, out difR, out difG, out difB);
+            difColorButton.BackColor = Color.FromArgb(255, (int)(difR*255), (int)(difG * 255), (int)(difB * 255));
+
+        }
+
+        private void diffuseSaturation_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(diffuseSaturation.Text, out i))
+            {
+                diffuseSaturation.BackColor = Color.White;
+                Runtime.dif_saturation = i;
+            }
+            else
+                diffuseSaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity, out difR, out difG, out difB);
+            difColorButton.BackColor = Color.FromArgb(255, (int)(difR * 255), (int)(difG * 255), (int)(difB * 255));
+        }
+
+        private void label20_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void diffuseIntensity_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(diffuseIntensity.Text, out i))
+            {
+                diffuseIntensity.BackColor = Color.White;
+                Runtime.dif_intensity = i;
+            }
+            else
+                diffuseIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity, out difR, out difG, out difB);
+            difColorButton.BackColor = Color.FromArgb(255, (int)(difR * 255), (int)(difG * 255), (int)(difB * 255));
+        }
+
+        private void ambientHue_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(ambientHue.Text, out i))
+            {
+                ambientHue.BackColor = Color.White;
+                Runtime.amb_hue = i ;
+            }
+            else
+                ambientHue.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.amb_hue, Runtime.amb_saturation, Runtime.amb_intensity, out ambR, out ambG, out ambB);
+            ambColorButton.BackColor = Color.FromArgb(255, (int)(ambR * 255), (int)(ambG * 255), (int)(ambB * 255));
+        }
+
+        private void ambientSaturation_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(ambientSaturation.Text, out i))
+            {
+                ambientSaturation.BackColor = Color.White;
+                Runtime.amb_saturation = i;
+            }
+            else
+                ambientSaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.amb_hue, Runtime.amb_saturation, Runtime.amb_intensity, out ambR, out ambG, out ambB);
+            ambColorButton.BackColor = Color.FromArgb(255, (int)(ambR * 255), (int)(ambG * 255), (int)(ambB * 255));
+        }
+
+        private void ambientIntensity_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(ambientIntensity.Text, out i))
+            {
+                ambientIntensity.BackColor = Color.White;
+                Runtime.amb_intensity = i;
+            }
+            else
+                ambientIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.amb_hue, Runtime.amb_saturation, Runtime.amb_intensity, out ambR, out ambG, out ambB);
+            ambColorButton.BackColor = Color.FromArgb(255, (int)(ambR * 255), (int)(ambG * 255), (int)(ambB * 255));
+        }
+
+        private void fresnelGroundHue_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fresnelGroundHue.Text, out i))
+            {
+                fresnelGroundHue.BackColor = Color.White;
+                Runtime.fres_ground_hue = i ;
+            }
+            else
+                fresnelGroundHue.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_ground_hue, Runtime.fres_ground_saturation, Runtime.fres_ground_intensity, out fresGroundR, out fresGroundG, out fresGroundB);
+            fresGroundColorButton.BackColor = Color.FromArgb(255, (int)(fresGroundR * 255), (int)(fresGroundG * 255), (int)(fresGroundB * 255));
+        }
+
+        private void fresnelGroundSaturation_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fresnelGroundSaturation.Text, out i))
+            {
+                fresnelGroundSaturation.BackColor = Color.White;
+                Runtime.fres_ground_saturation = i;
+            }
+            else
+                fresnelGroundSaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_ground_hue, Runtime.fres_ground_saturation, Runtime.fres_ground_intensity, out fresGroundR, out fresGroundG, out fresGroundB);
+            fresGroundColorButton.BackColor = Color.FromArgb(255, (int)(fresGroundR * 255), (int)(fresGroundG * 255), (int)(fresGroundB * 255));
+        }
+
+        private void fresnelGroundIntensity_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fresnelGroundIntensity.Text, out i))
+            {
+                fresnelGroundIntensity.BackColor = Color.White;
+                Runtime.fres_ground_intensity = i;
+            }
+            else
+                fresnelGroundIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_ground_hue, Runtime.fres_ground_saturation, Runtime.fres_ground_intensity, out fresGroundR, out fresGroundG, out fresGroundB);
+            fresGroundColorButton.BackColor = Color.FromArgb(255, (int)(fresGroundR * 255), (int)(fresGroundG * 255), (int)(fresGroundB * 255));
+        }
+
+        private void FogCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderFog = FogCB.Checked;
+            label31.Enabled = FogCB.Checked;
+            label32.Enabled = FogCB.Checked;
+            label33.Enabled = FogCB.Checked;
+            fogHue.Enabled = FogCB.Checked;
+            fogSaturation.Enabled = FogCB.Checked;
+            fogIntensity.Enabled = FogCB.Checked;
+
+        }
+
+        private void label35_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void fresnelSkyHue_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fresnelSkyHue.Text, out i))
+            {
+                fresnelSkyHue.BackColor = Color.White;
+                Runtime.fres_sky_hue = i ;
+            }
+            else
+                fresnelSkyHue.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_sky_hue, Runtime.fres_sky_saturation, Runtime.fres_sky_intensity, out fresSkyR, out fresSkyG, out fresSkyB);
+            fresSkyColorButton.BackColor = Color.FromArgb(255, (int)(fresSkyR * 255), (int)(fresSkyG * 255), (int)(fresSkyB * 255));
+        }
+
+        private void fresnelSkySaturation_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fresnelSkySaturation.Text, out i))
+            {
+                fresnelSkySaturation.BackColor = Color.White;
+                Runtime.fres_sky_saturation = i;
+            }
+            else
+                fresnelSkySaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_sky_hue, Runtime.fres_sky_saturation, Runtime.fres_sky_intensity, out fresSkyR, out fresSkyG, out fresSkyB);
+            fresSkyColorButton.BackColor = Color.FromArgb(255, (int)(fresSkyR * 255), (int)(fresSkyG * 255), (int)(fresSkyB * 255));
+        }
+
+        private void fresnelSkyIntensity_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fresnelSkyIntensity.Text, out i))
+            {
+                fresnelSkyIntensity.BackColor = Color.White;
+                Runtime.fres_sky_intensity = i;
+            }
+            else
+                fresnelSkyIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_sky_hue, Runtime.fres_sky_saturation, Runtime.fres_sky_intensity, out fresSkyR, out fresSkyG, out fresSkyB);
+            fresSkyColorButton.BackColor = Color.FromArgb(255, (int)(fresSkyR * 255), (int)(fresSkyG * 255), (int)(fresSkyB * 255));
+        }
+
+        private void label33_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void specularHue_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(specularHue.Text, out i))
+            {
+                specularHue.BackColor = Color.White;
+                Runtime.specular_hue = i;
+            }
+            else
+                specularHue.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity, out specR, out specG, out specB);
+            specColorButton.BackColor = Color.FromArgb(255, (int)(specR * 255), (int)(specG * 255), (int)(specB * 255));
+        }
+
+        private void specularSaturation_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(specularSaturation.Text, out i))
+            {
+                specularSaturation.BackColor = Color.White;
+                Runtime.specular_saturation = i;
+            }
+            else
+                specularSaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity, out specR, out specG, out specB);
+            specColorButton.BackColor = Color.FromArgb(255, (int)(specR * 255), (int)(specG * 255), (int)(specB * 255));
+        }
+
+        private void specularIntensity_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(specularIntensity.Text, out i))
+            {
+                specularIntensity.BackColor = Color.White;
+                Runtime.specular_intensity = i;
+            }
+            else
+                specularIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity, out specR, out specG, out specB);
+            specColorButton.BackColor = Color.FromArgb(255, (int)(specR * 255), (int)(specG * 255), (int)(specB * 255));
+        }
+
+        private void reflectionHue_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(reflectionHue.Text, out i))
+            {
+                reflectionHue.BackColor = Color.White;
+                Runtime.reflection_hue = i;
+            }
+            else
+                reflectionHue.BackColor = Color.Red;
+
+
+            RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
+            refColorButton.BackColor = Color.FromArgb(255, (int)(refR * 255), (int)(refG * 255), (int)(refB * 255));
+
+        }
+
+        private void reflectionSaturation_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(reflectionSaturation.Text, out i))
+            {
+                reflectionSaturation.BackColor = Color.White;
+                Runtime.reflection_saturation = i;
+            }
+            else
+                reflectionSaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
+            refColorButton.BackColor = Color.FromArgb(255, (int)(refR * 255), (int)(refG * 255), (int)(refB * 255));
+        }
+
+        private void reflectionIntensity_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(reflectionIntensity.Text, out i))
+            {
+                reflectionIntensity.BackColor = Color.White;
+                Runtime.reflection_intensity = i;
+            }
+            else
+                reflectionIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
+            refColorButton.BackColor = Color.FromArgb(255, (int)(refR * 255), (int)(refG * 255), (int)(refB * 255));
+        }
+
+        private void label47_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void specRotX_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(specRotX.Text, out i))
+            {
+                specRotX.BackColor = Color.White;
+                Runtime.specular_rotX = i;
+            }
+            else
+                specRotX.BackColor = Color.Red;
+        }
+
+        private void specRotY_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(specRotY.Text, out i))
+            {
+                specRotY.BackColor = Color.White;
+                Runtime.specular_rotY = i;
+            }
+            else
+                specRotY.BackColor = Color.Red;
+        }
+
+        private void difRotX_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(difRotX.Text, out i))
+            {
+                difRotX.BackColor = Color.White;
+                Runtime.dif_rotX = i;
+            }
+            else
+                difRotX.BackColor = Color.Red;
+        }
+
+        private void difRotY_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(difRotY.Text, out i))
+            {
+                difRotY.BackColor = Color.White;
+                Runtime.dif_rotY = i;
+            }
+            else
+                difRotY.BackColor = Color.Red;
+        }
+
+        private void difRotZ_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(difRotZ.Text, out i))
+            {
+                difRotZ.BackColor = Color.White;
+                Runtime.dif_rotZ = i;
+            }
+            else
+                difRotZ.BackColor = Color.Red;
+        }
+
+        private void stage1Hue_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage1Hue.Text, out i))
+            {
+                stage1Hue.BackColor = Color.White;
+                Runtime.stagelight1_hue = i;
+            }
+            else
+                stage1Hue.BackColor = Color.Red;
+        }
+
+        private void stage1Saturation_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage1Saturation.Text, out i))
+            {
+                stage1Saturation.BackColor = Color.White;
+                Runtime.stagelight1_saturation = i;
+            }
+            else
+                stage1Saturation.BackColor = Color.Red;
+        }
+
+        private void stage1Intensity_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage1Intensity.Text, out i))
+            {
+                stage1Intensity.BackColor = Color.White;
+                Runtime.stagelight1_intensity = i;
+            }
+            else
+                stage1Intensity.BackColor = Color.Red;
+        }
+
+        private void stage1RotX_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage1RotX.Text, out i))
+            {
+                stage1RotX.BackColor = Color.White;
+                Runtime.stagelight1_rotX = i;
+            }
+            else
+                stage1RotX.BackColor = Color.Red;
+        }
+
+        private void stage1RotY_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage1RotY.Text, out i))
+            {
+                stage1RotY.BackColor = Color.White;
+                Runtime.stagelight1_rotY = i;
+            }
+            else
+                stage1RotY.BackColor = Color.Red;
+        }
+
+        private void stage1RotZ_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage1RotZ.Text, out i))
+            {
+                stage1RotZ.BackColor = Color.White;
+                Runtime.stagelight1_rotZ = i;
+            }
+            else
+                stage1RotZ.BackColor = Color.Red;
+        }
+
+        private void stageLight1CB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderStageLight1 = stageLight1CB.Checked;
+            stage1Hue.Enabled = stageLight1CB.Checked;
+            stage1Saturation.Enabled = stageLight1CB.Checked;
+            stage1Intensity.Enabled = stageLight1CB.Checked;
+            stage1RotX.Enabled = stageLight1CB.Checked;
+            stage1RotY.Enabled = stageLight1CB.Checked;
+            stage1RotZ.Enabled = stageLight1CB.Checked;
+            label52.Enabled = stageLight1CB.Checked;
+            label53.Enabled = stageLight1CB.Checked;
+            label54.Enabled = stageLight1CB.Checked;
+            label56.Enabled = stageLight1CB.Checked;
+            label57.Enabled = stageLight1CB.Checked;
+            label58.Enabled = stageLight1CB.Checked;
+        }
+
+        private void stageLight2CB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderStageLight2 = stageLight2CB.Checked;
+            stage2Hue.Enabled = stageLight2CB.Checked;
+            stage2Saturation.Enabled = stageLight2CB.Checked;
+            stage2Intensity.Enabled = stageLight2CB.Checked;
+            stage2RotX.Enabled = stageLight2CB.Checked;
+            stage2RotY.Enabled = stageLight2CB.Checked;
+            stage2RotZ.Enabled = stageLight2CB.Checked;
+            label59.Enabled = stageLight2CB.Checked;
+            label65.Enabled = stageLight2CB.Checked;
+            label64.Enabled = stageLight2CB.Checked;
+            label63.Enabled = stageLight2CB.Checked;
+            label60.Enabled = stageLight2CB.Checked;
+            label61.Enabled = stageLight2CB.Checked;
+        }
+
+        private void stage2Hue_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage2Hue.Text, out i))
+            {
+                stage2Hue.BackColor = Color.White;
+                Runtime.stagelight2_hue = i;
+            }
+            else
+                stage2Hue.BackColor = Color.Red;
+        }
+
+        private void stage2Saturation_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage2Saturation.Text, out i))
+            {
+                stage2Saturation.BackColor = Color.White;
+                Runtime.stagelight2_saturation = i;
+            }
+            else
+                stage2Saturation.BackColor = Color.Red;
+        }
+
+        private void stage2Intensity_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage2Intensity.Text, out i))
+            {
+                stage2Intensity.BackColor = Color.White;
+                Runtime.stagelight2_intensity = i;
+            }
+            else
+                stage2Intensity.BackColor = Color.Red;
+        }
+
+        private void stage2RotX_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage2RotX.Text, out i))
+            {
+                stage2RotX.BackColor = Color.White;
+                Runtime.stagelight2_rotX = i;
+            }
+            else
+                stage2RotX.BackColor = Color.Red;
+        }
+
+        private void stage2RotY_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage2RotY.Text, out i))
+            {
+                stage2RotY.BackColor = Color.White;
+                Runtime.stagelight2_rotY = i;
+            }
+            else
+                stage2RotY.BackColor = Color.Red;
+        }
+
+        private void stage2RotZ_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage2RotZ.Text, out i))
+            {
+                stage2RotZ.BackColor = Color.White;
+                Runtime.stagelight2_rotZ = i;
+            }
+            else
+                stage2RotZ.BackColor = Color.Red;
+        }
+
+        private void stageLight3CB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderStageLight3 = stageLight3CB.Checked;
+            stage3Hue.Enabled = stageLight3CB.Checked;
+            stage3Saturation.Enabled = stageLight3CB.Checked;
+            stage3Intensity.Enabled = stageLight3CB.Checked;
+            stage3RotX.Enabled = stageLight3CB.Checked;
+            stage3RotY.Enabled = stageLight3CB.Checked;
+            stage3RotZ.Enabled = stageLight3CB.Checked;
+            label73.Enabled = stageLight3CB.Checked;
+            label74.Enabled = stageLight3CB.Checked;
+            label75.Enabled = stageLight3CB.Checked;
+            label77.Enabled = stageLight3CB.Checked;
+            label78.Enabled = stageLight3CB.Checked;
+            label79.Enabled = stageLight3CB.Checked;
+        }
+
+        private void stage3Hue_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage3Hue.Text, out i))
+            {
+                stage3Hue.BackColor = Color.White;
+                Runtime.stagelight3_hue = i;
+            }
+            else
+                stage3Hue.BackColor = Color.Red;
+        }
+
+        private void stage3Saturation_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage3Saturation.Text, out i))
+            {
+                stage3Saturation.BackColor = Color.White;
+                Runtime.stagelight3_saturation = i;
+            }
+            else
+                stage3Saturation.BackColor = Color.Red;
+        }
+
+        private void stage3Intensity_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage3Intensity.Text, out i))
+            {
+                stage3Intensity.BackColor = Color.White;
+                Runtime.stagelight3_intensity = i;
+            }
+            else
+                stage3Intensity.BackColor = Color.Red;
+        }
+
+        private void stage3RotX_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage3RotX.Text, out i))
+            {
+                stage3RotX.BackColor = Color.White;
+                Runtime.stagelight3_rotX = i;
+            }
+            else
+                stage3RotX.BackColor = Color.Red;
+        }
+
+        private void stage3RotY_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage3RotY.Text, out i))
+            {
+                stage3RotY.BackColor = Color.White;
+                Runtime.stagelight3_rotY = i;
+            }
+            else
+                stage3RotY.BackColor = Color.Red;
+        }
+
+        private void stage3RotZ_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage3RotZ.Text, out i))
+            {
+                stage3RotZ.BackColor = Color.White;
+                Runtime.stagelight3_rotZ = i;
+            }
+            else
+                stage3RotZ.BackColor = Color.Red;
+        }
+
+        private void fogHue_TextChanged_1(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fogHue.Text, out i))
+            {
+                fogHue.BackColor = Color.White;
+                Runtime.fog_hue = i;
+            }
+            else
+                fogHue.BackColor = Color.Red;
+        }
+
+        private void fogSaturation_TextChanged_1(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fogSaturation.Text, out i))
+            {
+                fogSaturation.BackColor = Color.White;
+                Runtime.fog_saturation = i;
+            }
+            else
+                fogSaturation.BackColor = Color.Red;
+        }
+
+        private void fogIntensity_TextChanged_1(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fogIntensity.Text, out i))
+            {
+                fogIntensity.BackColor = Color.White;
+                Runtime.fog_intensity = i;
+            }
+            else
+                fogIntensity.BackColor = Color.Red;
+        }
+
+        private void FogCB_CheckedChanged_1(object sender, EventArgs e)
+        {
+            Runtime.renderFog = FogCB.Checked;
+            label31.Enabled = FogCB.Checked;
+            label32.Enabled = FogCB.Checked;
+            label33.Enabled = FogCB.Checked;
+            fogHue.Enabled = FogCB.Checked;
+            fogSaturation.Enabled = FogCB.Checked;
+            fogIntensity.Enabled = FogCB.Checked;
+        }
+
+        private void stageLight4CB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderStageLight4 = stageLight4CB.Checked;
+            stage4Hue.Enabled = stageLight4CB.Checked;
+            stage4Saturation.Enabled = stageLight4CB.Checked;
+            stage4Intensity.Enabled = stageLight4CB.Checked;
+            stage4RotX.Enabled = stageLight4CB.Checked;
+            stage4RotY.Enabled = stageLight4CB.Checked;
+            stage4RotZ.Enabled = stageLight4CB.Checked;
+
+            label66.Enabled = stageLight4CB.Checked;
+            label68.Enabled = stageLight4CB.Checked;
+            label67.Enabled = stageLight4CB.Checked;
+            label70.Enabled = stageLight4CB.Checked;
+            label71.Enabled = stageLight4CB.Checked;
+            label72.Enabled = stageLight4CB.Checked;
+        }
+
+        private void stage4Hue_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage4Hue.Text, out i))
+            {
+                stage4Hue.BackColor = Color.White;
+                Runtime.stagelight4_hue = i;
+            }
+            else
+                stage4Hue.BackColor = Color.Red;
+        }
+
+        private void stage4RotX_TextChanged_1(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage4RotX.Text, out i))
+            {
+                stage4RotX.BackColor = Color.White;
+                Runtime.stagelight4_rotX = i;
+            }
+            else
+                stage4RotX.BackColor = Color.Red;
+        }
+
+        private void stage4RotY_TextChanged_1(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage4RotY.Text, out i))
+            {
+                stage4RotY.BackColor = Color.White;
+                Runtime.stagelight4_rotY = i;
+            }
+            else
+                stage4RotY.BackColor = Color.Red;
+        }
+
+        private void stage4Intensity_TextChanged_1(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage4Intensity.Text, out i))
+            {
+                stage4Intensity.BackColor = Color.White;
+                Runtime.stagelight4_intensity = i;
+            }
+            else
+                stage4Intensity.BackColor = Color.Red;
+        }
+
+        private void stage4Saturation_TextChanged_1(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage4Saturation.Text, out i))
+            {
+                stage4Saturation.BackColor = Color.White;
+                Runtime.stagelight4_saturation = i;
+            }
+            else
+                stage4Saturation.BackColor = Color.Red;
+        }
+
+        private void stage4RotZ_TextChanged_1(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(stage4RotZ.Text, out i))
+            {
+                stage4RotZ.BackColor = Color.White;
+                Runtime.stagelight4_rotZ = i;
+            }
+            else
+                stage4RotZ.BackColor = Color.Red;
+        }
+
+        private void pbWindboxColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.windboxColor = Color.FromArgb(0xFF, colorDialog.Color);
+                pbWindboxColor.BackColor = Runtime.windboxColor;
+            }
+        }
+
+        private void pbGrabboxColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.grabboxColor = Color.FromArgb(0xFF, colorDialog.Color);
+                pbGrabboxColor.BackColor = Runtime.grabboxColor;
+            }
+        }
+
+        private void pbSearchboxColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.searchboxColor = Color.FromArgb(0xFF, colorDialog.Color);
+                pbSearchboxColor.BackColor = Runtime.searchboxColor;
+            }
+        }
+
+        private void depthTestCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.useDepthTest = depthTestCB.Checked;
+        }
+
+        private void zScaleTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(zScaleTB.Text, out i))
+            {
+                zScaleTB.BackColor = Color.White;
+                Runtime.zScale = i;
+            }
+            else
+                zScaleTB.BackColor = Color.Red;
+        }
     }
+    
 }

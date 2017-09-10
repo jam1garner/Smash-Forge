@@ -71,6 +71,9 @@ namespace Smash_Forge
             Runtime.hurtboxColorMed = System.Drawing.Color.FromArgb(0xF6, 0x76, 0x8E);  //Strong Purplish Pink
             Runtime.hurtboxColorLow = System.Drawing.Color.FromArgb(0x00, 0x53, 0x8A);  // Strong blue
             Runtime.hurtboxColorSelected = System.Drawing.Color.FromArgb(0xFF, 0xFF, 0xFF); //White
+            Runtime.windboxColor = System.Drawing.Color.Blue;
+            Runtime.grabboxColor = System.Drawing.Color.Purple;
+            Runtime.searchboxColor = System.Drawing.Color.DarkOrange;
             Runtime.useFrameDuration = false;
             Runtime.hitboxKnockbackColors = new List<System.Drawing.Color>();
             Runtime.hitboxIdColors = new List<System.Drawing.Color>();
@@ -120,6 +123,12 @@ namespace Smash_Forge
             nud.vertexShader(RenderTools.nud_vs);
             nud.fragmentShader(RenderTools.nud_fs);
             Runtime.shaders.Add("NUD", nud);
+
+            Shader texture = new Shader();
+            texture.vertexShader(RenderTools.texture_vs);
+            texture.fragmentShader(RenderTools.texture_fs);
+            Runtime.shaders.Add("Texture", texture);
+
 
             RenderTools.Setup();
 
@@ -754,8 +763,18 @@ namespace Smash_Forge
                         if (s.EndsWith("motion"))
                         {
                             string[] anims = Directory.GetFiles(s + "\\body\\");
+                            Array.Sort(anims, (a, b) =>
+                            {
+                                if (a.Contains("main.pac"))
+                                    return -1;
+                                if (b.Contains("main.pac"))
+                                    return 1;
+
+                                return 0;
+                            }); //Sort files so main.pac is opened first
                             foreach (string a in anims)
                                 openAnimation(a);
+                            
                         }
                         if (s.EndsWith("script"))
                         {

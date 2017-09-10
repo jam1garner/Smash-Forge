@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using System.Xml;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace Smash_Forge
 {
@@ -478,26 +479,58 @@ namespace Smash_Forge
                         if (mat.entries.ContainsKey("NU_materialHash"))
                             hash = mat.entries["NU_materialHash"][0];
 
+
+                        // check flags to determine what texture number the normal map is (0, 1, or 2)
+                        int nrmTexIndex = 0;
+                        if (mat.normalmap)
+                        {
+                            nrmTexIndex = 1;
+
+                            if (2 < mat.textures.Count)
+                            {
+                                if (mat.cubemap || mat.stagemap || mat.spheremap)
+                                   nrmTexIndex = 2;
+
+                            }                         
+                        }
+
+                        //Debug.WriteLine(mat.flags.ToString("X"));
+
                         mat.anims.Clear();
                         mat.entries.Clear();
 
-                        mat.flags = 0x9601106B;
+                        if (mat.normalmap)
+                            mat.flags = 0x9601106B;
+                        else
+                            mat.flags = 0x96011069;
 
-                        //textures preserve normal map somehow...
+                        int difTexID = (int)((long)mat.textures[0].hash);          
+                        int nrmTexID = (int)((long)mat.textures[nrmTexIndex].hash);
 
-                        int difcol = (int)((long)mat.textures[0].hash & 0xFFFFFF00) | (0xF0);
                         mat.textures.Clear();
-                        mat.displayTexId = -1;
-
+                        mat.displayTexId = -1;                       
                         NUD.Mat_Texture dif = NUD.Polygon.makeDefault();
-                        dif.hash = difcol;
+                        dif.hash = difTexID; // preserve diffuse tex ID
                         NUD.Mat_Texture cub = NUD.Polygon.makeDefault();
                         cub.hash = 0x10102000;
+
                         NUD.Mat_Texture nrm = NUD.Polygon.makeDefault();
+                        nrm.hash = nrmTexID; // preserve normal map tex ID. should work for all common texture flags
+
                         NUD.Mat_Texture rim = NUD.Polygon.makeDefault();
                         rim.hash = 0x10080000;
 
-                        mat.textures.Add(dif); mat.textures.Add(cub); mat.textures.Add(nrm); mat.textures.Add(rim);
+                        if (mat.normalmap)
+                        {
+                            mat.textures.Add(dif);
+                            mat.textures.Add(cub);
+                            mat.textures.Add(nrm);
+                            mat.textures.Add(rim);
+                        }
+                        else
+                            mat.textures.Add(dif);
+                            mat.textures.Add(cub);
+                            mat.textures.Add(rim);
 
                         // properties
                         mat.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
@@ -774,8 +807,8 @@ namespace Smash_Forge
                         { XmlAttribute flags = doc.CreateAttribute("flags"); flags.Value = mat.flags.ToString("x"); matnode.Attributes.Append(flags); }
                         { XmlAttribute a = doc.CreateAttribute("srcFactor"); a.Value = mat.srcFactor.ToString(); matnode.Attributes.Append(a); }
                         { XmlAttribute a = doc.CreateAttribute("dstFactor"); a.Value = mat.dstFactor.ToString(); matnode.Attributes.Append(a); }
-                        { XmlAttribute a = doc.CreateAttribute("REF0"); a.Value = mat.ref0.ToString(); matnode.Attributes.Append(a); }
-                        { XmlAttribute a = doc.CreateAttribute("REF1"); a.Value = mat.ref1.ToString(); matnode.Attributes.Append(a); }
+                        { XmlAttribute a = doc.CreateAttribute("AlphaFunc"); a.Value = mat.AlphaFunc.ToString(); matnode.Attributes.Append(a); }
+                        { XmlAttribute a = doc.CreateAttribute("AlphaTest"); a.Value = mat.AlphaTest.ToString(); matnode.Attributes.Append(a); }
                         { XmlAttribute a = doc.CreateAttribute("cullmode"); a.Value = mat.cullMode.ToString("x"); matnode.Attributes.Append(a); }
                         { XmlAttribute a = doc.CreateAttribute("zbuffoff"); a.Value = mat.zBufferOffset.ToString(); matnode.Attributes.Append(a); }
 
@@ -868,8 +901,8 @@ namespace Smash_Forge
                                             case "flags": uint f = 0; if (uint.TryParse(a.Value, NumberStyles.HexNumber, null, out f)) { mat.flags = f; }; break;
                                             case "srcFactor": int.TryParse(a.Value, out mat.srcFactor); break;
                                             case "dstFactor": int.TryParse(a.Value, out mat.dstFactor); break;
-                                            case "REF0": int.TryParse(a.Value, out mat.ref0); break;
-                                            case "REF1": int.TryParse(a.Value, out mat.ref1); break;
+                                            case "AlphaFunc": int.TryParse(a.Value, out mat.AlphaFunc); break;
+                                            case "AlphaTest": int.TryParse(a.Value, out mat.AlphaTest); break;
                                             case "cullmode": int cm = 0; if (int.TryParse(a.Value, NumberStyles.HexNumber, null, out cm)) { mat.cullMode = cm; }; break;
                                             case "zbuffoff": int.TryParse(a.Value, out mat.zBufferOffset); break;
                                         }

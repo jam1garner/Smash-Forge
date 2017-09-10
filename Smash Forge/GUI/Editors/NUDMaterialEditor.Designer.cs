@@ -41,12 +41,12 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.comboBox3 = new System.Windows.Forms.ComboBox();
-            this.ref1CB = new System.Windows.Forms.ComboBox();
+            this.AlphaTestCB = new System.Windows.Forms.ComboBox();
             this.textBox8 = new System.Windows.Forms.TextBox();
             this.comboBox6 = new System.Windows.Forms.ComboBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.ref0CB = new System.Windows.Forms.ComboBox();
+            this.AlphaFuncCB = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.textBox7 = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
@@ -94,11 +94,19 @@
             this.label23 = new System.Windows.Forms.Label();
             this.descriptionLabel = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.glControl2 = new OpenTK.GLControl();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.cubemapCB = new System.Windows.Forms.CheckBox();
+            this.stageMapCB = new System.Windows.Forms.CheckBox();
+            this.dummy_rampCB = new System.Windows.Forms.CheckBox();
+            this.rampCB = new System.Windows.Forms.CheckBox();
+            this.AOCB = new System.Windows.Forms.CheckBox();
+            this.sphere_mapCB = new System.Windows.Forms.CheckBox();
+            this.normalCB = new System.Windows.Forms.CheckBox();
+            this.diffuse2CB = new System.Windows.Forms.CheckBox();
+            this.diffuseCB = new System.Windows.Forms.CheckBox();
             this.dummyRampCB = new System.Windows.Forms.CheckBox();
             this.sphereMapCB = new System.Windows.Forms.CheckBox();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            //this.specLightCB = new System.Windows.Forms.CheckBox();
-            //this.rimLightCB = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
@@ -177,18 +185,18 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(3, 54);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(34, 13);
+            this.label4.Size = new System.Drawing.Size(55, 13);
             this.label4.TabIndex = 6;
-            this.label4.Text = "REF1";
+            this.label4.Text = "AlphaTest";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(3, 108);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(66, 13);
+            this.label5.Size = new System.Drawing.Size(54, 13);
             this.label5.TabIndex = 7;
-            this.label5.Text = "Draw Priority";
+            this.label5.Text = "Ref Alpha";
             // 
             // label2
             // 
@@ -214,12 +222,12 @@
             this.tableLayoutPanel1.Controls.Add(this.label3, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.comboBox3, 2, 2);
-            this.tableLayoutPanel1.Controls.Add(this.ref1CB, 2, 3);
+            this.tableLayoutPanel1.Controls.Add(this.AlphaTestCB, 2, 3);
             this.tableLayoutPanel1.Controls.Add(this.textBox8, 2, 7);
             this.tableLayoutPanel1.Controls.Add(this.comboBox6, 2, 6);
             this.tableLayoutPanel1.Controls.Add(this.textBox6, 2, 5);
             this.tableLayoutPanel1.Controls.Add(this.label7, 0, 7);
-            this.tableLayoutPanel1.Controls.Add(this.ref0CB, 2, 4);
+            this.tableLayoutPanel1.Controls.Add(this.AlphaFuncCB, 2, 4);
             this.tableLayoutPanel1.Controls.Add(this.label6, 0, 6);
             this.tableLayoutPanel1.Controls.Add(this.textBox7, 1, 6);
             this.tableLayoutPanel1.Controls.Add(this.label5, 0, 5);
@@ -283,14 +291,14 @@
             this.comboBox3.TabIndex = 15;
             this.comboBox3.SelectedIndexChanged += new System.EventHandler(this.comboBox3_SelectedIndexChanged_1);
             // 
-            // ref1CB
+            // AlphaTestCB
             // 
-            this.ref1CB.FormattingEnabled = true;
-            this.ref1CB.Location = new System.Drawing.Point(125, 57);
-            this.ref1CB.Name = "ref1CB";
-            this.ref1CB.Size = new System.Drawing.Size(121, 21);
-            this.ref1CB.TabIndex = 16;
-            this.ref1CB.SelectedIndexChanged += new System.EventHandler(this.comboBox4_SelectedIndexChanged);
+            this.AlphaTestCB.FormattingEnabled = true;
+            this.AlphaTestCB.Location = new System.Drawing.Point(125, 57);
+            this.AlphaTestCB.Name = "AlphaTestCB";
+            this.AlphaTestCB.Size = new System.Drawing.Size(121, 21);
+            this.AlphaTestCB.TabIndex = 16;
+            this.AlphaTestCB.SelectedIndexChanged += new System.EventHandler(this.comboBox4_SelectedIndexChanged);
             // 
             // textBox8
             // 
@@ -326,14 +334,14 @@
             this.label7.TabIndex = 9;
             this.label7.Text = "z-Buffer Offset";
             // 
-            // ref0CB
+            // AlphaFuncCB
             // 
-            this.ref0CB.FormattingEnabled = true;
-            this.ref0CB.Location = new System.Drawing.Point(125, 84);
-            this.ref0CB.Name = "ref0CB";
-            this.ref0CB.Size = new System.Drawing.Size(121, 21);
-            this.ref0CB.TabIndex = 19;
-            this.ref0CB.SelectedIndexChanged += new System.EventHandler(this.ref0CB_SelectedIndexChanged);
+            this.AlphaFuncCB.FormattingEnabled = true;
+            this.AlphaFuncCB.Location = new System.Drawing.Point(125, 84);
+            this.AlphaFuncCB.Name = "AlphaFuncCB";
+            this.AlphaFuncCB.Size = new System.Drawing.Size(121, 21);
+            this.AlphaFuncCB.TabIndex = 19;
+            this.AlphaFuncCB.SelectedIndexChanged += new System.EventHandler(this.AlphaFuncCB_SelectedIndexChanged);
             // 
             // label6
             // 
@@ -357,9 +365,9 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(3, 81);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(34, 13);
+            this.label9.Size = new System.Drawing.Size(58, 13);
             this.label9.TabIndex = 20;
-            this.label9.Text = "REF0";
+            this.label9.Text = "AlphaFunc";
             // 
             // textBox2
             // 
@@ -808,6 +816,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.glControl2);
             this.groupBox2.Controls.Add(this.groupBox7);
             this.groupBox2.Controls.Add(this.listView1);
             this.groupBox2.Controls.Add(this.glControl1);
@@ -822,40 +831,155 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Textures";
             // 
-            // rimLightCB
+            // glControl2
             // 
-            //this.groupBox7.Controls.Add(this.specLightCB);
-            //this.groupBox7.Controls.Add(this.rimLightCB);
+            this.glControl2.BackColor = System.Drawing.Color.Black;
+            this.glControl2.Location = new System.Drawing.Point(145, 19);
+            this.glControl2.Name = "glControl2";
+            this.glControl2.Size = new System.Drawing.Size(116, 112);
+            this.glControl2.TabIndex = 25;
+            this.glControl2.VSync = false;
+            this.glControl2.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl2_Paint);
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.cubemapCB);
+            this.groupBox7.Controls.Add(this.stageMapCB);
+            this.groupBox7.Controls.Add(this.dummy_rampCB);
+            this.groupBox7.Controls.Add(this.rampCB);
+            this.groupBox7.Controls.Add(this.AOCB);
+            this.groupBox7.Controls.Add(this.sphere_mapCB);
+            this.groupBox7.Controls.Add(this.normalCB);
+            this.groupBox7.Controls.Add(this.diffuse2CB);
+            this.groupBox7.Controls.Add(this.diffuseCB);
             this.groupBox7.Location = new System.Drawing.Point(5, 366);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(262, 100);
             this.groupBox7.TabIndex = 24;
             this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "4th Byte";
+            this.groupBox7.Text = "4th Byte (experimental WIP)";
+            // 
+            // cubemapCB
+            // 
+            this.cubemapCB.AutoSize = true;
+            this.cubemapCB.Enabled = false;
+            this.cubemapCB.Location = new System.Drawing.Point(165, 66);
+            this.cubemapCB.Name = "cubemapCB";
+            this.cubemapCB.Size = new System.Drawing.Size(71, 17);
+            this.cubemapCB.TabIndex = 8;
+            this.cubemapCB.Text = "Cubemap";
+            this.cubemapCB.UseVisualStyleBackColor = true;
+            this.cubemapCB.CheckedChanged += new System.EventHandler(this.cubemapCB_CheckedChanged);
+            // 
+            // stageMapCB
+            // 
+            this.stageMapCB.AutoSize = true;
+            this.stageMapCB.Enabled = false;
+            this.stageMapCB.Location = new System.Drawing.Point(165, 42);
+            this.stageMapCB.Name = "stageMapCB";
+            this.stageMapCB.Size = new System.Drawing.Size(78, 17);
+            this.stageMapCB.TabIndex = 7;
+            this.stageMapCB.Text = "Stage Map";
+            this.stageMapCB.UseVisualStyleBackColor = true;
+            this.stageMapCB.CheckedChanged += new System.EventHandler(this.stageMapCB_CheckedChanged);
+            // 
+            // dummy_rampCB
+            // 
+            this.dummy_rampCB.AutoSize = true;
+            this.dummy_rampCB.Enabled = false;
+            this.dummy_rampCB.Location = new System.Drawing.Point(165, 18);
+            this.dummy_rampCB.Name = "dummy_rampCB";
+            this.dummy_rampCB.Size = new System.Drawing.Size(92, 17);
+            this.dummy_rampCB.TabIndex = 6;
+            this.dummy_rampCB.Text = "Dummy Ramp";
+            this.dummy_rampCB.UseVisualStyleBackColor = true;
+            this.dummy_rampCB.CheckedChanged += new System.EventHandler(this.dummy_rampCB_CheckedChanged);
+            // 
+            // rampCB
+            // 
+            this.rampCB.AutoSize = true;
+            this.rampCB.Enabled = false;
+            this.rampCB.Location = new System.Drawing.Point(78, 66);
+            this.rampCB.Name = "rampCB";
+            this.rampCB.Size = new System.Drawing.Size(54, 17);
+            this.rampCB.TabIndex = 5;
+            this.rampCB.Text = "Ramp";
+            this.rampCB.UseVisualStyleBackColor = true;
+            this.rampCB.CheckedChanged += new System.EventHandler(this.rampCB_CheckedChanged);
+            // 
+            // AOCB
+            // 
+            this.AOCB.AutoSize = true;
+            this.AOCB.Enabled = false;
+            this.AOCB.Location = new System.Drawing.Point(78, 42);
+            this.AOCB.Name = "AOCB";
+            this.AOCB.Size = new System.Drawing.Size(41, 17);
+            this.AOCB.TabIndex = 4;
+            this.AOCB.Text = "AO";
+            this.AOCB.UseVisualStyleBackColor = true;
+            this.AOCB.CheckedChanged += new System.EventHandler(this.AOCB_CheckedChanged);
+            // 
+            // sphere_mapCB
+            // 
+            this.sphere_mapCB.AutoSize = true;
+            this.sphere_mapCB.Enabled = false;
+            this.sphere_mapCB.Location = new System.Drawing.Point(78, 18);
+            this.sphere_mapCB.Name = "sphere_mapCB";
+            this.sphere_mapCB.Size = new System.Drawing.Size(84, 17);
+            this.sphere_mapCB.TabIndex = 3;
+            this.sphere_mapCB.Text = "Sphere Map";
+            this.sphere_mapCB.UseVisualStyleBackColor = true;
+            this.sphere_mapCB.CheckedChanged += new System.EventHandler(this.sphere_mapCB_CheckedChanged);
+            // 
+            // normalCB
+            // 
+            this.normalCB.AutoSize = true;
+            this.normalCB.Enabled = false;
+            this.normalCB.Location = new System.Drawing.Point(7, 68);
+            this.normalCB.Name = "normalCB";
+            this.normalCB.Size = new System.Drawing.Size(59, 17);
+            this.normalCB.TabIndex = 2;
+            this.normalCB.Text = "Normal";
+            this.normalCB.UseVisualStyleBackColor = true;
+            this.normalCB.CheckedChanged += new System.EventHandler(this.normalCB_CheckedChanged);
+            // 
+            // diffuse2CB
+            // 
+            this.diffuse2CB.AutoSize = true;
+            this.diffuse2CB.Enabled = false;
+            this.diffuse2CB.Location = new System.Drawing.Point(7, 44);
+            this.diffuse2CB.Name = "diffuse2CB";
+            this.diffuse2CB.Size = new System.Drawing.Size(65, 17);
+            this.diffuse2CB.TabIndex = 1;
+            this.diffuse2CB.Text = "Diffuse2";
+            this.diffuse2CB.UseVisualStyleBackColor = true;
+            this.diffuse2CB.CheckedChanged += new System.EventHandler(this.diffuse2CB_CheckedChanged);
+            // 
+            // diffuseCB
+            // 
+            this.diffuseCB.AutoSize = true;
+            this.diffuseCB.Enabled = false;
+            this.diffuseCB.Location = new System.Drawing.Point(7, 20);
+            this.diffuseCB.Name = "diffuseCB";
+            this.diffuseCB.Size = new System.Drawing.Size(59, 17);
+            this.diffuseCB.TabIndex = 0;
+            this.diffuseCB.Text = "Diffuse";
+            this.diffuseCB.UseVisualStyleBackColor = true;
+            this.diffuseCB.CheckedChanged += new System.EventHandler(this.diffuseCB_CheckedChanged);
+            // 
+            // dummyRampCB
+            // 
+            this.dummyRampCB.Location = new System.Drawing.Point(0, 0);
+            this.dummyRampCB.Name = "dummyRampCB";
+            this.dummyRampCB.Size = new System.Drawing.Size(104, 24);
+            this.dummyRampCB.TabIndex = 0;
             // 
             // sphereMapCB
             // 
-            /*this.specLightCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.specLightCB.AutoSize = true;
-            this.specLightCB.Location = new System.Drawing.Point(7, 19);
-            this.specLightCB.Name = "specLightCB";
-            this.specLightCB.Size = new System.Drawing.Size(98, 17);
-            this.specLightCB.TabIndex = 20;
-            this.specLightCB.Text = "Reflection Map";
-            this.specLightCB.UseVisualStyleBackColor = true;
-            this.specLightCB.CheckedChanged += new System.EventHandler(this.specLightCB_CheckedChanged);*/
-            // 
-            // rimLightCB
-            // 
-            /*this.rimLightCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.rimLightCB.AutoSize = true;
-            this.rimLightCB.Location = new System.Drawing.Point(7, 42);
-            this.rimLightCB.Name = "rimLightCB";
-            this.rimLightCB.Size = new System.Drawing.Size(115, 17);
-            this.rimLightCB.TabIndex = 19;
-            this.rimLightCB.Text = "Ramp Light Switch";
-            this.rimLightCB.UseVisualStyleBackColor = true;
-            this.rimLightCB.CheckedChanged += new System.EventHandler(this.rimLightCB_CheckedChanged);*/
+            this.sphereMapCB.Location = new System.Drawing.Point(0, 0);
+            this.sphereMapCB.Name = "sphereMapCB";
+            this.sphereMapCB.Size = new System.Drawing.Size(104, 24);
+            this.sphereMapCB.TabIndex = 0;
             // 
             // groupBox3
             // 
@@ -1110,7 +1234,7 @@
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.ComboBox comboBox3;
-        private System.Windows.Forms.ComboBox ref1CB;
+        private System.Windows.Forms.ComboBox AlphaTestCB;
         private System.Windows.Forms.ComboBox comboBox6;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.Label label21;
@@ -1151,7 +1275,7 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.ComboBox ref0CB;
+        private System.Windows.Forms.ComboBox AlphaFuncCB;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.GroupBox groupBox8;
@@ -1167,5 +1291,15 @@
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.TextBox textBox15;
         private System.Windows.Forms.TableLayoutPanel paramGB;
+        private OpenTK.GLControl glControl2;
+        private System.Windows.Forms.CheckBox cubemapCB;
+        private System.Windows.Forms.CheckBox stageMapCB;
+        private System.Windows.Forms.CheckBox dummy_rampCB;
+        private System.Windows.Forms.CheckBox rampCB;
+        private System.Windows.Forms.CheckBox AOCB;
+        private System.Windows.Forms.CheckBox sphere_mapCB;
+        private System.Windows.Forms.CheckBox normalCB;
+        private System.Windows.Forms.CheckBox diffuse2CB;
+        private System.Windows.Forms.CheckBox diffuseCB;
     }
 }

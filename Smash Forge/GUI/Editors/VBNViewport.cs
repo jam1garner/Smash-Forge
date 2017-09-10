@@ -19,6 +19,7 @@ using System.IO;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Gif.Components;
 
 namespace Smash_Forge
 {
@@ -86,6 +87,9 @@ namespace Smash_Forge
         bool isPlaying = false;
         bool fpsView = false;
         public Stopwatch timeSinceSelected = new Stopwatch();
+
+        public Stopwatch renderTime = new Stopwatch();
+
         Shader shader;
         #endregion
 
@@ -296,7 +300,7 @@ namespace Smash_Forge
                     foreach (BCH.BCH_Model mod in m.bch.models)
                     {
                         if (mod.skeleton != null)
-                            Runtime.TargetAnim.nextFrame(mod.skeleton);
+                            Runtime.TargetAnim.nextFrame(mod.skeleton);                       
                     }
                 }
             }
@@ -414,6 +418,9 @@ namespace Smash_Forge
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             CalculateLightSource();
 
+            Runtime.renderer = GL.GetString(StringName.Renderer);
+            Runtime.openGLVersion = GL.GetString(StringName.Version);
+            Runtime.GLSLVersion = GL.GetString(StringName.ShadingLanguageVersion);
         }
 
 
@@ -548,13 +555,24 @@ namespace Smash_Forge
             GL.Enable(EnableCap.StencilTest);
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
 
-           // GL.Enable(EnableCap.FramebufferSrgb);
+            // GL.Enable(EnableCap.FramebufferSrgb);
 
 
             // draw models
             //RenderTools.drawHitboxCircle(new Vector3(3, 3, 3), 5, 30, v.ClearTranslation().Inverted());
+            
+            renderTime.Start();
+
+            if (!Runtime.useDepthTest)
+                GL.Disable(EnableCap.DepthTest);
 
             if (Runtime.renderModel) DrawModels();
+
+            renderTime.Stop();
+            double fps = 1000 / (renderTime.ElapsedMilliseconds + 0.0001);
+            //Debug.WriteLine(renderTime.ElapsedMilliseconds.ToString()); // render time for NUD shader in milliseconds
+            renderTime.Reset();
+
             /*{
                 //draw
                 foreach (ModelContainer c in Runtime.ModelContainers)
@@ -702,6 +720,7 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
+          
             GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
 
             GL.Uniform1(shader.getAttribute("ambient"), Runtime.amb_inten);
@@ -710,43 +729,159 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("fresnel_intensity"), Runtime.frs_inten);
             GL.Uniform1(shader.getAttribute("reflection_intensity"), Runtime.ref_inten);
 
+            GL.Uniform1(shader.getAttribute("zScale"), Runtime.zScale);
+
             GL.ActiveTexture(TextureUnit.Texture11);
             GL.BindTexture(TextureTarget.Texture2D, depthmap);
             GL.Uniform1(shader.getAttribute("shadowmap"), 11);
 
+            #region character lighting color uniforms
 
-            // send lighting to Shader
-            // Miiverse Params
-            /*float specRotZ = -0.2254f;
-            float specRotY = 0f;
-            float specRotX = 0f;
+            float difR, difG, difB = 1.0f;
+            RenderTools.HSV2RGB(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity, out difR, out difG, out difB);
+            GL.Uniform3(shader.getAttribute("difLightColor"), difR, difG, difB);
+
+            float ambR, ambG, ambB = 1.0f;
+            RenderTools.HSV2RGB(Runtime.amb_hue, Runtime.amb_saturation, Runtime.amb_intensity, out ambR, out ambG, out ambB);
+            GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
+
+            float fresGroundR, fresGroundG, fresGroundB = 1.0f;
+            RenderTools.HSV2RGB(Runtime.fres_ground_hue, Runtime.fres_ground_saturation, Runtime.fres_ground_intensity, out fresGroundR, out fresGroundG, out fresGroundB);
+            GL.Uniform3(shader.getAttribute("fresGroundColor"), fresGroundR, fresGroundG, fresGroundB);
+
+            float fresSkyR, fresSkyG, fresSkyB = 1.0f;
+            RenderTools.HSV2RGB(Runtime.fres_sky_hue, Runtime.fres_sky_saturation, Runtime.fres_sky_intensity, out fresSkyR, out fresSkyG, out fresSkyB);
+            GL.Uniform3(shader.getAttribute("fresSkyColor"), fresSkyR, fresSkyG, fresSkyB);
+
+            float specR, specG, specB = 1.0f;
+            RenderTools.HSV2RGB(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity, out specR, out specG, out specB);
+            GL.Uniform3(shader.getAttribute("specLightColor"), specR, specG, specB);
+
+            float refR, refG, refB = 1.0f;
+            RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
+            GL.Uniform3(shader.getAttribute("refLightColor"), refR, refG, refB);
+     
+            #endregion
+
+            #region stage lighting color uniforms
+
+            // stage light 1
+            GL.Uniform1(shader.getAttribute("renderStageLight1"), Runtime.renderStageLight1 ? 1 : 0);
+            float stage1R, stage1G, stage1B = 1.0f;
+            RenderTools.HSV2RGB(Runtime.stagelight1_hue, Runtime.stagelight1_saturation, Runtime.stagelight1_intensity, out stage1R, out stage1G, out stage1B);
+            GL.Uniform3(shader.getAttribute("stageLight1Color"), stage1R, stage1G, stage1B);
+
+            // stage light 2
+            GL.Uniform1(shader.getAttribute("renderStageLight2"), Runtime.renderStageLight2 ? 1 : 0);
+            float stage2R, stage2G, stage2B = 1.0f;
+            RenderTools.HSV2RGB(Runtime.stagelight2_hue, Runtime.stagelight2_saturation, Runtime.stagelight2_intensity, out stage2R, out stage2G, out stage2B);
+            GL.Uniform3(shader.getAttribute("stageLight2Color"), stage2R, stage2G, stage2B);
+            
+            // stage light 3
+            GL.Uniform1(shader.getAttribute("renderStageLight3"), Runtime.renderStageLight3 ? 1 : 0);
+            float stage3R, stage3G, stage3B = 1.0f;
+            RenderTools.HSV2RGB(Runtime.stagelight3_hue, Runtime.stagelight3_saturation, Runtime.stagelight3_intensity, out stage3R, out stage3G, out stage3B);
+            GL.Uniform3(shader.getAttribute("stageLight3Color"), stage3R, stage3G, stage3B);
+
+            // stage light 4. colors don't work properly
+            GL.Uniform1(shader.getAttribute("renderStageLight4"), Runtime.renderStageLight4 ? 1 : 0);
+            float stage4R, stage4G, stage4B = 1.0f;
+            RenderTools.HSV2RGB(Runtime.stagelight4_hue, Runtime.stagelight4_saturation, Runtime.stagelight4_intensity, out stage4R, out stage4G, out stage4B);
+            GL.Uniform3(shader.getAttribute("stageLight4Color"), stage4R, stage4G, stage4B);
+
+
+            GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
+            float stageFogR, stageFogG, stageFogB = 1.0f;
+            RenderTools.HSV2RGB(Runtime.fog_hue, Runtime.fog_saturation, Runtime.fog_intensity, out stageFogR, out stageFogG, out stageFogB);
+            GL.Uniform3(shader.getAttribute("stageFogColor"), stageFogR, stageFogG, stageFogB);
+
+            #endregion
+
+            #region light_set rotation data uniforms
+            // light_set_param xyz rotation to vector for lighting calculations. Current matrices aren't correct!
+
+
+            // convert to radians
+            float difRotX = Runtime.dif_rotX * ((float)Math.PI / 180f);
+            float difRotY = Runtime.dif_rotY * ((float)Math.PI / 180f);
+            float difRotZ = Runtime.dif_rotZ * ((float)Math.PI / 180f);
+
+            Matrix4 difrot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, difRotX)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, difRotY)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, difRotZ);
+
+
+            float specRotX = Runtime.specular_rotX * ((float)Math.PI / 180f);
+            float specRotY = Runtime.specular_rotY * ((float)Math.PI / 180f);
+            float specRotZ = Runtime.specular_rotZ * ((float)Math.PI / 180f);
 
             Matrix4 specrot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, specRotX)
-                 * Matrix4.CreateFromAxisAngle(Vector3.UnitY, specRotY)
-                 * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, specRotZ);*/
+              * Matrix4.CreateFromAxisAngle(Vector3.UnitY, specRotY)
+              * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, specRotZ);
 
 
-            Vector3 specDir = new Vector3(0f, 0f, -1f);// Vector3.Transform(new Vector3(0f, 0f, -1f), specrot);
-            GL.Uniform3(shader.getAttribute("freslightDirection"), Vector3.TransformNormal(specDir, v.Inverted()).Normalized());
-            GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, v));
+            float stageLight1RotX = Runtime.stagelight1_rotX * ((float)Math.PI / 180f);
+            float stageLight1RotY = Runtime.stagelight1_rotY * ((float)Math.PI / 180f);
+            float stageLight1RotZ = Runtime.stagelight1_rotZ * ((float)Math.PI / 180f);
+
+            Matrix4 stagelight1rot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, stageLight1RotX)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, stageLight1RotY)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight1RotZ);
+
+            float stageLight2RotX = Runtime.stagelight2_rotX * ((float)Math.PI / 180f);
+            float stageLight2RotY = Runtime.stagelight2_rotY * ((float)Math.PI / 180f);
+            float stageLight2RotZ = Runtime.stagelight2_rotZ * ((float)Math.PI / 180f);
+
+            Matrix4 stagelight2rot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, stageLight2RotX)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, stageLight2RotY)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight2RotZ);
+
+            float stageLight3RotX = Runtime.stagelight3_rotX * ((float)Math.PI / 180f);
+            float stageLight3RotY = Runtime.stagelight3_rotY * ((float)Math.PI / 180f);
+            float stageLight3RotZ = Runtime.stagelight3_rotZ * ((float)Math.PI / 180f);
+
+            Matrix4 stagelight3rot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, stageLight3RotX)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, stageLight3RotY)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight3RotZ);
+
+            float stageLight4RotX = Runtime.stagelight4_rotX * ((float)Math.PI / 180f);
+            float stageLight4RotY = Runtime.stagelight4_rotY * ((float)Math.PI / 180f);
+            float stageLight4RotZ = Runtime.stagelight4_rotZ * ((float)Math.PI / 180f);
+
+            Matrix4 stagelight4rot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, stageLight4RotX)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, stageLight4RotY)
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight4RotZ);
+
+            Vector3 lightDirection= new Vector3(0f, 0f, -1f);
+            Vector3 difDir = new Vector3(0f, 0f, 1f);
+            Vector3 specDir = new Vector3(0f, 0f, 1f);
+            Vector3 stageLight1Dir = new Vector3(0f, 0f, 1f);
+            Vector3 stageLight2Dir = new Vector3(0f, 0f, 1f);
+            Vector3 stageLight3Dir = new Vector3(0f, 0f, 1f);
+            Vector3 stageLight4Dir = new Vector3(0f, 0f, 1f);
+
             if (Runtime.CameraLight)
             {
-                GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(specDir, v.Inverted()).Normalized());
-            } else
+                GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, v));
+            }
+            else
             {
+                GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.Transform(specDir, specrot).Normalized());
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.Transform(difDir, difrot).Normalized());
+                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, v));
                 GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
             }
 
-            /*float fresRotX = 0.45f;
-            float fresRotY = 1.32f;
-            float fresRotZ = 0f;
+            GL.Uniform3(shader.getAttribute("stageLight1Direction"), Vector3.Transform(stageLight1Dir, stagelight1rot).Normalized());
+            GL.Uniform3(shader.getAttribute("stageLight2Direction"), Vector3.Transform(stageLight2Dir, stagelight2rot).Normalized());
+            GL.Uniform3(shader.getAttribute("stageLight3Direction"), Vector3.Transform(stageLight3Dir, stagelight3rot).Normalized());
+            GL.Uniform3(shader.getAttribute("stageLight4Direction"), Vector3.Transform(stageLight4Dir, stagelight4rot).Normalized());
 
-            Matrix4 fresrot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, fresRotX)
-                 * Matrix4.CreateFromAxisAngle(Vector3.UnitY, fresRotY)
-                 * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, fresRotZ);
+            #endregion
 
-            Vector3 fresDir = new Vector3(0f, 0f, -1f);// Vector3.Transform(new Vector3(1f, 0f, 0f), fresrot);
-            GL.Uniform3(shader.getAttribute("fresLightDir"), Vector3.TransformNormal(fresDir, v.Inverted()).Normalized());*/
 
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
@@ -819,6 +954,7 @@ namespace Smash_Forge
                 }
             }
         }
+
 
         private void DrawBones()
         {
@@ -1527,7 +1663,7 @@ namespace Smash_Forge
                             break;  // this only works because the list is sorted
                         var h2 = pair2.Value;
 
-                        if (Runtime.HiddenHitboxes.Contains(h2.ID))
+                        if (!Runtime.HiddenHitboxes.Contains(h2.ID))
                         {
 
                             Bone b2 = getBone(h2.Bone);
@@ -1985,12 +2121,12 @@ namespace Smash_Forge
         private void VBNViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
             if (e.KeyChar == 'i')
-            {  /*
+            {   /*
                 GL.DeleteProgram(Runtime.shaders["NUD"].programID);
                 shader = new Shader();
                 shader.vertexShader(File.ReadAllText("vert.txt"));
                 shader.fragmentShader(File.ReadAllText("frag.txt"));
-                Runtime.shaders["NUD"] = shader;*/
+                Runtime.shaders["NUD"] = shader; */
             }
 
             /*if (e.KeyChar == 'w')
@@ -2014,6 +2150,62 @@ namespace Smash_Forge
             if (e.KeyChar == 'p')
             {
                 CaptureScreen(false).Save(MainForm.executableDir + "\\Render.png");
+            }
+            if (e.KeyChar == 'g')
+            {
+                if (Runtime.TargetAnim == null)
+                    return;
+
+                isPlaying = false;
+                btnPlay.Text = "Play";
+
+                GIFSettings settings = new GIFSettings((int)this.nupdMaxFrame.Value);
+                settings.ShowDialog();
+
+                if (!settings.OK)
+                    return;
+
+                int cFrame = (int)this.nupdFrame.Value; //Get current frame so at the end of capturing all frames of the animation it goes back to this frame
+                //Disable controls
+                this.Enabled = false;
+
+                List<Bitmap> images = new List<Bitmap>();
+                for (int i = settings.StartFrame; i <= settings.EndFrame + 1; i++)
+                {
+                    this.nupdFrame.Value = i;
+                    this.nupdFrame.Refresh(); //Refresh the frame counter control
+                    Render();
+
+                    if (i != settings.StartFrame) //On i=StartFrame it captures the frame the user had before setting frame to it so ignore that one, the +1 on the for makes it so the last frame is captured
+                    {
+                        Bitmap cs = CaptureScreen(false);
+                        images.Add(new Bitmap(cs, new Size((int)(cs.Width / settings.ScaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
+                        cs.Dispose();
+                    }
+                }
+
+
+                if (images.Count > 0)
+                {
+                    SaveFileDialog sf = new SaveFileDialog();
+
+                    sf.FileName = "Render.gif";
+                    sf.Filter = "GIF file (*.gif)|*.gif";
+
+                    if (sf.ShowDialog() == DialogResult.OK)
+                    {
+                        GIFProgress g = new GIFProgress(images, sf.FileName, AnimationSpeed, settings.Repeat, settings.Quality);
+                        g.Show();
+                    }
+
+
+                }
+                //Enable controls
+                this.Enabled = true;
+
+                this.nupdFrame.Value = cFrame;
+
+
             }
             if (e.KeyChar == ']')
             {

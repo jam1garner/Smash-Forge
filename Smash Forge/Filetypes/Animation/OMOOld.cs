@@ -9,6 +9,38 @@ namespace Smash_Forge
     {
         public static int flagsused = 0;
 
+        // For a specific type of rotation data
+        public static float epsilon = 1.0e-12f;
+        public static float rot6CalculateW(float x, float y, float z)
+        {
+            // float cumulative = (float)Math.Sqrt(Math.Abs(1 - (x * x + y * y + z * z)));
+            float cumulative = 1 - (x * x + y * y + z * z);
+            float f12 = (float)(1 / Math.Sqrt((double)cumulative));
+            float sqrt_cumulative = (cumulative - epsilon) < 0 ? 0f : f12;
+
+            float f7 = (0.5f * cumulative) * sqrt_cumulative;
+            float f8 = 1.5f - (f7 * sqrt_cumulative);
+            float f0 = f8 * sqrt_cumulative;
+            float f9 = (0.5f * cumulative) * f0;
+            float f10 = 1.5f - (f9 * f0);
+            f0 = f0 * f10;
+            float f11 = (0.5f * cumulative) * f0;
+            float f13 = 1.5f - (f11 * f0);
+            f0 = f0 * f13;
+            f7 = cumulative * f0;
+
+            return f7;
+        }
+
+
+        // For a specific type of rotation data
+        public static float scale1 = 1 / (float)Math.Sqrt(2f);
+        public static float scale2 = (scale1 * 2) / 1048575f;
+        public static float encodedRot10ToQuaternionComponent(float toConvert)
+        {
+            return (toConvert * scale2) - scale1;
+        }
+
         public static SkelAnimation read(FileData d)
         {
 
@@ -20,25 +52,26 @@ namespace Smash_Forge
             d.skip(4); //flags?
 
             d.skip(2);
-            int numOfBones = d.readShort();
+            int boneCount = d.readShort();
+            int frameCount = d.readShort();
             int frameSize = d.readShort();
-            int frameStart = d.readShort();
 
-            int offset1 = d.readInt();
-            int offset2 = d.readInt();
-            int offset3 = d.readInt();
+            int offset1 = d.readInt();  // nodeOffset
+            int offset2 = d.readInt();  // interOffset
+            int offset3 = d.readInt();  // keyOffset
 
             SkelAnimation anim = new SkelAnimation();
             anim.Tag = d;
             //anim.setModel(m);
 
             // base frames
-            // These are linked to bones somehow, hash??
+            // These are linked to bones via hashes
             d.seek(offset1); // 
-            int[] framekey = new int[numOfBones];
-            KeyNode[] baseNode = new KeyNode[numOfBones];
+            int[] framekey = new int[boneCount];
+            KeyNode[] baseNode = new KeyNode[boneCount];
 
-            for (int i = 0; i < numOfBones; i++)
+            // Start positions for bones/nodes
+            for (int i = 0; i < boneCount; i++)
             {
                 flagsused = flagsused | d.readInt(); d.seek(d.pos() - 4);
                 //Console.WriteLine(flagsused.ToString("x"));
@@ -76,16 +109,24 @@ namespace Smash_Forge
                         node.t_type = KeyNode.CONSTANT;
                         node.t = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                     }
+                    else if (tFlag == 0x4)
+                    {
+                        // entire Vector3 provided in keyframe data i.e. KEYFRAME type
+                        node.t_type = KeyNode.KEYFRAME;
+                    }
                 }
                 if (hasRot)
                 {
-                    if ((rFlag & 0xF) != 0x50 && (rFlag & 0xF0) != 0x70 && (rFlag & 0xF0) != 0x60 && (rFlag & 0xF0) != 0xA0)
+                    if ((rFlag & 0xF0) != 0x50 && (rFlag & 0xF0) != 0x70 && (rFlag & 0xF0) != 0x60 && (rFlag & 0xF0) != 0xA0)
                     {
                         //Console.WriteLine(rFlag);
                     }
 
                     if ((rFlag & 0xF0) == 0xA0)
-                        node.r_type = 3;
+                    {
+                        // All data is in the keyframe for this type
+                        node.r_type = KeyNode.COMPRESSED;
+                    }
 
                     if ((rFlag & 0xF0) == 0x50)
                     { // interpolated
@@ -93,12 +134,18 @@ namespace Smash_Forge
                         node.rv = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                         node.rv2 = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                     }
-                    if ((rFlag & 0xF0) == 0x70 || (rFlag & 0xF0) == 0x60)
-                    { // constant
+
+                    if ((rFlag & 0xF0) == 0x60)
+                    {
+                        node.r_type = KeyNode.KEYFRAME;
+                        node.rv = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
+                        node.r_extra = d.readFloat() / 65535;
+                    }
+
+                    if ((rFlag & 0xF0) == 0x70)
+                    {
                         node.r_type = KeyNode.CONSTANT;
                         node.rv = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
-                        if ((rFlag & 0xF0) == 0x60)
-                            d.skip(4);
                     }
                 }
 
@@ -110,6 +157,7 @@ namespace Smash_Forge
                         node.s = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                         node.s2 = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
                     }
+                    // TODO: investigate the difference between these
                     if ((rFlag & 0x0F) == 0x02 || (rFlag & 0x0F) == 0x03)
                     { // constant
                         node.s_type = KeyNode.CONSTANT;
@@ -119,15 +167,17 @@ namespace Smash_Forge
                 d.seek(temp);
             }
 
+            // Interpolated type below here is always a set translation/rotation/scale
+            // from the coords specified with the bone node above
             d.seek(offset3);
-            for (int i = 0; i < frameSize; i++)
+            for (int i = 0; i < frameCount; i++)
             {
                 KeyFrame key = new KeyFrame();
                 key.frame = i;
 
                 int off = d.pos();
 
-                for (int j = 0; j < numOfBones; j++)
+                for (int j = 0; j < boneCount; j++)
                 {
                     KeyNode node = new KeyNode();
 
@@ -152,27 +202,76 @@ namespace Smash_Forge
 
                         node.t = new Vector3(x, y, z);  // Translation
                     }
-                    else
+                    else if (baseNode[j].t_type == KeyNode.CONSTANT)
                     {
                         node.t = baseNode[j].t;
                     }
-
-                    if (baseNode[j].r_type == 3)
+                    else if (baseNode[j].t_type == 2)
                     {
-                        int v = short.MaxValue;
-                        float i1 = ((float)((short)d.readShort() ) / v);
-                        float i2 = ((float)((short)d.readShort() ) / v);
-                        float i3 = ((float)((short)d.readShort() ) / v);
-                        float i4 = ((float)((short)d.readShort() ) / v);
+                        float x = d.readFloat();
+                        float y = d.readFloat();
+                        float z = d.readFloat();
 
-                        node.r = new Quaternion(new Vector3(i1, i2, i3), i4);
-                        //Console.WriteLine(node.r.ToString());
-                        //node.r = VBN.FromEulerAngles(i4 * i1, i4 * i2, i4 * i3);
-                        node.r_type = KeyNode.INTERPOLATED;
-                        //node.r.Normalize();
+                        node.t = new Vector3(x, y, z);
                     }
-                    else
-                    if (baseNode[j].r_type == KeyNode.INTERPOLATED)
+
+                    if (baseNode[j].r_type == KeyNode.COMPRESSED)
+                    {
+                        // There are 64 bits present for each node of this rot type
+                        // The format is: 20bits * 3 of encoded floats, and 4 bits of flags
+                        // The flags describe which 3 components of the quaternion are being presented
+                        int b1 = d.readByte();
+                        int b2 = d.readByte();
+                        int b3 = d.readByte();
+                        int b4 = d.readByte();
+                        int b5 = d.readByte();
+                        int b6 = d.readByte();
+                        int b7 = d.readByte();
+                        int b8 = d.readByte();
+
+                        // Capture 20 bits at a time of the raw data
+                        int f1 = (b1 << 12) | (b2 << 4) | ((b3 & 0xF0) >> 4);
+                        int f2 = ((b3 & 0xF) << 16) | (b4 << 8) | b5;
+                        int f3 = (b6 << 12) | (b7 << 4) | ((b8 & 0xF0) >> 4);
+                        int flags = b8 & 0xF;
+
+                        node.r = new Quaternion();
+                        switch (flags)
+                        {
+                            case 0:  // y, z, w provided
+                                node.r.Y = encodedRot10ToQuaternionComponent(f1);
+                                node.r.Z = encodedRot10ToQuaternionComponent(f2);
+                                node.r.W = encodedRot10ToQuaternionComponent(f3);
+
+                                node.r.X = (float)Math.Sqrt(Math.Abs(1 - (node.r.Y * node.r.Y + node.r.Z * node.r.Z + node.r.W * node.r.W)));
+                                break;
+                            case 1:  // x, z, w provided
+                                node.r.X = encodedRot10ToQuaternionComponent(f1);
+                                node.r.Z = encodedRot10ToQuaternionComponent(f2);
+                                node.r.W = encodedRot10ToQuaternionComponent(f3);
+
+                                node.r.Y = (float)Math.Sqrt(Math.Abs(1 - (node.r.X * node.r.X + node.r.Z * node.r.Z + node.r.W * node.r.W)));
+                                break;
+                            case 2:  // x, y, w provided
+                                node.r.X = encodedRot10ToQuaternionComponent(f1);
+                                node.r.Y = encodedRot10ToQuaternionComponent(f2);
+                                node.r.W = encodedRot10ToQuaternionComponent(f3);
+
+                                node.r.Z = (float)Math.Sqrt(Math.Abs(1 - (node.r.X * node.r.X + node.r.Y * node.r.Y + node.r.W * node.r.W)));
+                                break;
+                            case 3:  // x, y, z, provided
+                                node.r.X = encodedRot10ToQuaternionComponent(f1);
+                                node.r.Y = encodedRot10ToQuaternionComponent(f2);
+                                node.r.Z = encodedRot10ToQuaternionComponent(f3);
+
+                                node.r.W = (float)Math.Sqrt(Math.Abs(1 - (node.r.X * node.r.X + node.r.Y * node.r.Y + node.r.Z * node.r.Z)));
+                                break;
+                            default:
+                                Console.WriteLine("Unknown rotation type3 flags: " + flags);
+                                break;
+                        }
+                    }
+                    else if (baseNode[j].r_type == KeyNode.INTERPOLATED)
                     {
                         float i1 = ((float)d.readShort() / (0xffff));
                         float i2 = ((float)d.readShort() / (0xffff));
@@ -184,15 +283,24 @@ namespace Smash_Forge
 
                         float w = (float)Math.Sqrt(Math.Abs(1 - (x * x + y * y + z * z)));
 
-                        node.r = new Quaternion(new Vector3(x, y, z), w);  // Rotation
+                        node.r = new Quaternion(new Vector3(x, y, z), w);
                         node.r.Normalize();
+                    }
+                    else if (baseNode[j].r_type == KeyNode.KEYFRAME)
+                    {
+                        float scale = d.readShort() * baseNode[j].r_extra;
+                        float x = baseNode[j].rv.X;
+                        float y = baseNode[j].rv.Y;
+                        float z = baseNode[j].rv.Z + scale;
+                        float w = rot6CalculateW(x, y, z);
+
+                        node.r = new Quaternion(x, y, z, w);
                     }
                     else
                     {
                         float x = baseNode[j].rv.X;
                         float y = baseNode[j].rv.Y;
                         float z = baseNode[j].rv.Z;
-
                         float w = (float)Math.Sqrt(Math.Abs(1 - (x * x + y * y + z * z)));
 
                         node.r = new Quaternion(baseNode[j].rv, w);
@@ -209,7 +317,7 @@ namespace Smash_Forge
                         float y = baseNode[j].s.Y + (baseNode[j].s2.Y * (i2));
                         float z = baseNode[j].s.Z + (baseNode[j].s2.Z * (i3));
 
-                        node.s = new Vector3(x, y, z);  // scaling
+                        node.s = new Vector3(x, y, z);
                     }
                     else
                     {
@@ -218,7 +326,7 @@ namespace Smash_Forge
 
                     key.addNode(node);
                 }
-                d.seek(off + frameStart);
+                d.seek(off + frameSize);
                 
                 anim.addKeyframe(key);
             }

@@ -90,15 +90,15 @@ namespace Smash_Forge
                     { 0x0405, "Cull Inside"}
                 };
 
-        public static Dictionary<int, string> ref1 = new Dictionary<int, string>(){
-                    { 0x00, "Nothing"},
-                    { 0x02, "LessOrEqual + 255"},
+        public static Dictionary<int, string> AlphaTest = new Dictionary<int, string>(){
+                    { 0x00, "Alpha Test Disabled"},
+                    { 0x02, "Alpha Test Enabled"},
                 };
 
-        public static Dictionary<int, string> ref0 = new Dictionary<int, string>(){
-                    { 0x00, "Nothing"},
-                    { 0x04, "GreaterOrEqual + 128"},
-                    { 0x06, "GreaterOrEqual + 255"}
+        public static Dictionary<int, string> AlphaFunc = new Dictionary<int, string>(){
+                    { 0x00, "Never"},
+                    { 0x04, "Lequal Ref Alpha + ??"},
+                    { 0x06, "Lequal Ref Alpha + ???"}
                 };
 
         public static Dictionary<int, string> mapmode = new Dictionary<int, string>(){
@@ -222,10 +222,10 @@ namespace Smash_Forge
                     comboBox3.Items.Add(dstFactor[i]);
                 foreach (int i in cullmode.Keys)
                     comboBox6.Items.Add(cullmode[i]);
-                foreach (int i in ref1.Keys)
-                    ref1CB.Items.Add(ref1[i]);
-                foreach (int i in ref0.Keys)
-                    ref0CB.Items.Add(ref0[i]);
+                foreach (int i in AlphaTest.Keys)
+                    AlphaTestCB.Items.Add(AlphaTest[i]);
+                foreach (int i in AlphaFunc.Keys)
+                    AlphaFuncCB.Items.Add(AlphaFunc[i]);
 
                 foreach (int i in wrapmode.Keys)
                 {
@@ -251,9 +251,9 @@ namespace Smash_Forge
             textBox1.Text = mat.flags.ToString("X") + "";
             textBox3.Text = mat.srcFactor + "";
             textBox4.Text = mat.dstFactor + "";
-            ref1CB.SelectedItem = ref1[mat.ref1];
-            ref0CB.SelectedItem = ref0[mat.ref0];
-            textBox6.Text = mat.drawPriority + "";
+            AlphaTestCB.SelectedItem = AlphaTest[mat.AlphaTest];
+            AlphaFuncCB.SelectedItem = AlphaFunc[mat.AlphaFunc];
+            textBox6.Text = mat.RefAlpha + "";
             textBox7.Text = mat.cullMode + "";
             textBox8.Text = mat.zBufferOffset + "";
 
@@ -263,18 +263,28 @@ namespace Smash_Forge
             
             shadowCB.Checked = mat.hasShadow;
             GlowCB.Checked = mat.glow;
-            sphereMapCB.Checked = mat.useSphereMap;
-            dummyRampCB.Checked = mat.useDummyRamp;
-            
+            //sphereMapCB.Checked = mat.useSphereMap;
+            dummy_rampCB.Checked = mat.useDummyRamp;
+            AOCB.Checked = mat.aomap;
+            diffuseCB.Checked = mat.diffuse;
+            diffuse2CB.Checked = mat.diffuse2;
+            normalCB.Checked = mat.normalmap;
+            sphere_mapCB.Checked = mat.useSphereMap;
+            cubemapCB.Checked = mat.cubemap;
+            stageMapCB.Checked = mat.stagemap;
+            rampCB.Checked = mat.ramp;
+
+   
             if (mat.diffuse) listView1.Items.Add("Diffuse");
+            if (mat.diffuse2) listView1.Items.Add("Diffuse2");
+            if (mat.diffuse3) listView1.Items.Add("Diffuse3");
             if (mat.stagemap) listView1.Items.Add("StageMap");
             if (mat.cubemap) listView1.Items.Add("Cubemap");
             if (mat.spheremap) listView1.Items.Add("SphereMap");
-            if (mat.diffuse2) listView1.Items.Add("Diffuse2");
+            //if (mat.diffuse2) listView1.Items.Add("Diffuse2");
             if (mat.aomap) listView1.Items.Add("AO Map");
             if (mat.normalmap) listView1.Items.Add("NormalMap");
             if (mat.ramp) listView1.Items.Add("Ramp");
-
             if (mat.useDummyRamp) listView1.Items.Add("Dummy Ramp");
 
             while (listView1.Items.Count > mat.textures.Count)
@@ -366,8 +376,8 @@ namespace Smash_Forge
         #region alpha function
         private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (int i in ref1.Keys)
-                if (ref1[i].Equals(ref1CB.SelectedItem))
+            foreach (int i in AlphaTest.Keys)
+                if (AlphaTest[i].Equals(AlphaTestCB.SelectedItem))
                 {
                     textBox5.Text = i + "";
                     break;
@@ -376,26 +386,26 @@ namespace Smash_Forge
 
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
-            int.TryParse(textBox5.Text, out material[current].ref1);
+            int.TryParse(textBox5.Text, out material[current].AlphaTest);
             //setValue(textBox5, comboBox4, afunc, out material[current].alphaFunc);
         }
         
-        private void ref0CB_SelectedIndexChanged(object sender, EventArgs e)
+        private void AlphaFuncCB_SelectedIndexChanged(object sender, EventArgs e)
         {
 
-            foreach (int i in ref0.Keys)
-                if (ref0[i].Equals(ref0CB.SelectedItem))
+            foreach (int i in AlphaFunc.Keys)
+                if (AlphaFunc[i].Equals(AlphaFuncCB.SelectedItem))
                 {
-                    Console.WriteLine(ref0[i] + " " + i);
+                    Console.WriteLine(AlphaFunc[i] + " " + i);
                     textBox2.Text = i + "";
-                    material[current].ref0 = i;
+                    material[current].AlphaFunc = i;
                     break;
                 }
         }
         
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            int.TryParse(textBox2.Text, out material[current].ref0);
+            int.TryParse(textBox2.Text, out material[current].AlphaFunc);
         }
 
 
@@ -440,6 +450,7 @@ namespace Smash_Forge
             comboBox12.SelectedItem = magfilter[tex.magFilter];
             comboBox13.SelectedItem = mip[tex.mipDetail];
             RenderTexture();
+            RenderTextureAlpha();
         }
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
@@ -467,7 +478,7 @@ namespace Smash_Forge
             int.TryParse(textBox6.Text, out n);
             if (n != -1)
             {
-                material[current].drawPriority = n;
+                material[current].RefAlpha = n;
             } else
             {
                 textBox6.Text = "0";
@@ -814,7 +825,7 @@ namespace Smash_Forge
             if (!tabControl1.SelectedTab.Text.Equals("Textures")) return;
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
-            GL.ClearColor(Color.Red);
+            GL.ClearColor(Color.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.MatrixMode(MatrixMode.Modelview);
@@ -854,22 +865,63 @@ namespace Smash_Forge
             }
             if (float.IsInfinity(h)) h = 1;
             Console.WriteLine(w + " " + h);
-            GL.BindTexture(TextureTarget.Texture2D, rt);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
-            GL.Begin(PrimitiveType.Quads);
-            GL.TexCoord2(w, h);
-            GL.Vertex2(1, -1);
-            GL.TexCoord2(0, h);
-            GL.Vertex2(-1, -1);
-            GL.TexCoord2(0, 0);
-            GL.Vertex2(-1, 1);
-            GL.TexCoord2(w, 0);
-            GL.Vertex2(1, 1);
-            GL.End();
+
+            RenderTools.DrawTexturedQuad(rt, true, true, true, false, false);
 
             glControl1.SwapBuffers();
         }
+
+
+        private void RenderTextureAlpha()
+        {
+            if (!tabControl1.SelectedTab.Text.Equals("Textures")) return;
+            glControl2.MakeCurrent();
+            GL.Viewport(glControl2.ClientRectangle);
+            GL.ClearColor(Color.White);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+
+            GL.Enable(EnableCap.Texture2D);
+
+            NUT.NUD_Texture tex = null;
+            int rt = 0;
+            if (material[current].entries.ContainsKey("NU_materialHash") && listView1.SelectedIndices.Count > 0)
+            {
+                int hash = material[current].textures[listView1.SelectedIndices[0]].hash;
+
+                foreach (NUT n in Runtime.TextureContainers)
+                    if (n.draw.ContainsKey(hash))
+                    {
+                        n.getTextureByID(hash, out tex);
+                        rt = n.draw[hash];
+                        break;
+                    }
+            }
+            float h = 1f, w = 1f;
+            if (tex != null)
+            {
+                float texureRatioW = tex.width / tex.height;
+                float widthPre = texureRatioW * glControl2.Height;
+                w = glControl2.Width / widthPre;
+                if (texureRatioW > glControl2.AspectRatio)
+                {
+                    w = 1f;
+                    float texureRatioH = tex.height / tex.width;
+                    float HeightPre = texureRatioH * glControl2.Width;
+                    h = glControl2.Height / HeightPre;
+                }
+            }
+            if (float.IsInfinity(h)) h = 1;
+            Console.WriteLine(w + " " + h);
+
+            RenderTools.DrawTexturedQuad(rt, false, false, false, true, true);
+            glControl2.SwapBuffers();
+        }
+
 
         private void glControl1_Click(object sender, EventArgs e)
         {
@@ -1014,6 +1066,12 @@ namespace Smash_Forge
             RenderTexture();
         }
 
+        private void glControl2_Paint(object sender, PaintEventArgs e)
+        {
+
+            RenderTextureAlpha();
+        }
+
         private void listView2_KeyDown(object sender, KeyEventArgs e)
         {
             if(e.KeyCode == Keys.Delete)
@@ -1025,6 +1083,60 @@ namespace Smash_Forge
                 }
                 e.Handled = true;
             }
+        }
+
+        private void diffuseCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].diffuse = diffuseCB.Checked;
+            FillForm();
+        }
+
+        private void dummy_rampCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].UseDummyRamp = dummy_rampCB.Checked;
+            FillForm();
+        }
+
+        private void diffuse2CB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].diffuse2 = diffuse2CB.Checked;
+            FillForm();
+        }
+
+        private void normalCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].normalmap = normalCB.Checked;
+            FillForm();
+        }
+
+        private void sphere_mapCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].useSphereMap = sphere_mapCB.Checked;
+            FillForm();
+        }
+
+        private void rampCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].ramp = rampCB.Checked;
+            FillForm();
+        }
+
+        private void AOCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].aomap = AOCB.Checked;
+            FillForm();
+        }
+
+        private void stageMapCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].stagemap = stageMapCB.Checked;
+            FillForm();
+        }
+
+        private void cubemapCB_CheckedChanged(object sender, EventArgs e)
+        {
+            material[current].cubemap = cubemapCB.Checked;
+            FillForm();
         }
     }
 }

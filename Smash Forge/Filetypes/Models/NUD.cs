@@ -120,24 +120,6 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
             GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
 
-            GL.Uniform1(shader.getAttribute("ambient"), Runtime.amb_inten);
-            GL.Uniform1(shader.getAttribute("diffuse_intensity"), Runtime.dif_inten);
-            GL.Uniform1(shader.getAttribute("specular_intensity"), Runtime.spc_inten);
-            GL.Uniform1(shader.getAttribute("fresnel_intensity"), Runtime.frs_inten);
-            GL.Uniform1(shader.getAttribute("reflection_intensity"), Runtime.ref_inten);
-
-            if (Runtime.CameraLight)
-            {
-                Vector3 specDir = new Vector3(0f, 0f, -1f);
-                GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(specDir, view.Inverted()).Normalized());
-                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, view));
-            }
-            else
-            {
-                GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
-                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, view));
-            }
-
             {
 
                 GL.ActiveTexture(TextureUnit.Texture10);
@@ -211,6 +193,7 @@ namespace Smash_Forge
                     //if (p.isTransparent)
                     //    trans.Add(p);
                     //else
+
                 }
             }
 
@@ -263,6 +246,7 @@ namespace Smash_Forge
              
                 GL.Uniform1(shader.getAttribute("hasDif"), mat.diffuse ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasDif2"), mat.diffuse2 ? 1 : 0);
+                GL.Uniform1(shader.getAttribute("hasDif3"), mat.diffuse3 ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasStage"), mat.stagemap ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasCube"), mat.cubemap ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasAo"), mat.aomap ? 1 : 0);
@@ -270,6 +254,7 @@ namespace Smash_Forge
                 GL.Uniform1(shader.getAttribute("hasRamp"), mat.ramp ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasDummyRamp"), mat.useDummyRamp ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasColorGainOffset"), mat.useColorGainOffset ? 1 : 0);
+                GL.Uniform1(shader.getAttribute("useDiffuseBlend"), mat.useDiffuseBlend ? 1 : 0);
 
                 //mat.entries.TryGetValue("NU_specularParams", out pa);
                 // specular params seems to override reflectionParams for specular
@@ -343,6 +328,11 @@ namespace Smash_Forge
                     GL.Uniform1(shader.getAttribute("dummyRamp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
                 }
 
+                if (mat.diffuse3 && texid < mat.textures.Count)
+                {
+                    GL.Uniform1(shader.getAttribute("dif3"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                }
+
 
                 {
                     float[] ao;
@@ -358,6 +348,20 @@ namespace Smash_Forge
                     if (mat.anims.ContainsKey("NU_colorSamplerUV")) pa = mat.anims["NU_colorSamplerUV"];
                     if (pa == null) pa = new float[] { 1, 1, 0, 0 };
                     GL.Uniform4(shader.getAttribute("colorSamplerUV"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_colorSampler2UV", out pa);
+                    if (mat.anims.ContainsKey("NU_colorSampler2UV")) pa = mat.anims["NU_colorSampler2UV"];
+                    if (pa == null) pa = new float[] { 1, 1, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("colorSampler2UV"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_colorSampler3UV", out pa);
+                    if (mat.anims.ContainsKey("NU_colorSampler3UV")) pa = mat.anims["NU_colorSampler3UV"];
+                    if (pa == null) pa = new float[] { 1, 1, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("colorSampler3UV"), pa[0], pa[1], pa[2], pa[3]);
                 }
                 {
                     float[] pa;
@@ -442,6 +446,98 @@ namespace Smash_Forge
                     if (pa == null) pa = new float[] { 0, 0, 0, 0 };
                     GL.Uniform4(shader.getAttribute("reflectionParams"), pa[0], pa[1], pa[2], pa[3]);
                 }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_fogColor", out pa);
+                    if (mat.anims.ContainsKey("NU_fogColor")) pa = mat.anims["NU_fogColor"];
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("fogColor"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_fogParams", out pa);
+                    if (mat.anims.ContainsKey("NU_fogParams")) pa = mat.anims["NU_fogParams"];
+                    if (pa == null) pa = new float[] { 0, 1, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("fogParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_normalParams", out pa);
+                    if (mat.anims.ContainsKey("NU_normalParams")) pa = mat.anims["NU_normalParams"];
+                    if (pa == null) pa = new float[] { 1, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("normalParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_zOffset", out pa);
+                    if (mat.anims.ContainsKey("NU_zOffset")) pa = mat.anims["NU_zOffset"];
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("zOffset"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_effColorGain", out pa);
+                    if (mat.anims.ContainsKey("NU_effColorGain")) pa = mat.anims["NU_effColorGain"];
+                    if (pa == null) pa = new float[] { 1, 1, 1, 1 };
+                    GL.Uniform4(shader.getAttribute("effColorGain"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_angleFadeParams", out pa);
+                    if (mat.anims.ContainsKey("NU_angleFadeParams")) pa = mat.anims["NU_angleFadeParams"];
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("angleFadeParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_dualNormalScrollParams", out pa);
+                    if (mat.anims.ContainsKey("NU_dualNormalScrollParams")) pa = mat.anims["NU_dualNormalScrollParams"];
+
+                    int hasDualNormal = 1;
+                    if (pa == null) hasDualNormal = 0;
+                    GL.Uniform1(shader.getAttribute("hasDualNormal"), hasDualNormal);
+
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("dualNormalScrollParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_normalSamplerAUV", out pa);
+                    if (mat.anims.ContainsKey("NU_normalSamplerAUV")) pa = mat.anims["NU_normalSamplerAUV"];
+                    if (pa == null) pa = new float[] { 1, 1, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("normalSamplerAUV"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_alphaBlendParams", out pa);
+                    if (mat.anims.ContainsKey("NU_alphaBlendParams")) pa = mat.anims["NU_alphaBlendParams"];
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("alphaBlendParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_softLightingParams", out pa);
+                    if (mat.anims.ContainsKey("NU_softLightingParams")) pa = mat.anims["NU_softLightingParams"];
+
+                    int hasSoftLight = 1;
+                    if (pa == null) hasSoftLight = 0;
+                    GL.Uniform1(shader.getAttribute("hasSoftLight"), hasSoftLight);
+
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("softLightingParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
+                {
+                    float[] pa;
+                    mat.entries.TryGetValue("NU_customSoftLightParams", out pa);
+                    if (mat.anims.ContainsKey("NU_customSoftLightParams")) pa = mat.anims["NU_customSoftLightParams"];
+
+                    int hasCustomSoftLight = 1;
+                    if (pa == null) hasCustomSoftLight = 0;
+                    GL.Uniform1(shader.getAttribute("hasCustomSoftLight"), hasCustomSoftLight);
+
+                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
+                    GL.Uniform4(shader.getAttribute("customSoftLightParams"), pa[0], pa[1], pa[2], pa[3]);
+                }
 
                 GL.Enable(EnableCap.Blend);
 
@@ -451,22 +547,21 @@ namespace Smash_Forge
                 if (mat.srcFactor == 0 && mat.dstFactor == 0) GL.Disable(EnableCap.Blend);
                 
                 GL.Enable(EnableCap.AlphaTest);
-                if (mat.ref0 == 0 && mat.ref1 == 0) GL.Disable(EnableCap.AlphaTest);
+                if (mat.AlphaTest == 0) GL.Disable(EnableCap.AlphaTest);
+
+                float refAlpha = mat.RefAlpha / 255f; // gequal used because fragcolor.a of 0 is refalpha of 1
 
                 GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-                switch (mat.ref1)
+                switch (mat.AlphaFunc)
                 {
-                    case 0x2:
-                        GL.AlphaFunc(AlphaFunction.Lequal, 255f / 255f);
+                    case 0x0:
+                        GL.AlphaFunc(AlphaFunction.Never, refAlpha);
                         break;
-                }
-                switch (mat.ref0)
-                {
                     case 0x4:
-                        GL.AlphaFunc(AlphaFunction.Gequal, 128f / 255f);
+                        GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
                         break;
                     case 0x6:
-                        GL.AlphaFunc(AlphaFunction.Gequal, 255f / 255f);
+                        GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
                         break;
                 }
                
@@ -661,7 +756,7 @@ namespace Smash_Forge
         static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>(){
                     { 0x01, TextureWrapMode.Repeat},
                     { 0x02, TextureWrapMode.MirroredRepeat},
-                    { 0x03, TextureWrapMode.Clamp}
+                    { 0x03, TextureWrapMode.ClampToEdge}
         };
 
         static Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>(){
@@ -971,11 +1066,11 @@ namespace Smash_Forge
                 m.srcFactor = d.readShort();
                 int propCount = d.readShort();
                 m.dstFactor = d.readShort();
-                m.ref1 = d.readByte();
-                m.ref0 = d.readByte();
+                m.AlphaTest = d.readByte();
+                m.AlphaFunc = d.readByte();
 
                 d.skip(1); // unknown
-                m.drawPriority = d.readByte();
+                m.RefAlpha = d.readByte();
                 m.cullMode = d.readShort();
                 d.skip(4); // padding
                 m.unkownWater = d.readInt();
@@ -1600,10 +1695,10 @@ namespace Smash_Forge
                 d.writeShort(mat.srcFactor);
                 d.writeShort(mat.textures.Count);
                 d.writeShort(mat.dstFactor);
-                d.writeByte(mat.ref1);
-                d.writeByte(mat.ref0);
+                d.writeByte(mat.AlphaTest);
+                d.writeByte(mat.AlphaFunc);
                 d.writeByte(0); // unknown padding?
-                d.writeByte(mat.drawPriority);
+                d.writeByte(mat.RefAlpha);
                 d.writeShort(mat.cullMode);
                 d.writeInt(0); // padding
                 d.writeInt(mat.unkownWater); 
@@ -1788,9 +1883,9 @@ namespace Smash_Forge
             public int blendMode = 0;
             public int dstFactor = 0;
             public int srcFactor = 0;
-            public int ref1 = 0;
-            public int ref0 = 0;
-            public int drawPriority = 0;
+            public int AlphaTest = 0;
+            public int AlphaFunc = 0;
+            public int RefAlpha = 0;
             public int cullMode = 0;
             public int displayTexId = -1;
 
@@ -1801,7 +1896,9 @@ namespace Smash_Forge
             //flags
             public bool glow = false;
             public bool hasShadow = false;
+            public bool useVertexColor = false;
             public bool useColorGainOffset = false;
+            public bool useDiffuseBlend = false;
             public bool useDummyRamp = false;
             public bool UseDummyRamp
             {
@@ -1832,6 +1929,7 @@ namespace Smash_Forge
             public bool diffuse = false;
             public bool normalmap = false;
             public bool diffuse2 = false;
+            public bool diffuse3 = false;
             public bool aomap = false;
             public bool stagemap = false;
             public bool cubemap = false;
@@ -1850,9 +1948,9 @@ namespace Smash_Forge
                 m.blendMode = blendMode;
                 m.dstFactor = dstFactor;
                 m.srcFactor = srcFactor;
-                m.ref1 = ref1;
-                m.ref0 = ref0;
-                m.drawPriority = drawPriority;
+                m.AlphaTest = AlphaTest;
+                m.AlphaFunc = AlphaFunc;
+                m.RefAlpha = RefAlpha;
                 m.cullMode = cullMode;
                 m.displayTexId = displayTexId;
 
@@ -1911,6 +2009,10 @@ namespace Smash_Forge
                 useColorGainOffset = (flag & 0x0C000000) == 0x0C000000 && (flag & 0x000000FF) == 0x00000061 && 
                 ((flag & 0x00FF0000) == 0x00610000 || (flag & 0x00FF0000) == 0x00420000 || (flag & 0x00FF0000) == 0x00440000);
 
+                useDiffuseBlend = (flag & 0xD0090000) == 0xD0090000 || (flag & 0x90005000) == 0x90005000;
+
+                useVertexColor = (flag & 0x0F000000) == 0x02000000 || (flag & 0x0F000000) == 0x04000000 || (flag & 0x0F000000) == 0x06000000 || (flag & 0xF0000000) == 0x90000000; // characters, stages with certain flags
+
             }
 
             public void TestTextures()
@@ -1922,11 +2024,17 @@ namespace Smash_Forge
                 cubemap = (flag & 0x04) > 0 && (!useDummyRamp) && (!useSphereMap);//(!useRimLight || (useRimLight && useSphereMap));// && !useRimLight;
                 ramp = (flag & 0x04) > 0 && useDummyRamp; //&& !useSpecular 
 
-                diffuse2 = (flag & 0x04) > 0 && (flag & 0x02) == 0 && useDummyRamp;
+                diffuse = (flag & 0x01) > 0;
+                // mostly correct (I hope)
+                diffuse3 = (flag & 0x00009100) == 0x00009100 || (flag & 0x00009600) == 0x00009600 || (flag & 0x00009900) == 0x00009900; 
+
+                diffuse2 = (flag & 0x04) > 0 && (flag & 0x02) == 0 && useDummyRamp || diffuse3;
                 normalmap = (flag & 0x02) > 0;
 
-                diffuse = (flag & 0x01) > 0;
+   
                 spheremap = (flag & 0x01) > 0 && useSphereMap;
+
+                
             }
         }
 
