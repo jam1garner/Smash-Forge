@@ -372,6 +372,10 @@ namespace Smash_Forge
                     }
                 }
 
+                // weird solution to refresh the listbox item
+                listBox2.DisplayMember = "test";
+                listBox2.DisplayMember = "";
+
                 //listBox2.Refresh();
             }
         }

@@ -1384,6 +1384,8 @@ namespace Smash_Forge
             while (h > 360) { h -= 360; }
             while (h < 0) { h += 360; }
 
+            if (s > 1.0f)
+                s = 1.0f;
 
             float hf = h / 60.0f;
             int i = (int)Math.Floor(hf);
@@ -1623,6 +1625,7 @@ uniform vec4 normalSamplerAUV;
 uniform mat4 eyeview;
 uniform uint flags;
 
+uniform float zScale;
 uniform vec4 zOffset;
 
 uniform bones
@@ -1663,10 +1666,11 @@ vec3 skinNRM(vec3 nr, ivec4 index)
 void main()
 {
     vec4 objPos = vec4(vPosition.xyz, 1.0);
+
     ivec4 bi = ivec4(vBone);
 
     if(vBone.x != -1.0) objPos = skin(vPosition, bi);
-
+    objPos.z *= zScale;
     objPos = eyeview * vec4(objPos.xyz, 1.0);
 
     gl_Position = objPos;
@@ -2331,7 +2335,7 @@ main()
         // if ((flags & 0xF0FF0000u) != 0xF0640000u) // ryu works differently. need to research this more
         fincol.a += alphaBlendParams.x;
         //---------------------------------------------------------------------------------------------
-
+        //gl_FragDepth *= 0.001;
 	}
 
 }";

@@ -161,6 +161,7 @@ namespace Smash_Forge
         public static float ref_inten = 1.00f;
         public static float amb_inten = 1.00f;
         public static float model_scale = 1f;
+        public static float zScale = 1.0f;
 
         #region character lighting
         public static float dif_hue = 360.0f;
@@ -241,11 +242,17 @@ namespace Smash_Forge
         public static bool renderVertColor;
         public static bool renderLighting;
         public static bool useNormalMap;
+        public static bool useDepthTest = true;
         public static RenderTypes renderType;
 
         // ETC
         public static string fighterDir = "";
         public static string paramDir;
+
+
+        public static string renderer = "";
+        public static string openGLVersion = "";
+        public static string GLSLVersion = "";
 
         public enum RenderTypes
         {

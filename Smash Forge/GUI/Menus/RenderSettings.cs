@@ -16,6 +16,29 @@ namespace Smash_Forge.GUI
         private bool disableRuntimeUpdates;
         private List<Color> hitboxColors;
 
+        float difR = 0.0f;
+        float difG = 0.0f;
+        float difB = 0.0f;
+
+        float ambR = 0.0f;
+        float ambG = 0.0f;
+        float ambB = 0.0f;
+
+        float fresSkyR = 0.0f;
+        float fresSkyG = 0.0f;
+        float fresSkyB = 0.0f;
+        float fresGroundR = 0.0f;
+        float fresGroundG = 0.0f;
+        float fresGroundB = 0.0f;
+
+        float specR = 0.0f;
+        float specG = 0.0f;
+        float specB = 0.0f;
+
+        float refR = 0.0f;
+        float refG = 0.0f;
+        float refB = 0.0f;
+
         public RenderSettings()
         {
             InitializeComponent();
@@ -124,6 +147,11 @@ namespace Smash_Forge.GUI
             stage4RotY.Text = Runtime.stagelight4_rotY + "";
             stage4RotZ.Text = Runtime.stagelight4_rotZ + "";
 
+            RendererLabel.Text = "Renderer: " + Runtime.renderer;
+            OpenGLVersionLabel.Text = "OpenGL Version: " + Runtime.GLSLVersion;
+
+            depthTestCB.Checked = Runtime.useDepthTest;
+            zScaleTB.Text = Runtime.zScale + "";
 
             cb_normals.Checked = Runtime.renderNormals;
             cb_vertcolor.Checked = Runtime.renderVertColor;
@@ -140,6 +168,7 @@ namespace Smash_Forge.GUI
 
             textParamDir.Text = Runtime.paramDir;
             disableRuntimeUpdates = false;
+
         }
 
         private void checkBox6_CheckedChanged(object sender, EventArgs e)
@@ -511,6 +540,7 @@ namespace Smash_Forge.GUI
         }
 
 
+
         private void diffuseHue_TextChanged(object sender, EventArgs e)
         {
             float i = 0;
@@ -521,6 +551,10 @@ namespace Smash_Forge.GUI
             }
             else
                 diffuseHue.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity, out difR, out difG, out difB);
+            difColorButton.BackColor = Color.FromArgb(255, (int)(difR*255), (int)(difG * 255), (int)(difB * 255));
+
         }
 
         private void diffuseSaturation_TextChanged(object sender, EventArgs e)
@@ -533,6 +567,9 @@ namespace Smash_Forge.GUI
             }
             else
                 diffuseSaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity, out difR, out difG, out difB);
+            difColorButton.BackColor = Color.FromArgb(255, (int)(difR * 255), (int)(difG * 255), (int)(difB * 255));
         }
 
         private void label20_Click(object sender, EventArgs e)
@@ -550,6 +587,9 @@ namespace Smash_Forge.GUI
             }
             else
                 diffuseIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity, out difR, out difG, out difB);
+            difColorButton.BackColor = Color.FromArgb(255, (int)(difR * 255), (int)(difG * 255), (int)(difB * 255));
         }
 
         private void ambientHue_TextChanged(object sender, EventArgs e)
@@ -562,6 +602,9 @@ namespace Smash_Forge.GUI
             }
             else
                 ambientHue.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.amb_hue, Runtime.amb_saturation, Runtime.amb_intensity, out ambR, out ambG, out ambB);
+            ambColorButton.BackColor = Color.FromArgb(255, (int)(ambR * 255), (int)(ambG * 255), (int)(ambB * 255));
         }
 
         private void ambientSaturation_TextChanged(object sender, EventArgs e)
@@ -574,6 +617,9 @@ namespace Smash_Forge.GUI
             }
             else
                 ambientSaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.amb_hue, Runtime.amb_saturation, Runtime.amb_intensity, out ambR, out ambG, out ambB);
+            ambColorButton.BackColor = Color.FromArgb(255, (int)(ambR * 255), (int)(ambG * 255), (int)(ambB * 255));
         }
 
         private void ambientIntensity_TextChanged(object sender, EventArgs e)
@@ -586,6 +632,9 @@ namespace Smash_Forge.GUI
             }
             else
                 ambientIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.amb_hue, Runtime.amb_saturation, Runtime.amb_intensity, out ambR, out ambG, out ambB);
+            ambColorButton.BackColor = Color.FromArgb(255, (int)(ambR * 255), (int)(ambG * 255), (int)(ambB * 255));
         }
 
         private void fresnelGroundHue_TextChanged(object sender, EventArgs e)
@@ -598,6 +647,9 @@ namespace Smash_Forge.GUI
             }
             else
                 fresnelGroundHue.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_ground_hue, Runtime.fres_ground_saturation, Runtime.fres_ground_intensity, out fresGroundR, out fresGroundG, out fresGroundB);
+            fresGroundColorButton.BackColor = Color.FromArgb(255, (int)(fresGroundR * 255), (int)(fresGroundG * 255), (int)(fresGroundB * 255));
         }
 
         private void fresnelGroundSaturation_TextChanged(object sender, EventArgs e)
@@ -610,6 +662,9 @@ namespace Smash_Forge.GUI
             }
             else
                 fresnelGroundSaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_ground_hue, Runtime.fres_ground_saturation, Runtime.fres_ground_intensity, out fresGroundR, out fresGroundG, out fresGroundB);
+            fresGroundColorButton.BackColor = Color.FromArgb(255, (int)(fresGroundR * 255), (int)(fresGroundG * 255), (int)(fresGroundB * 255));
         }
 
         private void fresnelGroundIntensity_TextChanged(object sender, EventArgs e)
@@ -622,6 +677,9 @@ namespace Smash_Forge.GUI
             }
             else
                 fresnelGroundIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_ground_hue, Runtime.fres_ground_saturation, Runtime.fres_ground_intensity, out fresGroundR, out fresGroundG, out fresGroundB);
+            fresGroundColorButton.BackColor = Color.FromArgb(255, (int)(fresGroundR * 255), (int)(fresGroundG * 255), (int)(fresGroundB * 255));
         }
 
         private void FogCB_CheckedChanged(object sender, EventArgs e)
@@ -651,6 +709,9 @@ namespace Smash_Forge.GUI
             }
             else
                 fresnelSkyHue.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_sky_hue, Runtime.fres_sky_saturation, Runtime.fres_sky_intensity, out fresSkyR, out fresSkyG, out fresSkyB);
+            fresSkyColorButton.BackColor = Color.FromArgb(255, (int)(fresSkyR * 255), (int)(fresSkyG * 255), (int)(fresSkyB * 255));
         }
 
         private void fresnelSkySaturation_TextChanged(object sender, EventArgs e)
@@ -663,6 +724,9 @@ namespace Smash_Forge.GUI
             }
             else
                 fresnelSkySaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_sky_hue, Runtime.fres_sky_saturation, Runtime.fres_sky_intensity, out fresSkyR, out fresSkyG, out fresSkyB);
+            fresSkyColorButton.BackColor = Color.FromArgb(255, (int)(fresSkyR * 255), (int)(fresSkyG * 255), (int)(fresSkyB * 255));
         }
 
         private void fresnelSkyIntensity_TextChanged(object sender, EventArgs e)
@@ -675,6 +739,9 @@ namespace Smash_Forge.GUI
             }
             else
                 fresnelSkyIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_sky_hue, Runtime.fres_sky_saturation, Runtime.fres_sky_intensity, out fresSkyR, out fresSkyG, out fresSkyB);
+            fresSkyColorButton.BackColor = Color.FromArgb(255, (int)(fresSkyR * 255), (int)(fresSkyG * 255), (int)(fresSkyB * 255));
         }
 
         private void label33_Click(object sender, EventArgs e)
@@ -692,6 +759,9 @@ namespace Smash_Forge.GUI
             }
             else
                 specularHue.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity, out specR, out specG, out specB);
+            specColorButton.BackColor = Color.FromArgb(255, (int)(specR * 255), (int)(specG * 255), (int)(specB * 255));
         }
 
         private void specularSaturation_TextChanged(object sender, EventArgs e)
@@ -704,6 +774,9 @@ namespace Smash_Forge.GUI
             }
             else
                 specularSaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity, out specR, out specG, out specB);
+            specColorButton.BackColor = Color.FromArgb(255, (int)(specR * 255), (int)(specG * 255), (int)(specB * 255));
         }
 
         private void specularIntensity_TextChanged(object sender, EventArgs e)
@@ -716,6 +789,9 @@ namespace Smash_Forge.GUI
             }
             else
                 specularIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity, out specR, out specG, out specB);
+            specColorButton.BackColor = Color.FromArgb(255, (int)(specR * 255), (int)(specG * 255), (int)(specB * 255));
         }
 
         private void reflectionHue_TextChanged(object sender, EventArgs e)
@@ -728,6 +804,11 @@ namespace Smash_Forge.GUI
             }
             else
                 reflectionHue.BackColor = Color.Red;
+
+
+            RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
+            refColorButton.BackColor = Color.FromArgb(255, (int)(refR * 255), (int)(refG * 255), (int)(refB * 255));
+
         }
 
         private void reflectionSaturation_TextChanged(object sender, EventArgs e)
@@ -740,6 +821,9 @@ namespace Smash_Forge.GUI
             }
             else
                 reflectionSaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
+            refColorButton.BackColor = Color.FromArgb(255, (int)(refR * 255), (int)(refG * 255), (int)(refB * 255));
         }
 
         private void reflectionIntensity_TextChanged(object sender, EventArgs e)
@@ -752,6 +836,9 @@ namespace Smash_Forge.GUI
             }
             else
                 reflectionIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
+            refColorButton.BackColor = Color.FromArgb(255, (int)(refR * 255), (int)(refG * 255), (int)(refB * 255));
         }
 
         private void label47_Click(object sender, EventArgs e)
@@ -1251,6 +1338,23 @@ namespace Smash_Forge.GUI
                 Runtime.searchboxColor = Color.FromArgb(0xFF, colorDialog.Color);
                 pbSearchboxColor.BackColor = Runtime.searchboxColor;
             }
+        }
+
+        private void depthTestCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.useDepthTest = depthTestCB.Checked;
+        }
+
+        private void zScaleTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(zScaleTB.Text, out i))
+            {
+                zScaleTB.BackColor = Color.White;
+                Runtime.zScale = i;
+            }
+            else
+                zScaleTB.BackColor = Color.Red;
         }
     }
     

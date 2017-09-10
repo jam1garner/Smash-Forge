@@ -300,7 +300,7 @@ namespace Smash_Forge
                     foreach (BCH.BCH_Model mod in m.bch.models)
                     {
                         if (mod.skeleton != null)
-                            Runtime.TargetAnim.nextFrame(mod.skeleton);
+                            Runtime.TargetAnim.nextFrame(mod.skeleton);                       
                     }
                 }
             }
@@ -418,7 +418,9 @@ namespace Smash_Forge
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             CalculateLightSource();
 
-
+            Runtime.renderer = GL.GetString(StringName.Renderer);
+            Runtime.openGLVersion = GL.GetString(StringName.Version);
+            Runtime.GLSLVersion = GL.GetString(StringName.ShadingLanguageVersion);
         }
 
 
@@ -561,11 +563,14 @@ namespace Smash_Forge
             
             renderTime.Start();
 
+            if (!Runtime.useDepthTest)
+                GL.Disable(EnableCap.DepthTest);
+
             if (Runtime.renderModel) DrawModels();
 
             renderTime.Stop();
             double fps = 1000 / (renderTime.ElapsedMilliseconds + 0.0001);
-            Debug.WriteLine(renderTime.ElapsedMilliseconds.ToString()); // render time for NUD shader in milliseconds
+            //Debug.WriteLine(renderTime.ElapsedMilliseconds.ToString()); // render time for NUD shader in milliseconds
             renderTime.Reset();
 
             /*{
@@ -723,6 +728,8 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("specular_intensity"), Runtime.spc_inten);
             GL.Uniform1(shader.getAttribute("fresnel_intensity"), Runtime.frs_inten);
             GL.Uniform1(shader.getAttribute("reflection_intensity"), Runtime.ref_inten);
+
+            GL.Uniform1(shader.getAttribute("zScale"), Runtime.zScale);
 
             GL.ActiveTexture(TextureUnit.Texture11);
             GL.BindTexture(TextureTarget.Texture2D, depthmap);
