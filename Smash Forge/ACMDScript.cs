@@ -41,7 +41,9 @@ namespace Smash_Forge
 
         // Script variables
         public List<uint> ActiveFlags { get; set; }
-        public SortedList<uint, bool> IfVariableList { get; set; } = new SortedList<uint, bool>();
+        public SortedList<uint, bool> IfVariableList { get; set; } = new SortedList<uint, bool>(); //Variables that have a bit flag
+        public SortedList<uint, int> IfVariableValueList { get; set; } = new SortedList<uint, int>(); //Variables that have a value
+        public SortedList<uint, List<int>> VariableValueList { get; set; } = new SortedList<uint, List<int>>(); //List of values these variables can have
 
 
         // Script processing helpers
@@ -91,10 +93,22 @@ namespace Smash_Forge
 
             //Get all If events variables for BitVariableList
             IfVariableList = new SortedList<uint, bool>();
+            IfVariableValueList = new SortedList<uint, int>();
+            VariableValueList = new SortedList<uint, List<int>>();
 
             if (script != null)
             {
                 getIfs();
+
+                foreach(var pair in VariableValueList)
+                {
+                    if (!pair.Value.Contains(-1))
+                        pair.Value.Add(-1); //There are some scripts that have false blocks so putting this value for those (One of peach scripts has -1 but only true blocks)
+                }
+
+                if (Runtime.variableViewer != null)
+                    Runtime.variableViewer.Initialize();
+
             }
         }
 
@@ -733,23 +747,37 @@ namespace Smash_Forge
                         ActiveFlags.Remove(flag);
                         break;
                     }
-                case 0x34BCD3F7: //If_Compare
                 case 0xA21BC6EA: //If_Bit_Is_Set
+                case 0x34BCD3F7: //If_Compare
                     {
                         if (IfVariableList.ContainsKey((uint)(int)cmd.Parameters[0]))
                             readTrue = IfVariableList[(uint)(int)cmd.Parameters[0]];
                         break;
                     }
+                case 0x477705C2: //unk_477705C2 If_Compare2?
+                    {
+                        if (IfVariableValueList.ContainsKey((uint)(int)cmd.Parameters[0]))
+                            readTrue = IfVariableValueList[(uint)(int)cmd.Parameters[0]] == (int)cmd.Parameters[2];
+                        break;
+                    }
                 case 0xA5BD4F32: // TRUE
                     {
                         if (!readTrue)
+                        {
                             TrueFalseSkipLength = (int)cmd.Parameters[0] - 4;
+                            if (TrueFalseSkipLength == 0)
+                                TrueFalseSkipLength = 1;
+                        }
                         break;
                     }
                 case 0x895B9275: // FALSE
                     {
-                        if(readTrue)
+                        if (readTrue)
+                        {
                             TrueFalseSkipLength = (int)cmd.Parameters[0] - 2;
+                            if (TrueFalseSkipLength == 0)
+                                TrueFalseSkipLength = 1;
+                        }
                         break;
                     }
                 case 0x0F39EC70: // Allow/Disallow Ledgegrab
@@ -780,19 +808,19 @@ namespace Smash_Forge
 
         public void getIfs()
         {
-            int index = 0;
+            scriptCommandIndex = 0;
             while (true)
             {
                 // Subscripts take precedence in processing, most deep one first
                 if (subscripts.Count > 0)
                 {
-                    if (index < subscripts[subscripts.Count - 1].Count)
-                        processAndGetIfs(subscripts[subscripts.Count - 1][index]);
+                    if (scriptCommandIndex < subscripts[subscripts.Count - 1].Count)
+                        processAndGetIfs(subscripts[subscripts.Count - 1][scriptCommandIndex]);
                     else
                     {
                         // We finished the subscript, pop it off and keep processing the parent
                         ScriptState prevState = scriptStates.Pop();
-                        index = prevState.commandIndex;
+                        scriptCommandIndex = prevState.commandIndex;
                         loopStart = prevState.loopStart;
                         loopIterations = prevState.loopIterations;
                         subscripts.RemoveAt(subscripts.Count - 1);
@@ -800,14 +828,15 @@ namespace Smash_Forge
                 }
                 else
                 {
-                    if (index < script.Count)
-                        processAndGetIfs(script[index]);
+                    if (scriptCommandIndex < script.Count)
+                        processAndGetIfs(script[scriptCommandIndex]);
                     else
                         // No script commands left to process, regardless of frame
                         break;
                 }
-                index++;
+                scriptCommandIndex++;
             }
+            scriptCommandIndex = 0;
         }
 
         public void processAndGetIfs(ICommand cmd)
@@ -816,8 +845,46 @@ namespace Smash_Forge
             {
                 case 0x34BCD3F7: //If_Compare
                 case 0xA21BC6EA: //If_Bit_Is_Set
-                    if (!IfVariableList.ContainsKey((uint)(int)cmd.Parameters[0]))
-                        IfVariableList.Add((uint)(int)cmd.Parameters[0], true);
+                    {
+                        if (!IfVariableList.ContainsKey((uint)(int)cmd.Parameters[0]))
+                            IfVariableList.Add((uint)(int)cmd.Parameters[0], true);
+                        break;
+                    }
+                case 0x477705C2: //unk_477705C2 If_Compare2?
+                    {
+                        if (!IfVariableValueList.ContainsKey((uint)(int)cmd.Parameters[0]))
+                        {
+                            IfVariableValueList.Add((uint)(int)cmd.Parameters[0], (int)cmd.Parameters[2]);
+                            VariableValueList.Add((uint)(int)cmd.Parameters[0], new List<int>() { (int)cmd.Parameters[2] });
+                        }
+                        else
+                        {
+                            if (!VariableValueList[(uint)(int)cmd.Parameters[0]].Contains((int)cmd.Parameters[2]))
+                                VariableValueList[(uint)(int)cmd.Parameters[0]].Add((int)cmd.Parameters[2]);
+                        }
+                        break;
+                    }
+
+                case 0x9126EBA2: // Subroutine: call another script
+                case 0xFA1BC28A: // Subroutine1: call another script
+                    // Try and load the other script. If we can't, then just keep going as per normal
+                    uint crc = (uint)int.Parse(cmd.Parameters[0] + "");
+                    if (Runtime.Moveset.Game.Scripts.ContainsKey(crc))
+                    {
+                        subscripts.Add((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
+
+                        // Store the return scriptCommandIndex
+                        scriptStates.Push(new ScriptState(
+                            scriptCommandIndex,
+                            loopStart,
+                            loopIterations
+                        ));
+
+                        // Start fresh in the new script
+                        scriptCommandIndex = -1; // This is incremented immediately in the containing loop hence the -1
+                        loopStart = 0;
+                        loopIterations = 0;
+                    }
                     break;
             }
         }

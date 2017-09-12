@@ -18,6 +18,8 @@ namespace Smash_Forge.GUI.Editors
             InitializeComponent();
         }
 
+        private bool VariableValuesSet = false;
+
         public void refresh()
         {
             listBox1.BeginUpdate();
@@ -34,21 +36,58 @@ namespace Smash_Forge.GUI.Editors
                     listBox1.Items.Add("Front Ledge grab allowed");
                 if (Runtime.gameAcmdScript.ReverseLedgeGrabAllowed)
                     listBox1.Items.Add("Reverse Ledge grab allowed");
-            }
-            listBox1.EndUpdate();
 
-            treeView1.BeginUpdate();
-            treeView1.Nodes.Clear();
-            if(Runtime.gameAcmdScript != null)
-            {
-                foreach(var pair in Runtime.gameAcmdScript.IfVariableList)
+                listBox1.EndUpdate();
+
+                treeView1.BeginUpdate();
+                treeView1.Nodes.Clear();
+                if (Runtime.gameAcmdScript != null)
                 {
-                    TreeNode node = new TreeNode($"Variable {pair.Key.ToString("X8")}") { Tag = pair.Key, Checked = pair.Value };
+                    foreach (var pair in Runtime.gameAcmdScript.IfVariableList)
+                    {
+                        TreeNode node = new TreeNode($"Variable 0x{pair.Key.ToString("X8")}") { Tag = pair.Key, Checked = pair.Value };
 
-                    treeView1.Nodes.Add(node);
+                        treeView1.Nodes.Add(node);
+                    }
+                }
+                treeView1.EndUpdate();
+
+                if (!VariableValuesSet)
+                {
+                    flowLayoutPanel1.Controls.Clear();
+                    foreach (var pair in Runtime.gameAcmdScript.VariableValueList)
+                    {
+                        Label label = new Label() { Text = $"Variable 0x{pair.Key.ToString("X8")}" };
+                        ComboBox comboBox = new ComboBox() { Tag = pair.Key };
+                        flowLayoutPanel1.Controls.Add(label);
+                        flowLayoutPanel1.Controls.Add(comboBox);
+                        label.Update();
+                        foreach (var value in pair.Value)
+                            comboBox.Items.Add(value);
+
+                        label.Width = 800;
+
+                        comboBox.SelectedItem = Runtime.gameAcmdScript.IfVariableValueList[pair.Key];
+
+                        comboBox.SelectedIndexChanged += (sender, e) =>
+                        {
+                            Runtime.gameAcmdScript.IfVariableValueList[(uint)comboBox.Tag] = (int)comboBox.SelectedItem;
+                        };
+                    }
+                    VariableValuesSet = true;
                 }
             }
-            treeView1.EndUpdate();
+            else
+            {
+                flowLayoutPanel1.Controls.Clear();
+                treeView1.Nodes.Clear();
+                listBox1.Items.Clear();
+            }
+        }
+
+        public void Initialize()
+        {
+            VariableValuesSet = false;
         }
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
@@ -62,9 +101,7 @@ namespace Smash_Forge.GUI.Editors
         private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
         {
             if (e.Node.Index > -1)
-            {
                 Runtime.gameAcmdScript.IfVariableList[(uint)e.Node.Tag] = e.Node.Checked;
-            }
         }
 
     }
