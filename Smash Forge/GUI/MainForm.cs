@@ -14,6 +14,7 @@ using System.Threading;
 using Microsoft.VisualBasic.Devices;
 using Smash_Forge.GUI.Menus;
 using Smash_Forge.GUI.Editors;
+using SALT.PARAMS;
 
 namespace Smash_Forge
 {
@@ -799,6 +800,12 @@ namespace Smash_Forge
                             Runtime.ParamManagerHelper = new PARAMEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
                             Runtime.ParamMoveNameIdMapping = Runtime.ParamManagerHelper.getMoveNameIdMapping();
                             Runtime.ModelContainers[0].name = fighterName;
+
+                            // Model render size
+                            ParamFile param = new ParamFile(Runtime.paramDir + "\\fighter\\fighter_param.bin");
+                            ParamEntry[] characterParams = ((ParamGroup)param.Groups[0])[CharacterParamManager.FIGHTER_ID[fighterName]];
+                            // index 44 is model_scale
+                            Runtime.model_scale = Convert.ToSingle(characterParams[44].Value);
                         }
                         catch { }
                     }
