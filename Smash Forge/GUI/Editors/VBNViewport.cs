@@ -2118,6 +2118,9 @@ namespace Smash_Forge
             Runtime.TargetMTA.Add(m);
         }
 
+        List<Bitmap> images = new List<Bitmap>();
+        float ScaleFactor = 1f;
+
         private void VBNViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
             if (e.KeyChar == 'i')
@@ -2159,17 +2162,21 @@ namespace Smash_Forge
                 isPlaying = false;
                 btnPlay.Text = "Play";
 
-                GIFSettings settings = new GIFSettings((int)this.nupdMaxFrame.Value);
+                GIFSettings settings = new GIFSettings((int)this.nupdMaxFrame.Value, ScaleFactor, images.Count > 0);
                 settings.ShowDialog();
+
+                if (settings.ClearFrames)
+                    images.Clear();
 
                 if (!settings.OK)
                     return;
+
+                ScaleFactor = settings.ScaleFactor;
 
                 int cFrame = (int)this.nupdFrame.Value; //Get current frame so at the end of capturing all frames of the animation it goes back to this frame
                 //Disable controls
                 this.Enabled = false;
 
-                List<Bitmap> images = new List<Bitmap>();
                 for (int i = settings.StartFrame; i <= settings.EndFrame + 1; i++)
                 {
                     this.nupdFrame.Value = i;
@@ -2179,13 +2186,13 @@ namespace Smash_Forge
                     if (i != settings.StartFrame) //On i=StartFrame it captures the frame the user had before setting frame to it so ignore that one, the +1 on the for makes it so the last frame is captured
                     {
                         Bitmap cs = CaptureScreen(false);
-                        images.Add(new Bitmap(cs, new Size((int)(cs.Width / settings.ScaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
+                        images.Add(new Bitmap(cs, new Size((int)(cs.Width / ScaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
                         cs.Dispose();
                     }
                 }
 
 
-                if (images.Count > 0)
+                if (images.Count > 0 && !settings.StoreFrames)
                 {
                     SaveFileDialog sf = new SaveFileDialog();
 
@@ -2198,6 +2205,7 @@ namespace Smash_Forge
                         g.Show();
                     }
 
+                    images.Clear();
 
                 }
                 //Enable controls

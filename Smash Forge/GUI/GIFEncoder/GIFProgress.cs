@@ -16,6 +16,12 @@ namespace Gif.Components
         private bool cancelled = false;
         private bool finished = false;
 
+        private List<Bitmap> images;
+        private string filename;
+        private int AnimationSpeed, Quality;
+        private bool Repeat;
+
+
         public GIFProgress(List<Bitmap> images, string filename, int AnimationSpeed, bool Repeat, int Quality)
         {
             InitializeComponent();
@@ -24,6 +30,24 @@ namespace Gif.Components
 
             this.Text = $"Encoding {Path.GetFileNameWithoutExtension(filename)}";
 
+            this.images = images;
+            this.filename = filename;
+            this.AnimationSpeed = AnimationSpeed;
+            this.Repeat = Repeat;
+            this.Quality = Quality;
+            
+        }
+
+        private void GIFProgress_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!finished)
+            {
+                cancelled = true;
+            }
+        }
+
+        private void GIFProgress_Load(object sender, EventArgs e)
+        {
             new Task(() =>
             {
                 AnimatedGifEncoder gifEncoder = new AnimatedGifEncoder();
@@ -58,14 +82,6 @@ namespace Gif.Components
                 if (!this.IsDisposed)
                     this.Invoke((Action)(() => this.Close()));
             }).Start();
-        }
-
-        private void GIFProgress_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (!finished)
-            {
-                cancelled = true;
-            }
         }
     }
 }
