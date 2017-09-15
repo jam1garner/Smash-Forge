@@ -2205,7 +2205,7 @@ namespace Smash_Forge
                         g.Show();
                     }
 
-                    images.Clear();
+                    images = new List<Bitmap>();
 
                 }
                 //Enable controls
