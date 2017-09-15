@@ -2041,30 +2041,12 @@ namespace Smash_Forge
 
         #endregion
 
-        public void SetFrame(int frame)
-        {
-            Runtime.TargetAnim.setFrame(frame);
-            foreach (ModelContainer m in Runtime.ModelContainers)
-            {
-                if (m.vbn != null)
-                    Runtime.TargetAnim.nextFrame(m.vbn);
-
-                if (m.dat_melee != null)
-                {
-                    Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value - 1);
-                    Runtime.TargetAnim.nextFrame(m.dat_melee.bones);
-                }
-            }
-        }
         public void loadAnimation(SkelAnimation a)
         {
             a.setFrame(0);
-            foreach (ModelContainer m in Runtime.ModelContainers)
-            {
-                if (m.vbn != null)
-                    Runtime.TargetAnim.nextFrame(m.vbn);
-            }
             setAnimMaxFrames(a);
+
+            // Will trigger a nupdFrame_ValueChanged event which will execute the vbn next frame
             nupdFrame.Value = 1;
         }
 
