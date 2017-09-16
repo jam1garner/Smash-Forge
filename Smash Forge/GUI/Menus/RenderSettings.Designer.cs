@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem21 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem22 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.stageLight3CB = new System.Windows.Forms.CheckBox();
             this.stageLight4CB = new System.Windows.Forms.CheckBox();
@@ -91,6 +91,10 @@
             this.label33 = new System.Windows.Forms.Label();
             this.FogCB = new System.Windows.Forms.CheckBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.specColorButton = new System.Windows.Forms.Button();
+            this.refColorButton = new System.Windows.Forms.Button();
+            this.fresGroundColorButton = new System.Windows.Forms.Button();
+            this.fresSkyColorButton = new System.Windows.Forms.Button();
             this.ambColorButton = new System.Windows.Forms.Button();
             this.difColorButton = new System.Windows.Forms.Button();
             this.label49 = new System.Windows.Forms.Label();
@@ -240,10 +244,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.depthSlider = new System.Windows.Forms.TrackBar();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.fresSkyColorButton = new System.Windows.Forms.Button();
-            this.fresGroundColorButton = new System.Windows.Forms.Button();
-            this.refColorButton = new System.Windows.Forms.Button();
-            this.specColorButton = new System.Windows.Forms.Button();
             this.tabPage4.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -985,6 +985,42 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Character Lighting";
             // 
+            // specColorButton
+            // 
+            this.specColorButton.Enabled = false;
+            this.specColorButton.Location = new System.Drawing.Point(226, 4);
+            this.specColorButton.Name = "specColorButton";
+            this.specColorButton.Size = new System.Drawing.Size(26, 23);
+            this.specColorButton.TabIndex = 67;
+            this.specColorButton.UseVisualStyleBackColor = true;
+            // 
+            // refColorButton
+            // 
+            this.refColorButton.Enabled = false;
+            this.refColorButton.Location = new System.Drawing.Point(220, 186);
+            this.refColorButton.Name = "refColorButton";
+            this.refColorButton.Size = new System.Drawing.Size(26, 23);
+            this.refColorButton.TabIndex = 66;
+            this.refColorButton.UseVisualStyleBackColor = true;
+            // 
+            // fresGroundColorButton
+            // 
+            this.fresGroundColorButton.Enabled = false;
+            this.fresGroundColorButton.Location = new System.Drawing.Point(6, 369);
+            this.fresGroundColorButton.Name = "fresGroundColorButton";
+            this.fresGroundColorButton.Size = new System.Drawing.Size(26, 23);
+            this.fresGroundColorButton.TabIndex = 65;
+            this.fresGroundColorButton.UseVisualStyleBackColor = true;
+            // 
+            // fresSkyColorButton
+            // 
+            this.fresSkyColorButton.Enabled = false;
+            this.fresSkyColorButton.Location = new System.Drawing.Point(6, 279);
+            this.fresSkyColorButton.Name = "fresSkyColorButton";
+            this.fresSkyColorButton.Size = new System.Drawing.Size(26, 23);
+            this.fresSkyColorButton.TabIndex = 64;
+            this.fresSkyColorButton.UseVisualStyleBackColor = true;
+            // 
             // ambColorButton
             // 
             this.ambColorButton.Enabled = false;
@@ -996,12 +1032,12 @@
             // 
             // difColorButton
             // 
-            this.difColorButton.Enabled = false;
             this.difColorButton.Location = new System.Drawing.Point(6, 4);
             this.difColorButton.Name = "difColorButton";
             this.difColorButton.Size = new System.Drawing.Size(26, 23);
             this.difColorButton.TabIndex = 62;
             this.difColorButton.UseVisualStyleBackColor = true;
+            this.difColorButton.Click += new System.EventHandler(this.difColorButton_Click);
             // 
             // label49
             // 
@@ -1834,8 +1870,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem21,
-            listViewItem22});
+            listViewItem1,
+            listViewItem2});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -2556,42 +2592,6 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(564, 623);
             this.tabControl1.TabIndex = 17;
-            // 
-            // fresSkyColorButton
-            // 
-            this.fresSkyColorButton.Enabled = false;
-            this.fresSkyColorButton.Location = new System.Drawing.Point(6, 279);
-            this.fresSkyColorButton.Name = "fresSkyColorButton";
-            this.fresSkyColorButton.Size = new System.Drawing.Size(26, 23);
-            this.fresSkyColorButton.TabIndex = 64;
-            this.fresSkyColorButton.UseVisualStyleBackColor = true;
-            // 
-            // fresGroundColorButton
-            // 
-            this.fresGroundColorButton.Enabled = false;
-            this.fresGroundColorButton.Location = new System.Drawing.Point(6, 369);
-            this.fresGroundColorButton.Name = "fresGroundColorButton";
-            this.fresGroundColorButton.Size = new System.Drawing.Size(26, 23);
-            this.fresGroundColorButton.TabIndex = 65;
-            this.fresGroundColorButton.UseVisualStyleBackColor = true;
-            // 
-            // refColorButton
-            // 
-            this.refColorButton.Enabled = false;
-            this.refColorButton.Location = new System.Drawing.Point(220, 186);
-            this.refColorButton.Name = "refColorButton";
-            this.refColorButton.Size = new System.Drawing.Size(26, 23);
-            this.refColorButton.TabIndex = 66;
-            this.refColorButton.UseVisualStyleBackColor = true;
-            // 
-            // specColorButton
-            // 
-            this.specColorButton.Enabled = false;
-            this.specColorButton.Location = new System.Drawing.Point(226, 4);
-            this.specColorButton.Name = "specColorButton";
-            this.specColorButton.Size = new System.Drawing.Size(26, 23);
-            this.specColorButton.TabIndex = 67;
-            this.specColorButton.UseVisualStyleBackColor = true;
             // 
             // RenderSettings
             // 

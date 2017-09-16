@@ -167,6 +167,9 @@ namespace Smash_Forge
         public static float dif_hue = 360.0f;
         public static float dif_saturation = 0.00f;
         public static float dif_intensity = 1.00f;
+        public static float difR = 1.0f;
+        public static float difG = 1.0f;
+        public static float difB = 1.0f;
         public static float dif_rotX = 0.0f;
         public static float dif_rotY = 0.0f;
         public static float dif_rotZ = 0.0f;

@@ -275,7 +275,7 @@ namespace Smash_Forge
 
                 GL.Uniform1(shader.getAttribute("dif"), 0);
                 GL.Uniform1(shader.getAttribute("dif2"), 0);
-                GL.Uniform1(shader.getAttribute("nrm"), 0);
+                GL.Uniform1(shader.getAttribute("normalMap"), 0);
                 GL.Uniform1(shader.getAttribute("cube"), 2);
                 GL.Uniform1(shader.getAttribute("stagecube"), 2);
                 GL.Uniform1(shader.getAttribute("spheremap"), 0);
@@ -317,7 +317,7 @@ namespace Smash_Forge
                 }
                 if (mat.normalmap && texid < mat.textures.Count)
                 {
-                    GL.Uniform1(shader.getAttribute("nrm"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                    GL.Uniform1(shader.getAttribute("normalMap"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
                 }
                 if (mat.ramp && texid < mat.textures.Count)
                 {

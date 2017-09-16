@@ -61,6 +61,7 @@
             this.renderChannelA = new System.Windows.Forms.Button();
             this.renderChannelR = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.aspectRatioCB = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -73,16 +74,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.glControl1.AutoSize = true;
             this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(196, 24);
+            this.glControl1.Location = new System.Drawing.Point(196, 22);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(367, 367);
+            this.glControl1.Size = new System.Drawing.Size(367, 368);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = false;
             // 
             // listBox1
             // 
-            this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(14, 22);
             this.listBox1.Margin = new System.Windows.Forms.Padding(2);
@@ -93,8 +92,6 @@
             // 
             // listBox2
             // 
-            this.listBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
             this.listBox2.FormattingEnabled = true;
             this.listBox2.Location = new System.Drawing.Point(100, 22);
             this.listBox2.Margin = new System.Windows.Forms.Padding(2);
@@ -386,6 +383,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.aspectRatioCB);
             this.groupBox1.Controls.Add(this.renderChannelR);
             this.groupBox1.Controls.Add(this.renderChannelA);
             this.groupBox1.Controls.Add(this.renderChannelG);
@@ -399,6 +397,17 @@
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Texture Settings";
+            // 
+            // aspectRatioCB
+            // 
+            this.aspectRatioCB.AutoSize = true;
+            this.aspectRatioCB.Location = new System.Drawing.Point(10, 102);
+            this.aspectRatioCB.Name = "aspectRatioCB";
+            this.aspectRatioCB.Size = new System.Drawing.Size(132, 17);
+            this.aspectRatioCB.TabIndex = 21;
+            this.aspectRatioCB.Text = "Preserve Aspect Ratio";
+            this.aspectRatioCB.UseVisualStyleBackColor = true;
+            this.aspectRatioCB.CheckedChanged += new System.EventHandler(this.aspectRatioCB_CheckedChanged);
             // 
             // NUTEditor
             // 
@@ -462,5 +471,6 @@
         private System.Windows.Forms.Button renderChannelA;
         private System.Windows.Forms.Button renderChannelR;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.CheckBox aspectRatioCB;
     }
 }

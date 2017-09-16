@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Smash_Forge.GUI.Menus;
 
 namespace Smash_Forge.GUI
 {
@@ -38,6 +39,8 @@ namespace Smash_Forge.GUI
         float refR = 0.0f;
         float refG = 0.0f;
         float refB = 0.0f;
+
+        LightColorEditor colorForm = null;
 
         public RenderSettings()
         {
@@ -1458,6 +1461,13 @@ namespace Smash_Forge.GUI
             }
             else
                 zScaleTB.BackColor = Color.Red;
+        }
+
+        private void difColorButton_Click(object sender, EventArgs e)
+        {           
+            if (colorForm == null || colorForm.IsDisposed)
+                colorForm = new LightColorEditor(VBNViewport.diffuseLight);
+            colorForm.Show();
         }
     }
     

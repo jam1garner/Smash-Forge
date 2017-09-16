@@ -82,6 +82,100 @@ namespace Smash_Forge
         }
     }
 
+    public class DirectionalLight
+    {
+        public float R = 1.0f;
+        public float G = 1.0f;
+        public float B = 1.0f;
+        public float rotX = 0.0f; // in degrees (converted to radians)
+        public float rotY = 0.0f; // in degrees (converted to radians)
+        public float rotZ = 0.0f; // in degrees (converted to radians)
+        public Vector3 direction = new Vector3(0f, 0f, 1f);
+
+        public DirectionalLight(float H, float S, float V, float rotX, float rot, float rotZ)
+        {
+            // calculate light color
+            RenderTools.HSV2RGB(H, S, V, out R, out G, out B);
+
+            // calculate light vector
+            Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, rotX * ((float)Math.PI / 180f))
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, rotY * ((float)Math.PI / 180f))
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, rotZ * ((float)Math.PI / 180f));
+
+            direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
+        }
+
+        public DirectionalLight(float H, float S, float V, Vector3 lightDirection)
+        {
+            // calculate light color
+            RenderTools.HSV2RGB(H, S, V, out R, out G, out B);
+
+            // calculate light vector
+            direction = lightDirection;
+        }
+
+        public DirectionalLight()
+        {
+
+        }
+
+        public void setDirectionFromXYZAngles(float rotX, float rotY, float rotZ)
+        {
+            // calculate light vector from 3 rotation angles
+            Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, rotX * ((float)Math.PI / 180f))
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, rotY * ((float)Math.PI / 180f))
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, rotZ * ((float)Math.PI / 180f));
+
+            direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
+        }
+
+        public void setColorFromHSV(float H, float S, float V)
+        {
+            RenderTools.HSV2RGB(H, S, V, out R, out G, out B);
+        }
+
+    }
+
+    public class AreaLight
+    {
+        public float groundR = 1.0f;
+        public float groundG = 1.0f;
+        public float groundB = 1.0f;
+
+        public float skyR = 1.0f;
+        public float skyG = 1.0f;
+        public float skyB = 1.0f;
+
+        public float scaleX = 1.0f;
+        public float scaleY = 1.0f;
+        public float scaleZ = 1.0f;
+
+        public float rotX = 0.0f; // in degrees (converted to radians)
+        public float rotY = 0.0f; // in degrees (converted to radians)
+        public float rotZ = 0.0f; // in degrees (converted to radians)
+        public Vector3 direction = new Vector3(0f, 0f, 1f);
+
+
+        public AreaLight()
+        {
+
+        }
+
+        public void setDirectionFromXYZAngles(float rotX, float rotY, float rotZ)
+        {
+            // calculate light vector from 3 rotation angles
+            Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, rotX * ((float)Math.PI / 180f))
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, rotY * ((float)Math.PI / 180f))
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, rotZ * ((float)Math.PI / 180f));
+
+            direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
+        }
+
+
+
+    }
+
+
     public class RenderTools
     {
         public static int defaultTex = -1, userTex;
@@ -1349,16 +1443,18 @@ namespace Smash_Forge
             }
         }
 
-        public static void DrawTexturedQuad(int texture, bool renderR, bool renderG, bool renderB, bool renderAlpha, bool alphaOverride) // draw RGB or alpha channel of texture to screen quad
+        public static void DrawTexturedQuad(int texture, bool renderR, bool renderG, bool renderB, bool renderAlpha, bool alphaOverride)             
         {
+            // draw RGB and alpha channels of texture to screen quad
+
             Shader shader = Runtime.shaders["Texture"];
             GL.UseProgram(shader.programID);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, texture);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.Uniform1(shader.getAttribute("texture"), 0);
 
@@ -1448,10 +1544,150 @@ namespace Smash_Forge
 
         }
 
+        public static void RGB2HSV(float R, float G, float B, out float h, out float s, out float v) // need to check weird values for errors
+        {
+            h = 360.0f;
+            s = 1.0f;
+            v = 1.0f;
+
+            float cMax = Math.Max(Math.Max(R, G), B);
+            float cMin = Math.Min(Math.Min(R, G), B);
+            float delta = cMax - cMin;
+
+            v = cMax;
+
+            if (v == 0)
+                s = 0.0f;
+            else
+                s = delta / v;
+
+            if (R == cMax)
+                h = 60.0f * (((G - B) / delta));
+
+            else if (G == cMax)
+                h = 60.0f * (((B - R) / delta) + 2);
+
+            else if (B == cMax)
+                h = 60.0f * (((R - G) / delta) + 4);
+
+            while (h < 0.0f)
+                h += 360.0f;
+
+        }
+
+        public static void ColorTemp2RGB(float temp, out float R, out float G, out float B)
+        {
+            // adapted from a cool algorithm by Tanner Helland
+            // http://www.tannerhelland.com/4435/convert-temperature-rgb-algorithm-code/ 
+
+            R = 1.0f;
+            G = 1.0f;
+            B = 1.0f;
+
+            // use doubles for calculations and convert to float at the end
+            // no need for double precision floating point colors on GPU
+            double Red = 255.0;
+            double Green = 255.0;
+            double Blue = 255.0;
+
+            temp = temp / 100.0f;
+
+            // Red calculations
+            if (temp <= 66.0f)
+                Red = 255.0f;
+            else
+            {
+                Red = temp - 60.0;
+                Red = 329.698727446 * Math.Pow(Red, -0.1332047592);
+                if (Red < 0.0)
+                    Red = 0.0;
+                if (Red > 255.0)
+                    Red = 255.0;
+            }
+
+            // Green calculations
+            if (temp <= 66.0)
+            {
+                Green = temp;
+                Green = 99.4708025861 * Math.Log(Green) - 161.1195681661;
+                if (Green < 0.0)
+                    Green = 0.0;
+                if (Green > 255.0)
+                    Green = 255.0;
+            }
+            else
+            {
+                Green = temp - 60.0;
+                Green = 288.1221695283 * Math.Pow(Green, -0.0755148492);
+                if (Green < 0)
+                    Green = 0;
+                if (Green > 255)
+                    Green = 255;
+            }
+                
+            // Blue calculations
+            if (temp >= 66.0)
+                Blue = 255.0;
+            else if (temp <= 19.0)
+                Blue = 0.0;
+            else
+            {
+                Blue = temp - 10;
+                Blue = 138.5177312231 * Math.Log(Blue) - 305.0447927307;
+                if (Blue < 0.0)
+                    Blue = 0.0;
+                if (Blue > 255)
+                    Blue = 255;
+            }
+
+            Red = Red / 255.0;
+            Green = Green / 255.0;
+            Blue = Blue / 255.0;
+
+            R = (float)Red;
+            G = (float)Green;
+            B = (float)Blue;
+        }
+
+
+        public static int ClampInt(int i) // Restricts RGB values to 0 to 255
+        {
+            if (i > 255)
+                return 255;
+            if (i < 0)
+                return 0;
+            else
+                return i;
+        }
+
+        public static float ClampFloat(float i) // Restricts RGB values to 0.0 to 1.0
+        {
+            if (i > 1.0f)
+                return 1.0f;
+            if (i < 0.0f)
+                return 0.0f;
+            else
+                return i;
+        }
+
+        public static int Float2RGBClamp(float i) 
+        {
+            // converts input color to int and restricts values to 0 to 255
+            // useful for setting colors of form UI stuff
+
+            i *= 255;
+            i = (int)i;
+            if (i > 255)
+                return 255;
+            if (i < 0)
+                return 0;
+            return (int)i;
+        }
+
 
         #endregion
 
-            #region Other
+        #region Other
         public static int LoadCubeMap(Bitmap b)
         {
             int id;
@@ -1708,8 +1944,6 @@ void main()
 
 in vec3 pos;
 in vec2 texcoord;
-in vec2 texcoord2;
-in vec2 texcoord3;
 in vec2 normaltexcoord;
 in vec4 vertexColor;
 in vec3 normal;
@@ -1724,7 +1958,6 @@ out vec4 fincol;
 // Textures
 uniform sampler2D dif;
 uniform sampler2D dif2;
-uniform sampler2D dif3;
 uniform sampler2D ramp;
 uniform sampler2D dummyRamp;
 uniform sampler2D nrm;
@@ -1769,6 +2002,7 @@ uniform vec4 finalColorGain;
 uniform vec4 reflectionColor;
 uniform vec4 fogColor;
 uniform vec4 effColorGain;
+
 uniform vec4 zOffset;
 
 // params
@@ -1783,17 +2017,16 @@ uniform vec4 alphaBlendParams;
 uniform vec4 softLightingParams;
 uniform vec4 customSoftLightParams;
 
+uniform int renderType;
+uniform int renderLighting;
+uniform int renderVertColor;
+uniform int renderNormal;
 
 // render settings
 uniform int renderDiffuse;
 uniform int renderSpecular;
 uniform int renderFresnel;
 uniform int renderReflection;
-uniform int renderType;
-uniform int renderLighting;
-uniform int renderVertColor;
-uniform int renderNormal;
-uniform int useNormalMap;
 
 uniform float diffuse_intensity;
 uniform float ambient;
@@ -1802,39 +2035,62 @@ uniform float fresnel_intensity;
 uniform float reflection_intensity;
 
 // character lighting
-uniform vec3 difLightColor;
-uniform vec3 ambLightColor;
+uniform float diffuseHue;
+uniform float diffuseSaturation;
+uniform float diffuseIntensity;
+uniform float ambientHue;
+uniform float ambientSaturation;
+uniform float ambientIntensity;
+uniform float fresnelGroundHue;
+uniform float fresnelGroundSaturation;
+uniform float fresnelGroundIntensity;
+uniform float fresnelSkyHue;
+uniform float fresnelSkySaturation;
+uniform float fresnelSkyIntensity;
+uniform float fogHue;
+uniform float fogSaturation;
+uniform float fogIntensity;
+uniform float specularHue;
+uniform float specularSaturation;
+uniform float specularIntensity;
+uniform float reflectionHue;
+uniform float reflectionSaturation;
+uniform float reflectionIntensity;
 uniform vec3 difLightDirection;
-uniform vec3 fresGroundColor;
-uniform vec3 fresSkyColor;
-uniform vec3 specLightColor;
 uniform vec3 specLightDirection;
-uniform vec3 refLightColor;
+
 
 // stage lighting
-uniform int renderStageLight1;
-uniform vec3 stageLight1Color;
 uniform vec3 stageLight1Direction;
-
-uniform int renderStageLight2;
-uniform vec3 stageLight2Color;
 uniform vec3 stageLight2Direction;
-
-uniform int renderStageLight3;
-uniform vec3 stageLight3Color;
 uniform vec3 stageLight3Direction;
-
-uniform int renderStageLight4;
-uniform vec3 stageLight4Color;
 uniform vec3 stageLight4Direction;
-
+uniform float stage1Hue;
+uniform float stage1Saturation;
+uniform float stage1Intensity;
+uniform float stage2Hue;
+uniform float stage2Saturation;
+uniform float stage2Intensity;
+uniform float stage3Hue;
+uniform float stage3Saturation;
+uniform float stage3Intensity;
+uniform float stage4Hue;
+uniform float stage4Saturation;
+uniform float stage4Intensity;
 uniform int renderFog;
-uniform vec3 stageFogColor;
+uniform int renderStageLight1;
+uniform int renderStageLight2;
+uniform int renderStageLight3;
+uniform int renderStageLight4;
 
+uniform int useNormalMap;
 uniform mat4 eyeview;
 uniform vec3 lightPosition;
 uniform vec3 lightDirection;
+
+
 uniform sampler2D shadowMap;
+
 
 // Tools
 vec3 rgb2hsv(vec3 c)
@@ -1861,9 +2117,9 @@ float luminance(vec3 rgb)
     return dot(rgb, W);
 }
 
-vec3 calculate_tint_color(vec3 inputColor, float colorAlpha)
+vec3 calculate_tint_color(vec3 inputColor, float color_alpha, float blendAmount)
 {
-    float intensity = colorAlpha * 0.4;
+    float intensity = color_alpha * 0.4;
     vec3 inputHSV = rgb2hsv(inputColor);
     float outSaturation = min((inputHSV.y * intensity),1); // can't have color with saturation > 1
     vec3 outColorTint = hsv2rgb(vec3(inputHSV.x,outSaturation,1));
@@ -1939,13 +2195,14 @@ vec3 SpecRampColor(vec3 col){ // currently just for bayo spec ramp
 	return ramp_contribution;
 }
 
-vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift) // probably not needed
+// adapted from 2004 ati ruby demo
+vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift)
 {
     vec3 shiftedT = tangent + shift * normal;
     return normalize(shiftedT);
 }
 
-float StrandSpecular(vec3 tangent, vec3 V, vec3 L, float exponent) // also not needed
+float StrandSpecular(vec3 tangent, vec3 V, vec3 L, float exponent)
 {
     vec3 H = normalize(L + V);
     float dotTH = dot(tangent, H);
@@ -1975,37 +2232,27 @@ vec3 BayoHairSpecular(vec3 diffuse_map, vec3 I, float xComponent, float yCompone
 
     vec3 half_angle = normalize(I + lightDirection);
     float test = dot(t2, half_angle)/reflectionParams.w;
-    test = (test + 1) / 2;
+    test = (test +1) /2;
     float test2 = diffuse_map.g;
 
     hairSpecular = texture2D(dummyRamp, vec2(test, test2)).rgb * diffuse_map.b * alphaBlendParams.z * 0.1;// * diffuse_map.b;
     return (hairSpecular) * diffuse_map.r * 20;
 }
 
-vec3 softLighting(vec3 diffuse_color, vec3 ambientLightColor, vec3 diffuseLightColor, float smoothAmount, float darkenAmount, float saturationAmount, float darkenMultiplier, float saturationMultiplier, float lambert)
-{
-
-    float edgeL = 0.5 - (smoothAmount / 2);
-    float edgeR = 0.5 + (smoothAmount / 2);
-    float softLight = smoothstep(edgeL, edgeR, lambert);
-    float softLightDarken = max(((-darkenMultiplier * darkenAmount) + 1), 0);
-    vec3 softLightAmbient = diffuse_color * softLightDarken * ambientLightColor;
-    softLightAmbient = rgb2hsv(softLightAmbient);
-    softLightAmbient = hsv2rgb(vec3(softLightAmbient.x, (softLightAmbient.y + (saturationMultiplier * saturationAmount)), softLightAmbient.z));
-    vec3 softLightDiffuse = diffuse_color * diffuseLightColor;
-
-    return mix(softLightAmbient, softLightDiffuse, softLight);
-
-}
 
 
 vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     vec3 I = vec3(0,0,-1) * mat3(eyeview);
+    float blendAmount = 1;
+	float fresnelBlendAmount = 0.5;
+    float specularBlendAmount = 0.5;
+    float reflectionBlendAmount = 0.5;
 
-    // light directions
-    vec3 newDiffuseDirection = difLightDirection;
-    vec3 newFresnelDirection = lightDirection;
-    vec3 newSpecularDirection = specLightDirection;
+
+    // light direction seems to be (z,x,y) from light_set_param
+    vec3 newDiffuseDirection = difLightDirection; //normalize(I + diffuseLightDirection);
+    vec3 newFresnelDirection = lightDirection; //normalize(I + fresnelLightDirection);
+    vec3 newSpecularDirection = specLightDirection; //normalize(I + specularLightDirection);
 
 	//---------------------------------------------------------------------------------------------
 		// diffuse pass
@@ -2023,7 +2270,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
 			//ao_blend = total ambient occlusion term. brightness is just addition. hue/saturation is ???
             vec3 ao_blend = vec3(1);
-            ao_blend = min((ao_map.aaa + minGain.rgb),vec3(1.20));
+            ao_blend = min((ao_map.aaa + minGain.rgb),vec3(1.15));
             vec3 aoGain = min((ao_map.aaa * (1+minGain.rgb)),vec3(1.0));
 			vec3 c1 = rgb2hsv(ao_blend);
             vec3 c2 = rgb2hsv(aoGain);
@@ -2037,6 +2284,8 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
                 aoMixIntensity = 0;
             }
 
+            vec3 ambientLightColor = hsv2rgb(vec3(ambientHue/360, ambientSaturation, ambientIntensity * ambient));// * ambient;
+            vec3 diffuseLightColor = hsv2rgb(vec3(diffuseHue/360, diffuseSaturation, diffuseIntensity * diffuse_intensity));// * diffuse_intensity;
 
 
 			//---------------------------------------------------------------------------------------------
@@ -2064,24 +2313,47 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
             //---------------------------------------------------------------------------------------------
                 // stage lighting
                 vec3 lighting = vec3(1);
-                if ((flags & 0xF0000000u) == 0xA0000000u) // stage lighting. should actually be based on xmb in future. would be faster to do on CPU
+                if ((flags & 0xF0000000u) == 0xA0000000u) // stage lighting. should actually be based on xmb in future
                 {
-                    vec3 stageLight1 = stageLight1Color * max((dot(N, stageLight1Direction)),0);
-                    vec3 stageLight2 = stageLight2Color * max((dot(N, stageLight2Direction)),0);
-                    vec3 stageLight3 = stageLight3Color * max((dot(N, stageLight3Direction)),0);
-                    vec3 stageLight4 = stageLight4Color * max((dot(N, stageLight4Direction)),0);
-                    lighting = (stageLight1 * renderStageLight1) + (stageLight2 * renderStageLight2) + (stageLight3 * renderStageLight3) + (stageLight4 * renderStageLight4);
+                    vec3 stageLight1Color = hsv2rgb(vec3(stage1Hue/360, stage1Saturation, stage1Intensity)) * max((dot(N, stageLight1Direction)),0);
+                    vec3 stageLight2Color = hsv2rgb(vec3(stage2Hue/360, stage2Saturation, stage2Intensity)) * max((dot(N, stageLight2Direction)),0);
+                    vec3 stageLight3Color = hsv2rgb(vec3(stage3Hue/360, stage3Saturation, stage3Intensity)) * max((dot(N, stageLight3Direction)),0);
+                    vec3 stageLight4Color = hsv2rgb(vec3(stage4Hue/360, stage4Saturation, stage4Intensity)) * max((dot(N, stageLight4Direction)),0);
+                    lighting = (stageLight1Color*renderStageLight1) + (stageLight2Color * renderStageLight2) + (stageLight3Color * renderStageLight3) + (stageLight4Color * renderStageLight4);
                 }
                 else // character lighting
-                    lighting = mix(ambLightColor * ambient, difLightColor * diffuse_intensity, halfLambert); // gradient based lighting
+                    lighting = mix(ambientLightColor, diffuseLightColor, halfLambert); // gradient based lighting
 
                 diffuse_pass = diffuse_color * lighting;
             //---------------------------------------------------------------------------------------------
 
+
             if (hasSoftLight == 1)
-                diffuse_pass = softLighting(diffuse_color, ambLightColor, difLightColor, softLightingParams.z, softLightingParams.y, softLightingParams.x, 0.3, 0.0561, lambert);
-            else if (hasCustomSoftLight == 1)
-                diffuse_pass = softLighting(diffuse_color, ambLightColor, difLightColor, customSoftLightParams.z, customSoftLightParams.y, customSoftLightParams.x, 0.3, 0.114, lambert);
+            {
+                float edgeL = 0.5 - (softLightingParams.z / 2);
+                float edgeR = 0.5 + (softLightingParams.z / 2);
+                float softLight = smoothstep(edgeL, edgeR, lambert);
+                float softLightDarken = max(((-0.3 * softLightingParams.y) + 1), 0);
+                vec3 softLightAmbient = diffuse_color * softLightDarken * ambientLightColor;
+                softLightAmbient = rgb2hsv(softLightAmbient);
+                softLightAmbient = hsv2rgb(vec3(softLightAmbient.x, (softLightAmbient.y + (0.0561 * softLightingParams.x)), softLightAmbient.z));
+                vec3 softLightDiffuse = diffuse_color * diffuseLightColor;
+
+                diffuse_pass = mix(softLightAmbient, softLightDiffuse, softLight); // byte2 81 makes it brighter/more saturated?
+            }
+            else if (hasCustomSoftLight == 1) // nearly identical to softlightingparams. just used for cloud hair
+            {
+                float edgeL = 0.5 - (customSoftLightParams.z / 2);
+                float edgeR = 0.5 + (customSoftLightParams.z / 2);
+                float softLight = smoothstep(edgeL, edgeR, lambert);
+                float softLightDarken = max(((-0.3 * customSoftLightParams.y) + 1), 0);
+                vec3 softLightAmbient = diffuse_color * ambientLightColor * softLightDarken;
+                softLightAmbient = rgb2hsv(softLightAmbient);
+                softLightAmbient = hsv2rgb(vec3(softLightAmbient.x, (softLightAmbient.y + (0.114 * customSoftLightParams.x)), softLightAmbient.z));
+                vec3 softLightDiffuse = diffuse_color * diffuseLightColor;
+
+                diffuse_pass = mix(softLightAmbient, softLightDiffuse, softLight); // byte2 81 makes it brighter/more saturated?
+            }
 
             if ((flags & 0x00FF0000u) == 0x00810000u || (flags & 0xFFFF0000u) == 0xFA600000u) // used with softlightingparams and customSoftLightParams, respectively
                 diffuse_pass *= 1.5;
@@ -2094,9 +2366,9 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 
 	//---------------------------------------------------------------------------------------------
 		// Calculate the color tint. input colors are r,g,b,alpha. alpha is color blend amount
-		vec3 spec_tint = calculate_tint_color(diffuse_color, specularColor.a);
-		vec3 fresnel_tint = calculate_tint_color(diffuse_color, fresnelColor.a);
-		vec3 reflection_tint = calculate_tint_color(diffuse_color, reflectionColor.a);
+		vec3 spec_tint = calculate_tint_color(diffuse_color, specularColor.a, specularBlendAmount);
+		vec3 fresnel_tint = calculate_tint_color(diffuse_color, fresnelColor.a, fresnelBlendAmount);
+		vec3 reflection_tint = calculate_tint_color(diffuse_color, reflectionColor.a, reflectionBlendAmount);
 	//---------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------
@@ -2133,6 +2405,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			else if (hasColorGainOffset == 1) // how does specularColorGain work?
             {
                 specular_pass += specularColor.rgb * blinnPhongSpec * (specularColorGain.rgb);
+                //specular_pass += specularColor.rgb * blinnPhongSpec * specular_intensity;// + (specularColorGain.rgb * diffuse_map.rgb);
             }
             else if ((flags & 0x00E10000u) == 0x00E10000u) // not sure how this works. specular works differently for eye mats
             {
@@ -2141,13 +2414,14 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			else // default
             {
                 specular_pass += specularColor.rgb * blinnPhongSpec * spec_tint;
-                // if (hasRamp == 1) // do ramps affect specular?
-                    // specular_pass = RampColor(specular_pass);
+                //if (hasRamp == 1) // do ramps affect specular?
+                //    specular_pass = RampColor(specular_pass);
             }
 
 			//---------------------------------------------------------------------------------------------
             specular_pass *= mix(ao_map.rgb, vec3(1), aoMixIntensity);
-            specular_pass *= specLightColor;
+            vec3 specularLightColor = hsv2rgb(vec3(specularHue/360, specularSaturation, specularIntensity * specular_intensity));
+            specular_pass *= specularLightColor;
 
 		specular_pass = pow(specular_pass, vec3(2.2));
 	//---------------------------------------------------------------------------------------------
@@ -2157,16 +2431,21 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 		vec3 fresnel_pass = vec3(0);
 
 			// hemisphere fresnel with fresnelParams control
+			vec3 groundColor = vec3(0);
+            groundColor = hsv2rgb(vec3(fresnelGroundHue/360, fresnelGroundSaturation, fresnelGroundIntensity));
+			vec3 skyColor = vec3(1);
+            skyColor = hsv2rgb(vec3(fresnelSkyHue/360, fresnelSkySaturation, fresnelSkyIntensity));
+
 			float hemiBlend = dot(N, vec3(0,1,0));
 			hemiBlend = (hemiBlend * 0.5) + 0.5;
             hemiBlend = pow(hemiBlend, 2); // use more ground color
-			vec3 hemiColor = mix(fresGroundColor, fresSkyColor, hemiBlend);
+			vec3 hemiColor = mix(groundColor, skyColor, hemiBlend);
 			float cosTheta = dot(I, N);
 			vec3 fresnel = clamp((hemiColor * pow(1.0 - cosTheta, 2.75 + fresnelParams.x)), 0, 1);
 			fresnel_pass += fresnelColor.rgb * fresnel * fresnel_intensity * fresnel_tint;
 
             //if((flags & 0x00120000u) == 0x00120000u)
-                //fresnel_pass *= mix(vec3(1),ao_map.rgb,fresnelParams.w);
+            //fresnel_pass *= mix(vec3(1),ao_map.rgb,fresnelParams.w);
             if ((flags & 0x0000FF00u) == 0x00003000u)
                 fresnel_pass *= diffuse_map.rgb;
 		fresnel_pass = pow(fresnel_pass, vec3(1));
@@ -2197,7 +2476,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
                 uCoord = uCoord * 2.4 - 0.7;
                 vCoord = vCoord * 2.4 - 0.7;
 
-				vec2 newTexCoord = vec2((uCoord) + 0.05,(1 - vCoord) + 0.05);
+				vec2 newTexCoord = vec2((uCoord)+0.05,(1-vCoord)+0.05);
 				vec3 weirdReflection = texture2D(spheremap, newTexCoord).xyz;
 				reflection_pass += weirdReflection*reflectionColor.xyz*reflection_tint*reflection_intensity;
 			}
@@ -2207,6 +2486,7 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
 			//---------------------------------------------------------------------------------------------
 
             reflection_pass *= mix(ao_map.rgb, vec3(1), aoMixIntensity);
+            vec3 refLightColor = hsv2rgb(vec3(reflectionHue/360, reflectionSaturation, reflectionIntensity));
             reflection_pass *= refLightColor;
 
 		reflection_pass = pow(reflection_pass, vec3(2.2));
@@ -2227,11 +2507,17 @@ vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
     resulting_color = pow(resulting_color, vec3(1/2.2)); // gamma correction. gamma correction also done within render passes
 
     // light_set fog calculations
+    vec3 stageFogColor = hsv2rgb(vec3(fogHue/360,fogSaturation,fogIntensity));
     float depth = pos.z;
     depth = min((depth / fogParams.y),1);
     float fog_Intensity = mix(fogParams.z, fogParams.w, depth);
     if(renderFog == 1)
         resulting_color = mix(resulting_color, stageFogColor, fog_Intensity);
+    if (hasDif3 == 1)
+        resulting_color = vec3(1,0,0);
+
+    if (hasStage > 0 || hasCube > 0 && hasNrm > 0)
+        resulting_color = vec3(1,0,0);
 
     return resulting_color;
 }
@@ -2272,6 +2558,8 @@ main()
 	else
     {
 
+        vec4 fc = vec4(0, 0, 0, 0);
+
         // similar to du dv but uses just the normal map
         float offsetIntensity = 0;
         if(useNormalMap == 1)
@@ -2280,28 +2568,24 @@ main()
         textureOffset = (textureOffset * 2) -1; // remap to -1 to 1?
         vec2 offsetTexCoord = texcoord + (textureOffset * offsetIntensity);
 
-        vec4 diffuse1 = vec4(0);
-        vec4 diffuse2 = vec4(0);
-        vec4 diffuse3 = texture2D(dif3, texcoord);
         if (hasDif == 1) // 1st diffuse texture
         {
-            diffuse1 = texture2D(dif, offsetTexCoord);
-            fincol = diffuse1;
-
-            if (hasDif2 == 1 && hasDif3 != 1) // 2nd diffuse texture. doesn't work properly with stages
+            fc = texture2D(dif, offsetTexCoord);
+            fincol = fc;
+            if (hasDif2 == 1) // 2nd diffuse texture
             {
-                diffuse2 = texture2D(dif2, offsetTexCoord);
-                fincol = mix(diffuse2, diffuse1, diffuse1.a);
+                fincol = texture2D(dif2, offsetTexCoord);
+                fincol = mix(fincol, fc, fc.a);
                 fincol.a = 1.0;
             }
-
         }
         else
             fincol = vec4(diffuseColor);
 
         vec3 diffuse2Texture = texture2D(ao, offsetTexCoord).rgb;
+                    //resulting_color = diffuseTexture;
 
-        if (hasAo == 1) // should be named differently. isn't always two diffuse
+        if (hasAo == 1) // should be named differently
             fincol.rgb = mix(diffuse2Texture, fincol.rgb, ((normal.y + 1) / 2));
 
         // calcuate final color by mixing with vertex color
@@ -2313,13 +2597,7 @@ main()
         fincol.rgb *= finalColorGain.rgb;
         fincol.rgb *= effColorGain.rgb;
 
-
-        //fincol.rgb = mix(diffuse2.rgb, diffuse1.rgb, vertexColor.r); // umbraf stage vertex color blending
-        //fincol.rgb *= mix(diffuse3.rgb, vec3(1), 0.5);
-
-        //---------------------------------------------------------------------------------------------
-            // correct alpha
-
+        // correct alpha
         fincol.a *= finalColorGain.a;
         fincol.a *= effColorGain.a;
 
@@ -2332,10 +2610,9 @@ main()
         angleFadeAmount = max((1-angleFadeAmount),0);
         fincol.a *= angleFadeAmount;
 
-        // if ((flags & 0xF0FF0000u) != 0xF0640000u) // ryu works differently. need to research this more
-        fincol.a += alphaBlendParams.x;
-        //---------------------------------------------------------------------------------------------
-        //gl_FragDepth *= 0.001;
+        if ((flags & 0xF0FF0000u) != 0xF0640000u) // ryu works differently. need to research this more
+            fincol.a += alphaBlendParams.x;
+
 	}
 
 }";
