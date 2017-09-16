@@ -83,7 +83,6 @@ namespace Smash_Forge
     {
 
         public object Tag;
-        public bool Main = false;
         public List<object> children = new List<object>();
         public List<KeyFrame> frames = new List<KeyFrame>();
         private int frame = 0;
@@ -142,12 +141,12 @@ namespace Smash_Forge
             return frames.Count;
         }
 
-        public void nextFrame(VBN vbn)
+        public void nextFrame(VBN vbn, bool isChild = false)
         {
             if (frame >= frames.Count)
                 return;
             
-            if (frame == 0 && Main)
+            if (frame == 0 && (!isChild || children.Count > 0))
             {
                 vbn.reset();
 
@@ -160,14 +159,12 @@ namespace Smash_Forge
                 }
             }
 
-            if (children.Count > 0) Main = true;
-
             foreach (object child in children)
             {
                 if(child is SkelAnimation)
                 {
                     ((SkelAnimation)child).setFrame(frame);
-                    ((SkelAnimation)child).nextFrame(vbn);
+                    ((SkelAnimation)child).nextFrame(vbn, isChild: true);
                 }
                 if (child is MTA)
                 {
