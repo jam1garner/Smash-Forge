@@ -22,10 +22,10 @@ namespace Smash_Forge.GUI.Editors
 
         public void refresh()
         {
-            listBox1.BeginUpdate();
-            listBox1.Items.Clear();
             if (Runtime.gameAcmdScript != null)
             {
+                listBox1.BeginUpdate();
+                listBox1.Items.Clear();
                 foreach (uint flag in Runtime.gameAcmdScript.ActiveFlags)
                 {
                     listBox1.Items.Add($"Flag 0x{flag.ToString("X8")}");

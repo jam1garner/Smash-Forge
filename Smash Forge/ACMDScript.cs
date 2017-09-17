@@ -869,7 +869,7 @@ namespace Smash_Forge
                 case 0xFA1BC28A: // Subroutine1: call another script
                     // Try and load the other script. If we can't, then just keep going as per normal
                     uint crc = (uint)int.Parse(cmd.Parameters[0] + "");
-                    if (Runtime.Moveset.Game.Scripts.ContainsKey(crc))
+                    if (Runtime.Moveset.Game.Scripts.ContainsKey(crc) && crc != this.script.AnimationCRC)
                     {
                         subscripts.Add((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
 

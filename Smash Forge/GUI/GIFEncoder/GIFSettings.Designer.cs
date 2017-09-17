@@ -38,6 +38,8 @@
             this.btStart = new System.Windows.Forms.Button();
             this.nupdScaleFactor = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
+            this.cbStoreFrames = new System.Windows.Forms.CheckBox();
+            this.btClearFrames = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.nupdInitialFrame)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nupdMaxFrame)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbQuality)).BeginInit();
@@ -130,9 +132,9 @@
             // 
             // btStart
             // 
-            this.btStart.Location = new System.Drawing.Point(366, 4);
+            this.btStart.Location = new System.Drawing.Point(385, 4);
             this.btStart.Name = "btStart";
-            this.btStart.Size = new System.Drawing.Size(75, 23);
+            this.btStart.Size = new System.Drawing.Size(110, 23);
             this.btStart.TabIndex = 7;
             this.btStart.Text = "Start";
             this.btStart.UseVisualStyleBackColor = true;
@@ -170,11 +172,35 @@
             this.label4.TabIndex = 9;
             this.label4.Text = "Scale factor";
             // 
+            // cbStoreFrames
+            // 
+            this.cbStoreFrames.AutoSize = true;
+            this.cbStoreFrames.Location = new System.Drawing.Point(410, 33);
+            this.cbStoreFrames.Name = "cbStoreFrames";
+            this.cbStoreFrames.Size = new System.Drawing.Size(85, 17);
+            this.cbStoreFrames.TabIndex = 10;
+            this.cbStoreFrames.Text = "Store frames";
+            this.cbStoreFrames.UseVisualStyleBackColor = true;
+            this.cbStoreFrames.CheckedChanged += new System.EventHandler(this.cbStoreFrames_CheckedChanged);
+            // 
+            // btClearFrames
+            // 
+            this.btClearFrames.Location = new System.Drawing.Point(385, 62);
+            this.btClearFrames.Name = "btClearFrames";
+            this.btClearFrames.Size = new System.Drawing.Size(110, 23);
+            this.btClearFrames.TabIndex = 11;
+            this.btClearFrames.Text = "Clear stored frames";
+            this.btClearFrames.UseVisualStyleBackColor = true;
+            this.btClearFrames.Visible = false;
+            this.btClearFrames.Click += new System.EventHandler(this.btClearFrames_Click);
+            // 
             // GIFSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(453, 95);
+            this.ClientSize = new System.Drawing.Size(507, 95);
+            this.Controls.Add(this.btClearFrames);
+            this.Controls.Add(this.cbStoreFrames);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.nupdScaleFactor);
             this.Controls.Add(this.btStart);
@@ -212,5 +238,7 @@
         private System.Windows.Forms.Button btStart;
         private System.Windows.Forms.NumericUpDown nupdScaleFactor;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.CheckBox cbStoreFrames;
+        private System.Windows.Forms.Button btClearFrames;
     }
 }

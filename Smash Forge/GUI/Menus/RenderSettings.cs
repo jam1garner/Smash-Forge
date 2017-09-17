@@ -409,6 +409,9 @@ namespace Smash_Forge.GUI
 
         private void modelscaleTB_TextChanged(object sender, EventArgs e)
         {
+            if (disableRuntimeUpdates)
+                return;
+
             float i = 0;
             if (float.TryParse(modelscaleTB.Text, out i))
             {
