@@ -2331,7 +2331,7 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
                     float distanceMixFactor = distance(objectPosition.xyz, vec3(-50, 50, 50));
                     distanceMixFactor *= 0.01;
                     distanceMixFactor = pow(distanceMixFactor, 2);
-                    lighting = mix(vec3(0), vec3(0.5), distanceMixFactor);
+                    //lighting = mix(vec3(0), vec3(0.5), distanceMixFactor);
                 }
                 else // character lighting
                     lighting = mix(ambLightColor * ambientIntensity, difLightColor * diffuseIntensity, halfLambert); // gradient based lighting
