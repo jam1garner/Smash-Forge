@@ -83,6 +83,7 @@
             // 
             // colorTempTrackBar
             // 
+            this.colorTempTrackBar.Enabled = false;
             this.colorTempTrackBar.Location = new System.Drawing.Point(129, 252);
             this.colorTempTrackBar.Maximum = 10000;
             this.colorTempTrackBar.Name = "colorTempTrackBar";
@@ -93,6 +94,7 @@
             // 
             // colorTempTB
             // 
+            this.colorTempTB.Enabled = false;
             this.colorTempTB.Location = new System.Drawing.Point(75, 260);
             this.colorTempTB.Name = "colorTempTB";
             this.colorTempTB.Size = new System.Drawing.Size(48, 20);
@@ -102,6 +104,7 @@
             // tempLabel
             // 
             this.tempLabel.AutoSize = true;
+            this.tempLabel.Enabled = false;
             this.tempLabel.Location = new System.Drawing.Point(10, 263);
             this.tempLabel.Name = "tempLabel";
             this.tempLabel.Size = new System.Drawing.Size(50, 13);
@@ -162,6 +165,7 @@
             // blueTrackBar
             // 
             this.blueTrackBar.Location = new System.Drawing.Point(123, 183);
+            this.blueTrackBar.Maximum = 255;
             this.blueTrackBar.Name = "blueTrackBar";
             this.blueTrackBar.Size = new System.Drawing.Size(176, 25);
             this.blueTrackBar.TabIndex = 24;
@@ -171,6 +175,7 @@
             // greenTrackBar
             // 
             this.greenTrackBar.Location = new System.Drawing.Point(123, 153);
+            this.greenTrackBar.Maximum = 255;
             this.greenTrackBar.Name = "greenTrackBar";
             this.greenTrackBar.Size = new System.Drawing.Size(176, 24);
             this.greenTrackBar.TabIndex = 23;
@@ -202,6 +207,7 @@
             this.valueTB.Name = "valueTB";
             this.valueTB.Size = new System.Drawing.Size(48, 20);
             this.valueTB.TabIndex = 19;
+            this.valueTB.TextChanged += new System.EventHandler(this.valueTB_TextChanged);
             // 
             // satTB
             // 
@@ -300,6 +306,7 @@
             this.hueTrackBar.Size = new System.Drawing.Size(176, 24);
             this.hueTrackBar.TabIndex = 7;
             this.hueTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.hueTrackBar.Value = 360;
             this.hueTrackBar.Scroll += new System.EventHandler(this.hueTrackBar_Scroll);
             // 
             // satTrackBar
@@ -324,7 +331,7 @@
             // 
             this.redTrackBar.LargeChange = 250;
             this.redTrackBar.Location = new System.Drawing.Point(123, 123);
-            this.redTrackBar.Maximum = 500;
+            this.redTrackBar.Maximum = 255;
             this.redTrackBar.Name = "redTrackBar";
             this.redTrackBar.Size = new System.Drawing.Size(176, 24);
             this.redTrackBar.TabIndex = 10;

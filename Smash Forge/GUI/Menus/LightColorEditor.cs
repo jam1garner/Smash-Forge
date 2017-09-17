@@ -28,15 +28,21 @@ namespace Smash_Forge.GUI.Menus
             R = light.R;
             G = light.G;
             B = light.B;
+            RenderTools.RGB2HSV(R, G, B, out hue, out saturation, out value);
 
             colorTempTB.Text = colorTemp + "";
             redTB.Text = R + "";
             greenTB.Text = G + "";
             blueTB.Text = B + "";
+            hueTB.Text = hue + "";
+            satTB.Text = saturation + "";
+            valueTB.Text = value + "";
 
             redTrackBar.Value = (int)(R * redTrackBar.Maximum);
             greenTrackBar.Value = (int)(G * greenTrackBar.Maximum);
             blueTrackBar.Value = (int)(B * blueTrackBar.Maximum);
+            hueTrackBar.Value = (int)(hue);
+            colorTempTrackBar.Value = (int)colorTemp;
 
 
             this.light = light;
@@ -44,7 +50,16 @@ namespace Smash_Forge.GUI.Menus
 
         private void hueTB_TextChanged(object sender, EventArgs e)
         {
- 
+            float i = 0;
+            if (float.TryParse(hueTB.Text, out i))
+            {
+                hueTB.BackColor = Color.White;
+                hue = i;
+            }
+            else
+                hueTB.BackColor = Color.Red;
+
+            updateColorFromHSV();
         }
 
         private void useColorTempCB_CheckedChanged(object sender, EventArgs e)
@@ -172,6 +187,10 @@ namespace Smash_Forge.GUI.Menus
             satTB.Text = saturation.ToString();
             valueTB.Text = value.ToString();
 
+            redTrackBar.Value = (int)(R * redTrackBar.Maximum);
+            greenTrackBar.Value = (int)(G * greenTrackBar.Maximum);
+            blueTrackBar.Value = (int)(B * blueTrackBar.Maximum);
+            hueTrackBar.Value = (int)(hue);
 
             colorButton.BackColor = Color.FromArgb(255, RenderTools.Float2RGBClamp(R), RenderTools.Float2RGBClamp(G), RenderTools.Float2RGBClamp(B));
         }
@@ -186,6 +205,10 @@ namespace Smash_Forge.GUI.Menus
             satTB.Text = saturation.ToString();
             valueTB.Text = value.ToString();
 
+            redTrackBar.Value = (int)(R * redTrackBar.Maximum);
+            greenTrackBar.Value = (int)(G * greenTrackBar.Maximum);
+            blueTrackBar.Value = (int)(B * blueTrackBar.Maximum);
+            hueTrackBar.Value = (int)(hue);
 
             colorButton.BackColor = Color.FromArgb(255, RenderTools.Float2RGBClamp(R), RenderTools.Float2RGBClamp(G), RenderTools.Float2RGBClamp(B));
         }
@@ -201,6 +224,11 @@ namespace Smash_Forge.GUI.Menus
             satTB.Text = saturation.ToString();
             valueTB.Text = value.ToString();
             colorTempTB.Text = colorTemp.ToString();
+
+            redTrackBar.Value = (int)(R * redTrackBar.Maximum);
+            greenTrackBar.Value = (int)(G * greenTrackBar.Maximum);
+            blueTrackBar.Value = (int)(B * blueTrackBar.Maximum);
+            hueTrackBar.Value = (int)(hue);
 
             colorButton.BackColor = Color.FromArgb(255, RenderTools.Float2RGBClamp(R), RenderTools.Float2RGBClamp(G), RenderTools.Float2RGBClamp(B));
         }
@@ -222,6 +250,20 @@ namespace Smash_Forge.GUI.Menus
         private void valueTrackBar_Scroll(object sender, EventArgs e)
         {
             value = (float)valueTrackBar.Value / (float)valueTrackBar.Maximum;
+
+            updateColorFromHSV();
+        }
+
+        private void valueTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(valueTB.Text, out i))
+            {
+                valueTB.BackColor = Color.White;
+                value = i;
+            }
+            else
+                valueTB.BackColor = Color.Red;
 
             updateColorFromHSV();
         }

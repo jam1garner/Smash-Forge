@@ -1465,9 +1465,10 @@ namespace Smash_Forge.GUI
 
         private void difColorButton_Click(object sender, EventArgs e)
         {           
+            /*
             if (colorForm == null || colorForm.IsDisposed)
                 colorForm = new LightColorEditor(VBNViewport.diffuseLight);
-            colorForm.Show();
+            colorForm.Show();*/
         }
     }
     

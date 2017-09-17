@@ -142,31 +142,49 @@ namespace Smash_Forge
             int height = ((NUT.NUD_Texture)listBox2.SelectedItem).height; // texture height
             int newWidth = glControl1.Width;
             int newHeight = glControl1.Height;
-            float ratio = width/height; // is this value being calculated correctly?
+            float ratio = (float)height / (float)width;
+            //if (height > width)
+            //    ratio = (float)width / (float)height; // is this value being calculated correctly?
+            //else
+            //    ratio = (float)height / (float)width;
 
+            string test = "";
+            /*
             // find longest side and shrink other side to preserve aspect ratio
             if (preserveAspectRatio)
-            {
+            {   
                 if (glControl1.Width > glControl1.Height)
                 {
-                    ratio = height / width;
-                    newHeight = (int)(glControl1.Width * ratio);
+                    ratio = (float)height / (float)width;
+                    newHeight = (int)(glControl1.Height * ratio);
+                    glControl1.Width = glControl1.Height;
 
                 }
                 else if (glControl1.Height > glControl1.Width)
                 {
-                    ratio = width / height;
-                    newWidth = (int)(glControl1.Height * ratio);
+                    ratio = (float)width / (float)height;
+                    newWidth = (int)(glControl1.Width * ratio);
+                    glControl1.Height = glControl1.Width;
                 }
+            
 
-                glControl1.Width = newWidth;
-                glControl1.Height = newHeight;
+                test = "Width:" + glControl1.Width.ToString() + " Height:" + glControl1.Height.ToString();
             }
+            else*/
+            if (preserveAspectRatio)
+            {
+                ratio = (float)height / (float)width;
+                glControl1.Height = (int)(glControl1.Width * ratio);
+            }
+                
             else
-                glControl1.Width = glControl1.Height;
+                glControl1.Height = glControl1.Width;
 
 
-            Debug.WriteLine(ratio.ToString());
+            /*Debug.WriteLine(test);
+            string test2 = "New Width:" + newWidth.ToString() + "New Height:" + newHeight.ToString();
+            Debug.WriteLine(test2);*/
+
             glControl1.SwapBuffers();
         }
 

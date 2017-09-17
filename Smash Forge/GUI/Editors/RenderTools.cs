@@ -1464,6 +1464,8 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderAlpha"), renderAlpha ? 1 : 0);
             GL.Uniform1(shader.getAttribute("alphaOverride"), alphaOverride ? 1 : 0);
 
+
+
             GL.Disable(EnableCap.DepthTest);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // draw full screen "quad" (big triangle)
             GL.BindVertexArray(0);
@@ -1555,6 +1557,9 @@ namespace Smash_Forge
             float delta = cMax - cMin;
 
             v = cMax;
+
+            if (delta == 0)
+                h = 0;
 
             if (v == 0)
                 s = 0.0f;
@@ -1838,7 +1843,8 @@ in vec2 vUV;
 in vec4 vBone;
 in vec4 vWeight;
 
-out vec3 pos;
+out vec3 viewPosition;
+out vec3 objectPosition;
 out vec3 tangent;
 out vec3 bitangent;
 out vec4 vertexColor;
@@ -1906,17 +1912,20 @@ void main()
     ivec4 bi = ivec4(vBone);
 
     if(vBone.x != -1.0) objPos = skin(vPosition, bi);
+    objectPosition = objPos.xyz;
     objPos.z *= zScale;
     objPos = eyeview * vec4(objPos.xyz, 1.0);
 
     gl_Position = objPos;
+
+
 
     texcoord = vec2((vUV * colorSamplerUV.xy) + colorSamplerUV.zw);
     normaltexcoord = vec2((vUV * normalSamplerAUV.xy) + normalSamplerAUV.zw);
     normal = vec3(0,0,0);
     tangent.xyz = vTangent.xyz;
     bitangent.xyz = vBiTangent.xyz;
-    pos = vec3(vPosition * mat3(eyeview));
+    viewPosition = vec3(vPosition * mat3(eyeview));
 
     // calculate view space normals for sphere map rendering. animations don't change normals?
     viewNormals = vec4(vNormal.xyz, 0);
@@ -1942,8 +1951,11 @@ void main()
 
         public static string nud_fs = @"#version 330
 
-in vec3 pos;
+in vec3 viewPosition;
+in vec3 objectPosition;
 in vec2 texcoord;
+in vec2 texcoord2;
+in vec2 texcoord3;
 in vec2 normaltexcoord;
 in vec4 vertexColor;
 in vec3 normal;
@@ -1953,14 +1965,15 @@ in vec4 vBoneOut;
 in vec4 vWeightOut;
 in vec4 viewNormals;
 
-out vec4 fincol;
+out vec4 FragColor;
 
 // Textures
 uniform sampler2D dif;
 uniform sampler2D dif2;
+uniform sampler2D dif3;
 uniform sampler2D ramp;
 uniform sampler2D dummyRamp;
-uniform sampler2D nrm;
+uniform sampler2D normalMap;
 uniform sampler2D ao;
 uniform samplerCube cube;
 uniform samplerCube stagecube;
@@ -1988,7 +2001,7 @@ uniform int hasCustomSoftLight;
 // Da Flags
 uniform uint flags;
 
-// Properties
+// NU_ Material Properties
 uniform vec4 colorSamplerUV;
 uniform vec4 normalSamplerAUV;
 uniform vec4 colorOffset;
@@ -2002,7 +2015,6 @@ uniform vec4 finalColorGain;
 uniform vec4 reflectionColor;
 uniform vec4 fogColor;
 uniform vec4 effColorGain;
-
 uniform vec4 zOffset;
 
 // params
@@ -2017,83 +2029,68 @@ uniform vec4 alphaBlendParams;
 uniform vec4 softLightingParams;
 uniform vec4 customSoftLightParams;
 
-uniform int renderType;
-uniform int renderLighting;
-uniform int renderVertColor;
-uniform int renderNormal;
-
 // render settings
 uniform int renderDiffuse;
 uniform int renderSpecular;
 uniform int renderFresnel;
 uniform int renderReflection;
+uniform int renderType;
+uniform int renderLighting;
+uniform int renderVertColor;
+uniform int renderNormal;
+uniform int useNormalMap;
 
-uniform float diffuse_intensity;
-uniform float ambient;
-uniform float specular_intensity;
-uniform float fresnel_intensity;
-uniform float reflection_intensity;
+uniform float diffuseIntensity;
+uniform float ambientIntensity;
+uniform float specularIntensity;
+uniform float fresnelIntensity;
+uniform float reflectionIntensity;
 
 // character lighting
-uniform float diffuseHue;
-uniform float diffuseSaturation;
-uniform float diffuseIntensity;
-uniform float ambientHue;
-uniform float ambientSaturation;
-uniform float ambientIntensity;
-uniform float fresnelGroundHue;
-uniform float fresnelGroundSaturation;
-uniform float fresnelGroundIntensity;
-uniform float fresnelSkyHue;
-uniform float fresnelSkySaturation;
-uniform float fresnelSkyIntensity;
-uniform float fogHue;
-uniform float fogSaturation;
-uniform float fogIntensity;
-uniform float specularHue;
-uniform float specularSaturation;
-uniform float specularIntensity;
-uniform float reflectionHue;
-uniform float reflectionSaturation;
-uniform float reflectionIntensity;
+uniform vec3 difLightColor;
+uniform vec3 ambLightColor;
 uniform vec3 difLightDirection;
+uniform vec3 fresGroundColor;
+uniform vec3 fresSkyColor;
+uniform vec3 specLightColor;
 uniform vec3 specLightDirection;
+uniform vec3 refLightColor;
 
-
-// stage lighting
-uniform vec3 stageLight1Direction;
-uniform vec3 stageLight2Direction;
-uniform vec3 stageLight3Direction;
-uniform vec3 stageLight4Direction;
-uniform float stage1Hue;
-uniform float stage1Saturation;
-uniform float stage1Intensity;
-uniform float stage2Hue;
-uniform float stage2Saturation;
-uniform float stage2Intensity;
-uniform float stage3Hue;
-uniform float stage3Saturation;
-uniform float stage3Intensity;
-uniform float stage4Hue;
-uniform float stage4Saturation;
-uniform float stage4Intensity;
-uniform int renderFog;
+// stage light 1
 uniform int renderStageLight1;
-uniform int renderStageLight2;
-uniform int renderStageLight3;
-uniform int renderStageLight4;
+uniform vec3 stageLight1Color;
+uniform vec3 stageLight1Direction;
 
-uniform int useNormalMap;
+// stage light 2
+uniform int renderStageLight2;
+uniform vec3 stageLight2Color;
+uniform vec3 stageLight2Direction;
+
+// stage light 3
+uniform int renderStageLight3;
+uniform vec3 stageLight3Color;
+uniform vec3 stageLight3Direction;
+
+// stage light 4
+uniform int renderStageLight4;
+uniform vec3 stageLight4Color;
+uniform vec3 stageLight4Direction;
+
+// light_set fog
+uniform int renderFog;
+uniform vec3 stageFogColor;
+
 uniform mat4 eyeview;
 uniform vec3 lightPosition;
 uniform vec3 lightDirection;
-
-
 uniform sampler2D shadowMap;
 
+// Constants
+#define gamma 2.2
+#define PI 3.14159
 
 // Tools
-vec3 rgb2hsv(vec3 c)
+vec3 RGB2HSV(vec3 c)
 {
     vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
     vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
@@ -2104,25 +2101,25 @@ vec3 rgb2hsv(vec3 c)
     return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
 }
 
-vec3 hsv2rgb(vec3 c)
+vec3 HSV2RGB(vec3 c)
 {
     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-float luminance(vec3 rgb)
+float Luminance(vec3 rgb)
 {
     const vec3 W = vec3(0.2125, 0.7154, 0.0721);
     return dot(rgb, W);
 }
 
-vec3 calculate_tint_color(vec3 inputColor, float color_alpha, float blendAmount)
+vec3 CalculateTintColor(vec3 inputColor, float colorAlpha)
 {
-    float intensity = color_alpha * 0.4;
-    vec3 inputHSV = rgb2hsv(inputColor);
+    float intensity = colorAlpha * 0.4;
+    vec3 inputHSV = RGB2HSV(inputColor);
     float outSaturation = min((inputHSV.y * intensity),1); // can't have color with saturation > 1
-    vec3 outColorTint = hsv2rgb(vec3(inputHSV.x,outSaturation,1));
+    vec3 outColorTint = HSV2RGB(vec3(inputHSV.x,outSaturation,1));
     return outColorTint;
 }
 
@@ -2144,8 +2141,8 @@ vec3 CalcBumpedNormal(vec3 inputNormal)
 	   return inputNormal;
 
     float normalIntensity = normalParams.x;
-    vec3 BumpMapNormal = texture2D(nrm, normaltexcoord).xyz;
-    vec3 BumpMapNormal2 = texture2D(nrm, vec2(normaltexcoord.x + dualNormalScrollParams.x, normaltexcoord.y + dualNormalScrollParams.y)).xyz;
+    vec3 BumpMapNormal = texture2D(normalMap, normaltexcoord).xyz;
+    vec3 BumpMapNormal2 = texture2D(normalMap, vec2(normaltexcoord.x + dualNormalScrollParams.x, normaltexcoord.y + dualNormalScrollParams.y)).xyz;
     if(hasDualNormal == 1)
         BumpMapNormal = normalize(BumpMapNormal + BumpMapNormal2);
     BumpMapNormal = mix(vec3(0.5, 0.5, 1), BumpMapNormal, normalIntensity); // probably a better way to do this
@@ -2165,10 +2162,10 @@ vec3 ScreenBlend(vec3 base, vec3 top)
     return vec3(1) - (vec3(1) - base) * (vec3(1) - top);
 }
 
-vec3 RampColor(vec3 col){
+vec3 RampColor(vec3 color){
 	if(hasRamp == 1)
 	{
-		float rampInputLuminance = luminance(col);
+		float rampInputLuminance = Luminance(color);
 		rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
 		return texture2D(ramp, vec2(1-rampInputLuminance, 0.50)).rgb;
 	}
@@ -2176,10 +2173,10 @@ vec3 RampColor(vec3 col){
 		return vec3(0);
 }
 
-vec3 DummyRampColor(vec3 col){
+vec3 DummyRampColor(vec3 color){
 	if(hasDummyRamp == 1)
 	{
-		float rampInputLuminance = luminance(col);
+		float rampInputLuminance = Luminance(color);
 		rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
 		return texture2D(dummyRamp, vec2(1-rampInputLuminance, 0.50)).rgb;
 	}
@@ -2187,22 +2184,21 @@ vec3 DummyRampColor(vec3 col){
 		return vec3(1);
 }
 
-vec3 SpecRampColor(vec3 col){ // currently just for bayo spec ramp
-	float rampInputLuminance = luminance(col);
+vec3 SpecRampColor(vec3 color){ // currently just for bayo spec ramp
+	float rampInputLuminance = Luminance(color);
 	rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
 
-    vec3 ramp_contribution = texture2D(dummyRamp, vec2(1-rampInputLuminance, 0.5)).rgb;
-	return ramp_contribution;
+    vec3 rampContribution = texture2D(dummyRamp, vec2(1-rampInputLuminance, 0.5)).rgb;
+	return rampContribution;
 }
 
-// adapted from 2004 ati ruby demo
-vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift)
+vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift) // probably not needed
 {
     vec3 shiftedT = tangent + shift * normal;
     return normalize(shiftedT);
 }
 
-float StrandSpecular(vec3 tangent, vec3 V, vec3 L, float exponent)
+float StrandSpecular(vec3 tangent, vec3 V, vec3 L, float exponent) // also not needed
 {
     vec3 H = normalize(L + V);
     float dotTH = dot(tangent, H);
@@ -2211,9 +2207,9 @@ float StrandSpecular(vec3 tangent, vec3 V, vec3 L, float exponent)
     return dirAtten * pow(sinTH, exponent);
 }
 
-vec3 BayoHairSpecular(vec3 diffuse_map, vec3 I, float xComponent, float yComponent)
+vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, float xComponent, float yComponent)
 {
-    float shiftTex = diffuse_map.g; // vertical component of ramp?
+    float shiftTex = diffuseMap.g; // vertical component of ramp?
     shiftTex = 0;
 
     float primaryShift = 0;
@@ -2227,391 +2223,387 @@ vec3 BayoHairSpecular(vec3 diffuse_map, vec3 I, float xComponent, float yCompone
     float specExp2 = reflectionParams.w;
 
     vec3 hairSpecular =  vec3(1);// * StrandSpecular(t1, I, lightDirection, specExp1);
-    float specMask = diffuse_map.b; // what channel should this be?
-    hairSpecular += vec3(.75,.75,1) * specMask * StrandSpecular(t2, I, lightDirection, specExp2);
+    float specMask = diffuseMap.b; // what channel should this be?
+    hairSpecular += vec3(.75,.75,1) * specMask * StrandSpecular(t2, I, specLightDirection, specExp2);
 
-    vec3 half_angle = normalize(I + lightDirection);
-    float test = dot(t2, half_angle)/reflectionParams.w;
-    test = (test +1) /2;
-    float test2 = diffuse_map.g;
+    vec3 halfAngle = normalize(I + specLightDirection);
+    float test = dot(t2, halfAngle)/reflectionParams.w;
+    test = (test + 1) / 2;
+    float test2 = diffuseMap.g;
 
-    hairSpecular = texture2D(dummyRamp, vec2(test, test2)).rgb * diffuse_map.b * alphaBlendParams.z * 0.1;// * diffuse_map.b;
-    return (hairSpecular) * diffuse_map.r * 20;
+    hairSpecular = texture2D(dummyRamp, vec2(test, test2)).rgb * diffuseMap.b * alphaBlendParams.z * 0.1; // find proper constants
+    return (hairSpecular) * diffuseMap.r * 20; // find proper constants
+}
+
+vec3 SoftLighting(vec3 diffuseColorFinal, vec3 ambientIntensityLightColor, vec3 diffuseLightColor, float smoothAmount, float darkenAmount, float saturationAmount, float darkenMultiplier, float saturationMultiplier, float lambert)
+{
+    // blend between a certain distance from dot(L,N) = 0.5
+    float edgeL = 0.5 - (smoothAmount / 2);
+    float edgeR = 0.5 + (smoothAmount / 2);
+    float softLight = smoothstep(edgeL, edgeR, lambert);
+
+    // darken ambientIntensity color to counteract flat stage lighting
+    float softLightDarken = max(((-darkenMultiplier * darkenAmount) + 1), 0);
+    vec3 softLightAmbient = diffuseColorFinal * softLightDarken * ambientIntensityLightColor;
+
+    // more saturated ambientIntensity color
+    softLightAmbient = RGB2HSV(softLightAmbient);
+    softLightAmbient = HSV2RGB(vec3(softLightAmbient.x, (softLightAmbient.y + (saturationMultiplier * saturationAmount)), softLightAmbient.z));
+
+    vec3 softLightDiffuse = diffuseColorFinal * diffuseLightColor;
+
+    return mix(softLightAmbient, softLightDiffuse, softLight); // custom diffuse gradient
 }
 
 
-
-vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
+vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
     vec3 I = vec3(0,0,-1) * mat3(eyeview);
-    float blendAmount = 1;
-	float fresnelBlendAmount = 0.5;
-    float specularBlendAmount = 0.5;
-    float reflectionBlendAmount = 0.5;
 
-
-    // light direction seems to be (z,x,y) from light_set_param
-    vec3 newDiffuseDirection = difLightDirection; //normalize(I + diffuseLightDirection);
-    vec3 newFresnelDirection = lightDirection; //normalize(I + fresnelLightDirection);
-    vec3 newSpecularDirection = specLightDirection; //normalize(I + specularLightDirection);
+    // light directions
+    vec3 newFresnelDirection = lightDirection;
 
 	//---------------------------------------------------------------------------------------------
 		// diffuse pass
-		vec3 diffuse_pass = vec3(0);
+		vec3 diffusePass = vec3(0);
 
 			// lambertian shading
-            float lambert = clamp((dot(newDiffuseDirection,N)),0,1);
-			float halfLambert = clamp((dot(newDiffuseDirection,N)),0,1);
-            halfLambert = dot(newDiffuseDirection,N);
-            halfLambert = (halfLambert + 1) / 2; // remap [-1,1] to [0,1]. not clamped because of ramp functions
-			vec3 diffuse_color = vec3(0);
-			vec3 diffuse_shading = vec3(0);
+            float lambert = clamp((dot(difLightDirection,N)), 0, 1);
+			float halfLambert = clamp((dot(difLightDirection,N)), 0, 1);
+            halfLambert = dot(difLightDirection, N);
+            halfLambert = (halfLambert * 0.5) + 0.5; // remap [-1,1] to [0,1]. not clamped because of ramp functions
+			vec3 diffuseColorFinal = vec3(0); // result of diffuse map, aoBlend, and some NU_values
+			float diffuseLuminance = Luminance(diffuseMap.rgb); // used for colorGain and colorOffset
 
-			float diffuse_luminance = luminance(diffuse_map.rgb);
-
-			//ao_blend = total ambient occlusion term. brightness is just addition. hue/saturation is ???
-            vec3 ao_blend = vec3(1);
-            ao_blend = min((ao_map.aaa + minGain.rgb),vec3(1.15));
-            vec3 aoGain = min((ao_map.aaa * (1+minGain.rgb)),vec3(1.0));
-			vec3 c1 = rgb2hsv(ao_blend);
-            vec3 c2 = rgb2hsv(aoGain);
-			ao_blend.rgb = hsv2rgb(vec3(c1.x, c2.y, c1.z));
+			//aoBlend = total ambientIntensity occlusion term. brightness is just addition. hue/saturation is ???
+            //aoMap = pow(aoMap, gamma);
+            vec3 aoBlend = vec3(1);
+            aoMap = texture2D(normalMap, texcoord).a;
+            float maxAOBlendValue = 1.2;
+            aoBlend = min((vec3(aoMap) + minGain.rgb), vec3(maxAOBlendValue));
+            vec3 aoGain = min((aoMap * (1 + minGain.rgb)), vec3(1.0));
+			vec3 c1 = RGB2HSV(aoBlend);
+            vec3 c2 = RGB2HSV(aoGain);
+			aoBlend.rgb = HSV2RGB(vec3(c1.x, c2.y, c1.z));
             float aoMixIntensity = minGain.a;
 
 
             if (useDiffuseBlend == 1) // aomingain but no ao map (mainly for trophies)
             {
-                ao_map.rgb = vec3(luminance(diffuse_map.rgb)); // should this use color? party ball is not saturated enough
+                aoMap = Luminance(diffuseMap.rgb); // should this use color? party ball item is not saturated enough
                 aoMixIntensity = 0;
             }
-
-            vec3 ambientLightColor = hsv2rgb(vec3(ambientHue/360, ambientSaturation, ambientIntensity * ambient));// * ambient;
-            vec3 diffuseLightColor = hsv2rgb(vec3(diffuseHue/360, diffuseSaturation, diffuseIntensity * diffuse_intensity));// * diffuse_intensity;
-
 
 			//---------------------------------------------------------------------------------------------
 				// flags based corrections for diffuse color
 
     			if (hasColorGainOffset == 1) // probably a more elegant solution...
     			{
-    				diffuse_color = colorOffset.rgb + (vec3(luminance(diffuse_map.rgb)) * (colorGain.rgb));
-    				ao_map.rgb = vec3(diffuse_luminance);
+    				diffuseColorFinal = colorOffset.rgb + (vec3(Luminance(diffuseMap.rgb)) * (colorGain.rgb));
+    				aoMap = diffuseLuminance;
 
                     if ((flags & 0x00420000u) == 0x00420000u) // bayo hair 'diffuse' is weird
                     {
-                    	diffuse_color = colorOffset.rgb + (diffuse_map.rrr * colorGain.rgb);
-                        ao_map.rgb = vec3(1); // don't know bayo ao yet (if it exists)
+                    	diffuseColorFinal = colorOffset.rgb + (diffuseMap.rrr * colorGain.rgb);
+                        aoMap = 1; // don't know bayo ao yet (if it exists)
 
                     }
     			}
 
     			else // regular characters
     			{
-    				diffuse_color = diffuse_map.rgb * ao_blend * diffuseColor.rgb;
+    				diffuseColorFinal = diffuseMap.rgb * aoBlend * diffuseColor.rgb;
     			}
 
 
             //---------------------------------------------------------------------------------------------
                 // stage lighting
                 vec3 lighting = vec3(1);
-                if ((flags & 0xF0000000u) == 0xA0000000u) // stage lighting. should actually be based on xmb in future
+                if ((flags & 0xF0000000u) == 0xA0000000u) // stage lighting. should actually be based on xmb in future.
                 {
-                    vec3 stageLight1Color = hsv2rgb(vec3(stage1Hue/360, stage1Saturation, stage1Intensity)) * max((dot(N, stageLight1Direction)),0);
-                    vec3 stageLight2Color = hsv2rgb(vec3(stage2Hue/360, stage2Saturation, stage2Intensity)) * max((dot(N, stageLight2Direction)),0);
-                    vec3 stageLight3Color = hsv2rgb(vec3(stage3Hue/360, stage3Saturation, stage3Intensity)) * max((dot(N, stageLight3Direction)),0);
-                    vec3 stageLight4Color = hsv2rgb(vec3(stage4Hue/360, stage4Saturation, stage4Intensity)) * max((dot(N, stageLight4Direction)),0);
-                    lighting = (stageLight1Color*renderStageLight1) + (stageLight2Color * renderStageLight2) + (stageLight3Color * renderStageLight3) + (stageLight4Color * renderStageLight4);
+                    // should this be half lambert?
+                    vec3 stageLight1 = stageLight1Color * max((dot(N, stageLight1Direction)), 0);
+                    vec3 stageLight2 = stageLight2Color * max((dot(N, stageLight2Direction)), 0);
+                    vec3 stageLight3 = stageLight3Color * max((dot(N, stageLight3Direction)), 0);
+                    vec3 stageLight4 = stageLight4Color * max((dot(N, stageLight4Direction)), 0);
+                    lighting = (stageLight1 * renderStageLight1) + (stageLight2 * renderStageLight2) + (stageLight3 * renderStageLight3) + (stageLight4 * renderStageLight4);
+
+                    // area lights experiment
+                    float distanceMixFactor = distance(objectPosition.xyz, vec3(-50, 50, 50));
+                    distanceMixFactor *= 0.01;
+                    distanceMixFactor = pow(distanceMixFactor, 2);
+                    lighting = mix(vec3(0), vec3(0.5), distanceMixFactor);
                 }
                 else // character lighting
-                    lighting = mix(ambientLightColor, diffuseLightColor, halfLambert); // gradient based lighting
+                    lighting = mix(ambLightColor * ambientIntensity, difLightColor * diffuseIntensity, halfLambert); // gradient based lighting
 
-                diffuse_pass = diffuse_color * lighting;
+                diffusePass = diffuseColorFinal * lighting;
             //---------------------------------------------------------------------------------------------
 
-
             if (hasSoftLight == 1)
-            {
-                float edgeL = 0.5 - (softLightingParams.z / 2);
-                float edgeR = 0.5 + (softLightingParams.z / 2);
-                float softLight = smoothstep(edgeL, edgeR, lambert);
-                float softLightDarken = max(((-0.3 * softLightingParams.y) + 1), 0);
-                vec3 softLightAmbient = diffuse_color * softLightDarken * ambientLightColor;
-                softLightAmbient = rgb2hsv(softLightAmbient);
-                softLightAmbient = hsv2rgb(vec3(softLightAmbient.x, (softLightAmbient.y + (0.0561 * softLightingParams.x)), softLightAmbient.z));
-                vec3 softLightDiffuse = diffuse_color * diffuseLightColor;
-
-                diffuse_pass = mix(softLightAmbient, softLightDiffuse, softLight); // byte2 81 makes it brighter/more saturated?
-            }
-            else if (hasCustomSoftLight == 1) // nearly identical to softlightingparams. just used for cloud hair
-            {
-                float edgeL = 0.5 - (customSoftLightParams.z / 2);
-                float edgeR = 0.5 + (customSoftLightParams.z / 2);
-                float softLight = smoothstep(edgeL, edgeR, lambert);
-                float softLightDarken = max(((-0.3 * customSoftLightParams.y) + 1), 0);
-                vec3 softLightAmbient = diffuse_color * ambientLightColor * softLightDarken;
-                softLightAmbient = rgb2hsv(softLightAmbient);
-                softLightAmbient = hsv2rgb(vec3(softLightAmbient.x, (softLightAmbient.y + (0.114 * customSoftLightParams.x)), softLightAmbient.z));
-                vec3 softLightDiffuse = diffuse_color * diffuseLightColor;
-
-                diffuse_pass = mix(softLightAmbient, softLightDiffuse, softLight); // byte2 81 makes it brighter/more saturated?
-            }
+                diffusePass = SoftLighting(diffuseColorFinal, ambLightColor, difLightColor, softLightingParams.z, softLightingParams.y, softLightingParams.x, 0.3, 0.0561, lambert);
+            else if (hasCustomSoftLight == 1)
+                diffusePass = SoftLighting(diffuseColorFinal, ambLightColor, difLightColor, customSoftLightParams.z, customSoftLightParams.y, customSoftLightParams.x, 0.3, 0.114, lambert);
 
             if ((flags & 0x00FF0000u) == 0x00810000u || (flags & 0xFFFF0000u) == 0xFA600000u) // used with softlightingparams and customSoftLightParams, respectively
-                diffuse_pass *= 1.5;
+                diffusePass *= 1.5;
 
-                vec3 ramp_contribution = 0.5 * pow((RampColor(vec3(halfLambert)) * DummyRampColor(vec3(halfLambert)) * diffuse_color), vec3(2.2));
-                diffuse_pass = ScreenBlend(diffuse_pass, ramp_contribution) * diffuse_intensity;
+            // result of ramp calculations isn't saturated enough
+            vec3 rampContribution = 0.5 * pow((RampColor(vec3(halfLambert)) * DummyRampColor(vec3(halfLambert)) * diffuseColorFinal), vec3(gamma));
+            diffusePass = ScreenBlend(diffusePass, rampContribution) * diffuseIntensity;
 
-		diffuse_pass = pow(diffuse_pass, vec3(2.2));
+		diffusePass = pow(diffusePass, vec3(gamma));
 	//---------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------
 		// Calculate the color tint. input colors are r,g,b,alpha. alpha is color blend amount
-		vec3 spec_tint = calculate_tint_color(diffuse_color, specularColor.a, specularBlendAmount);
-		vec3 fresnel_tint = calculate_tint_color(diffuse_color, fresnelColor.a, fresnelBlendAmount);
-		vec3 reflection_tint = calculate_tint_color(diffuse_color, reflectionColor.a, reflectionBlendAmount);
+		vec3 spec_tint = CalculateTintColor(diffuseColorFinal, specularColor.a);
+		vec3 fresnel_tint = CalculateTintColor(diffuseColorFinal, fresnelColor.a);
+		vec3 reflection_tint = CalculateTintColor(diffuseColorFinal, reflectionColor.a);
 	//---------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------
 		// specular pass
-		vec3 specular_pass = vec3(0);
+		vec3 specularPass = vec3(0);
             //---------------------------------------------------------------------------------------------
 		        // blinn phong with anisotropy
-    			vec3 half_angle = normalize(newSpecularDirection+I);
+    			vec3 halfAngle = normalize(specLightDirection + I);
                 // tangent plane vectors
                 vec3 X = normalize(tangent);
                 vec3 Y = normalize(bitangent);
                 // ax: anisotropic width. ay: anisotropic height
                 float ax = reflectionParams.z;
                 float ay = reflectionParams.w;
-                float xComponent = max(pow((dot(half_angle, X)/ax),2),0);
-                float yComponent = max(pow((dot(half_angle, Y)/ay),2),0);
+                float xComponent = max(pow((dot(halfAngle, X) / ax), 2), 0);
+                float yComponent = max(pow((dot(halfAngle, Y) / ay), 2), 0);
+
                 // only use anisotropy for mats without specularparams
                 float exponent = xComponent + yComponent;
                 if (hasSpecularParams == 1)
                     exponent = specularParams.y;
 
-            float blinnPhongSpec = pow(clamp((dot(half_angle, N)), 0, 1), exponent);
+            float blinnPhongSpec = pow(clamp((dot(halfAngle, N)), 0, 1), exponent);
             //---------------------------------------------------------------------------------------------
-
 
 			//---------------------------------------------------------------------------------------------
 				// flags based corrections for specular
 			if ((flags & 0x00FF0000u) == 0x00420000u) // bayo hair mats. rework this section
 			{
-                specular_pass = BayoHairSpecular(diffuse_map.rgb, I, xComponent, yComponent);
+                specularPass = BayoHairSpecular(diffuseMap.rgb, I, xComponent, yComponent);
 
 			}
 
 			else if (hasColorGainOffset == 1) // how does specularColorGain work?
             {
-                specular_pass += specularColor.rgb * blinnPhongSpec * (specularColorGain.rgb);
-                //specular_pass += specularColor.rgb * blinnPhongSpec * specular_intensity;// + (specularColorGain.rgb * diffuse_map.rgb);
+                specularPass += specularColor.rgb * blinnPhongSpec * (specularColorGain.rgb);
             }
             else if ((flags & 0x00E10000u) == 0x00E10000u) // not sure how this works. specular works differently for eye mats
             {
-                specular_pass += specularColor.rgb * blinnPhongSpec * spec_tint * 0;
+                specularPass += specularColor.rgb * blinnPhongSpec * spec_tint * 0;
             }
 			else // default
             {
-                specular_pass += specularColor.rgb * blinnPhongSpec * spec_tint;
-                //if (hasRamp == 1) // do ramps affect specular?
-                //    specular_pass = RampColor(specular_pass);
+                specularPass += specularColor.rgb * blinnPhongSpec * spec_tint;
+                // if (hasRamp == 1) // do ramps affect specular?
+                    // specularPass = RampColor(specularPass);
             }
 
 			//---------------------------------------------------------------------------------------------
-            specular_pass *= mix(ao_map.rgb, vec3(1), aoMixIntensity);
-            vec3 specularLightColor = hsv2rgb(vec3(specularHue/360, specularSaturation, specularIntensity * specular_intensity));
-            specular_pass *= specularLightColor;
+            specularPass *= mix(aoMap, 1, aoMixIntensity);
+            specularPass *= specLightColor;
+            specularPass *= specularIntensity;
 
-		specular_pass = pow(specular_pass, vec3(2.2));
+		specularPass = pow(specularPass, vec3(gamma));
 	//---------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------
 		// fresnel pass
-		vec3 fresnel_pass = vec3(0);
+		vec3 fresnelPass = vec3(0);
 
 			// hemisphere fresnel with fresnelParams control
-			vec3 groundColor = vec3(0);
-            groundColor = hsv2rgb(vec3(fresnelGroundHue/360, fresnelGroundSaturation, fresnelGroundIntensity));
-			vec3 skyColor = vec3(1);
-            skyColor = hsv2rgb(vec3(fresnelSkyHue/360, fresnelSkySaturation, fresnelSkyIntensity));
-
-			float hemiBlend = dot(N, vec3(0,1,0));
-			hemiBlend = (hemiBlend * 0.5) + 0.5;
+            vec3 upVector = vec3(0, 1, 0);
+			float hemiBlend = dot(N, upVector);
+			hemiBlend = (hemiBlend * 0.5) + 0.5; // remap [-1, 1] to [0, 1]
             hemiBlend = pow(hemiBlend, 2); // use more ground color
-			vec3 hemiColor = mix(groundColor, skyColor, hemiBlend);
+			vec3 hemiColor = mix(fresGroundColor, fresSkyColor, hemiBlend);
 			float cosTheta = dot(I, N);
-			vec3 fresnel = clamp((hemiColor * pow(1.0 - cosTheta, 2.75 + fresnelParams.x)), 0, 1);
-			fresnel_pass += fresnelColor.rgb * fresnel * fresnel_intensity * fresnel_tint;
+            float exponentOffset = 2.75;
+			vec3 fresnel = clamp((hemiColor * pow(1.0 - cosTheta, exponentOffset + fresnelParams.x)), 0, 1);
+			fresnelPass += fresnelColor.rgb * fresnel * fresnelIntensity * fresnel_tint;
 
             //if((flags & 0x00120000u) == 0x00120000u)
-            //fresnel_pass *= mix(vec3(1),ao_map.rgb,fresnelParams.w);
+                //fresnelPass *= mix(vec3(1),aoMap.rgb,fresnelParams.w);
             if ((flags & 0x0000FF00u) == 0x00003000u)
-                fresnel_pass *= diffuse_map.rgb;
-		fresnel_pass = pow(fresnel_pass, vec3(1));
+                fresnelPass *= diffuseMap.rgb;
+		fresnelPass = pow(fresnelPass, vec3(1));
 	//---------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------
 		// reflection pass
-		vec3 reflection_pass = vec3(0);
+		vec3 reflectionPass = vec3(0);
 
 			// cubemap reflection
 			vec3 R = reflect(I, N);
 			R.y *= -1.0;
-			vec3 refColor = texture(stagecube, R).rgb;
+			vec3 stageCubeColor = texture(stagecube, R).rgb;
 
 			//---------------------------------------------------------------------------------------------
 				// flags based corrections for reflection
 			if (hasCube == 1) // cubemaps from model.nut. currently just uses miiverse cubemap
-				reflection_pass += diffuse_map.aaa* refColor * reflection_tint* reflection_intensity * reflectionParams.x;
+				reflectionPass += diffuseMap.aaa * stageCubeColor * reflection_tint * reflectionParams.x;
 
 			if ((flags & 0x00000010u) == 0x00000010u) // view-based sphere mapping (rosa's stars, sonic eyes, etc)
 			{
 				// calculate UVs based on view space normals (UV scale is currently not right)
-				float PI = 3.14159;
-				float uCoord = asin(viewNormals.x)/ PI + 0.5;
-				float vCoord = asin(viewNormals.y)/PI + 0.5;
+				//float PI = 3.14159;
+				float uCoord = asin(viewNormals.x) / PI + 0.5;
+				float vCoord = asin(viewNormals.y) / PI + 0.5;
 
-                // transform UVs to fix scaling. values are abitrary
-                uCoord = uCoord * 2.4 - 0.7;
-                vCoord = vCoord * 2.4 - 0.7;
+                // transform UVs to fix scaling. values were chosen just to look correct
+                float sphereTexcoordOffset = -0.7;
+                float sphereTexcoordScale = 2.4;
+                uCoord = uCoord * sphereTexcoordScale + sphereTexcoordOffset;
+                vCoord = vCoord * sphereTexcoordScale + sphereTexcoordOffset;
 
-				vec2 newTexCoord = vec2((uCoord)+0.05,(1-vCoord)+0.05);
-				vec3 weirdReflection = texture2D(spheremap, newTexCoord).xyz;
-				reflection_pass += weirdReflection*reflectionColor.xyz*reflection_tint*reflection_intensity;
+				vec2 sphereTexcoord = vec2(uCoord + 0.05, (1 - vCoord) + 0.05); // 0.05?
+				vec3 sphereMapColor = texture2D(spheremap, sphereTexcoord).xyz;
+				reflectionPass += sphereMapColor * reflectionColor.xyz * reflection_tint;
 			}
 
 			else // stage cubemaps
-				reflection_pass += reflectionColor.rgb * refColor * reflection_tint * reflection_intensity * diffuse_map.aaa;
+				reflectionPass += reflectionColor.rgb * stageCubeColor * reflection_tint * diffuseMap.aaa;
 			//---------------------------------------------------------------------------------------------
 
-            reflection_pass *= mix(ao_map.rgb, vec3(1), aoMixIntensity);
-            vec3 refLightColor = hsv2rgb(vec3(reflectionHue/360, reflectionSaturation, reflectionIntensity));
-            reflection_pass *= refLightColor;
+            reflectionPass *= mix(aoMap, 1, aoMixIntensity);
+            reflectionPass *= refLightColor;
+            reflectionPass *= reflectionIntensity;
 
-		reflection_pass = pow(reflection_pass, vec3(2.2));
+		reflectionPass = pow(reflectionPass, vec3(gamma));
 	//---------------------------------------------------------------------------------------------
 
-	vec3 resulting_color = vec3(0);
+	vec3 resultingColor = vec3(0);
 
 	if(renderLighting == 1)
 	{
-		resulting_color += diffuse_pass * renderDiffuse;
-		resulting_color += fresnel_pass * renderFresnel;
-		resulting_color += specular_pass * renderSpecular;
-		resulting_color += reflection_pass * renderReflection;
+		resultingColor += diffusePass * renderDiffuse;
+		resultingColor += fresnelPass * renderFresnel;
+		resultingColor += specularPass * renderSpecular;
+		resultingColor += reflectionPass * renderReflection;
 	}
 	else
-		resulting_color = diffuse_pass;
+		resultingColor = diffusePass;
 
-    resulting_color = pow(resulting_color, vec3(1/2.2)); // gamma correction. gamma correction also done within render passes
+    resultingColor = pow(resultingColor, vec3(1 / gamma)); // gamma correction. gamma correction also done within render passes
 
     // light_set fog calculations
-    vec3 stageFogColor = hsv2rgb(vec3(fogHue/360,fogSaturation,fogIntensity));
-    float depth = pos.z;
+    float depth = viewPosition.z;
     depth = min((depth / fogParams.y),1);
-    float fog_Intensity = mix(fogParams.z, fogParams.w, depth);
+    float fogIntensity = mix(fogParams.z, fogParams.w, depth);
     if(renderFog == 1)
-        resulting_color = mix(resulting_color, stageFogColor, fog_Intensity);
-    if (hasDif3 == 1)
-        resulting_color = vec3(1,0,0);
+        resultingColor = mix(resultingColor, stageFogColor, fogIntensity);
 
-    if (hasStage > 0 || hasCube > 0 && hasNrm > 0)
-        resulting_color = vec3(1,0,0);
 
-    return resulting_color;
+    return resultingColor;
 }
 
-void
-main()
+void main()
 {
-    fincol = vec4(0,0,0,1);
-    vec3 norm = CalcBumpedNormal(normal);
-    vec3 displayNormal = (norm +1)/2;
-    vec3 displayTangent = (tangent +1)/2;
-    vec3 displayBitangent = (bitangent +1)/2;
+    FragColor = vec4(0,0,0,1);
+    vec3 bumpMapNormal = CalcBumpedNormal(normal);
+    vec3 displayNormal = (bumpMapNormal * 0.5) + 0.5; // remap [-1,1] to [0,1]
+    vec3 displayTangent = (tangent * 0.5) + 0.5; // remap [-1,1] to [0,1]
+    vec3 displayBitangent = (bitangent * 0.5) + 0.5; // remap [-1,1] to [0,1]
+
     // zOffset correction
-    gl_FragDepth = gl_FragCoord.z - (zOffset.x /1500); // divide by far plane?
+    gl_FragDepth = gl_FragCoord.z - (zOffset.x / 1500); // divide by far plane?
 
     // if the renderer wants to show something other than textures
     if (renderType == 1) // normals color
-        fincol = vec4(displayNormal,1);
+        FragColor = vec4(displayNormal,1);
     else if (renderType == 2) // normals black & white
     {
-        float normal = dot(vec4(norm * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0));
-        fincol.rgb = vec3(normal);
+        float normal = dot(vec4(bumpMapNormal * mat3(eyeview), 1.0), vec4(vec3(0.15), 1.0));
+        FragColor.rgb = vec3(normal);
     }
     else if (renderType == 3) // normal map
-        fincol = vec4(pow(texture2D(nrm, texcoord).rgb, vec3(1)), 1);
+        FragColor = vec4(pow(texture2D(normalMap, texcoord).rgb, vec3(1)), 1);
     else if (renderType == 4) // vertexColor
-        fincol = vertexColor;
-    else if (renderType == 5) // ambient occlusion
-        fincol = vec4(pow(texture2D(nrm, texcoord).aaa, vec3(1/2.2)), 1);
+        FragColor = vertexColor;
+    else if (renderType == 5) // ambientIntensity occlusion
+        FragColor = vec4(pow(texture2D(normalMap, texcoord).aaa, vec3(1)), 1);
     else if (renderType == 6) // uv coords
-		fincol = vec4(texcoord.x, texcoord.y, 1, 1);
+		FragColor = vec4(texcoord.x, texcoord.y, 1, 1);
     else if (renderType == 7) // uv test pattern
-        fincol = vec4(texture2D(UVTestPattern, texcoord).rgb, 1);
+        FragColor = vec4(texture2D(UVTestPattern, texcoord).rgb, 1);
     else if (renderType == 8) // tangents
-        fincol = vec4(displayTangent, 1);
+        FragColor = vec4(displayTangent, 1);
     else if (renderType == 9) // bitangents
-        fincol = vec4(displayBitangent, 1);
+        FragColor = vec4(displayBitangent, 1);
 	else
     {
-
-        vec4 fc = vec4(0, 0, 0, 0);
 
         // similar to du dv but uses just the normal map
         float offsetIntensity = 0;
         if(useNormalMap == 1)
             offsetIntensity = normalParams.z;
-        vec2 textureOffset = 1-texture2D(nrm, normaltexcoord).xy;
+        vec2 textureOffset = 1-texture2D(normalMap, normaltexcoord).xy;
         textureOffset = (textureOffset * 2) -1; // remap to -1 to 1?
         vec2 offsetTexCoord = texcoord + (textureOffset * offsetIntensity);
 
+        vec4 diffuse1 = vec4(0);
+        vec4 diffuse2 = vec4(0);
+        vec4 diffuse3 = texture2D(dif3, texcoord);
         if (hasDif == 1) // 1st diffuse texture
         {
-            fc = texture2D(dif, offsetTexCoord);
-            fincol = fc;
-            if (hasDif2 == 1) // 2nd diffuse texture
+            diffuse1 = texture2D(dif, offsetTexCoord);
+            FragColor = diffuse1;
+
+            if (hasDif2 == 1 && hasDif3 != 1) // 2nd diffuse texture. doesn't work properly with stages
             {
-                fincol = texture2D(dif2, offsetTexCoord);
-                fincol = mix(fincol, fc, fc.a);
-                fincol.a = 1.0;
+                diffuse2 = texture2D(dif2, offsetTexCoord);
+                FragColor = mix(diffuse2, diffuse1, diffuse1.a);
+                FragColor.a = 1.0;
             }
+
         }
         else
-            fincol = vec4(diffuseColor);
+            FragColor = vec4(diffuseColor);
 
         vec3 diffuse2Texture = texture2D(ao, offsetTexCoord).rgb;
-                    //resulting_color = diffuseTexture;
 
-        if (hasAo == 1) // should be named differently
-            fincol.rgb = mix(diffuse2Texture, fincol.rgb, ((normal.y + 1) / 2));
+        if (hasAo == 1) // should be named differently. isn't always two diffuse
+            FragColor.rgb = mix(diffuse2Texture, FragColor.rgb, ((normal.y + 1) / 2));
 
         // calcuate final color by mixing with vertex color
-        if (renderVertColor == 1) fincol *= vertexColor;
+        if (renderVertColor == 1) FragColor *= vertexColor;
 
         // Material lighting done in sm4sh shader
         if (renderNormal == 1)
-            fincol.rgb = sm4sh_shader(fincol, texture2D(nrm, texcoord).aaaa, norm);
-        fincol.rgb *= finalColorGain.rgb;
-        fincol.rgb *= effColorGain.rgb;
+            FragColor.rgb = sm4shShader(FragColor, texture2D(normalMap, texcoord).a, bumpMapNormal);
+        FragColor.rgb *= finalColorGain.rgb;
+        FragColor.rgb *= effColorGain.rgb;
 
-        // correct alpha
-        fincol.a *= finalColorGain.a;
-        fincol.a *= effColorGain.a;
 
-        // angleFadeParams alpha correction. currently doesn't work for nvidia users
+        //FragColor.rgb = mix(diffuse2.rgb, diffuse1.rgb, vertexColor.r); // umbraf stage vertex color blending
+        //FragColor.rgb *= mix(diffuse3.rgb, vec3(1), 0.5);
+
+        //---------------------------------------------------------------------------------------------
+            // correct alpha
+
+        FragColor.a *= finalColorGain.a;
+        FragColor.a *= effColorGain.a;
+
+        // angleFadeParams alpha correction
         float normalFadeAmount = angleFadeParams.x;
         float edgeFadeAmount = angleFadeParams.y;
         vec3 I = vec3(0,0,-1) * mat3(eyeview);
-        float fresnelBlend = 1-dot(I,norm);
+        float fresnelBlend = 1-dot(I, bumpMapNormal);
         float angleFadeAmount = mix(normalFadeAmount, edgeFadeAmount, fresnelBlend);
-        angleFadeAmount = max((1-angleFadeAmount),0);
-        fincol.a *= angleFadeAmount;
+        angleFadeAmount = max((1 - angleFadeAmount), 0);
+        FragColor.a *= angleFadeAmount;
 
-        if ((flags & 0xF0FF0000u) != 0xF0640000u) // ryu works differently. need to research this more
-            fincol.a += alphaBlendParams.x;
+        // if ((flags & 0xF0FF0000u) != 0xF0640000u) // ryu works differently. need to research this more
+        FragColor.a += alphaBlendParams.x;
+        //---------------------------------------------------------------------------------------------
 
 	}
 

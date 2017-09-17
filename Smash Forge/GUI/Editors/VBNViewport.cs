@@ -625,7 +625,7 @@ namespace Smash_Forge
             float R, G, B;
             RenderTools.ColorTemp2RGB(Runtime.dif_hue, out R, out G, out B);
             string test = R + "," + G + "," + B;
-            Debug.WriteLine(test);
+            //Debug.WriteLine(test);
 
         }
 
@@ -813,8 +813,8 @@ namespace Smash_Forge
             if (Runtime.CameraLight) // camera light should only affects character lighting
             {
                 GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
-                GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(specularLight.direction, v.Inverted()).Normalized());
-                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(diffuseLight.direction, v.Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
                 GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, v));
             }
             else
@@ -2072,12 +2072,12 @@ namespace Smash_Forge
         private void VBNViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
             if (e.KeyChar == 'i')
-            {   
+            {   /*
                 GL.DeleteProgram(Runtime.shaders["NUD"].programID);
                 shader = new Shader();
                 shader.vertexShader(File.ReadAllText("vert.txt"));
                 shader.fragmentShader(File.ReadAllText("frag.txt"));
-                Runtime.shaders["NUD"] = shader; 
+                Runtime.shaders["NUD"] = shader; */
             }
 
             /*if (e.KeyChar == 'w')
