@@ -1870,10 +1870,9 @@ namespace Smash_Forge
                     if ((int)nupdFrame.Value > h.EndFrame && h.EndFrame != -1)
                         continue;
 
-
                     Bone b = getBone(h.Bone);
 
-                    var va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
+                    var va = new Vector3(h.X, h.Y, h.Z);
 
                     GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, h.Color));
 
