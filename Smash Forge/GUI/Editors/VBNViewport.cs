@@ -939,6 +939,9 @@ namespace Smash_Forge
                 if (Runtime.renderECB)
                     RenderECB();
 
+                if (Runtime.renderSpecialBubbles)
+                    RenderSpecialBubbles();
+
                 if (Runtime.renderHitboxes && Runtime.renderInterpolatedHitboxes)
                     RenderInterpolatedHitboxes();
 
@@ -1842,7 +1845,55 @@ namespace Smash_Forge
                 GL.Disable(EnableCap.Blend);
             }
         }
-        
+
+        public void RenderSpecialBubbles()
+        {
+
+            if(Runtime.TargetAnimString == null)
+                return;
+
+            if (Runtime.ParamManager.SpecialBubbles.Count > 0)
+            {
+                GL.Enable(EnableCap.DepthTest);
+                GL.Enable(EnableCap.Blend);
+
+                foreach (var pair in Runtime.ParamManager.SpecialBubbles.Reverse())
+                {
+                    var h = pair.Value;
+
+                    if (!h.Animations.Contains(Runtime.TargetAnimString.Substring(3).Replace(".omo", "").ToLower()) && !h.Animations.Contains("*"))
+                        continue;
+
+                    if ((int)nupdFrame.Value < h.StartFrame)
+                        continue;
+
+                    if ((int)nupdFrame.Value > h.EndFrame && h.EndFrame != -1)
+                        continue;
+
+
+                    Bone b = getBone(h.Bone);
+
+                    var va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
+
+                    GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, h.Color));
+
+                    var va2 = new Vector3(h.X2, h.Y2, h.Z2);
+
+                    if (h.isSphere)
+                    {
+                        RenderTools.drawSphereTransformedVisible(va, h.Size, 30, b.transform.ClearScale());
+                    }
+                    else
+                    {
+                        RenderTools.drawReducedCylinderTransformed(va, va2, h.Size, b.transform.ClearScale());
+                    }
+                    
+                }
+                GL.Disable(EnableCap.DepthTest);
+                GL.Disable(EnableCap.Blend);
+            }
+        }
+
         ACMDScript scr_sound;
 
         int lastFrame = 0;

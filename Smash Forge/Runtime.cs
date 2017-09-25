@@ -80,6 +80,7 @@ namespace Smash_Forge
         public static bool renderHurtboxesZone;
         public static bool renderECB;
         public static bool renderIndicators;
+        public static bool renderSpecialBubbles;
         public static int hitboxRenderMode;
         public static int hitboxAlpha;
         public static int hurtboxAlpha;
@@ -94,6 +95,12 @@ namespace Smash_Forge
         public static bool renderHitboxesNoOverlap;
         public static bool useFrameDuration = true;
         public static bool useFAFasAnimationLength = false;
+
+        public static Color counterBubbleColor;
+        public static Color reflectBubbleColor;
+        public static Color shieldBubbleColor;
+        public static Color absorbBubbleColor;
+        public static Color wtSlowdownBubbleColor;
 
         // See https://stackoverflow.com/questions/470690/how-to-automatically-generate-n-distinct-colors
         // for a really good overview of how to use distinct colors.
@@ -394,6 +401,7 @@ namespace Smash_Forge
                         case "render_hurtboxes": bool.TryParse(node.InnerText, out renderHurtboxes); break;
                         case "render_hurtboxes_zone": bool.TryParse(node.InnerText, out renderHurtboxesZone); break;
                         case "render_ECB": bool.TryParse(node.InnerText, out renderECB); break;
+                        case "render_special_bubbles": bool.TryParse(node.InnerText, out renderSpecialBubbles); break;
                         case "render_bounding_boxes": bool.TryParse(node.InnerText, out renderBoundingBox); break;
                         case "render_path": bool.TryParse(node.InnerText, out renderPath); break;
                         case "render_respawns": bool.TryParse(node.InnerText, out renderRespawns); break;
@@ -415,6 +423,11 @@ namespace Smash_Forge
                         case "windbox_color": try { Runtime.windboxColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
                         case "grabbox_color": try { Runtime.grabboxColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
                         case "searchbox_color": try { Runtime.searchboxColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                        case "counterBubble_color": try { Runtime.counterBubbleColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                        case "reflectBubble_color": try { Runtime.reflectBubbleColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                        case "shieldBubble_color": try { Runtime.shieldBubbleColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                        case "absorbBubble_color": try { Runtime.absorbBubbleColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                        case "wtSlowdownBubble_color": try { Runtime.wtSlowdownBubbleColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
 
                         case "enabled":
                             if (node.ParentNode != null)
@@ -595,6 +608,7 @@ for changing default texure
             renderNode.AppendChild(createNode(doc, "render_interpolated_hitboxes", renderInterpolatedHitboxes.ToString()));
             renderNode.AppendChild(createNode(doc, "render_hitboxes_no_overlap", renderHitboxesNoOverlap.ToString()));
             renderNode.AppendChild(createNode(doc, "render_hitboxes_mode", hitboxRenderMode.ToString()));
+            renderNode.AppendChild(createNode(doc, "render_special_bubbles", renderSpecialBubbles.ToString()));
             renderNode.AppendChild(createNode(doc, "hitbox_alpha", hitboxAlpha.ToString()));
             renderNode.AppendChild(createNode(doc, "hurtbox_alpha", hurtboxAlpha.ToString()));
             renderNode.AppendChild(createNode(doc, "hurtbox_color", System.Drawing.ColorTranslator.ToHtml(hurtboxColor)));
@@ -605,6 +619,11 @@ for changing default texure
             renderNode.AppendChild(createNode(doc, "windbox_color", System.Drawing.ColorTranslator.ToHtml(windboxColor)));
             renderNode.AppendChild(createNode(doc, "grabbox_color", System.Drawing.ColorTranslator.ToHtml(grabboxColor)));
             renderNode.AppendChild(createNode(doc, "searchbox_color", System.Drawing.ColorTranslator.ToHtml(searchboxColor)));
+            renderNode.AppendChild(createNode(doc, "counterBubble_color", System.Drawing.ColorTranslator.ToHtml(counterBubbleColor)));
+            renderNode.AppendChild(createNode(doc, "reflectBubble_color", System.Drawing.ColorTranslator.ToHtml(reflectBubbleColor)));
+            renderNode.AppendChild(createNode(doc, "shieldBubble_color", System.Drawing.ColorTranslator.ToHtml(shieldBubbleColor)));
+            renderNode.AppendChild(createNode(doc, "absorbBubble_color", System.Drawing.ColorTranslator.ToHtml(absorbBubbleColor)));
+            renderNode.AppendChild(createNode(doc, "wtSlowdownBubble_color", System.Drawing.ColorTranslator.ToHtml(wtSlowdownBubbleColor)));
             {
                 XmlNode node = doc.CreateElement("hitbox_kb_colors");
                 renderNode.AppendChild(node);

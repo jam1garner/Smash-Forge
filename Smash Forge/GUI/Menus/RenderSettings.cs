@@ -169,6 +169,11 @@ namespace Smash_Forge.GUI
             pbGrabboxColor.BackColor = Runtime.grabboxColor;
             pbSearchboxColor.BackColor = Runtime.searchboxColor;
 
+            pbCounterColor.BackColor = Runtime.counterBubbleColor;
+            pbReflectColor.BackColor = Runtime.reflectBubbleColor;
+            pbAbsorbColor.BackColor = Runtime.absorbBubbleColor;
+            pbShieldColor.BackColor = Runtime.shieldBubbleColor;
+
             textParamDir.Text = Runtime.paramDir;
             disableRuntimeUpdates = false;
 
@@ -1472,6 +1477,46 @@ namespace Smash_Forge.GUI
             if (colorForm == null || colorForm.IsDisposed)
                 colorForm = new LightColorEditor(VBNViewport.diffuseLight);
             colorForm.Show();*/
+        }
+
+        private void pbCounterColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.counterBubbleColor = Color.FromArgb(0xFF, colorDialog.Color);
+                pbCounterColor.BackColor = Runtime.counterBubbleColor;
+            }
+        }
+
+        private void pbReflectColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.reflectBubbleColor = Color.FromArgb(0xFF, colorDialog.Color);
+                pbReflectColor.BackColor = Runtime.reflectBubbleColor;
+            }
+        }
+
+        private void pbAbsorbColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.absorbBubbleColor = Color.FromArgb(0xFF, colorDialog.Color);
+                pbAbsorbColor.BackColor = Runtime.absorbBubbleColor;
+            }
+        }
+
+        private void pbShieldColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.shieldBubbleColor = Color.FromArgb(0xFF, colorDialog.Color);
+                pbShieldColor.BackColor = Runtime.shieldBubbleColor;
+            }
         }
     }
     
