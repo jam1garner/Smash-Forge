@@ -64,6 +64,7 @@ namespace Smash_Forge
             Runtime.renderBackGround = true;
             Runtime.renderHitboxes = true;
             Runtime.renderInterpolatedHitboxes = true;
+            Runtime.renderSpecialBubbles = true;
             Runtime.hitboxRenderMode = Hitbox.RENDER_KNOCKBACK;
             Runtime.hitboxAlpha = 130;
             Runtime.hurtboxAlpha = 80;
@@ -75,6 +76,12 @@ namespace Smash_Forge
             Runtime.windboxColor = System.Drawing.Color.Blue;
             Runtime.grabboxColor = System.Drawing.Color.Purple;
             Runtime.searchboxColor = System.Drawing.Color.DarkOrange;
+            Runtime.counterBubbleColor = System.Drawing.Color.FromArgb(0x89, 0x89, 0x89);
+            Runtime.reflectBubbleColor = System.Drawing.Color.Cyan;
+            Runtime.shieldBubbleColor = System.Drawing.Color.Red;
+            Runtime.absorbBubbleColor = System.Drawing.Color.SteelBlue;
+            Runtime.wtSlowdownBubbleColor = System.Drawing.Color.FromArgb(0x9a, 0x47, 0x9a);
+
             Runtime.useFrameDuration = false;
             Runtime.hitboxKnockbackColors = new List<System.Drawing.Color>();
             Runtime.hitboxIdColors = new List<System.Drawing.Color>();
@@ -795,7 +802,7 @@ namespace Smash_Forge
                         // If they set the wrong dir, oh well
                         try
                         {
-                            Runtime.ParamManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
+                            Runtime.ParamManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin", fighterName);
                             hurtboxList.refresh();
                             Runtime.ParamManagerHelper = new PARAMEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
                             Runtime.ParamMoveNameIdMapping = Runtime.ParamManagerHelper.getMoveNameIdMapping();
