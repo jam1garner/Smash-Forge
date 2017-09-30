@@ -248,11 +248,11 @@
             this.areaLightsListBox = new System.Windows.Forms.ListBox();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.label87 = new System.Windows.Forms.Label();
-            this.label82 = new System.Windows.Forms.Label();
+            this.areaBBBlueLabel = new System.Windows.Forms.Label();
+            this.areaBBColor = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
-            this.label85 = new System.Windows.Forms.Label();
-            this.label86 = new System.Windows.Forms.Label();
+            this.areaBBRedLabel = new System.Windows.Forms.Label();
+            this.areaBBGreenLabel = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
@@ -272,9 +272,9 @@
             this.textBox19 = new System.Windows.Forms.TextBox();
             this.textBox20 = new System.Windows.Forms.TextBox();
             this.textBox21 = new System.Windows.Forms.TextBox();
-            this.label100 = new System.Windows.Forms.Label();
-            this.label101 = new System.Windows.Forms.Label();
-            this.label102 = new System.Windows.Forms.Label();
+            this.areaRotZLabel = new System.Windows.Forms.Label();
+            this.areaRotYLabel = new System.Windows.Forms.Label();
+            this.areaRotXLabel = new System.Windows.Forms.Label();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.areaScaleZ = new System.Windows.Forms.TextBox();
@@ -282,12 +282,12 @@
             this.areaScaleX = new System.Windows.Forms.TextBox();
             this.areaZPosTB = new System.Windows.Forms.TextBox();
             this.areaYPosTB = new System.Windows.Forms.TextBox();
-            this.label88 = new System.Windows.Forms.Label();
-            this.label89 = new System.Windows.Forms.Label();
-            this.label90 = new System.Windows.Forms.Label();
-            this.label91 = new System.Windows.Forms.Label();
-            this.label92 = new System.Windows.Forms.Label();
-            this.label93 = new System.Windows.Forms.Label();
+            this.areaPosXLabel = new System.Windows.Forms.Label();
+            this.areaPosYLabel = new System.Windows.Forms.Label();
+            this.areaPosZLabel = new System.Windows.Forms.Label();
+            this.areaScaleXLabel = new System.Windows.Forms.Label();
+            this.areaScaleYLabel = new System.Windows.Forms.Label();
+            this.areaScaleZLabel = new System.Windows.Forms.Label();
             this.areaXPosTB = new System.Windows.Forms.TextBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -295,18 +295,18 @@
             this.areaSkyB = new System.Windows.Forms.TextBox();
             this.label95 = new System.Windows.Forms.Label();
             this.colorButton = new System.Windows.Forms.Button();
-            this.label96 = new System.Windows.Forms.Label();
+            this.areaSkyBLabel = new System.Windows.Forms.Label();
             this.areaGroundR = new System.Windows.Forms.TextBox();
-            this.label94 = new System.Windows.Forms.Label();
+            this.areaGroundRLabel = new System.Windows.Forms.Label();
             this.areaSkyG = new System.Windows.Forms.TextBox();
-            this.label84 = new System.Windows.Forms.Label();
+            this.areaGroundGLabel = new System.Windows.Forms.Label();
             this.areaGroundG = new System.Windows.Forms.TextBox();
             this.areaSkyR = new System.Windows.Forms.TextBox();
-            this.label97 = new System.Windows.Forms.Label();
-            this.label83 = new System.Windows.Forms.Label();
+            this.areaSkyGLabel = new System.Windows.Forms.Label();
+            this.areaGroundBLabel = new System.Windows.Forms.Label();
             this.areaGroundB = new System.Windows.Forms.TextBox();
-            this.label99 = new System.Windows.Forms.Label();
-            this.label98 = new System.Windows.Forms.Label();
+            this.areaColCeiling = new System.Windows.Forms.Label();
+            this.areaSkyRLabel = new System.Windows.Forms.Label();
             this.tabPage4.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -2719,11 +2719,11 @@
             this.tableLayoutPanel4.ColumnCount = 2;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 49.20635F));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.79365F));
-            this.tableLayoutPanel4.Controls.Add(this.label87, 0, 3);
-            this.tableLayoutPanel4.Controls.Add(this.label82, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.areaBBBlueLabel, 0, 3);
+            this.tableLayoutPanel4.Controls.Add(this.areaBBColor, 0, 0);
             this.tableLayoutPanel4.Controls.Add(this.button3, 1, 0);
-            this.tableLayoutPanel4.Controls.Add(this.label85, 0, 1);
-            this.tableLayoutPanel4.Controls.Add(this.label86, 0, 2);
+            this.tableLayoutPanel4.Controls.Add(this.areaBBRedLabel, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.areaBBGreenLabel, 0, 2);
             this.tableLayoutPanel4.Controls.Add(this.textBox1, 1, 1);
             this.tableLayoutPanel4.Controls.Add(this.textBox3, 1, 2);
             this.tableLayoutPanel4.Controls.Add(this.textBox4, 1, 3);
@@ -2737,27 +2737,27 @@
             this.tableLayoutPanel4.Size = new System.Drawing.Size(160, 87);
             this.tableLayoutPanel4.TabIndex = 74;
             // 
-            // label87
+            // areaBBBlueLabel
             // 
-            this.label87.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label87.AutoSize = true;
-            this.label87.Location = new System.Drawing.Point(2, 68);
-            this.label87.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label87.Name = "label87";
-            this.label87.Size = new System.Drawing.Size(28, 13);
-            this.label87.TabIndex = 75;
-            this.label87.Text = "Blue";
+            this.areaBBBlueLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.areaBBBlueLabel.AutoSize = true;
+            this.areaBBBlueLabel.Location = new System.Drawing.Point(2, 68);
+            this.areaBBBlueLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.areaBBBlueLabel.Name = "areaBBBlueLabel";
+            this.areaBBBlueLabel.Size = new System.Drawing.Size(28, 13);
+            this.areaBBBlueLabel.TabIndex = 75;
+            this.areaBBBlueLabel.Text = "Blue";
             // 
-            // label82
+            // areaBBColor
             // 
-            this.label82.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label82.AutoSize = true;
-            this.label82.Location = new System.Drawing.Point(2, 4);
-            this.label82.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label82.Name = "label82";
-            this.label82.Size = new System.Drawing.Size(31, 13);
-            this.label82.TabIndex = 58;
-            this.label82.Text = "Color";
+            this.areaBBColor.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.areaBBColor.AutoSize = true;
+            this.areaBBColor.Location = new System.Drawing.Point(2, 4);
+            this.areaBBColor.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.areaBBColor.Name = "areaBBColor";
+            this.areaBBColor.Size = new System.Drawing.Size(31, 13);
+            this.areaBBColor.TabIndex = 58;
+            this.areaBBColor.Text = "Color";
             // 
             // button3
             // 
@@ -2768,27 +2768,27 @@
             this.button3.TabIndex = 72;
             this.button3.UseVisualStyleBackColor = true;
             // 
-            // label85
+            // areaBBRedLabel
             // 
-            this.label85.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label85.AutoSize = true;
-            this.label85.Location = new System.Drawing.Point(2, 25);
-            this.label85.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label85.Name = "label85";
-            this.label85.Size = new System.Drawing.Size(27, 13);
-            this.label85.TabIndex = 73;
-            this.label85.Text = "Red";
+            this.areaBBRedLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.areaBBRedLabel.AutoSize = true;
+            this.areaBBRedLabel.Location = new System.Drawing.Point(2, 25);
+            this.areaBBRedLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.areaBBRedLabel.Name = "areaBBRedLabel";
+            this.areaBBRedLabel.Size = new System.Drawing.Size(27, 13);
+            this.areaBBRedLabel.TabIndex = 73;
+            this.areaBBRedLabel.Text = "Red";
             // 
-            // label86
+            // areaBBGreenLabel
             // 
-            this.label86.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label86.AutoSize = true;
-            this.label86.Location = new System.Drawing.Point(2, 46);
-            this.label86.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label86.Name = "label86";
-            this.label86.Size = new System.Drawing.Size(36, 13);
-            this.label86.TabIndex = 74;
-            this.label86.Text = "Green";
+            this.areaBBGreenLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.areaBBGreenLabel.AutoSize = true;
+            this.areaBBGreenLabel.Location = new System.Drawing.Point(2, 46);
+            this.areaBBGreenLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.areaBBGreenLabel.Name = "areaBBGreenLabel";
+            this.areaBBGreenLabel.Size = new System.Drawing.Size(36, 13);
+            this.areaBBGreenLabel.TabIndex = 74;
+            this.areaBBGreenLabel.Text = "Green";
             // 
             // textBox1
             // 
@@ -2937,9 +2937,9 @@
             this.groupBox7.Controls.Add(this.textBox19);
             this.groupBox7.Controls.Add(this.textBox20);
             this.groupBox7.Controls.Add(this.textBox21);
-            this.groupBox7.Controls.Add(this.label100);
-            this.groupBox7.Controls.Add(this.label101);
-            this.groupBox7.Controls.Add(this.label102);
+            this.groupBox7.Controls.Add(this.areaRotZLabel);
+            this.groupBox7.Controls.Add(this.areaRotYLabel);
+            this.groupBox7.Controls.Add(this.areaRotXLabel);
             this.groupBox7.Location = new System.Drawing.Point(133, 285);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(200, 125);
@@ -2981,35 +2981,35 @@
             this.textBox21.Size = new System.Drawing.Size(52, 20);
             this.textBox21.TabIndex = 53;
             // 
-            // label100
+            // areaRotZLabel
             // 
-            this.label100.AutoSize = true;
-            this.label100.Location = new System.Drawing.Point(37, 88);
-            this.label100.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label100.Name = "label100";
-            this.label100.Size = new System.Drawing.Size(34, 13);
-            this.label100.TabIndex = 58;
-            this.label100.Text = "Rot Z";
+            this.areaRotZLabel.AutoSize = true;
+            this.areaRotZLabel.Location = new System.Drawing.Point(37, 88);
+            this.areaRotZLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.areaRotZLabel.Name = "areaRotZLabel";
+            this.areaRotZLabel.Size = new System.Drawing.Size(34, 13);
+            this.areaRotZLabel.TabIndex = 58;
+            this.areaRotZLabel.Text = "Rot Z";
             // 
-            // label101
+            // areaRotYLabel
             // 
-            this.label101.AutoSize = true;
-            this.label101.Location = new System.Drawing.Point(37, 65);
-            this.label101.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label101.Name = "label101";
-            this.label101.Size = new System.Drawing.Size(34, 13);
-            this.label101.TabIndex = 56;
-            this.label101.Text = "Rot Y";
+            this.areaRotYLabel.AutoSize = true;
+            this.areaRotYLabel.Location = new System.Drawing.Point(37, 65);
+            this.areaRotYLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.areaRotYLabel.Name = "areaRotYLabel";
+            this.areaRotYLabel.Size = new System.Drawing.Size(34, 13);
+            this.areaRotYLabel.TabIndex = 56;
+            this.areaRotYLabel.Text = "Rot Y";
             // 
-            // label102
+            // areaRotXLabel
             // 
-            this.label102.AutoSize = true;
-            this.label102.Location = new System.Drawing.Point(37, 43);
-            this.label102.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label102.Name = "label102";
-            this.label102.Size = new System.Drawing.Size(34, 13);
-            this.label102.TabIndex = 55;
-            this.label102.Text = "Rot X";
+            this.areaRotXLabel.AutoSize = true;
+            this.areaRotXLabel.Location = new System.Drawing.Point(37, 43);
+            this.areaRotXLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.areaRotXLabel.Name = "areaRotXLabel";
+            this.areaRotXLabel.Size = new System.Drawing.Size(34, 13);
+            this.areaRotXLabel.TabIndex = 55;
+            this.areaRotXLabel.Text = "Rot X";
             // 
             // groupBox6
             // 
@@ -3031,12 +3031,12 @@
             this.tableLayoutPanel3.Controls.Add(this.areaScaleX, 1, 3);
             this.tableLayoutPanel3.Controls.Add(this.areaZPosTB, 1, 2);
             this.tableLayoutPanel3.Controls.Add(this.areaYPosTB, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.label88, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.label89, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.label90, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.label91, 0, 3);
-            this.tableLayoutPanel3.Controls.Add(this.label92, 0, 4);
-            this.tableLayoutPanel3.Controls.Add(this.label93, 0, 5);
+            this.tableLayoutPanel3.Controls.Add(this.areaPosXLabel, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.areaPosYLabel, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.areaPosZLabel, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.areaScaleXLabel, 0, 3);
+            this.tableLayoutPanel3.Controls.Add(this.areaScaleYLabel, 0, 4);
+            this.tableLayoutPanel3.Controls.Add(this.areaScaleZLabel, 0, 5);
             this.tableLayoutPanel3.Controls.Add(this.areaXPosTB, 1, 0);
             this.tableLayoutPanel3.Location = new System.Drawing.Point(7, 19);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
@@ -3100,65 +3100,65 @@
             this.areaYPosTB.Text = "0.0";
             this.areaYPosTB.TextChanged += new System.EventHandler(this.areaYPosTB_TextChanged);
             // 
-            // label88
+            // areaPosXLabel
             // 
-            this.label88.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label88.AutoSize = true;
-            this.label88.Location = new System.Drawing.Point(3, 9);
-            this.label88.Name = "label88";
-            this.label88.Size = new System.Drawing.Size(54, 13);
-            this.label88.TabIndex = 0;
-            this.label88.Text = "Position X";
+            this.areaPosXLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.areaPosXLabel.AutoSize = true;
+            this.areaPosXLabel.Location = new System.Drawing.Point(3, 9);
+            this.areaPosXLabel.Name = "areaPosXLabel";
+            this.areaPosXLabel.Size = new System.Drawing.Size(54, 13);
+            this.areaPosXLabel.TabIndex = 0;
+            this.areaPosXLabel.Text = "Position X";
             // 
-            // label89
+            // areaPosYLabel
             // 
-            this.label89.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label89.AutoSize = true;
-            this.label89.Location = new System.Drawing.Point(3, 40);
-            this.label89.Name = "label89";
-            this.label89.Size = new System.Drawing.Size(54, 13);
-            this.label89.TabIndex = 1;
-            this.label89.Text = "Position Y";
+            this.areaPosYLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.areaPosYLabel.AutoSize = true;
+            this.areaPosYLabel.Location = new System.Drawing.Point(3, 40);
+            this.areaPosYLabel.Name = "areaPosYLabel";
+            this.areaPosYLabel.Size = new System.Drawing.Size(54, 13);
+            this.areaPosYLabel.TabIndex = 1;
+            this.areaPosYLabel.Text = "Position Y";
             // 
-            // label90
+            // areaPosZLabel
             // 
-            this.label90.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label90.AutoSize = true;
-            this.label90.Location = new System.Drawing.Point(3, 71);
-            this.label90.Name = "label90";
-            this.label90.Size = new System.Drawing.Size(54, 13);
-            this.label90.TabIndex = 2;
-            this.label90.Text = "Position Z";
+            this.areaPosZLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.areaPosZLabel.AutoSize = true;
+            this.areaPosZLabel.Location = new System.Drawing.Point(3, 71);
+            this.areaPosZLabel.Name = "areaPosZLabel";
+            this.areaPosZLabel.Size = new System.Drawing.Size(54, 13);
+            this.areaPosZLabel.TabIndex = 2;
+            this.areaPosZLabel.Text = "Position Z";
             // 
-            // label91
+            // areaScaleXLabel
             // 
-            this.label91.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label91.AutoSize = true;
-            this.label91.Location = new System.Drawing.Point(3, 102);
-            this.label91.Name = "label91";
-            this.label91.Size = new System.Drawing.Size(44, 13);
-            this.label91.TabIndex = 3;
-            this.label91.Text = "Scale X";
+            this.areaScaleXLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.areaScaleXLabel.AutoSize = true;
+            this.areaScaleXLabel.Location = new System.Drawing.Point(3, 102);
+            this.areaScaleXLabel.Name = "areaScaleXLabel";
+            this.areaScaleXLabel.Size = new System.Drawing.Size(44, 13);
+            this.areaScaleXLabel.TabIndex = 3;
+            this.areaScaleXLabel.Text = "Scale X";
             // 
-            // label92
+            // areaScaleYLabel
             // 
-            this.label92.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label92.AutoSize = true;
-            this.label92.Location = new System.Drawing.Point(3, 133);
-            this.label92.Name = "label92";
-            this.label92.Size = new System.Drawing.Size(44, 13);
-            this.label92.TabIndex = 4;
-            this.label92.Text = "Scale Y";
+            this.areaScaleYLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.areaScaleYLabel.AutoSize = true;
+            this.areaScaleYLabel.Location = new System.Drawing.Point(3, 133);
+            this.areaScaleYLabel.Name = "areaScaleYLabel";
+            this.areaScaleYLabel.Size = new System.Drawing.Size(44, 13);
+            this.areaScaleYLabel.TabIndex = 4;
+            this.areaScaleYLabel.Text = "Scale Y";
             // 
-            // label93
+            // areaScaleZLabel
             // 
-            this.label93.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label93.AutoSize = true;
-            this.label93.Location = new System.Drawing.Point(3, 166);
-            this.label93.Name = "label93";
-            this.label93.Size = new System.Drawing.Size(44, 13);
-            this.label93.TabIndex = 5;
-            this.label93.Text = "Scale Z";
+            this.areaScaleZLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.areaScaleZLabel.AutoSize = true;
+            this.areaScaleZLabel.Location = new System.Drawing.Point(3, 166);
+            this.areaScaleZLabel.Name = "areaScaleZLabel";
+            this.areaScaleZLabel.Size = new System.Drawing.Size(44, 13);
+            this.areaScaleZLabel.TabIndex = 5;
+            this.areaScaleZLabel.Text = "Scale Z";
             // 
             // areaXPosTB
             // 
@@ -3189,18 +3189,18 @@
             this.tableLayoutPanel2.Controls.Add(this.areaSkyB, 1, 7);
             this.tableLayoutPanel2.Controls.Add(this.label95, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.colorButton, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.label96, 0, 7);
+            this.tableLayoutPanel2.Controls.Add(this.areaSkyBLabel, 0, 7);
             this.tableLayoutPanel2.Controls.Add(this.areaGroundR, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.label94, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.areaGroundRLabel, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.areaSkyG, 1, 6);
-            this.tableLayoutPanel2.Controls.Add(this.label84, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.areaGroundGLabel, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.areaGroundG, 1, 2);
             this.tableLayoutPanel2.Controls.Add(this.areaSkyR, 1, 5);
-            this.tableLayoutPanel2.Controls.Add(this.label97, 0, 6);
-            this.tableLayoutPanel2.Controls.Add(this.label83, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.areaSkyGLabel, 0, 6);
+            this.tableLayoutPanel2.Controls.Add(this.areaGroundBLabel, 0, 3);
             this.tableLayoutPanel2.Controls.Add(this.areaGroundB, 1, 3);
-            this.tableLayoutPanel2.Controls.Add(this.label99, 0, 4);
-            this.tableLayoutPanel2.Controls.Add(this.label98, 0, 5);
+            this.tableLayoutPanel2.Controls.Add(this.areaColCeiling, 0, 4);
+            this.tableLayoutPanel2.Controls.Add(this.areaSkyRLabel, 0, 5);
             this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 19);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 8;
@@ -3254,16 +3254,16 @@
             this.colorButton.TabIndex = 71;
             this.colorButton.UseVisualStyleBackColor = true;
             // 
-            // label96
+            // areaSkyBLabel
             // 
-            this.label96.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label96.AutoSize = true;
-            this.label96.Location = new System.Drawing.Point(2, 226);
-            this.label96.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label96.Name = "label96";
-            this.label96.Size = new System.Drawing.Size(28, 13);
-            this.label96.TabIndex = 70;
-            this.label96.Text = "Blue";
+            this.areaSkyBLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.areaSkyBLabel.AutoSize = true;
+            this.areaSkyBLabel.Location = new System.Drawing.Point(2, 226);
+            this.areaSkyBLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.areaSkyBLabel.Name = "areaSkyBLabel";
+            this.areaSkyBLabel.Size = new System.Drawing.Size(28, 13);
+            this.areaSkyBLabel.TabIndex = 70;
+            this.areaSkyBLabel.Text = "Blue";
             // 
             // areaGroundR
             // 
@@ -3276,16 +3276,16 @@
             this.areaGroundR.Text = "1.0";
             this.areaGroundR.TextChanged += new System.EventHandler(this.areaGroundR_TextChanged);
             // 
-            // label94
+            // areaGroundRLabel
             // 
-            this.label94.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label94.AutoSize = true;
-            this.label94.Location = new System.Drawing.Point(2, 40);
-            this.label94.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label94.Name = "label94";
-            this.label94.Size = new System.Drawing.Size(27, 13);
-            this.label94.TabIndex = 58;
-            this.label94.Text = "Red";
+            this.areaGroundRLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.areaGroundRLabel.AutoSize = true;
+            this.areaGroundRLabel.Location = new System.Drawing.Point(2, 40);
+            this.areaGroundRLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.areaGroundRLabel.Name = "areaGroundRLabel";
+            this.areaGroundRLabel.Size = new System.Drawing.Size(27, 13);
+            this.areaGroundRLabel.TabIndex = 58;
+            this.areaGroundRLabel.Text = "Red";
             // 
             // areaSkyG
             // 
@@ -3297,16 +3297,16 @@
             this.areaSkyG.TabIndex = 67;
             this.areaSkyG.Text = "1.0";
             // 
-            // label84
+            // areaGroundGLabel
             // 
-            this.label84.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label84.AutoSize = true;
-            this.label84.Location = new System.Drawing.Point(2, 71);
-            this.label84.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label84.Name = "label84";
-            this.label84.Size = new System.Drawing.Size(36, 13);
-            this.label84.TabIndex = 60;
-            this.label84.Text = "Green";
+            this.areaGroundGLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.areaGroundGLabel.AutoSize = true;
+            this.areaGroundGLabel.Location = new System.Drawing.Point(2, 71);
+            this.areaGroundGLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.areaGroundGLabel.Name = "areaGroundGLabel";
+            this.areaGroundGLabel.Size = new System.Drawing.Size(36, 13);
+            this.areaGroundGLabel.TabIndex = 60;
+            this.areaGroundGLabel.Text = "Green";
             // 
             // areaGroundG
             // 
@@ -3329,27 +3329,27 @@
             this.areaSkyR.TabIndex = 64;
             this.areaSkyR.Text = "1.0";
             // 
-            // label97
+            // areaSkyGLabel
             // 
-            this.label97.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label97.AutoSize = true;
-            this.label97.Location = new System.Drawing.Point(2, 195);
-            this.label97.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label97.Name = "label97";
-            this.label97.Size = new System.Drawing.Size(36, 13);
-            this.label97.TabIndex = 68;
-            this.label97.Text = "Green";
+            this.areaSkyGLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.areaSkyGLabel.AutoSize = true;
+            this.areaSkyGLabel.Location = new System.Drawing.Point(2, 195);
+            this.areaSkyGLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.areaSkyGLabel.Name = "areaSkyGLabel";
+            this.areaSkyGLabel.Size = new System.Drawing.Size(36, 13);
+            this.areaSkyGLabel.TabIndex = 68;
+            this.areaSkyGLabel.Text = "Green";
             // 
-            // label83
+            // areaGroundBLabel
             // 
-            this.label83.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label83.AutoSize = true;
-            this.label83.Location = new System.Drawing.Point(2, 102);
-            this.label83.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label83.Name = "label83";
-            this.label83.Size = new System.Drawing.Size(28, 13);
-            this.label83.TabIndex = 62;
-            this.label83.Text = "Blue";
+            this.areaGroundBLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.areaGroundBLabel.AutoSize = true;
+            this.areaGroundBLabel.Location = new System.Drawing.Point(2, 102);
+            this.areaGroundBLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.areaGroundBLabel.Name = "areaGroundBLabel";
+            this.areaGroundBLabel.Size = new System.Drawing.Size(28, 13);
+            this.areaGroundBLabel.TabIndex = 62;
+            this.areaGroundBLabel.Text = "Blue";
             // 
             // areaGroundB
             // 
@@ -3362,27 +3362,27 @@
             this.areaGroundB.Text = "1.0";
             this.areaGroundB.TextChanged += new System.EventHandler(this.areaGroundB_TextChanged);
             // 
-            // label99
+            // areaColCeiling
             // 
-            this.label99.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label99.AutoSize = true;
-            this.label99.Location = new System.Drawing.Point(2, 133);
-            this.label99.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label99.Name = "label99";
-            this.label99.Size = new System.Drawing.Size(65, 13);
-            this.label99.TabIndex = 65;
-            this.label99.Text = "Color Ceiling";
+            this.areaColCeiling.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.areaColCeiling.AutoSize = true;
+            this.areaColCeiling.Location = new System.Drawing.Point(2, 133);
+            this.areaColCeiling.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.areaColCeiling.Name = "areaColCeiling";
+            this.areaColCeiling.Size = new System.Drawing.Size(65, 13);
+            this.areaColCeiling.TabIndex = 65;
+            this.areaColCeiling.Text = "Color Ceiling";
             // 
-            // label98
+            // areaSkyRLabel
             // 
-            this.label98.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label98.AutoSize = true;
-            this.label98.Location = new System.Drawing.Point(2, 164);
-            this.label98.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label98.Name = "label98";
-            this.label98.Size = new System.Drawing.Size(27, 13);
-            this.label98.TabIndex = 66;
-            this.label98.Text = "Red";
+            this.areaSkyRLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.areaSkyRLabel.AutoSize = true;
+            this.areaSkyRLabel.Location = new System.Drawing.Point(2, 164);
+            this.areaSkyRLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.areaSkyRLabel.Name = "areaSkyRLabel";
+            this.areaSkyRLabel.Size = new System.Drawing.Size(27, 13);
+            this.areaSkyRLabel.TabIndex = 66;
+            this.areaSkyRLabel.Text = "Red";
             // 
             // RenderSettings
             // 
@@ -3664,26 +3664,26 @@
         private System.Windows.Forms.CheckBox boundingBoxCB;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.TextBox areaSkyB;
-        private System.Windows.Forms.Label label96;
+        private System.Windows.Forms.Label areaSkyBLabel;
         private System.Windows.Forms.TextBox areaSkyG;
         private System.Windows.Forms.TextBox areaSkyR;
-        private System.Windows.Forms.Label label97;
-        private System.Windows.Forms.Label label98;
-        private System.Windows.Forms.Label label99;
+        private System.Windows.Forms.Label areaSkyGLabel;
+        private System.Windows.Forms.Label areaSkyRLabel;
+        private System.Windows.Forms.Label areaColCeiling;
         private System.Windows.Forms.TextBox areaGroundB;
-        private System.Windows.Forms.Label label83;
+        private System.Windows.Forms.Label areaGroundBLabel;
         private System.Windows.Forms.TextBox areaGroundG;
         private System.Windows.Forms.TextBox areaGroundR;
-        private System.Windows.Forms.Label label84;
-        private System.Windows.Forms.Label label94;
+        private System.Windows.Forms.Label areaGroundGLabel;
+        private System.Windows.Forms.Label areaGroundRLabel;
         private System.Windows.Forms.Label label95;
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.TextBox textBox19;
         private System.Windows.Forms.TextBox textBox20;
         private System.Windows.Forms.TextBox textBox21;
-        private System.Windows.Forms.Label label100;
-        private System.Windows.Forms.Label label101;
-        private System.Windows.Forms.Label label102;
+        private System.Windows.Forms.Label areaRotZLabel;
+        private System.Windows.Forms.Label areaRotYLabel;
+        private System.Windows.Forms.Label areaRotXLabel;
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.Label label81;
         private System.Windows.Forms.Button removeAreaLightButton;
@@ -3705,20 +3705,20 @@
         private System.Windows.Forms.TextBox areaScaleX;
         private System.Windows.Forms.TextBox areaZPosTB;
         private System.Windows.Forms.TextBox areaYPosTB;
-        private System.Windows.Forms.Label label88;
-        private System.Windows.Forms.Label label89;
-        private System.Windows.Forms.Label label90;
-        private System.Windows.Forms.Label label91;
-        private System.Windows.Forms.Label label92;
-        private System.Windows.Forms.Label label93;
+        private System.Windows.Forms.Label areaPosXLabel;
+        private System.Windows.Forms.Label areaPosYLabel;
+        private System.Windows.Forms.Label areaPosZLabel;
+        private System.Windows.Forms.Label areaScaleXLabel;
+        private System.Windows.Forms.Label areaScaleYLabel;
+        private System.Windows.Forms.Label areaScaleZLabel;
         private System.Windows.Forms.TextBox areaXPosTB;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
-        private System.Windows.Forms.Label label87;
-        private System.Windows.Forms.Label label82;
+        private System.Windows.Forms.Label areaBBBlueLabel;
+        private System.Windows.Forms.Label areaBBColor;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Label label85;
-        private System.Windows.Forms.Label label86;
+        private System.Windows.Forms.Label areaBBRedLabel;
+        private System.Windows.Forms.Label areaBBGreenLabel;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.TextBox textBox4;
