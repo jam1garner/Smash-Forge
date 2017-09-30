@@ -28,6 +28,8 @@ namespace Smash_Forge
         public static List<NUT> TextureContainers = new List<NUT>();
         public static List<NUS3BANK> SoundContainers = new List<NUS3BANK>();
 
+        public static Dictionary<string, AreaLight> areaLights = new Dictionary<string, AreaLight>();
+
         public static SortedList<string, FileBase> OpenedFiles { get; set; }
 
         public static VBNViewport vbnViewport { get; set; }
@@ -146,8 +148,8 @@ namespace Smash_Forge
         public static bool renderFloorLines = true;
         public static Color back1 = Color.FromArgb((255 << 24) | (26 << 16) | (26 << 8) | (26));
         public static Color back2 = Color.FromArgb((255 << 24) | (77 << 16) | (77 << 8) | (77));
-        public static float fov = 0.8f;
-        public static float zoomspeed = 0.8f;
+        public static float fov = 0.524f; // default angle in radians from stage param files
+        public static float zoomspeed = 1.0f;
         public static bool CameraLight = false;
 
         public static bool renderDiffuse = true;
@@ -240,7 +242,7 @@ namespace Smash_Forge
 
         #endregion
 
-        public static float renderDepth;
+        public static float renderDepth = 100000.0f;
         public static bool renderNormals;
         public static bool renderVertColor;
         public static bool renderLighting;
@@ -259,16 +261,17 @@ namespace Smash_Forge
 
         public enum RenderTypes
         {
-            Texture = 0,
+            Shaded = 0,
             Normals = 1,
             NormalsBnW = 2,
-            NormalMap = 3,
-            VertColor = 4,
-            AmbientOcclusion = 5,
-            UVCoords = 6,
-            UVTestPattern = 7,
-            Tangents = 8,
-            Bitangents = 9
+            DiffuseMap = 3,
+            NormalMap = 4,
+            VertColor = 5,
+            AmbientOcclusion = 6,
+            UVCoords = 7,
+            UVTestPattern = 8,
+            Tangents = 9,
+            Bitangents = 10
         }
         public enum FloorStyle
         {

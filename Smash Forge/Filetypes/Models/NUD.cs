@@ -2073,11 +2073,12 @@ namespace Smash_Forge
 
             public void PreRender()
             {
+
                 // rearrange faces
                 display = getDisplayFace().ToArray();
 
-                if ((vertSize & 0xF) != 3 && (vertSize & 0xF) != 7)
-                    NUD.computeTangentBitangent(this);
+                //if ((vertSize & 0xF) != 3 && (vertSize & 0xF) != 7)
+                NUD.computeTangentBitangent(this);
 
                 List<dVertex> vert = new List<dVertex>();
 
@@ -2112,9 +2113,9 @@ namespace Smash_Forge
                     };
 
                     isTransparent = false;
-                    if (v.col.Z < 0x7F)
-                        isTransparent = true;
-                    if (materials[0].srcFactor > 0 || materials[0].dstFactor > 0)
+                    //if (v.col.Z < 0x7F)
+                       //isTransparent = true;
+                    if (materials[0].srcFactor > 0 || materials[0].dstFactor > 0 || materials[0].AlphaFunc > 0 || materials[0].AlphaTest > 0)
                         isTransparent = true;
 
                     vert.Add(nv);

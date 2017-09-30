@@ -67,18 +67,19 @@ namespace Smash_Forge
                 GL.Viewport(glControl1.ClientRectangle);
 
 
-                v = Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 500.0f);
+                v = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width, -height, zoom) * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 500.0f);
             }
         }
 
         #region Members
         Matrix4 v, vi;
-        public float rot = 0;
+        public float cameraYRotation = 0;
         public float x = 0;
-        public float lookup = 0;
-        public float height = 1.5f;
-        public float width = 0;
-        public float zoom = -25f, nzoom = 0;
+        public float cameraXRotation = 0;
+        public float height = 10.0f; // camera y position
+        public float width = 0; // camera x position
+        public float zoom = -80f; // camera z position
+        public float nzoom = 0;
         public GUI.Menus.CameraPosition cameraPosForm = null;
         float mouseXLast = 0;
         float mouseYLast = 0;
@@ -95,6 +96,9 @@ namespace Smash_Forge
         public static DirectionalLight stageLight2 = new DirectionalLight();
         public static DirectionalLight stageLight3 = new DirectionalLight();
         public static DirectionalLight stageLight4 = new DirectionalLight();
+
+        
+
 
         Shader shader;
         #endregion
@@ -399,9 +403,9 @@ namespace Smash_Forge
             int w = Width;
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
-            v = Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
+            v = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width,-height,zoom) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
-            //v2 = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
+            //v2 = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(width,-height,zoom);
 
             GL.GenFramebuffers(1, out sfb);
 
@@ -574,6 +578,8 @@ namespace Smash_Forge
 
             if (Runtime.renderModel) DrawModels();
 
+ 
+
             renderTime.Stop();
             double fps = 1000 / (renderTime.ElapsedMilliseconds + 0.0001);
             //Debug.WriteLine(renderTime.ElapsedMilliseconds.ToString()); // render time for NUD shader in milliseconds
@@ -602,6 +608,15 @@ namespace Smash_Forge
             // draw path.bin
             if (Runtime.renderPath)
                 DrawPathDisplay();
+
+            foreach (KeyValuePair<string, AreaLight> areaLight in Runtime.areaLights)
+                {   if (areaLight.Value.renderBoundingBox)
+                    {
+                        Vector3 center = new Vector3(areaLight.Value.positionX, areaLight.Value.positionY, areaLight.Value.positionZ);
+                        RenderTools.drawRectangularPrismWireframe(center, areaLight.Value.scaleX, areaLight.Value.scaleY, areaLight.Value.scaleZ);
+                    }
+                }
+
             // clear the buffer bit so the skeleton 
             // will be drawn on top of everything
             GL.Clear(ClearBufferMask.DepthBufferBit);
@@ -610,6 +625,8 @@ namespace Smash_Forge
                 DrawLVD();
             // drawing the bones
             DrawBones();
+
+
 
             /*GL.LineWidth(3f);
             GL.Color3(freezeCamera ? Color.Yellow : Color.White);
@@ -620,13 +637,6 @@ namespace Smash_Forge
             // Clean up
             GL.PopAttrib();
             glControl1.SwapBuffers();
-
-
-            float R, G, B;
-            RenderTools.ColorTemp2RGB(Runtime.dif_hue, out R, out G, out B);
-            string test = R + "," + G + "," + B;
-            //Debug.WriteLine(test);
-
         }
 
         public void UpdateCameraPositionControl()
@@ -637,21 +647,25 @@ namespace Smash_Forge
 
         public void UpdateMousePosition()
         {
-            float zoomscale = Runtime.zoomspeed;
+            float zoomMultiplier = 3.5f; // convert zoomSpeed to in game stprm zoom speed. still not exact
+            float mouseTranslateSpeed = 0.050f;
+            float scrollWheelZoomSpeed = 1.75f;
+            float shiftZoomMultiplier = 2.5f;
+            float zoomscale = Runtime.zoomspeed * zoomMultiplier;
 
             if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
             {
-                height += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                width += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                height += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                width += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
             }
             if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
             {
-                rot += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                lookup += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                cameraYRotation += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                cameraXRotation += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
             }
 
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
-                zoomscale = 6;
+                zoomscale *= shiftZoomMultiplier;
 
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Down))
                 zoom -= 1 * zoomscale;
@@ -661,11 +675,11 @@ namespace Smash_Forge
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
-            zoom += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale;
+            zoom += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale * scrollWheelZoomSpeed;
 
-            v = Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
+            v = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width,-height,zoom) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
-            //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
+            //v2 = Matrix4.CreateTranslation(width,-height,zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
         public bool IsMouseOverViewport()
         {
@@ -2027,8 +2041,8 @@ namespace Smash_Forge
 
         private void button1_Click(object sender, EventArgs e)
         {
-            rot = 0;
-            lookup = 0;
+            cameraYRotation = 0;
+            cameraXRotation = 0;
             height = 0;
             width = 0;
             zoom = 0;
@@ -2337,15 +2351,15 @@ namespace Smash_Forge
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.S))
                 zoom -= 0.2f;
 
-            rot += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-            lookup += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+            cameraYRotation += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+            cameraXRotation += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
 
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
-            v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) 
+            v = Matrix4.CreateTranslation(width,-height,zoom) * Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
-            //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
+            //v2 = Matrix4.CreateTranslation(width,-height,zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
 
         public Bitmap CaptureScreen(bool saveAlpha = false)

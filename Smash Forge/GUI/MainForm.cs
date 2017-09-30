@@ -43,7 +43,7 @@ namespace Smash_Forge
             ThreadStart t = new ThreadStart(Smash_Forge.Update.CheckLatest);
             Thread thread = new Thread(t);
             thread.Start();
-            Runtime.renderDepth = 2500f;
+            Runtime.renderDepth = 100000.0f;
             foreach (var vp in viewports)
                 AddDockedControl(vp);
 
@@ -94,7 +94,7 @@ namespace Smash_Forge
             Runtime.renderHurtboxesZone = true;
             Runtime.renderECB = false;
             Runtime.renderIndicators = false;
-            Runtime.renderType = Runtime.RenderTypes.Texture;
+            Runtime.renderType = Runtime.RenderTypes.Shaded;
             Runtime.paramDir = "";
             //Pichu.MakePichu();
             //meshList.refresh();

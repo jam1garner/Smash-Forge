@@ -40,11 +40,34 @@ namespace Smash_Forge.GUI
         float refG = 0.0f;
         float refB = 0.0f;
 
+        // area light values for currently selected light
+        string areaLightID = "";
+        float groundR = 1.0f;
+        float groundG = 1.0f;
+        float groundB = 1.0f;
+        // diffuse color
+        float skyR = 1.0f;
+        float skyG = 1.0f;
+        float skyB = 1.0f;
+        // size
+        float scaleX = 1.0f;
+        float scaleY = 1.0f;
+        float scaleZ = 1.0f;
+        // position of the center of the region
+        float positionX = 0.0f;
+        float positionY = 0.0f;
+        float positionZ = 0.0f;
+        // bounding box values
+        bool renderBoundingBox = true;
+
+        List<string> areaLightIDList = new List<string>();
+
         LightColorEditor colorForm = null;
 
         public RenderSettings()
         {
             InitializeComponent();
+            FillForm();
 
             disableRuntimeUpdates = true;
             nudHitboxAlpha.Value = Runtime.hitboxAlpha;
@@ -79,7 +102,8 @@ namespace Smash_Forge.GUI
             modelSelectCB.Enabled = checkBox1.Checked;
 
             depthSlider.Value = (int)Runtime.renderDepth;
-            fovSlider.Value = (int)(Runtime.fov * 10);
+            fovSlider.Value = (int)(Runtime.fov * 180.0f / Math.PI);
+            fovLabel.Text = "FOV (Degrees): " + fovSlider.Value;
 
             cameraLightCB.Checked = Runtime.CameraLight;
             diffuseCB.Checked = Runtime.renderDiffuse;
@@ -172,6 +196,9 @@ namespace Smash_Forge.GUI
             textParamDir.Text = Runtime.paramDir;
             disableRuntimeUpdates = false;
 
+
+
+
         }
 
         private void checkBox6_CheckedChanged(object sender, EventArgs e)
@@ -260,6 +287,7 @@ namespace Smash_Forge.GUI
         private void depthSlider_ValueChanged(object sender, EventArgs e)
         {
             Runtime.renderDepth = depthSlider.Value;
+            renderDepthLabel.Text = "Depth: " + Runtime.renderDepth;
         }
 
         private void renderMode_SelectionChangeCommitted(object sender, EventArgs e)
@@ -319,8 +347,20 @@ namespace Smash_Forge.GUI
 
         private void fovSlider_Scroll(object sender, EventArgs e)
         {
-            Runtime.fov = fovSlider.Value / 10f;
+            Runtime.fov = fovSlider.Value * (float)Math.PI / 180.0f;
+        
+            fovLabel.Text = "FOV (Degrees): " + fovSlider.Value;
         }
+
+        private double fovToDegrees(float fov)
+        {
+            // convert fov to an easier to display value in degrees
+            double FOV = fov * 180.0 / Math.PI;
+            FOV = Math.Round(FOV, 2);
+
+            return FOV;
+        }
+
 
         private void backgroundCB_CheckedChanged(object sender, EventArgs e)
         {
@@ -1472,6 +1512,254 @@ namespace Smash_Forge.GUI
             if (colorForm == null || colorForm.IsDisposed)
                 colorForm = new LightColorEditor(VBNViewport.diffuseLight);
             colorForm.Show();*/
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+    
+        }
+
+
+        public void FillForm()
+        {
+            areaLightsListBox.Items.Clear();
+
+            foreach (KeyValuePair<string, AreaLight> areaLight in Runtime.areaLights)
+            {         
+                areaLightsListBox.Items.Add(areaLight);
+            }
+        }
+
+      
+
+        private void addAreaLightButton_Click(object sender, EventArgs e)
+        {
+            AreaLight areaLight = new AreaLight(areaLightID);
+            Runtime.areaLights.Add(areaLight.ID, areaLight);
+            areaLightIDList.Add(areaLight.ID);
+            FillForm();
+        }
+
+        private void areaLightsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            areaLightID = areaLightIDList[areaLightsListBox.SelectedIndex];
+            areaLightIDTB.Text = areaLightIDList[areaLightsListBox.SelectedIndex];
+            updateValuesFromAreaLight();
+        }
+
+
+
+        private void textBox10_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void areaLightIDTB_TextChanged(object sender, EventArgs e)
+        {
+            areaLightID = areaLightIDTB.Text;
+            
+        }
+
+        private void removeAreaLightButton_Click(object sender, EventArgs e)
+        {
+
+
+            Runtime.areaLights.Remove(areaLightIDList[areaLightsListBox.SelectedIndex]); //should only work if something is selected            
+            FillForm();
+        }
+
+        private void boundingBoxComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //boundingBoxComboBox.SelectedItem;
+        }
+
+        private void updateAreaLight()
+        {
+            
+            // udpate the values for the selected area light
+            Runtime.areaLights[areaLightID].groundR = groundR;
+            Runtime.areaLights[areaLightID].groundG = groundG;
+            Runtime.areaLights[areaLightID].groundB = groundB;
+            Runtime.areaLights[areaLightID].skyR = skyR;
+            Runtime.areaLights[areaLightID].skyG = skyG;
+            Runtime.areaLights[areaLightID].skyB = skyB;
+
+            Runtime.areaLights[areaLightID].positionX = positionX;
+            Runtime.areaLights[areaLightID].positionY = positionY;
+            Runtime.areaLights[areaLightID].positionZ = positionZ;
+
+            Runtime.areaLights[areaLightID].scaleX = scaleX;
+            Runtime.areaLights[areaLightID].scaleY = scaleY;
+            Runtime.areaLights[areaLightID].scaleZ = scaleZ;
+
+            Runtime.areaLights[areaLightID].renderBoundingBox = renderBoundingBox; // currently not working properly, overrides value
+
+            
+        }
+
+        private void updateValuesFromAreaLight()
+        {
+            // update the text boxes, which will also udpate the variables
+            areaGroundR.Text = Runtime.areaLights[areaLightID].groundR.ToString();
+            areaGroundG.Text = Runtime.areaLights[areaLightID].groundG.ToString();
+            areaGroundB.Text = Runtime.areaLights[areaLightID].groundB.ToString();
+
+            areaSkyR.Text = Runtime.areaLights[areaLightID].skyR.ToString();
+            areaSkyG.Text = Runtime.areaLights[areaLightID].skyG.ToString();
+            areaSkyB.Text = Runtime.areaLights[areaLightID].skyB.ToString();
+
+            areaXPosTB.Text = Runtime.areaLights[areaLightID].positionX.ToString();
+            areaYPosTB.Text = Runtime.areaLights[areaLightID].positionY.ToString();
+            areaZPosTB.Text = Runtime.areaLights[areaLightID].positionZ.ToString();
+
+            areaScaleX.Text = Runtime.areaLights[areaLightID].scaleX.ToString();
+            areaScaleY.Text = Runtime.areaLights[areaLightID].scaleY.ToString();
+            areaScaleZ.Text = Runtime.areaLights[areaLightID].scaleZ.ToString();
+
+            boundingBoxCB.Checked = Runtime.areaLights[areaLightID].renderBoundingBox; // currently not working properly, overrides value
+        }
+
+        private void areaXPosTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaXPosTB.Text, out i))
+            {
+                areaXPosTB.BackColor = Color.White;
+                positionX = i;
+            }
+            else
+                areaXPosTB.BackColor = Color.Red;
+
+            updateAreaLight();
+        }
+
+        private void areaYPosTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaYPosTB.Text, out i))
+            {
+                areaYPosTB.BackColor = Color.White;
+                positionY = i;
+            }
+            else
+                areaYPosTB.BackColor = Color.Red;
+
+            updateAreaLight();
+
+            Runtime.areaLights[areaLightID].positionY = positionY;
+        }
+
+        private void areaZPosTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaZPosTB.Text, out i))
+            {
+                areaZPosTB.BackColor = Color.White;
+                positionZ = i;
+            }
+            else
+                areaZPosTB.BackColor = Color.Red;
+
+            updateAreaLight();
+        }
+
+        private void areaScaleX_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaScaleX.Text, out i))
+            {
+                areaScaleX.BackColor = Color.White;
+                scaleX = i;
+            }
+            else
+                areaScaleX.BackColor = Color.Red;
+
+            updateAreaLight();
+        }
+
+        private void areaScaleY_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaScaleY.Text, out i))
+            {
+                areaScaleY.BackColor = Color.White;
+                scaleY = i;
+            }
+            else
+                areaScaleY.BackColor = Color.Red;
+
+            updateAreaLight();
+        }
+
+        private void areaScaleZ_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaScaleZ.Text, out i))
+            {
+                areaScaleZ.BackColor = Color.White;
+                scaleZ = i;
+            }
+            else
+                areaScaleZ.BackColor = Color.Red;
+
+            updateAreaLight();
+        }
+
+        private void areaGroundR_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaGroundR.Text, out i))
+            {
+                areaGroundR.BackColor = Color.White;
+                groundR = i;
+            }
+            else
+                areaGroundR.BackColor = Color.Red;
+
+            updateAreaLight();
+        }
+
+        private void areaGroundG_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaGroundG.Text, out i))
+            {
+                areaGroundG.BackColor = Color.White;
+                groundG = i;
+            }
+            else
+                areaGroundG.BackColor = Color.Red;
+
+            updateAreaLight();
+        }
+
+        private void areaGroundB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaGroundB.Text, out i))
+            {
+                areaGroundB.BackColor = Color.White;
+                groundB = i;
+            }
+            else
+                areaGroundB.BackColor = Color.Red;
+
+            updateAreaLight();
+        }
+
+        private void boundingBoxCB_CheckedChanged(object sender, EventArgs e)
+        {
+            renderBoundingBox = boundingBoxCB.Checked;
+        }
+
+        private void depthSlider_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void fovLabel_Click(object sender, EventArgs e)
+        {
+
         }
     }
     
