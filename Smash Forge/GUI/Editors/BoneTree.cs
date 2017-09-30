@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -73,6 +74,8 @@ namespace Smash_Forge
             tbl.Rows.Add("Y Scale", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).scale[1]);
             tbl.Rows.Add("Z Scale", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).scale[2]);
             Runtime.TargetVBN.reset();
+
+            Runtime.selectedBoneIndex = Runtime.TargetVBN.getJTBIndex(treeView1.SelectedNode.Text);
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

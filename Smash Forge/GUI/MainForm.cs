@@ -94,7 +94,7 @@ namespace Smash_Forge
             Runtime.renderSpawns = true;
             Runtime.renderRespawns = true;
             Runtime.renderOtherLVDEntries = true;
-            Runtime.renderNormals = true;
+            Runtime.renderAlpha = true;
             Runtime.renderVertColor = true;
             Runtime.renderSwag = false;
             Runtime.renderHurtboxes = true;

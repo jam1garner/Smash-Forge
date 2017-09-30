@@ -1981,7 +1981,6 @@ uniform bones
 
 uniform int renderType;
 
-
 vec4 skin(vec3 po, ivec4 index);
 vec3 skinNRM(vec3 po, ivec4 index);
 
@@ -2143,6 +2142,7 @@ uniform int renderLighting;
 uniform int renderVertColor;
 uniform int renderNormal;
 uniform int useNormalMap;
+uniform int renderAlpha;
 
 uniform float diffuseIntensity;
 uniform float ambientIntensity;
@@ -2188,6 +2188,8 @@ uniform mat4 eyeview;
 uniform vec3 lightPosition;
 uniform vec3 lightDirection;
 uniform sampler2D shadowMap;
+
+uniform int selectedBoneIndex;
 
 // Constants
 #define gamma 2.2
@@ -2596,6 +2598,24 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
         resultingColor = mix(resultingColor, stageFogColor, fogIntensity);
 
     resultingColor = pow(resultingColor, vec3(1 / gamma)); // gamma correction. gamma correction also done within render passes
+
+    // bone stuff
+    /*resultingColor = vec3(0);
+
+    // int boneIndex1 = vBoneOut.x;
+    // int boneIndex2 = int(vBoneOut.y);
+    // int boneIndex3 = int(vBoneOut.z);
+    // int boneIndex4 = int(vBoneOut.w);
+
+    if (vBoneOut.x == selectedBoneIndex)
+        resultingColor += vec3(vWeightOut.x);
+    if (vBoneOut.y == selectedBoneIndex)
+        resultingColor += vec3(vWeightOut.y);
+    if (vBoneOut.z == selectedBoneIndex)
+        resultingColor += vec3(vWeightOut.z);
+    if (vBoneOut.w == selectedBoneIndex)
+        resultingColor += vec3(vWeightOut.w);*/
+
     return resultingColor;
 }
 
@@ -2612,28 +2632,28 @@ void main()
 
     // if the renderer wants to show something other than textures
     if (renderType == 1) // normals color
-        FragColor = vec4(displayNormal,1);
+        FragColor.rgb = displayNormal;
     else if (renderType == 2) // normals black & white
     {
         float normal = dot(vec4(bumpMapNormal * mat3(eyeview), 1.0), vec4(vec3(0.15), 1.0));
         FragColor.rgb = vec3(normal);
     }
     else if (renderType == 3) // diffuse map
-        FragColor = vec4(pow(texture2D(dif, texcoord).rgb, vec3(1)), 1);
+        FragColor.rgb = pow(texture2D(dif, texcoord).rgb, vec3(1));
     else if (renderType == 4) // normal map
-        FragColor = vec4(pow(texture2D(normalMap, texcoord).rgb, vec3(1)), 1);
+        FragColor.rgb = pow(texture2D(normalMap, texcoord).rgb, vec3(1));
     else if (renderType == 5) // vertexColor
-        FragColor = vertexColor;
+        FragColor.rgb = vertexColor.rgb;
     else if (renderType == 6) // ambientIntensity occlusion
-        FragColor = vec4(pow(texture2D(normalMap, texcoord).aaa, vec3(1)), 1);
+        FragColor.rgb = pow(texture2D(normalMap, texcoord).aaa, vec3(1));
     else if (renderType == 7) // uv coords
-		FragColor = vec4(texcoord.x, texcoord.y, 1, 1);
+		FragColor.rgb = vec3(texcoord.x, texcoord.y, 1);
     else if (renderType == 8) // uv test pattern
-        FragColor = vec4(texture2D(UVTestPattern, texcoord).rgb, 1);
+        FragColor.rgb = texture2D(UVTestPattern, texcoord).rgb;
     else if (renderType == 9) // tangents
-        FragColor = vec4(displayTangent, 1);
+        FragColor.rgb = displayTangent;
     else if (renderType == 10) // bitangents
-        FragColor = vec4(displayBitangent, 1);
+        FragColor.rgb = displayBitangent;
 	else
     {
 
@@ -2703,6 +2723,11 @@ void main()
         if (isTransparent < 1)
             FragColor.a = 1;
         // FragColor.rgb = FragColor.aaa;
+
+        // alpha override
+        if (renderAlpha < 1)
+            FragColor.a = 1;
+
         //---------------------------------------------------------------------------------------------
 
 	}

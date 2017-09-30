@@ -180,7 +180,7 @@ namespace Smash_Forge.GUI
             depthTestCB.Checked = Runtime.useDepthTest;
             zScaleTB.Text = Runtime.zScale + "";
 
-            cb_normals.Checked = Runtime.renderNormals;
+            renderAlphaCB.Checked = Runtime.renderAlpha;
             cb_vertcolor.Checked = Runtime.renderVertColor;
             renderMode.SelectedIndex = (int)Runtime.renderType;
 
@@ -317,7 +317,7 @@ namespace Smash_Forge.GUI
 
         private void cb_normals_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.renderNormals= cb_normals.Checked;
+            Runtime.renderAlpha= renderAlphaCB.Checked;
         }
 
         private void cb_vertcolor_CheckedChanged(object sender, EventArgs e)

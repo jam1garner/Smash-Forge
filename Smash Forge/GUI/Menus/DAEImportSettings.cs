@@ -152,8 +152,8 @@ namespace Smash_Forge
                 }
             }
 
-            if (VertTypes[(string)comboBox1.SelectedItem] == 3 || VertTypes[(string)comboBox1.SelectedItem] == 7)
-                nud.computeTangentBitangent();
+            //if (VertTypes[(string)comboBox1.SelectedItem] == 3 || VertTypes[(string)comboBox1.SelectedItem] == 7)
+            nud.computeTangentBitangent();
 
             if (checkBox2.Checked)
             {

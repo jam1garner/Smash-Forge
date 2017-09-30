@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.stageLight3CB = new System.Windows.Forms.CheckBox();
             this.stageLight4CB = new System.Windows.Forms.CheckBox();
@@ -152,6 +152,14 @@
             this.label20 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.pbShieldColor = new System.Windows.Forms.PictureBox();
+            this.label83 = new System.Windows.Forms.Label();
+            this.pbAbsorbColor = new System.Windows.Forms.PictureBox();
+            this.label80 = new System.Windows.Forms.Label();
+            this.pbReflectColor = new System.Windows.Forms.PictureBox();
+            this.label81 = new System.Windows.Forms.Label();
+            this.pbCounterColor = new System.Windows.Forms.PictureBox();
+            this.label82 = new System.Windows.Forms.Label();
             this.pbSearchboxColor = new System.Windows.Forms.PictureBox();
             this.label55 = new System.Windows.Forms.Label();
             this.pbGrabboxColor = new System.Windows.Forms.PictureBox();
@@ -238,7 +246,7 @@
             this.fresnelCB = new System.Windows.Forms.CheckBox();
             this.diffuseCB = new System.Windows.Forms.CheckBox();
             this.lightCheckBox = new System.Windows.Forms.CheckBox();
-            this.cb_normals = new System.Windows.Forms.CheckBox();
+            this.renderAlphaCB = new System.Windows.Forms.CheckBox();
             this.renderMode = new System.Windows.Forms.ComboBox();
             this.cb_vertcolor = new System.Windows.Forms.CheckBox();
             this.renderDepthLabel = new System.Windows.Forms.Label();
@@ -260,10 +268,8 @@
             this.label103 = new System.Windows.Forms.Label();
             this.checkBox20 = new System.Windows.Forms.CheckBox();
             this.boundingBoxComboBox = new System.Windows.Forms.ComboBox();
-            this.label80 = new System.Windows.Forms.Label();
             this.boundingBoxCB = new System.Windows.Forms.CheckBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.label81 = new System.Windows.Forms.Label();
             this.removeAreaLightButton = new System.Windows.Forms.Button();
             this.addAreaLightButton = new System.Windows.Forms.Button();
             this.areaLightIDTB = new System.Windows.Forms.TextBox();
@@ -307,17 +313,13 @@
             this.areaGroundB = new System.Windows.Forms.TextBox();
             this.areaColCeiling = new System.Windows.Forms.Label();
             this.areaSkyRLabel = new System.Windows.Forms.Label();
-            this.pbAbsorbColor = new System.Windows.Forms.PictureBox();
-            this.label80 = new System.Windows.Forms.Label();
-            this.pbReflectColor = new System.Windows.Forms.PictureBox();
-            this.label81 = new System.Windows.Forms.Label();
-            this.pbCounterColor = new System.Windows.Forms.PictureBox();
-            this.label82 = new System.Windows.Forms.Label();
-            this.pbShieldColor = new System.Windows.Forms.PictureBox();
-            this.label83 = new System.Windows.Forms.Label();
             this.tabPage4.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAbsorbColor)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbReflectColor)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbCounterColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbSearchboxColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbGrabboxColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbWindboxColor)).BeginInit();
@@ -346,10 +348,6 @@
             this.tableLayoutPanel3.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAbsorbColor)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbReflectColor)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbCounterColor)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
             this.SuspendLayout();
             // 
             // tabPage4
@@ -1635,9 +1633,7 @@
             this.tabPage2.Controls.Add(this.pbShieldColor);
             this.tabPage2.Controls.Add(this.label83);
             this.tabPage2.Controls.Add(this.pbAbsorbColor);
-            this.tabPage2.Controls.Add(this.label80);
             this.tabPage2.Controls.Add(this.pbReflectColor);
-            this.tabPage2.Controls.Add(this.label81);
             this.tabPage2.Controls.Add(this.pbCounterColor);
             this.tabPage2.Controls.Add(this.label82);
             this.tabPage2.Controls.Add(this.pbSearchboxColor);
@@ -1682,6 +1678,78 @@
             this.tabPage2.Size = new System.Drawing.Size(556, 597);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Hit/Hurt boxes";
+            // 
+            // pbShieldColor
+            // 
+            this.pbShieldColor.Location = new System.Drawing.Point(533, 273);
+            this.pbShieldColor.Name = "pbShieldColor";
+            this.pbShieldColor.Size = new System.Drawing.Size(16, 16);
+            this.pbShieldColor.TabIndex = 66;
+            this.pbShieldColor.TabStop = false;
+            this.pbShieldColor.Click += new System.EventHandler(this.pbShieldColor_Click);
+            // 
+            // label83
+            // 
+            this.label83.AutoSize = true;
+            this.label83.Location = new System.Drawing.Point(393, 276);
+            this.label83.Name = "label83";
+            this.label83.Size = new System.Drawing.Size(97, 13);
+            this.label83.TabIndex = 65;
+            this.label83.Text = "Shield bubble color";
+            // 
+            // pbAbsorbColor
+            // 
+            this.pbAbsorbColor.Location = new System.Drawing.Point(357, 317);
+            this.pbAbsorbColor.Name = "pbAbsorbColor";
+            this.pbAbsorbColor.Size = new System.Drawing.Size(16, 16);
+            this.pbAbsorbColor.TabIndex = 64;
+            this.pbAbsorbColor.TabStop = false;
+            this.pbAbsorbColor.Click += new System.EventHandler(this.pbAbsorbColor_Click);
+            // 
+            // label80
+            // 
+            this.label80.AutoSize = true;
+            this.label80.Location = new System.Drawing.Point(207, 320);
+            this.label80.Name = "label80";
+            this.label80.Size = new System.Drawing.Size(101, 13);
+            this.label80.TabIndex = 63;
+            this.label80.Text = "Absorb bubble color";
+            // 
+            // pbReflectColor
+            // 
+            this.pbReflectColor.Location = new System.Drawing.Point(357, 295);
+            this.pbReflectColor.Name = "pbReflectColor";
+            this.pbReflectColor.Size = new System.Drawing.Size(16, 16);
+            this.pbReflectColor.TabIndex = 62;
+            this.pbReflectColor.TabStop = false;
+            this.pbReflectColor.Click += new System.EventHandler(this.pbReflectColor_Click);
+            // 
+            // label81
+            // 
+            this.label81.AutoSize = true;
+            this.label81.Location = new System.Drawing.Point(208, 298);
+            this.label81.Name = "label81";
+            this.label81.Size = new System.Drawing.Size(102, 13);
+            this.label81.TabIndex = 61;
+            this.label81.Text = "Reflect bubble color";
+            // 
+            // pbCounterColor
+            // 
+            this.pbCounterColor.Location = new System.Drawing.Point(357, 273);
+            this.pbCounterColor.Name = "pbCounterColor";
+            this.pbCounterColor.Size = new System.Drawing.Size(16, 16);
+            this.pbCounterColor.TabIndex = 60;
+            this.pbCounterColor.TabStop = false;
+            this.pbCounterColor.Click += new System.EventHandler(this.pbCounterColor_Click);
+            // 
+            // label82
+            // 
+            this.label82.AutoSize = true;
+            this.label82.Location = new System.Drawing.Point(207, 276);
+            this.label82.Name = "label82";
+            this.label82.Size = new System.Drawing.Size(102, 13);
+            this.label82.TabIndex = 59;
+            this.label82.Text = "Counter trigger color";
             // 
             // pbSearchboxColor
             // 
@@ -1962,8 +2030,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem3,
-            listViewItem4});
+            listViewItem1,
+            listViewItem2});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -2351,7 +2419,7 @@
             this.groupBox1.Controls.Add(this.fresnelCB);
             this.groupBox1.Controls.Add(this.diffuseCB);
             this.groupBox1.Controls.Add(this.lightCheckBox);
-            this.groupBox1.Controls.Add(this.cb_normals);
+            this.groupBox1.Controls.Add(this.renderAlphaCB);
             this.groupBox1.Controls.Add(this.renderMode);
             this.groupBox1.Controls.Add(this.cb_vertcolor);
             this.groupBox1.Controls.Add(this.renderDepthLabel);
@@ -2607,20 +2675,18 @@
             this.lightCheckBox.UseVisualStyleBackColor = true;
             this.lightCheckBox.CheckedChanged += new System.EventHandler(this.lightCheckBox_CheckedChanged);
             // 
-            // cb_normals
+            // renderAlphaCB
             // 
-            this.cb_normals.AutoSize = true;
-            this.cb_normals.Checked = true;
-            this.cb_normals.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_normals.Enabled = false;
-            this.cb_normals.Location = new System.Drawing.Point(181, 162);
-            this.cb_normals.Name = "cb_normals";
-            this.cb_normals.Size = new System.Drawing.Size(94, 17);
-            this.cb_normals.TabIndex = 17;
-            this.cb_normals.Text = "Show Normals";
-            this.cb_normals.UseVisualStyleBackColor = true;
-            this.cb_normals.Visible = false;
-            this.cb_normals.CheckedChanged += new System.EventHandler(this.cb_normals_CheckedChanged);
+            this.renderAlphaCB.AutoSize = true;
+            this.renderAlphaCB.Checked = true;
+            this.renderAlphaCB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.renderAlphaCB.Location = new System.Drawing.Point(181, 162);
+            this.renderAlphaCB.Name = "renderAlphaCB";
+            this.renderAlphaCB.Size = new System.Drawing.Size(91, 17);
+            this.renderAlphaCB.TabIndex = 17;
+            this.renderAlphaCB.Text = "Render Alpha";
+            this.renderAlphaCB.UseVisualStyleBackColor = true;
+            this.renderAlphaCB.CheckedChanged += new System.EventHandler(this.cb_normals_CheckedChanged);
             // 
             // renderMode
             // 
@@ -2880,15 +2946,6 @@
             this.boundingBoxComboBox.Text = "WireFrame";
             this.boundingBoxComboBox.SelectedIndexChanged += new System.EventHandler(this.boundingBoxComboBox_SelectedIndexChanged);
             // 
-            // label80
-            // 
-            this.label80.AutoSize = true;
-            this.label80.Location = new System.Drawing.Point(16, 143);
-            this.label80.Name = "label80";
-            this.label80.Size = new System.Drawing.Size(30, 13);
-            this.label80.TabIndex = 54;
-            this.label80.Text = "Style";
-            // 
             // boundingBoxCB
             // 
             this.boundingBoxCB.AutoSize = true;
@@ -2912,15 +2969,6 @@
             this.groupBox8.TabIndex = 59;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Area Light";
-            // 
-            // label81
-            // 
-            this.label81.AutoSize = true;
-            this.label81.Location = new System.Drawing.Point(19, 22);
-            this.label81.Name = "label81";
-            this.label81.Size = new System.Drawing.Size(69, 13);
-            this.label81.TabIndex = 3;
-            this.label81.Text = "Area Light ID";
             // 
             // removeAreaLightButton
             // 
@@ -3404,78 +3452,6 @@
             this.areaSkyRLabel.TabIndex = 66;
             this.areaSkyRLabel.Text = "Red";
             // 
-            // pbAbsorbColor
-            // 
-            this.pbAbsorbColor.Location = new System.Drawing.Point(357, 317);
-            this.pbAbsorbColor.Name = "pbAbsorbColor";
-            this.pbAbsorbColor.Size = new System.Drawing.Size(16, 16);
-            this.pbAbsorbColor.TabIndex = 64;
-            this.pbAbsorbColor.TabStop = false;
-            this.pbAbsorbColor.Click += new System.EventHandler(this.pbAbsorbColor_Click);
-            // 
-            // label80
-            // 
-            this.label80.AutoSize = true;
-            this.label80.Location = new System.Drawing.Point(207, 320);
-            this.label80.Name = "label80";
-            this.label80.Size = new System.Drawing.Size(101, 13);
-            this.label80.TabIndex = 63;
-            this.label80.Text = "Absorb bubble color";
-            // 
-            // pbReflectColor
-            // 
-            this.pbReflectColor.Location = new System.Drawing.Point(357, 295);
-            this.pbReflectColor.Name = "pbReflectColor";
-            this.pbReflectColor.Size = new System.Drawing.Size(16, 16);
-            this.pbReflectColor.TabIndex = 62;
-            this.pbReflectColor.TabStop = false;
-            this.pbReflectColor.Click += new System.EventHandler(this.pbReflectColor_Click);
-            // 
-            // label81
-            // 
-            this.label81.AutoSize = true;
-            this.label81.Location = new System.Drawing.Point(208, 298);
-            this.label81.Name = "label81";
-            this.label81.Size = new System.Drawing.Size(102, 13);
-            this.label81.TabIndex = 61;
-            this.label81.Text = "Reflect bubble color";
-            // 
-            // pbCounterColor
-            // 
-            this.pbCounterColor.Location = new System.Drawing.Point(357, 273);
-            this.pbCounterColor.Name = "pbCounterColor";
-            this.pbCounterColor.Size = new System.Drawing.Size(16, 16);
-            this.pbCounterColor.TabIndex = 60;
-            this.pbCounterColor.TabStop = false;
-            this.pbCounterColor.Click += new System.EventHandler(this.pbCounterColor_Click);
-            // 
-            // label82
-            // 
-            this.label82.AutoSize = true;
-            this.label82.Location = new System.Drawing.Point(207, 276);
-            this.label82.Name = "label82";
-            this.label82.Size = new System.Drawing.Size(102, 13);
-            this.label82.TabIndex = 59;
-            this.label82.Text = "Counter trigger color";
-            // 
-            // pbShieldColor
-            // 
-            this.pbShieldColor.Location = new System.Drawing.Point(533, 273);
-            this.pbShieldColor.Name = "pbShieldColor";
-            this.pbShieldColor.Size = new System.Drawing.Size(16, 16);
-            this.pbShieldColor.TabIndex = 66;
-            this.pbShieldColor.TabStop = false;
-            this.pbShieldColor.Click += new System.EventHandler(this.pbShieldColor_Click);
-            // 
-            // label83
-            // 
-            this.label83.AutoSize = true;
-            this.label83.Location = new System.Drawing.Point(393, 276);
-            this.label83.Name = "label83";
-            this.label83.Size = new System.Drawing.Size(97, 13);
-            this.label83.TabIndex = 65;
-            this.label83.Text = "Shield bubble color";
-            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3492,6 +3468,10 @@
             this.tabPage3.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAbsorbColor)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbReflectColor)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbCounterColor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbSearchboxColor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbGrabboxColor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbWindboxColor)).EndInit();
@@ -3531,10 +3511,6 @@
             this.groupBox5.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAbsorbColor)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbReflectColor)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbCounterColor)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -3739,7 +3715,7 @@
         private System.Windows.Forms.CheckBox fresnelCB;
         private System.Windows.Forms.CheckBox diffuseCB;
         private System.Windows.Forms.CheckBox lightCheckBox;
-        private System.Windows.Forms.CheckBox cb_normals;
+        private System.Windows.Forms.CheckBox renderAlphaCB;
         private System.Windows.Forms.ComboBox renderMode;
         private System.Windows.Forms.CheckBox cb_vertcolor;
         private System.Windows.Forms.Label renderDepthLabel;

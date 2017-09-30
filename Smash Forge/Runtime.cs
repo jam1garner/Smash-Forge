@@ -172,7 +172,8 @@ namespace Smash_Forge
         public static float model_scale = 1f;
         public static float zScale = 1.0f;
 
-        #region character lighting
+        public static int selectedBoneIndex = -1;
+
         public static float dif_hue = 360.0f;
         public static float dif_saturation = 0.00f;
         public static float dif_intensity = 1.00f;
@@ -206,9 +207,7 @@ namespace Smash_Forge
         public static float reflection_hue = 360.0f;
         public static float reflection_saturation = 0.0f;
         public static float reflection_intensity = 1.0f;
-        #endregion
 
-        #region stage lighting
         public static bool renderStageLight1 = true;
         public static bool renderStageLight2 = true;
         public static bool renderStageLight3 = false;
@@ -247,10 +246,8 @@ namespace Smash_Forge
         public static float fog_saturation = 0.00f;
         public static float fog_intensity = 0.00f;
 
-        #endregion
-
         public static float renderDepth = 100000.0f;
-        public static bool renderNormals;
+        public static bool renderAlpha;
         public static bool renderVertColor;
         public static bool renderLighting;
         public static bool useNormalMap;
@@ -386,7 +383,7 @@ namespace Smash_Forge
                         case "camera_light": bool.TryParse(node.InnerText, out CameraLight); break;
                         case "use_normal_map": bool.TryParse(node.InnerText, out useNormalMap); break;
                         case "render_vertex_color": bool.TryParse(node.InnerText, out renderVertColor); break;
-                        case "render_normals": bool.TryParse(node.InnerText, out renderNormals); break;
+                        case "render_alpha": bool.TryParse(node.InnerText, out renderAlpha); break;
                         case "render_diffuse": bool.TryParse(node.InnerText, out renderDiffuse); break;
                         case "render_specular": bool.TryParse(node.InnerText, out renderSpecular); break;
                         case "render_fresnel": bool.TryParse(node.InnerText, out renderFresnel); break;
@@ -551,7 +548,7 @@ for changing default texure
             mainNode.AppendChild(renderNode);
             renderNode.AppendChild(createNode(doc, "type",renderType.ToString()));
             renderNode.AppendChild(createNode(doc, "render_vertex_color", renderVertColor.ToString()));
-            renderNode.AppendChild(createNode(doc, "render_normals", renderNormals.ToString()));
+            renderNode.AppendChild(createNode(doc, "render_alpha", renderAlpha.ToString()));
             renderNode.AppendChild(createNode(doc, "camera_light", CameraLight.ToString()));
             renderNode.AppendChild(createNode(doc, "use_normal_map", useNormalMap.ToString()));
 

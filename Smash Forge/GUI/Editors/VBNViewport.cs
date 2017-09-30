@@ -734,7 +734,7 @@ namespace Smash_Forge
             int rt = (int)Runtime.renderType;
             if(rt == 0)
             {
-                if (Runtime.renderNormals)
+                if (Runtime.renderAlpha)
                     rt = rt | (0x10);
                 if (Runtime.renderVertColor)
                     rt = rt | (0x20);
@@ -742,7 +742,7 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderType"), rt);
             GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderNormal"), Runtime.renderNormals ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderDiffuse"), Runtime.renderDiffuse ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
