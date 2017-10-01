@@ -647,7 +647,7 @@ namespace Smash_Forge
 
         public void UpdateMousePosition()
         {
-            float zoomMultiplier = 3.5f; // convert zoomSpeed to in game stprm zoom speed. still not exact
+            float zoomMultiplier = Runtime.zoomModifierScale; // convert zoomSpeed to in game stprm zoom speed. still not exact
             float mouseTranslateSpeed = 0.050f;
             float scrollWheelZoomSpeed = 1.75f;
             float shiftZoomMultiplier = 2.5f;
@@ -2093,9 +2093,9 @@ namespace Smash_Forge
         {
             cameraYRotation = 0;
             cameraXRotation = 0;
-            height = 0;
+            height = 10;
             width = 0;
-            zoom = 0;
+            zoom = -80;
             nzoom = 0;
             mouseXLast = 0;
             mouseYLast = 0;

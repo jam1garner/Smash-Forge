@@ -157,6 +157,7 @@ namespace Smash_Forge
         public static Color back2 = Color.FromArgb((255 << 24) | (77 << 16) | (77 << 8) | (77));
         public static float fov = 0.524f; // default angle in radians from stage param files
         public static float zoomspeed = 1.0f;
+        public static float zoomModifierScale = 2.0f;
         public static bool CameraLight = false;
 
         public static bool renderDiffuse = true;
@@ -247,10 +248,10 @@ namespace Smash_Forge
         public static float fog_intensity = 0.00f;
 
         public static float renderDepth = 100000.0f;
-        public static bool renderAlpha;
-        public static bool renderVertColor;
-        public static bool renderLighting;
-        public static bool useNormalMap;
+        public static bool renderAlpha = true;
+        public static bool renderVertColor = true;
+        public static bool renderLighting = true;
+        public static bool useNormalMap = true;
         public static bool useDepthTest = true;
         public static RenderTypes renderType;
 
@@ -374,6 +375,7 @@ namespace Smash_Forge
                             break;
                         case "guide_lines": bool.TryParse(node.InnerText, out renderFloorLines); break;
                         case "zoom_speed": float.TryParse(node.InnerText, out zoomspeed); break;
+                        case "zoom_modifier_multiplier": float.TryParse(node.InnerText, out zoomModifierScale); break;
                         case "render_depth": float.TryParse(node.InnerText, out renderDepth); break;
                         case "fov": float.TryParse(node.InnerText, out fov); break;
                         case "back_gradient_top": try { back1 = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
@@ -537,7 +539,9 @@ for changing default texure
                 node.AppendChild(createNode(doc, "color", ColorTranslator.ToHtml(floorColor)));
                 node.AppendChild(createNode(doc, "size", floorSize.ToString()));
             }
+            
             viewportNode.AppendChild(createNode(doc, "zoom_speed", zoomspeed.ToString()));
+            viewportNode.AppendChild(createNode(doc, "zoom_modifier_multiplier", zoomModifierScale.ToString()));
             viewportNode.AppendChild(createNode(doc, "fov", fov.ToString()));
             viewportNode.AppendChild(createNode(doc, "render_depth", renderDepth.ToString()));
             viewportNode.AppendChild(createNode(doc, "render_background", renderBackGround.ToString()));
