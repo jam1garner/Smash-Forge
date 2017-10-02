@@ -2817,7 +2817,6 @@ gl_FragColor = vec4(1);
 
         #endregion
 
-
         #region texture shader
         public static string texture_vs = @"#version 330
 
@@ -2848,17 +2847,30 @@ out vec4 outColor;
 void main()
 {   outColor = vec4(0,0,0,1);    
     vec4 textureColor = texture2D(texture, vec2(texCoord.x, 1-texCoord.y)).rgba;
-    if (renderR == 1)
+    if (renderR == 1) 
+    {
         outColor.r = textureColor.r;
+        if (renderB == 0 && renderG == 0)
+            outColor.rgb = textureColor.rrr;
+    }
     if (renderG == 1)
+    {    
         outColor.g = textureColor.g;
+        if (renderB == 0 && renderR == 0)
+            outColor.rgb = textureColor.ggg;
+    }
     if (renderB == 1)
+    {
         outColor.b = textureColor.b;
+        if (renderG == 0 && renderR == 0)
+            outColor.rgb = textureColor.bbb;
+    }
     if (renderAlpha == 1)
+    {
         outColor.a = textureColor.a;
+    }
     if (alphaOverride == 1)
         outColor = vec4(textureColor.aaa, 1);
-        
 }";
 
         #endregion
