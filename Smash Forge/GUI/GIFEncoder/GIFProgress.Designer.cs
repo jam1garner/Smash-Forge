@@ -50,6 +50,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "GIFProgress";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GIFProgress_FormClosing);
+            this.Load += new System.EventHandler(this.GIFProgress_Load);
             this.ResumeLayout(false);
 
         }

@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Smash_Forge.GUI.Menus;
 
 namespace Smash_Forge.GUI
 {
@@ -16,9 +17,57 @@ namespace Smash_Forge.GUI
         private bool disableRuntimeUpdates;
         private List<Color> hitboxColors;
 
+        float difR = 0.0f;
+        float difG = 0.0f;
+        float difB = 0.0f;
+
+        float ambR = 0.0f;
+        float ambG = 0.0f;
+        float ambB = 0.0f;
+
+        float fresSkyR = 0.0f;
+        float fresSkyG = 0.0f;
+        float fresSkyB = 0.0f;
+        float fresGroundR = 0.0f;
+        float fresGroundG = 0.0f;
+        float fresGroundB = 0.0f;
+
+        float specR = 0.0f;
+        float specG = 0.0f;
+        float specB = 0.0f;
+
+        float refR = 0.0f;
+        float refG = 0.0f;
+        float refB = 0.0f;
+
+        // area light values for currently selected light
+        string areaLightID = "";
+        float groundR = 1.0f;
+        float groundG = 1.0f;
+        float groundB = 1.0f;
+        // diffuse color
+        float skyR = 1.0f;
+        float skyG = 1.0f;
+        float skyB = 1.0f;
+        // size
+        float scaleX = 1.0f;
+        float scaleY = 1.0f;
+        float scaleZ = 1.0f;
+        // position of the center of the region
+        float positionX = 0.0f;
+        float positionY = 0.0f;
+        float positionZ = 0.0f;
+        // bounding box values
+        bool renderBoundingBox = true;
+
+        List<string> areaLightIDList = new List<string>();
+
+        LightColorEditor colorForm = null;
+
         public RenderSettings()
         {
             InitializeComponent();
+            FillForm();
 
             disableRuntimeUpdates = true;
             nudHitboxAlpha.Value = Runtime.hitboxAlpha;
@@ -53,7 +102,8 @@ namespace Smash_Forge.GUI
             modelSelectCB.Enabled = checkBox1.Checked;
 
             depthSlider.Value = (int)Runtime.renderDepth;
-            fovSlider.Value = (int)(Runtime.fov * 10);
+            fovSlider.Value = (int)(Runtime.fov * 180.0f / Math.PI);
+            fovLabel.Text = "FOV (Degrees): " + fovSlider.Value;
 
             cameraLightCB.Checked = Runtime.CameraLight;
             diffuseCB.Checked = Runtime.renderDiffuse;
@@ -124,8 +174,13 @@ namespace Smash_Forge.GUI
             stage4RotY.Text = Runtime.stagelight4_rotY + "";
             stage4RotZ.Text = Runtime.stagelight4_rotZ + "";
 
+            RendererLabel.Text = "Renderer: " + Runtime.renderer;
+            OpenGLVersionLabel.Text = "OpenGL Version: " + Runtime.GLSLVersion;
 
-            cb_normals.Checked = Runtime.renderNormals;
+            depthTestCB.Checked = Runtime.useDepthTest;
+            zScaleTB.Text = Runtime.zScale + "";
+
+            renderAlphaCB.Checked = Runtime.renderAlpha;
             cb_vertcolor.Checked = Runtime.renderVertColor;
             renderMode.SelectedIndex = (int)Runtime.renderType;
 
@@ -138,8 +193,17 @@ namespace Smash_Forge.GUI
             pbGrabboxColor.BackColor = Runtime.grabboxColor;
             pbSearchboxColor.BackColor = Runtime.searchboxColor;
 
+            pbCounterColor.BackColor = Runtime.counterBubbleColor;
+            pbReflectColor.BackColor = Runtime.reflectBubbleColor;
+            pbAbsorbColor.BackColor = Runtime.absorbBubbleColor;
+            pbShieldColor.BackColor = Runtime.shieldBubbleColor;
+
             textParamDir.Text = Runtime.paramDir;
             disableRuntimeUpdates = false;
+
+
+
+
         }
 
         private void checkBox6_CheckedChanged(object sender, EventArgs e)
@@ -228,6 +292,7 @@ namespace Smash_Forge.GUI
         private void depthSlider_ValueChanged(object sender, EventArgs e)
         {
             Runtime.renderDepth = depthSlider.Value;
+            renderDepthLabel.Text = "Depth: " + Runtime.renderDepth;
         }
 
         private void renderMode_SelectionChangeCommitted(object sender, EventArgs e)
@@ -252,7 +317,7 @@ namespace Smash_Forge.GUI
 
         private void cb_normals_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.renderNormals= cb_normals.Checked;
+            Runtime.renderAlpha= renderAlphaCB.Checked;
         }
 
         private void cb_vertcolor_CheckedChanged(object sender, EventArgs e)
@@ -287,8 +352,20 @@ namespace Smash_Forge.GUI
 
         private void fovSlider_Scroll(object sender, EventArgs e)
         {
-            Runtime.fov = fovSlider.Value / 10f;
+            Runtime.fov = fovSlider.Value * (float)Math.PI / 180.0f;
+        
+            fovLabel.Text = "FOV (Degrees): " + fovSlider.Value;
         }
+
+        private double fovToDegrees(float fov)
+        {
+            // convert fov to an easier to display value in degrees
+            double FOV = fov * 180.0 / Math.PI;
+            FOV = Math.Round(FOV, 2);
+
+            return FOV;
+        }
+
 
         private void backgroundCB_CheckedChanged(object sender, EventArgs e)
         {
@@ -377,6 +454,9 @@ namespace Smash_Forge.GUI
 
         private void modelscaleTB_TextChanged(object sender, EventArgs e)
         {
+            if (disableRuntimeUpdates)
+                return;
+
             float i = 0;
             if (float.TryParse(modelscaleTB.Text, out i))
             {
@@ -511,6 +591,7 @@ namespace Smash_Forge.GUI
         }
 
 
+
         private void diffuseHue_TextChanged(object sender, EventArgs e)
         {
             float i = 0;
@@ -521,6 +602,15 @@ namespace Smash_Forge.GUI
             }
             else
                 diffuseHue.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity, out difR, out difG, out difB);
+
+            difR = Clamp(difR);
+            difG = Clamp(difG);
+            difB = Clamp(difB);
+
+            difColorButton.BackColor = Color.FromArgb(255, (int)(difR), (int)(difG), (int)(difB));
+
         }
 
         private void diffuseSaturation_TextChanged(object sender, EventArgs e)
@@ -533,6 +623,14 @@ namespace Smash_Forge.GUI
             }
             else
                 diffuseSaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity, out difR, out difG, out difB);
+
+            difR = Clamp(difR);
+            difG = Clamp(difG);
+            difB = Clamp(difB);
+
+            difColorButton.BackColor = Color.FromArgb(255, (int)(difR), (int)(difG), (int)(difB));
         }
 
         private void label20_Click(object sender, EventArgs e)
@@ -550,6 +648,14 @@ namespace Smash_Forge.GUI
             }
             else
                 diffuseIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity, out difR, out difG, out difB);
+
+            difR = Clamp(difR);
+            difG = Clamp(difG);
+            difB = Clamp(difB);
+
+            difColorButton.BackColor = Color.FromArgb(255, (int)(difR), (int)(difG), (int)(difB));
         }
 
         private void ambientHue_TextChanged(object sender, EventArgs e)
@@ -562,6 +668,15 @@ namespace Smash_Forge.GUI
             }
             else
                 ambientHue.BackColor = Color.Red;
+
+
+            RenderTools.HSV2RGB(Runtime.amb_hue, Runtime.amb_saturation, Runtime.amb_intensity, out ambR, out ambG, out ambB);
+
+            ambR = Clamp(ambR);
+            ambG = Clamp(ambG);
+            ambB = Clamp(ambB);
+
+            ambColorButton.BackColor = Color.FromArgb(255, (int)(ambR), (int)(ambG), (int)(ambB));
         }
 
         private void ambientSaturation_TextChanged(object sender, EventArgs e)
@@ -574,6 +689,14 @@ namespace Smash_Forge.GUI
             }
             else
                 ambientSaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.amb_hue, Runtime.amb_saturation, Runtime.amb_intensity, out ambR, out ambG, out ambB);
+
+            ambR = Clamp(ambR);
+            ambG = Clamp(ambG);
+            ambB = Clamp(ambB);
+
+            ambColorButton.BackColor = Color.FromArgb(255, (int)(ambR), (int)(ambG), (int)(ambB));
         }
 
         private void ambientIntensity_TextChanged(object sender, EventArgs e)
@@ -586,6 +709,14 @@ namespace Smash_Forge.GUI
             }
             else
                 ambientIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.amb_hue, Runtime.amb_saturation, Runtime.amb_intensity, out ambR, out ambG, out ambB);
+
+            ambR = Clamp(ambR);
+            ambG = Clamp(ambG);
+            ambB = Clamp(ambB);
+
+            ambColorButton.BackColor = Color.FromArgb(255, (int)(ambR), (int)(ambG), (int)(ambB));
         }
 
         private void fresnelGroundHue_TextChanged(object sender, EventArgs e)
@@ -598,6 +729,14 @@ namespace Smash_Forge.GUI
             }
             else
                 fresnelGroundHue.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_ground_hue, Runtime.fres_ground_saturation, Runtime.fres_ground_intensity, out fresGroundR, out fresGroundG, out fresGroundB);
+
+            fresGroundR = Clamp(fresGroundR);
+            fresGroundG = Clamp(fresGroundG);
+            fresGroundB = Clamp(fresGroundB);
+
+            fresGroundColorButton.BackColor = Color.FromArgb(255, (int)(fresGroundR), (int)(fresGroundG), (int)(fresGroundB));
         }
 
         private void fresnelGroundSaturation_TextChanged(object sender, EventArgs e)
@@ -610,6 +749,14 @@ namespace Smash_Forge.GUI
             }
             else
                 fresnelGroundSaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_ground_hue, Runtime.fres_ground_saturation, Runtime.fres_ground_intensity, out fresGroundR, out fresGroundG, out fresGroundB);
+
+            fresGroundR = Clamp(fresGroundR);
+            fresGroundG = Clamp(fresGroundG);
+            fresGroundB = Clamp(fresGroundB);
+
+            fresGroundColorButton.BackColor = Color.FromArgb(255, (int)(fresGroundR), (int)(fresGroundG), (int)(fresGroundB));
         }
 
         private void fresnelGroundIntensity_TextChanged(object sender, EventArgs e)
@@ -622,6 +769,14 @@ namespace Smash_Forge.GUI
             }
             else
                 fresnelGroundIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_ground_hue, Runtime.fres_ground_saturation, Runtime.fres_ground_intensity, out fresGroundR, out fresGroundG, out fresGroundB);
+
+            fresGroundR = Clamp(fresGroundR);
+            fresGroundG = Clamp(fresGroundG);
+            fresGroundB = Clamp(fresGroundB);
+
+            fresGroundColorButton.BackColor = Color.FromArgb(255, (int)(fresGroundR), (int)(fresGroundG), (int)(fresGroundB));
         }
 
         private void FogCB_CheckedChanged(object sender, EventArgs e)
@@ -651,6 +806,14 @@ namespace Smash_Forge.GUI
             }
             else
                 fresnelSkyHue.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_sky_hue, Runtime.fres_sky_saturation, Runtime.fres_sky_intensity, out fresSkyR, out fresSkyG, out fresSkyB);
+
+            fresSkyR = Clamp(fresSkyR);
+            fresSkyG = Clamp(fresSkyG);
+            fresSkyB = Clamp(fresSkyB);
+
+            fresSkyColorButton.BackColor = Color.FromArgb(255, (int)(fresSkyR), (int)(fresSkyG), (int)(fresSkyB));
         }
 
         private void fresnelSkySaturation_TextChanged(object sender, EventArgs e)
@@ -663,6 +826,14 @@ namespace Smash_Forge.GUI
             }
             else
                 fresnelSkySaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_sky_hue, Runtime.fres_sky_saturation, Runtime.fres_sky_intensity, out fresSkyR, out fresSkyG, out fresSkyB);
+
+            fresSkyR = Clamp(fresSkyR);
+            fresSkyG = Clamp(fresSkyG);
+            fresSkyB = Clamp(fresSkyB);
+
+            fresSkyColorButton.BackColor = Color.FromArgb(255, (int)(fresSkyR), (int)(fresSkyG), (int)(fresSkyB));
         }
 
         private void fresnelSkyIntensity_TextChanged(object sender, EventArgs e)
@@ -675,6 +846,14 @@ namespace Smash_Forge.GUI
             }
             else
                 fresnelSkyIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.fres_sky_hue, Runtime.fres_sky_saturation, Runtime.fres_sky_intensity, out fresSkyR, out fresSkyG, out fresSkyB);
+
+            fresSkyR = Clamp(fresSkyR);
+            fresSkyG = Clamp(fresSkyG);
+            fresSkyB = Clamp(fresSkyB);
+
+            fresSkyColorButton.BackColor = Color.FromArgb(255, (int)(fresSkyR), (int)(fresSkyG), (int)(fresSkyB));
         }
 
         private void label33_Click(object sender, EventArgs e)
@@ -692,6 +871,14 @@ namespace Smash_Forge.GUI
             }
             else
                 specularHue.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity, out specR, out specG, out specB);
+
+            specR = Clamp(specR);
+            specG = Clamp(specG);
+            specB = Clamp(specB);
+
+            specColorButton.BackColor = Color.FromArgb(255, (int)(specR), (int)(specG), (int)(specB));
         }
 
         private void specularSaturation_TextChanged(object sender, EventArgs e)
@@ -704,6 +891,14 @@ namespace Smash_Forge.GUI
             }
             else
                 specularSaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity, out specR, out specG, out specB);
+
+            specR = Clamp(specR);
+            specG = Clamp(specG);
+            specB = Clamp(specB);
+
+            specColorButton.BackColor = Color.FromArgb(255, (int)(specR), (int)(specG), (int)(specB));
         }
 
         private void specularIntensity_TextChanged(object sender, EventArgs e)
@@ -716,6 +911,14 @@ namespace Smash_Forge.GUI
             }
             else
                 specularIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity, out specR, out specG, out specB);
+
+            specR = Clamp(specR);
+            specG = Clamp(specG);
+            specB = Clamp(specB);
+
+            specColorButton.BackColor = Color.FromArgb(255, (int)(specR), (int)(specG), (int)(specB));
         }
 
         private void reflectionHue_TextChanged(object sender, EventArgs e)
@@ -728,6 +931,16 @@ namespace Smash_Forge.GUI
             }
             else
                 reflectionHue.BackColor = Color.Red;
+
+
+            RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
+
+            refR = Clamp(refR);
+            refG = Clamp(refG);
+            refB = Clamp(refB);
+
+            refColorButton.BackColor = Color.FromArgb(255, (int)(refR), (int)(refG), (int)(refB));
+
         }
 
         private void reflectionSaturation_TextChanged(object sender, EventArgs e)
@@ -740,6 +953,14 @@ namespace Smash_Forge.GUI
             }
             else
                 reflectionSaturation.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
+
+            refR = Clamp(refR);
+            refG = Clamp(refG);
+            refB = Clamp(refB);
+
+            refColorButton.BackColor = Color.FromArgb(255, (int)(refR), (int)(refG), (int)(refB));
         }
 
         private void reflectionIntensity_TextChanged(object sender, EventArgs e)
@@ -752,12 +973,32 @@ namespace Smash_Forge.GUI
             }
             else
                 reflectionIntensity.BackColor = Color.Red;
+
+            RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
+
+            refR = Clamp(refR);
+            refG = Clamp(refG);
+            refB = Clamp(refB);
+
+            refColorButton.BackColor = Color.FromArgb(255, (int)(refR), (int)(refG), (int)(refB));
         }
 
         private void label47_Click(object sender, EventArgs e)
         {
 
         }
+
+        public int Clamp(float i)
+        {
+            i *= 255;
+            i = (int)i;
+            if (i > 255)
+                return 255;
+            if (i < 0)
+                return 0;
+            return (int)i;
+        }
+
 
         private void specRotX_TextChanged(object sender, EventArgs e)
         {
@@ -1250,6 +1491,319 @@ namespace Smash_Forge.GUI
             {
                 Runtime.searchboxColor = Color.FromArgb(0xFF, colorDialog.Color);
                 pbSearchboxColor.BackColor = Runtime.searchboxColor;
+            }
+        }
+
+        private void depthTestCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.useDepthTest = depthTestCB.Checked;
+        }
+
+        private void zScaleTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(zScaleTB.Text, out i))
+            {
+                zScaleTB.BackColor = Color.White;
+                Runtime.zScale = i;
+            }
+            else
+                zScaleTB.BackColor = Color.Red;
+        }
+
+        private void difColorButton_Click(object sender, EventArgs e)
+        {           
+            /*
+            if (colorForm == null || colorForm.IsDisposed)
+                colorForm = new LightColorEditor(VBNViewport.diffuseLight);
+            colorForm.Show();*/
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+    
+        }
+
+
+        public void FillForm()
+        {
+            areaLightsListBox.Items.Clear();
+
+            foreach (KeyValuePair<string, AreaLight> areaLight in Runtime.areaLights)
+            {         
+                areaLightsListBox.Items.Add(areaLight);
+            }
+        }
+
+      
+
+        private void addAreaLightButton_Click(object sender, EventArgs e)
+        {
+            AreaLight areaLight = new AreaLight(areaLightID);
+            Runtime.areaLights.Add(areaLight.ID, areaLight);
+            areaLightIDList.Add(areaLight.ID);
+            FillForm();
+        }
+
+        private void areaLightsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            areaLightID = areaLightIDList[areaLightsListBox.SelectedIndex];
+            areaLightIDTB.Text = areaLightIDList[areaLightsListBox.SelectedIndex];
+            updateValuesFromAreaLight();
+        }
+
+
+
+        private void textBox10_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void areaLightIDTB_TextChanged(object sender, EventArgs e)
+        {
+            areaLightID = areaLightIDTB.Text;
+            
+        }
+
+        private void removeAreaLightButton_Click(object sender, EventArgs e)
+        {
+
+
+            Runtime.areaLights.Remove(areaLightIDList[areaLightsListBox.SelectedIndex]); //should only work if something is selected            
+            FillForm();
+        }
+
+        private void boundingBoxComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //boundingBoxComboBox.SelectedItem;
+        }
+
+        private void updateAreaLight()
+        {
+            
+            // udpate the values for the selected area light
+            Runtime.areaLights[areaLightID].groundR = groundR;
+            Runtime.areaLights[areaLightID].groundG = groundG;
+            Runtime.areaLights[areaLightID].groundB = groundB;
+            Runtime.areaLights[areaLightID].skyR = skyR;
+            Runtime.areaLights[areaLightID].skyG = skyG;
+            Runtime.areaLights[areaLightID].skyB = skyB;
+
+            Runtime.areaLights[areaLightID].positionX = positionX;
+            Runtime.areaLights[areaLightID].positionY = positionY;
+            Runtime.areaLights[areaLightID].positionZ = positionZ;
+
+            Runtime.areaLights[areaLightID].scaleX = scaleX;
+            Runtime.areaLights[areaLightID].scaleY = scaleY;
+            Runtime.areaLights[areaLightID].scaleZ = scaleZ;
+
+            Runtime.areaLights[areaLightID].renderBoundingBox = renderBoundingBox; // currently not working properly, overrides value
+
+            
+        }
+
+        private void updateValuesFromAreaLight()
+        {
+            // update the text boxes, which will also udpate the variables
+            areaGroundR.Text = Runtime.areaLights[areaLightID].groundR.ToString();
+            areaGroundG.Text = Runtime.areaLights[areaLightID].groundG.ToString();
+            areaGroundB.Text = Runtime.areaLights[areaLightID].groundB.ToString();
+
+            areaSkyR.Text = Runtime.areaLights[areaLightID].skyR.ToString();
+            areaSkyG.Text = Runtime.areaLights[areaLightID].skyG.ToString();
+            areaSkyB.Text = Runtime.areaLights[areaLightID].skyB.ToString();
+
+            areaXPosTB.Text = Runtime.areaLights[areaLightID].positionX.ToString();
+            areaYPosTB.Text = Runtime.areaLights[areaLightID].positionY.ToString();
+            areaZPosTB.Text = Runtime.areaLights[areaLightID].positionZ.ToString();
+
+            areaScaleX.Text = Runtime.areaLights[areaLightID].scaleX.ToString();
+            areaScaleY.Text = Runtime.areaLights[areaLightID].scaleY.ToString();
+            areaScaleZ.Text = Runtime.areaLights[areaLightID].scaleZ.ToString();
+
+            boundingBoxCB.Checked = Runtime.areaLights[areaLightID].renderBoundingBox; // currently not working properly, overrides value
+        }
+
+        private void areaXPosTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaXPosTB.Text, out i))
+            {
+                areaXPosTB.BackColor = Color.White;
+                positionX = i;
+            }
+            else
+                areaXPosTB.BackColor = Color.Red;
+
+            updateAreaLight();
+        }
+
+        private void areaYPosTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaYPosTB.Text, out i))
+            {
+                areaYPosTB.BackColor = Color.White;
+                positionY = i;
+            }
+            else
+                areaYPosTB.BackColor = Color.Red;
+
+            updateAreaLight();
+
+            Runtime.areaLights[areaLightID].positionY = positionY;
+        }
+
+        private void areaZPosTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaZPosTB.Text, out i))
+            {
+                areaZPosTB.BackColor = Color.White;
+                positionZ = i;
+            }
+            else
+                areaZPosTB.BackColor = Color.Red;
+
+            updateAreaLight();
+        }
+
+        private void areaScaleX_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaScaleX.Text, out i))
+            {
+                areaScaleX.BackColor = Color.White;
+                scaleX = i;
+            }
+            else
+                areaScaleX.BackColor = Color.Red;
+
+            updateAreaLight();
+        }
+
+        private void areaScaleY_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaScaleY.Text, out i))
+            {
+                areaScaleY.BackColor = Color.White;
+                scaleY = i;
+            }
+            else
+                areaScaleY.BackColor = Color.Red;
+
+            updateAreaLight();
+        }
+
+        private void areaScaleZ_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaScaleZ.Text, out i))
+            {
+                areaScaleZ.BackColor = Color.White;
+                scaleZ = i;
+            }
+            else
+                areaScaleZ.BackColor = Color.Red;
+
+            updateAreaLight();
+        }
+
+        private void areaGroundR_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaGroundR.Text, out i))
+            {
+                areaGroundR.BackColor = Color.White;
+                groundR = i;
+            }
+            else
+                areaGroundR.BackColor = Color.Red;
+
+            updateAreaLight();
+        }
+
+        private void areaGroundG_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaGroundG.Text, out i))
+            {
+                areaGroundG.BackColor = Color.White;
+                groundG = i;
+            }
+            else
+                areaGroundG.BackColor = Color.Red;
+
+            updateAreaLight();
+        }
+
+        private void areaGroundB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(areaGroundB.Text, out i))
+            {
+                areaGroundB.BackColor = Color.White;
+                groundB = i;
+            }
+            else
+                areaGroundB.BackColor = Color.Red;
+
+            updateAreaLight();
+        }
+
+        private void boundingBoxCB_CheckedChanged(object sender, EventArgs e)
+        {
+            renderBoundingBox = boundingBoxCB.Checked;
+        }
+
+        private void depthSlider_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void fovLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pbCounterColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.counterBubbleColor = Color.FromArgb(0xFF, colorDialog.Color);
+                pbCounterColor.BackColor = Runtime.counterBubbleColor;
+            }
+        }
+
+        private void pbReflectColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.reflectBubbleColor = Color.FromArgb(0xFF, colorDialog.Color);
+                pbReflectColor.BackColor = Runtime.reflectBubbleColor;
+            }
+        }
+
+        private void pbAbsorbColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.absorbBubbleColor = Color.FromArgb(0xFF, colorDialog.Color);
+                pbAbsorbColor.BackColor = Runtime.absorbBubbleColor;
+            }
+        }
+
+        private void pbShieldColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.shieldBubbleColor = Color.FromArgb(0xFF, colorDialog.Color);
+                pbShieldColor.BackColor = Runtime.shieldBubbleColor;
             }
         }
     }

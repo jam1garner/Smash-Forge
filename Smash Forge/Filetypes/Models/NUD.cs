@@ -105,7 +105,7 @@ namespace Smash_Forge
             int rt = (int)Runtime.renderType;
             if (rt == 0)
             {
-                if (Runtime.renderNormals)
+                if (Runtime.renderAlpha)
                     rt = rt | (0x10);
                 if (Runtime.renderVertColor)
                     rt = rt | (0x20);
@@ -113,7 +113,7 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderType"), rt);
             GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderNormal"), Runtime.renderNormals ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderNormal"), Runtime.renderAlpha ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderDiffuse"), Runtime.renderDiffuse ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
@@ -275,7 +275,7 @@ namespace Smash_Forge
 
                 GL.Uniform1(shader.getAttribute("dif"), 0);
                 GL.Uniform1(shader.getAttribute("dif2"), 0);
-                GL.Uniform1(shader.getAttribute("nrm"), 0);
+                GL.Uniform1(shader.getAttribute("normalMap"), 0);
                 GL.Uniform1(shader.getAttribute("cube"), 2);
                 GL.Uniform1(shader.getAttribute("stagecube"), 2);
                 GL.Uniform1(shader.getAttribute("spheremap"), 0);
@@ -283,7 +283,7 @@ namespace Smash_Forge
                 GL.Uniform1(shader.getAttribute("ramp"), 0);
 
 
-
+                GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
 
          
                 int texid = 0;
@@ -317,7 +317,7 @@ namespace Smash_Forge
                 }
                 if (mat.normalmap && texid < mat.textures.Count)
                 {
-                    GL.Uniform1(shader.getAttribute("nrm"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                    GL.Uniform1(shader.getAttribute("normalMap"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
                 }
                 if (mat.ramp && texid < mat.textures.Count)
                 {
@@ -589,6 +589,7 @@ namespace Smash_Forge
                 GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 48);
                 GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 56);
                 GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 72);
+                //GL.VertexAttribIPointer(shader.getAttribute("vBone"), 4, VertexAttribIntegerType.Int, dVertex.Size, IntPtr.Add(IntPtr.Zero, 72));
                 GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 88);
 
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
@@ -718,6 +719,7 @@ namespace Smash_Forge
                     GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
                     GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
                     GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
+                    //GL.VertexAttribIPointer(shader.getAttribute("vBone"), 4, VertexAttribIntegerType.Int, dVertex.Size, IntPtr.Add(IntPtr.Zero, 72));
                     GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 72);
                     GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 88);
 
@@ -2073,11 +2075,12 @@ namespace Smash_Forge
 
             public void PreRender()
             {
+
                 // rearrange faces
                 display = getDisplayFace().ToArray();
 
-                if ((vertSize & 0xF) != 3 && (vertSize & 0xF) != 7)
-                    NUD.computeTangentBitangent(this);
+                //if ((vertSize & 0xF) != 3 && (vertSize & 0xF) != 7)
+                NUD.computeTangentBitangent(this);
 
                 List<dVertex> vert = new List<dVertex>();
 
@@ -2112,9 +2115,9 @@ namespace Smash_Forge
                     };
 
                     isTransparent = false;
-                    if (v.col.Z < 0x7F)
-                        isTransparent = true;
-                    if (materials[0].srcFactor > 0 || materials[0].dstFactor > 0)
+                    //if (v.col.Z < 0x7F)
+                       //isTransparent = true;
+                    if (materials[0].srcFactor > 0 || materials[0].dstFactor > 0 || materials[0].AlphaFunc > 0 || materials[0].AlphaTest > 0)
                         isTransparent = true;
 
                     vert.Add(nv);
@@ -2476,15 +2479,22 @@ namespace Smash_Forge
                 float t1 = v2.tx[0].Y - v1.tx[0].Y;
                 float t2 = v3.tx[0].Y - v1.tx[0].Y;
 
-                float r = 1.0f / (s1 * t2 - s2 * t1);
-                Vector3 s = new Vector3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
-        (t2 * z1 - t1 * z2) * r);
-                Vector3 t = new Vector3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
-        (s1 * z2 - s2 * z1) * r);
+                float r = 1.0f;
+                // prevent incorrect tangent calculation from division by 0
+                float div = (s1 * t2 - s2 * t1);
+                if (div == 0)
+                    r = 0.0f;
+                else
+                    r = 1.0f / div;
+                Vector3 s = new Vector3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, 
+                    (t2 * z1 - t1 * z2) * r);
+                Vector3 t = new Vector3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, 
+                    (s1 * z2 - s2 * z1) * r);
 
                 tan1[f[i]] += s;
                 tan1[f[i + 1]] += s;
                 tan1[f[i + 2]] += s;
+
                 tan2[f[i]] += t;
                 tan2[f[i + 1]] += t;
                 tan2[f[i + 2]] += t;
@@ -2495,6 +2505,7 @@ namespace Smash_Forge
                 Vertex v = p.vertices[i];
                 Vector3 t = tan1[i];
 
+                // orthogonalize tangent and calculate bitangent from tangent
                 v.tan = new Vector4(Vector3.Normalize(t - v.nrm * Vector3.Dot(v.nrm, t)), Vector3.Dot(Vector3.Cross(v.nrm, t), tan2[i]) < 0.0f ? -1.0f : 1.0f);
                 v.bitan = new Vector4(Vector3.Cross(v.tan.Xyz, v.nrm), 1.0f);
             }

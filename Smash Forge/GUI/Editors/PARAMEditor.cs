@@ -234,7 +234,7 @@ namespace Smash_Forge
         {
             using (var sfd = new SaveFileDialog())
             {
-                sfd.Filter = "Paramter Files (.bin)|*.bin|" +
+                sfd.Filter = "Parameter Files (.bin)|*.bin|" +
                              "All Files (*.*)|*.*";
 
                 if (sfd.ShowDialog() == DialogResult.OK)

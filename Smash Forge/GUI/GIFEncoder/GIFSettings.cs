@@ -18,10 +18,21 @@ namespace Gif.Components
         public float ScaleFactor { get; set; } = 1;
         public int Quality { get; set; } = 1;
         public bool Repeat { get; set; } = false;
+        public bool StoreFrames { get; set; } = true;
+        public bool ClearFrames { get; set; } = false;
 
-        public GIFSettings(int MaxFrame)
+        public GIFSettings(int MaxFrame, float ScaleFactor, bool HasStoredFrames)
         {
             InitializeComponent();
+
+            this.ScaleFactor = ScaleFactor;
+            nupdScaleFactor.Value = (decimal)ScaleFactor;
+
+            if (HasStoredFrames)
+            {
+                nupdScaleFactor.Enabled = false;
+                btClearFrames.Visible = true;
+            }
 
             nupdMaxFrame.Maximum = MaxFrame;
             nupdMaxFrame.Value = MaxFrame;
@@ -39,9 +50,23 @@ namespace Gif.Components
             ScaleFactor = (float)nupdScaleFactor.Value;
             Quality = tbQuality.Value;
             Repeat = cbRepeat.Checked;
+            StoreFrames = cbStoreFrames.Checked;            
 
             this.Close();
 
+        }
+
+        private void cbStoreFrames_CheckedChanged(object sender, EventArgs e)
+        {
+            cbRepeat.Enabled = !cbStoreFrames.Checked;
+            tbQuality.Enabled = !cbStoreFrames.Checked;
+        }
+
+        private void btClearFrames_Click(object sender, EventArgs e)
+        {
+            ClearFrames = true;
+            btClearFrames.Visible = false;
+            nupdScaleFactor.Enabled = true;
         }
     }
 }

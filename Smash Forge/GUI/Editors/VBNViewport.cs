@@ -67,18 +67,19 @@ namespace Smash_Forge
                 GL.Viewport(glControl1.ClientRectangle);
 
 
-                v = Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 500.0f);
+                v = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width, -height, zoom) * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 500.0f);
             }
         }
 
         #region Members
         Matrix4 v, vi;
-        public float rot = 0;
+        public float cameraYRotation = 0;
         public float x = 0;
-        public float lookup = 0;
-        public float height = 1.5f;
-        public float width = 0;
-        public float zoom = -25f, nzoom = 0;
+        public float cameraXRotation = 0;
+        public float height = 10.0f; // camera y position
+        public float width = 0; // camera x position
+        public float zoom = -80f; // camera z position
+        public float nzoom = 0;
         public GUI.Menus.CameraPosition cameraPosForm = null;
         float mouseXLast = 0;
         float mouseYLast = 0;
@@ -87,8 +88,17 @@ namespace Smash_Forge
         bool isPlaying = false;
         bool fpsView = false;
         public Stopwatch timeSinceSelected = new Stopwatch();
-
         public Stopwatch renderTime = new Stopwatch();
+
+        public static DirectionalLight diffuseLight = new DirectionalLight();
+        public static DirectionalLight specularLight = new DirectionalLight();
+        public static DirectionalLight stageLight1 = new DirectionalLight();
+        public static DirectionalLight stageLight2 = new DirectionalLight();
+        public static DirectionalLight stageLight3 = new DirectionalLight();
+        public static DirectionalLight stageLight4 = new DirectionalLight();
+
+        
+
 
         Shader shader;
         #endregion
@@ -300,7 +310,7 @@ namespace Smash_Forge
                     foreach (BCH.BCH_Model mod in m.bch.models)
                     {
                         if (mod.skeleton != null)
-                            Runtime.TargetAnim.nextFrame(mod.skeleton);
+                            Runtime.TargetAnim.nextFrame(mod.skeleton);                       
                     }
                 }
             }
@@ -393,9 +403,9 @@ namespace Smash_Forge
             int w = Width;
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
-            v = Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
+            v = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width,-height,zoom) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
-            //v2 = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
+            //v2 = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(width,-height,zoom);
 
             GL.GenFramebuffers(1, out sfb);
 
@@ -418,6 +428,9 @@ namespace Smash_Forge
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             CalculateLightSource();
 
+            Runtime.renderer = GL.GetString(StringName.Renderer);
+            Runtime.openGLVersion = GL.GetString(StringName.Version);
+            Runtime.GLSLVersion = GL.GetString(StringName.ShadingLanguageVersion);
 
         }
 
@@ -561,7 +574,11 @@ namespace Smash_Forge
             
             renderTime.Start();
 
+            if (!Runtime.useDepthTest) GL.Disable(EnableCap.DepthTest);
+
             if (Runtime.renderModel) DrawModels();
+
+ 
 
             renderTime.Stop();
             double fps = 1000 / (renderTime.ElapsedMilliseconds + 0.0001);
@@ -591,6 +608,15 @@ namespace Smash_Forge
             // draw path.bin
             if (Runtime.renderPath)
                 DrawPathDisplay();
+
+            foreach (KeyValuePair<string, AreaLight> areaLight in Runtime.areaLights)
+                {   if (areaLight.Value.renderBoundingBox)
+                    {
+                        Vector3 center = new Vector3(areaLight.Value.positionX, areaLight.Value.positionY, areaLight.Value.positionZ);
+                        RenderTools.drawRectangularPrismWireframe(center, areaLight.Value.scaleX, areaLight.Value.scaleY, areaLight.Value.scaleZ);
+                    }
+                }
+
             // clear the buffer bit so the skeleton 
             // will be drawn on top of everything
             GL.Clear(ClearBufferMask.DepthBufferBit);
@@ -599,6 +625,8 @@ namespace Smash_Forge
                 DrawLVD();
             // drawing the bones
             DrawBones();
+
+
 
             /*GL.LineWidth(3f);
             GL.Color3(freezeCamera ? Color.Yellow : Color.White);
@@ -610,7 +638,7 @@ namespace Smash_Forge
             GL.PopAttrib();
             glControl1.SwapBuffers();
         }
-        
+
         public void UpdateCameraPositionControl()
         {
             if (cameraPosForm != null && !cameraPosForm.IsDisposed)
@@ -619,21 +647,25 @@ namespace Smash_Forge
 
         public void UpdateMousePosition()
         {
-            float zoomscale = Runtime.zoomspeed;
+            float zoomMultiplier = Runtime.zoomModifierScale; // convert zoomSpeed to in game stprm zoom speed. still not exact
+            float mouseTranslateSpeed = 0.050f;
+            float scrollWheelZoomSpeed = 1.75f;
+            float shiftZoomMultiplier = 2.5f;
+            float zoomscale = Runtime.zoomspeed * zoomMultiplier;
 
             if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
             {
-                height += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                width += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                height += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                width += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
             }
             if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
             {
-                rot += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                lookup += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                cameraYRotation += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                cameraXRotation += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
             }
 
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
-                zoomscale = 6;
+                zoomscale *= shiftZoomMultiplier;
 
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Down))
                 zoom -= 1 * zoomscale;
@@ -643,11 +675,11 @@ namespace Smash_Forge
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
-            zoom += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale;
+            zoom += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale * scrollWheelZoomSpeed;
 
-            v = Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
+            v = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width,-height,zoom) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
-            //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
+            //v2 = Matrix4.CreateTranslation(width,-height,zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
         public bool IsMouseOverViewport()
         {
@@ -702,7 +734,7 @@ namespace Smash_Forge
             int rt = (int)Runtime.renderType;
             if(rt == 0)
             {
-                if (Runtime.renderNormals)
+                if (Runtime.renderAlpha)
                     rt = rt | (0x10);
                 if (Runtime.renderVertColor)
                     rt = rt | (0x20);
@@ -710,7 +742,7 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderType"), rt);
             GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderNormal"), Runtime.renderNormals ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderDiffuse"), Runtime.renderDiffuse ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
@@ -718,142 +750,81 @@ namespace Smash_Forge
           
             GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
 
-            GL.Uniform1(shader.getAttribute("ambient"), Runtime.amb_inten);
-            GL.Uniform1(shader.getAttribute("diffuse_intensity"), Runtime.dif_inten);
-            GL.Uniform1(shader.getAttribute("specular_intensity"), Runtime.spc_inten);
-            GL.Uniform1(shader.getAttribute("fresnel_intensity"), Runtime.frs_inten);
-            GL.Uniform1(shader.getAttribute("reflection_intensity"), Runtime.ref_inten);
+            GL.Uniform1(shader.getAttribute("ambientIntensity"), Runtime.amb_inten);
+            GL.Uniform1(shader.getAttribute("diffuseIntensity"), Runtime.dif_inten);
+            GL.Uniform1(shader.getAttribute("specularIntensity"), Runtime.spc_inten);
+            GL.Uniform1(shader.getAttribute("fresnelIntensity"), Runtime.frs_inten);
+            GL.Uniform1(shader.getAttribute("reflectionIntensity"), Runtime.ref_inten);
+
+            GL.Uniform1(shader.getAttribute("zScale"), Runtime.zScale);
 
             GL.ActiveTexture(TextureUnit.Texture11);
             GL.BindTexture(TextureTarget.Texture2D, depthmap);
             GL.Uniform1(shader.getAttribute("shadowmap"), 11);
 
-            #region character lighting color uniforms
+            #region light_set lights uniforms
 
-            float difR, difG, difB = 1.0f;
-            RenderTools.HSV2RGB(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity, out difR, out difG, out difB);
-            GL.Uniform3(shader.getAttribute("difLightColor"), difR, difG, difB);
-
-            float ambR, ambG, ambB = 1.0f;
-            RenderTools.HSV2RGB(Runtime.amb_hue, Runtime.amb_saturation, Runtime.amb_intensity, out ambR, out ambG, out ambB);
-            GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
-
+            // fresnel ground color for characters & stages
             float fresGroundR, fresGroundG, fresGroundB = 1.0f;
             RenderTools.HSV2RGB(Runtime.fres_ground_hue, Runtime.fres_ground_saturation, Runtime.fres_ground_intensity, out fresGroundR, out fresGroundG, out fresGroundB);
             GL.Uniform3(shader.getAttribute("fresGroundColor"), fresGroundR, fresGroundG, fresGroundB);
-
+            // fresnel sky color for characters & stages
             float fresSkyR, fresSkyG, fresSkyB = 1.0f;
             RenderTools.HSV2RGB(Runtime.fres_sky_hue, Runtime.fres_sky_saturation, Runtime.fres_sky_intensity, out fresSkyR, out fresSkyG, out fresSkyB);
             GL.Uniform3(shader.getAttribute("fresSkyColor"), fresSkyR, fresSkyG, fresSkyB);
 
-            float specR, specG, specB = 1.0f;
-            RenderTools.HSV2RGB(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity, out specR, out specG, out specB);
-            GL.Uniform3(shader.getAttribute("specLightColor"), specR, specG, specB);
-
+            // reflection color for characters & stages
             float refR, refG, refB = 1.0f;
             RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
             GL.Uniform3(shader.getAttribute("refLightColor"), refR, refG, refB);
-     
-            #endregion
 
-            #region stage lighting color uniforms
+            // character diffuse light
+            diffuseLight.setColorFromHSV(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity);
+            diffuseLight.setDirectionFromXYZAngles(Runtime.dif_rotX, Runtime.dif_rotY, Runtime.dif_rotZ);
+            GL.Uniform3(shader.getAttribute("difLightColor"), diffuseLight.R, diffuseLight.G, diffuseLight.B);
+            // character ambient light
+            float ambR, ambG, ambB = 1.0f;
+            RenderTools.HSV2RGB(Runtime.amb_hue, Runtime.amb_saturation, Runtime.amb_intensity, out ambR, out ambG, out ambB);
+            GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
+
+            // character specular light
+            specularLight.setColorFromHSV(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity);
+            specularLight.setDirectionFromXYZAngles(Runtime.specular_rotX, Runtime.specular_rotY, Runtime.specular_rotZ);
+            GL.Uniform3(shader.getAttribute("specLightColor"), specularLight.R, specularLight.G, specularLight.B);
 
             // stage light 1
             GL.Uniform1(shader.getAttribute("renderStageLight1"), Runtime.renderStageLight1 ? 1 : 0);
-            float stage1R, stage1G, stage1B = 1.0f;
-            RenderTools.HSV2RGB(Runtime.stagelight1_hue, Runtime.stagelight1_saturation, Runtime.stagelight1_intensity, out stage1R, out stage1G, out stage1B);
-            GL.Uniform3(shader.getAttribute("stageLight1Color"), stage1R, stage1G, stage1B);
+            stageLight1.setColorFromHSV(Runtime.stagelight1_hue, Runtime.stagelight1_saturation, Runtime.stagelight1_intensity);
+            stageLight1.setDirectionFromXYZAngles(Runtime.stagelight1_rotX, Runtime.stagelight1_rotY, Runtime.stagelight1_rotZ);
+            GL.Uniform3(shader.getAttribute("stageLight1Color"), stageLight1.R, stageLight1.G, stageLight1.B);
 
             // stage light 2
             GL.Uniform1(shader.getAttribute("renderStageLight2"), Runtime.renderStageLight2 ? 1 : 0);
-            float stage2R, stage2G, stage2B = 1.0f;
-            RenderTools.HSV2RGB(Runtime.stagelight2_hue, Runtime.stagelight2_saturation, Runtime.stagelight2_intensity, out stage2R, out stage2G, out stage2B);
-            GL.Uniform3(shader.getAttribute("stageLight2Color"), stage2R, stage2G, stage2B);
-            
+            stageLight2.setColorFromHSV(Runtime.stagelight2_hue, Runtime.stagelight2_saturation, Runtime.stagelight2_intensity);
+            stageLight2.setDirectionFromXYZAngles(Runtime.stagelight2_rotX, Runtime.stagelight2_rotY, Runtime.stagelight2_rotZ);
+            GL.Uniform3(shader.getAttribute("stageLight2Color"), stageLight2.R, stageLight2.G, stageLight2.B);
+
             // stage light 3
             GL.Uniform1(shader.getAttribute("renderStageLight3"), Runtime.renderStageLight3 ? 1 : 0);
-            float stage3R, stage3G, stage3B = 1.0f;
-            RenderTools.HSV2RGB(Runtime.stagelight3_hue, Runtime.stagelight3_saturation, Runtime.stagelight3_intensity, out stage3R, out stage3G, out stage3B);
-            GL.Uniform3(shader.getAttribute("stageLight3Color"), stage3R, stage3G, stage3B);
+            stageLight3.setColorFromHSV(Runtime.stagelight3_hue, Runtime.stagelight3_saturation, Runtime.stagelight3_intensity);
+            stageLight3.setDirectionFromXYZAngles(Runtime.stagelight3_rotX, Runtime.stagelight3_rotY, Runtime.stagelight3_rotZ);
+            GL.Uniform3(shader.getAttribute("stageLight3Color"), stageLight3.R, stageLight3.G, stageLight3.B);
 
-            // stage light 4. colors don't work properly
+            // stage light 4
             GL.Uniform1(shader.getAttribute("renderStageLight4"), Runtime.renderStageLight4 ? 1 : 0);
-            float stage4R, stage4G, stage4B = 1.0f;
-            RenderTools.HSV2RGB(Runtime.stagelight4_hue, Runtime.stagelight4_saturation, Runtime.stagelight4_intensity, out stage4R, out stage4G, out stage4B);
-            GL.Uniform3(shader.getAttribute("stageLight4Color"), stage4R, stage4G, stage4B);
+            stageLight4.setColorFromHSV(Runtime.stagelight4_hue, Runtime.stagelight4_saturation, Runtime.stagelight4_intensity);
+            stageLight4.setDirectionFromXYZAngles(Runtime.stagelight4_rotX, Runtime.stagelight4_rotY, Runtime.stagelight4_rotZ);
+            GL.Uniform3(shader.getAttribute("stageLight4Color"), stageLight4.R, stageLight4.G, stageLight4.B);
 
-
+            // stage fog
             GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
             float stageFogR, stageFogG, stageFogB = 1.0f;
             RenderTools.HSV2RGB(Runtime.fog_hue, Runtime.fog_saturation, Runtime.fog_intensity, out stageFogR, out stageFogG, out stageFogB);
             GL.Uniform3(shader.getAttribute("stageFogColor"), stageFogR, stageFogG, stageFogB);
 
-            #endregion
+            Vector3 lightDirection = new Vector3(0f, 0f, -1f);
 
-            #region light_set rotation data uniforms
-            // light_set_param xyz rotation to vector for lighting calculations. Current matrices aren't correct!
-
-
-            // convert to radians
-            float difRotX = Runtime.dif_rotX * ((float)Math.PI / 180f);
-            float difRotY = Runtime.dif_rotY * ((float)Math.PI / 180f);
-            float difRotZ = Runtime.dif_rotZ * ((float)Math.PI / 180f);
-
-            Matrix4 difrot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, difRotX)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, difRotY)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, difRotZ);
-
-
-            float specRotX = Runtime.specular_rotX * ((float)Math.PI / 180f);
-            float specRotY = Runtime.specular_rotY * ((float)Math.PI / 180f);
-            float specRotZ = Runtime.specular_rotZ * ((float)Math.PI / 180f);
-
-            Matrix4 specrot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, specRotX)
-              * Matrix4.CreateFromAxisAngle(Vector3.UnitY, specRotY)
-              * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, specRotZ);
-
-
-            float stageLight1RotX = Runtime.stagelight1_rotX * ((float)Math.PI / 180f);
-            float stageLight1RotY = Runtime.stagelight1_rotY * ((float)Math.PI / 180f);
-            float stageLight1RotZ = Runtime.stagelight1_rotZ * ((float)Math.PI / 180f);
-
-            Matrix4 stagelight1rot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, stageLight1RotX)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, stageLight1RotY)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight1RotZ);
-
-            float stageLight2RotX = Runtime.stagelight2_rotX * ((float)Math.PI / 180f);
-            float stageLight2RotY = Runtime.stagelight2_rotY * ((float)Math.PI / 180f);
-            float stageLight2RotZ = Runtime.stagelight2_rotZ * ((float)Math.PI / 180f);
-
-            Matrix4 stagelight2rot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, stageLight2RotX)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, stageLight2RotY)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight2RotZ);
-
-            float stageLight3RotX = Runtime.stagelight3_rotX * ((float)Math.PI / 180f);
-            float stageLight3RotY = Runtime.stagelight3_rotY * ((float)Math.PI / 180f);
-            float stageLight3RotZ = Runtime.stagelight3_rotZ * ((float)Math.PI / 180f);
-
-            Matrix4 stagelight3rot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, stageLight3RotX)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, stageLight3RotY)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight3RotZ);
-
-            float stageLight4RotX = Runtime.stagelight4_rotX * ((float)Math.PI / 180f);
-            float stageLight4RotY = Runtime.stagelight4_rotY * ((float)Math.PI / 180f);
-            float stageLight4RotZ = Runtime.stagelight4_rotZ * ((float)Math.PI / 180f);
-
-            Matrix4 stagelight4rot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, stageLight4RotX)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, stageLight4RotY)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight4RotZ);
-
-            Vector3 lightDirection= new Vector3(0f, 0f, -1f);
-            Vector3 difDir = new Vector3(0f, 0f, 1f);
-            Vector3 specDir = new Vector3(0f, 0f, 1f);
-            Vector3 stageLight1Dir = new Vector3(0f, 0f, 1f);
-            Vector3 stageLight2Dir = new Vector3(0f, 0f, 1f);
-            Vector3 stageLight3Dir = new Vector3(0f, 0f, 1f);
-            Vector3 stageLight4Dir = new Vector3(0f, 0f, 1f);
-
-            if (Runtime.CameraLight)
+            if (Runtime.CameraLight) // camera light should only affects character lighting
             {
                 GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
                 GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
@@ -862,16 +833,16 @@ namespace Smash_Forge
             }
             else
             {
-                GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.Transform(specDir, specrot).Normalized());
-                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.Transform(difDir, difrot).Normalized());
+                GL.Uniform3(shader.getAttribute("specLightDirection"), specularLight.direction);
+                GL.Uniform3(shader.getAttribute("difLightDirection"), diffuseLight.direction);
                 GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, v));
                 GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
             }
 
-            GL.Uniform3(shader.getAttribute("stageLight1Direction"), Vector3.Transform(stageLight1Dir, stagelight1rot).Normalized());
-            GL.Uniform3(shader.getAttribute("stageLight2Direction"), Vector3.Transform(stageLight2Dir, stagelight2rot).Normalized());
-            GL.Uniform3(shader.getAttribute("stageLight3Direction"), Vector3.Transform(stageLight3Dir, stagelight3rot).Normalized());
-            GL.Uniform3(shader.getAttribute("stageLight4Direction"), Vector3.Transform(stageLight4Dir, stagelight4rot).Normalized());
+            GL.Uniform3(shader.getAttribute("stageLight1Direction"), stageLight1.direction);
+            GL.Uniform3(shader.getAttribute("stageLight2Direction"), stageLight2.direction);
+            GL.Uniform3(shader.getAttribute("stageLight3Direction"), stageLight3.direction);
+            GL.Uniform3(shader.getAttribute("stageLight4Direction"), stageLight4.direction);
 
             #endregion
 
@@ -1011,6 +982,9 @@ namespace Smash_Forge
                     RenderHurtboxes();
                 if (Runtime.renderECB)
                     RenderECB();
+
+                if (Runtime.renderSpecialBubbles)
+                    RenderSpecialBubbles();
 
                 if (Runtime.renderHitboxes && Runtime.renderInterpolatedHitboxes)
                     RenderInterpolatedHitboxes();
@@ -1915,7 +1889,54 @@ namespace Smash_Forge
                 GL.Disable(EnableCap.Blend);
             }
         }
-        
+
+        public void RenderSpecialBubbles()
+        {
+
+            if(Runtime.TargetAnimString == null)
+                return;
+
+            if (Runtime.ParamManager.SpecialBubbles.Count > 0)
+            {
+                GL.Enable(EnableCap.DepthTest);
+                GL.Enable(EnableCap.Blend);
+
+                foreach (var pair in Runtime.ParamManager.SpecialBubbles.Reverse())
+                {
+                    var h = pair.Value;
+
+                    if (!h.Animations.Contains(Runtime.TargetAnimString.Substring(3).Replace(".omo", "").ToLower()) && !h.Animations.Contains("*"))
+                        continue;
+
+                    if ((int)nupdFrame.Value < h.StartFrame)
+                        continue;
+
+                    if ((int)nupdFrame.Value > h.EndFrame && h.EndFrame != -1)
+                        continue;
+
+                    Bone b = getBone(h.Bone);
+
+                    var va = new Vector3(h.X, h.Y, h.Z);
+
+                    GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, h.Color));
+
+                    var va2 = new Vector3(h.X2, h.Y2, h.Z2);
+
+                    if (h.isSphere)
+                    {
+                        RenderTools.drawSphereTransformedVisible(va, h.Size, 30, b.transform.ClearScale());
+                    }
+                    else
+                    {
+                        RenderTools.drawReducedCylinderTransformed(va, va2, h.Size, b.transform.ClearScale());
+                    }
+                    
+                }
+                GL.Disable(EnableCap.DepthTest);
+                GL.Disable(EnableCap.Blend);
+            }
+        }
+
         ACMDScript scr_sound;
 
         int lastFrame = 0;
@@ -2065,30 +2086,12 @@ namespace Smash_Forge
 
         #endregion
 
-        public void SetFrame(int frame)
-        {
-            Runtime.TargetAnim.setFrame(frame);
-            foreach (ModelContainer m in Runtime.ModelContainers)
-            {
-                if (m.vbn != null)
-                    Runtime.TargetAnim.nextFrame(m.vbn);
-
-                if (m.dat_melee != null)
-                {
-                    Runtime.TargetAnim.setFrame((int)this.nupdFrame.Value - 1);
-                    Runtime.TargetAnim.nextFrame(m.dat_melee.bones);
-                }
-            }
-        }
         public void loadAnimation(SkelAnimation a)
         {
             a.setFrame(0);
-            foreach (ModelContainer m in Runtime.ModelContainers)
-            {
-                if (m.vbn != null)
-                    Runtime.TargetAnim.nextFrame(m.vbn);
-            }
             setAnimMaxFrames(a);
+
+            // Will trigger a nupdFrame_ValueChanged event which will execute the vbn next frame
             nupdFrame.Value = 1;
         }
 
@@ -2118,11 +2121,11 @@ namespace Smash_Forge
 
         private void button1_Click(object sender, EventArgs e)
         {
-            rot = 0;
-            lookup = 0;
-            height = 0;
+            cameraYRotation = 0;
+            cameraXRotation = 0;
+            height = 10;
             width = 0;
-            zoom = 0;
+            zoom = -80;
             nzoom = 0;
             mouseXLast = 0;
             mouseYLast = 0;
@@ -2142,15 +2145,18 @@ namespace Smash_Forge
             Runtime.TargetMTA.Add(m);
         }
 
+        List<Bitmap> images = new List<Bitmap>();
+        float ScaleFactor = 1f;
+
         private void VBNViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
             if (e.KeyChar == 'i')
-            {   
-                GL.DeleteProgram(Runtime.shaders["MBN"].programID);
+            {   /*
+                GL.DeleteProgram(Runtime.shaders["NUD"].programID);
                 shader = new Shader();
                 shader.vertexShader(File.ReadAllText("vert.txt"));
                 shader.fragmentShader(File.ReadAllText("frag.txt"));
-                Runtime.shaders["MBN"] = shader; 
+                Runtime.shaders["NUD"] = shader; */
             }
 
             /*if (e.KeyChar == 'w')
@@ -2183,17 +2189,21 @@ namespace Smash_Forge
                 isPlaying = false;
                 btnPlay.Text = "Play";
 
-                GIFSettings settings = new GIFSettings((int)this.nupdMaxFrame.Value);
+                GIFSettings settings = new GIFSettings((int)this.nupdMaxFrame.Value, ScaleFactor, images.Count > 0);
                 settings.ShowDialog();
+
+                if (settings.ClearFrames)
+                    images.Clear();
 
                 if (!settings.OK)
                     return;
+
+                ScaleFactor = settings.ScaleFactor;
 
                 int cFrame = (int)this.nupdFrame.Value; //Get current frame so at the end of capturing all frames of the animation it goes back to this frame
                 //Disable controls
                 this.Enabled = false;
 
-                List<Bitmap> images = new List<Bitmap>();
                 for (int i = settings.StartFrame; i <= settings.EndFrame + 1; i++)
                 {
                     this.nupdFrame.Value = i;
@@ -2203,13 +2213,13 @@ namespace Smash_Forge
                     if (i != settings.StartFrame) //On i=StartFrame it captures the frame the user had before setting frame to it so ignore that one, the +1 on the for makes it so the last frame is captured
                     {
                         Bitmap cs = CaptureScreen(false);
-                        images.Add(new Bitmap(cs, new Size((int)(cs.Width / settings.ScaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
+                        images.Add(new Bitmap(cs, new Size((int)(cs.Width / ScaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
                         cs.Dispose();
                     }
                 }
 
 
-                if (images.Count > 0)
+                if (images.Count > 0 && !settings.StoreFrames)
                 {
                     SaveFileDialog sf = new SaveFileDialog();
 
@@ -2222,6 +2232,7 @@ namespace Smash_Forge
                         g.Show();
                     }
 
+                    images = new List<Bitmap>();
 
                 }
                 //Enable controls
@@ -2420,15 +2431,15 @@ namespace Smash_Forge
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.S))
                 zoom -= 0.2f;
 
-            rot += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-            lookup += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+            cameraYRotation += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+            cameraXRotation += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
 
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
-            v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) 
+            v = Matrix4.CreateTranslation(width,-height,zoom) * Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
-            //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
+            //v2 = Matrix4.CreateTranslation(width,-height,zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
 
         public Bitmap CaptureScreen(bool saveAlpha = false)

@@ -14,6 +14,7 @@ using System.Threading;
 using Microsoft.VisualBasic.Devices;
 using Smash_Forge.GUI.Menus;
 using Smash_Forge.GUI.Editors;
+using SALT.PARAMS;
 
 namespace Smash_Forge
 {
@@ -42,7 +43,7 @@ namespace Smash_Forge
             ThreadStart t = new ThreadStart(Smash_Forge.Update.CheckLatest);
             Thread thread = new Thread(t);
             thread.Start();
-            Runtime.renderDepth = 2500f;
+            Runtime.renderDepth = 100000.0f;
             foreach (var vp in viewports)
                 AddDockedControl(vp);
 
@@ -63,6 +64,7 @@ namespace Smash_Forge
             Runtime.renderBackGround = true;
             Runtime.renderHitboxes = true;
             Runtime.renderInterpolatedHitboxes = true;
+            Runtime.renderSpecialBubbles = true;
             Runtime.hitboxRenderMode = Hitbox.RENDER_KNOCKBACK;
             Runtime.hitboxAlpha = 130;
             Runtime.hurtboxAlpha = 80;
@@ -74,6 +76,12 @@ namespace Smash_Forge
             Runtime.windboxColor = System.Drawing.Color.Blue;
             Runtime.grabboxColor = System.Drawing.Color.Purple;
             Runtime.searchboxColor = System.Drawing.Color.DarkOrange;
+            Runtime.counterBubbleColor = System.Drawing.Color.FromArgb(0x89, 0x89, 0x89);
+            Runtime.reflectBubbleColor = System.Drawing.Color.Cyan;
+            Runtime.shieldBubbleColor = System.Drawing.Color.Red;
+            Runtime.absorbBubbleColor = System.Drawing.Color.SteelBlue;
+            Runtime.wtSlowdownBubbleColor = System.Drawing.Color.FromArgb(0x9a, 0x47, 0x9a);
+
             Runtime.useFrameDuration = false;
             Runtime.hitboxKnockbackColors = new List<System.Drawing.Color>();
             Runtime.hitboxIdColors = new List<System.Drawing.Color>();
@@ -86,14 +94,14 @@ namespace Smash_Forge
             Runtime.renderSpawns = true;
             Runtime.renderRespawns = true;
             Runtime.renderOtherLVDEntries = true;
-            Runtime.renderNormals = true;
+            Runtime.renderAlpha = true;
             Runtime.renderVertColor = true;
             Runtime.renderSwag = false;
             Runtime.renderHurtboxes = true;
             Runtime.renderHurtboxesZone = true;
             Runtime.renderECB = false;
             Runtime.renderIndicators = false;
-            Runtime.renderType = Runtime.RenderTypes.Texture;
+            Runtime.renderType = Runtime.RenderTypes.Shaded;
             Runtime.paramDir = "";
             //Pichu.MakePichu();
             //meshList.refresh();
@@ -799,11 +807,17 @@ namespace Smash_Forge
                         // If they set the wrong dir, oh well
                         try
                         {
-                            Runtime.ParamManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
+                            Runtime.ParamManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin", fighterName);
                             hurtboxList.refresh();
                             Runtime.ParamManagerHelper = new PARAMEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
                             Runtime.ParamMoveNameIdMapping = Runtime.ParamManagerHelper.getMoveNameIdMapping();
                             Runtime.ModelContainers[0].name = fighterName;
+
+                            // Model render size
+                            ParamFile param = new ParamFile(Runtime.paramDir + "\\fighter\\fighter_param.bin");
+                            ParamEntry[] characterParams = ((ParamGroup)param.Groups[0])[CharacterParamManager.FIGHTER_ID[fighterName]];
+                            // index 44 is model_scale
+                            Runtime.model_scale = Convert.ToSingle(characterParams[44].Value);
                         }
                         catch { }
                     }
