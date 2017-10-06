@@ -858,10 +858,10 @@ namespace Smash_Forge
             }
             else
             {
-                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.Transform(difDir, difrot).Normalized());
+                GL.Uniform3(shader.getAttribute("difLightDirection"), diffuseLight.direction);
             }
 
-            GL.Uniform3(shader.getAttribute("difLightColor"), difR, difG, difB);
+            GL.Uniform3(shader.getAttribute("difLightColor"), diffuseLight.R, diffuseLight.G, diffuseLight.B);
             GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
 
             GL.ActiveTexture(TextureUnit.Texture10);
