@@ -129,6 +129,11 @@ namespace Smash_Forge
             texture.fragmentShader(RenderTools.texture_fs);
             Runtime.shaders.Add("Texture", texture);
 
+            Shader mbn = new Shader();
+            texture.vertexShader(RenderTools.mbn_vs);
+            texture.fragmentShader(RenderTools.mbn_fs);
+            Runtime.shaders.Add("MBN", texture);
+
 
             RenderTools.Setup();
 
@@ -2015,7 +2020,7 @@ namespace Smash_Forge
 
         private void exportErrorLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Runtime.shaders["NUD"].SaveErrorLog();
+            Runtime.shaders["MBN"].SaveErrorLog();
             MessageBox.Show("Saved to Forge directory");
         }
 

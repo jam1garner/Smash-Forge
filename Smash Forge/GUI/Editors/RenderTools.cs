@@ -2419,7 +2419,6 @@ gl_FragColor = vec4(1);
 
         #endregion
 
-
         #region texture shader
         public static string texture_vs = @"#version 330
 
@@ -2464,6 +2463,62 @@ void main()
 }";
 
         #endregion
+
+        #region mbn shader
+
+        public static string mbn_vs = @"#version 330
+ 
+in vec3 vPosition;
+in vec4 vColor;
+in vec3 vNormal;
+in vec2 vUV;
+in vec4 vBone;
+in vec4 vWeight;
+out vec2 f_texcoord;
+out vec4 color;
+out float normal;
+uniform mat4 modelview;
+uniform bones
+{{
+    mat4 transforms[{0}];
+}} bones_;
+ 
+void
+main()
+{{
+    ivec4 index = ivec4(vBone); 
+    vec4 objPos = vec4(vPosition.xyz, 1.0);
+    if(vBone.x != -1)
+    {{
+        objPos = bones_.transforms[index.x] * vec4(vPosition, 1.0) * vWeight.x;
+        objPos += bones_.transforms[index.y] * vec4(vPosition, 1.0) * vWeight.y;
+        objPos += bones_.transforms[index.z] * vec4(vPosition, 1.0) * vWeight.z;
+        objPos += bones_.transforms[index.w] * vec4(vPosition, 1.0) * vWeight.w;
+    }}
+    gl_Position = modelview * vec4(objPos.xyz, 1.0);
+    f_texcoord = vUV;
+    color = vColor;
+    normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.3,0.3,0.3,1.0)) ;
+}}";
+
+        public static string mbn_fs = @"#version 330
+in vec2 f_texcoord;
+in vec4 color;
+in float normal;
+uniform sampler2D tex;
+uniform vec2 uvscale;
+void
+main()
+{{
+    vec4 alpha = texture(tex, f_texcoord*uvscale).aaaa;
+    gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale) * normal).xyz, alpha.a * color.w);
+}}
+";
+
+
+        #endregion
+
+
 
         #endregion
 

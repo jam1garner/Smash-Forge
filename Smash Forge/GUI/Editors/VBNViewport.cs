@@ -565,7 +565,7 @@ namespace Smash_Forge
 
             renderTime.Stop();
             double fps = 1000 / (renderTime.ElapsedMilliseconds + 0.0001);
-            Debug.WriteLine(renderTime.ElapsedMilliseconds.ToString()); // render time for NUD shader in milliseconds
+            //Debug.WriteLine(renderTime.ElapsedMilliseconds.ToString()); // render time for NUD shader in milliseconds
             renderTime.Reset();
 
             /*{
@@ -876,10 +876,41 @@ namespace Smash_Forge
             #endregion
 
 
+            #region MBN Uniforms
+
+            shader = Runtime.shaders["MBN"];
+            GL.UseProgram(shader.programID);
+
+            if (Runtime.CameraLight)
+            {
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
+            }
+            else
+            {
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.Transform(difDir, difrot).Normalized());
+            }
+
+            GL.Uniform3(shader.getAttribute("difLightColor"), difR, difG, difB);
+            GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
+
+            GL.ActiveTexture(TextureUnit.Texture10);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
+            GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
+
+            GL.Uniform1(shader.getAttribute("renderType"), rt);
+
+            #endregion
+
+
+            shader = Runtime.shaders["NUD"];
+            GL.UseProgram(shader.programID);
+
+
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
                 if (m.bch != null)
                 {
+            
                     if (m.bch.mbn != null)
                     {
                         m.bch.mbn.Render(v);
@@ -2114,12 +2145,12 @@ namespace Smash_Forge
         private void VBNViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
             if (e.KeyChar == 'i')
-            {   /*
-                GL.DeleteProgram(Runtime.shaders["NUD"].programID);
+            {   
+                GL.DeleteProgram(Runtime.shaders["MBN"].programID);
                 shader = new Shader();
                 shader.vertexShader(File.ReadAllText("vert.txt"));
                 shader.fragmentShader(File.ReadAllText("frag.txt"));
-                Runtime.shaders["NUD"] = shader; */
+                Runtime.shaders["MBN"] = shader; 
             }
 
             /*if (e.KeyChar == 'w')

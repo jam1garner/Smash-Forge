@@ -26,7 +26,7 @@ namespace Smash_Forge
         public static Shader shader = null;
 
         static string vs = @"#version 330
- 
+
 in vec3 vPosition;
 in vec4 vColor;
 in vec3 vNormal;
@@ -34,53 +34,92 @@ in vec2 vUV;
 in vec4 vBone;
 in vec4 vWeight;
 
-out vec2 f_texcoord;
+out vec2 texcoord;
 out vec4 color;
-out float normal;
+out vec3 normal;
+out vec4 position;
 
 uniform mat4 modelview;
-uniform bones
-{{
-    mat4 transforms[{0}];
-}} bones_;
- 
+/*uniform bones
+{
+    mat4 transforms[1];
+} bones_;*/
+
 void
 main()
-{{
-    ivec4 index = ivec4(vBone); 
+{
+    //ivec4 index = ivec4(vBone);
     vec4 objPos = vec4(vPosition.xyz, 1.0);
 
+/*
     if(vBone.x != -1)
-    {{
+    {
         objPos = bones_.transforms[index.x] * vec4(vPosition, 1.0) * vWeight.x;
         objPos += bones_.transforms[index.y] * vec4(vPosition, 1.0) * vWeight.y;
         objPos += bones_.transforms[index.z] * vec4(vPosition, 1.0) * vWeight.z;
         objPos += bones_.transforms[index.w] * vec4(vPosition, 1.0) * vWeight.w;
-    }}
+    }*/
 
     gl_Position = modelview * vec4(objPos.xyz, 1.0);
 
-    f_texcoord = vUV;
+    position = modelview * vec4(objPos.xyz, 1.0);
+    texcoord = vUV;
     color = vColor;
-    normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.3,0.3,0.3,1.0)) ;
-}}";
+    //normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.3,0.3,0.3,1.0));
+
+    normal.xyz = vNormal.xyz;
+}";
 
         static string fs = @"#version 330
-
-in vec2 f_texcoord;
+in vec2 texcoord;
 in vec4 color;
-in float normal;
+in vec3 normal;
+in vec4 position;
+
+uniform vec3 difLightDirection;
+uniform vec3 difLightColor;
+uniform vec3 ambLightColor;
 
 uniform sampler2D tex;
-uniform vec2 uvscale;
+uniform sampler2D UVTestPattern;
 
-void
-main()
-{{
-    vec4 alpha = texture(tex, f_texcoord*uvscale).aaaa;
-    gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale) * normal).xyz, alpha.a * color.w);
-}}
-";
+uniform vec2 uvscale;
+uniform int renderType;
+uniform mat4 modelview;
+
+out vec4 FragColor;
+void main()
+{
+    vec4 alpha = texture2D(tex, texcoord*uvscale).aaaa;
+
+    vec3 displayNormal = normal.xyz;
+    displayNormal = (displayNormal + 1) / 2;
+
+    vec4 diffuseColor = texture2D(tex, texcoord);
+
+    float halfLambert = dot(difLightDirection, normal.xyz);
+    halfLambert = (halfLambert + 1) / 2;
+    vec3 lighting = mix(ambLightColor, difLightColor, halfLambert); // gradient based lighting
+
+    FragColor = vec4(1);
+    vec3 resulting_color = diffuseColor.rgb * lighting.rgb * color.rgb;
+
+    if (renderType == 1) // normals color
+        FragColor = vec4(displayNormal,1);
+    else if (renderType == 2) // normals black & white
+    {
+        float normalBnW = dot(vec4(normal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0));
+        FragColor.rgb = vec3(normalBnW);
+    }
+    else if (renderType == 4) // vertexColor
+        FragColor = color;
+    else if (renderType == 6) // uv coords
+        FragColor = vec4(texcoord.x, texcoord.y, 1, 1);
+    else if (renderType == 7) // uv test pattern
+        FragColor = vec4(texture2D(UVTestPattern, texcoord).rgb, 1);
+    else
+        FragColor = vec4(resulting_color, 1);
+}";
 
         public List<Descriptor> descript = new List<Descriptor>(); // Descriptors are used to describe the vertex data...
 
@@ -196,13 +235,16 @@ main()
         private void SetupShader()
         {
             int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
+            
 
             if (shader == null)
             {
-                shader = new Shader();
-
-                shader.vertexShader(string.Format(vs, 0));
-                shader.fragmentShader(string.Format(fs));
+                //shader = new Shader();
+                //shader.vertexShader(File.ReadAllText("vert.txt"));
+                //shader.fragmentShader(File.ReadAllText("frag.txt"));
+                //shader.vertexShader(string.Format(vs, 0));
+                //shader.fragmentShader(string.Format(fs));
+                //shader = Runtime.shaders["MBN"];
             }
         }
 
@@ -211,6 +253,7 @@ main()
             if (null == shader)
                 return;
 
+            shader = Runtime.shaders["MBN"];
             GL.UseProgram(shader.programID);
 
             GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref modelview);
@@ -245,15 +288,21 @@ main()
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(facedata.Length * sizeof(int)), facedata, BufferUsageHint.StaticDraw);
 
             int indiceat = 0;
+    
             foreach (Mesh m in mesh)
             {
                 GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1, 1, 0, 0));
 
+                GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindTexture(TextureTarget.Texture2D, m.texId);
                 GL.Uniform1(shader.getAttribute("tex"), 0);
 
                 foreach (List<int> l in m.faces)
                 {
+
+                    GL.Enable(EnableCap.CullFace);
+                    GL.CullFace(CullFaceMode.Back);
+
                     if (m.isVisible)
                         GL.DrawElements(PrimitiveType.Triangles, l.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
 
