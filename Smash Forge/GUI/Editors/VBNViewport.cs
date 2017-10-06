@@ -67,12 +67,12 @@ namespace Smash_Forge
                 GL.Viewport(glControl1.ClientRectangle);
 
 
-                v = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width, -height, zoom) * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 500.0f);
+                mvpMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width, -height, zoom) * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 500.0f);
             }
         }
 
         #region Members
-        Matrix4 v, vi;
+        Matrix4 mvpMatrix, vi;
         public float cameraYRotation = 0;
         public float x = 0;
         public float cameraXRotation = 0;
@@ -403,7 +403,7 @@ namespace Smash_Forge
             int w = Width;
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
-            v = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width,-height,zoom) 
+            mvpMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width,-height,zoom) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(width,-height,zoom);
 
@@ -444,7 +444,7 @@ namespace Smash_Forge
         {
             Matrix4 lightProjection;
             Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 500f, out lightProjection);
-            Matrix4 lightView = Matrix4.LookAt(Vector3.Transform(Vector3.Zero, v).Normalized(), //new Vector3(0.5f, 1f, 1f),
+            Matrix4 lightView = Matrix4.LookAt(Vector3.Transform(Vector3.Zero, mvpMatrix).Normalized(), //new Vector3(0.5f, 1f, 1f),
                 new Vector3(0),
                 new Vector3(0, 1, 0));
 
@@ -480,6 +480,7 @@ namespace Smash_Forge
                     }
                 }
             }
+
             GL.Disable(EnableCap.DepthTest);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);*/
@@ -499,16 +500,9 @@ namespace Smash_Forge
 
             if (Runtime.renderBackGround)
             {
-                GL.Begin(PrimitiveType.Quads);
-                GL.Color3(Runtime.back1);
-                GL.Vertex2(1.0, 1.0);
-                GL.Vertex2(-1.0, 1.0);
-                GL.Color3(Runtime.back2);
-                GL.Vertex2(-1.0, -1.0);
-                GL.Vertex2(1.0, -1.0);
-                GL.End();
+                renderBackground();
             }
-            
+
             //RenderTools.RenderCubeMap(v);
 
             //GL.DepthFunc(DepthFunction.Never);
@@ -535,8 +529,8 @@ namespace Smash_Forge
             /*GL.LoadMatrix(ref lightMatrix);
             RenderTools.drawFloor();
             RenderTools.drawSphere(Vector3.Zero, 1, 5);*/
-            GL.LoadMatrix(ref v);
-            
+            GL.LoadMatrix(ref mvpMatrix);
+
             GL.UseProgram(0);
 
             // drawing floor---------------------------
@@ -571,14 +565,15 @@ namespace Smash_Forge
 
             // draw models
             //RenderTools.drawHitboxCircle(new Vector3(3, 3, 3), 5, 30, v.ClearTranslation().Inverted());
-            
+
             renderTime.Start();
 
             if (!Runtime.useDepthTest) GL.Disable(EnableCap.DepthTest);
 
-            if (Runtime.renderModel) DrawModels();
-
- 
+            if (Runtime.renderModel)
+            {
+                DrawModels();
+            }
 
             renderTime.Stop();
             double fps = 1000 / (renderTime.ElapsedMilliseconds + 0.0001);
@@ -609,23 +604,15 @@ namespace Smash_Forge
             if (Runtime.renderPath)
                 DrawPathDisplay();
 
-            foreach (KeyValuePair<string, AreaLight> areaLight in Runtime.areaLights)
-                {   if (areaLight.Value.renderBoundingBox)
-                    {
-                        Vector3 center = new Vector3(areaLight.Value.positionX, areaLight.Value.positionY, areaLight.Value.positionZ);
-                        RenderTools.drawRectangularPrismWireframe(center, areaLight.Value.scaleX, areaLight.Value.scaleY, areaLight.Value.scaleZ);
-                    }
-                }
+            DrawAreaLightBoundingBoxes();
 
-            // clear the buffer bit so the skeleton 
-            // will be drawn on top of everything
+            // clear the buffer bit so the skeleton will be drawn on top of everything
             GL.Clear(ClearBufferMask.DepthBufferBit);
             // draw lvd
             if (Runtime.renderLVD)
                 DrawLVD();
-            // drawing the bones
-            DrawBones();
 
+            DrawBones();
 
 
             /*GL.LineWidth(3f);
@@ -637,6 +624,30 @@ namespace Smash_Forge
             // Clean up
             GL.PopAttrib();
             glControl1.SwapBuffers();
+        }
+
+        private static void DrawAreaLightBoundingBoxes()
+        {
+            foreach (KeyValuePair<string, AreaLight> areaLight in Runtime.areaLights)
+            {
+                if (areaLight.Value.renderBoundingBox)
+                {
+                    Vector3 center = new Vector3(areaLight.Value.positionX, areaLight.Value.positionY, areaLight.Value.positionZ);
+                    RenderTools.drawRectangularPrismWireframe(center, areaLight.Value.scaleX, areaLight.Value.scaleY, areaLight.Value.scaleZ);
+                }
+            }
+        }
+
+        private static void renderBackground()
+        {
+            GL.Begin(PrimitiveType.Quads);
+            GL.Color3(Runtime.back1);
+            GL.Vertex2(1.0, 1.0);
+            GL.Vertex2(-1.0, 1.0);
+            GL.Color3(Runtime.back2);
+            GL.Vertex2(-1.0, -1.0);
+            GL.Vertex2(1.0, -1.0);
+            GL.End();
         }
 
         public void UpdateCameraPositionControl()
@@ -677,7 +688,7 @@ namespace Smash_Forge
 
             zoom += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale * scrollWheelZoomSpeed;
 
-            v = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width,-height,zoom) 
+            mvpMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width,-height,zoom) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateTranslation(width,-height,zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
@@ -696,7 +707,7 @@ namespace Smash_Forge
                 if (cf >= Runtime.TargetPath.Frames.Count)
                     cf = 0;
                 pathFrame f = Runtime.TargetPath.Frames[cf];
-                v = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() 
+                mvpMatrix = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() 
                     * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 90000.0f);
                 cf++;
             }
@@ -705,7 +716,7 @@ namespace Smash_Forge
                 if (cf >= Runtime.TargetCMR0.frames.Count)
                     cf = 0;
                 Matrix4 m = Runtime.TargetCMR0.frames[cf].Inverted();
-                v = Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) 
+                mvpMatrix = Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) 
                     * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 90000.0f);
                 cf++;
             }
@@ -714,32 +725,17 @@ namespace Smash_Forge
         private void DrawModels()
         {
             // Bounding Box Render
-            if(Runtime.renderBoundingBox)
-            foreach (ModelContainer m in Runtime.ModelContainers)
+            if (Runtime.renderBoundingBox)
             {
-                if (m.nud != null)
-                {
-                    RenderTools.drawCubeWireframe(new Vector3(m.nud.param[0], m.nud.param[1], m.nud.param[2]), m.nud.param[3]);
-                    foreach (NUD.Mesh mesh in m.nud.mesh)
-                    {
-                        if(mesh.Checked)
-                            RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
-                    }
-                }
+                DrawBoundingBoxes();
             }
-
+  
             shader = Runtime.shaders["NUD"];
             
             GL.UseProgram(shader.programID);
-            int rt = (int)Runtime.renderType;
-            if(rt == 0)
-            {
-                if (Runtime.renderAlpha)
-                    rt = rt | (0x10);
-                if (Runtime.renderVertColor)
-                    rt = rt | (0x20);
-            }
-            GL.Uniform1(shader.getAttribute("renderType"), rt);
+            int renderType = (int)Runtime.renderType;
+            GL.Uniform1(shader.getAttribute("renderType"), renderType);
+
             GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
@@ -762,7 +758,6 @@ namespace Smash_Forge
             GL.BindTexture(TextureTarget.Texture2D, depthmap);
             GL.Uniform1(shader.getAttribute("shadowmap"), 11);
 
-            #region light_set lights uniforms
 
             // fresnel ground color for characters & stages
             float fresGroundR, fresGroundG, fresGroundB = 1.0f;
@@ -826,16 +821,16 @@ namespace Smash_Forge
 
             if (Runtime.CameraLight) // camera light should only affects character lighting
             {
-                GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
-                GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
-                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
-                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, v));
+                GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, mvpMatrix));
             }
             else
             {
                 GL.Uniform3(shader.getAttribute("specLightDirection"), specularLight.direction);
                 GL.Uniform3(shader.getAttribute("difLightDirection"), diffuseLight.direction);
-                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, v));
+                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, mvpMatrix));
                 GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
             }
 
@@ -844,53 +839,20 @@ namespace Smash_Forge
             GL.Uniform3(shader.getAttribute("stageLight3Direction"), stageLight3.direction);
             GL.Uniform3(shader.getAttribute("stageLight4Direction"), stageLight4.direction);
 
-            #endregion
-
-
-            #region MBN Uniforms
-
-            shader = Runtime.shaders["MBN"];
-            GL.UseProgram(shader.programID);
-
-            if (Runtime.CameraLight)
-            {
-                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
-            }
-            else
-            {
-                GL.Uniform3(shader.getAttribute("difLightDirection"), diffuseLight.direction);
-            }
-
-            GL.Uniform3(shader.getAttribute("difLightColor"), diffuseLight.R, diffuseLight.G, diffuseLight.B);
-            GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
-
-            GL.ActiveTexture(TextureUnit.Texture10);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
-            GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
-
-            GL.Uniform1(shader.getAttribute("renderType"), rt);
-
-            #endregion
-
-
-            shader = Runtime.shaders["NUD"];
-            GL.UseProgram(shader.programID);
-
 
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
                 if (m.bch != null)
                 {
-            
                     if (m.bch.mbn != null)
                     {
-                        m.bch.mbn.Render(v);
+                        m.bch.mbn.Render(mvpMatrix);
                     }
                 }
 
                 if (m.dat_melee != null)
                 {
-                    m.dat_melee.Render(v);
+                    m.dat_melee.Render(mvpMatrix);
                 }
 
                 if (m.nud != null)
@@ -898,7 +860,7 @@ namespace Smash_Forge
                     GL.ActiveTexture(TextureUnit.Texture2);
                     GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex);
                     GL.Uniform1(shader.getAttribute("cmap"), 2);
-                    GL.UniformMatrix4(shader.getAttribute("eyeview"), false, ref v);
+                    GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
 
                     if (m.vbn != null)
                     {
@@ -950,6 +912,21 @@ namespace Smash_Forge
             }
         }
 
+        private static void DrawBoundingBoxes()
+        {
+            foreach (ModelContainer m in Runtime.ModelContainers)
+            {
+                if (m.nud != null)
+                {
+                    RenderTools.drawCubeWireframe(new Vector3(m.nud.param[0], m.nud.param[1], m.nud.param[2]), m.nud.param[3]);
+                    foreach (NUD.Mesh mesh in m.nud.mesh)
+                    {
+                        if (mesh.Checked)
+                            RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
+                    }
+                }
+            }
+        }
 
         private void DrawBones()
         {
@@ -2151,12 +2128,8 @@ namespace Smash_Forge
         private void VBNViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
             if (e.KeyChar == 'i')
-            {   /*
-                GL.DeleteProgram(Runtime.shaders["NUD"].programID);
-                shader = new Shader();
-                shader.vertexShader(File.ReadAllText("vert.txt"));
-                shader.fragmentShader(File.ReadAllText("frag.txt"));
-                Runtime.shaders["NUD"] = shader; */
+            {
+                reloadShaderFromFile("NUD", File.ReadAllText("vert.txt"), File.ReadAllText("frag.txt"));
             }
 
             /*if (e.KeyChar == 'w')
@@ -2272,6 +2245,22 @@ namespace Smash_Forge
             }
         }
 
+        private void reloadShaderFromFile(string shaderName, string vertexFilePath, string fragmentFilePath)
+        {
+            /*GL.DeleteProgram(Runtime.shaders["NUD"].programID);
+            shader = new Shader();
+            shader.vertexShader(File.ReadAllText("vert.txt"));
+            shader.fragmentShader(File.ReadAllText("frag.txt"));
+            Runtime.shaders["NUD"] = shader;*/
+
+            GL.DeleteProgram(Runtime.shaders[shaderName].programID);
+            shader = new Shader();
+            shader.vertexShader(vertexFilePath);
+            shader.fragmentShader(fragmentFilePath);
+            Runtime.shaders[shaderName] = shader;
+
+        }
+
         System.Drawing.Point mouseDownPos = new System.Drawing.Point();
         Vector3 p1 = Vector3.Zero, p2 = Vector3.Zero;
         public int dbdistance = 0;
@@ -2283,8 +2272,8 @@ namespace Smash_Forge
 
             float x = (2.0f * mouse_x) / glControl1.Width - 1.0f;
             float y = 1.0f - (2.0f * mouse_y) / glControl1.Height;
-            Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), v.Inverted());
-            Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), v.Inverted());
+            Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), mvpMatrix.Inverted());
+            Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), mvpMatrix.Inverted());
 
             p1 = va.Xyz;
             p2 = p1 - (va - (va + vb)).Xyz * 100;
@@ -2400,8 +2389,8 @@ namespace Smash_Forge
 
                 float x = (2.0f * mouse_x) / glControl1.Width - 1.0f;
                 float y = 1.0f - (2.0f * mouse_y) / glControl1.Height;
-                Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), v.Inverted());
-                Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), v.Inverted());
+                Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), mvpMatrix.Inverted());
+                Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), mvpMatrix.Inverted());
 
                 p1 = va.Xyz;
                 p2 = p1 - (va - (va + vb)).Xyz * 100;
@@ -2437,7 +2426,7 @@ namespace Smash_Forge
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
-            v = Matrix4.CreateTranslation(width,-height,zoom) * Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) 
+            mvpMatrix = Matrix4.CreateTranslation(width,-height,zoom) * Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             //v2 = Matrix4.CreateTranslation(width,-height,zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }

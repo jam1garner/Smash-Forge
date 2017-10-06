@@ -5,6 +5,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing.Imaging;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace Smash_Forge
 {
@@ -1968,7 +1969,7 @@ uniform vec4 colorSamplerUV;
 uniform vec4 colorSampler2UV;
 uniform vec4 colorSampler3UV;
 uniform vec4 normalSamplerAUV;
-uniform mat4 eyeview;
+uniform mat4 mvpMatrix;
 uniform uint flags;
 
 uniform float zScale;
@@ -2017,7 +2018,7 @@ void main()
     if(vBone.x != -1.0) objPos = skin(vPosition, bi);
     objectPosition = objPos.xyz;
     objPos.z *= zScale;
-    objPos = eyeview * vec4(objPos.xyz, 1.0);
+    objPos = mvpMatrix * vec4(objPos.xyz, 1.0);
 
     gl_Position = objPos;
 
@@ -2027,11 +2028,11 @@ void main()
     normal = vec3(0,0,0);
     tangent.xyz = vTangent.xyz;
     bitangent.xyz = vBiTangent.xyz;
-    viewPosition = vec3(vPosition * mat3(eyeview));
+    viewPosition = vec3(vPosition * mat3(mvpMatrix));
 
     // calculate view space normals for sphere map rendering. animations don't change normals?
     viewNormals = vec4(vNormal.xyz, 0);
-	mat4 matrixThing = transpose(inverse(eyeview));
+	mat4 matrixThing = transpose(inverse(mvpMatrix));
 	viewNormals = matrixThing * viewNormals;
 
 
@@ -2044,7 +2045,7 @@ void main()
 	fragpos = objPos.xyz;
 
 	if(vBone.x != -1.0)
-		normal = normalize((skinNRM(vNormal.xyz, bi)).xyz) ; //  * -1 * mat3(eyeview)
+		normal = normalize((skinNRM(vNormal.xyz, bi)).xyz) ; //  * -1 * mat3(mvpMatrix)
 	else
 		normal = vNormal ;
 
@@ -2184,7 +2185,7 @@ uniform vec3 stageLight4Direction;
 uniform int renderFog;
 uniform vec3 stageFogColor;
 
-uniform mat4 eyeview;
+uniform mat4 mvpMatrix;
 uniform vec3 lightPosition;
 uniform vec3 lightDirection;
 uniform sampler2D shadowMap;
@@ -2349,7 +2350,7 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
     // easier to work with if everything's in the same scope
     // split up into sections for easier reading
 
-    vec3 I = vec3(0,0,-1) * mat3(eyeview);
+    vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
 
     // light directions
     vec3 newFresnelDirection = lightDirection;
@@ -2635,7 +2636,7 @@ void main()
         FragColor.rgb = displayNormal;
     else if (renderType == 2) // normals black & white
     {
-        float normal = dot(vec4(bumpMapNormal * mat3(eyeview), 1.0), vec4(vec3(0.15), 1.0));
+        float normal = dot(vec4(bumpMapNormal * mat3(mvpMatrix), 1.0), vec4(vec3(0.15), 1.0));
         FragColor.rgb = vec3(normal);
     }
     else if (renderType == 3) // diffuse map
@@ -2712,7 +2713,7 @@ void main()
         // angleFadeParams alpha correction
         float normalFadeAmount = angleFadeParams.x;
         float edgeFadeAmount = angleFadeParams.y;
-        vec3 I = vec3(0,0,-1) * mat3(eyeview);
+        vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
         float fresnelBlend = 1-dot(I, bumpMapNormal);
         float angleFadeAmount = mix(normalFadeAmount, edgeFadeAmount, fresnelBlend);
         angleFadeAmount = max((1 - angleFadeAmount), 0);
@@ -2733,6 +2734,7 @@ void main()
 	}
 
 }";
+  
 
         #endregion
 
@@ -2746,7 +2748,7 @@ in int vSelected;
 
 flat out int selected;
 
-uniform mat4 eyeview;
+uniform mat4 mvpMatrix;
 uniform bones
 {
     mat4 transforms[200];
@@ -2775,7 +2777,7 @@ void main()
 
     selected = vSelected;
 
-    gl_Position = eyeview * vec4(objPos.xyz, 1.0f);
+    gl_Position = mvpMatrix * vec4(objPos.xyz, 1.0f);
 }
 ";
         public static string fs_Point = @"#version 330
@@ -2847,89 +2849,20 @@ out vec4 outColor;
 void main()
 {   outColor = vec4(0,0,0,1);    
     vec4 textureColor = texture2D(texture, vec2(texCoord.x, 1-texCoord.y)).rgba;
-    if (renderR == 1) 
-    {
+    if (renderR == 1)
         outColor.r = textureColor.r;
-        if (renderB == 0 && renderG == 0)
-            outColor.rgb = textureColor.rrr;
-    }
     if (renderG == 1)
-    {    
         outColor.g = textureColor.g;
-        if (renderB == 0 && renderR == 0)
-            outColor.rgb = textureColor.ggg;
-    }
     if (renderB == 1)
-    {
         outColor.b = textureColor.b;
-        if (renderG == 0 && renderR == 0)
-            outColor.rgb = textureColor.bbb;
-    }
     if (renderAlpha == 1)
-    {
         outColor.a = textureColor.a;
-    }
     if (alphaOverride == 1)
         outColor = vec4(textureColor.aaa, 1);
+        
 }";
 
         #endregion
-
-        #region mbn shader
-
-        public static string mbn_vs = @"#version 330
- 
-in vec3 vPosition;
-in vec4 vColor;
-in vec3 vNormal;
-in vec2 vUV;
-in vec4 vBone;
-in vec4 vWeight;
-out vec2 f_texcoord;
-out vec4 color;
-out float normal;
-uniform mat4 modelview;
-uniform bones
-{{
-    mat4 transforms[{0}];
-}} bones_;
- 
-void
-main()
-{{
-    ivec4 index = ivec4(vBone); 
-    vec4 objPos = vec4(vPosition.xyz, 1.0);
-    if(vBone.x != -1)
-    {{
-        objPos = bones_.transforms[index.x] * vec4(vPosition, 1.0) * vWeight.x;
-        objPos += bones_.transforms[index.y] * vec4(vPosition, 1.0) * vWeight.y;
-        objPos += bones_.transforms[index.z] * vec4(vPosition, 1.0) * vWeight.z;
-        objPos += bones_.transforms[index.w] * vec4(vPosition, 1.0) * vWeight.w;
-    }}
-    gl_Position = modelview * vec4(objPos.xyz, 1.0);
-    f_texcoord = vUV;
-    color = vColor;
-    normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.3,0.3,0.3,1.0)) ;
-}}";
-
-        public static string mbn_fs = @"#version 330
-in vec2 f_texcoord;
-in vec4 color;
-in float normal;
-uniform sampler2D tex;
-uniform vec2 uvscale;
-void
-main()
-{{
-    vec4 alpha = texture(tex, f_texcoord*uvscale).aaaa;
-    gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale) * normal).xyz, alpha.a * color.w);
-}}
-";
-
-
-        #endregion
-
-
 
         #endregion
 

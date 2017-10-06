@@ -66,7 +66,7 @@ namespace Smash_Forge
             DiffuseMap = 0x00000001
         }
 
-        
+
         public void PreRender()
         {
             for (int mes = mesh.Count - 1; mes >= 0; mes--)
@@ -83,7 +83,7 @@ namespace Smash_Forge
             //    (max-min).ToString());
         }
 
-        public void Render(Matrix4 view, VBN vbn)
+        public void Render(Matrix4 mvpMatrix, VBN vbn)
         {
             // Bounding Box Render
             if (Runtime.renderBoundingBox)
@@ -100,17 +100,10 @@ namespace Smash_Forge
             }
 
             Shader shader = Runtime.shaders["NUD"];
-
             GL.UseProgram(shader.programID);
-            int rt = (int)Runtime.renderType;
-            if (rt == 0)
-            {
-                if (Runtime.renderAlpha)
-                    rt = rt | (0x10);
-                if (Runtime.renderVertColor)
-                    rt = rt | (0x20);
-            }
-            GL.Uniform1(shader.getAttribute("renderType"), rt);
+
+            int renderType = (int)Runtime.renderType;
+            GL.Uniform1(shader.getAttribute("renderType"), renderType);
             GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderNormal"), Runtime.renderAlpha ? 1 : 0);
@@ -125,7 +118,7 @@ namespace Smash_Forge
                 GL.ActiveTexture(TextureUnit.Texture10);
                 GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex);
                 GL.Uniform1(shader.getAttribute("cmap"), 10);
-                GL.UniformMatrix4(shader.getAttribute("eyeview"), false, ref view);
+                GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
 
                 if (vbn != null)
                 {
@@ -183,12 +176,12 @@ namespace Smash_Forge
                     Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - pol];
 
                     //int hash = p.materials[0].textures[0].hash;
-                    if(p.materials.Count > 0)
-                    if (p.materials[0].srcFactor != 0 || p.materials[0].dstFactor != 0)
-                    {
-                        trans.Add(p);
-                        continue;
-                    }
+                    if (p.materials.Count > 0)
+                        if (p.materials[0].srcFactor != 0 || p.materials[0].dstFactor != 0)
+                        {
+                            trans.Add(p);
+                            continue;
+                        }
                     opaque.Add(p);
                     //if (p.isTransparent)
                     //    trans.Add(p);
@@ -204,7 +197,7 @@ namespace Smash_Forge
                     DrawPolygon(p, shader);
 
             foreach (Polygon p in trans)
-                if(((Mesh)p.Parent).Checked)
+                if (((Mesh)p.Parent).Checked)
                     DrawPolygon(p, shader);
 
             foreach (Mesh m in mesh)
@@ -243,7 +236,7 @@ namespace Smash_Forge
 
                 GL.Uniform1(shader.getAttribute("flags"), mat.flags);
                 GL.Uniform1(shader.getAttribute("isTransparent"), p.isTransparent ? 1 : 0);
-             
+
                 GL.Uniform1(shader.getAttribute("hasDif"), mat.diffuse ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasDif2"), mat.diffuse2 ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasDif3"), mat.diffuse3 ? 1 : 0);
@@ -256,13 +249,11 @@ namespace Smash_Forge
                 GL.Uniform1(shader.getAttribute("hasColorGainOffset"), mat.useColorGainOffset ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("useDiffuseBlend"), mat.useDiffuseBlend ? 1 : 0);
 
-                //mat.entries.TryGetValue("NU_specularParams", out pa);
                 // specular params seems to override reflectionParams for specular
                 bool hasSpecularParams = false;
                 if (mat.anims.ContainsKey("NU_specularParams"))
                     hasSpecularParams = true;
                 GL.Uniform1(shader.getAttribute("hasSpecParams"), hasSpecularParams ? 1 : 0);
-
 
                 GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
@@ -270,8 +261,6 @@ namespace Smash_Forge
                 GL.ActiveTexture(TextureUnit.Texture10);
                 GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
                 GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
-                
-
 
                 GL.Uniform1(shader.getAttribute("dif"), 0);
                 GL.Uniform1(shader.getAttribute("dif2"), 0);
@@ -282,12 +271,11 @@ namespace Smash_Forge
                 GL.Uniform1(shader.getAttribute("ao"), 0);
                 GL.Uniform1(shader.getAttribute("ramp"), 0);
 
-
                 GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
 
-         
+
                 int texid = 0;
-               
+
                 if (mat.diffuse && texid < mat.textures.Count)
                 {
                     int hash = mat.textures[texid].hash;
@@ -295,10 +283,18 @@ namespace Smash_Forge
                     GL.Uniform1(shader.getAttribute("dif"), BindTexture(mat.textures[texid], hash, texid));
                     texid++;
                 }
+                if (mat.diffuse2 && texid < mat.textures.Count)
+                {
+                    GL.Uniform1(shader.getAttribute("dif2"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                }
+                if (mat.diffuse3 && texid < mat.textures.Count)
+                {
+                    GL.Uniform1(shader.getAttribute("dif3"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                }
                 if (mat.stagemap && texid < mat.textures.Count)
                 {
                     GL.Uniform1(shader.getAttribute("stagecube"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
-                }       
+                }
                 if (mat.cubemap && texid < mat.textures.Count)
                 {
                     GL.Uniform1(shader.getAttribute("cube"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
@@ -306,10 +302,6 @@ namespace Smash_Forge
                 if (mat.spheremap && texid < mat.textures.Count)
                 {
                     GL.Uniform1(shader.getAttribute("spheremap"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
-                }
-                if (mat.diffuse2 && texid < mat.textures.Count)
-                {
-                    GL.Uniform1(shader.getAttribute("dif2"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
                 }
                 if (mat.aomap && texid < mat.textures.Count)
                 {
@@ -328,224 +320,48 @@ namespace Smash_Forge
                     GL.Uniform1(shader.getAttribute("dummyRamp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
                 }
 
-                if (mat.diffuse3 && texid < mat.textures.Count)
-                {
-                    GL.Uniform1(shader.getAttribute("dif3"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
-                }
+                // pass all researched material values to the shader for viewport rendering
+                MaterialPropertyShaderUniform(shader, mat, "NU_aoMinGain", "minGain", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_colorSamplerUV", "colorSamplerUV", 1, 1, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_colorSampler2UV", "colorSampler2UV", 1, 1, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_colorSampler3UV", "colorSampler3UV", 1, 1, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_colorGain", "colorGain", 1, 1, 1, 1);
+                MaterialPropertyShaderUniform(shader, mat, "NU_finalColorGain", "finalColorGain", 1, 1, 1, 1);
+                MaterialPropertyShaderUniform(shader, mat, "NU_colorOffset", "colorOffset", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_diffuseColor", "diffuseColor", 1, 1, 1, 0.5f);
+                MaterialPropertyShaderUniform(shader, mat, "NU_specularColor", "specularColor", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_specularColorGain", "specularColorGain", 1, 1, 1, 1);
+                MaterialPropertyShaderUniform(shader, mat, "NU_specularParams", "specularParams", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_fresnelColor", "fresnelColor", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_fresnelParams", "fresnelParams", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_reflectionColor", "reflectionColor", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_reflectionParams", "reflectionParams", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_fogColor", "fogColor", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_fogParams", "fogParams", 0, 1, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_normalParams", "normalParams", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_zOffset", "zOffset", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_effColorGain", "effColorGain", 1, 1, 1, 1);
+                MaterialPropertyShaderUniform(shader, mat, "NU_angleFadeParams", "angleFadeParams", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", "dualNormalScrollParams", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV", "normalSamplerAUV", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_alphaBlendParams", "alphaBlendParams", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_softLightingParams", "softLightingParams", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_customSoftLightParams", "customSoftLightParams", 0, 0, 0, 0);
 
+                // create some conditionals rather than using different shaders
+                GL.Uniform1(shader.getAttribute("hasSoftLight"), mat.anims.ContainsKey("NU_softLightingParams") ? 1 : 0);
+                GL.Uniform1(shader.getAttribute("hasCustomSoftLight"), mat.anims.ContainsKey("NU_customSoftLightParams") ? 1 : 0);
+                GL.Uniform1(shader.getAttribute("hasSpecularParams"), mat.anims.ContainsKey("NU_specularParams") ? 1 : 0);
+                GL.Uniform1(shader.getAttribute("hasDualNormal"), mat.anims.ContainsKey("NU_dualNormalScrollParams") ? 1 : 0);
 
-                {
-                    float[] ao;
-                    mat.entries.TryGetValue("NU_aoMinGain", out ao);
-                    if (mat.anims.ContainsKey("NU_aoMinGain")) ao = mat.anims["NU_aoMinGain"];
-                    if (ao == null) ao = new float[] { 0, 0, 0, 0 };
-                    Vector4 aoo = new Vector4(ao[0], ao[1], ao[2], ao[3]);
-                    GL.Uniform4(shader.getAttribute("minGain"), aoo);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_colorSamplerUV", out pa);
-                    if (mat.anims.ContainsKey("NU_colorSamplerUV")) pa = mat.anims["NU_colorSamplerUV"];
-                    if (pa == null) pa = new float[] { 1, 1, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("colorSamplerUV"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_colorSampler2UV", out pa);
-                    if (mat.anims.ContainsKey("NU_colorSampler2UV")) pa = mat.anims["NU_colorSampler2UV"];
-                    if (pa == null) pa = new float[] { 1, 1, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("colorSampler2UV"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_colorSampler3UV", out pa);
-                    if (mat.anims.ContainsKey("NU_colorSampler3UV")) pa = mat.anims["NU_colorSampler3UV"];
-                    if (pa == null) pa = new float[] { 1, 1, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("colorSampler3UV"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_colorGain", out pa);
-                    if (mat.anims.ContainsKey("NU_colorGain")) pa = mat.anims["NU_colorGain"];
-                    if (pa == null) pa = new float[] { 1, 1, 1, 1 };
-                    GL.Uniform4(shader.getAttribute("colorGain"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_finalColorGain", out pa);
-                    if (mat.anims.ContainsKey("NU_finalColorGain")) pa = mat.anims["NU_finalColorGain"];
-                    if (pa == null) pa = new float[] { 1, 1, 1, 1 };
-                    GL.Uniform4(shader.getAttribute("finalColorGain"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_colorOffset", out pa);
-                    if (mat.anims.ContainsKey("NU_colorOffset")) pa = mat.anims["NU_colorOffset"];
-                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("colorOffset"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_diffuseColor", out pa);
-                    if (mat.anims.ContainsKey("NU_diffuseColor")) pa = mat.anims["NU_diffuseColor"];
-                    if (pa == null) pa = new float[] { 1, 1, 1, 0.5f };
-                    GL.Uniform4(shader.getAttribute("diffuseColor"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_specularColor", out pa);
-                    if (mat.anims.ContainsKey("NU_specularColor")) pa = mat.anims["NU_specularColor"];
-                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("specularColor"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_specularColorGain", out pa);
-                    if (mat.anims.ContainsKey("NU_specularColorGain")) pa = mat.anims["NU_specularColorGain"];
-                    if (pa == null) pa = new float[] { 1, 1, 1, 1 };
-                    GL.Uniform4(shader.getAttribute("specularColorGain"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_specularParams", out pa);
-                    if (mat.anims.ContainsKey("NU_specularParams")) pa = mat.anims["NU_specularParams"];
-                   
-                    // specularparams seems to override reflectionparams for specular
-                    int hasSpecParams = 1;
-                    if (pa == null) hasSpecParams = 0;
-                    GL.Uniform1(shader.getAttribute("hasSpecularParams"), hasSpecParams);
-
-                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("specularParams"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_fresnelColor", out pa);
-                    if (mat.anims.ContainsKey("NU_fresnelColor")) pa = mat.anims["NU_fresnelColor"];
-                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("fresnelColor"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_fresnelParams", out pa);
-                    if (mat.anims.ContainsKey("NU_fresnelParams")) pa = mat.anims["NU_fresnelParams"];
-                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("fresnelParams"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_reflectionColor", out pa);
-                    if (mat.anims.ContainsKey("NU_reflectionColor")) pa = mat.anims["NU_reflectionColor"];
-                    if (pa == null) pa = new float[] { 0, 0, 0, 1 };
-                    GL.Uniform4(shader.getAttribute("reflectionColor"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_reflectionParams", out pa);
-                    if (mat.anims.ContainsKey("NU_reflectionParams")) pa = mat.anims["NU_reflectionParams"];
-                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("reflectionParams"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_fogColor", out pa);
-                    if (mat.anims.ContainsKey("NU_fogColor")) pa = mat.anims["NU_fogColor"];
-                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("fogColor"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_fogParams", out pa);
-                    if (mat.anims.ContainsKey("NU_fogParams")) pa = mat.anims["NU_fogParams"];
-                    if (pa == null) pa = new float[] { 0, 1, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("fogParams"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_normalParams", out pa);
-                    if (mat.anims.ContainsKey("NU_normalParams")) pa = mat.anims["NU_normalParams"];
-                    if (pa == null) pa = new float[] { 1, 0, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("normalParams"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_zOffset", out pa);
-                    if (mat.anims.ContainsKey("NU_zOffset")) pa = mat.anims["NU_zOffset"];
-                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("zOffset"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_effColorGain", out pa);
-                    if (mat.anims.ContainsKey("NU_effColorGain")) pa = mat.anims["NU_effColorGain"];
-                    if (pa == null) pa = new float[] { 1, 1, 1, 1 };
-                    GL.Uniform4(shader.getAttribute("effColorGain"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_angleFadeParams", out pa);
-                    if (mat.anims.ContainsKey("NU_angleFadeParams")) pa = mat.anims["NU_angleFadeParams"];
-                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("angleFadeParams"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_dualNormalScrollParams", out pa);
-                    if (mat.anims.ContainsKey("NU_dualNormalScrollParams")) pa = mat.anims["NU_dualNormalScrollParams"];
-
-                    int hasDualNormal = 1;
-                    if (pa == null) hasDualNormal = 0;
-                    GL.Uniform1(shader.getAttribute("hasDualNormal"), hasDualNormal);
-
-                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("dualNormalScrollParams"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_normalSamplerAUV", out pa);
-                    if (mat.anims.ContainsKey("NU_normalSamplerAUV")) pa = mat.anims["NU_normalSamplerAUV"];
-                    if (pa == null) pa = new float[] { 1, 1, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("normalSamplerAUV"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_alphaBlendParams", out pa);
-                    if (mat.anims.ContainsKey("NU_alphaBlendParams")) pa = mat.anims["NU_alphaBlendParams"];
-                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("alphaBlendParams"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_softLightingParams", out pa);
-                    if (mat.anims.ContainsKey("NU_softLightingParams")) pa = mat.anims["NU_softLightingParams"];
-
-                    int hasSoftLight = 1;
-                    if (pa == null) hasSoftLight = 0;
-                    GL.Uniform1(shader.getAttribute("hasSoftLight"), hasSoftLight);
-
-                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("softLightingParams"), pa[0], pa[1], pa[2], pa[3]);
-                }
-                {
-                    float[] pa;
-                    mat.entries.TryGetValue("NU_customSoftLightParams", out pa);
-                    if (mat.anims.ContainsKey("NU_customSoftLightParams")) pa = mat.anims["NU_customSoftLightParams"];
-
-                    int hasCustomSoftLight = 1;
-                    if (pa == null) hasCustomSoftLight = 0;
-                    GL.Uniform1(shader.getAttribute("hasCustomSoftLight"), hasCustomSoftLight);
-
-                    if (pa == null) pa = new float[] { 0, 0, 0, 0 };
-                    GL.Uniform4(shader.getAttribute("customSoftLightParams"), pa[0], pa[1], pa[2], pa[3]);
-                }
 
                 GL.Enable(EnableCap.Blend);
 
-                GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha, 
+                GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha,
                     dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
 
                 if (mat.srcFactor == 0 && mat.dstFactor == 0) GL.Disable(EnableCap.Blend);
-                
+
                 GL.Enable(EnableCap.AlphaTest);
                 if (mat.AlphaTest == 0) GL.Disable(EnableCap.AlphaTest);
 
@@ -564,7 +380,7 @@ namespace Smash_Forge
                         GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
                         break;
                 }
-               
+
                 GL.Enable(EnableCap.CullFace);
                 GL.CullFace(CullFaceMode.Front);
                 switch (mat.cullMode)
@@ -601,7 +417,7 @@ namespace Smash_Forge
                     //(p.strip >> 4) == 4 ? PrimitiveType.Triangles : PrimitiveType.TriangleStrip
                     //if (p.IsSelected || p.Parent.IsSelected)
                     //    GL.Uniform4(shader.getAttribute("finalColorGain"), 0.5f, 0.5f, 1.5f, 1f);
-                    
+
                     if ((p.IsSelected || p.Parent.IsSelected) && drawSelection)
                     {
                         GL.Disable(EnableCap.DepthTest);
@@ -651,6 +467,26 @@ namespace Smash_Forge
             }
         }
 
+        private static void MaterialPropertyShaderUniform(Shader shader, Material mat, string propertyName, string uniformName,
+            float default1, float default2, float default3, float default4)
+        {
+            float[] pa;
+            mat.entries.TryGetValue(propertyName, out pa);
+            if (mat.anims.ContainsKey(propertyName)) pa = mat.anims[propertyName];
+            if (pa == null) pa = new float[] { default1, default2, default3, default4 };
+            GL.Uniform4(shader.getAttribute(uniformName), pa[0], pa[1], pa[2], pa[3]);
+        }
+
+        private static void HasMaterialPropertyShaderUniform(Shader shader, Material mat, string propertyName, string uniformName)
+        {
+            float[] pa;
+            mat.entries.TryGetValue(propertyName, out pa);
+            if (mat.anims.ContainsKey(propertyName)) pa = mat.anims[propertyName];
+            int hasParam = 1;
+            if (pa == null) hasParam = 0;
+            GL.Uniform1(shader.getAttribute(uniformName), hasParam);
+        }
+
         // simple passthrough vertex render for shadow mapping
         public void RenderShadow(Matrix4 lightMatrix)
         {
@@ -681,11 +517,11 @@ namespace Smash_Forge
             GL.UseProgram(0);
         }
 
-        public void DrawPoints(Matrix4 view, VBN vbn)
+        public void DrawPoints(Matrix4 mvpMatrix, VBN vbn)
         {
             Shader shader = Runtime.shaders["Point"];
             GL.UseProgram(shader.programID);
-            GL.UniformMatrix4(shader.getAttribute("eyeview"), false, ref view);
+            GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
             GL.Uniform4(shader.getAttribute("color"), 1, 1, 1, 1);
 
             if (vbn != null)
