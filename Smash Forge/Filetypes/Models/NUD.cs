@@ -83,6 +83,20 @@ namespace Smash_Forge
             //    (max-min).ToString());
         }
 
+        public void CalculateNewTangentBitangent()
+        {
+            for (int mes = mesh.Count - 1; mes >= 0; mes--)
+            {
+                Mesh m = mesh[mes];
+                for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
+                {
+                    Polygon p = (NUD.Polygon)m.Nodes[pol];
+                    p.CalculateNewTangentBitangent();
+                    //NUD.computeTangentBitangent(p);
+                }
+            }
+        }
+
         public void Render(Matrix4 mvpMatrix, VBN vbn)
         {
             // Bounding Box Render
@@ -338,22 +352,21 @@ namespace Smash_Forge
                 MaterialPropertyShaderUniform(shader, mat, "NU_reflectionParams", "reflectionParams", 0, 0, 0, 0);
                 MaterialPropertyShaderUniform(shader, mat, "NU_fogColor", "fogColor", 0, 0, 0, 0);
                 MaterialPropertyShaderUniform(shader, mat, "NU_fogParams", "fogParams", 0, 1, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_normalParams", "normalParams", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_normalParams", "normalParams", 1, 0, 0, 0);
                 MaterialPropertyShaderUniform(shader, mat, "NU_zOffset", "zOffset", 0, 0, 0, 0);
                 MaterialPropertyShaderUniform(shader, mat, "NU_effColorGain", "effColorGain", 1, 1, 1, 1);
                 MaterialPropertyShaderUniform(shader, mat, "NU_angleFadeParams", "angleFadeParams", 0, 0, 0, 0);
                 MaterialPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", "dualNormalScrollParams", 0, 0, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV", "normalSamplerAUV", 0, 0, 0, 0);
+                MaterialPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV", "normalSamplerAUV", 1, 1, 0, 0);
                 MaterialPropertyShaderUniform(shader, mat, "NU_alphaBlendParams", "alphaBlendParams", 0, 0, 0, 0);
                 MaterialPropertyShaderUniform(shader, mat, "NU_softLightingParams", "softLightingParams", 0, 0, 0, 0);
                 MaterialPropertyShaderUniform(shader, mat, "NU_customSoftLightParams", "customSoftLightParams", 0, 0, 0, 0);
 
                 // create some conditionals rather than using different shaders
-                GL.Uniform1(shader.getAttribute("hasSoftLight"), mat.anims.ContainsKey("NU_softLightingParams") ? 1 : 0);
-                GL.Uniform1(shader.getAttribute("hasCustomSoftLight"), mat.anims.ContainsKey("NU_customSoftLightParams") ? 1 : 0);
-                GL.Uniform1(shader.getAttribute("hasSpecularParams"), mat.anims.ContainsKey("NU_specularParams") ? 1 : 0);
-                GL.Uniform1(shader.getAttribute("hasDualNormal"), mat.anims.ContainsKey("NU_dualNormalScrollParams") ? 1 : 0);
-
+                HasMaterialPropertyShaderUniform(shader, mat, "NU_softLightingParams", "hasSoftLight");
+                HasMaterialPropertyShaderUniform(shader, mat, "NU_customSoftLightParams", "hasCustomSoftLight");
+                HasMaterialPropertyShaderUniform(shader, mat, "NU_specularParams", "hasSpecularParams");
+                HasMaterialPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", "hasDualNormal");
 
                 GL.Enable(EnableCap.Blend);
 
@@ -1915,9 +1928,10 @@ namespace Smash_Forge
                 // rearrange faces
                 display = getDisplayFace().ToArray();
 
-                //if ((vertSize & 0xF) != 3 && (vertSize & 0xF) != 7)
-                NUD.computeTangentBitangent(this);
-
+                //if ((vertSize & 0xF) != 3 && (vertSize & 0xF) != 7)              
+                //NUD.computeTangentBitangent(this);
+                
+          
                 List<dVertex> vert = new List<dVertex>();
 
                 if (faces.Count <= 3)
@@ -1966,6 +1980,66 @@ namespace Smash_Forge
                     selectedVerts[i] = 1;
                 }*/
             }
+
+            public void CalculateNewTangentBitangent()
+            {
+
+                // rearrange faces
+                display = getDisplayFace().ToArray();
+
+                //if ((vertSize & 0xF) != 3 && (vertSize & 0xF) != 7)              
+                NUD.computeTangentBitangent(this);
+
+
+                List<dVertex> vert = new List<dVertex>();
+
+                if (faces.Count <= 3)
+                    return;
+                foreach (Vertex v in vertices)
+                {
+                    //if (v.pos.X > xmax) xmax = v.pos.X; if (v.pos.X < xmin) xmin = v.pos.X;
+                    //if (v.pos.Y > ymax) ymax = v.pos.Y; if (v.pos.Y < ymin) ymin = v.pos.Y;
+                    //if (v.pos.Z > zmax) zmax = v.pos.Z; if (v.pos.Z < zmin) zmin = v.pos.Z;
+
+                    //if (v.pos.Y > max.Y) max = v.pos;
+                    //if (v.pos.Y < min.Y) min = v.pos;
+
+                    dVertex nv = new dVertex()
+                    {
+                        pos = v.pos,
+                        nrm = v.nrm,
+                        tan = v.tan.Xyz,
+                        bit = v.bitan.Xyz,
+                        col = v.col / 0x7F, // ((NUD)Parent.Parent.Tag).Endian == Endianness.Little ? new Vector4(1f, 1f, 1f, 1f) : v.col / 0x7F,
+                        tx0 = v.tx.Count > 0 ? v.tx[0] : new Vector2(0, 0),
+                        node = new Vector4(v.node.Count > 0 ? v.node[0] : -1,
+                        v.node.Count > 1 ? v.node[1] : -1,
+                        v.node.Count > 2 ? v.node[2] : -1,
+                        v.node.Count > 3 ? v.node[3] : -1),
+                        weight = new Vector4(v.weight.Count > 0 ? v.weight[0] : 0,
+                        v.weight.Count > 1 ? v.weight[1] : 0,
+                        v.weight.Count > 2 ? v.weight[2] : 0,
+                        v.weight.Count > 3 ? v.weight[3] : 0),
+
+                    };
+
+                    isTransparent = false;
+                    //if (v.col.Z < 0x7F)
+                    //isTransparent = true;
+                    if (materials[0].srcFactor > 0 || materials[0].dstFactor > 0 || materials[0].AlphaFunc > 0 || materials[0].AlphaTest > 0)
+                        isTransparent = true;
+
+                    vert.Add(nv);
+                }
+                vertdata = vert.ToArray();
+                vert = new List<dVertex>();
+                selectedVerts = new int[vertdata.Length];
+                /*for(int i = 0; i < selectedVerts.Length / 10; i++)
+                {
+                    selectedVerts[i] = 1;
+                }*/
+            }
+
 
             public void SmoothNormals()
             {
@@ -2289,6 +2363,7 @@ namespace Smash_Forge
                 foreach (Polygon p in m.Nodes)
                     computeTangentBitangent(p);
             }
+
         }
 
         public static void computeTangentBitangent(Polygon p)
@@ -2345,6 +2420,7 @@ namespace Smash_Forge
                 v.tan = new Vector4(Vector3.Normalize(t - v.nrm * Vector3.Dot(v.nrm, t)), Vector3.Dot(Vector3.Cross(v.nrm, t), tan2[i]) < 0.0f ? -1.0f : 1.0f);
                 v.bitan = new Vector4(Vector3.Cross(v.tan.Xyz, v.nrm), 1.0f);
             }
+
         }
 
         #endregion

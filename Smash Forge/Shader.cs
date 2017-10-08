@@ -112,32 +112,32 @@ namespace Smash_Forge
             }
         }
 
-        public void vertexShader(string filename){
+        public void vertexShader(string shaderText){
             //MessageBox.Show("GL major: " + GL.GetInteger(GetPName.MajorVersion) );
             //MessageBox.Show("GL minor: " + GL.GetInteger(GetPName.MinorVersion));
-            loadShader(filename, ShaderType.VertexShader, programID, out vsID);
+            loadShader(shaderText, ShaderType.VertexShader, programID, out vsID);
 			GL.LinkProgram (programID);
-            LoadAttributes(filename);
+            LoadAttributes(shaderText);
             string error = GL.GetProgramInfoLog(programID);
             errorlog += error + "\n";
             Console.WriteLine(error);
         }
 
-		public void fragmentShader(string filename){
-			loadShader(filename, ShaderType.FragmentShader, programID, out fsID);
+		public void fragmentShader(string shaderText){
+			loadShader(shaderText, ShaderType.FragmentShader, programID, out fsID);
 			GL.LinkProgram (programID);
-            LoadAttributes(filename, true);
+            LoadAttributes(shaderText, true);
             string error = GL.GetProgramInfoLog(programID);
             errorlog += error + "\n";
             Console.WriteLine(error);
         }
 
-        void loadShader(string shader, ShaderType type, int program, out int address)
+        void loadShader(string shaderText, ShaderType type, int program, out int address)
 		{
 			address = GL.CreateShader(type);
 			//using (StreamReader sr = new StreamReader(filename))
 			//{
-				GL.ShaderSource(address, shader);
+				GL.ShaderSource(address, shaderText);
 			//}
 			GL.CompileShader(address);
             GL.AttachShader(program, address);

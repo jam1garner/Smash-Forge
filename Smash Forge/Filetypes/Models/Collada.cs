@@ -299,6 +299,7 @@ namespace Smash_Forge
 
             n.Optimize();
             n.PreRender();
+            n.CalculateNewTangentBitangent();
         }
 
         private static void ReadSemantic(ColladaInput input, NUD.Vertex v, int p, Dictionary<string, ColladaSource> sources)
@@ -598,6 +599,7 @@ namespace Smash_Forge
             }
             n.MergePoly();
             n.PreRender();
+            n.computeTangentBitangent();
         }
         
         public static void SaveBoneNodes(Collada dae, Bone b, VBN vbn, ColladaNode parent)

@@ -2129,9 +2129,9 @@ namespace Smash_Forge
         {
             if (e.KeyChar == 'i')
             {
-                reloadShaderFromFile("NUD", File.ReadAllText("vert.txt"), File.ReadAllText("frag.txt"));
+                //reloadShaderFromFile("NUD", File.ReadAllText("vert.txt"), File.ReadAllText("frag.txt"));
+                reloadShaderFromFile("Texture", File.ReadAllText("vert.txt"), File.ReadAllText("frag.txt"));
             }
-
             /*if (e.KeyChar == 'w')
             {
                 int width = sw;
@@ -2247,17 +2247,17 @@ namespace Smash_Forge
 
         private void reloadShaderFromFile(string shaderName, string vertexFilePath, string fragmentFilePath)
         {
-            /*GL.DeleteProgram(Runtime.shaders["NUD"].programID);
+            GL.DeleteProgram(Runtime.shaders["NUD"].programID);
             shader = new Shader();
             shader.vertexShader(File.ReadAllText("vert.txt"));
             shader.fragmentShader(File.ReadAllText("frag.txt"));
-            Runtime.shaders["NUD"] = shader;*/
-
+            Runtime.shaders["NUD"] = shader;
+            /*
             GL.DeleteProgram(Runtime.shaders[shaderName].programID);
             shader = new Shader();
             shader.vertexShader(vertexFilePath);
             shader.fragmentShader(fragmentFilePath);
-            Runtime.shaders[shaderName] = shader;
+            Runtime.shaders[shaderName] = shader;*/
 
         }
 

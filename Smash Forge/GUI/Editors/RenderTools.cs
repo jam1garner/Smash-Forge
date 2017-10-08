@@ -2255,6 +2255,9 @@ vec3 CalcBumpedNormal(vec3 inputNormal)
     BumpMapNormal = mix(vec3(0.5, 0.5, 1), BumpMapNormal, normalIntensity); // probably a better way to do this
     BumpMapNormal = 2.0 * BumpMapNormal - vec3(1);
 
+    float flipBitangent = (tangent.x < 0.0) ? -1.0 : 1.0f;
+
+
     vec3 NewNormal;
     vec3 Normal = normalize(normal);
     mat3 TBN = mat3(tangent, bitangent, Normal);
@@ -2407,7 +2410,6 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
     				diffuseColorFinal = diffuseMap.rgb * aoBlend * diffuseColor.rgb;
     			}
 
-
             //---------------------------------------------------------------------------------------------
                 // stage lighting
                 vec3 lighting = vec3(1);
@@ -2431,8 +2433,6 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
                     distanceMixFactor = distanceMixFactor / distance(vec3(-55, 0, 0), vec3(-81, 0, 0));
                     //lighting = mix(vec3(2), vec3(0), distanceMixFactor);
                 }
-
-
 
                 diffusePass = diffuseColorFinal * lighting;
             //---------------------------------------------------------------------------------------------
@@ -2479,31 +2479,29 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
                 if (hasSpecularParams == 1)
                     exponent = specularParams.y;
 
-            float blinnPhongSpec = pow(clamp((dot(halfAngle, N)), 0, 1), exponent);
+                float blinnPhongSpec = pow(clamp((dot(halfAngle, N)), 0, 1), exponent);
             //---------------------------------------------------------------------------------------------
 
 			//---------------------------------------------------------------------------------------------
 				// flags based corrections for specular
-			if ((flags & 0x00FF0000u) == 0x00420000u) // bayo hair mats. rework this section
-			{
-                specularPass = BayoHairSpecular(diffuseMap.rgb, I, xComponent, yComponent);
-
-			}
-
-			else if (hasColorGainOffset == 1) // how does specularColorGain work?
-            {
-                specularPass += specularColor.rgb * blinnPhongSpec * (specularColorGain.rgb);
-            }
-            else if ((flags & 0x00E10000u) == 0x00E10000u) // not sure how this works. specular works differently for eye mats
-            {
-                specularPass += specularColor.rgb * blinnPhongSpec * specularTintColor * 0;
-            }
-			else // default
-            {
-                specularPass += specularColor.rgb * blinnPhongSpec * specularTintColor;
-                // if (hasRamp == 1) // do ramps affect specular?
-                    // specularPass = RampColor(specularPass);
-            }
+    			if ((flags & 0x00FF0000u) == 0x00420000u) // bayo hair mats. rework this section
+    			{
+                    specularPass = BayoHairSpecular(diffuseMap.rgb, I, xComponent, yComponent);
+    			}
+    			else if (hasColorGainOffset == 1) // how does specularColorGain work?
+                {
+                    specularPass += specularColor.rgb * blinnPhongSpec * (specularColorGain.rgb);
+                }
+                else if ((flags & 0x00E10000u) == 0x00E10000u) // not sure how this works. specular works differently for eye mats
+                {
+                    specularPass += specularColor.rgb * blinnPhongSpec * specularTintColor * 0;
+                }
+    			else // default
+                {
+                    specularPass += specularColor.rgb * blinnPhongSpec * specularTintColor;
+                    // if (hasRamp == 1) // do ramps affect specular?
+                        // specularPass = RampColor(specularPass);
+                }
 
 			//---------------------------------------------------------------------------------------------
             specularPass *= mix(aoMap, 1, aoMixIntensity);
@@ -2517,7 +2515,7 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
 		// fresnel pass
 		vec3 fresnelPass = vec3(0);
 
-			// hemisphere fresnel with fresnelParams control
+			// hemisphere fresnel with fresnelParams exponent
             vec3 upVector = vec3(0, 1, 0);
 			float hemiBlend = dot(N, upVector);
 			hemiBlend = (hemiBlend * 0.5) + 0.5; // remap [-1, 1] to [0, 1]
@@ -2528,11 +2526,9 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
 			vec3 fresnel = clamp((hemiColor * pow(1.0 - cosTheta, exponentOffset + fresnelParams.x)), 0, 1);
 			fresnelPass += fresnelColor.rgb * fresnel * fresnelIntensity * fresnelTintColor;
 
-            //if((flags & 0x00120000u) == 0x00120000u)
-                //fresnelPass *= mix(vec3(1),aoMap.rgb,fresnelParams.w);
             if ((flags & 0x0000FF00u) == 0x00003000u)
                 fresnelPass *= diffuseMap.rgb;
-		fresnelPass = pow(fresnelPass, vec3(1));
+
 	//---------------------------------------------------------------------------------------------
 
 	//---------------------------------------------------------------------------------------------
@@ -2623,6 +2619,8 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
 void main()
 {
     FragColor = vec4(0,0,0,1);
+
+    // remap vectors for nicer visualization
     vec3 bumpMapNormal = CalcBumpedNormal(normal);
     vec3 displayNormal = (bumpMapNormal * 0.5) + 0.5; // remap [-1,1] to [0,1]
     vec3 displayTangent = (tangent * 0.5) + 0.5; // remap [-1,1] to [0,1]
@@ -2631,7 +2629,40 @@ void main()
     // zOffset correction
     gl_FragDepth = gl_FragCoord.z - (zOffset.x / 1500); // divide by far plane?
 
-    // if the renderer wants to show something other than textures
+    // similar to du dv but uses just the normal map
+    float offsetIntensity = 0;
+    if(useNormalMap == 1)
+        offsetIntensity = normalParams.z;
+    vec2 textureOffset = 1-texture2D(normalMap, normaltexcoord).xy;
+    textureOffset = (textureOffset * 2) -1; // remap to -1 to 1?
+    vec2 offsetTexCoord = texcoord + (textureOffset * offsetIntensity);
+
+    // calculate diffuse map blending to use in Shaded and Diffuse Maps render modes
+    vec4 diffuse1 = vec4(0);
+    vec4 diffuse2 = vec4(0);
+    vec4 diffuse3 = texture2D(dif3, texcoord);
+    vec4 diffuseMapTotal = vec4(0);
+    if (hasDif == 1) // 1st diffuse texture
+    {
+        diffuse1 = texture2D(dif, offsetTexCoord);
+        diffuseMapTotal = diffuse1;
+
+        if (hasDif2 == 1 && hasDif3 != 1) // 2nd diffuse texture. doesn't work properly with stages
+        {
+            diffuse2 = texture2D(dif2, offsetTexCoord);
+            diffuseMapTotal = mix(diffuse2, diffuse1, diffuse1.a);
+            diffuseMapTotal.a = 1.0;
+        }
+
+    }
+
+
+//---------------------------------------------------------------------------------------------
+    // render modes
+
+    if (renderAlpha) // use texture alpha for render modes
+        FragColor.a = texture2D(dif, texcoord).a;
+
     if (renderType == 1) // normals color
         FragColor.rgb = displayNormal;
     else if (renderType == 2) // normals black & white
@@ -2640,7 +2671,9 @@ void main()
         FragColor.rgb = vec3(normal);
     }
     else if (renderType == 3) // diffuse map
-        FragColor.rgb = pow(texture2D(dif, texcoord).rgb, vec3(1));
+    {
+        FragColor.rgb = diffuseMapTotal.rgb;
+    }
     else if (renderType == 4) // normal map
         FragColor.rgb = pow(texture2D(normalMap, texcoord).rgb, vec3(1));
     else if (renderType == 5) // vertexColor
@@ -2655,33 +2688,13 @@ void main()
         FragColor.rgb = displayTangent;
     else if (renderType == 10) // bitangents
         FragColor.rgb = displayBitangent;
-	else
+
+
+	else // Shaded
     {
 
-        // similar to du dv but uses just the normal map
-        float offsetIntensity = 0;
-        if(useNormalMap == 1)
-            offsetIntensity = normalParams.z;
-        vec2 textureOffset = 1-texture2D(normalMap, normaltexcoord).xy;
-        textureOffset = (textureOffset * 2) -1; // remap to -1 to 1?
-        vec2 offsetTexCoord = texcoord + (textureOffset * offsetIntensity);
-
-        vec4 diffuse1 = vec4(0);
-        vec4 diffuse2 = vec4(0);
-        vec4 diffuse3 = texture2D(dif3, texcoord);
-        if (hasDif == 1) // 1st diffuse texture
-        {
-            diffuse1 = texture2D(dif, offsetTexCoord);
-            FragColor = diffuse1;
-
-            if (hasDif2 == 1 && hasDif3 != 1) // 2nd diffuse texture. doesn't work properly with stages
-            {
-                diffuse2 = texture2D(dif2, offsetTexCoord);
-                FragColor = mix(diffuse2, diffuse1, diffuse1.a);
-                FragColor.a = 1.0;
-            }
-
-        }
+        if (hasDif)
+            FragColor = diffuseMapTotal;
         else
             FragColor = vec4(diffuseColor);
 
@@ -2728,10 +2741,10 @@ void main()
         // alpha override
         if (renderAlpha < 1)
             FragColor.a = 1;
-
         //---------------------------------------------------------------------------------------------
-
 	}
+
+//---------------------------------------------------------------------------------------------
 
 }";
   
@@ -2861,6 +2874,60 @@ void main()
         outColor = vec4(textureColor.aaa, 1);
         
 }";
+
+        #endregion
+
+        #region mbn shader
+
+        public static string mbn_vs = @"#version 330
+ 
+in vec3 vPosition;
+in vec4 vColor;
+in vec3 vNormal;
+in vec2 vUV;
+in vec4 vBone;
+in vec4 vWeight;
+out vec2 f_texcoord;
+out vec4 color;
+out float normal;
+uniform mat4 modelview;
+uniform bones
+{{
+    mat4 transforms[{0}];
+}} bones_;
+ 
+void
+main()
+{{
+    ivec4 index = ivec4(vBone); 
+    vec4 objPos = vec4(vPosition.xyz, 1.0);
+    if(vBone.x != -1)
+    {{
+        objPos = bones_.transforms[index.x] * vec4(vPosition, 1.0) * vWeight.x;
+        objPos += bones_.transforms[index.y] * vec4(vPosition, 1.0) * vWeight.y;
+        objPos += bones_.transforms[index.z] * vec4(vPosition, 1.0) * vWeight.z;
+        objPos += bones_.transforms[index.w] * vec4(vPosition, 1.0) * vWeight.w;
+    }}
+    gl_Position = modelview * vec4(objPos.xyz, 1.0);
+    f_texcoord = vUV;
+    color = vColor;
+    normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.3,0.3,0.3,1.0)) ;
+}}";
+
+        public static string mbn_fs = @"#version 330
+in vec2 f_texcoord;
+in vec4 color;
+in float normal;
+uniform sampler2D tex;
+uniform vec2 uvscale;
+void
+main()
+{{
+    vec4 alpha = texture(tex, f_texcoord*uvscale).aaaa;
+    gl_FragColor = vec4 ((color * alpha * texture(tex, f_texcoord*uvscale) * normal).xyz, alpha.a * color.w);
+}}
+";
+
 
         #endregion
 
