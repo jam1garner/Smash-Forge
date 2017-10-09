@@ -19,7 +19,7 @@ littlemac,SpecialLw|SpecialAirLw,0,16,0,-1,5,6,7,-1,-1,-1,8,0,5,29
 lucas,SpecialLwHold|SpecialAirLwHold,0,16,0,-1,9,10,11,-1,-1,-1,12,2,1,-1
 lucas,AttackS4S,1,17,0,-1,9,10,11,-1,-1,-1,10,1,10,19
 ness,SpecialLwHold|SpecialAirLwHold,0,16,0,-1,9,10,11,-1,-1,-1,12,2,1,-1
-ness,AttackS4S,1,17,3,-1,8,9,10,-1,-1,-1,11,1,11,23
+ness,AttackS4S,1,16,3,-1,8,9,10,-1,-1,-1,11,1,19,31
 lucina,SpecialLw|SpecialAirLw,0,16,0,-1,10,11,12,-1,-1,-1,13,0,6,27
 marth,SpecialLw|SpecialAirLw,0,16,0,-1,10,11,12,-1,-1,-1,13,0,6,27
 mewtwo,SpecialS|SpecialAirS,0,19,0,-1,1,2,3,4,5,6,7,1,12,35
