@@ -1857,12 +1857,18 @@ namespace Smash_Forge
 
                 // check lighting channel and 4th byte of flags
                 flag = ((int)flags);
-                useColorGainOffset = (flag & 0x0C000000) == 0x0C000000 && (flag & 0x000000FF) == 0x00000061 && 
-                ((flag & 0x00FF0000) == 0x00610000 || (flag & 0x00FF0000) == 0x00420000 || (flag & 0x00FF0000) == 0x00440000);
+
+                bool colorGainLightingChannel = (flag & 0x0C000000) == 0x0C000000;
+                bool colorGain2ndByte = ((flag & 0x00FF0000) == 0x00610000 || (flag & 0x00FF0000) == 0x00420000 || (flag & 0x00FF0000) == 0x00440000);
+                bool colorGain4thByte = (flag & 0x000000FF) == 0x00000061;
+
+                useColorGainOffset = colorGainLightingChannel && colorGain2ndByte && colorGain4thByte;
 
                 useDiffuseBlend = (flag & 0xD0090000) == 0xD0090000 || (flag & 0x90005000) == 0x90005000;
 
-                useVertexColor = (flag & 0x0F000000) == 0x02000000 || (flag & 0x0F000000) == 0x04000000 || (flag & 0x0F000000) == 0x06000000 || (flag & 0xF0000000) == 0x90000000; // characters, stages with certain flags
+                // characters, stages with certain flags
+                useVertexColor = (flag & 0x0F000000) == 0x02000000 || (flag & 0x0F000000) == 0x04000000 
+                    || (flag & 0x0F000000) == 0x06000000 || (flag & 0xF0000000) == 0x90000000; 
 
             }
 
@@ -1872,20 +1878,18 @@ namespace Smash_Forge
                 aomap = (flag & 0x08) > 0 && !useDummyRamp;
                 stagemap = (flag & 0x08) > 0 && useDummyRamp;
 
-                cubemap = (flag & 0x04) > 0 && (!useDummyRamp) && (!useSphereMap);//(!useRimLight || (useRimLight && useSphereMap));// && !useRimLight;
-                ramp = (flag & 0x04) > 0 && useDummyRamp; //&& !useSpecular 
+                cubemap = (flag & 0x04) > 0 && (!useDummyRamp) && (!useSphereMap);
+                ramp = (flag & 0x04) > 0 && useDummyRamp; 
 
                 diffuse = (flag & 0x01) > 0;
                 // mostly correct (I hope)
                 diffuse3 = (flag & 0x00009100) == 0x00009100 || (flag & 0x00009600) == 0x00009600 || (flag & 0x00009900) == 0x00009900; 
-
                 diffuse2 = (flag & 0x04) > 0 && (flag & 0x02) == 0 && useDummyRamp || diffuse3;
+
                 normalmap = (flag & 0x02) > 0;
 
-   
                 spheremap = (flag & 0x01) > 0 && useSphereMap;
 
-                
             }
         }
 
@@ -1929,7 +1933,7 @@ namespace Smash_Forge
                 display = getDisplayFace().ToArray();
 
                 //if ((vertSize & 0xF) != 3 && (vertSize & 0xF) != 7)              
-                //NUD.computeTangentBitangent(this);
+                NUD.computeTangentBitangent(this);
                 
           
                 List<dVertex> vert = new List<dVertex>();
@@ -2040,6 +2044,64 @@ namespace Smash_Forge
                 }*/
             }
 
+            public void computeTangentBitangent()
+            {
+                List<int> f = getDisplayFace();
+                Vector3[] tan1 = new Vector3[vertices.Count];
+                Vector3[] tan2 = new Vector3[vertices.Count];
+                for (int i = 0; i < displayFaceSize; i += 3)
+                {
+                    Vertex v1 = vertices[f[i]];
+                    Vertex v2 = vertices[f[i + 1]];
+                    Vertex v3 = vertices[f[i + 2]];
+
+                    float x1 = v2.pos.X - v1.pos.X;
+                    float x2 = v3.pos.X - v1.pos.X;
+                    float y1 = v2.pos.Y - v1.pos.Y;
+                    float y2 = v3.pos.Y - v1.pos.Y;
+                    float z1 = v2.pos.Z - v1.pos.Z;
+                    float z2 = v3.pos.Z - v1.pos.Z;
+
+                    if (v2.tx.Count < 1) break;
+                    float s1 = v2.tx[0].X - v1.tx[0].X;
+                    float s2 = v3.tx[0].X - v1.tx[0].X;
+                    float t1 = v2.tx[0].Y - v1.tx[0].Y;
+                    float t2 = v3.tx[0].Y - v1.tx[0].Y;
+
+                    float r = 1.0f;
+                    // prevent incorrect tangent calculation from division by 0
+                    float div = (s1 * t2 - s2 * t1);
+                    if (div == 0)
+                        r = 0.0f;
+                    else
+                        r = 1.0f / div;
+                    Vector3 s = new Vector3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
+                        (t2 * z1 - t1 * z2) * r);
+                    Vector3 t = new Vector3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
+                        (s1 * z2 - s2 * z1) * r);
+
+                    tan1[f[i]] += s;
+                    tan1[f[i + 1]] += s;
+                    tan1[f[i + 2]] += s;
+
+                    tan2[f[i]] += t;
+                    tan2[f[i + 1]] += t;
+                    tan2[f[i + 2]] += t;
+                }
+
+                for (int i = 0; i < vertices.Count; i++)
+                {
+                    Vertex v = vertices[i];
+                    Vector3 t = tan1[i];
+
+                    // orthogonalize tangent and calculate bitangent from tangent
+                    v.tan = new Vector4(Vector3.Normalize(t - v.nrm * Vector3.Dot(v.nrm, t)), Vector3.Dot(Vector3.Cross(v.nrm, t), tan2[i]) < 0.0f ? -1.0f : 1.0f);
+                    v.bitan = new Vector4(Vector3.Cross(v.tan.Xyz, v.nrm), 1.0f);
+                }
+
+                PreRender();
+
+            }
 
             public void SmoothNormals()
             {

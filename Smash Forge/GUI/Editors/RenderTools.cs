@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Drawing;
 using OpenTK;
 using OpenTK.Graphics;
@@ -2049,7 +2050,6 @@ void main()
 	else
 		normal = vNormal ;
 
-
 }";
 
         public static string nud_fs = @"#version 330
@@ -2832,9 +2832,7 @@ gl_FragColor = vec4(1);
 
         #endregion
 
-        #region texture shader
         public static string texture_vs = @"#version 330
-
 out vec2 texCoord;
  
 void main()
@@ -2845,39 +2843,17 @@ void main()
     texCoord.y = (y+1.0)*0.5;
     gl_Position = vec4(x, y, 0, 1);
 }";
-
         public static string texture_fs = @"#version 330
-in vec2 texCoord;
-
-uniform sampler2D texture;
-
-uniform int renderR;
-uniform int renderG;
-uniform int renderB;
-uniform int renderAlpha;
-uniform int alphaOverride;
-
-out vec4 outColor;
-
+out vec2 texCoord;
+ 
 void main()
-{   outColor = vec4(0,0,0,1);    
-    vec4 textureColor = texture2D(texture, vec2(texCoord.x, 1-texCoord.y)).rgba;
-    if (renderR == 1)
-        outColor.r = textureColor.r;
-    if (renderG == 1)
-        outColor.g = textureColor.g;
-    if (renderB == 1)
-        outColor.b = textureColor.b;
-    if (renderAlpha == 1)
-        outColor.a = textureColor.a;
-    if (alphaOverride == 1)
-        outColor = vec4(textureColor.aaa, 1);
-        
+{
+    float x = -1.0 + float((gl_VertexID & 1) << 2);
+    float y = -1.0 + float((gl_VertexID & 2) << 1);
+    texCoord.x = (x+1.0)*0.5;
+    texCoord.y = (y+1.0)*0.5;
+    gl_Position = vec4(x, y, 0, 1);
 }";
-
-        #endregion
-
-        #region mbn shader
 
         public static string mbn_vs = @"#version 330
  
@@ -2913,7 +2889,6 @@ main()
     color = vColor;
     normal = dot(vec4(vNormal * mat3(modelview), 1.0), vec4(0.3,0.3,0.3,1.0)) ;
 }}";
-
         public static string mbn_fs = @"#version 330
 in vec2 f_texcoord;
 in vec4 color;
@@ -2929,7 +2904,6 @@ main()
 ";
 
 
-        #endregion
 
         #endregion
 
