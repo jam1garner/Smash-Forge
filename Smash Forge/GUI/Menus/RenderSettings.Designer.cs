@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.stageLight3CB = new System.Windows.Forms.CheckBox();
             this.stageLight4CB = new System.Windows.Forms.CheckBox();
@@ -155,9 +155,7 @@
             this.pbShieldColor = new System.Windows.Forms.PictureBox();
             this.label83 = new System.Windows.Forms.Label();
             this.pbAbsorbColor = new System.Windows.Forms.PictureBox();
-            this.label80 = new System.Windows.Forms.Label();
             this.pbReflectColor = new System.Windows.Forms.PictureBox();
-            this.label81 = new System.Windows.Forms.Label();
             this.pbCounterColor = new System.Windows.Forms.PictureBox();
             this.label82 = new System.Windows.Forms.Label();
             this.pbSearchboxColor = new System.Windows.Forms.PictureBox();
@@ -313,6 +311,8 @@
             this.areaGroundB = new System.Windows.Forms.TextBox();
             this.areaColCeiling = new System.Windows.Forms.Label();
             this.areaSkyRLabel = new System.Windows.Forms.Label();
+            this.label81 = new System.Windows.Forms.Label();
+            this.label80 = new System.Windows.Forms.Label();
             this.tabPage4.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -1630,6 +1630,8 @@
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage2.Controls.Add(this.label80);
+            this.tabPage2.Controls.Add(this.label81);
             this.tabPage2.Controls.Add(this.pbShieldColor);
             this.tabPage2.Controls.Add(this.label83);
             this.tabPage2.Controls.Add(this.pbAbsorbColor);
@@ -1706,15 +1708,6 @@
             this.pbAbsorbColor.TabStop = false;
             this.pbAbsorbColor.Click += new System.EventHandler(this.pbAbsorbColor_Click);
             // 
-            // label80
-            // 
-            this.label80.AutoSize = true;
-            this.label80.Location = new System.Drawing.Point(207, 320);
-            this.label80.Name = "label80";
-            this.label80.Size = new System.Drawing.Size(101, 13);
-            this.label80.TabIndex = 63;
-            this.label80.Text = "Absorb bubble color";
-            // 
             // pbReflectColor
             // 
             this.pbReflectColor.Location = new System.Drawing.Point(357, 295);
@@ -1723,15 +1716,6 @@
             this.pbReflectColor.TabIndex = 62;
             this.pbReflectColor.TabStop = false;
             this.pbReflectColor.Click += new System.EventHandler(this.pbReflectColor_Click);
-            // 
-            // label81
-            // 
-            this.label81.AutoSize = true;
-            this.label81.Location = new System.Drawing.Point(208, 298);
-            this.label81.Name = "label81";
-            this.label81.Size = new System.Drawing.Size(102, 13);
-            this.label81.TabIndex = 61;
-            this.label81.Text = "Reflect bubble color";
             // 
             // pbCounterColor
             // 
@@ -2030,8 +2014,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2});
+            listViewItem3,
+            listViewItem4});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -2791,7 +2775,6 @@
             this.groupBox9.Controls.Add(this.label103);
             this.groupBox9.Controls.Add(this.checkBox20);
             this.groupBox9.Controls.Add(this.boundingBoxComboBox);
-            this.groupBox9.Controls.Add(this.label80);
             this.groupBox9.Controls.Add(this.boundingBoxCB);
             this.groupBox9.Location = new System.Drawing.Point(339, 229);
             this.groupBox9.Name = "groupBox9";
@@ -2959,7 +2942,6 @@
             // 
             // groupBox8
             // 
-            this.groupBox8.Controls.Add(this.label81);
             this.groupBox8.Controls.Add(this.removeAreaLightButton);
             this.groupBox8.Controls.Add(this.addAreaLightButton);
             this.groupBox8.Controls.Add(this.areaLightIDTB);
@@ -3452,6 +3434,24 @@
             this.areaSkyRLabel.TabIndex = 66;
             this.areaSkyRLabel.Text = "Red";
             // 
+            // label81
+            // 
+            this.label81.AutoSize = true;
+            this.label81.Location = new System.Drawing.Point(207, 298);
+            this.label81.Name = "label81";
+            this.label81.Size = new System.Drawing.Size(102, 13);
+            this.label81.TabIndex = 67;
+            this.label81.Text = "Reflect bubble color";
+            // 
+            // label80
+            // 
+            this.label80.AutoSize = true;
+            this.label80.Location = new System.Drawing.Point(208, 320);
+            this.label80.Name = "label80";
+            this.label80.Size = new System.Drawing.Size(101, 13);
+            this.label80.TabIndex = 68;
+            this.label80.Text = "Absorb bubble color";
+            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3795,12 +3795,12 @@
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.PictureBox pbAbsorbColor;
-        private System.Windows.Forms.Label label80;
         private System.Windows.Forms.PictureBox pbReflectColor;
-        private System.Windows.Forms.Label label81;
         private System.Windows.Forms.PictureBox pbCounterColor;
         private System.Windows.Forms.Label label82;
         private System.Windows.Forms.PictureBox pbShieldColor;
         private System.Windows.Forms.Label label83;
+        private System.Windows.Forms.Label label80;
+        private System.Windows.Forms.Label label81;
     }
 }
