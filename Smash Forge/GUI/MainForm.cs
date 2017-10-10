@@ -133,13 +133,13 @@ namespace Smash_Forge
             Runtime.shaders.Add("NUD", nud);
 
             Shader texture = new Shader();           
-            texture.vertexShader(RenderTools.texture_vs);
-            texture.fragmentShader(RenderTools.texture_fs);
+            texture.vertexShader(File.ReadAllText("lib/Shader/Texture_vs.txt"));
+            texture.fragmentShader(File.ReadAllText("lib/Shader/Texture_fs.txt"));
             Runtime.shaders.Add("Texture", texture);
 
             Shader mbn = new Shader();
-            texture.vertexShader(RenderTools.mbn_vs);
-            texture.fragmentShader(RenderTools.mbn_fs);
+            mbn.vertexShader(File.ReadAllText("lib/Shader/MBN_vs.txt"));
+            mbn.fragmentShader(File.ReadAllText("lib/Shader/MBN_fs.txt"));
             Runtime.shaders.Add("MBN", texture);
 
 
