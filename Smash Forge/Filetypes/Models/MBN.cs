@@ -300,8 +300,8 @@ void main()
                 foreach (List<int> l in m.faces)
                 {
 
-                    GL.Enable(EnableCap.CullFace);
-                    GL.CullFace(CullFaceMode.Back);
+                    //GL.Enable(EnableCap.CullFace);
+                    //GL.CullFace(CullFaceMode.Back);
 
                     if (m.isVisible)
                         GL.DrawElements(PrimitiveType.Triangles, l.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));

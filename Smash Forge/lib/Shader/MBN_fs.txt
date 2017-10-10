@@ -47,4 +47,6 @@ void main()
         FragColor = vec4(texture2D(UVTestPattern, texcoord).rgb, 1);
     else
         FragColor = vec4(resulting_color, 1);
+
+    FragColor = vec4(1);
 }

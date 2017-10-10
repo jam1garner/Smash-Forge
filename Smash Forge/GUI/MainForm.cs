@@ -140,7 +140,7 @@ namespace Smash_Forge
             Shader mbn = new Shader();
             mbn.vertexShader(File.ReadAllText("lib/Shader/MBN_vs.txt"));
             mbn.fragmentShader(File.ReadAllText("lib/Shader/MBN_fs.txt"));
-            Runtime.shaders.Add("MBN", texture);
+            Runtime.shaders.Add("MBN", mbn);
 
 
             RenderTools.Setup();
@@ -2034,8 +2034,11 @@ namespace Smash_Forge
 
         private void exportErrorLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Runtime.shaders["NUD"].SaveErrorLog();
-            MessageBox.Show("Saved to Forge directory");
+            Runtime.shaders["NUD"].SaveErrorLog("NUD");
+            Runtime.shaders["MBN"].SaveErrorLog("MBN");
+            Runtime.shaders["Texture"].SaveErrorLog("Texture");
+
+            MessageBox.Show("Error logs saved to Forge directory");
         }
 
         private void nESROMInjectorToolStripMenuItem_Click(object sender, EventArgs e)

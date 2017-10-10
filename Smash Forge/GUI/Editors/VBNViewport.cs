@@ -839,6 +839,33 @@ namespace Smash_Forge
             GL.Uniform3(shader.getAttribute("stageLight3Direction"), stageLight3.direction);
             GL.Uniform3(shader.getAttribute("stageLight4Direction"), stageLight4.direction);
 
+            #region MBN Uniforms
+
+            shader = Runtime.shaders["MBN"];
+            GL.UseProgram(shader.programID);
+
+            if (Runtime.CameraLight)
+            {
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
+            }
+            else
+            {
+                GL.Uniform3(shader.getAttribute("difLightDirection"), diffuseLight.direction);
+            }
+
+            GL.Uniform3(shader.getAttribute("difLightColor"), diffuseLight.R, diffuseLight.G, diffuseLight.B);
+            GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
+
+            GL.ActiveTexture(TextureUnit.Texture10);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
+            GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
+
+            GL.Uniform1(shader.getAttribute("renderType"), renderType);
+
+            #endregion
+
+            shader = Runtime.shaders["NUD"];
+            GL.UseProgram(shader.programID);
 
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
