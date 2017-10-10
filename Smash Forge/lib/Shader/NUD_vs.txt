@@ -76,7 +76,8 @@ void main()
 
     ivec4 bi = ivec4(vBone);
 
-    if(vBone.x != -1.0) objPos = skin(vPosition, bi);
+    if(vBone.x != -1.0)
+        objPos = skin(vPosition, bi);
     objectPosition = objPos.xyz;
     objPos.z *= zScale;
     objPos = mvpMatrix * vec4(objPos.xyz, 1.0);

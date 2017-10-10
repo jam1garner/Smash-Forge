@@ -171,7 +171,7 @@ vec3 CalculateTintColor(vec3 inputColor, float colorAlpha)
 {
     float intensity = colorAlpha * 0.4;
     vec3 inputHSV = RGB2HSV(inputColor);
-    float outSaturation = min((inputHSV.y * intensity),1); // can't have color with saturation > 1
+    float outSaturation = min((inputHSV.y * intensity),1); // cant have color with saturation > 1
     vec3 outColorTint = HSV2RGB(vec3(inputHSV.x,outSaturation,1));
     return outColorTint;
 }
@@ -296,7 +296,7 @@ vec3 SoftLighting(vec3 diffuseColorFinal, vec3 ambientIntensityLightColor, vec3 
 
 
 vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
-    // easier to work with if everything's in the same scope
+    // easier to work with if everythings in the same scope
     // split up into sections for easier reading
 
     vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
@@ -343,10 +343,10 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
     				diffuseColorFinal = colorOffset.rgb + (vec3(Luminance(diffuseMap.rgb)) * (colorGain.rgb));
     				aoMap = diffuseLuminance;
 
-                    if ((flags & 0x00420000u) == 0x00420000u) // bayo hair 'diffuse' is weird
+                    if ((flags & 0x00420000u) == 0x00420000u) // bayo hair diffuse is weird
                     {
                     	diffuseColorFinal = colorOffset.rgb + (diffuseMap.rrr * colorGain.rgb);
-                        aoMap = 1; // don't know bayo ao yet (if it exists)
+                        aoMap = 1; // dont know bayo ao yet (if it exists)
 
                     }
     			}
@@ -391,7 +391,7 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
             if ((flags & 0x00FF0000u) == 0x00810000u || (flags & 0xFFFF0000u) == 0xFA600000u) // used with softlightingparams and customSoftLightParams, respectively
                 diffusePass *= 1.5;
 
-            // result of ramp calculations isn't saturated enough
+            // result of ramp calculations isnt saturated enough
             vec3 rampContribution = 0.5 * pow((RampColor(vec3(halfLambert)) * DummyRampColor(vec3(halfLambert)) * diffuseColorFinal), vec3(gamma));
             diffusePass = ScreenBlend(diffusePass, rampContribution) * diffuseIntensity;
 
@@ -491,7 +491,7 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
 			if (hasCube == 1) // cubemaps from model.nut. currently just uses miiverse cubemap
 				reflectionPass += diffuseMap.aaa * stageCubeColor * reflectionTintColor * reflectionParams.x;
 
-			if ((flags & 0x00000010u) == 0x00000010u) // view-based sphere mapping (rosa's stars, sonic eyes, etc). replace with proper variable
+			if ((flags & 0x00000010u) == 0x00000010u) // view-based sphere mapping (rosas stars, sonic eyes, etc). replace with proper variable
 			{
 				// calculate UVs based on view space normals (UV scale is currently not right)
 				//float PI = 3.14159;
@@ -593,7 +593,7 @@ void main()
         diffuse1 = texture2D(dif, offsetTexCoord);
         diffuseMapTotal = diffuse1;
 
-        if (hasDif2 == 1 && hasDif3 != 1) // 2nd diffuse texture. doesn't work properly with stages
+        if (hasDif2 == 1 && hasDif3 != 1) // 2nd diffuse texture. doesnt work properly with stages
         {
             diffuse2 = texture2D(dif2, offsetTexCoord);
             diffuseMapTotal = mix(diffuse2, diffuse1, diffuse1.a);
@@ -606,9 +606,8 @@ void main()
 //---------------------------------------------------------------------------------------------
     // render modes
 
-    if (renderAlpha) // use texture alpha for render modes
+    if (renderAlpha == 1) // use texture alpha for render modes
         FragColor.a = texture2D(dif, texcoord).a;
-
     if (renderType == 1) // normals color
         FragColor.rgb = displayNormal;
     else if (renderType == 2) // normals black & white
@@ -617,9 +616,7 @@ void main()
         FragColor.rgb = vec3(normal);
     }
     else if (renderType == 3) // diffuse map
-    {
         FragColor.rgb = diffuseMapTotal.rgb;
-    }
     else if (renderType == 4) // normal map
         FragColor.rgb = pow(texture2D(normalMap, texcoord).rgb, vec3(1));
     else if (renderType == 5) // vertexColor
@@ -634,23 +631,22 @@ void main()
         FragColor.rgb = displayTangent;
     else if (renderType == 10) // bitangents
         FragColor.rgb = displayBitangent;
-
-
 	else // Shaded
     {
 
-        if (hasDif)
+        if (hasDif == 1)
             FragColor = diffuseMapTotal;
         else
             FragColor = vec4(diffuseColor);
 
         vec3 diffuse2Texture = texture2D(ao, offsetTexCoord).rgb;
 
-        if (hasAo == 1) // should be named differently. isn't always two diffuse
+        if (hasAo == 1) // should be named differently. isnt always two diffuse
             FragColor.rgb = mix(diffuse2Texture, FragColor.rgb, ((normal.y + 1) / 2));
 
         // calcuate final color by mixing with vertex color
-        if (renderVertColor == 1) FragColor *= vertexColor;
+        if (renderVertColor == 1)
+            FragColor *= vertexColor;
 
         // Material lighting done in sm4sh shader
         //if (renderNormal == 1) // rework this

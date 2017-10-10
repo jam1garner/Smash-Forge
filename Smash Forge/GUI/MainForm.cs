@@ -128,8 +128,8 @@ namespace Smash_Forge
             Runtime.shaders.Add("Shadow", sha);
 
             Shader nud = new Shader();
-            nud.vertexShader(RenderTools.nud_vs);
-            nud.fragmentShader(RenderTools.nud_fs);
+            nud.vertexShader(File.ReadAllText("lib/Shader/NUD_vs.txt"));
+            nud.fragmentShader(File.ReadAllText("lib/Shader/NUD_fs.txt"));
             Runtime.shaders.Add("NUD", nud);
 
             Shader texture = new Shader();           
@@ -2034,7 +2034,7 @@ namespace Smash_Forge
 
         private void exportErrorLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Runtime.shaders["MBN"].SaveErrorLog();
+            Runtime.shaders["NUD"].SaveErrorLog();
             MessageBox.Show("Saved to Forge directory");
         }
 
