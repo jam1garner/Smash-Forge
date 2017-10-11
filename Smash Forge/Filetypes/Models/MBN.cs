@@ -239,18 +239,16 @@ void main()
 
             if (shader == null)
             {
-                //shader = new Shader();
-                //shader.vertexShader(File.ReadAllText("vert.txt"));
-                //shader.fragmentShader(File.ReadAllText("frag.txt"));
-                //shader.vertexShader(string.Format(vs, 0));
-                //shader.fragmentShader(string.Format(fs));
-                //shader = Runtime.shaders["MBN"];
+                shader = new Shader();
+                //shader.vertexShader(File.ReadAllText("lib/Shader/MBN_vs.txt"));
+                //shader.fragmentShader(File.ReadAllText("lib/Shader/MBN_fs.txt"));
+                shader = Runtime.shaders["MBN"];
             }
         }
 
         public void Render(Matrix4 modelview)
         {
-            if (null == shader)
+            if (shader == null)
                 return;
 
             shader = Runtime.shaders["MBN"];
@@ -288,9 +286,10 @@ void main()
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(facedata.Length * sizeof(int)), facedata, BufferUsageHint.StaticDraw);
 
             int indiceat = 0;
-    
+   
             foreach (Mesh m in mesh)
             {
+                
                 GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1, 1, 0, 0));
 
                 GL.ActiveTexture(TextureUnit.Texture0);
@@ -300,11 +299,13 @@ void main()
                 foreach (List<int> l in m.faces)
                 {
 
-                    //GL.Enable(EnableCap.CullFace);
-                    //GL.CullFace(CullFaceMode.Back);
+                    GL.Enable(EnableCap.CullFace);
+                    GL.CullFace(CullFaceMode.Back);
 
                     if (m.isVisible)
+                    {
                         GL.DrawElements(PrimitiveType.Triangles, l.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
+                    }
 
                     indiceat += l.Count;
                 }

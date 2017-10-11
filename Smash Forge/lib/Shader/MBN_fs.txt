@@ -1,4 +1,4 @@
-﻿#version 330
+#version 330
 in vec2 texcoord;
 in vec4 color;
 in vec3 normal;
@@ -47,6 +47,4 @@ void main()
         FragColor = vec4(texture2D(UVTestPattern, texcoord).rgb, 1);
     else
         FragColor = vec4(resulting_color, 1);
-
-    FragColor = vec4(1);
 }

@@ -864,8 +864,8 @@ namespace Smash_Forge
 
             #endregion
 
-            shader = Runtime.shaders["NUD"];
-            GL.UseProgram(shader.programID);
+            //shader = Runtime.shaders["NUD"];
+            //GL.UseProgram(shader.programID);
 
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
@@ -874,6 +874,7 @@ namespace Smash_Forge
                     if (m.bch.mbn != null)
                     {
                         m.bch.mbn.Render(mvpMatrix);
+                       
                     }
                 }
 
