@@ -2157,7 +2157,7 @@ namespace Smash_Forge
         {
             if (e.KeyChar == 'i')
             {
-                //reloadShaderFromFile("NUD", File.ReadAllText("vert.txt"), File.ReadAllText("frag.txt"));
+                //reloadShaderFromFile("MBN", File.ReadAllText("vert.txt"), File.ReadAllText("frag.txt"));
                 //reloadShaderFromFile("Texture", File.ReadAllText("vert.txt"), File.ReadAllText("frag.txt"));
             }
             /*if (e.KeyChar == 'w')
