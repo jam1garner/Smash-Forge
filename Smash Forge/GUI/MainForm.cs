@@ -128,18 +128,18 @@ namespace Smash_Forge
             Runtime.shaders.Add("Shadow", sha);
 
             Shader nud = new Shader();
-            nud.vertexShader(File.ReadAllText("lib/Shader/NUD_vs.txt"));
-            nud.fragmentShader(File.ReadAllText("lib/Shader/NUD_fs.txt"));
+            nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
+            nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
             Runtime.shaders.Add("NUD", nud);
 
             Shader texture = new Shader();           
-            texture.vertexShader(File.ReadAllText("lib/Shader/Texture_vs.txt"));
-            texture.fragmentShader(File.ReadAllText("lib/Shader/Texture_fs.txt"));
+            texture.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_vs.txt"));
+            texture.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_fs.txt"));
             Runtime.shaders.Add("Texture", texture);
 
             Shader mbn = new Shader();
-            mbn.vertexShader(File.ReadAllText("lib/Shader/MBN_vs.txt"));
-            mbn.fragmentShader(File.ReadAllText("lib/Shader/MBN_fs.txt"));
+            mbn.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_vs.txt"));
+            mbn.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_fs.txt"));
             Runtime.shaders.Add("MBN", mbn);
 
 

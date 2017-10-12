@@ -240,8 +240,6 @@ void main()
             if (shader == null)
             {
                 shader = new Shader();
-                //shader.vertexShader(File.ReadAllText("lib/Shader/MBN_vs.txt"));
-                //shader.fragmentShader(File.ReadAllText("lib/Shader/MBN_fs.txt"));
                 shader = Runtime.shaders["MBN"];
             }
         }
