@@ -1737,7 +1737,7 @@ namespace Smash_Forge
                     {
                         // Don't interpolate extended hitboxes - there is data to suggest they don't interpolate
                         if (!h.Extended)
-                            RenderTools.drawCylinder(va, lastMatchingHitbox.va, lastMatchingHitbox.Size);
+                            RenderTools.drawCylinder(va, lastMatchingHitbox.va, h.Size);
                     }
                 }
 
