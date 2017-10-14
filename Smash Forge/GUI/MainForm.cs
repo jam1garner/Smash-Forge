@@ -144,8 +144,8 @@ namespace Smash_Forge
 
 
             Shader quad = new Shader();
-            quad.vertexShader(RenderTools.vs_quad);
-            quad.fragmentShader(RenderTools.fs_quad);
+            quad.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Quad_vs.txt"));
+            quad.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Quad_fs.txt"));
             Runtime.shaders.Add("Quad", quad);
 
             Shader blur = new Shader();
@@ -2048,6 +2048,7 @@ namespace Smash_Forge
             Runtime.shaders["NUD"].SaveErrorLog("NUD");
             Runtime.shaders["MBN"].SaveErrorLog("MBN");
             Runtime.shaders["Texture"].SaveErrorLog("Texture");
+            Runtime.shaders["Quad"].SaveErrorLog("Quad");
 
             MessageBox.Show("Error logs saved to Forge directory");
         }

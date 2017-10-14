@@ -546,7 +546,8 @@ namespace Smash_Forge
             // clear the gf buffer
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
-            GL.UseProgram(0);
+            // use fixed function pipeline for drawing background and floor grid
+            GL.UseProgram(0); 
 
             if (Runtime.renderBackGround)
             {
@@ -561,10 +562,7 @@ namespace Smash_Forge
 
             GL.Enable(EnableCap.DepthTest);
 
-
-
             // set up the matrices for drawing models and floor
-            // set up the viewport projection and send it to GPU
             GL.MatrixMode(MatrixMode.Projection);
             if (IsMouseOverViewport() && glControl1.Focused && !freezeCamera)
             {
@@ -584,16 +582,14 @@ namespace Smash_Forge
             if (Runtime.renderFloor)
             {
                 RenderTools.drawFloor();
-            } 
-            
-            CalculateLightSource();
-            //GL.Enable(EnableCap.DepthTest);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadMatrix(ref lightMatrix);
+            }
 
             // render shadow map
             //------------------------------------------------------------
-            /*GL.Enable(EnableCap.DepthTest);
+            CalculateLightSource();
+            /*GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref lightMatrix);
+            GL.Enable(EnableCap.DepthTest);
             GL.Viewport(0, 0, sw, sh);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
@@ -615,6 +611,7 @@ namespace Smash_Forge
             GL.LoadMatrix(ref mvpMatrix);
             GL.Viewport(glControl1.ClientRectangle); // setup viewport with proper dimensions
             */
+
 
             GL.Enable(EnableCap.LineSmooth); // This is Optional 
             GL.Enable(EnableCap.Normalize);  // This is critical to have
@@ -638,11 +635,12 @@ namespace Smash_Forge
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
 
 
-
             // render models into hdr buffer
             //------------------------------------------------------------
-            //GL.BindFramebuffer(FramebufferTarget.Framebuffer, hdrFBO);
+            // GL.BindFramebuffer(FramebufferTarget.Framebuffer, hdrFBO);
             //GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
+
+            if (!Runtime.useDepthTest) GL.Disable(EnableCap.DepthTest);
 
             if (Runtime.renderModel)
             {
@@ -651,11 +649,9 @@ namespace Smash_Forge
            
             //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
-
             GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
             GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
 
- 
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
             GL.DepthFunc(DepthFunction.Less);
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
@@ -676,30 +672,36 @@ namespace Smash_Forge
             // render full screen quad
             //------------------------------------------------------------
             //full screen quad for post processing
-            /*GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, colorTexture1);
+            /* GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+             GL.ActiveTexture(TextureUnit.Texture0);
+             GL.BindTexture(TextureTarget.Texture2D, colorTexture1);
 
-            GL.ActiveTexture(TextureUnit.Texture11);
-            GL.BindTexture(TextureTarget.Texture2D, depthmap);
+             GL.ActiveTexture(TextureUnit.Texture11);
+             GL.BindTexture(TextureTarget.Texture2D, depthmap);
 
-            GL.Disable(EnableCap.DepthTest);
-            DrawScreenQuad();*/
-           
+             GL.Disable(EnableCap.DepthTest);
+             DrawScreenQuad();*/
 
-            // draw path.bin
+            // use fixed function pipeline again for area lights, lvd, bones, hitboxes, etc
+            GL.UseProgram(0); 
+
             if (Runtime.renderPath)
+            { 
+                // draw path.bin
                 DrawPathDisplay();
+            }
 
             DrawAreaLightBoundingBoxes();
 
-            // clear the buffer bit so the skeleton will be drawn on top of everything
+            // clear depth buffer so stuff will render on top of the models
             GL.Clear(ClearBufferMask.DepthBufferBit);
-            // draw lvd
-            if (Runtime.renderLVD)
-                DrawLVD();
 
-            DrawBones();
+            if (Runtime.renderLVD)
+            {
+                DrawLVD();
+            }
+               
+            DrawBonesAndHitboxes();
 
             // Clean up
             GL.PopAttrib();
@@ -1126,7 +1128,7 @@ namespace Smash_Forge
             }
         }
 
-        private void DrawBones()
+        private void DrawBonesAndHitboxes()
         {
             if (Runtime.ModelContainers.Count > 0)
             {
