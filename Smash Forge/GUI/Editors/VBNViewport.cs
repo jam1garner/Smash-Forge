@@ -521,7 +521,7 @@ namespace Smash_Forge
 
             Matrix4 lightProjection;
             Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 500.0f, out lightProjection);
-            Matrix4 lightView = Matrix4.LookAt(Vector3.Transform(Vector3.Zero, v).Normalized(), //new Vector3(0.5f, 1f, 1f),
+            Matrix4 lightView = Matrix4.LookAt(Vector3.Transform(Vector3.Zero, mvpMatrix).Normalized(), //new Vector3(0.5f, 1f, 1f),
                 new Vector3(0),
                 new Vector3(0, 1, 0));
             //lightView = Matrix4.LookAt(-2.0f, 4.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
@@ -537,42 +537,35 @@ namespace Smash_Forge
                 return;
 
             glControl1.MakeCurrent();
-            
-            //RenderTools.drawFloor();
-            /*
-            RenderTools.drawSphere(Vector3.Zero, 1, 5);
-            {
-          
-            GL.Disable(EnableCap.DepthTest);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);*/
+
 
             GL.Viewport(glControl1.ClientRectangle);
 
-            //GL.ClearColor(back1);
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
             // clear the gf buffer
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
+            GL.UseProgram(0);
 
             if (Runtime.renderBackGround)
             {
+                // background uses different matrices
+                GL.MatrixMode(MatrixMode.Modelview);
+                GL.LoadIdentity();
+                GL.MatrixMode(MatrixMode.Projection);
+                GL.LoadIdentity();
+
                 renderBackground();
             }
 
-            //RenderTools.RenderCubeMap(v);
-
-            //GL.DepthFunc(DepthFunction.Never);
             GL.Enable(EnableCap.DepthTest);
-            //GL.ClearDepth(1.0);
 
+
+
+            // set up the matrices for drawing models and floor
             // set up the viewport projection and send it to GPU
             GL.MatrixMode(MatrixMode.Projection);
-
             if (IsMouseOverViewport() && glControl1.Focused && !freezeCamera)
             {
                 if (fpsView)
@@ -582,42 +575,29 @@ namespace Smash_Forge
                 UpdateCameraPositionControl();
             }
             mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
-
             SetCameraAnimation();
 
-            // ready to start drawing model stuff
             GL.MatrixMode(MatrixMode.Modelview);
-            /*GL.LoadMatrix(ref lightMatrix);
-            RenderTools.drawFloor();
-            RenderTools.drawSphere(Vector3.Zero, 1, 5);*/
             GL.LoadMatrix(ref mvpMatrix);
-
-            GL.UseProgram(0);
-
 
             // drawing floor---------------------------
             if (Runtime.renderFloor)
             {
                 RenderTools.drawFloor();
-            } // should probably move to hdr buffer but idk
-
-            
+            } 
             
             CalculateLightSource();
             //GL.Enable(EnableCap.DepthTest);
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref lightMatrix);
 
-
-
-
             // render shadow map
             //------------------------------------------------------------
-            GL.Enable(EnableCap.DepthTest);
+            /*GL.Enable(EnableCap.DepthTest);
             GL.Viewport(0, 0, sw, sh);
-            
+
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
-         
+
             GL.Clear(ClearBufferMask.DepthBufferBit); // critical to have
             {
                 //draw
@@ -625,16 +605,16 @@ namespace Smash_Forge
                 {
                     if (c.nud != null)
                     {
-                        c.nud.RenderShadow(lightMatrix, v, modelMatrix);
+                        c.nud.RenderShadow(lightMatrix, mvpMatrix, modelMatrix);
                     }
                 }
             }
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
-            GL.LoadMatrix(ref v);
+            GL.LoadMatrix(ref mvpMatrix);
             GL.Viewport(glControl1.ClientRectangle); // setup viewport with proper dimensions
-
+            */
 
             GL.Enable(EnableCap.LineSmooth); // This is Optional 
             GL.Enable(EnableCap.Normalize);  // This is critical to have
@@ -658,21 +638,18 @@ namespace Smash_Forge
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
 
 
-            // draw models
-            //RenderTools.drawHitboxCircle(new Vector3(3, 3, 3), 5, 30, v.ClearTranslation().Inverted());
-
 
             // render models into hdr buffer
             //------------------------------------------------------------
+            //GL.BindFramebuffer(FramebufferTarget.Framebuffer, hdrFBO);
+            //GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, hdrFBO);
-            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
-            
-
-            if (Runtime.renderModel) DrawModels();
+            if (Runtime.renderModel)
+            {
+                DrawModels();
+            }
            
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
 
             GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
@@ -686,17 +663,14 @@ namespace Smash_Forge
 
             // render gaussian blur stuff
             //------------------------------------------------------------
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            /*GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Disable(EnableCap.DepthTest);
             bool horizontal = true;
             bool first_iteration = true;
             int blur_amount = 10;
             DrawScreenQuadBlur(blur_amount, horizontal, first_iteration);
             
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-
-
-
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);*/
 
 
             // render full screen quad
@@ -713,8 +687,6 @@ namespace Smash_Forge
             DrawScreenQuad();*/
            
 
-
-
             // draw path.bin
             if (Runtime.renderPath)
                 DrawPathDisplay();
@@ -728,13 +700,6 @@ namespace Smash_Forge
                 DrawLVD();
 
             DrawBones();
-
-
-            /*GL.LineWidth(3f);
-            GL.Color3(freezeCamera ? Color.Yellow : Color.White);
-            RenderTools.drawCircle(new Vector3(6, 6, 6), 5, 30);
-
-            Cursor.Current = freezeCamera ? Cursors.VSplit : Cursors.Default;*/
 
             // Clean up
             GL.PopAttrib();
@@ -1004,7 +969,7 @@ namespace Smash_Forge
                     GL.ActiveTexture(TextureUnit.Texture2);
                     GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex);
                     GL.Uniform1(shader.getAttribute("cmap"), 2);
-                    GL.UniformMatrix4(shader.getAttribute("eyeview"), false, ref v);
+                    GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
                    
 
                     GL.ActiveTexture(TextureUnit.Texture11);
@@ -2662,7 +2627,7 @@ namespace Smash_Forge
 
             mvpMatrix = Matrix4.CreateTranslation(width,-height,zoom) * Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
-            modelMatrix = Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
+            modelMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
             //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
 
