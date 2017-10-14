@@ -501,13 +501,15 @@ namespace Smash_Forge
         }
 
         // simple passthrough vertex render for shadow mapping
-        public void RenderShadow(Matrix4 lightMatrix)
+        public void RenderShadow(Matrix4 lightMatrix, Matrix4 view, Matrix4 modelMatrix)
         {
             Shader shader = Runtime.shaders["Shadow"];
 
             GL.UseProgram(shader.programID);
 
             GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
+            GL.UniformMatrix4(shader.getAttribute("eyeview"), false, ref view);
+            GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
 
             shader.enableAttrib();
             foreach(Mesh m in mesh)

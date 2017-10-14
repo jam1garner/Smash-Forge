@@ -143,6 +143,17 @@ namespace Smash_Forge
             Runtime.shaders.Add("MBN", mbn);
 
 
+            Shader quad = new Shader();
+            quad.vertexShader(RenderTools.vs_quad);
+            quad.fragmentShader(RenderTools.fs_quad);
+            Runtime.shaders.Add("Quad", quad);
+
+            Shader blur = new Shader();
+            blur.vertexShader(RenderTools.vs_blur);
+            blur.fragmentShader(RenderTools.fs_blur);
+            Runtime.shaders.Add("Blur", blur);
+
+
             RenderTools.Setup();
 
             /*openFile("C:\\s\\Smash\\extract\\data\\fighter\\kamui\\model\\body\\c00\\model.vbn");
