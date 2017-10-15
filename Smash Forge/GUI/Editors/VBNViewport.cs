@@ -498,8 +498,10 @@ namespace Smash_Forge
             Debug.WriteLine(GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer));
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
+            Runtime.renderer = GL.GetString(StringName.Renderer);
+            Runtime.openGLVersion = GL.GetString(StringName.Version);
+            Runtime.GLSLVersion = GL.GetString(StringName.ShadingLanguageVersion);
 
-            Debug.WriteLine("setup viewport");
             Debug.WriteLine(GL.GetError());
             CalculateLightSource();
         }
@@ -547,7 +549,7 @@ namespace Smash_Forge
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
             // use fixed function pipeline for drawing background and floor grid
-            GL.UseProgram(0); 
+            GL.UseProgram(0);
 
             if (Runtime.renderBackGround)
             {
@@ -643,10 +645,8 @@ namespace Smash_Forge
             if (!Runtime.useDepthTest) GL.Disable(EnableCap.DepthTest);
 
             if (Runtime.renderModel)
-            {
                 DrawModels();
-            }
-           
+
             //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
             GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
@@ -658,38 +658,20 @@ namespace Smash_Forge
             GL.Disable(EnableCap.CullFace);
 
             // render gaussian blur stuff
-            //------------------------------------------------------------
-            /*GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Disable(EnableCap.DepthTest);
-            bool horizontal = true;
-            bool first_iteration = true;
-            int blur_amount = 10;
-            DrawScreenQuadBlur(blur_amount, horizontal, first_iteration);
-            
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);*/
+            if (Runtime.drawQuadBlur)
+                DrawQuadBlur();
 
-
-            // render full screen quad
-            //------------------------------------------------------------
-            //full screen quad for post processing
-            /* GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-             GL.ActiveTexture(TextureUnit.Texture0);
-             GL.BindTexture(TextureTarget.Texture2D, colorTexture1);
-
-             GL.ActiveTexture(TextureUnit.Texture11);
-             GL.BindTexture(TextureTarget.Texture2D, depthmap);
-
-             GL.Disable(EnableCap.DepthTest);
-             DrawScreenQuad();*/
+            // render full screen quad for post processing
+            if (Runtime.drawQuadFinalOutput)
+                DrawQuadFinalOutput();
 
             // use fixed function pipeline again for area lights, lvd, bones, hitboxes, etc
-            GL.UseProgram(0); 
+            GL.UseProgram(0);
 
+            // draw path.bin
             if (Runtime.renderPath)
-            { 
-                // draw path.bin
                 DrawPathDisplay();
-            }
+
 
             DrawAreaLightBoundingBoxes();
 
@@ -700,12 +682,62 @@ namespace Smash_Forge
             {
                 DrawLVD();
             }
-               
-            DrawBonesAndHitboxes();
+
+            DrawBones();
+
+            DrawHitboxesHurtboxes();
 
             // Clean up
             GL.PopAttrib();
             glControl1.SwapBuffers();
+        }
+
+        private void DrawQuadBlur()
+        {
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Disable(EnableCap.DepthTest);
+            bool horizontal = true;
+            bool first_iteration = true;
+            int blur_amount = 10;
+            DrawScreenQuadBlur(blur_amount, horizontal, first_iteration);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+        }
+
+        private void DrawQuadFinalOutput()
+        {
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, colorTexture1);
+
+            GL.ActiveTexture(TextureUnit.Texture11);
+            GL.BindTexture(TextureTarget.Texture2D, depthmap);
+
+            GL.Disable(EnableCap.DepthTest);
+            DrawScreenQuad();
+        }
+
+        private void DrawHitboxesHurtboxes()
+        {
+            if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
+            {
+                HandleACMD(Runtime.TargetAnimString.Substring(3));
+            }
+
+            // Hurtboxes and ECBs first so they appear under hitboxes
+            if (Runtime.renderHurtboxes)
+                RenderHurtboxes();
+            if (Runtime.renderECB)
+                RenderECB();
+
+            if (Runtime.renderSpecialBubbles)
+                RenderSpecialBubbles();
+
+            if (Runtime.renderHitboxes && Runtime.renderInterpolatedHitboxes)
+                RenderInterpolatedHitboxes();
+
+            // Must come after interpolated boxes to appear on top
+            if (Runtime.renderHitboxes)
+                RenderHitboxes();
         }
 
         private static void DrawAreaLightBoundingBoxes()
@@ -902,7 +934,7 @@ namespace Smash_Forge
 
             Vector3 lightDirection = new Vector3(0f, 0f, -1f);
 
-            if (Runtime.CameraLight) // camera light should only affects character lighting
+            if (Runtime.cameraLight) // camera light should only affects character lighting
             {
                 GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
                 GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
@@ -927,7 +959,7 @@ namespace Smash_Forge
             shader = Runtime.shaders["MBN"];
             GL.UseProgram(shader.programID);
 
-            if (Runtime.CameraLight)
+            if (Runtime.cameraLight)
             {
                 GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
             }
@@ -1128,7 +1160,7 @@ namespace Smash_Forge
             }
         }
 
-        private void DrawBonesAndHitboxes()
+        private void DrawBones()
         {
             if (Runtime.ModelContainers.Count > 0)
             {
@@ -1147,28 +1179,7 @@ namespace Smash_Forge
                     }
                 }
 
-                // Render the hitboxes - because of how we disable the depth buffer here,
-                // make sure that everything else is drawn before this!
-                if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
-                {
-                    HandleACMD(Runtime.TargetAnimString.Substring(3));
-                }
-
-                // Hurtboxes and ECBs first so they appear under hitboxes
-                if (Runtime.renderHurtboxes)
-                    RenderHurtboxes();
-                if (Runtime.renderECB)
-                    RenderECB();
-
-                if (Runtime.renderSpecialBubbles)
-                    RenderSpecialBubbles();
-
-                if (Runtime.renderHitboxes && Runtime.renderInterpolatedHitboxes)
-                    RenderInterpolatedHitboxes();
-
-                // Must come after interpolated boxes to appear on top
-                if (Runtime.renderHitboxes)
-                    RenderHitboxes();
+                
             }
         }
 

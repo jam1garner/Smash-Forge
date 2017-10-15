@@ -105,7 +105,7 @@ namespace Smash_Forge.GUI
             fovSlider.Value = (int)(Runtime.fov * 180.0f / Math.PI);
             fovLabel.Text = "FOV (Degrees): " + fovSlider.Value;
 
-            cameraLightCB.Checked = Runtime.CameraLight;
+            cameraLightCB.Checked = Runtime.cameraLight;
             diffuseCB.Checked = Runtime.renderDiffuse;
             specularCB.Checked = Runtime.renderSpecular;
             fresnelCB.Checked = Runtime.renderFresnel;
@@ -389,7 +389,7 @@ namespace Smash_Forge.GUI
 
         private void cameraLightCB_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.CameraLight = cameraLightCB.Checked;
+            Runtime.cameraLight = cameraLightCB.Checked;
         }
 
         private void difTB_TextChanged(object sender, EventArgs e)

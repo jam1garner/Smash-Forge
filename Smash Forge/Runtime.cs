@@ -158,7 +158,10 @@ namespace Smash_Forge
         public static float fov = 0.524f; // default angle in radians from stage param files
         public static float zoomspeed = 1.0f;
         public static float zoomModifierScale = 2.0f;
-        public static bool CameraLight = false;
+        public static bool cameraLight = false;
+
+        public static bool drawQuadBlur = false;
+        public static bool drawQuadFinalOutput = false;
 
         public static bool renderDiffuse = true;
         public static bool renderFresnel = true;
@@ -382,7 +385,7 @@ namespace Smash_Forge
                         case "back_gradient_bottom": try { back2 = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
 
                         case "type": if (node.ParentNode != null && node.ParentNode.Name.Equals("RENDERSETTINGS")) Enum.TryParse(node.InnerText, out renderType); break;
-                        case "camera_light": bool.TryParse(node.InnerText, out CameraLight); break;
+                        case "camera_light": bool.TryParse(node.InnerText, out cameraLight); break;
                         case "use_normal_map": bool.TryParse(node.InnerText, out useNormalMap); break;
                         case "render_vertex_color": bool.TryParse(node.InnerText, out renderVertColor); break;
                         case "render_alpha": bool.TryParse(node.InnerText, out renderAlpha); break;
@@ -553,7 +556,7 @@ for changing default texure
             renderNode.AppendChild(createNode(doc, "type",renderType.ToString()));
             renderNode.AppendChild(createNode(doc, "render_vertex_color", renderVertColor.ToString()));
             renderNode.AppendChild(createNode(doc, "render_alpha", renderAlpha.ToString()));
-            renderNode.AppendChild(createNode(doc, "camera_light", CameraLight.ToString()));
+            renderNode.AppendChild(createNode(doc, "camera_light", cameraLight.ToString()));
             renderNode.AppendChild(createNode(doc, "use_normal_map", useNormalMap.ToString()));
 
             {
