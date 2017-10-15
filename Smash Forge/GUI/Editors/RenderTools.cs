@@ -1495,7 +1495,7 @@ namespace Smash_Forge
 
         public static void DrawVBN(VBN vbn)
         {
-            if (vbn != null && Runtime.renderBones)
+            if (vbn != null)
             {
                 Bone selectedBone = null;
                 foreach (Bone bone in vbn.bones)

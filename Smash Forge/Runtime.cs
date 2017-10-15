@@ -162,6 +162,7 @@ namespace Smash_Forge
 
         public static bool drawQuadBlur = false;
         public static bool drawQuadFinalOutput = false;
+        public static bool drawModelShadow = false;
 
         public static bool renderDiffuse = true;
         public static bool renderFresnel = true;
@@ -261,7 +262,6 @@ namespace Smash_Forge
         // ETC
         public static string fighterDir = "";
         public static string paramDir;
-
 
         public static string renderer = "";
         public static string openGLVersion = "";

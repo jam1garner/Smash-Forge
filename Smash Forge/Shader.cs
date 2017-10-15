@@ -28,11 +28,6 @@ namespace Smash_Forge
             errorLog += "GLSL Version: " + GL.GetString(StringName.ShadingLanguageVersion) + "\n";
         }
 
-        /*~Shader()
-        {
-            GL.DeleteProgram(programID);
-        }*/
-
 		public int getAttribute(string s){
 			int v;
 			bool success = attributes.TryGetValue (s, out v);
@@ -114,8 +109,6 @@ namespace Smash_Forge
         }
 
         public void vertexShader(string shaderText){
-            //MessageBox.Show("GL major: " + GL.GetInteger(GetPName.MajorVersion) );
-            //MessageBox.Show("GL minor: " + GL.GetInteger(GetPName.MinorVersion));
             loadShader(shaderText, ShaderType.VertexShader, programID, out vsID);
 			GL.LinkProgram (programID);
             errorLog += "Vertex Shader" + "\n";
@@ -138,14 +131,9 @@ namespace Smash_Forge
         void loadShader(string shaderText, ShaderType type, int program, out int address)
 		{
 			address = GL.CreateShader(type);
-			//using (StreamReader sr = new StreamReader(filename))
-			//{
-				GL.ShaderSource(address, shaderText);
-			//}
+			GL.ShaderSource(address, shaderText);
 			GL.CompileShader(address);
             GL.AttachShader(program, address);
-            //File.WriteAllText("log.txt", GL.GetShaderInfoLog(address).ToLower() + "Shader Log");
-            //MessageBox.Show(GL.GetShaderInfoLog(address));
 			Console.WriteLine(GL.GetShaderInfoLog(address));
             errorLog += GL.GetShaderInfoLog(address) + "\n";
         }

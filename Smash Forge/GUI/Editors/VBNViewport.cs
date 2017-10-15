@@ -389,26 +389,35 @@ namespace Smash_Forge
 
         private void SetupViewPort()
         {
-
+        
             if (shader != null)
                 GL.DeleteShader(shader.programID);
 
             if (shader == null)
             {
 
-                // shoudl vbn do this instead?
+                // should vbn do this instead?
                 GL.GenBuffers(1, out ubo_bones);
                 GL.GenBuffers(1, out ubo_bonesIT);
             }
-            
+
             int h = Height - groupBox2.ClientRectangle.Top;
             int w = Width;
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
-            mvpMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width,-height,zoom) 
+            mvpMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width, -height, zoom)
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
-            //v2 = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(width,-height,zoom);
 
+            SetupFrameBuffersRenderBuffers();
+
+            GetOpenGLSystemInfo();
+
+            Debug.WriteLine(GL.GetError());
+            CalculateLightSource();
+        }
+
+        private void SetupFrameBuffersRenderBuffers()
+        {
             // shadowmap
             GL.GenTextures(1, out depthmap);
             GL.BindTexture(TextureTarget.Texture2D, depthmap);
@@ -453,19 +462,23 @@ namespace Smash_Forge
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
 
-
             // depth render buffer
             int rboDepth;
             GL.GenRenderbuffers(1, out rboDepth);
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rboDepth);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, screenWidth, screenHeight);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, 
+                screenWidth, screenHeight);
 
             // attach buffers and stuff
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, hdrFBO);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, colorTexture1, 0);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, colorTexture2, 0);
-            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, rboDepth);
-            DrawBuffersEnum[] bufs = new DrawBuffersEnum[2] { (DrawBuffersEnum)FramebufferAttachment.ColorAttachment0, (DrawBuffersEnum)FramebufferAttachment.ColorAttachment1 };
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, 
+                TextureTarget.Texture2D, colorTexture1, 0);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, 
+                TextureTarget.Texture2D, colorTexture2, 0);
+            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, 
+                RenderbufferTarget.Renderbuffer, rboDepth);
+            DrawBuffersEnum[] bufs = new DrawBuffersEnum[2] { (DrawBuffersEnum)FramebufferAttachment.ColorAttachment0,
+                (DrawBuffersEnum)FramebufferAttachment.ColorAttachment1 };
             GL.DrawBuffers(bufs.Length, bufs);
 
             // multiple textures and fbos for 2 pass guassian blur
@@ -476,36 +489,38 @@ namespace Smash_Forge
             GL.GenTextures(1, out pingPongColorTexture1);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, pingPongFBO1);
             GL.BindTexture(TextureTarget.Texture2D, pingPongColorTexture1);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, screenWidth, screenHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, screenWidth, screenHeight, 0, 
+                OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, pingPongColorTexture1, 0);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, 
+                TextureTarget.Texture2D, pingPongColorTexture1, 0);
 
             // pingpong texture 2
             GL.GenTextures(1, out pingPongColorTexture2);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, pingPongFBO2);
             GL.BindTexture(TextureTarget.Texture2D, pingPongColorTexture2);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, screenWidth, screenHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, screenWidth, screenHeight, 0, 
+                OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, pingPongColorTexture2, 0);
-
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, 
+                TextureTarget.Texture2D, pingPongColorTexture2, 0);
 
             Debug.WriteLine(GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer));
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+        }
 
+        private static void GetOpenGLSystemInfo()
+        {
             Runtime.renderer = GL.GetString(StringName.Renderer);
             Runtime.openGLVersion = GL.GetString(StringName.Version);
             Runtime.GLSLVersion = GL.GetString(StringName.ShadingLanguageVersion);
-
-            Debug.WriteLine(GL.GetError());
-            CalculateLightSource();
         }
-
 
         int cf = 0;
         //Matrix4 v2;
@@ -539,13 +554,12 @@ namespace Smash_Forge
                 return;
 
             glControl1.MakeCurrent();
-
-
             GL.Viewport(glControl1.ClientRectangle);
 
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
-            // clear the gf buffer
+
+            // clear all the buffers
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
             // use fixed function pipeline for drawing background and floor grid
@@ -561,8 +575,6 @@ namespace Smash_Forge
 
                 renderBackground();
             }
-
-            GL.Enable(EnableCap.DepthTest);
 
             // set up the matrices for drawing models and floor
             GL.MatrixMode(MatrixMode.Projection);
@@ -580,40 +592,61 @@ namespace Smash_Forge
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref mvpMatrix);
 
-            // drawing floor---------------------------
             if (Runtime.renderFloor)
-            {
                 RenderTools.drawFloor();
-            }
 
-            // render shadow map
-            //------------------------------------------------------------
-            CalculateLightSource();
-            /*GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadMatrix(ref lightMatrix);
-            GL.Enable(EnableCap.DepthTest);
-            GL.Viewport(0, 0, sw, sh);
+            if (Runtime.drawModelShadow)
+                DrawModelShadow();
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
+            // render models into hdr buffer
+            //GL.BindFramebuffer(FramebufferTarget.Framebuffer, hdrFBO);
+            //GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
+            if (Runtime.useDepthTest)
+                GL.Enable(EnableCap.DepthTest);
+            else
+                GL.Disable(EnableCap.DepthTest);
 
-            GL.Clear(ClearBufferMask.DepthBufferBit); // critical to have
-            {
-                //draw
-                foreach (ModelContainer c in Runtime.ModelContainers)
-                {
-                    if (c.nud != null)
-                    {
-                        c.nud.RenderShadow(lightMatrix, mvpMatrix, modelMatrix);
-                    }
-                }
-            }
+            if (Runtime.renderModel)
+                DrawModels();
+            //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            // render gaussian blur stuff
+            if (Runtime.drawQuadBlur)
+                DrawQuadBlur();
 
-            GL.LoadMatrix(ref mvpMatrix);
-            GL.Viewport(glControl1.ClientRectangle); // setup viewport with proper dimensions
-            */
+            // render full screen quad for post processing
+            if (Runtime.drawQuadFinalOutput)
+                DrawQuadFinalOutput();
 
+            // use fixed function pipeline again for area lights, lvd, bones, hitboxes, etc
+            SetupFixedFunctionRendering();
+
+            // draw path.bin
+            if (Runtime.renderPath)
+                DrawPathDisplay();
+
+            // area light bounding boxes should intersect stage geometry and not render on top
+            DrawAreaLightBoundingBoxes();
+
+            // clear depth buffer so stuff will render on top of the models
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            if (Runtime.renderLVD)
+                DrawLVD();
+
+            if (Runtime.renderBones)
+                DrawBones();
+
+            DrawHitboxesHurtboxes();
+
+            // Clean up
+            GL.PopAttrib();
+            glControl1.SwapBuffers();
+        }
+
+        private static void SetupFixedFunctionRendering()
+        {
+            GL.UseProgram(0);
 
             GL.Enable(EnableCap.LineSmooth); // This is Optional 
             GL.Enable(EnableCap.Normalize);  // This is critical to have
@@ -635,61 +668,33 @@ namespace Smash_Forge
 
             GL.Enable(EnableCap.StencilTest);
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
+        }
 
+        private void DrawModelShadow()
+        {
+            // update light matrix and setup shadowmap rendering
+            CalculateLightSource();
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref lightMatrix);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Viewport(0, 0, sw, sh);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
 
-            // render models into hdr buffer
-            //------------------------------------------------------------
-            // GL.BindFramebuffer(FramebufferTarget.Framebuffer, hdrFBO);
-            //GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
-
-            if (!Runtime.useDepthTest) GL.Disable(EnableCap.DepthTest);
-
-            if (Runtime.renderModel)
-                DrawModels();
-
-            //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-
-            GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
-            GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
-
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-            GL.DepthFunc(DepthFunction.Less);
-            GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-            GL.Disable(EnableCap.CullFace);
-
-            // render gaussian blur stuff
-            if (Runtime.drawQuadBlur)
-                DrawQuadBlur();
-
-            // render full screen quad for post processing
-            if (Runtime.drawQuadFinalOutput)
-                DrawQuadFinalOutput();
-
-            // use fixed function pipeline again for area lights, lvd, bones, hitboxes, etc
-            GL.UseProgram(0);
-
-            // draw path.bin
-            if (Runtime.renderPath)
-                DrawPathDisplay();
-
-
-            DrawAreaLightBoundingBoxes();
-
-            // clear depth buffer so stuff will render on top of the models
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-
-            if (Runtime.renderLVD)
+            // critical to clear depth buffer
+            GL.Clear(ClearBufferMask.DepthBufferBit); 
+            
+            foreach (ModelContainer c in Runtime.ModelContainers)
             {
-                DrawLVD();
+                if (c.nud != null)
+                {
+                    c.nud.RenderShadow(lightMatrix, mvpMatrix, modelMatrix);
+                }
             }
-
-            DrawBones();
-
-            DrawHitboxesHurtboxes();
-
-            // Clean up
-            GL.PopAttrib();
-            glControl1.SwapBuffers();
+            
+            // reset matrices and viewport for model rendering again
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.LoadMatrix(ref mvpMatrix);
+            GL.Viewport(glControl1.ClientRectangle); 
         }
 
         private void DrawQuadBlur()
@@ -873,6 +878,8 @@ namespace Smash_Forge
             GL.BindTexture(TextureTarget.Texture2D, depthmap);
             GL.Uniform1(shader.getAttribute("shadowmap"), 11);
 
+            GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
+            GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
 
             // fresnel ground color for characters & stages
             float fresGroundR, fresGroundG, fresGroundB = 1.0f;
@@ -1013,10 +1020,6 @@ namespace Smash_Forge
                     if (m.vbn != null)
                     {
                         Matrix4[] f = m.vbn.getShaderMatrix();
-                        /*int shad = shader.getAttribute("bones");
-                        GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);*/
-                        //int shadi = shader.getAttribute("boneIT");
-                        //GL.UniformMatrix4(shadi, f.Length, false, ref m.vbn.bonematIT[0].Row0.X);
 
                         int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
                         int boneCount = m.vbn.bones.Count;
@@ -1029,24 +1032,15 @@ namespace Smash_Forge
                         var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
                         GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
 
-                        //GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bonesIT);
-                        //GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
-                        //GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-                        //blockIndex = GL.GetUniformBlockIndex(shader.programID, "bonesIT");
-                        //GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bonesIT);
-
                         if (f.Length > 0)
                         {
                             GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
                             GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
-
-                            //GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bonesIT);
-                            //GL.BufferSubData(BufferTarget.UniformBuffer, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), (IntPtr)(f.Length * Vector4.SizeInBytes * 4), m.vbn.bonematIT);
                         }
                     }
 
                     shader.enableAttrib();
-                    m.nud.clearMTA();//Clear animated materials
+                    m.nud.clearMTA();
 
                     if (m.mta != null)
                         m.nud.applyMTA(m.mta, (int)nupdFrame.Value - 1);//Apply base mta
@@ -1059,8 +1053,9 @@ namespace Smash_Forge
                 }
             }
         }
-        private void DrawScreenQuad() // draw a full screen quad for fbo debugging and post processing
+        private void DrawScreenQuad() 
         {
+            // draw a full screen quad for fbo debugging and post processing
             shader = Runtime.shaders["Quad"];
             GL.UseProgram(shader.programID);
 
@@ -1076,15 +1071,16 @@ namespace Smash_Forge
             GL.BindTexture(TextureTarget.Texture2D, pingPongColorTexture1);
             GL.Uniform1(shader.getAttribute("ScreenRenderBlur"), 1);
 
-
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // just use a big triangle instead
+            // just use a big triangle instead of a quad
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 3); 
             GL.BindVertexArray(0);
       
         }
 
-        // draw a full screen quad for fbo debugging and post processing
+
         private void DrawScreenQuadBlur(int blur_amount, bool horizontal, bool first_iteration) 
         {
+            // draw a full screen quad for fbo debugging and post processing
             shader = Runtime.shaders["Blur"];
             GL.UseProgram(shader.programID);
             
@@ -1164,7 +1160,6 @@ namespace Smash_Forge
         {
             if (Runtime.ModelContainers.Count > 0)
             {
-                // Render bones
                 foreach (ModelContainer m in Runtime.ModelContainers)
                 {
                     RenderTools.DrawVBN(m.vbn);
@@ -1177,9 +1172,7 @@ namespace Smash_Forge
                     {
                         RenderTools.DrawVBN(m.dat_melee.bones);
                     }
-                }
-
-                
+                }           
             }
         }
 
