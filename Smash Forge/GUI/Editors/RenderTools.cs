@@ -1039,6 +1039,10 @@ namespace Smash_Forge
 
             GL.UseProgram(0);
 
+            // objects shouldn't show through opaque parts of floor
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal);
+
             GL.Color3(Runtime.floorColor);
             GL.LineWidth(1f);
 
@@ -1228,6 +1232,63 @@ namespace Smash_Forge
             GL.End();
         }
 
+        public static void drawPyramid(Vector3 center, float scale)
+        {
+            GL.Begin(PrimitiveType.Quads);
+
+            GL.Vertex3(center.X - scale, center.Y, 0);
+            GL.Vertex3(center.X, center.Y - scale, 0);
+            GL.Vertex3(center.X + scale, center.Y, 0);
+            GL.Vertex3(center.X, center.Y - scale, 0);
+
+            GL.Vertex3(center.X, center.Y, -scale);
+            GL.Vertex3(center.X, center.Y - scale, 0);
+            GL.Vertex3(center.X, center.Y, scale);
+            GL.Vertex3(center.X, center.Y - scale, 0);
+
+            GL.Vertex3(center.X, center.Y, -scale);
+            GL.Vertex3(center.X + scale, center.Y, 0);
+            GL.Vertex3(center.X, center.Y, -scale);
+            GL.Vertex3(center.X - scale, center.Y, 0);
+
+            GL.Vertex3(center.X, center.Y, scale);
+            GL.Vertex3(center.X + scale, center.Y, 0);
+            GL.Vertex3(center.X, center.Y, scale);
+            GL.Vertex3(center.X - scale, center.Y, 0);
+
+            GL.End();
+        }
+
+        public static void drawPyramidWireframe(Vector3 center, float scale, float lineWidth)
+        {
+            //GL.Color4(Color.FromArgb(200, Color.Black));
+            GL.LineWidth(lineWidth);
+            GL.Begin(PrimitiveType.Lines);
+
+            GL.Vertex3(center.X - scale, center.Y, 0);
+            GL.Vertex3(center.X, center.Y - scale, 0);
+            GL.Vertex3(center.X + scale, center.Y, 0);
+            GL.Vertex3(center.X, center.Y - scale, 0);
+
+            GL.Vertex3(center.X, center.Y, -scale);
+            GL.Vertex3(center.X, center.Y - scale, 0);
+            GL.Vertex3(center.X, center.Y, scale);
+            GL.Vertex3(center.X, center.Y - scale, 0);
+
+            GL.Vertex3(center.X, center.Y, -scale);
+            GL.Vertex3(center.X + scale, center.Y, 0);
+            GL.Vertex3(center.X, center.Y, -scale);
+            GL.Vertex3(center.X - scale, center.Y, 0);
+
+            GL.Vertex3(center.X, center.Y, scale);
+            GL.Vertex3(center.X + scale, center.Y, 0);
+            GL.Vertex3(center.X, center.Y, scale);
+            GL.Vertex3(center.X - scale, center.Y, 0);
+
+            GL.End();
+        }
+
+
         public static void drawCube(Vector3 center, float size)
         {
             GL.Begin(PrimitiveType.Quads);
@@ -1330,12 +1391,22 @@ namespace Smash_Forge
             GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z - sizeZ);
             GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z - sizeZ);
             GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z - sizeZ);
+
+            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z + sizeZ);
+
+            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z - sizeZ);
             GL.End();
         }
 
         public static void drawRectangularPrismWireframe(Vector3 center, float sizeX, float sizeY, float sizeZ)
         {
-            GL.Color3(Color.White);
+            //GL.Color3(Color.Black);
             GL.LineWidth(2);
             GL.Begin(PrimitiveType.LineLoop);
             GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z - sizeZ);

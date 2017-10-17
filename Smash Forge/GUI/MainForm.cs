@@ -142,7 +142,6 @@ namespace Smash_Forge
             mbn.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_fs.txt"));
             Runtime.shaders.Add("MBN", mbn);
 
-
             Shader quad = new Shader();
             quad.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Quad_vs.txt"));
             quad.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Quad_fs.txt"));
@@ -153,19 +152,12 @@ namespace Smash_Forge
             blur.fragmentShader(RenderTools.fs_blur);
             Runtime.shaders.Add("Blur", blur);
 
+            Shader DAT = new Shader();
+            DAT.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_vs.txt"));
+            DAT.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_fs.txt"));
+            Runtime.shaders.Add("DAT", DAT);
 
             RenderTools.Setup();
-
-            /*openFile("C:\\s\\Smash\\extract\\data\\fighter\\kamui\\model\\body\\c00\\model.vbn");
-            {
-                OMO omo = new OMO(new FileData("C:\\s\\Smash\\extract\\data\\fighter\\kamui\\model\\body\\c00\\corrin2.omo"));
-                omo.Apply(Runtime.TargetVBN, 0);
-            }
-            {
-                OMO omo = new OMO(new FileData("C:\\s\\Smash\\extract\\data\\fighter\\kamui\\model\\body\\c00\\corrin.omo"));
-                omo.Apply(Runtime.TargetVBN, 0);
-            }*/
-            
         }
 
         public void openFiles()
@@ -1915,13 +1907,6 @@ namespace Smash_Forge
             }
         }
 
-        /*
-        public AnimListPanel animList = new AnimListPanel() {ShowHint = DockState.DockRight};
-        public BoneTreePanel boneTreePanel = new BoneTreePanel() {ShowHint = DockState.DockLeft};
-        public ProjectTree project = new ProjectTree() {ShowHint = DockState.DockLeft};
-        public LVDList lvdList = new LVDList() {ShowHint = DockState.DockLeft};
-        public LVDEditor lvdEditor = new LVDEditor() {ShowHint = DockState.DockRight};
-         */
 
         private void allViewsPreset(object sender, EventArgs e)
         {
@@ -2047,6 +2032,7 @@ namespace Smash_Forge
         {
             Runtime.shaders["NUD"].SaveErrorLog("NUD");
             Runtime.shaders["MBN"].SaveErrorLog("MBN");
+            Runtime.shaders["DAT"].SaveErrorLog("DAT");
             Runtime.shaders["Texture"].SaveErrorLog("Texture");
             Runtime.shaders["Quad"].SaveErrorLog("Quad");
 

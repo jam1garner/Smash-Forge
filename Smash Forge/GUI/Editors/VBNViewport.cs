@@ -530,22 +530,17 @@ namespace Smash_Forge
         int pingPongFBO1, pingPongFBO2;
         Matrix4 lightMatrix;
         Matrix4 modelMatrix;
+        Matrix4 lightProjection;
 
         public void CalculateLightSource()
-        {   ////////////////////////////
-            // fix the lightMatrix stuff
-            ////////////////////////////
-
-            Matrix4 lightProjection;
-            Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 500.0f, out lightProjection);
-            Matrix4 lightView = Matrix4.LookAt(Vector3.Transform(Vector3.Zero, mvpMatrix).Normalized(), //new Vector3(0.5f, 1f, 1f),
+        {   
+            Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, Runtime.renderDepth, out lightProjection);
+            Matrix4 lightView = Matrix4.LookAt(Vector3.Transform(Vector3.Zero, mvpMatrix).Normalized(),
                 new Vector3(0),
                 new Vector3(0, 1, 0));
-            //lightView = Matrix4.LookAt(-2.0f, 4.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
             lightMatrix = lightProjection * lightView;
-             /////////////////////////////////////
-             //
-             ////////////////////////////////////////
+            lightMatrix = Matrix4.CreateTranslation(width, -height, zoom)
+                * lightProjection * Matrix4.CreateRotationY(Runtime.dif_rotY) * Matrix4.CreateRotationX(Runtime.dif_rotX);
         }
 
         public void Render()
@@ -639,9 +634,42 @@ namespace Smash_Forge
 
             DrawHitboxesHurtboxes();
 
+            // draw last to avoid messing up transformations and colors
+            //DrawLightArrows(Runtime.dif_rotX, Runtime.dif_rotY, Runtime.dif_rotZ, new Vector3(0.0f), diffuseLight.R, diffuseLight.G, diffuseLight.B);
+
             // Clean up
             GL.PopAttrib();
             glControl1.SwapBuffers();
+        }
+
+        private static void DrawLightArrows(float rotX, float rotY, float rotZ, Vector3 center, float R, float G, float B)
+        {
+            // can reuse this function to draw arrows for all directional lights
+            // should use parameters for rotation, center point, color, and wireframe stuff
+
+            // set default rotation
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+
+            // rotate arrow to match light direction
+            GL.Rotate(rotX, 1.0f, 0.0f, 0.0f);
+            GL.Rotate(-rotY, 0.0f, 0.0f, 1.0f);
+            GL.Rotate(rotZ, 0.0f, 1.0f, 0.0f);
+
+            Vector3 p1 = new Vector3(0.0f, 0.0f, 0.0f);
+            Vector3 p2 = new Vector3(0.0f, 5.0f, 0.0f);
+
+            // set color to light color
+            int r = (int)(diffuseLight.R * 255);
+            r = RenderTools.ClampInt(r);
+            int g = (int)(diffuseLight.G * 255);
+            g = RenderTools.ClampInt(g);
+            int b = (int)(diffuseLight.G * 255);
+            b = RenderTools.ClampInt(b);
+            GL.Color4(Color.FromArgb(255, r, g, b));
+
+            RenderTools.drawPyramidWireframe(p1, 5.0f, 3.0f);
+            RenderTools.drawRectangularPrismWireframe(p2, 2.0f, 5.0f, 2.0f);
         }
 
         private static void SetupFixedFunctionRendering()
@@ -982,9 +1010,26 @@ namespace Smash_Forge
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
             GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
 
+            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderType"), renderType);
 
             #endregion
+
+            #region DAT uniforms
+            shader = Runtime.shaders["DAT"];
+            GL.UseProgram(shader.programID);
+
+            GL.Uniform3(shader.getAttribute("difLightColor"), diffuseLight.R, diffuseLight.G, diffuseLight.B);
+            GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
+
+            GL.ActiveTexture(TextureUnit.Texture10);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
+            GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
+
+            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderType"), renderType);
+            #endregion
+
 
             shader = Runtime.shaders["NUD"];
             GL.UseProgram(shader.programID);

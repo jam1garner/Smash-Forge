@@ -892,6 +892,12 @@
     <None Include="lib\Shader\Shadow_fs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="lib\Shader\DAT_fs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\DAT_vs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="lib\Shader\Shadow_vs.txt" />
     <Content Include="Resources\10080000.png" />
     <Content Include="Resources\forge.ico" />

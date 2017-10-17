@@ -1,30 +1,31 @@
 #version 330
+
 in vec2 texcoord;
 in vec4 vertexColor;
 in vec3 normal;
-in vec4 position;
+
+out vec4 FragColor;
 
 uniform vec3 difLightDirection;
 uniform vec3 difLightColor;
 uniform vec3 ambLightColor;
 
-uniform sampler2D tex;
-uniform sampler2D UVTestPattern;
-
-uniform vec2 uvscale;
 uniform int renderType;
 uniform int renderVertColor;
+
+uniform sampler2D tex;
+uniform sampler2D UVTestPattern;
+uniform vec2 uvscale;
 uniform mat4 modelview;
 
-out vec4 FragColor;
 void main()
 {
+    vec3 displayNormal = normal * 0.5 + 0.5;
+
     vec4 alpha = texture(tex, texcoord*uvscale).aaaa;
+    FragColor = vec4 ((vertexColor * alpha * texture(tex, texcoord*uvscale)).xyz, alpha.a * vertexColor.w);
 
-    vec3 displayNormal = normal.xyz;
-    displayNormal = (displayNormal + 1) / 2;
-
-    vec4 diffuseColor = texture(tex, texcoord);
+    vec4 diffuseColor = texture(tex, texcoord * uvscale).rgba;
 
     float halfLambert = dot(difLightDirection, normal.xyz);
     halfLambert = (halfLambert + 1) / 2;
@@ -35,7 +36,7 @@ void main()
     if (renderVertColor == 1)
         resultingColor *= vertexColor.rgb;
 
-    if (renderType == 1) // normals color
+    if (renderType == 1) // normals vertexColor
         FragColor = vec4(displayNormal,1);
     else if (renderType == 2) // normals black & white
     {
