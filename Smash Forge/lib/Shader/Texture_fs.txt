@@ -1,7 +1,7 @@
 ﻿#version 330
 in vec2 texCoord;
 
-uniform sampler2D texture;
+uniform sampler2D image;
 
 uniform int renderR;
 uniform int renderG;
@@ -13,7 +13,7 @@ out vec4 outColor;
 
 void main()
 {   outColor = vec4(0,0,0,1);
-    vec4 textureColor = texture(texture, vec2(texCoord.x, 1-texCoord.y)).rgba;
+    vec4 textureColor = texture(image, vec2(texCoord.x, 1-texCoord.y)).rgba;
     if (renderR == 1)
     {
         outColor.r = textureColor.r;

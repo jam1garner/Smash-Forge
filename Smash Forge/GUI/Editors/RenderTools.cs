@@ -1633,7 +1633,7 @@ namespace Smash_Forge
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.Uniform1(shader.getAttribute("texture"), 0);
+            GL.Uniform1(shader.getAttribute("image"), 0);
 
             GL.Uniform1(shader.getAttribute("renderR"), renderR ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderG"), renderG ? 1 : 0);
