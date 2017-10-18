@@ -568,7 +568,7 @@ namespace Smash_Forge
                 GL.MatrixMode(MatrixMode.Projection);
                 GL.LoadIdentity();
 
-                renderBackground();
+                RenderTools.RenderBackground();
             }
 
             // set up the matrices for drawing models and floor
@@ -785,17 +785,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void renderBackground()
-        {
-            GL.Begin(PrimitiveType.Quads);
-            GL.Color3(Runtime.back1);
-            GL.Vertex2(1.0, 1.0);
-            GL.Vertex2(-1.0, 1.0);
-            GL.Color3(Runtime.back2);
-            GL.Vertex2(-1.0, -1.0);
-            GL.Vertex2(1.0, -1.0);
-            GL.End();
-        }
+        
 
         public void UpdateCameraPositionControl()
         {
@@ -1362,13 +1352,16 @@ namespace Smash_Forge
 
                 GL.End();
             }
+
         }
 
         public void DrawLVD()
         {
+            GL.Disable(EnableCap.CullFace);
+
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
-                // JAM FIIIIIIXXXXXED IIIIIIIT
+                
                 if (m.dat_melee != null && m.dat_melee.collisions != null)
                 {
                     float scale = m.dat_melee.stageScale;
@@ -1404,17 +1397,6 @@ namespace Smash_Forge
                         GL.End();
                     }
 
-                    /*GL.Color4(Color.FromArgb(128, Color.Purple));
-                    foreach(DAT.COLL_DATA.AreaTableEntry entry in m.dat_melee.collisions.areaTable)
-                    {
-                        GL.Begin(PrimitiveType.QuadStrip);
-                        GL.Vertex3(entry.xBotLeftCorner, entry.yBotLeftCorner, 0);
-                        GL.Vertex3(entry.xTopRightCorner, entry.yBotLeftCorner, 0);
-                        GL.Vertex3(entry.xBotLeftCorner, entry.yTopRightCorner, 0);
-                        GL.Vertex3(entry.xTopRightCorner, entry.yTopRightCorner, 0);
-                        GL.End();
-                        //Console.WriteLine($"{entry.xBotLeftCorner},{entry.yBotLeftCorner},{entry.xTopRightCorner},{entry.yTopRightCorner}");
-                    }*/
                 }
 
                 if(m.dat_melee != null && m.dat_melee.blastzones != null)
@@ -1737,6 +1719,8 @@ namespace Smash_Forge
                     }
                 }
             }
+
+            GL.Enable(EnableCap.CullFace);
         }
 
         private void DrawPathDisplay()

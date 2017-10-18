@@ -388,7 +388,6 @@ namespace Smash_Forge
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
             int.TryParse(textBox5.Text, out material[current].AlphaTest);
-            //setValue(textBox5, comboBox4, afunc, out material[current].alphaFunc);
         }
         
         private void AlphaFuncCB_SelectedIndexChanged(object sender, EventArgs e)
@@ -788,37 +787,7 @@ namespace Smash_Forge
                 Init();
                 FillForm();
             }
-
-            /*using (var ofd = new OpenFileDialog())
-            {
-                ofd.Filter = "Namco Material (NMT)|*.nmt|" +
-                             "All files(*.*)|*.*";
-
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    if (ofd.FileName.EndsWith(".nmt"))
-                    {
-                        FileData f = new FileData(ofd.FileName);
-
-                        int soff = f.readInt();
-                        
-                        NUD._s_Poly pol = new NUD._s_Poly()
-                        {
-                            texprop1 = f.readInt(),
-                            texprop2 = f.readInt(),
-                            texprop3 = f.readInt(),
-                            texprop4 = f.readInt()
-                        };
-
-                        poly.materials = NUD.readMaterial(f, pol, soff);
-                        material = poly.materials;
-                        Console.WriteLine(material.Count);
-                        current = 0;
-                        Init();
-                        FillForm();
-                    }
-                }
-            }*/
+       
         }
 
         private void RenderTexture()
@@ -837,7 +806,7 @@ namespace Smash_Forge
             GL.Enable(EnableCap.Texture2D);
 
             NUT.NUD_Texture tex = null;
-            int rt = 0;
+            int texture = 0;
             if (material[current].entries.ContainsKey("NU_materialHash") && listView1.SelectedIndices.Count > 0)
             {
                 int hash = material[current].textures[listView1.SelectedIndices[0]].hash;
@@ -846,7 +815,7 @@ namespace Smash_Forge
                     if (n.draw.ContainsKey(hash))
                     {
                         n.getTextureByID(hash, out tex);
-                        rt = n.draw[hash];
+                        texture = n.draw[hash];
                         break;
                     }
             }
@@ -867,7 +836,7 @@ namespace Smash_Forge
             if (float.IsInfinity(h)) h = 1;
             Console.WriteLine(w + " " + h);
 
-            RenderTools.DrawTexturedQuad(rt, true, true, true, false, false);
+            RenderTools.DrawTexturedQuad(texture, 1, 1, true, true, true, false, false, false);
 
             glControl1.SwapBuffers();
         }
@@ -889,7 +858,7 @@ namespace Smash_Forge
             GL.Enable(EnableCap.Texture2D);
 
             NUT.NUD_Texture tex = null;
-            int rt = 0;
+            int texture = 0;
             if (material[current].entries.ContainsKey("NU_materialHash") && listView1.SelectedIndices.Count > 0)
             {
                 int hash = material[current].textures[listView1.SelectedIndices[0]].hash;
@@ -898,7 +867,7 @@ namespace Smash_Forge
                     if (n.draw.ContainsKey(hash))
                     {
                         n.getTextureByID(hash, out tex);
-                        rt = n.draw[hash];
+                        texture = n.draw[hash];
                         break;
                     }
             }
@@ -919,16 +888,13 @@ namespace Smash_Forge
             if (float.IsInfinity(h)) h = 1;
             Console.WriteLine(w + " " + h);
 
-            RenderTools.DrawTexturedQuad(rt, false, false, false, true, true);
+            RenderTools.DrawTexturedQuad(texture, 1, 1, false, false, false, true, true, false);
             glControl2.SwapBuffers();
         }
 
 
         private void glControl1_Click(object sender, EventArgs e)
         {
-
-            //GL.BindTexture(TextureTarget.Texture2D, i);
-            //GL.Begin(PrimitiveType.Quads);
         }
 
         private void button4_Click_1(object sender, EventArgs e)
@@ -1028,14 +994,12 @@ namespace Smash_Forge
         private void rimLightCB_CheckedChanged(object sender, EventArgs e)
         {
             material[current].UseDummyRamp = dummyRampCB.Checked;
-            //if(rimLightCB.Checked)specLightCB.Checked = !rimLightCB.Checked;
             FillForm();
         }
 
         private void sphereMapCB_CheckedChanged(object sender, EventArgs e)
         {
             material[current].UseSphereMap = sphereMapCB.Checked;
-            //if (specLightCB.Checked)rimLightCB.Checked = !specLightCB.Checked;
             FillForm();
         }
 

@@ -373,7 +373,6 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
                 else // character lighting
                 {
                     lighting = mix(ambLightColor * ambientIntensity, difLightColor * diffuseIntensity, halfLambert); // gradient based lighting
-
                     // area lights experiment
                     float distanceMixFactor = distance(objectPosition.xyz, vec3(-81, 0, 0));
                     distanceMixFactor = distanceMixFactor / distance(vec3(-55, 0, 0), vec3(-81, 0, 0));
@@ -425,7 +424,8 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
                 if (hasSpecularParams == 1)
                     exponent = specularParams.y;
 
-                float blinnPhongSpec = pow(clamp((dot(halfAngle, N)), 0, 1), exponent);
+                float blinnPhongSpec = dot(halfAngle, N);
+                blinnPhongSpec = pow(blinnPhongSpec, exponent);
             //---------------------------------------------------------------------------------------------
 
 			//---------------------------------------------------------------------------------------------
@@ -445,8 +445,6 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
     			else // default
                 {
                     specularPass += specularColor.rgb * blinnPhongSpec * specularTintColor;
-                    // if (hasRamp == 1) // do ramps affect specular?
-                        // specularPass = RampColor(specularPass);
                 }
 
 			//---------------------------------------------------------------------------------------------

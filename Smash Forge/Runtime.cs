@@ -153,6 +153,7 @@ namespace Smash_Forge
         public static Color floorColor = Color.Gray;
         public static FloorStyle floorStyle = FloorStyle.Normal;
         public static bool renderFloorLines = true;
+
         public static Color back1 = Color.FromArgb((255 << 24) | (26 << 16) | (26 << 8) | (26));
         public static Color back2 = Color.FromArgb((255 << 24) | (77 << 16) | (77 << 8) | (77));
         public static float fov = 0.524f; // default angle in radians from stage param files
@@ -345,7 +346,7 @@ namespace Smash_Forge
                                     case "floor":
                                         if (File.Exists(node.InnerText) && node.InnerText.ToLower().EndsWith(".png"))
                                         {
-                                            RenderTools.userTex = NUT.loadImage(new Bitmap(node.InnerText));
+                                            RenderTools.floorTexture = NUT.loadImage(new Bitmap(node.InnerText));
                                             floorStyle = FloorStyle.UserTexture;
                                         }
                                         break;
@@ -450,18 +451,6 @@ namespace Smash_Forge
                                 }
                             }
                             break;
-                        /*case "intensity":
-                            if (node.ParentNode != null)
-                            {
-                                switch (node.ParentNode.Name)
-                                {
-                                    case "diffuse": float.TryParse(node.InnerText, out dif_inten); break;
-                                    case "specular": float.TryParse(node.InnerText, out spc_inten); break;
-                                    case "fresnel": float.TryParse(node.InnerText, out frs_inten); break;
-                                    case "reflection": float.TryParse(node.InnerText, out ref_inten); break;
-                                }
-                            }
-                            break;*/
                         case "color":
                             if (node.ParentNode != null)
                             {

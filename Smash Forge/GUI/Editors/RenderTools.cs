@@ -212,7 +212,7 @@ namespace Smash_Forge
 
     public class RenderTools
     {
-        public static int defaultTex = -1, userTex;
+        public static int defaultTex = -1, floorTexture;
         public static int cubeTex, cubeTex2;
         public static int defaultRamp;
         public static int UVTestPattern;
@@ -1051,7 +1051,7 @@ namespace Smash_Forge
                 GL.Enable(EnableCap.Texture2D);
                 GL.ActiveTexture(TextureUnit.Texture0);
                 if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
-                    GL.BindTexture(TextureTarget.Texture2D, userTex);
+                    GL.BindTexture(TextureTarget.Texture2D, floorTexture);
                 else
                     GL.BindTexture(TextureTarget.Texture2D, defaultTex);
 
@@ -1132,6 +1132,41 @@ namespace Smash_Forge
             }
 
             GL.Enable(EnableCap.DepthTest);
+        }
+
+        public static void RenderBackground()
+        {
+            if (Runtime.floorStyle == Runtime.FloorStyle.Textured || Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
+            {
+                GL.Enable(EnableCap.Texture2D);
+                GL.ActiveTexture(TextureUnit.Texture0);
+                if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
+                    GL.BindTexture(TextureTarget.Texture2D, floorTexture);
+                else
+                    GL.BindTexture(TextureTarget.Texture2D, defaultTex);
+
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)Runtime.floorWrap);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)Runtime.floorWrap);
+
+                GL.Disable(EnableCap.Texture2D);
+            }
+    
+            GL.Begin(PrimitiveType.Quads);
+            GL.Color3(Runtime.back1);
+            GL.TexCoord2(2, 2);
+            GL.Vertex2(1.0, 1.0);
+
+            GL.TexCoord2(0, 2);
+            GL.Vertex2(-1.0, 1.0);
+
+            GL.Color3(Runtime.back2);
+
+            GL.TexCoord2(0, 0);
+            GL.Vertex2(-1.0, -1.0);
+
+            GL.TexCoord2(2, 0);
+            GL.Vertex2(1.0, -1.0);
+            GL.End();
         }
 
         public static void drawCircle(float x, float y, float z, float radius, uint precision)
@@ -1620,12 +1655,15 @@ namespace Smash_Forge
             }
         }
 
-        public static void DrawTexturedQuad(int texture, bool renderR, bool renderG, bool renderB, bool renderAlpha, bool alphaOverride)             
+        public static void DrawTexturedQuad(int texture, int width, int height, bool renderR, bool renderG, bool renderB, 
+            bool renderAlpha, bool alphaOverride, bool preserveAspectRatio)      
         {
             // draw RGB and alpha channels of texture to screen quad
 
             Shader shader = Runtime.shaders["Texture"];
             GL.UseProgram(shader.programID);
+
+            GL.ClearColor(Color.White);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, texture);
@@ -1640,7 +1678,10 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderB"), renderB ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderAlpha"), renderAlpha ? 1 : 0);
             GL.Uniform1(shader.getAttribute("alphaOverride"), alphaOverride ? 1 : 0);
-
+            GL.Uniform1(shader.getAttribute("preserveAspectRatio"), preserveAspectRatio ? 1 : 0);
+            float aspectRatio = (float) width / (float) height;
+            GL.Uniform1(shader.getAttribute("width"), width);
+            GL.Uniform1(shader.getAttribute("height"), height);
 
 
             GL.Disable(EnableCap.DepthTest);

@@ -133,57 +133,14 @@ namespace Smash_Forge
             if (listBox1.SelectedItem == null || listBox2.SelectedItem == null)
                 return;
 
-            int rt = ((NUT)listBox1.SelectedItem).draw[((NUT.NUD_Texture)listBox2.SelectedItem).id];
+            int width = ((NUT.NUD_Texture)listBox2.SelectedItem).width;
+            int height = ((NUT.NUD_Texture)listBox2.SelectedItem).height; 
+
+            int texture = ((NUT)listBox1.SelectedItem).draw[((NUT.NUD_Texture)listBox2.SelectedItem).id];
             bool alphaOverride = renderAlpha && !renderR && !renderG && !renderB;
-            RenderTools.DrawTexturedQuad(rt, renderR, renderG, renderB, renderAlpha, alphaOverride);
+            RenderTools.DrawTexturedQuad(texture, width, height, renderR, renderG, renderB, renderAlpha, alphaOverride, preserveAspectRatio);
 
-            // aspect ratio of texture. needs to not scale to be too big (should only shrink)
-            int width = ((NUT.NUD_Texture)listBox2.SelectedItem).width; // texture width
-            int height = ((NUT.NUD_Texture)listBox2.SelectedItem).height; // texture height
-            int newWidth = glControl1.Width;
-            int newHeight = glControl1.Height;
-            float ratio = (float)height / (float)width;
-            //if (height > width)
-            //    ratio = (float)width / (float)height; // is this value being calculated correctly?
-            //else
-            //    ratio = (float)height / (float)width;
-
-            string test = "";
-            /*
-            // find longest side and shrink other side to preserve aspect ratio
-            if (preserveAspectRatio)
-            {   
-                if (glControl1.Width > glControl1.Height)
-                {
-                    ratio = (float)height / (float)width;
-                    newHeight = (int)(glControl1.Height * ratio);
-                    glControl1.Width = glControl1.Height;
-
-                }
-                else if (glControl1.Height > glControl1.Width)
-                {
-                    ratio = (float)width / (float)height;
-                    newWidth = (int)(glControl1.Width * ratio);
-                    glControl1.Height = glControl1.Width;
-                }
-            
-
-                test = "Width:" + glControl1.Width.ToString() + " Height:" + glControl1.Height.ToString();
-            }
-            else*/
-            if (preserveAspectRatio)
-            {
-                ratio = (float)height / (float)width;
-                glControl1.Height = (int)(glControl1.Width * ratio);
-            }
-                
-            else
-                glControl1.Height = glControl1.Width;
-
-
-            /*Debug.WriteLine(test);
-            string test2 = "New Width:" + newWidth.ToString() + "New Height:" + newHeight.ToString();
-            Debug.WriteLine(test2);*/
+            glControl1.Height = glControl1.Width;
 
             glControl1.SwapBuffers();
         }
@@ -371,7 +328,7 @@ namespace Smash_Forge
         private void ExportPNG(string fname, NUT.NUD_Texture tex)
         {
             if (tex.mipmaps.Count > 1)
-                MessageBox.Show("RGBA texture exported as PNG do no preserve mipmaps");
+                MessageBox.Show("RGBA texture exported as PNG do not preserve mipmaps");
 
             switch (tex.utype)
             {
@@ -413,8 +370,6 @@ namespace Smash_Forge
                 // weird solution to refresh the listbox item
                 listBox2.DisplayMember = "test";
                 listBox2.DisplayMember = "";
-
-                //listBox2.Refresh();
             }
         }
 
@@ -818,7 +773,8 @@ namespace Smash_Forge
                 renderChannelR.ForeColor = Color.Red;
             }
 
-            RenderTexture(); // Uniforms need to be udpated.
+            // Uniforms need to be udpated.
+            RenderTexture(); 
         }
 
         private void renderChannelG_Click(object sender, EventArgs e)
@@ -834,8 +790,8 @@ namespace Smash_Forge
                 renderChannelG.ForeColor = Color.Green;
             }
 
-
-            RenderTexture(); // Uniforms need to be udpated.
+            // Uniforms need to be udpated.
+            RenderTexture();
         }
 
         private void renderChannelB_Click_1(object sender, EventArgs e)
@@ -852,8 +808,8 @@ namespace Smash_Forge
                 renderChannelB.ForeColor = Color.Blue;
             }
 
-
-            RenderTexture(); // Uniforms need to be udpated.
+            // Uniforms need to be udpated.
+            RenderTexture(); 
         }
 
         private void renderChannelA_Click_1(object sender, EventArgs e)
@@ -870,7 +826,8 @@ namespace Smash_Forge
                 renderChannelA.ForeColor = Color.Black;
             }
 
-            RenderTexture(); // Uniforms need to be udpated.
+            // Uniforms need to be udpated.
+            RenderTexture(); 
         }
 
         private void aspectRatioCB_CheckedChanged(object sender, EventArgs e)
