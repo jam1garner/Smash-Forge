@@ -2362,23 +2362,17 @@ namespace Smash_Forge
         {
             if (e.KeyChar == 'i')
             {
-                //reloadShaderFromFile("MBN", File.ReadAllText("vert.txt"), File.ReadAllText("frag.txt"));
-                //reloadShaderFromFile("Texture", File.ReadAllText("vert.txt"), File.ReadAllText("frag.txt"));
+                // the shaders will always be present in the lib/Shader folder, so this is safe to do
+                // SMG's super secret developer tools
+                reloadShaderFromFile("MBN", File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_vs.txt"), 
+                    File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_fs.txt"));
+                reloadShaderFromFile("NUD", File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"),
+                    File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
+                reloadShaderFromFile("DAT", File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_vs.txt"),
+                    File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_fs.txt"));
+                reloadShaderFromFile("Texture", File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_vs.txt"),
+                    File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_fs.txt"));
             }
-            /*if (e.KeyChar == 'w')
-            {
-                int width = sw;
-                int height = sh;
-
-                byte[] pixels = new byte[width * height * 4];
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
-                GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
-                File.WriteAllBytes("shadowFB.bin", pixels);
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                GL.BindTexture(TextureTarget.Texture2D, depthmap);
-                GL.GetTexImage(TextureTarget.Texture2D,0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, pixels);
-                File.WriteAllBytes("shadowFB.bin", pixels);
-            }*/
 
             if (e.KeyChar == 'r')
             {
@@ -2481,18 +2475,11 @@ namespace Smash_Forge
 
         private void reloadShaderFromFile(string shaderName, string vertexFilePath, string fragmentFilePath)
         {
-            GL.DeleteProgram(Runtime.shaders["NUD"].programID);
-            shader = new Shader();
-            shader.vertexShader(File.ReadAllText("vert.txt"));
-            shader.fragmentShader(File.ReadAllText("frag.txt"));
-            Runtime.shaders["NUD"] = shader;
-            /*
             GL.DeleteProgram(Runtime.shaders[shaderName].programID);
             shader = new Shader();
-            shader.vertexShader(vertexFilePath);
-            shader.fragmentShader(fragmentFilePath);
-            Runtime.shaders[shaderName] = shader;*/
-
+            shader.vertexShader(File.ReadAllText(vertexFilePath));
+            shader.fragmentShader(File.ReadAllText(fragmentFilePath));
+            Runtime.shaders[shaderName] = shader;
         }
 
         System.Drawing.Point mouseDownPos = new System.Drawing.Point();
@@ -2511,19 +2498,6 @@ namespace Smash_Forge
 
             p1 = va.Xyz;
             p2 = p1 - (va - (va + vb)).Xyz * 100;
-
-            /*if(MainForm.Instance.boneTreePanel.treeView1.SelectedNode != null)
-            {
-                // check if a control was clicked
-                Bone b = (Bone)MainForm.Instance.boneTreePanel.treeView1.SelectedNode;
-
-                if(b.CheckControl(new Ray(p1, p2)) == 1)
-                {
-                    //Console.WriteLine("Selected");
-                    //freezeCamera = true;
-                    return;
-                }
-            }*/
 
             SortedList<double, Bone> selected = new SortedList<double, Bone>(new DuplicateKeyComparer<double>());
 
@@ -2646,13 +2620,13 @@ namespace Smash_Forge
         public void FPSCamera()
         {
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.A))
-                x += 0.2f;
+                width += 1.0f;
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.D))
-                x -= 0.2f;
+                width -= 1.0f;
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.W))
-                zoom += 0.2f;
+                zoom += 1.0f;
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.S))
-                zoom -= 0.2f;
+                zoom -= 1.0f;
 
             cameraYRotation += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
             cameraXRotation += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
@@ -2663,7 +2637,6 @@ namespace Smash_Forge
             mvpMatrix = Matrix4.CreateTranslation(width,-height,zoom) * Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
             modelMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
-            //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
 
         public Bitmap CaptureScreen(bool saveAlpha = false)
@@ -2673,7 +2646,7 @@ namespace Smash_Forge
 
             byte[] pixels = new byte[width * height * 4];
             GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
-            // Flip data becausee glReadPixels reads it in from bottom row to top row
+            // Flip data because glReadPixels reads it in from bottom row to top row
             byte[] fixedPixels = new byte[width * height * 4];
             for (int h = 0; h < height; h++)
                 for (int w = 0; w < width; w++)

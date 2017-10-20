@@ -103,9 +103,7 @@ namespace Smash_Forge
             Runtime.renderIndicators = false;
             Runtime.renderType = Runtime.RenderTypes.Shaded;
             Runtime.paramDir = "";
-            //Pichu.MakePichu();
-            //meshList.refresh();
-            //ReadChimeraLucas();
+
             viewportWindowToolStripMenuItem.Checked = true;
             openFiles();
 

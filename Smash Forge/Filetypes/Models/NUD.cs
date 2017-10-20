@@ -78,9 +78,6 @@ namespace Smash_Forge
                     p.PreRender();
                 }
             }
-            //Console.WriteLine("Center: " + param[0] + " " + param[1] + " " + param[2] + " " + param[3] + "\n" 
-            //    + (xmax-xmin) + " " + (ymax - ymin) + " " + (zmax - zmin) + "\n" + 
-            //    (max-min).ToString());
         }
 
         public void CalculateNewTangentBitangent()
@@ -166,22 +163,9 @@ namespace Smash_Forge
         {
             // create lists...
             // first draw opaque
-            // then sort transparent by distance to camera
-            // 
 
             List<Polygon> opaque = new List<Polygon>();
             List<Polygon> trans = new List<Polygon>();
-
-            /*SortedList<float, Mesh> transorder = new SortedList<float, Mesh>();
-          foreach(Mesh m in mesh)
-           {
-               // get nearest box point
-               float pos = Vector4.Transform(new Vector4(m.bbox[0], m.bbox[1], m.bbox[2], 1.0f), Matrix4.CreateTranslation(0,0,0)).Z;
-               if (!transorder.ContainsKey((pos+m.bbox[3])*-1))
-                   transorder.Add((pos + m.bbox[3])*-1, m);
-               else
-                   transorder.Add(((pos + m.bbox[3]) * -1) + 0.01f, m);
-           }*/
 
             foreach (Mesh m in mesh)
             {
@@ -189,7 +173,6 @@ namespace Smash_Forge
                 {
                     Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - pol];
 
-                    //int hash = p.materials[0].textures[0].hash;
                     if (p.materials.Count > 0)
                         if (p.materials[0].srcFactor != 0 || p.materials[0].dstFactor != 0)
                         {
@@ -197,14 +180,8 @@ namespace Smash_Forge
                             continue;
                         }
                     opaque.Add(p);
-                    //if (p.isTransparent)
-                    //    trans.Add(p);
-                    //else
-
                 }
             }
-
-            //GL.Enable(EnableCap.PrimitiveRestartFixedIndex);
 
             foreach (Polygon p in opaque)
                 if (p.Parent != null && ((Mesh)p.Parent).Checked)
@@ -262,12 +239,6 @@ namespace Smash_Forge
                 GL.Uniform1(shader.getAttribute("hasDummyRamp"), mat.useDummyRamp ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("hasColorGainOffset"), mat.useColorGainOffset ? 1 : 0);
                 GL.Uniform1(shader.getAttribute("useDiffuseBlend"), mat.useDiffuseBlend ? 1 : 0);
-
-                // specular params seems to override reflectionParams for specular
-                bool hasSpecularParams = false;
-                if (mat.anims.ContainsKey("NU_specularParams"))
-                    hasSpecularParams = true;
-                GL.Uniform1(shader.getAttribute("hasSpecParams"), hasSpecularParams ? 1 : 0);
 
                 GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
@@ -368,6 +339,7 @@ namespace Smash_Forge
                 HasMaterialPropertyShaderUniform(shader, mat, "NU_specularParams", "hasSpecularParams");
                 HasMaterialPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", "hasDualNormal");
 
+                // alpha blending
                 GL.Enable(EnableCap.Blend);
 
                 GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha,
@@ -394,6 +366,7 @@ namespace Smash_Forge
                         break;
                 }
 
+                // face culling
                 GL.Enable(EnableCap.CullFace);
                 GL.CullFace(CullFaceMode.Front);
                 switch (mat.cullMode)
@@ -427,10 +400,6 @@ namespace Smash_Forge
 
                 if (p.Checked)
                 {
-                    //(p.strip >> 4) == 4 ? PrimitiveType.Triangles : PrimitiveType.TriangleStrip
-                    //if (p.IsSelected || p.Parent.IsSelected)
-                    //    GL.Uniform4(shader.getAttribute("finalColorGain"), 0.5f, 0.5f, 1.5f, 1f);
-
                     if ((p.IsSelected || p.Parent.IsSelected) && drawSelection)
                     {
                         GL.Disable(EnableCap.DepthTest);
@@ -450,6 +419,7 @@ namespace Smash_Forge
                         GL.StencilFunc(StencilFunction.Notequal, 1, 0xFF);
                         GL.StencilMask(0x00);
 
+                        // use vertex color for model selection color?
                         GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.RenderTypes.VertColor);
                         GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
                         GL.LineWidth(2);
@@ -468,9 +438,10 @@ namespace Smash_Forge
 
                         if (Runtime.renderModelWireframe)
                         {
-                            GL.Uniform1(shader.getAttribute("renderType"), 2);
+                            // use vertex color for wireframe color
+                            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.RenderTypes.VertColor);
                             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
-                            GL.LineWidth(1f);
+                            GL.LineWidth(2.0f);
                             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
                             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
                             GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
@@ -500,9 +471,10 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute(uniformName), hasParam);
         }
 
-        // simple passthrough vertex render for shadow mapping
+        
         public void RenderShadow(Matrix4 lightMatrix, Matrix4 view, Matrix4 modelMatrix)
         {
+            // simple passthrough vertex render for shadow mapping
             Shader shader = Runtime.shaders["Shadow"];
 
             GL.UseProgram(shader.programID);
@@ -566,11 +538,9 @@ namespace Smash_Forge
             {
                 foreach (Polygon p in m.Nodes)
                 {
-                    //if (!p.Checked && !m.Checked) continue;
                     GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
                     GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
                     GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
-                    //GL.VertexAttribIPointer(shader.getAttribute("vBone"), 4, VertexAttribIntegerType.Int, dVertex.Size, IntPtr.Add(IntPtr.Zero, 72));
                     GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 72);
                     GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 88);
 
@@ -664,7 +634,6 @@ namespace Smash_Forge
                     GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 0.0f);
                     if(tex.mipDetail == 0x4 || tex.mipDetail == 0x6)
                         GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 4.0f);
-                    //GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName.triline), 4.0f);
                     break;
                 }
             }

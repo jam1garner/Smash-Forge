@@ -185,12 +185,6 @@ namespace Smash_Forge
 
         private void NUDMaterialEditor_Load(object sender, EventArgs e)
         {
-            /*// Create a timer with a two second interval.
-            System.Timers.Timer aTimer = new System.Timers.Timer((1f / 60) * 1000);
-            // Hook up the Elapsed event for the timer. 
-            aTimer.Elapsed += OnTimedEvent;
-            aTimer.AutoReset = true;
-            aTimer.Enabled = true;*/
         }
 
 
