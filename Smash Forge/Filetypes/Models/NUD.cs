@@ -15,6 +15,8 @@ namespace Smash_Forge
     {
         public NUD()
         {
+            Runtime.shaders["NUD"].shaderCompilationWarningMessage("NUD");
+
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out ibo_elements);
             GL.GenBuffers(1, out ubo_bones);

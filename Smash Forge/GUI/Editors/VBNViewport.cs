@@ -395,7 +395,6 @@ namespace Smash_Forge
 
             if (shader == null)
             {
-
                 // should vbn do this instead?
                 GL.GenBuffers(1, out ubo_bones);
                 GL.GenBuffers(1, out ubo_bonesIT);
@@ -1028,19 +1027,19 @@ namespace Smash_Forge
             {
                 if (m.bch != null)
                 {
-                    if (m.bch.mbn != null)
+                    if (m.bch.mbn != null && Runtime.shaders["MBN"].shadersCompiledSuccessfully())
                     {
                         m.bch.mbn.Render(mvpMatrix);
                        
                     }
                 }
 
-                if (m.dat_melee != null)
+                if (m.dat_melee != null && Runtime.shaders["DAT"].shadersCompiledSuccessfully())
                 {
                     m.dat_melee.Render(mvpMatrix);
                 }
 
-                if (m.nud != null)
+                if (m.nud != null && Runtime.shaders["NUD"].shadersCompiledSuccessfully())
                 {
                     GL.ActiveTexture(TextureUnit.Texture2);
                     GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex);

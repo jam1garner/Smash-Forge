@@ -15,6 +15,7 @@ using Microsoft.VisualBasic.Devices;
 using Smash_Forge.GUI.Menus;
 using Smash_Forge.GUI.Editors;
 using SALT.PARAMS;
+using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge
 {
@@ -129,7 +130,7 @@ namespace Smash_Forge
             nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
             nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
             Runtime.shaders.Add("NUD", nud);
-
+    
             Shader texture = new Shader();           
             texture.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_vs.txt"));
             texture.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_fs.txt"));

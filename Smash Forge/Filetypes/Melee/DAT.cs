@@ -70,6 +70,8 @@ namespace Smash_Forge
             GL.GenBuffers(1, out vbo_bone);
             GL.GenBuffers(1, out vbo_weight);
             GL.GenBuffers(1, out ibo_elements);
+
+            Runtime.shaders["DAT"].shaderCompilationWarningMessage("DAT");
         }
 
         ~DAT()
