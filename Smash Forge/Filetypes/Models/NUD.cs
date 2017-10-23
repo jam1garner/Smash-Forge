@@ -68,6 +68,12 @@ namespace Smash_Forge
             DiffuseMap = 0x00000001
         }
 
+        public enum DummyTextures
+        {
+            StageMapLow = 0x10101000,
+            StageMapHigh = 0x10102000,
+            DummyRamp =  0x10080000
+        }
 
         public void PreRender()
         {
@@ -129,7 +135,7 @@ namespace Smash_Forge
             {
 
                 GL.ActiveTexture(TextureUnit.Texture10);
-                GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex);
+                GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
                 GL.Uniform1(shader.getAttribute("cmap"), 10);
                 GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
 
@@ -217,129 +223,16 @@ namespace Smash_Forge
             //foreach (Material mat in p.materials)
             {
                 Material mat = p.materials[0];
-                //NSC
-                GL.Uniform3(shader.getAttribute("NSC"), Vector3.Zero);
-                /*if (p.Parent != null && p.Parent.Text.Contains("_NSC"))
-                {
-                    //GL.Uniform3(shader.getAttribute("NSC"), Vector3.Transform(Vector3.Zero, Runtime.ModelContainers[0].vbn.bones[((Mesh)p.Parent).singlebind].transform));
-                }else
-                {
-                    GL.Uniform3(shader.getAttribute("NSC"), Vector3.Zero);
-                }*/
 
                 GL.Uniform1(shader.getAttribute("flags"), mat.flags);
                 GL.Uniform1(shader.getAttribute("isTransparent"), p.isTransparent ? 1 : 0);
-
-                GL.Uniform1(shader.getAttribute("hasDif"), mat.diffuse ? 1 : 0);
-                GL.Uniform1(shader.getAttribute("hasDif2"), mat.diffuse2 ? 1 : 0);
-                GL.Uniform1(shader.getAttribute("hasDif3"), mat.diffuse3 ? 1 : 0);
-                GL.Uniform1(shader.getAttribute("hasStage"), mat.stagemap ? 1 : 0);
-                GL.Uniform1(shader.getAttribute("hasCube"), mat.cubemap ? 1 : 0);
-                GL.Uniform1(shader.getAttribute("hasAo"), mat.aomap ? 1 : 0);
-                GL.Uniform1(shader.getAttribute("hasNrm"), mat.normalmap ? 1 : 0);
-                GL.Uniform1(shader.getAttribute("hasRamp"), mat.ramp ? 1 : 0);
-                GL.Uniform1(shader.getAttribute("hasDummyRamp"), mat.useDummyRamp ? 1 : 0);
-                GL.Uniform1(shader.getAttribute("hasColorGainOffset"), mat.useColorGainOffset ? 1 : 0);
-                GL.Uniform1(shader.getAttribute("useDiffuseBlend"), mat.useDiffuseBlend ? 1 : 0);
-
-                GL.ActiveTexture(TextureUnit.Texture0);
-                GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
-
-                GL.ActiveTexture(TextureUnit.Texture10);
-                GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
-                GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
-
-                GL.Uniform1(shader.getAttribute("dif"), 0);
-                GL.Uniform1(shader.getAttribute("dif2"), 0);
-                GL.Uniform1(shader.getAttribute("normalMap"), 0);
-                GL.Uniform1(shader.getAttribute("cube"), 2);
-                GL.Uniform1(shader.getAttribute("stagecube"), 2);
-                GL.Uniform1(shader.getAttribute("spheremap"), 0);
-                GL.Uniform1(shader.getAttribute("ao"), 0);
-                GL.Uniform1(shader.getAttribute("ramp"), 0);
-
                 GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
 
-
-                int texid = 0;
-
-                if (mat.diffuse && texid < mat.textures.Count)
-                {
-                    int hash = mat.textures[texid].hash;
-                    if (mat.displayTexId != -1) hash = mat.displayTexId;
-                    GL.Uniform1(shader.getAttribute("dif"), BindTexture(mat.textures[texid], hash, texid));
-                    texid++;
-                }
-                if (mat.diffuse2 && texid < mat.textures.Count)
-                {
-                    GL.Uniform1(shader.getAttribute("dif2"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
-                }
-                if (mat.diffuse3 && texid < mat.textures.Count)
-                {
-                    GL.Uniform1(shader.getAttribute("dif3"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
-                }
-                if (mat.stagemap && texid < mat.textures.Count)
-                {
-                    GL.Uniform1(shader.getAttribute("stagecube"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
-                }
-                if (mat.cubemap && texid < mat.textures.Count)
-                {
-                    GL.Uniform1(shader.getAttribute("cube"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
-                }
-                if (mat.spheremap && texid < mat.textures.Count)
-                {
-                    GL.Uniform1(shader.getAttribute("spheremap"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
-                }
-                if (mat.aomap && texid < mat.textures.Count)
-                {
-                    GL.Uniform1(shader.getAttribute("ao"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
-                }
-                if (mat.normalmap && texid < mat.textures.Count)
-                {
-                    GL.Uniform1(shader.getAttribute("normalMap"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
-                }
-                if (mat.ramp && texid < mat.textures.Count)
-                {
-                    GL.Uniform1(shader.getAttribute("ramp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
-                }
-                if (mat.useDummyRamp && texid < mat.textures.Count)
-                {
-                    GL.Uniform1(shader.getAttribute("dummyRamp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
-                }
+                // pass all the textures from the model.NUT to shader (no cubemaps from NUT yet)
+                TextureUniforms(shader, mat);
 
                 // pass all researched material values to the shader for viewport rendering
-                MaterialPropertyShaderUniform(shader, mat, "NU_aoMinGain", "minGain", 0, 0, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_colorSamplerUV", "colorSamplerUV", 1, 1, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_colorSampler2UV", "colorSampler2UV", 1, 1, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_colorSampler3UV", "colorSampler3UV", 1, 1, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_colorGain", "colorGain", 1, 1, 1, 1);
-                MaterialPropertyShaderUniform(shader, mat, "NU_finalColorGain", "finalColorGain", 1, 1, 1, 1);
-                MaterialPropertyShaderUniform(shader, mat, "NU_colorOffset", "colorOffset", 0, 0, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_diffuseColor", "diffuseColor", 1, 1, 1, 0.5f);
-                MaterialPropertyShaderUniform(shader, mat, "NU_specularColor", "specularColor", 0, 0, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_specularColorGain", "specularColorGain", 1, 1, 1, 1);
-                MaterialPropertyShaderUniform(shader, mat, "NU_specularParams", "specularParams", 0, 0, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_fresnelColor", "fresnelColor", 0, 0, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_fresnelParams", "fresnelParams", 0, 0, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_reflectionColor", "reflectionColor", 0, 0, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_reflectionParams", "reflectionParams", 0, 0, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_fogColor", "fogColor", 0, 0, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_fogParams", "fogParams", 0, 1, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_normalParams", "normalParams", 1, 0, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_zOffset", "zOffset", 0, 0, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_effColorGain", "effColorGain", 1, 1, 1, 1);
-                MaterialPropertyShaderUniform(shader, mat, "NU_angleFadeParams", "angleFadeParams", 0, 0, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", "dualNormalScrollParams", 0, 0, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV", "normalSamplerAUV", 1, 1, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_alphaBlendParams", "alphaBlendParams", 0, 0, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_softLightingParams", "softLightingParams", 0, 0, 0, 0);
-                MaterialPropertyShaderUniform(shader, mat, "NU_customSoftLightParams", "customSoftLightParams", 0, 0, 0, 0);
-
-                // create some conditionals rather than using different shaders
-                HasMaterialPropertyShaderUniform(shader, mat, "NU_softLightingParams", "hasSoftLight");
-                HasMaterialPropertyShaderUniform(shader, mat, "NU_customSoftLightParams", "hasCustomSoftLight");
-                HasMaterialPropertyShaderUniform(shader, mat, "NU_specularParams", "hasSpecularParams");
-                HasMaterialPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", "hasDualNormal");
+                MaterialPropertyUniforms(shader, mat);
 
                 // alpha blending
                 GL.Enable(EnableCap.Blend);
@@ -393,7 +286,6 @@ namespace Smash_Forge
                 GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 48);
                 GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 56);
                 GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 72);
-                //GL.VertexAttribIPointer(shader.getAttribute("vBone"), 4, VertexAttribIntegerType.Int, dVertex.Size, IntPtr.Add(IntPtr.Zero, 72));
                 GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 88);
 
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
@@ -453,23 +345,144 @@ namespace Smash_Forge
             }
         }
 
-        private static void MaterialPropertyShaderUniform(Shader shader, Material mat, string propertyName, string uniformName,
-            float default1, float default2, float default3, float default4)
+        private static void MaterialPropertyUniforms(Shader shader, Material mat)
         {
-            float[] pa;
-            mat.entries.TryGetValue(propertyName, out pa);
-            if (mat.anims.ContainsKey(propertyName)) pa = mat.anims[propertyName];
-            if (pa == null) pa = new float[] { default1, default2, default3, default4 };
-            GL.Uniform4(shader.getAttribute(uniformName), pa[0], pa[1], pa[2], pa[3]);
+            // "NU_aoMinGain" becomes "aoMinGain"
+            MatPropertyShaderUniform(shader, mat, "NU_aoMinGain", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_colorSamplerUV", 1, 1, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_colorSampler2UV", 1, 1, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_colorSampler3UV", 1, 1, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_colorGain", 1, 1, 1, 1);
+            MatPropertyShaderUniform(shader, mat, "NU_finalColorGain", 1, 1, 1, 1);
+            MatPropertyShaderUniform(shader, mat, "NU_colorOffset", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_diffuseColor", 1, 1, 1, 0.5f);
+            MatPropertyShaderUniform(shader, mat, "NU_specularColor", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_specularColorGain", 1, 1, 1, 1);
+            MatPropertyShaderUniform(shader, mat, "NU_specularParams", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_fresnelColor", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_fresnelParams", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_reflectionColor", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_reflectionParams", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_fogColor", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_fogParams", 0, 1, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_normalParams", 1, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_zOffset", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_effColorGain", 1, 1, 1, 1);
+            MatPropertyShaderUniform(shader, mat, "NU_angleFadeParams", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV", 1, 1, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_alphaBlendParams", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_softLightingParams", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_customSoftLightParams", 0, 0, 0, 0);
+
+            // create some conditionals rather than using different shaders
+            HasMatPropertyShaderUniform(shader, mat, "NU_softLightingParams", "hasSoftLight");
+            HasMatPropertyShaderUniform(shader, mat, "NU_customSoftLightParams", "hasCustomSoftLight");
+            HasMatPropertyShaderUniform(shader, mat, "NU_specularParams", "hasSpecularParams");
+            HasMatPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", "hasDualNormal");
         }
 
-        private static void HasMaterialPropertyShaderUniform(Shader shader, Material mat, string propertyName, string uniformName)
+        private static void TextureUniforms(Shader shader, Material mat)
         {
-            float[] pa;
-            mat.entries.TryGetValue(propertyName, out pa);
-            if (mat.anims.ContainsKey(propertyName)) pa = mat.anims[propertyName];
+            GL.Uniform1(shader.getAttribute("hasDif"), mat.diffuse ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("hasDif2"), mat.diffuse2 ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("hasDif3"), mat.diffuse3 ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("hasStage"), mat.stagemap ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("hasCube"), mat.cubemap ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("hasAo"), mat.aomap ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("hasNrm"), mat.normalmap ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("hasRamp"), mat.ramp ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("hasDummyRamp"), mat.useDummyRamp ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("hasColorGainOffset"), mat.useColorGainOffset ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("useDiffuseBlend"), mat.useDiffuseBlend ? 1 : 0);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
+
+            GL.ActiveTexture(TextureUnit.Texture10);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
+            GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
+
+            GL.Uniform1(shader.getAttribute("dif"), 0);
+            GL.Uniform1(shader.getAttribute("dif2"), 0);
+            GL.Uniform1(shader.getAttribute("normalMap"), 0);
+            GL.Uniform1(shader.getAttribute("cube"), 2);
+            GL.Uniform1(shader.getAttribute("stagecube"), 2);
+            GL.Uniform1(shader.getAttribute("spheremap"), 0);
+            GL.Uniform1(shader.getAttribute("ao"), 0);
+            GL.Uniform1(shader.getAttribute("ramp"), 0);
+
+            int texid = 0;
+
+            if (mat.diffuse && texid < mat.textures.Count)
+            {
+                int hash = mat.textures[texid].hash;
+                if (mat.displayTexId != -1) hash = mat.displayTexId;
+                GL.Uniform1(shader.getAttribute("dif"), BindTexture(mat.textures[texid], hash, texid));
+                texid++;
+            }
+            if (mat.diffuse2 && texid < mat.textures.Count)
+            {
+                GL.Uniform1(shader.getAttribute("dif2"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+            }
+            if (mat.diffuse3 && texid < mat.textures.Count)
+            {
+                GL.Uniform1(shader.getAttribute("dif3"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+            }
+            if (mat.stagemap && texid < mat.textures.Count)
+            {
+                GL.Uniform1(shader.getAttribute("stagecube"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+            }
+            if (mat.cubemap && texid < mat.textures.Count)
+            {
+                GL.Uniform1(shader.getAttribute("cube"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+            }
+            if (mat.spheremap && texid < mat.textures.Count)
+            {
+                GL.Uniform1(shader.getAttribute("spheremap"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+            }
+            if (mat.aomap && texid < mat.textures.Count)
+            {
+                GL.Uniform1(shader.getAttribute("ao"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+            }
+            if (mat.normalmap && texid < mat.textures.Count)
+            {
+                GL.Uniform1(shader.getAttribute("normalMap"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+            }
+            if (mat.ramp && texid < mat.textures.Count)
+            {
+                GL.Uniform1(shader.getAttribute("ramp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+            }
+            if (mat.useDummyRamp && texid < mat.textures.Count)
+            {
+                GL.Uniform1(shader.getAttribute("dummyRamp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+            }
+        }
+
+        private static void MatPropertyShaderUniform(Shader shader, Material mat, string propertyName, float default1,
+            float default2, float default3, float default4)
+        {
+            float[] values;
+            mat.entries.TryGetValue(propertyName, out values);
+            if (mat.anims.ContainsKey(propertyName))
+                values = mat.anims[propertyName];
+            if (values == null)
+                values = new float[] { default1, default2, default3, default4 };
+            string uniformName = propertyName.Substring(3); // remove the NU_ from name
+            GL.Uniform4(shader.getAttribute(uniformName), values[0], values[1], values[2], values[3]);
+        }
+        
+        private static void HasMatPropertyShaderUniform(Shader shader, Material mat, string propertyName, string uniformName)
+        {
+            float[] values;
+            mat.entries.TryGetValue(propertyName, out values);
+            if (mat.anims.ContainsKey(propertyName))
+                values = mat.anims[propertyName];
+
             int hasParam = 1;
-            if (pa == null) hasParam = 0;
+            if (values == null)
+                hasParam = 0;
+
             GL.Uniform1(shader.getAttribute(uniformName), hasParam);
         }
 
@@ -602,14 +615,18 @@ namespace Smash_Forge
             if (hash == 0x10101000)
             {
                 GL.ActiveTexture(TextureUnit.Texture20 + loc);
-                GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex2);
+                GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapLow);
+                Debug.WriteLine("low:" + TextureUnit.Texture20 + loc);
                 return 20 + loc;
+
             }
             if (hash == 0x10102000)
             {
                 GL.ActiveTexture(TextureUnit.Texture20 + loc);
-                GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex);
+                GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
+                Debug.WriteLine("high:" + TextureUnit.Texture20 + loc);
                 return 20 + loc;
+
             }
             if (hash == 0x10080000)
             {

@@ -147,6 +147,8 @@ namespace Smash_Forge
             Init();
             FillForm();
             comboBox1.SelectedIndex = 0;
+
+            Runtime.shaders["Texture"].shaderCompilationWarningMessage("Texture");
         }
 
         public void InitPropList()

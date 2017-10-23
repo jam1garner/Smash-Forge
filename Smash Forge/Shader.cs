@@ -161,18 +161,23 @@ namespace Smash_Forge
             int compileStatusVS;
             GL.GetShader(vsID, ShaderParameter.CompileStatus, out compileStatusVS);
             if (compileStatusVS == 0)
+            {
                 MessageBox.Show("The " + shaderName
                       + " vertex shader failed to compile. Check that your system supports OpenGL and GLSL 3.30." +
                       " Please export a shader error log and " +
-                      "upload it when reporting rendering issues.");
+                      "upload it when reporting rendering issues.", "Shader Compilation Error");
+            }
 
             int compileStatusFS;
             GL.GetShader(fsID, ShaderParameter.CompileStatus, out compileStatusFS);
             if (compileStatusFS == 0)
-                MessageBox.Show("The " + shaderName 
-                    + " fragment shader failed to compile. Check that your system supports OpenGL and GLSL 3.30." +
-                    " Please export a shader error log and " +
-                    "upload it when reporting rendering issues.");
+            {
+                MessageBox.Show("The " + shaderName
+              + " fragment shader failed to compile. Check that your system supports OpenGL and GLSL 3.30." +
+              " Please export a shader error log and " +
+              "upload it when reporting rendering issues.", "Shader Compilation Error");
+            }
+          
         }
 	}
 }

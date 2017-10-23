@@ -868,8 +868,8 @@ namespace Smash_Forge
             }
   
             shader = Runtime.shaders["NUD"];
-            
             GL.UseProgram(shader.programID);
+
             int renderType = (int)Runtime.renderType;
             GL.Uniform1(shader.getAttribute("renderType"), renderType);
 
@@ -1042,11 +1042,10 @@ namespace Smash_Forge
                 if (m.nud != null && Runtime.shaders["NUD"].shadersCompiledSuccessfully())
                 {
                     GL.ActiveTexture(TextureUnit.Texture2);
-                    GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex);
+                    GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
                     GL.Uniform1(shader.getAttribute("cmap"), 2);
                     GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
                    
-
                     GL.ActiveTexture(TextureUnit.Texture11);
                     GL.BindTexture(TextureTarget.Texture2D, depthmap);
                     GL.Uniform1(shader.getAttribute("shadowMap"), 11);
@@ -2363,15 +2362,17 @@ namespace Smash_Forge
             {
                 // the shaders will always be present in the lib/Shader folder, so this is safe to do
                 // SMG's super secret developer tools
-                reloadShaderFromFile("MBN", File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_vs.txt"), 
+                /*reloadShaderFromFile("MBN", File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_vs.txt"), 
                     File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_fs.txt"));
                 reloadShaderFromFile("NUD", File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"),
                     File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
                 reloadShaderFromFile("DAT", File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_vs.txt"),
                     File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_fs.txt"));
                 reloadShaderFromFile("Texture", File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_vs.txt"),
-                    File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_fs.txt"));
+                    File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_fs.txt"));*/
+
             }
+
 
             if (e.KeyChar == 'r')
             {

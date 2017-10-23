@@ -45,6 +45,8 @@ namespace Smash_Forge
             fw.EnableRaisingEvents = false;
             fw.Changed += new FileSystemEventHandler(OnChanged);
             fw.Filter = "";
+
+            Runtime.shaders["Texture"].shaderCompilationWarningMessage("Texture");
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)

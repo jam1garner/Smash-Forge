@@ -213,7 +213,7 @@ namespace Smash_Forge
     public class RenderTools
     {
         public static int defaultTex = -1, floorTexture;
-        public static int cubeTex, cubeTex2;
+        public static int cubeMapHigh, cubeMapLow;
         public static int defaultRamp;
         public static int UVTestPattern;
 
@@ -221,14 +221,14 @@ namespace Smash_Forge
 
         public static void Setup()
         {
-            cubeTex2 = LoadCubeMap(Smash_Forge.Properties.Resources._10101000);
+            cubeMapHigh = LoadCubeMap(Smash_Forge.Properties.Resources._10102000, TextureUnit.Texture12);
+            cubeMapLow = LoadCubeMap(Smash_Forge.Properties.Resources._10101000, TextureUnit.Texture13);
             defaultRamp = NUT.loadImage(Smash_Forge.Properties.Resources._10080000);
             UVTestPattern = NUT.loadImage(Smash_Forge.Properties.Resources.UVPattern);
 
-            if (defaultTex == -1)
-            cubeTex = LoadCubeMap(Smash_Forge.Properties.Resources.cubemap);
+
             if(defaultTex == -1)
-            defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
+                defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
          
             GL.GenBuffers(1, out cubeVAO);
             GL.GenBuffers(1, out cubeVBO);
@@ -1911,12 +1911,12 @@ namespace Smash_Forge
         #endregion
 
         #region Other
-        public static int LoadCubeMap(Bitmap b)
+        public static int LoadCubeMap(Bitmap b, TextureUnit textureUnit)
         {
             int id;
             GL.GenBuffers(1, out id);
 
-            GL.ActiveTexture(0);
+            GL.ActiveTexture(textureUnit);
             
             GL.BindTexture(TextureTarget.TextureCubeMap, id);
 
@@ -2007,7 +2007,7 @@ void main()
             GL.UniformMatrix3(shader.getAttribute("view"), false, ref v);
 
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex);
+            GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
             GL.Uniform1(shader.getAttribute("skycube"), 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, cubeVBO);

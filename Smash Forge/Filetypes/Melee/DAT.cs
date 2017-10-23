@@ -62,6 +62,7 @@ namespace Smash_Forge
 
         public DAT()
         {
+            
             GL.GenBuffers(1, out ubo_bones);
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out vbo_color);
@@ -225,7 +226,7 @@ namespace Smash_Forge
 
         Dictionary<int, TextureWrapMode> GX_TEXTUREWRAP = new Dictionary<int, TextureWrapMode>()
         {
-            { 0, TextureWrapMode.Clamp},
+            { 0, TextureWrapMode.ClampToEdge},
             { 1, TextureWrapMode.Repeat},
             { 2, TextureWrapMode.MirroredRepeat}
         };
@@ -358,7 +359,8 @@ namespace Smash_Forge
 
             facedata = face.ToArray();
 
-            SetupShader();
+            if (Runtime.shaders["DAT"].shadersCompiledSuccessfully())
+                SetupShader();
         }
 
         private void SetupShader()
@@ -372,7 +374,7 @@ namespace Smash_Forge
                 shader = new Shader();
                 shader = Runtime.shaders["DAT"];
             }
-
+            
             GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
             GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
