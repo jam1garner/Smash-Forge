@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.glControl1 = new OpenTK.GLControl();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.listBox2 = new System.Windows.Forms.ListBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -61,23 +60,12 @@
             this.renderChannelA = new System.Windows.Forms.Button();
             this.renderChannelR = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.aspectRatioCB = new System.Windows.Forms.CheckBox();
+            this.glControl1 = new OpenTK.GLControl();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // glControl1
-            // 
-            this.glControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.glControl1.AutoSize = true;
-            this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(196, 24);
-            this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(367, 367);
-            this.glControl1.TabIndex = 0;
-            this.glControl1.VSync = false;
             // 
             // listBox1
             // 
@@ -293,9 +281,9 @@
             this.label1.Location = new System.Drawing.Point(2, 0);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(46, 13);
+            this.label1.Size = new System.Drawing.Size(57, 13);
             this.label1.TabIndex = 4;
-            this.label1.Text = "Hash ID";
+            this.label1.Text = "Texture ID";
             // 
             // textBox1
             // 
@@ -386,6 +374,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.aspectRatioCB);
             this.groupBox1.Controls.Add(this.renderChannelR);
             this.groupBox1.Controls.Add(this.renderChannelA);
             this.groupBox1.Controls.Add(this.renderChannelG);
@@ -399,6 +388,30 @@
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Texture Settings";
+            // 
+            // aspectRatioCB
+            // 
+            this.aspectRatioCB.AutoSize = true;
+            this.aspectRatioCB.Location = new System.Drawing.Point(10, 102);
+            this.aspectRatioCB.Name = "aspectRatioCB";
+            this.aspectRatioCB.Size = new System.Drawing.Size(132, 17);
+            this.aspectRatioCB.TabIndex = 21;
+            this.aspectRatioCB.Text = "Preserve Aspect Ratio";
+            this.aspectRatioCB.UseVisualStyleBackColor = true;
+            this.aspectRatioCB.CheckedChanged += new System.EventHandler(this.aspectRatioCB_CheckedChanged);
+            // 
+            // glControl1
+            // 
+            this.glControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.glControl1.AutoSize = true;
+            this.glControl1.BackColor = System.Drawing.Color.Black;
+            this.glControl1.Location = new System.Drawing.Point(196, 22);
+            this.glControl1.Name = "glControl1";
+            this.glControl1.Size = new System.Drawing.Size(368, 368);
+            this.glControl1.TabIndex = 0;
+            this.glControl1.VSync = false;
             // 
             // NUTEditor
             // 
@@ -428,8 +441,6 @@
         }
 
         #endregion
-
-        private OpenTK.GLControl glControl1;
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.ListBox listBox2;
         private System.Windows.Forms.MenuStrip menuStrip1;
@@ -462,5 +473,7 @@
         private System.Windows.Forms.Button renderChannelA;
         private System.Windows.Forms.Button renderChannelR;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.CheckBox aspectRatioCB;
+        private OpenTK.GLControl glControl1;
     }
 }

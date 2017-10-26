@@ -29,6 +29,7 @@ namespace Smash_Forge
         private bool renderG = true;
         private bool renderB = true;
         private bool renderAlpha = true;
+        private bool preserveAspectRatio = false;
 
 
         public NUTEditor()
@@ -131,21 +132,58 @@ namespace Smash_Forge
 
             if (listBox1.SelectedItem == null || listBox2.SelectedItem == null)
                 return;
-            float h = 1f;
-            int rt = ((NUT)listBox1.SelectedItem).draw[((NUT.NUD_Texture)listBox2.SelectedItem).id];
-            float texureRatioW = (float)((NUT.NUD_Texture)listBox2.SelectedItem).width / (float)((NUT.NUD_Texture)listBox2.SelectedItem).height;
-            float widthPre = texureRatioW * glControl1.Height;
-            float w = glControl1.Width / widthPre;
-            if (texureRatioW > glControl1.AspectRatio)
-            {
-                w = 1f;
-                float texureRatioH = (float)((NUT.NUD_Texture)listBox2.SelectedItem).height / (float)((NUT.NUD_Texture)listBox2.SelectedItem).width;
-                float HeightPre = texureRatioH * glControl1.Width;
-                h = glControl1.Height / HeightPre;
-            }
 
+            int rt = ((NUT)listBox1.SelectedItem).draw[((NUT.NUD_Texture)listBox2.SelectedItem).id];
             bool alphaOverride = renderAlpha && !renderR && !renderG && !renderB;
             RenderTools.DrawTexturedQuad(rt, renderR, renderG, renderB, renderAlpha, alphaOverride);
+
+            // aspect ratio of texture. needs to not scale to be too big (should only shrink)
+            int width = ((NUT.NUD_Texture)listBox2.SelectedItem).width; // texture width
+            int height = ((NUT.NUD_Texture)listBox2.SelectedItem).height; // texture height
+            int newWidth = glControl1.Width;
+            int newHeight = glControl1.Height;
+            float ratio = (float)height / (float)width;
+            //if (height > width)
+            //    ratio = (float)width / (float)height; // is this value being calculated correctly?
+            //else
+            //    ratio = (float)height / (float)width;
+
+            string test = "";
+            /*
+            // find longest side and shrink other side to preserve aspect ratio
+            if (preserveAspectRatio)
+            {   
+                if (glControl1.Width > glControl1.Height)
+                {
+                    ratio = (float)height / (float)width;
+                    newHeight = (int)(glControl1.Height * ratio);
+                    glControl1.Width = glControl1.Height;
+
+                }
+                else if (glControl1.Height > glControl1.Width)
+                {
+                    ratio = (float)width / (float)height;
+                    newWidth = (int)(glControl1.Width * ratio);
+                    glControl1.Height = glControl1.Width;
+                }
+            
+
+                test = "Width:" + glControl1.Width.ToString() + " Height:" + glControl1.Height.ToString();
+            }
+            else*/
+            if (preserveAspectRatio)
+            {
+                ratio = (float)height / (float)width;
+                glControl1.Height = (int)(glControl1.Width * ratio);
+            }
+                
+            else
+                glControl1.Height = glControl1.Width;
+
+
+            /*Debug.WriteLine(test);
+            string test2 = "New Width:" + newWidth.ToString() + "New Height:" + newHeight.ToString();
+            Debug.WriteLine(test2);*/
 
             glControl1.SwapBuffers();
         }
@@ -382,8 +420,6 @@ namespace Smash_Forge
 
         private void NUTEditor_Resize(object sender, EventArgs e)
         {
-
-            glControl1.Width = glControl1.Height;
 
             RenderTexture();
             
@@ -835,6 +871,12 @@ namespace Smash_Forge
             }
 
             RenderTexture(); // Uniforms need to be udpated.
+        }
+
+        private void aspectRatioCB_CheckedChanged(object sender, EventArgs e)
+        {
+            preserveAspectRatio = aspectRatioCB.Checked;
+            RenderTexture();
         }
     }
 }

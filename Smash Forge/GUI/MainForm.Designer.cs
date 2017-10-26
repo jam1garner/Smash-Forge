@@ -190,7 +190,7 @@
             // 
             this.exportErrorLogToolStripMenuItem.Name = "exportErrorLogToolStripMenuItem";
             this.exportErrorLogToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.exportErrorLogToolStripMenuItem.Text = "Export ErrorLog";
+            this.exportErrorLogToolStripMenuItem.Text = "Export Shader Error Logs";
             this.exportErrorLogToolStripMenuItem.Click += new System.EventHandler(this.exportErrorLogToolStripMenuItem_Click);
             // 
             // exportModelToolStripMenuItem

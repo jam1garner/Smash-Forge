@@ -1,10 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Drawing;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing.Imaging;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace Smash_Forge
 {
@@ -81,6 +83,132 @@ namespace Smash_Forge
             return RenderTools.CheckSphereHit(sphere, rad, p1, p2,  out closest);
         }
     }
+
+    public class DirectionalLight
+    {
+        public float R = 1.0f;
+        public float G = 1.0f;
+        public float B = 1.0f;
+        public float rotX = 0.0f; // in degrees (converted to radians)
+        public float rotY = 0.0f; // in degrees (converted to radians)
+        public float rotZ = 0.0f; // in degrees (converted to radians)
+        public Vector3 direction = new Vector3(0f, 0f, 1f);
+
+        public DirectionalLight(float H, float S, float V, float rotX, float rot, float rotZ)
+        {
+            // calculate light color
+            RenderTools.HSV2RGB(H, S, V, out R, out G, out B);
+
+            // calculate light vector
+            Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, rotX * ((float)Math.PI / 180f))
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, rotY * ((float)Math.PI / 180f))
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, rotZ * ((float)Math.PI / 180f));
+
+            direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
+        }
+
+        public DirectionalLight(float H, float S, float V, Vector3 lightDirection)
+        {
+            // calculate light color
+            RenderTools.HSV2RGB(H, S, V, out R, out G, out B);
+
+            // calculate light vector
+            direction = lightDirection;
+        }
+
+        public DirectionalLight()
+        {
+
+        }
+
+        public void setDirectionFromXYZAngles(float rotX, float rotY, float rotZ)
+        {
+            // calculate light vector from 3 rotation angles
+            Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, rotX * ((float)Math.PI / 180f))
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, rotY * ((float)Math.PI / 180f))
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, rotZ * ((float)Math.PI / 180f));
+
+            direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
+        }
+
+        public void setColorFromHSV(float H, float S, float V)
+        {
+            RenderTools.HSV2RGB(H, S, V, out R, out G, out B);
+        }
+
+    }
+
+    public class AreaLight
+    {
+        // not sure how this should work exactly
+        public string ID = "";
+    
+        // ambient color
+        public float groundR = 1.0f;
+        public float groundG = 1.0f;
+        public float groundB = 1.0f;
+
+        // diffuse color
+        public float skyR = 1.0f;
+        public float skyG = 1.0f;
+        public float skyB = 1.0f;
+        
+        // size
+        public float scaleX = 1.0f;
+        public float scaleY = 1.0f;
+        public float scaleZ = 1.0f;
+
+        // position of the center of the region
+        public float positionX = 0.0f;
+        public float positionY = 0.0f;
+        public float positionZ = 0.0f;
+
+        // XYZ angles
+        // How should "non directional" area lights work?
+        public float rotX = 0.0f; // in degrees (converted to radians)
+        public float rotY = 0.0f; // in degrees (converted to radians)
+        public float rotZ = 0.0f; // in degrees (converted to radians)
+        public Vector3 direction = new Vector3(0f, 0f, 1f);
+
+        public bool noDirectional = false;
+        public bool renderBoundingBox = true;
+
+        public AreaLight(string areaLightID)
+        {
+            ID = areaLightID;
+        }
+
+        public AreaLight(string areaLightID, Vector3 groundColor, Vector3 skyColor, Vector3 position, Vector3 scale, Vector3 direction)
+        {
+            ID = areaLightID;
+            groundR = groundColor.X;
+            groundG = groundColor.Y;
+            groundB = groundColor.Z;
+
+            skyR = skyColor.X;
+            skyG = skyColor.Y;
+            skyB = skyColor.Z;
+        }
+
+        public AreaLight(string areaLightID, Vector3 groundColor, Vector3 skyColor, Vector3 position, Vector3 scale, float rotX, float rotY, float rotZ)
+        {
+            ID = areaLightID;
+        }
+
+        public void setDirectionFromXYZAngles(float rotX, float rotY, float rotZ)
+        {
+            // calculate light vector from 3 rotation angles
+            Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, rotX * ((float)Math.PI / 180f))
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, rotY * ((float)Math.PI / 180f))
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, rotZ * ((float)Math.PI / 180f));
+
+            direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
+        }
+
+
+
+    }
+
 
     public class RenderTools
     {
@@ -911,6 +1039,10 @@ namespace Smash_Forge
 
             GL.UseProgram(0);
 
+            // objects shouldn't show through opaque parts of floor
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal);
+
             GL.Color3(Runtime.floorColor);
             GL.LineWidth(1f);
 
@@ -1100,6 +1232,63 @@ namespace Smash_Forge
             GL.End();
         }
 
+        public static void drawPyramid(Vector3 center, float scale)
+        {
+            GL.Begin(PrimitiveType.Quads);
+
+            GL.Vertex3(center.X - scale, center.Y, 0);
+            GL.Vertex3(center.X, center.Y - scale, 0);
+            GL.Vertex3(center.X + scale, center.Y, 0);
+            GL.Vertex3(center.X, center.Y - scale, 0);
+
+            GL.Vertex3(center.X, center.Y, -scale);
+            GL.Vertex3(center.X, center.Y - scale, 0);
+            GL.Vertex3(center.X, center.Y, scale);
+            GL.Vertex3(center.X, center.Y - scale, 0);
+
+            GL.Vertex3(center.X, center.Y, -scale);
+            GL.Vertex3(center.X + scale, center.Y, 0);
+            GL.Vertex3(center.X, center.Y, -scale);
+            GL.Vertex3(center.X - scale, center.Y, 0);
+
+            GL.Vertex3(center.X, center.Y, scale);
+            GL.Vertex3(center.X + scale, center.Y, 0);
+            GL.Vertex3(center.X, center.Y, scale);
+            GL.Vertex3(center.X - scale, center.Y, 0);
+
+            GL.End();
+        }
+
+        public static void drawPyramidWireframe(Vector3 center, float scale, float lineWidth)
+        {
+            //GL.Color4(Color.FromArgb(200, Color.Black));
+            GL.LineWidth(lineWidth);
+            GL.Begin(PrimitiveType.Lines);
+
+            GL.Vertex3(center.X - scale, center.Y, 0);
+            GL.Vertex3(center.X, center.Y - scale, 0);
+            GL.Vertex3(center.X + scale, center.Y, 0);
+            GL.Vertex3(center.X, center.Y - scale, 0);
+
+            GL.Vertex3(center.X, center.Y, -scale);
+            GL.Vertex3(center.X, center.Y - scale, 0);
+            GL.Vertex3(center.X, center.Y, scale);
+            GL.Vertex3(center.X, center.Y - scale, 0);
+
+            GL.Vertex3(center.X, center.Y, -scale);
+            GL.Vertex3(center.X + scale, center.Y, 0);
+            GL.Vertex3(center.X, center.Y, -scale);
+            GL.Vertex3(center.X - scale, center.Y, 0);
+
+            GL.Vertex3(center.X, center.Y, scale);
+            GL.Vertex3(center.X + scale, center.Y, 0);
+            GL.Vertex3(center.X, center.Y, scale);
+            GL.Vertex3(center.X - scale, center.Y, 0);
+
+            GL.End();
+        }
+
+
         public static void drawCube(Vector3 center, float size)
         {
             GL.Begin(PrimitiveType.Quads);
@@ -1134,8 +1323,10 @@ namespace Smash_Forge
             GL.Vertex3(center.X + size, center.Y - size, center.Z - size);
             GL.End();
         }
+
         public static void drawCubeWireframe(Vector3 center, float size)
         {
+            GL.Color3(Color.Red);
             GL.Begin(PrimitiveType.LineLoop);
             GL.Vertex3(center.X + size, center.Y + size, center.Z - size);
             GL.Vertex3(center.X - size, center.Y + size, center.Z - size);
@@ -1178,9 +1369,89 @@ namespace Smash_Forge
             GL.End();
         }
 
+        public static void drawRectangularPrism(Vector3 center, float sizeX, float sizeY, float sizeZ)
+        {
+            GL.Begin(PrimitiveType.Quads);
+            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z + sizeZ);
+
+            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z - sizeZ);
+
+            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z + sizeZ);
+
+            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z - sizeZ);
+
+            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z + sizeZ);
+
+            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z - sizeZ);
+            GL.End();
+        }
+
+        public static void drawRectangularPrismWireframe(Vector3 center, float sizeX, float sizeY, float sizeZ)
+        {
+            //GL.Color3(Color.Black);
+            GL.LineWidth(2);
+            GL.Begin(PrimitiveType.LineLoop);
+            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z + sizeZ);
+                                                    
+            GL.Begin(PrimitiveType.LineLoop);       
+            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z - sizeZ);
+            GL.End();                             
+       
+            GL.Begin(PrimitiveType.LineLoop);       
+            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z + sizeZ);
+            GL.End();
+            
+            GL.Begin(PrimitiveType.LineLoop);       
+            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z - sizeZ);
+            GL.End();
+
+            GL.Begin(PrimitiveType.LineLoop);
+            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z + sizeZ);
+            GL.End();
+
+            GL.Begin(PrimitiveType.LineLoop);
+            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z - sizeZ);
+            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z + sizeZ);
+            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z - sizeZ);
+            GL.End();
+        }
         #endregion
 
-        
+
         public static void drawCircle(Vector3 pos, float r, int smooth)
         {
             float t = 2 * (float)Math.PI / smooth;
@@ -1295,7 +1566,7 @@ namespace Smash_Forge
 
         public static void DrawVBN(VBN vbn)
         {
-            if (vbn != null && Runtime.renderBones)
+            if (vbn != null)
             {
                 Bone selectedBone = null;
                 foreach (Bone bone in vbn.bones)
@@ -1349,24 +1620,28 @@ namespace Smash_Forge
             }
         }
 
-        public static void DrawTexturedQuad(int texture, bool renderR, bool renderG, bool renderB, bool renderAlpha, bool alphaOverride) // draw RGB or alpha channel of texture to screen quad
+        public static void DrawTexturedQuad(int texture, bool renderR, bool renderG, bool renderB, bool renderAlpha, bool alphaOverride)             
         {
+            // draw RGB and alpha channels of texture to screen quad
+
             Shader shader = Runtime.shaders["Texture"];
             GL.UseProgram(shader.programID);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, texture);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.Uniform1(shader.getAttribute("texture"), 0);
+            GL.Uniform1(shader.getAttribute("image"), 0);
 
             GL.Uniform1(shader.getAttribute("renderR"), renderR ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderG"), renderG ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderB"), renderB ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderAlpha"), renderAlpha ? 1 : 0);
             GL.Uniform1(shader.getAttribute("alphaOverride"), alphaOverride ? 1 : 0);
+
+
 
             GL.Disable(EnableCap.DepthTest);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // draw full screen "quad" (big triangle)
@@ -1448,10 +1723,153 @@ namespace Smash_Forge
 
         }
 
+        public static void RGB2HSV(float R, float G, float B, out float h, out float s, out float v) // need to check weird values for errors
+        {
+            h = 360.0f;
+            s = 1.0f;
+            v = 1.0f;
+
+            float cMax = Math.Max(Math.Max(R, G), B);
+            float cMin = Math.Min(Math.Min(R, G), B);
+            float delta = cMax - cMin;
+
+            v = cMax;
+
+            if (delta == 0)
+                h = 0;
+
+            if (v == 0)
+                s = 0.0f;
+            else
+                s = delta / v;
+
+            if (R == cMax)
+                h = 60.0f * (((G - B) / delta));
+
+            else if (G == cMax)
+                h = 60.0f * (((B - R) / delta) + 2);
+
+            else if (B == cMax)
+                h = 60.0f * (((R - G) / delta) + 4);
+
+            while (h < 0.0f)
+                h += 360.0f;
+
+        }
+
+        public static void ColorTemp2RGB(float temp, out float R, out float G, out float B)
+        {
+            // adapted from a cool algorithm by Tanner Helland
+            // http://www.tannerhelland.com/4435/convert-temperature-rgb-algorithm-code/ 
+
+            R = 1.0f;
+            G = 1.0f;
+            B = 1.0f;
+
+            // use doubles for calculations and convert to float at the end
+            // no need for double precision floating point colors on GPU
+            double Red = 255.0;
+            double Green = 255.0;
+            double Blue = 255.0;
+
+            temp = temp / 100.0f;
+
+            // Red calculations
+            if (temp <= 66.0f)
+                Red = 255.0f;
+            else
+            {
+                Red = temp - 60.0;
+                Red = 329.698727446 * Math.Pow(Red, -0.1332047592);
+                if (Red < 0.0)
+                    Red = 0.0;
+                if (Red > 255.0)
+                    Red = 255.0;
+            }
+
+            // Green calculations
+            if (temp <= 66.0)
+            {
+                Green = temp;
+                Green = 99.4708025861 * Math.Log(Green) - 161.1195681661;
+                if (Green < 0.0)
+                    Green = 0.0;
+                if (Green > 255.0)
+                    Green = 255.0;
+            }
+            else
+            {
+                Green = temp - 60.0;
+                Green = 288.1221695283 * Math.Pow(Green, -0.0755148492);
+                if (Green < 0)
+                    Green = 0;
+                if (Green > 255)
+                    Green = 255;
+            }
+                
+            // Blue calculations
+            if (temp >= 66.0)
+                Blue = 255.0;
+            else if (temp <= 19.0)
+                Blue = 0.0;
+            else
+            {
+                Blue = temp - 10;
+                Blue = 138.5177312231 * Math.Log(Blue) - 305.0447927307;
+                if (Blue < 0.0)
+                    Blue = 0.0;
+                if (Blue > 255)
+                    Blue = 255;
+            }
+
+            Red = Red / 255.0;
+            Green = Green / 255.0;
+            Blue = Blue / 255.0;
+
+            R = (float)Red;
+            G = (float)Green;
+            B = (float)Blue;
+        }
+
+
+        public static int ClampInt(int i) // Restricts RGB values to 0 to 255
+        {
+            if (i > 255)
+                return 255;
+            if (i < 0)
+                return 0;
+            else
+                return i;
+        }
+
+        public static float ClampFloat(float i) // Restricts RGB values to 0.0 to 1.0
+        {
+            if (i > 1.0f)
+                return 1.0f;
+            if (i < 0.0f)
+                return 0.0f;
+            else
+                return i;
+        }
+
+        public static int Float2RGBClamp(float i) 
+        {
+            // converts input color to int and restricts values to 0 to 255
+            // useful for setting colors of form UI stuff
+
+            i *= 255;
+            i = (int)i;
+            if (i > 255)
+                return 255;
+            if (i < 0)
+                return 0;
+            return (int)i;
+        }
+
 
         #endregion
 
-            #region Other
+        #region Other
         public static int LoadCubeMap(Bitmap b)
         {
             int id;
@@ -1588,760 +2006,6 @@ void main()
 
         #region Shaders
 
-        #region NUD shader
-
-
-        public static string nud_vs = @"#version 330
-
-in vec3 vPosition;
-in vec4 vColor;
-in vec3 vNormal;
-in vec3 vTangent;
-in vec3 vBiTangent;
-in vec2 vUV;
-in vec4 vBone;
-in vec4 vWeight;
-
-out vec3 pos;
-out vec3 tangent;
-out vec3 bitangent;
-out vec4 vertexColor;
-
-out vec2 texcoord;
-out vec2 texcoord2;
-out vec2 texcoord3;
-out vec2 normaltexcoord;
-
-out vec3 normal;
-out vec3 fragpos;
-out vec4 vBoneOut;
-out vec4 vWeightOut;
-out vec4 viewNormals;
-
-uniform vec4 colorSamplerUV;
-uniform vec4 colorSampler2UV;
-uniform vec4 colorSampler3UV;
-uniform vec4 normalSamplerAUV;
-uniform mat4 eyeview;
-uniform uint flags;
-
-uniform float zScale;
-uniform vec4 zOffset;
-
-uniform bones
-{
-    mat4 transforms[200];
-} bones_;
-
-uniform int renderType;
-
-
-vec4 skin(vec3 po, ivec4 index);
-vec3 skinNRM(vec3 po, ivec4 index);
-
-vec4 skin(vec3 po, ivec4 index)
-{
-    vec4 oPos = vec4(po.xyz, 1.0);
-
-    oPos = bones_.transforms[index.x] * vec4(po, 1.0) * vWeight.x;
-    oPos += bones_.transforms[index.y] * vec4(po, 1.0) * vWeight.y;
-    oPos += bones_.transforms[index.z] * vec4(po, 1.0) * vWeight.z;
-    oPos += bones_.transforms[index.w] * vec4(po, 1.0) * vWeight.w;
-
-    return oPos;
-}
-
-vec3 skinNRM(vec3 nr, ivec4 index)
-{
-    vec3 nrmPos = vec3(0);
-
-    if(vWeight.x != 0.0) nrmPos = mat3(bones_.transforms[index.x]) * nr * vWeight.x;
-    if(vWeight.y != 0.0) nrmPos += mat3(bones_.transforms[index.y]) * nr * vWeight.y;
-    if(vWeight.z != 0.0) nrmPos += mat3(bones_.transforms[index.z]) * nr * vWeight.z;
-    if(vWeight.w != 0.0) nrmPos += mat3(bones_.transforms[index.w]) * nr * vWeight.w;
-
-    return nrmPos;
-}
-
-void main()
-{
-    vec4 objPos = vec4(vPosition.xyz, 1.0);
-
-    ivec4 bi = ivec4(vBone);
-
-    if(vBone.x != -1.0) objPos = skin(vPosition, bi);
-    objPos.z *= zScale;
-    objPos = eyeview * vec4(objPos.xyz, 1.0);
-
-    gl_Position = objPos;
-
-    texcoord = vec2((vUV * colorSamplerUV.xy) + colorSamplerUV.zw);
-    normaltexcoord = vec2((vUV * normalSamplerAUV.xy) + normalSamplerAUV.zw);
-    normal = vec3(0,0,0);
-    tangent.xyz = vTangent.xyz;
-    bitangent.xyz = vBiTangent.xyz;
-    pos = vec3(vPosition * mat3(eyeview));
-
-    // calculate view space normals for sphere map rendering. animations don't change normals?
-    viewNormals = vec4(vNormal.xyz, 0);
-	mat4 matrixThing = transpose(inverse(eyeview));
-	viewNormals = matrixThing * viewNormals;
-
-
-	vBoneOut = vBone;
-	vWeightOut = vWeight;
-
-    vertexColor = vColor;
-
-
-	fragpos = objPos.xyz;
-
-	if(vBone.x != -1.0)
-		normal = normalize((skinNRM(vNormal.xyz, bi)).xyz) ; //  * -1 * mat3(eyeview)
-	else
-		normal = vNormal ;
-
-
-}";
-
-        public static string nud_fs = @"#version 330
-
-in vec3 pos;
-in vec2 texcoord;
-in vec2 texcoord2;
-in vec2 texcoord3;
-in vec2 normaltexcoord;
-in vec4 vertexColor;
-in vec3 normal;
-in vec3 tangent;
-in vec3 bitangent;
-in vec4 vBoneOut;
-in vec4 vWeightOut;
-in vec4 viewNormals;
-
-out vec4 fincol;
-
-// Textures
-uniform sampler2D dif;
-uniform sampler2D dif2;
-uniform sampler2D dif3;
-uniform sampler2D ramp;
-uniform sampler2D dummyRamp;
-uniform sampler2D nrm;
-uniform sampler2D ao;
-uniform samplerCube cube;
-uniform samplerCube stagecube;
-uniform sampler2D spheremap;
-uniform samplerCube cmap;
-uniform sampler2D UVTestPattern;
-
-// flags tests
-uniform int hasDif;
-uniform int hasDif2;
-uniform int hasDif3;
-uniform int hasStage;
-uniform int hasCube;
-uniform int hasNrm;
-uniform int hasRamp;
-uniform int hasAo;
-uniform int hasDummyRamp;
-uniform int hasColorGainOffset;
-uniform int hasSpecularParams;
-uniform int useDiffuseBlend;
-uniform int hasDualNormal;
-uniform int hasSoftLight;
-uniform int hasCustomSoftLight;
-
-// Da Flags
-uniform uint flags;
-
-// Properties
-uniform vec4 colorSamplerUV;
-uniform vec4 normalSamplerAUV;
-uniform vec4 colorOffset;
-uniform vec4 minGain;
-uniform vec4 fresnelColor;
-uniform vec4 specularColor;
-uniform vec4 specularColorGain;
-uniform vec4 diffuseColor;
-uniform vec4 colorGain;
-uniform vec4 finalColorGain;
-uniform vec4 reflectionColor;
-uniform vec4 fogColor;
-uniform vec4 effColorGain;
-uniform vec4 zOffset;
-
-// params
-uniform vec4 fresnelParams;
-uniform vec4 specularParams;
-uniform vec4 reflectionParams;
-uniform vec4 fogParams;
-uniform vec4 normalParams;
-uniform vec4 angleFadeParams;
-uniform vec4 dualNormalScrollParams;
-uniform vec4 alphaBlendParams;
-uniform vec4 softLightingParams;
-uniform vec4 customSoftLightParams;
-
-
-// render settings
-uniform int renderDiffuse;
-uniform int renderSpecular;
-uniform int renderFresnel;
-uniform int renderReflection;
-uniform int renderType;
-uniform int renderLighting;
-uniform int renderVertColor;
-uniform int renderNormal;
-uniform int useNormalMap;
-
-uniform float diffuse_intensity;
-uniform float ambient;
-uniform float specular_intensity;
-uniform float fresnel_intensity;
-uniform float reflection_intensity;
-
-// character lighting
-uniform vec3 difLightColor;
-uniform vec3 ambLightColor;
-uniform vec3 difLightDirection;
-uniform vec3 fresGroundColor;
-uniform vec3 fresSkyColor;
-uniform vec3 specLightColor;
-uniform vec3 specLightDirection;
-uniform vec3 refLightColor;
-
-// stage lighting
-uniform int renderStageLight1;
-uniform vec3 stageLight1Color;
-uniform vec3 stageLight1Direction;
-
-uniform int renderStageLight2;
-uniform vec3 stageLight2Color;
-uniform vec3 stageLight2Direction;
-
-uniform int renderStageLight3;
-uniform vec3 stageLight3Color;
-uniform vec3 stageLight3Direction;
-
-uniform int renderStageLight4;
-uniform vec3 stageLight4Color;
-uniform vec3 stageLight4Direction;
-
-uniform int renderFog;
-uniform vec3 stageFogColor;
-
-uniform mat4 eyeview;
-uniform vec3 lightPosition;
-uniform vec3 lightDirection;
-uniform sampler2D shadowMap;
-
-// Tools
-vec3 rgb2hsv(vec3 c)
-{
-    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
-    vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
-    vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
-
-    float d = q.x - min(q.w, q.y);
-    float e = 1.0e-10;
-    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
-}
-
-vec3 hsv2rgb(vec3 c)
-{
-    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-}
-
-float luminance(vec3 rgb)
-{
-    const vec3 W = vec3(0.2125, 0.7154, 0.0721);
-    return dot(rgb, W);
-}
-
-vec3 calculate_tint_color(vec3 inputColor, float colorAlpha)
-{
-    float intensity = colorAlpha * 0.4;
-    vec3 inputHSV = rgb2hsv(inputColor);
-    float outSaturation = min((inputHSV.y * intensity),1); // can't have color with saturation > 1
-    vec3 outColorTint = hsv2rgb(vec3(inputHSV.x,outSaturation,1));
-    return outColorTint;
-}
-
-float ShadowCalculation(vec4 fragPosLightSpace)
-{
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
-    float closestDepth = texture(shadowMap, projCoords.xy).r;
-    float currentDepth = projCoords.z;
-    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
-
-    return shadow;
-}
-
-vec3 CalcBumpedNormal(vec3 inputNormal)
-{
-    // if no normal map, then return just the normal
-    if(hasNrm == 0 || useNormalMap == 0)
-	   return inputNormal;
-
-    float normalIntensity = normalParams.x;
-    vec3 BumpMapNormal = texture2D(nrm, normaltexcoord).xyz;
-    vec3 BumpMapNormal2 = texture2D(nrm, vec2(normaltexcoord.x + dualNormalScrollParams.x, normaltexcoord.y + dualNormalScrollParams.y)).xyz;
-    if(hasDualNormal == 1)
-        BumpMapNormal = normalize(BumpMapNormal + BumpMapNormal2);
-    BumpMapNormal = mix(vec3(0.5, 0.5, 1), BumpMapNormal, normalIntensity); // probably a better way to do this
-    BumpMapNormal = 2.0 * BumpMapNormal - vec3(1);
-
-    vec3 NewNormal;
-    vec3 Normal = normalize(normal);
-    mat3 TBN = mat3(tangent, bitangent, Normal);
-    NewNormal = TBN * BumpMapNormal;
-    NewNormal = normalize(NewNormal);
-
-    return NewNormal;
-}
-
-vec3 ScreenBlend(vec3 base, vec3 top)
-{
-    return vec3(1) - (vec3(1) - base) * (vec3(1) - top);
-}
-
-vec3 RampColor(vec3 col){
-	if(hasRamp == 1)
-	{
-		float rampInputLuminance = luminance(col);
-		rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
-		return texture2D(ramp, vec2(1-rampInputLuminance, 0.50)).rgb;
-	}
-	else
-		return vec3(0);
-}
-
-vec3 DummyRampColor(vec3 col){
-	if(hasDummyRamp == 1)
-	{
-		float rampInputLuminance = luminance(col);
-		rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
-		return texture2D(dummyRamp, vec2(1-rampInputLuminance, 0.50)).rgb;
-	}
-	else
-		return vec3(1);
-}
-
-vec3 SpecRampColor(vec3 col){ // currently just for bayo spec ramp
-	float rampInputLuminance = luminance(col);
-	rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
-
-    vec3 ramp_contribution = texture2D(dummyRamp, vec2(1-rampInputLuminance, 0.5)).rgb;
-	return ramp_contribution;
-}
-
-vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift) // probably not needed
-{
-    vec3 shiftedT = tangent + shift * normal;
-    return normalize(shiftedT);
-}
-
-float StrandSpecular(vec3 tangent, vec3 V, vec3 L, float exponent) // also not needed
-{
-    vec3 H = normalize(L + V);
-    float dotTH = dot(tangent, H);
-    float sinTH = sqrt(1.0 - dotTH * dotTH);
-    float dirAtten = smoothstep(-1.0, 0.0, dot(tangent, H));
-    return dirAtten * pow(sinTH, exponent);
-}
-
-vec3 BayoHairSpecular(vec3 diffuse_map, vec3 I, float xComponent, float yComponent)
-{
-    float shiftTex = diffuse_map.g; // vertical component of ramp?
-    shiftTex = 0;
-
-    float primaryShift = 0;
-    float secondaryShift = 0;
-
-    vec3 t1 = ShiftTangent(tangent.xyz, normal.xyz, primaryShift + shiftTex);
-    //vec3 t2 = ShiftTangent(tangent.xyz, normal.xyz, secondaryShift + shiftTex);
-    vec3 t2 = ShiftTangent(bitangent.xyz, normal.xyz, secondaryShift + shiftTex);
-
-    float specExp1 = reflectionParams.z;
-    float specExp2 = reflectionParams.w;
-
-    vec3 hairSpecular =  vec3(1);// * StrandSpecular(t1, I, lightDirection, specExp1);
-    float specMask = diffuse_map.b; // what channel should this be?
-    hairSpecular += vec3(.75,.75,1) * specMask * StrandSpecular(t2, I, lightDirection, specExp2);
-
-    vec3 half_angle = normalize(I + lightDirection);
-    float test = dot(t2, half_angle)/reflectionParams.w;
-    test = (test + 1) / 2;
-    float test2 = diffuse_map.g;
-
-    hairSpecular = texture2D(dummyRamp, vec2(test, test2)).rgb * diffuse_map.b * alphaBlendParams.z * 0.1;// * diffuse_map.b;
-    return (hairSpecular) * diffuse_map.r * 20;
-}
-
-vec3 softLighting(vec3 diffuse_color, vec3 ambientLightColor, vec3 diffuseLightColor, float smoothAmount, float darkenAmount, float saturationAmount, float darkenMultiplier, float saturationMultiplier, float lambert)
-{
-
-    float edgeL = 0.5 - (smoothAmount / 2);
-    float edgeR = 0.5 + (smoothAmount / 2);
-    float softLight = smoothstep(edgeL, edgeR, lambert);
-    float softLightDarken = max(((-darkenMultiplier * darkenAmount) + 1), 0);
-    vec3 softLightAmbient = diffuse_color * softLightDarken * ambientLightColor;
-    softLightAmbient = rgb2hsv(softLightAmbient);
-    softLightAmbient = hsv2rgb(vec3(softLightAmbient.x, (softLightAmbient.y + (saturationMultiplier * saturationAmount)), softLightAmbient.z));
-    vec3 softLightDiffuse = diffuse_color * diffuseLightColor;
-
-    return mix(softLightAmbient, softLightDiffuse, softLight);
-
-}
-
-
-vec3 sm4sh_shader(vec4 diffuse_map, vec4 ao_map, vec3 N){
-    vec3 I = vec3(0,0,-1) * mat3(eyeview);
-
-    // light directions
-    vec3 newDiffuseDirection = difLightDirection;
-    vec3 newFresnelDirection = lightDirection;
-    vec3 newSpecularDirection = specLightDirection;
-
-	//---------------------------------------------------------------------------------------------
-		// diffuse pass
-		vec3 diffuse_pass = vec3(0);
-
-			// lambertian shading
-            float lambert = clamp((dot(newDiffuseDirection,N)),0,1);
-			float halfLambert = clamp((dot(newDiffuseDirection,N)),0,1);
-            halfLambert = dot(newDiffuseDirection,N);
-            halfLambert = (halfLambert + 1) / 2; // remap [-1,1] to [0,1]. not clamped because of ramp functions
-			vec3 diffuse_color = vec3(0);
-			vec3 diffuse_shading = vec3(0);
-
-			float diffuse_luminance = luminance(diffuse_map.rgb);
-
-			//ao_blend = total ambient occlusion term. brightness is just addition. hue/saturation is ???
-            vec3 ao_blend = vec3(1);
-            ao_blend = min((ao_map.aaa + minGain.rgb),vec3(1.20));
-            vec3 aoGain = min((ao_map.aaa * (1+minGain.rgb)),vec3(1.0));
-			vec3 c1 = rgb2hsv(ao_blend);
-            vec3 c2 = rgb2hsv(aoGain);
-			ao_blend.rgb = hsv2rgb(vec3(c1.x, c2.y, c1.z));
-            float aoMixIntensity = minGain.a;
-
-
-            if (useDiffuseBlend == 1) // aomingain but no ao map (mainly for trophies)
-            {
-                ao_map.rgb = vec3(luminance(diffuse_map.rgb)); // should this use color? party ball is not saturated enough
-                aoMixIntensity = 0;
-            }
-
-
-
-			//---------------------------------------------------------------------------------------------
-				// flags based corrections for diffuse color
-
-    			if (hasColorGainOffset == 1) // probably a more elegant solution...
-    			{
-    				diffuse_color = colorOffset.rgb + (vec3(luminance(diffuse_map.rgb)) * (colorGain.rgb));
-    				ao_map.rgb = vec3(diffuse_luminance);
-
-                    if ((flags & 0x00420000u) == 0x00420000u) // bayo hair 'diffuse' is weird
-                    {
-                    	diffuse_color = colorOffset.rgb + (diffuse_map.rrr * colorGain.rgb);
-                        ao_map.rgb = vec3(1); // don't know bayo ao yet (if it exists)
-
-                    }
-    			}
-
-    			else // regular characters
-    			{
-    				diffuse_color = diffuse_map.rgb * ao_blend * diffuseColor.rgb;
-    			}
-
-
-            //---------------------------------------------------------------------------------------------
-                // stage lighting
-                vec3 lighting = vec3(1);
-                if ((flags & 0xF0000000u) == 0xA0000000u) // stage lighting. should actually be based on xmb in future. would be faster to do on CPU
-                {
-                    vec3 stageLight1 = stageLight1Color * max((dot(N, stageLight1Direction)),0);
-                    vec3 stageLight2 = stageLight2Color * max((dot(N, stageLight2Direction)),0);
-                    vec3 stageLight3 = stageLight3Color * max((dot(N, stageLight3Direction)),0);
-                    vec3 stageLight4 = stageLight4Color * max((dot(N, stageLight4Direction)),0);
-                    lighting = (stageLight1 * renderStageLight1) + (stageLight2 * renderStageLight2) + (stageLight3 * renderStageLight3) + (stageLight4 * renderStageLight4);
-                }
-                else // character lighting
-                    lighting = mix(ambLightColor * ambient, difLightColor * diffuse_intensity, halfLambert); // gradient based lighting
-
-                diffuse_pass = diffuse_color * lighting;
-            //---------------------------------------------------------------------------------------------
-
-            if (hasSoftLight == 1)
-                diffuse_pass = softLighting(diffuse_color, ambLightColor, difLightColor, softLightingParams.z, softLightingParams.y, softLightingParams.x, 0.3, 0.0561, lambert);
-            else if (hasCustomSoftLight == 1)
-                diffuse_pass = softLighting(diffuse_color, ambLightColor, difLightColor, customSoftLightParams.z, customSoftLightParams.y, customSoftLightParams.x, 0.3, 0.114, lambert);
-
-            if ((flags & 0x00FF0000u) == 0x00810000u || (flags & 0xFFFF0000u) == 0xFA600000u) // used with softlightingparams and customSoftLightParams, respectively
-                diffuse_pass *= 1.5;
-
-                vec3 ramp_contribution = 0.5 * pow((RampColor(vec3(halfLambert)) * DummyRampColor(vec3(halfLambert)) * diffuse_color), vec3(2.2));
-                diffuse_pass = ScreenBlend(diffuse_pass, ramp_contribution) * diffuse_intensity;
-
-		diffuse_pass = pow(diffuse_pass, vec3(2.2));
-	//---------------------------------------------------------------------------------------------
-
-	//---------------------------------------------------------------------------------------------
-		// Calculate the color tint. input colors are r,g,b,alpha. alpha is color blend amount
-		vec3 spec_tint = calculate_tint_color(diffuse_color, specularColor.a);
-		vec3 fresnel_tint = calculate_tint_color(diffuse_color, fresnelColor.a);
-		vec3 reflection_tint = calculate_tint_color(diffuse_color, reflectionColor.a);
-	//---------------------------------------------------------------------------------------------
-
-	//---------------------------------------------------------------------------------------------
-		// specular pass
-		vec3 specular_pass = vec3(0);
-            //---------------------------------------------------------------------------------------------
-		        // blinn phong with anisotropy
-    			vec3 half_angle = normalize(newSpecularDirection+I);
-                // tangent plane vectors
-                vec3 X = normalize(tangent);
-                vec3 Y = normalize(bitangent);
-                // ax: anisotropic width. ay: anisotropic height
-                float ax = reflectionParams.z;
-                float ay = reflectionParams.w;
-                float xComponent = max(pow((dot(half_angle, X)/ax),2),0);
-                float yComponent = max(pow((dot(half_angle, Y)/ay),2),0);
-                // only use anisotropy for mats without specularparams
-                float exponent = xComponent + yComponent;
-                if (hasSpecularParams == 1)
-                    exponent = specularParams.y;
-
-            float blinnPhongSpec = pow(clamp((dot(half_angle, N)), 0, 1), exponent);
-            //---------------------------------------------------------------------------------------------
-
-
-			//---------------------------------------------------------------------------------------------
-				// flags based corrections for specular
-			if ((flags & 0x00FF0000u) == 0x00420000u) // bayo hair mats. rework this section
-			{
-                specular_pass = BayoHairSpecular(diffuse_map.rgb, I, xComponent, yComponent);
-
-			}
-
-			else if (hasColorGainOffset == 1) // how does specularColorGain work?
-            {
-                specular_pass += specularColor.rgb * blinnPhongSpec * (specularColorGain.rgb);
-            }
-            else if ((flags & 0x00E10000u) == 0x00E10000u) // not sure how this works. specular works differently for eye mats
-            {
-                specular_pass += specularColor.rgb * blinnPhongSpec * spec_tint * 0;
-            }
-			else // default
-            {
-                specular_pass += specularColor.rgb * blinnPhongSpec * spec_tint;
-                // if (hasRamp == 1) // do ramps affect specular?
-                    // specular_pass = RampColor(specular_pass);
-            }
-
-			//---------------------------------------------------------------------------------------------
-            specular_pass *= mix(ao_map.rgb, vec3(1), aoMixIntensity);
-            specular_pass *= specLightColor;
-
-		specular_pass = pow(specular_pass, vec3(2.2));
-	//---------------------------------------------------------------------------------------------
-
-	//---------------------------------------------------------------------------------------------
-		// fresnel pass
-		vec3 fresnel_pass = vec3(0);
-
-			// hemisphere fresnel with fresnelParams control
-			float hemiBlend = dot(N, vec3(0,1,0));
-			hemiBlend = (hemiBlend * 0.5) + 0.5;
-            hemiBlend = pow(hemiBlend, 2); // use more ground color
-			vec3 hemiColor = mix(fresGroundColor, fresSkyColor, hemiBlend);
-			float cosTheta = dot(I, N);
-			vec3 fresnel = clamp((hemiColor * pow(1.0 - cosTheta, 2.75 + fresnelParams.x)), 0, 1);
-			fresnel_pass += fresnelColor.rgb * fresnel * fresnel_intensity * fresnel_tint;
-
-            //if((flags & 0x00120000u) == 0x00120000u)
-                //fresnel_pass *= mix(vec3(1),ao_map.rgb,fresnelParams.w);
-            if ((flags & 0x0000FF00u) == 0x00003000u)
-                fresnel_pass *= diffuse_map.rgb;
-		fresnel_pass = pow(fresnel_pass, vec3(1));
-	//---------------------------------------------------------------------------------------------
-
-	//---------------------------------------------------------------------------------------------
-		// reflection pass
-		vec3 reflection_pass = vec3(0);
-
-			// cubemap reflection
-			vec3 R = reflect(I, N);
-			R.y *= -1.0;
-			vec3 refColor = texture(stagecube, R).rgb;
-
-			//---------------------------------------------------------------------------------------------
-				// flags based corrections for reflection
-			if (hasCube == 1) // cubemaps from model.nut. currently just uses miiverse cubemap
-				reflection_pass += diffuse_map.aaa* refColor * reflection_tint* reflection_intensity * reflectionParams.x;
-
-			if ((flags & 0x00000010u) == 0x00000010u) // view-based sphere mapping (rosa's stars, sonic eyes, etc)
-			{
-				// calculate UVs based on view space normals (UV scale is currently not right)
-				float PI = 3.14159;
-				float uCoord = asin(viewNormals.x)/ PI + 0.5;
-				float vCoord = asin(viewNormals.y)/PI + 0.5;
-
-                // transform UVs to fix scaling. values are abitrary
-                uCoord = uCoord * 2.4 - 0.7;
-                vCoord = vCoord * 2.4 - 0.7;
-
-				vec2 newTexCoord = vec2((uCoord) + 0.05,(1 - vCoord) + 0.05);
-				vec3 weirdReflection = texture2D(spheremap, newTexCoord).xyz;
-				reflection_pass += weirdReflection*reflectionColor.xyz*reflection_tint*reflection_intensity;
-			}
-
-			else // stage cubemaps
-				reflection_pass += reflectionColor.rgb * refColor * reflection_tint * reflection_intensity * diffuse_map.aaa;
-			//---------------------------------------------------------------------------------------------
-
-            reflection_pass *= mix(ao_map.rgb, vec3(1), aoMixIntensity);
-            reflection_pass *= refLightColor;
-
-		reflection_pass = pow(reflection_pass, vec3(2.2));
-	//---------------------------------------------------------------------------------------------
-
-	vec3 resulting_color = vec3(0);
-
-	if(renderLighting == 1)
-	{
-		resulting_color += diffuse_pass * renderDiffuse;
-		resulting_color += fresnel_pass * renderFresnel;
-		resulting_color += specular_pass * renderSpecular;
-		resulting_color += reflection_pass * renderReflection;
-	}
-	else
-		resulting_color = diffuse_pass;
-
-    resulting_color = pow(resulting_color, vec3(1/2.2)); // gamma correction. gamma correction also done within render passes
-
-    // light_set fog calculations
-    float depth = pos.z;
-    depth = min((depth / fogParams.y),1);
-    float fog_Intensity = mix(fogParams.z, fogParams.w, depth);
-    if(renderFog == 1)
-        resulting_color = mix(resulting_color, stageFogColor, fog_Intensity);
-
-    return resulting_color;
-}
-
-void
-main()
-{
-    fincol = vec4(0,0,0,1);
-    vec3 norm = CalcBumpedNormal(normal);
-    vec3 displayNormal = (norm +1)/2;
-    vec3 displayTangent = (tangent +1)/2;
-    vec3 displayBitangent = (bitangent +1)/2;
-    // zOffset correction
-    gl_FragDepth = gl_FragCoord.z - (zOffset.x /1500); // divide by far plane?
-
-    // if the renderer wants to show something other than textures
-    if (renderType == 1) // normals color
-        fincol = vec4(displayNormal,1);
-    else if (renderType == 2) // normals black & white
-    {
-        float normal = dot(vec4(norm * mat3(eyeview), 1.0), vec4(0.15,0.15,0.15,1.0));
-        fincol.rgb = vec3(normal);
-    }
-    else if (renderType == 3) // normal map
-        fincol = vec4(pow(texture2D(nrm, texcoord).rgb, vec3(1)), 1);
-    else if (renderType == 4) // vertexColor
-        fincol = vertexColor;
-    else if (renderType == 5) // ambient occlusion
-        fincol = vec4(pow(texture2D(nrm, texcoord).aaa, vec3(1/2.2)), 1);
-    else if (renderType == 6) // uv coords
-		fincol = vec4(texcoord.x, texcoord.y, 1, 1);
-    else if (renderType == 7) // uv test pattern
-        fincol = vec4(texture2D(UVTestPattern, texcoord).rgb, 1);
-    else if (renderType == 8) // tangents
-        fincol = vec4(displayTangent, 1);
-    else if (renderType == 9) // bitangents
-        fincol = vec4(displayBitangent, 1);
-	else
-    {
-
-        // similar to du dv but uses just the normal map
-        float offsetIntensity = 0;
-        if(useNormalMap == 1)
-            offsetIntensity = normalParams.z;
-        vec2 textureOffset = 1-texture2D(nrm, normaltexcoord).xy;
-        textureOffset = (textureOffset * 2) -1; // remap to -1 to 1?
-        vec2 offsetTexCoord = texcoord + (textureOffset * offsetIntensity);
-
-        vec4 diffuse1 = vec4(0);
-        vec4 diffuse2 = vec4(0);
-        vec4 diffuse3 = texture2D(dif3, texcoord);
-        if (hasDif == 1) // 1st diffuse texture
-        {
-            diffuse1 = texture2D(dif, offsetTexCoord);
-            fincol = diffuse1;
-
-            if (hasDif2 == 1 && hasDif3 != 1) // 2nd diffuse texture. doesn't work properly with stages
-            {
-                diffuse2 = texture2D(dif2, offsetTexCoord);
-                fincol = mix(diffuse2, diffuse1, diffuse1.a);
-                fincol.a = 1.0;
-            }
-
-        }
-        else
-            fincol = vec4(diffuseColor);
-
-        vec3 diffuse2Texture = texture2D(ao, offsetTexCoord).rgb;
-
-        if (hasAo == 1) // should be named differently. isn't always two diffuse
-            fincol.rgb = mix(diffuse2Texture, fincol.rgb, ((normal.y + 1) / 2));
-
-        // calcuate final color by mixing with vertex color
-        if (renderVertColor == 1) fincol *= vertexColor;
-
-        // Material lighting done in sm4sh shader
-        if (renderNormal == 1)
-            fincol.rgb = sm4sh_shader(fincol, texture2D(nrm, texcoord).aaaa, norm);
-        fincol.rgb *= finalColorGain.rgb;
-        fincol.rgb *= effColorGain.rgb;
-
-
-        //fincol.rgb = mix(diffuse2.rgb, diffuse1.rgb, vertexColor.r); // umbraf stage vertex color blending
-        //fincol.rgb *= mix(diffuse3.rgb, vec3(1), 0.5);
-
-        //---------------------------------------------------------------------------------------------
-            // correct alpha
-
-        fincol.a *= finalColorGain.a;
-        fincol.a *= effColorGain.a;
-
-        // angleFadeParams alpha correction. currently doesn't work for nvidia users
-        float normalFadeAmount = angleFadeParams.x;
-        float edgeFadeAmount = angleFadeParams.y;
-        vec3 I = vec3(0,0,-1) * mat3(eyeview);
-        float fresnelBlend = 1-dot(I,norm);
-        float angleFadeAmount = mix(normalFadeAmount, edgeFadeAmount, fresnelBlend);
-        angleFadeAmount = max((1-angleFadeAmount),0);
-        fincol.a *= angleFadeAmount;
-
-        // if ((flags & 0xF0FF0000u) != 0xF0640000u) // ryu works differently. need to research this more
-        fincol.a += alphaBlendParams.x;
-        //---------------------------------------------------------------------------------------------
-        //gl_FragDepth *= 0.001;
-	}
-
-}";
-
-        #endregion
-
         #region point shader
         public static string vs_Point = @"#version 330
 
@@ -2352,7 +2016,7 @@ in int vSelected;
 
 flat out int selected;
 
-uniform mat4 eyeview;
+uniform mat4 mvpMatrix;
 uniform bones
 {
     mat4 transforms[200];
@@ -2381,7 +2045,7 @@ void main()
 
     selected = vSelected;
 
-    gl_Position = eyeview * vec4(objPos.xyz, 1.0f);
+    gl_Position = mvpMatrix * vec4(objPos.xyz, 1.0f);
 }
 ";
         public static string fs_Point = @"#version 330
@@ -2405,72 +2069,87 @@ void main()
 
         public static string vs_Shadow = @"#version 330
 in vec3 vPosition;
-
+out vec4 outPosition;
 uniform mat4 lightSpaceMatrix;
+uniform mat4 modelMatrix;
+uniform mat4 eyeview; // modelview matrix
 
 void main()
 {
-    gl_Position = lightSpaceMatrix * vec4(vPosition, 1.0f);
+    gl_Position = lightSpaceMatrix * modelMatrix * vec4(vPosition, 1.0f); //lightSpaceMatrix * eyeview * vec4(vPosition, 1.0f);
+    outPosition = gl_Position;
 }";
         public static string fs_Shadow = @"#version 330
-
+//out vec4 outColor;
+in vec4 outPosition;
 void main()
-{             
-    gl_FragDepth = gl_FragCoord.z;
-gl_FragColor = vec4(1);
-}  ";
+{   
+    float depth = outPosition.z;
+    depth *= 0.01;
+    //outColor = vec4(vec3(depth), 1);
+}";
 
 
         #endregion
 
 
-        #region texture shader
-        public static string texture_vs = @"#version 330
 
-out vec2 texCoord;
+
+
+
+        #region blur shader
+        // basically identical to "quad" shader but with guassian blur
+        public static string vs_blur = @"#version 330
+
+out vec2 TexCoords;
  
 void main()
 {
     float x = -1.0 + float((gl_VertexID & 1) << 2);
     float y = -1.0 + float((gl_VertexID & 2) << 1);
-    texCoord.x = (x+1.0)*0.5;
-    texCoord.y = (y+1.0)*0.5;
+    TexCoords.x = (x+1.0)*0.5;
+    TexCoords.y = (y+1.0)*0.5;
     gl_Position = vec4(x, y, 0, 1);
 }";
+        public static string fs_blur = @"#version 330 core
+out vec4 FragColor;
+  
+in vec2 TexCoords;
 
-        public static string texture_fs = @"#version 330
-in vec2 texCoord;
-
-uniform sampler2D texture;
-
-uniform int renderR;
-uniform int renderG;
-uniform int renderB;
-uniform int renderAlpha;
-uniform int alphaOverride;
-
-out vec4 outColor;
+uniform sampler2D image;
+  
+uniform int horizontal;
+uniform float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
 
 void main()
-{   outColor = vec4(0,0,0,1);    
-    vec4 textureColor = texture2D(texture, vec2(texCoord.x, 1-texCoord.y)).rgba;
-    if (renderR == 1)
-        outColor.r = textureColor.r;
-    if (renderG == 1)
-        outColor.g = textureColor.g;
-    if (renderB == 1)
-        outColor.b = textureColor.b;
-    if (renderAlpha == 1)
-        outColor.a = textureColor.a;
-    if (alphaOverride == 1)
-        outColor = vec4(textureColor.aaa, 1);
-        
+{             
+    vec2 tex_offset = 1.0 / textureSize(image, 0); // gets size of single texel
+    vec3 result = texture(image, TexCoords).rgb * weight[0]; // current fragment's contribution
+    if(horizontal == 1)
+    {
+        for(int i = 1; i < 5; ++i)
+        {
+            result += texture(image, TexCoords + vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
+            result += texture(image, TexCoords - vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
+        }
+    }
+    else
+    {
+        for(int i = 1; i < 5; ++i)
+        {
+            result += texture(image, TexCoords + vec2(0.0, tex_offset.y * i)).rgb * weight[i];
+            result += texture(image, TexCoords - vec2(0.0, tex_offset.y * i)).rgb * weight[i];
+        }
+    }
+    result = texture(image, TexCoords).rgb;
+    FragColor = vec4(result, 1.0);
+    //FragColor = vec4(TexCoords.x, TexCoords.y, 1, 1);
 }";
 
         #endregion
 
-        #endregion
 
+        #endregion
     }
 }
 

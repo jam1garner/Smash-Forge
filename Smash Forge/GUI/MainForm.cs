@@ -43,7 +43,7 @@ namespace Smash_Forge
             ThreadStart t = new ThreadStart(Smash_Forge.Update.CheckLatest);
             Thread thread = new Thread(t);
             thread.Start();
-            Runtime.renderDepth = 2500f;
+            Runtime.renderDepth = 100000.0f;
             foreach (var vp in viewports)
                 AddDockedControl(vp);
 
@@ -64,6 +64,7 @@ namespace Smash_Forge
             Runtime.renderBackGround = true;
             Runtime.renderHitboxes = true;
             Runtime.renderInterpolatedHitboxes = true;
+            Runtime.renderSpecialBubbles = true;
             Runtime.hitboxRenderMode = Hitbox.RENDER_KNOCKBACK;
             Runtime.hitboxAlpha = 130;
             Runtime.hurtboxAlpha = 80;
@@ -75,6 +76,12 @@ namespace Smash_Forge
             Runtime.windboxColor = System.Drawing.Color.Blue;
             Runtime.grabboxColor = System.Drawing.Color.Purple;
             Runtime.searchboxColor = System.Drawing.Color.DarkOrange;
+            Runtime.counterBubbleColor = System.Drawing.Color.FromArgb(0x89, 0x89, 0x89);
+            Runtime.reflectBubbleColor = System.Drawing.Color.Cyan;
+            Runtime.shieldBubbleColor = System.Drawing.Color.Red;
+            Runtime.absorbBubbleColor = System.Drawing.Color.SteelBlue;
+            Runtime.wtSlowdownBubbleColor = System.Drawing.Color.FromArgb(0x9a, 0x47, 0x9a);
+
             Runtime.useFrameDuration = false;
             Runtime.hitboxKnockbackColors = new List<System.Drawing.Color>();
             Runtime.hitboxIdColors = new List<System.Drawing.Color>();
@@ -87,14 +94,14 @@ namespace Smash_Forge
             Runtime.renderSpawns = true;
             Runtime.renderRespawns = true;
             Runtime.renderOtherLVDEntries = true;
-            Runtime.renderNormals = true;
+            Runtime.renderAlpha = true;
             Runtime.renderVertColor = true;
             Runtime.renderSwag = false;
             Runtime.renderHurtboxes = true;
             Runtime.renderHurtboxesZone = true;
             Runtime.renderECB = false;
             Runtime.renderIndicators = false;
-            Runtime.renderType = Runtime.RenderTypes.Texture;
+            Runtime.renderType = Runtime.RenderTypes.Shaded;
             Runtime.paramDir = "";
             //Pichu.MakePichu();
             //meshList.refresh();
@@ -121,28 +128,36 @@ namespace Smash_Forge
             Runtime.shaders.Add("Shadow", sha);
 
             Shader nud = new Shader();
-            nud.vertexShader(RenderTools.nud_vs);
-            nud.fragmentShader(RenderTools.nud_fs);
+            nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
+            nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
             Runtime.shaders.Add("NUD", nud);
 
-            Shader texture = new Shader();
-            texture.vertexShader(RenderTools.texture_vs);
-            texture.fragmentShader(RenderTools.texture_fs);
+            Shader texture = new Shader();           
+            texture.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_vs.txt"));
+            texture.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_fs.txt"));
             Runtime.shaders.Add("Texture", texture);
 
+            Shader mbn = new Shader();
+            mbn.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_vs.txt"));
+            mbn.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_fs.txt"));
+            Runtime.shaders.Add("MBN", mbn);
+
+            Shader quad = new Shader();
+            quad.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Quad_vs.txt"));
+            quad.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Quad_fs.txt"));
+            Runtime.shaders.Add("Quad", quad);
+
+            Shader blur = new Shader();
+            blur.vertexShader(RenderTools.vs_blur);
+            blur.fragmentShader(RenderTools.fs_blur);
+            Runtime.shaders.Add("Blur", blur);
+
+            Shader DAT = new Shader();
+            DAT.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_vs.txt"));
+            DAT.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_fs.txt"));
+            Runtime.shaders.Add("DAT", DAT);
 
             RenderTools.Setup();
-
-            /*openFile("C:\\s\\Smash\\extract\\data\\fighter\\kamui\\model\\body\\c00\\model.vbn");
-            {
-                OMO omo = new OMO(new FileData("C:\\s\\Smash\\extract\\data\\fighter\\kamui\\model\\body\\c00\\corrin2.omo"));
-                omo.Apply(Runtime.TargetVBN, 0);
-            }
-            {
-                OMO omo = new OMO(new FileData("C:\\s\\Smash\\extract\\data\\fighter\\kamui\\model\\body\\c00\\corrin.omo"));
-                omo.Apply(Runtime.TargetVBN, 0);
-            }*/
-            
         }
 
         public void openFiles()
@@ -795,7 +810,7 @@ namespace Smash_Forge
                         // If they set the wrong dir, oh well
                         try
                         {
-                            Runtime.ParamManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
+                            Runtime.ParamManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin", fighterName);
                             hurtboxList.refresh();
                             Runtime.ParamManagerHelper = new PARAMEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
                             Runtime.ParamMoveNameIdMapping = Runtime.ParamManagerHelper.getMoveNameIdMapping();
@@ -1892,13 +1907,6 @@ namespace Smash_Forge
             }
         }
 
-        /*
-        public AnimListPanel animList = new AnimListPanel() {ShowHint = DockState.DockRight};
-        public BoneTreePanel boneTreePanel = new BoneTreePanel() {ShowHint = DockState.DockLeft};
-        public ProjectTree project = new ProjectTree() {ShowHint = DockState.DockLeft};
-        public LVDList lvdList = new LVDList() {ShowHint = DockState.DockLeft};
-        public LVDEditor lvdEditor = new LVDEditor() {ShowHint = DockState.DockRight};
-         */
 
         private void allViewsPreset(object sender, EventArgs e)
         {
@@ -2022,8 +2030,13 @@ namespace Smash_Forge
 
         private void exportErrorLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Runtime.shaders["NUD"].SaveErrorLog();
-            MessageBox.Show("Saved to Forge directory");
+            Runtime.shaders["NUD"].SaveErrorLog("NUD");
+            Runtime.shaders["MBN"].SaveErrorLog("MBN");
+            Runtime.shaders["DAT"].SaveErrorLog("DAT");
+            Runtime.shaders["Texture"].SaveErrorLog("Texture");
+            Runtime.shaders["Quad"].SaveErrorLog("Quad");
+
+            MessageBox.Show("Error logs saved to Forge directory");
         }
 
         private void nESROMInjectorToolStripMenuItem_Click(object sender, EventArgs e)

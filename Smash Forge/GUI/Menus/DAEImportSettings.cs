@@ -83,9 +83,9 @@ namespace Smash_Forge
 
                     poly.vertSize = ((poly.vertSize == 0x6 ? 0 : BoneTypes[(string)comboBox2.SelectedItem])) | (VertTypes[(string)comboBox1.SelectedItem]);
 
-                    if(!warning && poly.vertSize == 0x27)
+                    if (!warning && poly.vertSize == 0x27)
                     {
-                        MessageBox.Show("Using \""+ (string)comboBox2.SelectedItem + "\" and \"" + (string)comboBox1.SelectedItem + "\" can make shadows not appear in-game",
+                        MessageBox.Show("Using \"" + (string)comboBox2.SelectedItem + "\" and \"" + (string)comboBox1.SelectedItem + "\" can make shadows not appear in-game",
                             "Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         warning = true;
                     }
@@ -108,63 +108,66 @@ namespace Smash_Forge
 
                         m.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
                         m.entries.Add("NU_diffuseColor", new float[] { 1, 1, 1, 1f });
-                        m.entries.Add("NU_materialHash", new float[] { BitConverter.ToSingle(new byte[] { 0x12, 0xEE, 0x2A, 0x1B}, 0), 0, 0, 0});
+                        m.entries.Add("NU_materialHash", new float[] { BitConverter.ToSingle(new byte[] { 0x12, 0xEE, 0x2A, 0x1B }, 0), 0, 0, 0 });
                     }
-                    
+
                     //if (checkBox1.Checked || checkBox4.Checked || vertcolorCB.Checked || sc != 1f)
-                        foreach (NUD.Vertex v in poly.vertices)
+                    foreach (NUD.Vertex v in poly.vertices)
+                    {
+
+                        if (!checkedUVRange && (Math.Abs(v.tx[0].X) > 4 || Math.Abs(v.tx[0].Y) > 4))
                         {
+                            checkedUVRange = true;
 
-                            if (!checkedUVRange && (Math.Abs(v.tx[0].X) > 4 || Math.Abs(v.tx[0].Y) > 4))
-                            {
-                                checkedUVRange = true;
+                            DialogResult dialogResult = MessageBox.Show("Some UVs are detected to be out of accurate range.\nFix them now?", "Potential UV Problem", MessageBoxButtons.YesNo);
+                            if (dialogResult == DialogResult.Yes)
+                                fixUV = true;
+                        }
 
-                                DialogResult dialogResult = MessageBox.Show("Some UVs are detected to be out of accurate range.\nFix them now?", "Potential UV Problem", MessageBoxButtons.YesNo);
-                                if (dialogResult == DialogResult.Yes)
-                                    fixUV = true;
-                            }
-
-                            if (fixUV)
-                            {
-                                for (int h = 0; h < v.tx.Count; h++)
-                                    v.tx[h] = new Vector2(v.tx[h].X - (int)v.tx[h].X, v.tx[h].Y - (int)v.tx[h].Y);
-                            }
+                        if (fixUV)
+                        {
+                            for (int h = 0; h < v.tx.Count; h++)
+                                v.tx[h] = new Vector2(v.tx[h].X - (int)v.tx[h].X, v.tx[h].Y - (int)v.tx[h].Y);
+                        }
 
 
-                            if (flipUVCB.Checked)
-                                for (int i = 0; i < v.tx.Count; i++)
-                                    v.tx[i] = new Vector2(v.tx[i].X, 1 - v.tx[i].Y);
+                        if (flipUVCB.Checked)
+                            for (int i = 0; i < v.tx.Count; i++)
+                                v.tx[i] = new Vector2(v.tx[i].X, 1 - v.tx[i].Y);
 
                         if (vertColorDivCB.Checked)
                             v.col = v.col / 2;
 
                         if (vertcolorCB.Checked)
-                                v.col = new Vector4(0x7F, 0x7F, 0x7F, 0x7F);
+                            v.col = new Vector4(0x7F, 0x7F, 0x7F, 0x7F);
 
                         if (checkBox4.Checked)
-                            {
-                                v.pos = Vector3.Transform(v.pos, rot);
-                                v.nrm = Vector3.Transform(v.nrm, rot);
-                            }
-                            if(sc != 1f)
-                                v.pos = Vector3.Multiply(v.pos, sc);
+                        {
+                            v.pos = Vector3.Transform(v.pos, rot);
+                            v.nrm = Vector3.Transform(v.nrm, rot);
                         }
+                        if (sc != 1f)
+                            v.pos = Vector3.Multiply(v.pos, sc);
+                    }
                 }
             }
 
-            if (VertTypes[(string)comboBox1.SelectedItem] == 3 || VertTypes[(string)comboBox1.SelectedItem] == 7)
-                nud.computeTangentBitangent();
+            //if (VertTypes[(string)comboBox1.SelectedItem] == 3 || VertTypes[(string)comboBox1.SelectedItem] == 7)
+           
 
             if (checkBox2.Checked)
             {
                 foreach (NUD.Mesh mesh in nud.mesh)
                 {
-                    if(mesh.Text.Length > 5)
+                    if (mesh.Text.Length > 5)
                         mesh.Text = mesh.Text.Substring(5, mesh.Text.Length - 5);
                 }
             }
-            
+
+            // we only want to calculate new tangents/bitangents for imports
+            // vanilla models have special tangents/bitangents for mirrored normal maps
             nud.PreRender();
+            nud.CalculateNewTangentBitangent();
         }
 
         public VBN getVBN()

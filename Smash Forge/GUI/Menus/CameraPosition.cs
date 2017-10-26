@@ -46,8 +46,8 @@ namespace Smash_Forge.GUI.Menus
 
         private void buttonApply_Click(object sender, EventArgs e)
         {
-            parentViewport.rot = Convert.ToSingle(numericHorizontalRadians.Value);
-            parentViewport.lookup = Convert.ToSingle(numericVerticalRadians.Value);
+            parentViewport.cameraYRotation = Convert.ToSingle(numericHorizontalRadians.Value);
+            parentViewport.cameraXRotation = Convert.ToSingle(numericVerticalRadians.Value);
             parentViewport.width = Convert.ToSingle(numericPositionX.Value);
             parentViewport.height = Convert.ToSingle(numericPositionY.Value);
             parentViewport.zoom = Convert.ToSingle(numericZoom.Value);
@@ -57,15 +57,15 @@ namespace Smash_Forge.GUI.Menus
         // Updates text controls based on parentViewport's current camera position
         public void updatePosition()
         {
-            numericHorizontalRadians.Value = Convert.ToDecimal(parentViewport.rot);
-            numericVerticalRadians.Value = Convert.ToDecimal(parentViewport.lookup);
+            numericHorizontalRadians.Value = Convert.ToDecimal(parentViewport.cameraYRotation);
+            numericVerticalRadians.Value = Convert.ToDecimal(parentViewport.cameraXRotation);
             numericPositionX.Value = Convert.ToDecimal(parentViewport.width);
             numericPositionY.Value = Convert.ToDecimal(parentViewport.height);
             numericZoom.Value = Convert.ToDecimal(parentViewport.zoom);
 
             // derived values
-            numericHorizontalDegrees.Value = Convert.ToDecimal(parentViewport.rot * (180 / Math.PI));
-            numericVerticalDegrees.Value = Convert.ToDecimal(parentViewport.lookup * (180 / Math.PI));
+            numericHorizontalDegrees.Value = Convert.ToDecimal(parentViewport.cameraYRotation * (180 / Math.PI));
+            numericVerticalDegrees.Value = Convert.ToDecimal(parentViewport.cameraXRotation * (180 / Math.PI));
         }
 
         private void numericHorizontalDegrees_ValueChanged(object sender, EventArgs e)

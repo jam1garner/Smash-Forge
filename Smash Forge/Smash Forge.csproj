@@ -355,6 +355,12 @@
     <Compile Include="GUI\Menus\CameraPosition.Designer.cs">
       <DependentUpon>CameraPosition.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Menus\LightColorEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\LightColorEditor.Designer.cs">
+      <DependentUpon>LightColorEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Menus\MaterialSelector.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -538,6 +544,9 @@
     <EmbeddedResource Include="GUI\Menus\CameraPosition.resx">
       <DependentUpon>CameraPosition.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\LightColorEditor.resx">
+      <DependentUpon>LightColorEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\MaterialSelector.resx">
       <DependentUpon>MaterialSelector.cs</DependentUpon>
     </EmbeddedResource>
@@ -573,6 +582,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="characterSpecialBubbles.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="GUI\Menus\RenderSettings.resx">
       <DependentUpon>RenderSettings.cs</DependentUpon>
     </None>
@@ -664,6 +676,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\allstar_param_cafe.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\battle_object_param.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\event_param.ini">
@@ -850,6 +865,40 @@
     <None Include="Resources\1.dds.png" />
     <None Include="Resources\cubemap2.bmp" />
     <None Include="Resources\10101000.png" />
+    <None Include="lib\Shader\Texture_fs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\Texture_vs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\NUD_fs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\NUD_vs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\MBN_fs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\MBN_vs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\Quad_fs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\Quad_vs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\Shadow_fs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\DAT_fs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\DAT_vs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="lib\Shader\Shadow_vs.txt" />
     <Content Include="Resources\10080000.png" />
     <Content Include="Resources\forge.ico" />
     <Content Include="lib\FITC.exe">

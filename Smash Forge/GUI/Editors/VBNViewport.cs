@@ -63,22 +63,25 @@ namespace Smash_Forge
             base.OnResize(e);
             if (!DesignMode && _controlLoaded)
             {
+             
+
                 GL.LoadIdentity();
                 GL.Viewport(glControl1.ClientRectangle);
 
 
-                v = Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 500.0f);
+                mvpMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width, -height, zoom) * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 500.0f);
             }
         }
 
         #region Members
-        Matrix4 v, vi;
-        public float rot = 0;
+        Matrix4 mvpMatrix, vi;
+        public float cameraYRotation = 0;
         public float x = 0;
-        public float lookup = 0;
-        public float height = 1.5f;
-        public float width = 0;
-        public float zoom = -25f, nzoom = 0;
+        public float cameraXRotation = 0;
+        public float height = 10.0f; // camera y position
+        public float width = 0; // camera x position
+        public float zoom = -80f; // camera z position
+        public float nzoom = 0;
         public GUI.Menus.CameraPosition cameraPosForm = null;
         float mouseXLast = 0;
         float mouseYLast = 0;
@@ -87,8 +90,17 @@ namespace Smash_Forge
         bool isPlaying = false;
         bool fpsView = false;
         public Stopwatch timeSinceSelected = new Stopwatch();
-
         public Stopwatch renderTime = new Stopwatch();
+
+        public static DirectionalLight diffuseLight = new DirectionalLight();
+        public static DirectionalLight specularLight = new DirectionalLight();
+        public static DirectionalLight stageLight1 = new DirectionalLight();
+        public static DirectionalLight stageLight2 = new DirectionalLight();
+        public static DirectionalLight stageLight3 = new DirectionalLight();
+        public static DirectionalLight stageLight4 = new DirectionalLight();
+
+        
+
 
         Shader shader;
         #endregion
@@ -377,14 +389,14 @@ namespace Smash_Forge
 
         private void SetupViewPort()
         {
-
+        
             if (shader != null)
                 GL.DeleteShader(shader.programID);
 
             if (shader == null)
             {
 
-                // shoudl vbn do this instead?
+                // should vbn do this instead?
                 GL.GenBuffers(1, out ubo_bones);
                 GL.GenBuffers(1, out ubo_bonesIT);
             }
@@ -393,52 +405,142 @@ namespace Smash_Forge
             int w = Width;
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
-            v = Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
+            mvpMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width, -height, zoom)
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
-            //v2 = Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
 
-            GL.GenFramebuffers(1, out sfb);
+            SetupFrameBuffersRenderBuffers();
 
+            GetOpenGLSystemInfo();
+
+            Debug.WriteLine(GL.GetError());
+            CalculateLightSource();
+        }
+
+        private void SetupFrameBuffersRenderBuffers()
+        {
+            // shadowmap
             GL.GenTextures(1, out depthmap);
-
             GL.BindTexture(TextureTarget.Texture2D, depthmap);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent
-                , sw, sh, 0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, sw, sh, 0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 
+            // shadow framebuffer
+            GL.GenFramebuffers(1, out sfb);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
-            GL.FramebufferTexture2D(FramebufferTarget.FramebufferExt, FramebufferAttachment.DepthAttachmentExt,
-                TextureTarget.Texture2D, depthmap, 0);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, depthmap, 0);
             GL.DrawBuffer(DrawBufferMode.None);
             GL.ReadBuffer(ReadBufferMode.None);
-            Console.WriteLine(GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer));
+            Debug.WriteLine(GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer));
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            CalculateLightSource();
 
+            // hdr framebuffer
+            //int hdrFBO;
+            GL.GenFramebuffers(1, out hdrFBO);
+
+            // color texture (result of drawing NUD shader)
+            int screenWidth = glControl1.Width; // how to handle screen resizing?
+            int screenHeight = glControl1.Height;
+
+            //colorTexture1
+            GL.GenTextures(1, out colorTexture1);
+            GL.BindTexture(TextureTarget.Texture2D, colorTexture1);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, screenWidth, screenHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+
+            //colorTexture2 (bright color)
+            GL.GenTextures(1, out colorTexture2);
+            GL.BindTexture(TextureTarget.Texture2D, colorTexture2);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, screenWidth, screenHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+
+            // depth render buffer
+            int rboDepth;
+            GL.GenRenderbuffers(1, out rboDepth);
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rboDepth);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, 
+                screenWidth, screenHeight);
+
+            // attach buffers and stuff
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, hdrFBO);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, 
+                TextureTarget.Texture2D, colorTexture1, 0);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, 
+                TextureTarget.Texture2D, colorTexture2, 0);
+            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, 
+                RenderbufferTarget.Renderbuffer, rboDepth);
+            DrawBuffersEnum[] bufs = new DrawBuffersEnum[2] { (DrawBuffersEnum)FramebufferAttachment.ColorAttachment0,
+                (DrawBuffersEnum)FramebufferAttachment.ColorAttachment1 };
+            GL.DrawBuffers(bufs.Length, bufs);
+
+            // multiple textures and fbos for 2 pass guassian blur
+            GL.GenFramebuffers(1, out pingPongFBO1);
+            GL.GenFramebuffers(1, out pingPongFBO2);
+
+            // pingpong texture 1
+            GL.GenTextures(1, out pingPongColorTexture1);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, pingPongFBO1);
+            GL.BindTexture(TextureTarget.Texture2D, pingPongColorTexture1);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, screenWidth, screenHeight, 0, 
+                OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, 
+                TextureTarget.Texture2D, pingPongColorTexture1, 0);
+
+            // pingpong texture 2
+            GL.GenTextures(1, out pingPongColorTexture2);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, pingPongFBO2);
+            GL.BindTexture(TextureTarget.Texture2D, pingPongColorTexture2);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, screenWidth, screenHeight, 0, 
+                OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, 
+                TextureTarget.Texture2D, pingPongColorTexture2, 0);
+
+            Debug.WriteLine(GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer));
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+        }
+
+        private static void GetOpenGLSystemInfo()
+        {
             Runtime.renderer = GL.GetString(StringName.Renderer);
             Runtime.openGLVersion = GL.GetString(StringName.Version);
             Runtime.GLSLVersion = GL.GetString(StringName.ShadingLanguageVersion);
         }
 
-
         int cf = 0;
         //Matrix4 v2;
-        int sfb, sw=1024, sh=1024, depthmap;
+        int sfb, sw=512, sh=512, depthmap, hdrFBO;
+        int colorTexture1, colorTexture2;
+        int pingPongColorTexture1, pingPongColorTexture2;
+        int pingPongFBO1, pingPongFBO2;
         Matrix4 lightMatrix;
+        Matrix4 modelMatrix;
+        Matrix4 lightProjection;
 
         public void CalculateLightSource()
-        {
-            Matrix4 lightProjection;
-            Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 500f, out lightProjection);
-            Matrix4 lightView = Matrix4.LookAt(Vector3.Transform(Vector3.Zero, v).Normalized(), //new Vector3(0.5f, 1f, 1f),
+        {   
+            Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, Runtime.renderDepth, out lightProjection);
+            Matrix4 lightView = Matrix4.LookAt(Vector3.Transform(Vector3.Zero, mvpMatrix).Normalized(),
                 new Vector3(0),
                 new Vector3(0, 1, 0));
-
-            lightMatrix = lightProjection * lightView.Inverted();
-            //Console.WriteLine(v.ExtractTranslation().ToString());
+            lightMatrix = lightProjection * lightView;
+            lightMatrix = Matrix4.CreateTranslation(width, -height, zoom)
+                * lightProjection * Matrix4.CreateRotationY(Runtime.dif_rotY) * Matrix4.CreateRotationX(Runtime.dif_rotX);
         }
 
         public void Render()
@@ -447,66 +549,30 @@ namespace Smash_Forge
                 return;
 
             glControl1.MakeCurrent();
-
-            // shadow frame buffer
-            /*GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
-            GL.Viewport(0, 0, sw, sh);
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-
-            CalculateLightSource();
-            GL.Enable(EnableCap.DepthTest);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadMatrix(ref lightMatrix);
-            RenderTools.drawFloor();
-            RenderTools.drawSphere(Vector3.Zero, 1, 5);
-            {
-                //draw
-                foreach(ModelContainer c in Runtime.ModelContainers)
-                {
-                    if(c.nud != null)
-                    {
-                        c.nud.RenderShadow(lightMatrix);
-                    }
-                }
-            }
-            GL.Disable(EnableCap.DepthTest);
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);*/
-
             GL.Viewport(glControl1.ClientRectangle);
 
-            //GL.ClearColor(back1);
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
-            // clear the gf buffer
+
+            // clear all the buffers
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
+            // use fixed function pipeline for drawing background and floor grid
+            GL.UseProgram(0);
 
             if (Runtime.renderBackGround)
             {
-                GL.Begin(PrimitiveType.Quads);
-                GL.Color3(Runtime.back1);
-                GL.Vertex2(1.0, 1.0);
-                GL.Vertex2(-1.0, 1.0);
-                GL.Color3(Runtime.back2);
-                GL.Vertex2(-1.0, -1.0);
-                GL.Vertex2(1.0, -1.0);
-                GL.End();
+                // background uses different matrices
+                GL.MatrixMode(MatrixMode.Modelview);
+                GL.LoadIdentity();
+                GL.MatrixMode(MatrixMode.Projection);
+                GL.LoadIdentity();
+
+                renderBackground();
             }
-            
-            //RenderTools.RenderCubeMap(v);
 
-            //GL.DepthFunc(DepthFunction.Never);
-            GL.Enable(EnableCap.DepthTest);
-            GL.ClearDepth(1.0);
-
-            // set up the viewport projection and send it to GPU
+            // set up the matrices for drawing models and floor
             GL.MatrixMode(MatrixMode.Projection);
-
             if (IsMouseOverViewport() && glControl1.Focused && !freezeCamera)
             {
                 if (fpsView)
@@ -516,26 +582,102 @@ namespace Smash_Forge
                 UpdateCameraPositionControl();
             }
             mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
-
             SetCameraAnimation();
 
-            // ready to start drawing model stuff
             GL.MatrixMode(MatrixMode.Modelview);
-            /*GL.LoadMatrix(ref lightMatrix);
-            RenderTools.drawFloor();
-            RenderTools.drawSphere(Vector3.Zero, 1, 5);*/
-            GL.LoadMatrix(ref v);
-            
+            GL.LoadMatrix(ref mvpMatrix);
+
+            if (Runtime.renderFloor)
+                RenderTools.drawFloor();
+
+            if (Runtime.drawModelShadow)
+                DrawModelShadow();
+
+            // render models into hdr buffer
+            //GL.BindFramebuffer(FramebufferTarget.Framebuffer, hdrFBO);
+            //GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
+            if (Runtime.useDepthTest)
+                GL.Enable(EnableCap.DepthTest);
+            else
+                GL.Disable(EnableCap.DepthTest);
+
+            if (Runtime.renderModel)
+                DrawModels();
+            //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            // render gaussian blur stuff
+            if (Runtime.drawQuadBlur)
+                DrawQuadBlur();
+
+            // render full screen quad for post processing
+            if (Runtime.drawQuadFinalOutput)
+                DrawQuadFinalOutput();
+
+            // use fixed function pipeline again for area lights, lvd, bones, hitboxes, etc
+            SetupFixedFunctionRendering();
+
+            // draw path.bin
+            if (Runtime.renderPath)
+                DrawPathDisplay();
+
+            // area light bounding boxes should intersect stage geometry and not render on top
+            DrawAreaLightBoundingBoxes();
+
+            // clear depth buffer so stuff will render on top of the models
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            if (Runtime.renderLVD)
+                DrawLVD();
+
+            if (Runtime.renderBones)
+                DrawBones();
+
+            DrawHitboxesHurtboxes();
+
+            // draw last to avoid messing up transformations and colors
+            //DrawLightArrows(Runtime.dif_rotX, Runtime.dif_rotY, Runtime.dif_rotZ, new Vector3(0.0f), diffuseLight.R, diffuseLight.G, diffuseLight.B);
+
+            // Clean up
+            GL.PopAttrib();
+            glControl1.SwapBuffers();
+        }
+
+        private static void DrawLightArrows(float rotX, float rotY, float rotZ, Vector3 center, float R, float G, float B)
+        {
+            // can reuse this function to draw arrows for all directional lights
+            // should use parameters for rotation, center point, color, and wireframe stuff
+
+            // set default rotation
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+
+            // rotate arrow to match light direction
+            GL.Rotate(rotX, 1.0f, 0.0f, 0.0f);
+            GL.Rotate(-rotY, 0.0f, 0.0f, 1.0f);
+            GL.Rotate(rotZ, 0.0f, 1.0f, 0.0f);
+
+            Vector3 p1 = new Vector3(0.0f, 0.0f, 0.0f);
+            Vector3 p2 = new Vector3(0.0f, 5.0f, 0.0f);
+
+            // set color to light color
+            int r = (int)(diffuseLight.R * 255);
+            r = RenderTools.ClampInt(r);
+            int g = (int)(diffuseLight.G * 255);
+            g = RenderTools.ClampInt(g);
+            int b = (int)(diffuseLight.G * 255);
+            b = RenderTools.ClampInt(b);
+            GL.Color4(Color.FromArgb(255, r, g, b));
+
+            RenderTools.drawPyramidWireframe(p1, 5.0f, 3.0f);
+            RenderTools.drawRectangularPrismWireframe(p2, 2.0f, 5.0f, 2.0f);
+        }
+
+        private static void SetupFixedFunctionRendering()
+        {
             GL.UseProgram(0);
 
-            // drawing floor---------------------------
-            if (Runtime.renderFloor)
-            {
-                RenderTools.drawFloor();
-            }
-
-            //GL.Enable(EnableCap.LineSmooth); // This is Optional 
-            GL.Enable(EnableCap.Normalize);  // These is critical to have
+            GL.Enable(EnableCap.LineSmooth); // This is Optional 
+            GL.Enable(EnableCap.Normalize);  // This is critical to have
             GL.Enable(EnableCap.RescaleNormal);
 
             GL.Enable(EnableCap.Blend);
@@ -554,68 +696,107 @@ namespace Smash_Forge
 
             GL.Enable(EnableCap.StencilTest);
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
-
-            // GL.Enable(EnableCap.FramebufferSrgb);
-
-
-            // draw models
-            //RenderTools.drawHitboxCircle(new Vector3(3, 3, 3), 5, 30, v.ClearTranslation().Inverted());
-            
-            renderTime.Start();
-
-            if (!Runtime.useDepthTest)
-                GL.Disable(EnableCap.DepthTest);
-
-            if (Runtime.renderModel) DrawModels();
-
-            renderTime.Stop();
-            double fps = 1000 / (renderTime.ElapsedMilliseconds + 0.0001);
-            //Debug.WriteLine(renderTime.ElapsedMilliseconds.ToString()); // render time for NUD shader in milliseconds
-            renderTime.Reset();
-
-            /*{
-                //draw
-                foreach (ModelContainer c in Runtime.ModelContainers)
-                {
-                    if (c.nud != null)
-                    {
-                        c.nud.RenderShadow(v);
-                        c.nud.RenderShadow(lightMatrix);
-                    }
-                }
-            }*/
-
-
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-            GL.DepthFunc(DepthFunction.Less);
-            GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-            GL.Disable(EnableCap.CullFace);
-            //GL.Disable(EnableCap.FramebufferSrgb);
-
-            GL.UseProgram(0);
-            // draw path.bin
-            if (Runtime.renderPath)
-                DrawPathDisplay();
-            // clear the buffer bit so the skeleton 
-            // will be drawn on top of everything
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-            // draw lvd
-            if (Runtime.renderLVD)
-                DrawLVD();
-            // drawing the bones
-            DrawBones();
-
-            /*GL.LineWidth(3f);
-            GL.Color3(freezeCamera ? Color.Yellow : Color.White);
-            RenderTools.drawCircle(new Vector3(6, 6, 6), 5, 30);
-
-            Cursor.Current = freezeCamera ? Cursors.VSplit : Cursors.Default;*/
-
-            // Clean up
-            GL.PopAttrib();
-            glControl1.SwapBuffers();
         }
-        
+
+        private void DrawModelShadow()
+        {
+            // update light matrix and setup shadowmap rendering
+            CalculateLightSource();
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref lightMatrix);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Viewport(0, 0, sw, sh);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
+
+            // critical to clear depth buffer
+            GL.Clear(ClearBufferMask.DepthBufferBit); 
+            
+            foreach (ModelContainer c in Runtime.ModelContainers)
+            {
+                if (c.nud != null)
+                {
+                    c.nud.RenderShadow(lightMatrix, mvpMatrix, modelMatrix);
+                }
+            }
+            
+            // reset matrices and viewport for model rendering again
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.LoadMatrix(ref mvpMatrix);
+            GL.Viewport(glControl1.ClientRectangle); 
+        }
+
+        private void DrawQuadBlur()
+        {
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Disable(EnableCap.DepthTest);
+            bool horizontal = true;
+            bool first_iteration = true;
+            int blur_amount = 10;
+            DrawScreenQuadBlur(blur_amount, horizontal, first_iteration);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+        }
+
+        private void DrawQuadFinalOutput()
+        {
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, colorTexture1);
+
+            GL.ActiveTexture(TextureUnit.Texture11);
+            GL.BindTexture(TextureTarget.Texture2D, depthmap);
+
+            GL.Disable(EnableCap.DepthTest);
+            DrawScreenQuad();
+        }
+
+        private void DrawHitboxesHurtboxes()
+        {
+            if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
+            {
+                HandleACMD(Runtime.TargetAnimString.Substring(3));
+            }
+
+            // Hurtboxes and ECBs first so they appear under hitboxes
+            if (Runtime.renderHurtboxes)
+                RenderHurtboxes();
+            if (Runtime.renderECB)
+                RenderECB();
+
+            if (Runtime.renderSpecialBubbles)
+                RenderSpecialBubbles();
+
+            if (Runtime.renderHitboxes && Runtime.renderInterpolatedHitboxes)
+                RenderInterpolatedHitboxes();
+
+            // Must come after interpolated boxes to appear on top
+            if (Runtime.renderHitboxes)
+                RenderHitboxes();
+        }
+
+        private static void DrawAreaLightBoundingBoxes()
+        {
+            foreach (KeyValuePair<string, AreaLight> areaLight in Runtime.areaLights)
+            {
+                if (areaLight.Value.renderBoundingBox)
+                {
+                    Vector3 center = new Vector3(areaLight.Value.positionX, areaLight.Value.positionY, areaLight.Value.positionZ);
+                    RenderTools.drawRectangularPrismWireframe(center, areaLight.Value.scaleX, areaLight.Value.scaleY, areaLight.Value.scaleZ);
+                }
+            }
+        }
+
+        private static void renderBackground()
+        {
+            GL.Begin(PrimitiveType.Quads);
+            GL.Color3(Runtime.back1);
+            GL.Vertex2(1.0, 1.0);
+            GL.Vertex2(-1.0, 1.0);
+            GL.Color3(Runtime.back2);
+            GL.Vertex2(-1.0, -1.0);
+            GL.Vertex2(1.0, -1.0);
+            GL.End();
+        }
+
         public void UpdateCameraPositionControl()
         {
             if (cameraPosForm != null && !cameraPosForm.IsDisposed)
@@ -624,21 +805,25 @@ namespace Smash_Forge
 
         public void UpdateMousePosition()
         {
-            float zoomscale = Runtime.zoomspeed;
+            float zoomMultiplier = Runtime.zoomModifierScale; // convert zoomSpeed to in game stprm zoom speed. still not exact
+            float mouseTranslateSpeed = 0.050f;
+            float scrollWheelZoomSpeed = 1.75f;
+            float shiftZoomMultiplier = 2.5f;
+            float zoomscale = Runtime.zoomspeed * zoomMultiplier;
 
             if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
             {
-                height += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                width += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                height += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                width += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
             }
             if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
             {
-                rot += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                lookup += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                cameraYRotation += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                cameraXRotation += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
             }
 
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
-                zoomscale = 6;
+                zoomscale *= shiftZoomMultiplier;
 
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Down))
                 zoom -= 1 * zoomscale;
@@ -648,11 +833,11 @@ namespace Smash_Forge
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
-            zoom += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale;
+            zoom += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale * scrollWheelZoomSpeed;
 
-            v = Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) 
+            mvpMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width,-height,zoom) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
-            //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
+            //v2 = Matrix4.CreateTranslation(width,-height,zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
         public bool IsMouseOverViewport()
         {
@@ -669,7 +854,7 @@ namespace Smash_Forge
                 if (cf >= Runtime.TargetPath.Frames.Count)
                     cf = 0;
                 pathFrame f = Runtime.TargetPath.Frames[cf];
-                v = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() 
+                mvpMatrix = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() 
                     * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 90000.0f);
                 cf++;
             }
@@ -678,7 +863,7 @@ namespace Smash_Forge
                 if (cf >= Runtime.TargetCMR0.frames.Count)
                     cf = 0;
                 Matrix4 m = Runtime.TargetCMR0.frames[cf].Inverted();
-                v = Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) 
+                mvpMatrix = Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) 
                     * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 90000.0f);
                 cf++;
             }
@@ -686,36 +871,22 @@ namespace Smash_Forge
 
         private void DrawModels()
         {
+           
             // Bounding Box Render
-            if(Runtime.renderBoundingBox)
-            foreach (ModelContainer m in Runtime.ModelContainers)
+            if (Runtime.renderBoundingBox)
             {
-                if (m.nud != null)
-                {
-                    RenderTools.drawCubeWireframe(new Vector3(m.nud.param[0], m.nud.param[1], m.nud.param[2]), m.nud.param[3]);
-                    foreach (NUD.Mesh mesh in m.nud.mesh)
-                    {
-                        if(mesh.Checked)
-                            RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
-                    }
-                }
+                DrawBoundingBoxes();
             }
-
+  
             shader = Runtime.shaders["NUD"];
             
             GL.UseProgram(shader.programID);
-            int rt = (int)Runtime.renderType;
-            if(rt == 0)
-            {
-                if (Runtime.renderNormals)
-                    rt = rt | (0x10);
-                if (Runtime.renderVertColor)
-                    rt = rt | (0x20);
-            }
-            GL.Uniform1(shader.getAttribute("renderType"), rt);
+            int renderType = (int)Runtime.renderType;
+            GL.Uniform1(shader.getAttribute("renderType"), renderType);
+
             GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderNormal"), Runtime.renderNormals ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderDiffuse"), Runtime.renderDiffuse ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
@@ -723,11 +894,11 @@ namespace Smash_Forge
           
             GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
 
-            GL.Uniform1(shader.getAttribute("ambient"), Runtime.amb_inten);
-            GL.Uniform1(shader.getAttribute("diffuse_intensity"), Runtime.dif_inten);
-            GL.Uniform1(shader.getAttribute("specular_intensity"), Runtime.spc_inten);
-            GL.Uniform1(shader.getAttribute("fresnel_intensity"), Runtime.frs_inten);
-            GL.Uniform1(shader.getAttribute("reflection_intensity"), Runtime.ref_inten);
+            GL.Uniform1(shader.getAttribute("ambientIntensity"), Runtime.amb_inten);
+            GL.Uniform1(shader.getAttribute("diffuseIntensity"), Runtime.dif_inten);
+            GL.Uniform1(shader.getAttribute("specularIntensity"), Runtime.spc_inten);
+            GL.Uniform1(shader.getAttribute("fresnelIntensity"), Runtime.frs_inten);
+            GL.Uniform1(shader.getAttribute("reflectionIntensity"), Runtime.ref_inten);
 
             GL.Uniform1(shader.getAttribute("zScale"), Runtime.zScale);
 
@@ -735,153 +906,133 @@ namespace Smash_Forge
             GL.BindTexture(TextureTarget.Texture2D, depthmap);
             GL.Uniform1(shader.getAttribute("shadowmap"), 11);
 
-            #region character lighting color uniforms
+            GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
+            GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
 
-            float difR, difG, difB = 1.0f;
-            RenderTools.HSV2RGB(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity, out difR, out difG, out difB);
-            GL.Uniform3(shader.getAttribute("difLightColor"), difR, difG, difB);
-
-            float ambR, ambG, ambB = 1.0f;
-            RenderTools.HSV2RGB(Runtime.amb_hue, Runtime.amb_saturation, Runtime.amb_intensity, out ambR, out ambG, out ambB);
-            GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
-
+            // fresnel ground color for characters & stages
             float fresGroundR, fresGroundG, fresGroundB = 1.0f;
             RenderTools.HSV2RGB(Runtime.fres_ground_hue, Runtime.fres_ground_saturation, Runtime.fres_ground_intensity, out fresGroundR, out fresGroundG, out fresGroundB);
             GL.Uniform3(shader.getAttribute("fresGroundColor"), fresGroundR, fresGroundG, fresGroundB);
-
+            // fresnel sky color for characters & stages
             float fresSkyR, fresSkyG, fresSkyB = 1.0f;
             RenderTools.HSV2RGB(Runtime.fres_sky_hue, Runtime.fres_sky_saturation, Runtime.fres_sky_intensity, out fresSkyR, out fresSkyG, out fresSkyB);
             GL.Uniform3(shader.getAttribute("fresSkyColor"), fresSkyR, fresSkyG, fresSkyB);
 
-            float specR, specG, specB = 1.0f;
-            RenderTools.HSV2RGB(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity, out specR, out specG, out specB);
-            GL.Uniform3(shader.getAttribute("specLightColor"), specR, specG, specB);
-
+            // reflection color for characters & stages
             float refR, refG, refB = 1.0f;
             RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
             GL.Uniform3(shader.getAttribute("refLightColor"), refR, refG, refB);
-     
-            #endregion
 
-            #region stage lighting color uniforms
+            // character diffuse light
+            diffuseLight.setColorFromHSV(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity);
+            diffuseLight.setDirectionFromXYZAngles(Runtime.dif_rotX, Runtime.dif_rotY, Runtime.dif_rotZ);
+            GL.Uniform3(shader.getAttribute("difLightColor"), diffuseLight.R, diffuseLight.G, diffuseLight.B);
+            // character ambient light
+            float ambR, ambG, ambB = 1.0f;
+            RenderTools.HSV2RGB(Runtime.amb_hue, Runtime.amb_saturation, Runtime.amb_intensity, out ambR, out ambG, out ambB);
+            GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
+
+            // character specular light
+            specularLight.setColorFromHSV(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity);
+            specularLight.setDirectionFromXYZAngles(Runtime.specular_rotX, Runtime.specular_rotY, Runtime.specular_rotZ);
+            GL.Uniform3(shader.getAttribute("specLightColor"), specularLight.R, specularLight.G, specularLight.B);
 
             // stage light 1
             GL.Uniform1(shader.getAttribute("renderStageLight1"), Runtime.renderStageLight1 ? 1 : 0);
-            float stage1R, stage1G, stage1B = 1.0f;
-            RenderTools.HSV2RGB(Runtime.stagelight1_hue, Runtime.stagelight1_saturation, Runtime.stagelight1_intensity, out stage1R, out stage1G, out stage1B);
-            GL.Uniform3(shader.getAttribute("stageLight1Color"), stage1R, stage1G, stage1B);
+            stageLight1.setColorFromHSV(Runtime.stagelight1_hue, Runtime.stagelight1_saturation, Runtime.stagelight1_intensity);
+            stageLight1.setDirectionFromXYZAngles(Runtime.stagelight1_rotX, Runtime.stagelight1_rotY, Runtime.stagelight1_rotZ);
+            GL.Uniform3(shader.getAttribute("stageLight1Color"), stageLight1.R, stageLight1.G, stageLight1.B);
 
             // stage light 2
             GL.Uniform1(shader.getAttribute("renderStageLight2"), Runtime.renderStageLight2 ? 1 : 0);
-            float stage2R, stage2G, stage2B = 1.0f;
-            RenderTools.HSV2RGB(Runtime.stagelight2_hue, Runtime.stagelight2_saturation, Runtime.stagelight2_intensity, out stage2R, out stage2G, out stage2B);
-            GL.Uniform3(shader.getAttribute("stageLight2Color"), stage2R, stage2G, stage2B);
-            
+            stageLight2.setColorFromHSV(Runtime.stagelight2_hue, Runtime.stagelight2_saturation, Runtime.stagelight2_intensity);
+            stageLight2.setDirectionFromXYZAngles(Runtime.stagelight2_rotX, Runtime.stagelight2_rotY, Runtime.stagelight2_rotZ);
+            GL.Uniform3(shader.getAttribute("stageLight2Color"), stageLight2.R, stageLight2.G, stageLight2.B);
+
             // stage light 3
             GL.Uniform1(shader.getAttribute("renderStageLight3"), Runtime.renderStageLight3 ? 1 : 0);
-            float stage3R, stage3G, stage3B = 1.0f;
-            RenderTools.HSV2RGB(Runtime.stagelight3_hue, Runtime.stagelight3_saturation, Runtime.stagelight3_intensity, out stage3R, out stage3G, out stage3B);
-            GL.Uniform3(shader.getAttribute("stageLight3Color"), stage3R, stage3G, stage3B);
+            stageLight3.setColorFromHSV(Runtime.stagelight3_hue, Runtime.stagelight3_saturation, Runtime.stagelight3_intensity);
+            stageLight3.setDirectionFromXYZAngles(Runtime.stagelight3_rotX, Runtime.stagelight3_rotY, Runtime.stagelight3_rotZ);
+            GL.Uniform3(shader.getAttribute("stageLight3Color"), stageLight3.R, stageLight3.G, stageLight3.B);
 
-            // stage light 4. colors don't work properly
+            // stage light 4
             GL.Uniform1(shader.getAttribute("renderStageLight4"), Runtime.renderStageLight4 ? 1 : 0);
-            float stage4R, stage4G, stage4B = 1.0f;
-            RenderTools.HSV2RGB(Runtime.stagelight4_hue, Runtime.stagelight4_saturation, Runtime.stagelight4_intensity, out stage4R, out stage4G, out stage4B);
-            GL.Uniform3(shader.getAttribute("stageLight4Color"), stage4R, stage4G, stage4B);
+            stageLight4.setColorFromHSV(Runtime.stagelight4_hue, Runtime.stagelight4_saturation, Runtime.stagelight4_intensity);
+            stageLight4.setDirectionFromXYZAngles(Runtime.stagelight4_rotX, Runtime.stagelight4_rotY, Runtime.stagelight4_rotZ);
+            GL.Uniform3(shader.getAttribute("stageLight4Color"), stageLight4.R, stageLight4.G, stageLight4.B);
 
-
+            // stage fog
             GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
             float stageFogR, stageFogG, stageFogB = 1.0f;
             RenderTools.HSV2RGB(Runtime.fog_hue, Runtime.fog_saturation, Runtime.fog_intensity, out stageFogR, out stageFogG, out stageFogB);
             GL.Uniform3(shader.getAttribute("stageFogColor"), stageFogR, stageFogG, stageFogB);
 
-            #endregion
+            Vector3 lightDirection = new Vector3(0f, 0f, -1f);
 
-            #region light_set rotation data uniforms
-            // light_set_param xyz rotation to vector for lighting calculations. Current matrices aren't correct!
-
-
-            // convert to radians
-            float difRotX = Runtime.dif_rotX * ((float)Math.PI / 180f);
-            float difRotY = Runtime.dif_rotY * ((float)Math.PI / 180f);
-            float difRotZ = Runtime.dif_rotZ * ((float)Math.PI / 180f);
-
-            Matrix4 difrot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, difRotX)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, difRotY)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, difRotZ);
-
-
-            float specRotX = Runtime.specular_rotX * ((float)Math.PI / 180f);
-            float specRotY = Runtime.specular_rotY * ((float)Math.PI / 180f);
-            float specRotZ = Runtime.specular_rotZ * ((float)Math.PI / 180f);
-
-            Matrix4 specrot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, specRotX)
-              * Matrix4.CreateFromAxisAngle(Vector3.UnitY, specRotY)
-              * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, specRotZ);
-
-
-            float stageLight1RotX = Runtime.stagelight1_rotX * ((float)Math.PI / 180f);
-            float stageLight1RotY = Runtime.stagelight1_rotY * ((float)Math.PI / 180f);
-            float stageLight1RotZ = Runtime.stagelight1_rotZ * ((float)Math.PI / 180f);
-
-            Matrix4 stagelight1rot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, stageLight1RotX)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, stageLight1RotY)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight1RotZ);
-
-            float stageLight2RotX = Runtime.stagelight2_rotX * ((float)Math.PI / 180f);
-            float stageLight2RotY = Runtime.stagelight2_rotY * ((float)Math.PI / 180f);
-            float stageLight2RotZ = Runtime.stagelight2_rotZ * ((float)Math.PI / 180f);
-
-            Matrix4 stagelight2rot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, stageLight2RotX)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, stageLight2RotY)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight2RotZ);
-
-            float stageLight3RotX = Runtime.stagelight3_rotX * ((float)Math.PI / 180f);
-            float stageLight3RotY = Runtime.stagelight3_rotY * ((float)Math.PI / 180f);
-            float stageLight3RotZ = Runtime.stagelight3_rotZ * ((float)Math.PI / 180f);
-
-            Matrix4 stagelight3rot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, stageLight3RotX)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, stageLight3RotY)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight3RotZ);
-
-            float stageLight4RotX = Runtime.stagelight4_rotX * ((float)Math.PI / 180f);
-            float stageLight4RotY = Runtime.stagelight4_rotY * ((float)Math.PI / 180f);
-            float stageLight4RotZ = Runtime.stagelight4_rotZ * ((float)Math.PI / 180f);
-
-            Matrix4 stagelight4rot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, stageLight4RotX)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, stageLight4RotY)
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, stageLight4RotZ);
-
-            Vector3 lightDirection= new Vector3(0f, 0f, -1f);
-            Vector3 difDir = new Vector3(0f, 0f, 1f);
-            Vector3 specDir = new Vector3(0f, 0f, 1f);
-            Vector3 stageLight1Dir = new Vector3(0f, 0f, 1f);
-            Vector3 stageLight2Dir = new Vector3(0f, 0f, 1f);
-            Vector3 stageLight3Dir = new Vector3(0f, 0f, 1f);
-            Vector3 stageLight4Dir = new Vector3(0f, 0f, 1f);
-
-            if (Runtime.CameraLight)
+            if (Runtime.cameraLight) // camera light should only affects character lighting
             {
-                GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
-                GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
-                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, v.Inverted()).Normalized());
-                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, v));
+                GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, mvpMatrix));
             }
             else
             {
-                GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.Transform(specDir, specrot).Normalized());
-                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.Transform(difDir, difrot).Normalized());
-                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, v));
+                GL.Uniform3(shader.getAttribute("specLightDirection"), specularLight.direction);
+                GL.Uniform3(shader.getAttribute("difLightDirection"), diffuseLight.direction);
+                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, mvpMatrix));
                 GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
             }
 
-            GL.Uniform3(shader.getAttribute("stageLight1Direction"), Vector3.Transform(stageLight1Dir, stagelight1rot).Normalized());
-            GL.Uniform3(shader.getAttribute("stageLight2Direction"), Vector3.Transform(stageLight2Dir, stagelight2rot).Normalized());
-            GL.Uniform3(shader.getAttribute("stageLight3Direction"), Vector3.Transform(stageLight3Dir, stagelight3rot).Normalized());
-            GL.Uniform3(shader.getAttribute("stageLight4Direction"), Vector3.Transform(stageLight4Dir, stagelight4rot).Normalized());
+            GL.Uniform3(shader.getAttribute("stageLight1Direction"), stageLight1.direction);
+            GL.Uniform3(shader.getAttribute("stageLight2Direction"), stageLight2.direction);
+            GL.Uniform3(shader.getAttribute("stageLight3Direction"), stageLight3.direction);
+            GL.Uniform3(shader.getAttribute("stageLight4Direction"), stageLight4.direction);
+
+            #region MBN Uniforms
+
+            shader = Runtime.shaders["MBN"];
+            GL.UseProgram(shader.programID);
+
+            if (Runtime.cameraLight)
+            {
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
+            }
+            else
+            {
+                GL.Uniform3(shader.getAttribute("difLightDirection"), diffuseLight.direction);
+            }
+
+            GL.Uniform3(shader.getAttribute("difLightColor"), diffuseLight.R, diffuseLight.G, diffuseLight.B);
+            GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
+
+            GL.ActiveTexture(TextureUnit.Texture10);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
+            GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
+
+            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderType"), renderType);
 
             #endregion
 
+            #region DAT uniforms
+            shader = Runtime.shaders["DAT"];
+            GL.UseProgram(shader.programID);
+
+            GL.Uniform3(shader.getAttribute("difLightColor"), diffuseLight.R, diffuseLight.G, diffuseLight.B);
+            GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
+
+            GL.ActiveTexture(TextureUnit.Texture10);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
+            GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
+
+            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderType"), renderType);
+            #endregion
+
+
+            shader = Runtime.shaders["NUD"];
+            GL.UseProgram(shader.programID);
 
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
@@ -889,13 +1040,14 @@ namespace Smash_Forge
                 {
                     if (m.bch.mbn != null)
                     {
-                        m.bch.mbn.Render(v);
+                        m.bch.mbn.Render(mvpMatrix);
+                       
                     }
                 }
 
                 if (m.dat_melee != null)
                 {
-                    m.dat_melee.Render(v);
+                    m.dat_melee.Render(mvpMatrix);
                 }
 
                 if (m.nud != null)
@@ -903,15 +1055,16 @@ namespace Smash_Forge
                     GL.ActiveTexture(TextureUnit.Texture2);
                     GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex);
                     GL.Uniform1(shader.getAttribute("cmap"), 2);
-                    GL.UniformMatrix4(shader.getAttribute("eyeview"), false, ref v);
+                    GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
+                   
+
+                    GL.ActiveTexture(TextureUnit.Texture11);
+                    GL.BindTexture(TextureTarget.Texture2D, depthmap);
+                    GL.Uniform1(shader.getAttribute("shadowMap"), 11);
 
                     if (m.vbn != null)
                     {
                         Matrix4[] f = m.vbn.getShaderMatrix();
-                        /*int shad = shader.getAttribute("bones");
-                        GL.UniformMatrix4(shad, f.Length, false, ref f[0].Row0.X);*/
-                        //int shadi = shader.getAttribute("boneIT");
-                        //GL.UniformMatrix4(shadi, f.Length, false, ref m.vbn.bonematIT[0].Row0.X);
 
                         int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
                         int boneCount = m.vbn.bones.Count;
@@ -924,24 +1077,15 @@ namespace Smash_Forge
                         var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
                         GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
 
-                        //GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bonesIT);
-                        //GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
-                        //GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-                        //blockIndex = GL.GetUniformBlockIndex(shader.programID, "bonesIT");
-                        //GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bonesIT);
-
                         if (f.Length > 0)
                         {
                             GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
                             GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
-
-                            //GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bonesIT);
-                            //GL.BufferSubData(BufferTarget.UniformBuffer, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), (IntPtr)(f.Length * Vector4.SizeInBytes * 4), m.vbn.bonematIT);
                         }
                     }
 
                     shader.enableAttrib();
-                    m.nud.clearMTA();//Clear animated materials
+                    m.nud.clearMTA();
 
                     if (m.mta != null)
                         m.nud.applyMTA(m.mta, (int)nupdFrame.Value - 1);//Apply base mta
@@ -954,13 +1098,113 @@ namespace Smash_Forge
                 }
             }
         }
+        private void DrawScreenQuad() 
+        {
+            // draw a full screen quad for fbo debugging and post processing
+            shader = Runtime.shaders["Quad"];
+            GL.UseProgram(shader.programID);
 
+            GL.ActiveTexture(TextureUnit.Texture11);
+            GL.BindTexture(TextureTarget.Texture2D, depthmap);
+            GL.Uniform1(shader.getAttribute("ShadowMap"), 11);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, colorTexture1);
+            GL.Uniform1(shader.getAttribute("ScreenRender"), 0);
+
+            GL.ActiveTexture(TextureUnit.Texture1);
+            GL.BindTexture(TextureTarget.Texture2D, pingPongColorTexture1);
+            GL.Uniform1(shader.getAttribute("ScreenRenderBlur"), 1);
+
+            // just use a big triangle instead of a quad
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 3); 
+            GL.BindVertexArray(0);
+      
+        }
+
+
+        private void DrawScreenQuadBlur(int blur_amount, bool horizontal, bool first_iteration) 
+        {
+            // draw a full screen quad for fbo debugging and post processing
+            shader = Runtime.shaders["Blur"];
+            GL.UseProgram(shader.programID);
+            
+            GL.ActiveTexture(TextureUnit.Texture0);// should I bind a texture here
+            GL.Uniform1(shader.getAttribute("image"), 0);
+
+            for (int i = 0; i < blur_amount; i++)
+            {
+                
+                if (horizontal)
+                {
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, pingPongFBO1);
+                    //Debug.WriteLine("pingPongFBO1");
+                }
+    
+                else
+                {
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, pingPongFBO2);
+                    //Debug.WriteLine("pingPongFBO2");
+                }
+                 
+
+                GL.Uniform1(shader.getAttribute("horizontal"), horizontal ? 1 : 0);
+
+                if (first_iteration)
+                {
+                    GL.BindTexture(TextureTarget.Texture2D, colorTexture2);
+                    Debug.WriteLine("First Iteration");
+                }
+                   
+                else
+                {
+
+                    if (horizontal)
+                    {
+                        Debug.WriteLine("ColorTexture1");
+                        GL.BindTexture(TextureTarget.Texture2D, pingPongColorTexture1);
+                    }
+
+                    else if (!horizontal)
+                    {
+                        Debug.WriteLine("ColorTexture2");
+                        GL.BindTexture(TextureTarget.Texture2D, pingPongColorTexture2);
+                    }
+               
+                }
+            
+                // render screen quad
+                GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // just use a big triangle instead
+                GL.BindVertexArray(0);
+       
+                horizontal = !horizontal;
+                if (first_iteration)
+                    first_iteration = false;
+
+            }
+
+        }
+
+        private static void DrawBoundingBoxes()
+        {
+            foreach (ModelContainer m in Runtime.ModelContainers)
+            {
+                if (m.nud != null)
+                {
+                    RenderTools.drawCubeWireframe(new Vector3(m.nud.param[0], m.nud.param[1], m.nud.param[2]), m.nud.param[3]);
+                    foreach (NUD.Mesh mesh in m.nud.mesh)
+                    {
+                        if (mesh.Checked)
+                            RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
+                    }
+                }
+            }
+        }
 
         private void DrawBones()
         {
             if (Runtime.ModelContainers.Count > 0)
             {
-                // Render bones
                 foreach (ModelContainer m in Runtime.ModelContainers)
                 {
                     RenderTools.DrawVBN(m.vbn);
@@ -973,27 +1217,7 @@ namespace Smash_Forge
                     {
                         RenderTools.DrawVBN(m.dat_melee.bones);
                     }
-                }
-
-                // Render the hitboxes - because of how we disable the depth buffer here,
-                // make sure that everything else is drawn before this!
-                if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
-                {
-                    HandleACMD(Runtime.TargetAnimString.Substring(3));
-                }
-
-                // Hurtboxes and ECBs first so they appear under hitboxes
-                if (Runtime.renderHurtboxes)
-                    RenderHurtboxes();
-                if (Runtime.renderECB)
-                    RenderECB();
-
-                if (Runtime.renderHitboxes && Runtime.renderInterpolatedHitboxes)
-                    RenderInterpolatedHitboxes();
-
-                // Must come after interpolated boxes to appear on top
-                if (Runtime.renderHitboxes)
-                    RenderHitboxes();
+                }           
             }
         }
 
@@ -1734,7 +1958,7 @@ namespace Smash_Forge
                     {
                         // Don't interpolate extended hitboxes - there is data to suggest they don't interpolate
                         if (!h.Extended)
-                            RenderTools.drawCylinder(va, lastMatchingHitbox.va, lastMatchingHitbox.Size);
+                            RenderTools.drawCylinder(va, lastMatchingHitbox.va, h.Size);
                     }
                 }
 
@@ -1891,7 +2115,54 @@ namespace Smash_Forge
                 GL.Disable(EnableCap.Blend);
             }
         }
-        
+
+        public void RenderSpecialBubbles()
+        {
+
+            if(Runtime.TargetAnimString == null)
+                return;
+
+            if (Runtime.ParamManager.SpecialBubbles.Count > 0)
+            {
+                GL.Enable(EnableCap.DepthTest);
+                GL.Enable(EnableCap.Blend);
+
+                foreach (var pair in Runtime.ParamManager.SpecialBubbles.Reverse())
+                {
+                    var h = pair.Value;
+
+                    if (!h.Animations.Contains(Runtime.TargetAnimString.Substring(3).Replace(".omo", "").ToLower()) && !h.Animations.Contains("*"))
+                        continue;
+
+                    if ((int)nupdFrame.Value < h.StartFrame)
+                        continue;
+
+                    if ((int)nupdFrame.Value > h.EndFrame && h.EndFrame != -1)
+                        continue;
+
+                    Bone b = getBone(h.Bone);
+
+                    var va = new Vector3(h.X, h.Y, h.Z);
+
+                    GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, h.Color));
+
+                    var va2 = new Vector3(h.X2, h.Y2, h.Z2);
+
+                    if (h.isSphere)
+                    {
+                        RenderTools.drawSphereTransformedVisible(va, h.Size, 30, b.transform.ClearScale());
+                    }
+                    else
+                    {
+                        RenderTools.drawReducedCylinderTransformed(va, va2, h.Size, b.transform.ClearScale());
+                    }
+                    
+                }
+                GL.Disable(EnableCap.DepthTest);
+                GL.Disable(EnableCap.Blend);
+            }
+        }
+
         ACMDScript scr_sound;
 
         int lastFrame = 0;
@@ -2076,11 +2347,11 @@ namespace Smash_Forge
 
         private void button1_Click(object sender, EventArgs e)
         {
-            rot = 0;
-            lookup = 0;
-            height = 0;
+            cameraYRotation = 0;
+            cameraXRotation = 0;
+            height = 10;
             width = 0;
-            zoom = 0;
+            zoom = -80;
             nzoom = 0;
             mouseXLast = 0;
             mouseYLast = 0;
@@ -2106,14 +2377,10 @@ namespace Smash_Forge
         private void VBNViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
             if (e.KeyChar == 'i')
-            {   /*
-                GL.DeleteProgram(Runtime.shaders["NUD"].programID);
-                shader = new Shader();
-                shader.vertexShader(File.ReadAllText("vert.txt"));
-                shader.fragmentShader(File.ReadAllText("frag.txt"));
-                Runtime.shaders["NUD"] = shader; */
+            {
+                //reloadShaderFromFile("MBN", File.ReadAllText("vert.txt"), File.ReadAllText("frag.txt"));
+                //reloadShaderFromFile("Texture", File.ReadAllText("vert.txt"), File.ReadAllText("frag.txt"));
             }
-
             /*if (e.KeyChar == 'w')
             {
                 int width = sw;
@@ -2128,6 +2395,7 @@ namespace Smash_Forge
                 GL.GetTexImage(TextureTarget.Texture2D,0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, pixels);
                 File.WriteAllBytes("shadowFB.bin", pixels);
             }*/
+
             if (e.KeyChar == 'r')
             {
                 CaptureScreen(true).Save(MainForm.executableDir + "\\Render.png");
@@ -2225,6 +2493,84 @@ namespace Smash_Forge
                 {
                 }
             }
+            /*
+            HI FRUITMAGE WAS HERE, I MADE A SHITTY ROCK PAPER SCISSORS
+            */
+            if (e.KeyChar == 'm')
+            {
+                DialogResult dialogResult = MessageBox.Show("fruitmage was here, have a nice day", "cool message box", MessageBoxButtons.OK);
+                if (dialogResult == DialogResult.OK)
+                {
+                    dialogResult = MessageBox.Show("wanna play rock paper scissors?\n yes = rock\n no = paper\n cancel = scissors", "cool message box", MessageBoxButtons.YesNoCancel);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        Random randomNumber = new Random();
+                        int randResult = randomNumber.Next(0, 2);
+                        if (randResult == 0) //tie
+                        {
+                            dialogResult = MessageBox.Show("i played rock on your rock, it's a tie", "cool message box", MessageBoxButtons.OK);
+                        }
+                        if (randResult == 1) //lose
+                        {
+                            dialogResult = MessageBox.Show("i played paper on your rock, you lose", "cool message box", MessageBoxButtons.OK);
+                        }
+                        if (randResult == 2) //win
+                        {
+                            dialogResult = MessageBox.Show("i played scissors on your rock, you win", "cool message box", MessageBoxButtons.OK);
+                        }
+                    }
+                    if (dialogResult == DialogResult.No)
+                    {
+                        Random randomNumber = new Random();
+                        int randResult = randomNumber.Next(0, 2);
+                        if (randResult == 0) //win
+                        {
+                            dialogResult = MessageBox.Show("i played rock on your paper, you win", "cool message box", MessageBoxButtons.OK);
+                        }
+                        if (randResult == 1) //tie
+                        {
+                            dialogResult = MessageBox.Show("i played paper on your paper, it's a tie", "cool message box", MessageBoxButtons.OK);
+                        }
+                        if (randResult == 2) //lose
+                        {
+                            dialogResult = MessageBox.Show("i played scissors on your paper, you lose", "cool message box", MessageBoxButtons.OK);
+                        }
+                    }
+                    if (dialogResult == DialogResult.Cancel)
+                    {
+                        Random randomNumber = new Random();
+                        int randResult = randomNumber.Next(0, 2);
+                        if (randResult == 0) //lose
+                        {
+                            dialogResult = MessageBox.Show("i played rock on your scissors, you lose", "cool message box", MessageBoxButtons.OK);
+                        }
+                        if (randResult == 1) //win
+                        {
+                            dialogResult = MessageBox.Show("i played paper on your scissors, you win", "cool message box", MessageBoxButtons.OK);
+                        }
+                        if (randResult == 2) //tie
+                        {
+                            dialogResult = MessageBox.Show("i played scissors on your scissors, it's a tie", "cool message box", MessageBoxButtons.OK);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void reloadShaderFromFile(string shaderName, string vertexFilePath, string fragmentFilePath)
+        {
+            GL.DeleteProgram(Runtime.shaders["NUD"].programID);
+            shader = new Shader();
+            shader.vertexShader(File.ReadAllText("vert.txt"));
+            shader.fragmentShader(File.ReadAllText("frag.txt"));
+            Runtime.shaders["NUD"] = shader;
+            /*
+            GL.DeleteProgram(Runtime.shaders[shaderName].programID);
+            shader = new Shader();
+            shader.vertexShader(vertexFilePath);
+            shader.fragmentShader(fragmentFilePath);
+            Runtime.shaders[shaderName] = shader;*/
+
         }
 
         System.Drawing.Point mouseDownPos = new System.Drawing.Point();
@@ -2238,8 +2584,8 @@ namespace Smash_Forge
 
             float x = (2.0f * mouse_x) / glControl1.Width - 1.0f;
             float y = 1.0f - (2.0f * mouse_y) / glControl1.Height;
-            Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), v.Inverted());
-            Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), v.Inverted());
+            Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), mvpMatrix.Inverted());
+            Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), mvpMatrix.Inverted());
 
             p1 = va.Xyz;
             p2 = p1 - (va - (va + vb)).Xyz * 100;
@@ -2355,8 +2701,8 @@ namespace Smash_Forge
 
                 float x = (2.0f * mouse_x) / glControl1.Width - 1.0f;
                 float y = 1.0f - (2.0f * mouse_y) / glControl1.Height;
-                Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), v.Inverted());
-                Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), v.Inverted());
+                Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), mvpMatrix.Inverted());
+                Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), mvpMatrix.Inverted());
 
                 p1 = va.Xyz;
                 p2 = p1 - (va - (va + vb)).Xyz * 100;
@@ -2386,14 +2732,15 @@ namespace Smash_Forge
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.S))
                 zoom -= 0.2f;
 
-            rot += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-            lookup += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+            cameraYRotation += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+            cameraXRotation += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
 
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
-            v = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(rot) * Matrix4.CreateRotationX(lookup) 
+            mvpMatrix = Matrix4.CreateTranslation(width,-height,zoom) * Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
+            modelMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
             //v2 = Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
 

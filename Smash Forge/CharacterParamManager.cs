@@ -4,28 +4,41 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SALT.PARAMS;
+using System.Drawing;
+using System.IO;
 
 namespace Smash_Forge
 {
     public class CharacterParamManager
     {
+        private List<csvSpecialBubble> SpecialBubbleData { get; set; }
+
+        public string character { get; set; }
         public ParamFile param { get; set; }
         public SortedList<int, MoveData> MovesData { get; set; }
         public SortedList<int, ECB> ECBs { get; set; }
         public SortedList<int, Hurtbox> Hurtboxes { get; set; }
         public SortedList<int, LedgeGrabbox> LedgeGrabboxes { get; set; }
 
+        public SortedList<int, SpecialBubble> SpecialBubbles { get; set; }
+
         public CharacterParamManager()
         {
             Reset();
         }
 
-        public CharacterParamManager(string file)
+        public CharacterParamManager(string file, string character = null)
         {
             Reset();
+            
             try
             {
                 param = new ParamFile(file);
+
+                if (character != null)
+                    this.character = character;
+                else
+                    this.character = Path.GetFileNameWithoutExtension(file.Replace("fighter_param_vl_", ""));
 
                 //Move data (FAF, Intangibility)
 
@@ -96,6 +109,39 @@ namespace Smash_Forge
 
                     LedgeGrabboxes.Add(id, l);
                 }
+
+                //Special Bubbles, these are used in certain moves as trigger/reflect/absorb bubbles and shields such as counters or reflectors
+
+                //Read the data from the csv file that contains the param group, entry and values as well as the character and animation
+                foreach(csvSpecialBubble sb in SpecialBubbleData)
+                {
+                    if(sb.Character == this.character)
+                    {
+                        try
+                        {
+                            SpecialBubbles.Add(sb.ID, new SpecialBubble()
+                            {
+                                Animations = sb.Animation.ToLower().Split('|').ToList(),
+                                Type = (SpecialBubble.BubbleType)sb.Type,
+                                X = sb.X != -1 ? Convert.ToSingle(((ParamGroup)param.Groups[sb.ParamGroup-1])[sb.ParamEntry][sb.X].Value) : 0,
+                                Y = sb.Y != -1 ? Convert.ToSingle(((ParamGroup)param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Y].Value) : 0,
+                                Z = sb.Z != -1 ? Convert.ToSingle(((ParamGroup)param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Z].Value) : 0,
+                                X2 = sb.X2 != -1 ? Convert.ToSingle(((ParamGroup)param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.X2].Value) : 0,
+                                Y2 = sb.Y2 != -1 ? Convert.ToSingle(((ParamGroup)param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Y2].Value) : 0,
+                                Z2 = sb.Z2 != -1 ? Convert.ToSingle(((ParamGroup)param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Z2].Value) : 0,
+                                Size = sb.Size != -1 ? Convert.ToSingle(((ParamGroup)param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Size].Value) : 0,
+                                Bone = sb.SetBone ? sb.Bone :(sb.Bone != -1 ? Convert.ToInt32(((ParamGroup)param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Bone].Value) : 0),
+                                ID = sb.ID,
+                                StartFrame = sb.StartFrame,
+                                EndFrame = sb.EndFrame
+                            });
+                        }catch
+                        {
+                            //Probably wrong params, ignore it... also don't reset hurtboxes and other stuff if something goes wrong here
+                        }
+                    }
+                }
+
             }
             catch
             {
@@ -107,11 +153,15 @@ namespace Smash_Forge
 
         public void Reset()
         {
+            if (SpecialBubbleData == null)
+                SpecialBubbleData = csvSpecialBubble.Read(Path.Combine(MainForm.executableDir, "characterSpecialBubbles.csv"));
+
             Hurtboxes = new SortedList<int, Hurtbox>();
             MovesData = new SortedList<int, MoveData>();
             LedgeGrabboxes = new SortedList<int, LedgeGrabbox>();
             ECBs = new SortedList<int, ECB>();
             param = null;
+            SpecialBubbles = new SortedList<int, SpecialBubble>();
         }
 
         public void UnselectHurtboxes()
@@ -259,5 +309,135 @@ namespace Smash_Forge
         public float X { get; set; }
         public float Y { get; set; }
         public float Z { get; set; }
+    }
+
+    public class SpecialBubble
+    {
+        public enum BubbleType
+        {
+            COUNTER,
+            REFLECT,
+            ABSORB,
+            SHIELD,
+            WT_SLOWDOWN,
+            OTHER = -1
+        }
+
+        public List<string> Animations { get; set; }
+        public int ID { get; set; }
+        public int Bone { get; set; } = 0;
+        public float Size { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
+        public float X2 { get; set; }
+        public float Y2 { get; set; }
+        public float Z2 { get; set; }
+        public bool isSphere {
+            get
+            {
+                return X2 == 0 && Y2 == 0 && Z2 == 0;
+            }
+        }
+
+        public BubbleType Type;
+
+        public Color Color
+        {
+            get
+            {
+                switch (Type)
+                {
+                    case BubbleType.COUNTER:
+                        return Runtime.counterBubbleColor;
+                    case BubbleType.REFLECT:
+                        return Runtime.reflectBubbleColor;
+                    case BubbleType.ABSORB:
+                        return Runtime.absorbBubbleColor;
+                    case BubbleType.SHIELD:
+                        return Runtime.shieldBubbleColor;
+                    case BubbleType.WT_SLOWDOWN:
+                        return Runtime.wtSlowdownBubbleColor;
+                }
+                return Color.FromArgb(0x32, 0x32, 0x32);
+            }
+        }
+
+        public int StartFrame { get; set; }
+        public int EndFrame { get; set; }
+    }
+
+    class csvSpecialBubble
+    {
+        public string Character { get; set; }
+        public string Animation { get; set; }
+
+        public int ParamGroup { get; set; }
+        public int ParamEntry { get; set; }
+
+        public int ID { get; set; }
+
+        //If value == -1 then set it to 0
+        public int Bone { get; set; } = 0;
+        public int Size { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Z { get; set; }
+        public int X2 { get; set; }
+        public int Y2 { get; set; }
+        public int Z2 { get; set; }
+
+        public int Type { get; set; }
+
+        //Manual frames since they vary their activation: Defensive_Collision, Bit_Variable_Set, WT activation
+        public int StartFrame { get; set; }
+        public int EndFrame { get; set; }
+
+        public bool SetBone { get; set; } //Bone has an ! at the start, this means bone value is given on csv and it isn't on params nor default 0
+
+        public static List<csvSpecialBubble> Read(string filename)
+        {
+            StreamReader reader = new StreamReader(File.OpenRead(filename));
+            bool firstLine = false;
+
+            List<csvSpecialBubble> list = new List<csvSpecialBubble>();
+
+            while (!reader.EndOfStream)
+            {
+                string line = reader.ReadLine();
+
+                if (!firstLine)
+                {
+                    firstLine = true;
+                    continue;
+                }
+
+                string[] values = line.Split(',');
+
+                list.Add(new csvSpecialBubble()
+                {
+                    Character = values[0],
+                    Animation = values[1],
+                    ID = Convert.ToInt32(values[2]),
+                    ParamGroup = Convert.ToInt32(values[3]),
+                    ParamEntry = Convert.ToInt32(values[4]),
+                    Bone = Convert.ToInt32(values[5].Replace("!", "")),
+                    X = Convert.ToInt32(values[6]),
+                    Y = Convert.ToInt32(values[7]),
+                    Z = Convert.ToInt32(values[8]),
+                    X2 = Convert.ToInt32(values[9]),
+                    Y2 = Convert.ToInt32(values[10]),
+                    Z2 = Convert.ToInt32(values[11]),
+                    Size = Convert.ToInt32(values[12]),
+                    Type = Convert.ToInt32(values[13]),
+                    StartFrame = Convert.ToInt32(values[14]),
+                    EndFrame = Convert.ToInt32(values[15]), //-1 = Active until end of animation
+
+                    SetBone = values[5].Contains("!")
+
+                });
+            }
+            return list;
+        }
     }
 }
