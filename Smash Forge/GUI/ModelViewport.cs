@@ -104,7 +104,7 @@ namespace Smash_Forge
         public void Setup()
         {
             perspective = Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glViewport.Width / (float)glViewport.Height, 1.0f, Runtime.renderDepth);
-            view = cam.getViewMatrix() * perspective;
+            view = cam.getModelViewMatrix() * perspective;
         }
         
         public Vector2 getMouseOnViewPort()
@@ -252,7 +252,7 @@ namespace Smash_Forge
                 if (glViewport.Focused && glViewport.ClientRectangle.Contains(PointToClient(Cursor.Position)))
                 {
                     cam.Update();
-                    view = cam.getViewMatrix() * perspective;
+                    view = cam.getModelViewMatrix() * perspective;
                 }
                 cam.TrackMouse();
             }

@@ -99,7 +99,7 @@ namespace Smash_Forge
         public static DirectionalLight stageLight3 = new DirectionalLight();
         public static DirectionalLight stageLight4 = new DirectionalLight();
 
-        
+        //Camera camera = new Camera();
 
 
         Shader shader;
@@ -596,9 +596,16 @@ namespace Smash_Forge
             //GL.BindFramebuffer(FramebufferTarget.Framebuffer, hdrFBO);
             //GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
             if (Runtime.useDepthTest)
+            {
                 GL.Enable(EnableCap.DepthTest);
+                GL.DepthFunc(DepthFunction.Lequal);
+            }
+      
             else
                 GL.Disable(EnableCap.DepthTest);
+
+            GL.Enable(EnableCap.DepthTest);
+           // GL.DepthFunc(DepthFunction.Lequal);
 
             if (Runtime.renderModel)
                 DrawModels();

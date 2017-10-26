@@ -195,7 +195,6 @@ namespace Smash_Forge
             }
 
             nud.PreRender();
-            nud.CalculateNewTangentBitangent();
             return nud;
         }
 

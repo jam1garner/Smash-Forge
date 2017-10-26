@@ -167,7 +167,6 @@ namespace Smash_Forge
             // we only want to calculate new tangents/bitangents for imports
             // vanilla models have special tangents/bitangents for mirrored normal maps
             nud.PreRender();
-            nud.CalculateNewTangentBitangent();
         }
 
         public VBN getVBN()
