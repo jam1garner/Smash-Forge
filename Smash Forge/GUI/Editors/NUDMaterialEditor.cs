@@ -260,13 +260,12 @@ namespace Smash_Forge
             
             shadowCB.Checked = mat.hasShadow;
             GlowCB.Checked = mat.glow;
-            //sphereMapCB.Checked = mat.useSphereMap;
-            dummy_rampCB.Checked = mat.useDummyRamp;
+            dummy_rampCB.Checked = mat.dummyramp;
             AOCB.Checked = mat.aomap;
             diffuseCB.Checked = mat.diffuse;
             diffuse2CB.Checked = mat.diffuse2;
             normalCB.Checked = mat.normalmap;
-            sphere_mapCB.Checked = mat.useSphereMap;
+            sphere_mapCB.Checked = mat.spheremap;
             cubemapCB.Checked = mat.cubemap;
             stageMapCB.Checked = mat.stagemap;
             rampCB.Checked = mat.ramp;
@@ -278,11 +277,10 @@ namespace Smash_Forge
             if (mat.stagemap) listView1.Items.Add("StageMap");
             if (mat.cubemap) listView1.Items.Add("Cubemap");
             if (mat.spheremap) listView1.Items.Add("SphereMap");
-            //if (mat.diffuse2) listView1.Items.Add("Diffuse2");
             if (mat.aomap) listView1.Items.Add("AO Map");
             if (mat.normalmap) listView1.Items.Add("NormalMap");
             if (mat.ramp) listView1.Items.Add("Ramp");
-            if (mat.useDummyRamp) listView1.Items.Add("Dummy Ramp");
+            if (mat.dummyramp) listView1.Items.Add("Dummy Ramp");
 
             while (listView1.Items.Count > mat.textures.Count)
                 listView1.Items.RemoveAt(1);
@@ -989,13 +987,13 @@ namespace Smash_Forge
 
         private void rimLightCB_CheckedChanged(object sender, EventArgs e)
         {
-            material[current].UseDummyRamp = dummyRampCB.Checked;
+            material[current].dummyramp = dummyRampCB.Checked;
             FillForm();
         }
 
         private void sphereMapCB_CheckedChanged(object sender, EventArgs e)
         {
-            material[current].UseSphereMap = sphereMapCB.Checked;
+            material[current].spheremap = sphereMapCB.Checked;
             FillForm();
         }
 
@@ -1054,7 +1052,7 @@ namespace Smash_Forge
 
         private void dummy_rampCB_CheckedChanged(object sender, EventArgs e)
         {
-            material[current].UseDummyRamp = dummy_rampCB.Checked;
+            material[current].dummyramp = dummy_rampCB.Checked;
             FillForm();
         }
 
@@ -1072,7 +1070,7 @@ namespace Smash_Forge
 
         private void sphere_mapCB_CheckedChanged(object sender, EventArgs e)
         {
-            material[current].useSphereMap = sphere_mapCB.Checked;
+            material[current].spheremap = sphere_mapCB.Checked;
             FillForm();
         }
 
