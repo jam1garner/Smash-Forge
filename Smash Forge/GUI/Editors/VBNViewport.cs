@@ -522,7 +522,6 @@ namespace Smash_Forge
         }
 
         int cf = 0;
-        //Matrix4 v2;
         int sfb, sw=512, sh=512, depthmap, hdrFBO;
         int colorTexture1, colorTexture2;
         int pingPongColorTexture1, pingPongColorTexture2;
@@ -833,8 +832,8 @@ namespace Smash_Forge
 
             mvpMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width,-height,zoom) 
                 * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
-            //v2 = Matrix4.CreateTranslation(width,-height,zoom) * Matrix4.CreateRotationY(0.5f * rot) * Matrix4.CreateRotationX(0.2f * lookup);
         }
+
         public bool IsMouseOverViewport()
         {
             if (glControl1.ClientRectangle.Contains(PointToClient(Cursor.Position)))
@@ -867,8 +866,6 @@ namespace Smash_Forge
 
         private void DrawModels()
         {
-           
-            // Bounding Box Render
             if (Runtime.renderBoundingBox)
             {
                 DrawBoundingBoxes();
@@ -1127,6 +1124,7 @@ namespace Smash_Forge
             GL.ActiveTexture(TextureUnit.Texture0);// should I bind a texture here
             GL.Uniform1(shader.getAttribute("image"), 0);
 
+            // this whole section in general is pretty broken
             for (int i = 0; i < blur_amount; i++)
             {
                 
@@ -2369,14 +2367,14 @@ namespace Smash_Forge
             {
                 // the shaders will always be present in the lib/Shader folder, so this is safe to do
                 // SMG's super secret developer tools
-                /*reloadShaderFromFile("MBN", File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_vs.txt"), 
+                reloadShaderFromFile("MBN", File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_vs.txt"), 
                     File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_fs.txt"));
                 reloadShaderFromFile("NUD", File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"),
                     File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
                 reloadShaderFromFile("DAT", File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_vs.txt"),
                     File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_fs.txt"));
                 reloadShaderFromFile("Texture", File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_vs.txt"),
-                    File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_fs.txt"));*/
+                    File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_fs.txt"));
 
             }
 
@@ -2546,12 +2544,6 @@ namespace Smash_Forge
                 }
             }
 
-            /*Console.WriteLine(dbdistance + " " + selected.Count);
-            foreach(var v in selected)
-            {
-                Console.WriteLine(new String(v.Value.boneName));
-            }*/
-
             if (selected.Count > dbdistance)
             {
                 if(Runtime.TargetVBN.bones.Contains(selected.Values.ElementAt(dbdistance)));
@@ -2580,8 +2572,6 @@ namespace Smash_Forge
 
         public class DuplicateKeyComparer<TKey> : IComparer<TKey> where TKey : IComparable
         {
-            #region IComparer<TKey> Members
-
             public int Compare(TKey x, TKey y)
             {
                 int result = x.CompareTo(y);
@@ -2591,8 +2581,6 @@ namespace Smash_Forge
                 else
                     return result;
             }
-
-            #endregion
         }
 
         private void glControl1_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)

@@ -60,10 +60,10 @@ namespace Smash_Forge
         {
             Glow = 0x00000080,
             Shadow = 0x00000040,
-            RIM = 0x00000020,
+            DummyRamp = 0x00000020,
             SphereMap = 0x00000010,
-            AOMap = 0x00000008,
-            CubeMap = 0x00000004,
+            StageAOMap = 0x00000008,
+            RampCubeMap = 0x00000004,
             NormalMap = 0x00000002,
             DiffuseMap = 0x00000001
         }
@@ -90,18 +90,9 @@ namespace Smash_Forge
 
         public void Render(Matrix4 mvpMatrix, VBN vbn)
         {
-            // Bounding Box Render
             if (Runtime.renderBoundingBox)
             {
-                GL.UseProgram(0);
-                GL.Color4(Color.GhostWhite);
-                RenderTools.drawCubeWireframe(new Vector3(param[0], param[1], param[2]), param[3]);
-                GL.Color4(Color.OrangeRed);
-                foreach (NUD.Mesh mesh in mesh)
-                {
-                    if (mesh.Checked)
-                        RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
-                }
+                DrawBoundingBoxes();
             }
 
             Shader shader = Runtime.shaders["NUD"];
@@ -150,6 +141,19 @@ namespace Smash_Forge
                 shader.enableAttrib();
                 Render(shader);
                 shader.disableAttrib();
+            }
+        }
+
+        private void DrawBoundingBoxes()
+        {
+            GL.UseProgram(0);
+            GL.Color4(Color.GhostWhite);
+            RenderTools.drawCubeWireframe(new Vector3(param[0], param[1], param[2]), param[3]);
+            GL.Color4(Color.OrangeRed);
+            foreach (NUD.Mesh mesh in mesh)
+            {
+                if (mesh.Checked)
+                    RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
             }
         }
 
@@ -206,132 +210,147 @@ namespace Smash_Forge
             if (p.faces.Count <= 3)
                 return;
 
-            //foreach (Material mat in p.materials)
+            Material mat = p.materials[0];
+
+            GL.Uniform1(shader.getAttribute("flags"), mat.flags);
+            GL.Uniform1(shader.getAttribute("isTransparent"), p.isTransparent ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
+
+            // pass all the textures from the model.NUT to shader (no cubemaps from NUT yet)
+            SetTextureUniforms(shader, mat);
+
+            // pass all researched material values to the shader for viewport rendering
+            SetMaterialPropertyUniforms(shader, mat);
+
+            // alpha blending
+            GL.Enable(EnableCap.Blend);
+
+            GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha,
+                dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
+
+            if (mat.srcFactor == 0 && mat.dstFactor == 0) GL.Disable(EnableCap.Blend);
+
+            // alpha testing
+            GL.Enable(EnableCap.AlphaTest);
+            if (mat.AlphaTest == 0) GL.Disable(EnableCap.AlphaTest);
+
+            float refAlpha = mat.RefAlpha / 255f;
+
+            // gequal used because fragcolor.a of 0 is refalpha of 1
+            GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
+            switch (mat.AlphaFunc)
             {
-                Material mat = p.materials[0];
+                case 0x0:
+                    GL.AlphaFunc(AlphaFunction.Never, refAlpha);
+                    break;
+                case 0x4:
+                    GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
+                    break;
+                case 0x6:
+                    GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
+                    break;
+            }
 
-                GL.Uniform1(shader.getAttribute("flags"), mat.flags);
-                GL.Uniform1(shader.getAttribute("isTransparent"), p.isTransparent ? 1 : 0);
-                GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
+            // face culling
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Front);
+            switch (mat.cullMode)
+            {
+                case 0:
+                    GL.Disable(EnableCap.CullFace);
+                    break;
+                case 0x0205:
+                    GL.CullFace(CullFaceMode.Front);
+                    break;
+                case 0x0405:
+                    GL.CullFace(CullFaceMode.Back);
+                    break;
+            }
 
-                // pass all the textures from the model.NUT to shader (no cubemaps from NUT yet)
-                TextureUniforms(shader, mat);
+            SetVertexAttributes(p, shader);
 
-                // pass all researched material values to the shader for viewport rendering
-                MaterialPropertyUniforms(shader, mat);
-
-                // alpha blending
-                GL.Enable(EnableCap.Blend);
-
-                GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha,
-                    dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
-
-                if (mat.srcFactor == 0 && mat.dstFactor == 0) GL.Disable(EnableCap.Blend);
-
-                GL.Enable(EnableCap.AlphaTest);
-                if (mat.AlphaTest == 0) GL.Disable(EnableCap.AlphaTest);
-
-                float refAlpha = mat.RefAlpha / 255f; // gequal used because fragcolor.a of 0 is refalpha of 1
-
-                GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-                switch (mat.AlphaFunc)
+            if (p.Checked)
+            {
+                if ((p.IsSelected || p.Parent.IsSelected) && drawSelection)
                 {
-                    case 0x0:
-                        GL.AlphaFunc(AlphaFunction.Never, refAlpha);
-                        break;
-                    case 0x4:
-                        GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
-                        break;
-                    case 0x6:
-                        GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
-                        break;
+                    DrawModelSelection(p, shader);
                 }
-
-                // face culling
-                GL.Enable(EnableCap.CullFace);
-                GL.CullFace(CullFaceMode.Front);
-                switch (mat.cullMode)
+                else
                 {
-                    case 0:
-                        GL.Disable(EnableCap.CullFace);
-                        break;
-                    case 0x0205:
-                        GL.CullFace(CullFaceMode.Front);
-                        break;
-                    case 0x0405:
-                        GL.CullFace(CullFaceMode.Back);
-                        break;
-                }
-
-                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-                GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
-                GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
-                GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 12);
-                GL.VertexAttribPointer(shader.getAttribute("vTangent"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 24);
-                GL.VertexAttribPointer(shader.getAttribute("vBiTangent"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 36);
-                GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 48);
-                GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 56);
-                GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 72);
-                GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 88);
-
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
-                GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-
-                if (p.Checked)
-                {
-                    if ((p.IsSelected || p.Parent.IsSelected) && drawSelection)
+                    if (Runtime.renderModelWireframe)
                     {
-                        GL.Disable(EnableCap.DepthTest);
-                        bool[] cwm = new bool[4];
-                        GL.GetBoolean(GetIndexedPName.ColorWritemask, 4, cwm);
-                        //GL.DepthMask(false);
-                        GL.ColorMask(false, false, false, false);
-
-                        GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
-                        GL.StencilMask(0xFF);
-
-                        GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
-
-                        //GL.DepthMask(true);
-                        GL.ColorMask(cwm[0], cwm[1], cwm[2], cwm[3]);
-
-                        GL.StencilFunc(StencilFunction.Notequal, 1, 0xFF);
-                        GL.StencilMask(0x00);
-
-                        // use vertex color for model selection color?
-                        GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.RenderTypes.VertColor);
-                        GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
-                        GL.LineWidth(2);
-                        GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
-                        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-                        GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
-
-                        GL.StencilMask(0xFF);
-                        GL.Clear(ClearBufferMask.StencilBufferBit);
-                        GL.Enable(EnableCap.StencilTest);
-                        GL.Enable(EnableCap.DepthTest);
+                        DrawModelWireframe(p, shader);
                     }
-                    else
-                    {
-                        GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
 
-                        if (Runtime.renderModelWireframe)
-                        {
-                            // use vertex color for wireframe color
-                            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.RenderTypes.VertColor);
-                            GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
-                            GL.LineWidth(2.0f);
-                            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
-                            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-                            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
-                        }
-                    }
+                    // need this
+                    GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
                 }
             }
+       
         }
 
-        private static void MaterialPropertyUniforms(Shader shader, Material mat)
+        private void SetVertexAttributes(Polygon p, Shader shader)
+        {
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
+            GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
+            GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 12);
+            GL.VertexAttribPointer(shader.getAttribute("vTangent"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 24);
+            GL.VertexAttribPointer(shader.getAttribute("vBiTangent"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 36);
+            GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 48);
+            GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 56);
+            GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 72);
+            GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 88);
+
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        }
+
+        private static void DrawModelWireframe(Polygon p, Shader shader)
+        {
+            // use vertex color for wireframe color
+            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.RenderTypes.VertColor);
+            GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
+            GL.LineWidth(2.0f);
+            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
+        }
+
+        private static void DrawModelSelection(Polygon p, Shader shader)
+        {
+            GL.Enable(EnableCap.LineSmooth);
+            GL.LineWidth(2.0f);
+
+            bool[] cwm = new bool[4];
+            GL.GetBoolean(GetIndexedPName.ColorWritemask, 4, cwm);
+            GL.ColorMask(false, false, false, false);
+
+            GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
+            GL.StencilMask(0xFF);
+
+            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+
+            GL.ColorMask(cwm[0], cwm[1], cwm[2], cwm[3]);
+
+            GL.StencilFunc(StencilFunction.Notequal, 1, 0xFF);
+            GL.StencilMask(0x00);
+
+            // use vertex color for model selection color
+            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.RenderTypes.VertColor);
+            GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
+            GL.LineWidth(2);
+            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
+
+            GL.StencilMask(0xFF);
+            GL.Clear(ClearBufferMask.StencilBufferBit);
+            GL.Enable(EnableCap.StencilTest);
+        }
+
+        private static void SetMaterialPropertyUniforms(Shader shader, Material mat)
         {
             // "NU_aoMinGain" becomes "aoMinGain"
             MatPropertyShaderUniform(shader, mat, "NU_aoMinGain", 0, 0, 0, 0);
@@ -368,7 +387,7 @@ namespace Smash_Forge
             HasMatPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", "hasDualNormal");
         }
 
-        private static void TextureUniforms(Shader shader, Material mat)
+        private static void SetTextureUniforms(Shader shader, Material mat)
         {
             GL.Uniform1(shader.getAttribute("hasDif"), mat.diffuse ? 1 : 0);
             GL.Uniform1(shader.getAttribute("hasDif2"), mat.diffuse2 ? 1 : 0);
@@ -378,7 +397,7 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("hasAo"), mat.aomap ? 1 : 0);
             GL.Uniform1(shader.getAttribute("hasNrm"), mat.normalmap ? 1 : 0);
             GL.Uniform1(shader.getAttribute("hasRamp"), mat.ramp ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("hasDummyRamp"), mat.useDummyRamp ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("hasDummyRamp"), mat.dummyramp ? 1 : 0);
             GL.Uniform1(shader.getAttribute("hasColorGainOffset"), mat.useColorGainOffset ? 1 : 0);
             GL.Uniform1(shader.getAttribute("useDiffuseBlend"), mat.useDiffuseBlend ? 1 : 0);
 
@@ -439,7 +458,7 @@ namespace Smash_Forge
             {
                 GL.Uniform1(shader.getAttribute("ramp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
             }
-            if (mat.useDummyRamp && texid < mat.textures.Count)
+            if (mat.dummyramp && texid < mat.textures.Count)
             {
                 GL.Uniform1(shader.getAttribute("dummyRamp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
             }
@@ -598,7 +617,7 @@ namespace Smash_Forge
 
         public static int BindTexture(NUD.Mat_Texture tex, int hash, int loc)
         {
-            if (hash == 0x10101000)
+            if (hash == (int) DummyTextures.StageMapLow)
             {
                 GL.ActiveTexture(TextureUnit.Texture20 + loc);
                 GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapLow);
@@ -606,7 +625,7 @@ namespace Smash_Forge
                 return 20 + loc;
 
             }
-            if (hash == 0x10102000)
+            if (hash == (int)DummyTextures.StageMapHigh)
             {
                 GL.ActiveTexture(TextureUnit.Texture20 + loc);
                 GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
@@ -614,7 +633,7 @@ namespace Smash_Forge
                 return 20 + loc;
 
             }
-            if (hash == 0x10080000)
+            if (hash == (int)DummyTextures.DummyRamp)
             {
                 GL.ActiveTexture(TextureUnit.Texture20 + loc);
                 GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultRamp);
@@ -1726,32 +1745,6 @@ namespace Smash_Forge
             public bool useVertexColor = false;
             public bool useColorGainOffset = false;
             public bool useDiffuseBlend = false;
-            public bool useDummyRamp = false;
-            public bool UseDummyRamp
-            {
-                get
-                {
-                    return useDummyRamp;
-                }
-                set
-                {
-                    useDummyRamp = value;
-                    TestTextures();
-                }
-            }
-            public bool useSphereMap = false;
-            public bool UseSphereMap
-            {
-                get
-                {
-                    return useSphereMap;
-                }
-                set
-                {
-                    useSphereMap = value;
-                    TestTextures();
-                }
-            }
 
             public bool diffuse = false;
             public bool normalmap = false;
@@ -1762,6 +1755,7 @@ namespace Smash_Forge
             public bool cubemap = false;
             public bool ramp = false;
             public bool spheremap = false;
+            public bool dummyramp = false;
            
 
             public Material Clone()
@@ -1800,20 +1794,15 @@ namespace Smash_Forge
             public uint RebuildFlags()
             {
                 int t = 0;
-                if (glow) t |= 0x80;
-                if (hasShadow) t |= 0x40;
-                if (useDummyRamp) t |= 0x20;
-                if (useSphereMap) t |= 0x10;
+                if (diffuse) t |= (int)TextureFlags.DiffuseMap;
+                if (normalmap) t |= (int)TextureFlags.NormalMap;
+                if (cubemap || ramp) t |= (int)TextureFlags.RampCubeMap;
+                if (stagemap || aomap) t |= (int)TextureFlags.StageAOMap;
+                if (spheremap) t |= (int)TextureFlags.SphereMap;
+                if (glow) t |= (int) TextureFlags.Glow;
+                if (hasShadow) t |= (int) TextureFlags.Shadow;
+                if (dummyramp) t |= (int) TextureFlags.DummyRamp; 
                 if (useColorGainOffset) t |= 0x0C000061;
-
-                if (diffuse) t |= 0x01;
-                if (spheremap) t |= 0x01;
-                if (normalmap) t |= 0x02;
-                if (cubemap) t |= 0x04;
-                //if (diffuse2) t |= 0x04;
-                if (ramp) t |= 0x04;
-                if (aomap) t |= 0x08;
-                if (stagemap) t |= 0x08;
                 flag = (uint)(((int)flag & 0xFFFFFF00) | t);
 
                 return flag;
@@ -1821,14 +1810,14 @@ namespace Smash_Forge
 
             public void InterpretFlags(uint flags)
             {
-                //Debug.WriteLine("Interpretting flags");
+                // also need to clean this up
                 // set depending on flags
                 this.flag = flags;
                 int flag = ((int)flags) & 0xFF;
-                glow = (flag & 0x80) > 0;
-                hasShadow = (flag & 0x40) > 0;
-                useDummyRamp = (flag & 0x20) > 0;
-                useSphereMap = (flag & 0x10) > 0;
+                glow = (flag & (int) TextureFlags.Glow) > 0;
+                hasShadow = (flag & (int) TextureFlags.Shadow) > 0;
+                dummyramp = (flag & (int) TextureFlags.DummyRamp) > 0;
+                spheremap = (flag & (int) TextureFlags.SphereMap) > 0;
                 TestTextures();
 
                 // check lighting channel and 4th byte of flags
@@ -1850,22 +1839,24 @@ namespace Smash_Forge
 
             public void TestTextures()
             {
+                // really need to clean this up
                 // texture flags
-                aomap = (flag & 0x08) > 0 && !useDummyRamp;
-                stagemap = (flag & 0x08) > 0 && useDummyRamp;
 
-                cubemap = (flag & 0x04) > 0 && (!useDummyRamp) && (!useSphereMap);
-                ramp = (flag & 0x04) > 0 && useDummyRamp; 
+                spheremap = (flag & (int)TextureFlags.SphereMap) > 0;
 
-                diffuse = (flag & 0x01) > 0;
+                aomap = (flag & (int)TextureFlags.StageAOMap) > 0 && !dummyramp;
+                stagemap = (flag & (int)TextureFlags.StageAOMap) > 0 && dummyramp;
+
+                cubemap = (flag & (int)TextureFlags.RampCubeMap) > 0 && (!dummyramp) && (!spheremap);
+                ramp = (flag & (int) TextureFlags.RampCubeMap) > 0 && dummyramp; 
+
+                diffuse = (flag & (int)TextureFlags.DiffuseMap) > 0;
                 // mostly correct (I hope)
                 diffuse3 = (flag & 0x00009100) == 0x00009100 || (flag & 0x00009600) == 0x00009600 || (flag & 0x00009900) == 0x00009900; 
-                diffuse2 = (flag & 0x04) > 0 && (flag & 0x02) == 0 && useDummyRamp || diffuse3;
+                diffuse2 = (flag & (int)TextureFlags.RampCubeMap) > 0 && (flag & (int)TextureFlags.NormalMap) == 0 
+                    && dummyramp || diffuse3;
 
-                normalmap = (flag & 0x02) > 0;
-
-                spheremap = (flag & 0x01) > 0 && useSphereMap;
-
+                normalmap = (flag & (int) TextureFlags.NormalMap) > 0;
             }
         }
 
@@ -1918,13 +1909,6 @@ namespace Smash_Forge
                     return;
                 foreach (Vertex v in vertices)
                 {
-                    //if (v.pos.X > xmax) xmax = v.pos.X; if (v.pos.X < xmin) xmin = v.pos.X;
-                    //if (v.pos.Y > ymax) ymax = v.pos.Y; if (v.pos.Y < ymin) ymin = v.pos.Y;
-                    //if (v.pos.Z > zmax) zmax = v.pos.Z; if (v.pos.Z < zmin) zmin = v.pos.Z;
-
-                    //if (v.pos.Y > max.Y) max = v.pos;
-                    //if (v.pos.Y < min.Y) min = v.pos;
-
                     dVertex nv = new dVertex()
                     {
                         pos = v.pos,
