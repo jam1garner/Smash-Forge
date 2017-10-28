@@ -2514,6 +2514,12 @@ namespace Smash_Forge
         System.Drawing.Point mouseDownPos = new System.Drawing.Point();
         Vector3 p1 = Vector3.Zero, p2 = Vector3.Zero;
         public int dbdistance = 0;
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Clearing up space on drive 'C:'...");
+        }
+
         bool freezeCamera = false;
         private void glControl1_DoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {

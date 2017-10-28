@@ -56,5 +56,10 @@ namespace Smash_Forge
         {
 
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("SMG", "Forge wiki Contributors");
+        }
     }
 }
