@@ -244,7 +244,6 @@ namespace Smash_Forge
         {
             NUD.Material mat = material[current];
 
-            //mat.flags = mat.RebuildFlags();
             textBox1.Text = mat.flags.ToString("X") + "";
             textBox3.Text = mat.srcFactor + "";
             textBox4.Text = mat.dstFactor + "";
@@ -787,6 +786,7 @@ namespace Smash_Forge
         private void RenderTexture()
         {
             if (!tabControl1.SelectedTab.Text.Equals("Textures")) return;
+
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
             GL.ClearColor(Color.White);
@@ -813,23 +813,7 @@ namespace Smash_Forge
                         break;
                     }
             }
-            float h = 1f, w = 1f;
-            if (tex != null)
-            {
-                float texureRatioW = tex.width / tex.height;
-                float widthPre = texureRatioW * glControl1.Height;
-                w = glControl1.Width / widthPre;
-                if (texureRatioW > glControl1.AspectRatio)
-                {
-                    w = 1f;
-                    float texureRatioH = tex.height / tex.width;
-                    float HeightPre = texureRatioH * glControl1.Width;
-                    h = glControl1.Height / HeightPre;
-                }
-            }
-            if (float.IsInfinity(h)) h = 1;
-            Console.WriteLine(w + " " + h);
-
+     
             RenderTools.DrawTexturedQuad(texture, 1, 1, true, true, true, false, false, false);
 
             glControl1.SwapBuffers();
@@ -985,7 +969,7 @@ namespace Smash_Forge
             }
         }
 
-        private void rimLightCB_CheckedChanged(object sender, EventArgs e)
+        private void dummyRampCB_CheckedChanged(object sender, EventArgs e)
         {
             material[current].dummyramp = dummyRampCB.Checked;
             FillForm();

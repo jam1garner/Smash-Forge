@@ -150,11 +150,6 @@ namespace Smash_Forge
                 GC.Collect();
             }
 
-            //if (Runtime.ModelContainers.Count > 0)
-            //    MainForm.Instance.exportModelToolStripMenuItem.Visible = true;
-            //else
-            //    MainForm.Instance.exportModelToolStripMenuItem.Visible = false;
-
             if (this.IsDisposed == true)
                 return;
 
@@ -1220,6 +1215,7 @@ namespace Smash_Forge
             {
                 foreach (Bone bone in vbn.bones)
                 {
+                    float offset = 0.1f;
                     // first calcuate the point and draw a point
                     GL.Color3(Color.DarkGray);
                     GL.PointSize(1f);
@@ -1227,10 +1223,10 @@ namespace Smash_Forge
                     Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform);
 
                     GL.Begin(PrimitiveType.LineLoop);
-                    GL.Vertex3(new Vector3(pos_c.X - 0.1f, pos_c.Y, pos_c.Z - 0.1f));
-                    GL.Vertex3(new Vector3(pos_c.X + 0.1f, pos_c.Y, pos_c.Z - 0.1f));
-                    GL.Vertex3(new Vector3(pos_c.X + 0.1f, pos_c.Y, pos_c.Z + 0.1f));
-                    GL.Vertex3(new Vector3(pos_c.X - 0.1f, pos_c.Y, pos_c.Z + 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z - offset));
+                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z - offset));
+                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z + offset));
+                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z + offset));
                     GL.End();
 
                     Vector3 pos_p = pos_c;
@@ -1242,31 +1238,30 @@ namespace Smash_Forge
 
                     GL.Color3(Color.Gray);
                     GL.Begin(PrimitiveType.Lines);
-                    GL.Vertex3(new Vector3(pos_c.X - 0.1f, pos_c.Y, pos_c.Z - 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z - offset));
                     GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X + 0.1f, pos_c.Y, pos_c.Z - 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z - offset));
                     GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X + 0.1f, pos_c.Y, pos_c.Z + 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z + offset));
                     GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X - 0.1f, pos_c.Y, pos_c.Z + 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z + offset));
                     GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X - 0.1f, pos_c.Y, pos_c.Z - 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z - offset));
                     GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X + 0.1f, pos_c.Y, pos_c.Z - 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z - offset));
                     GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X + 0.1f, pos_c.Y, pos_c.Z + 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z + offset));
                     GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X - 0.1f, pos_c.Y, pos_c.Z + 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z + offset));
                     GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
 
-
-                    GL.Vertex3(new Vector3(pos_c.X - 0.1f, pos_c.Y, pos_c.Z - 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z - offset));
                     GL.Vertex3(pos_p);
-                    GL.Vertex3(new Vector3(pos_c.X + 0.1f, pos_c.Y, pos_c.Z - 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z - offset));
                     GL.Vertex3(pos_p);
-                    GL.Vertex3(new Vector3(pos_c.X + 0.1f, pos_c.Y, pos_c.Z + 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z + offset));
                     GL.Vertex3(pos_p);
-                    GL.Vertex3(new Vector3(pos_c.X - 0.1f, pos_c.Y, pos_c.Z + 0.1f));
+                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z + offset));
                     GL.Vertex3(pos_p);
 
                     GL.End();
@@ -1274,90 +1269,6 @@ namespace Smash_Forge
             }
         }
         
-        private static Color getLinkColor(DAT.COLL_DATA.Link link)
-        {
-            if ((link.flags & 1) != 0)
-                return Color.FromArgb(128, Color.Yellow);
-            if ((link.collisionAngle & 4) + (link.collisionAngle & 8) != 0)
-                return Color.FromArgb(128, Color.Lime);
-            if ((link.collisionAngle & 2) != 0)
-                return Color.FromArgb(128, Color.Red);
-
-            return Color.FromArgb(128, Color.DarkCyan);
-        }
-
-        public static Color invertColor(Color color)
-        {
-            return Color.FromArgb(color.A, 255 - color.R, 255 - color.G, 255 - color.B);
-        }
-
-        public void DrawSpawn(Point s, bool isRespawn)
-        {
-            GL.Color4(Color.FromArgb(100, Color.Blue));
-            GL.Begin(PrimitiveType.QuadStrip);
-            GL.Vertex3(s.x - 3f, s.y, 0f);
-            GL.Vertex3(s.x + 3f, s.y, 0f);
-            GL.Vertex3(s.x - 3f, s.y + 10f, 0f);
-            GL.Vertex3(s.x + 3f, s.y + 10f, 0f);
-            GL.End();
-
-            //Draw respawn platform
-            if (isRespawn)
-            {
-                GL.Color4(Color.FromArgb(200, Color.Gray));
-                GL.Begin(PrimitiveType.Triangles);
-                GL.Vertex3(s.x - 5, s.y, 0);
-                GL.Vertex3(s.x + 5, s.y, 0);
-                GL.Vertex3(s.x, s.y, 5);
-
-                GL.Vertex3(s.x - 5, s.y, 0);
-                GL.Vertex3(s.x + 5, s.y, 0);
-                GL.Vertex3(s.x, s.y, -5);
-
-                GL.Vertex3(s.x - 5, s.y, 0);
-                GL.Vertex3(s.x, s.y - 5, 0);
-                GL.Vertex3(s.x, s.y, 5);
-
-                GL.Vertex3(s.x + 5, s.y, 0);
-                GL.Vertex3(s.x, s.y - 5, 0);
-                GL.Vertex3(s.x, s.y, -5);
-
-                GL.Vertex3(s.x + 5, s.y, 0);
-                GL.Vertex3(s.x, s.y - 5, 0);
-                GL.Vertex3(s.x, s.y, 5);
-
-                GL.Vertex3(s.x - 5, s.y, 0);
-                GL.Vertex3(s.x, s.y - 5, 0);
-                GL.Vertex3(s.x, s.y, -5);
-                GL.End();
-
-                GL.Color4(Color.FromArgb(200, Color.Black));
-                GL.Begin(PrimitiveType.Lines);
-                GL.Vertex3(s.x - 5, s.y, 0);
-                GL.Vertex3(s.x, s.y - 5, 0);
-                GL.Vertex3(s.x + 5, s.y, 0);
-                GL.Vertex3(s.x, s.y - 5, 0);
-
-                GL.Vertex3(s.x, s.y, -5);
-                GL.Vertex3(s.x, s.y - 5, 0);
-                GL.Vertex3(s.x, s.y, 5);
-                GL.Vertex3(s.x, s.y - 5, 0);
-
-                GL.Vertex3(s.x, s.y, -5);
-                GL.Vertex3(s.x + 5, s.y, 0);
-                GL.Vertex3(s.x, s.y, -5);
-                GL.Vertex3(s.x - 5, s.y, 0);
-
-                GL.Vertex3(s.x, s.y, 5);
-                GL.Vertex3(s.x + 5, s.y, 0);
-                GL.Vertex3(s.x, s.y, 5);
-                GL.Vertex3(s.x - 5, s.y, 0);
-
-                GL.End();
-            }
-
-        }
-
         public void DrawLVD()
         {
             GL.Disable(EnableCap.CullFace);
@@ -1367,63 +1278,18 @@ namespace Smash_Forge
                 
                 if (m.dat_melee != null && m.dat_melee.collisions != null)
                 {
-                    float scale = m.dat_melee.stageScale;
-                    List<int> ledges = new List<int>();
-                    foreach (DAT.COLL_DATA.Link link in m.dat_melee.collisions.links)
-                    {
-                        GL.Begin(PrimitiveType.Quads);
-                        GL.Color4(getLinkColor(link));
-                        Vector2D vi = m.dat_melee.collisions.vertices[link.vertexIndices[0]];
-                        GL.Vertex3(vi.x * scale, vi.y * scale, 5);
-                        GL.Vertex3(vi.x * scale, vi.y * scale, -5);
-                        vi = m.dat_melee.collisions.vertices[link.vertexIndices[1]];
-                        GL.Vertex3(vi.x * scale, vi.y * scale, -5);
-                        GL.Vertex3(vi.x * scale, vi.y * scale, 5);
-                        GL.End();
-                        if ((link.flags & 2) != 0)
-                        {
-                            ledges.Add(link.vertexIndices[0]);
-                            ledges.Add(link.vertexIndices[1]);
-                        }
-                    }
-                    GL.LineWidth(4);
-                    for (int i = 0; i < m.dat_melee.collisions.vertices.Count; i++)
-                    {
-                        Vector2D vi = m.dat_melee.collisions.vertices[i];
-                        if (ledges.Contains(i))
-                            GL.Color3(Color.Purple);
-                        else
-                            GL.Color3(Color.Tomato);
-                        GL.Begin(PrimitiveType.Lines);
-                        GL.Vertex3(vi.x * scale, vi.y * scale, 5);
-                        GL.Vertex3(vi.x * scale, vi.y * scale, -5);
-                        GL.End();
-                    }
+                    LVD.DrawDATCollisions(m);
 
                 }
 
-                if(m.dat_melee != null && m.dat_melee.blastzones != null)
+                if (m.dat_melee != null && m.dat_melee.blastzones != null)
                 {
-                    Bounds b = m.dat_melee.blastzones;
-                    GL.Color3(Color.Red);
-                    GL.Begin(PrimitiveType.LineLoop);
-                    GL.Vertex3(b.left, b.top, 0);
-                    GL.Vertex3(b.right, b.top, 0);
-                    GL.Vertex3(b.right, b.bottom, 0);
-                    GL.Vertex3(b.left, b.bottom, 0);
-                    GL.End();
+                    LVD.DrawBlastZones(m.dat_melee.blastzones, Color.Red);
                 }
 
                 if (m.dat_melee != null && m.dat_melee.cameraBounds != null)
                 {
-                    Bounds b = m.dat_melee.cameraBounds;
-                    GL.Color3(Color.Blue);
-                    GL.Begin(PrimitiveType.LineLoop);
-                    GL.Vertex3(b.left, b.top, 0);
-                    GL.Vertex3(b.right, b.top, 0);
-                    GL.Vertex3(b.right, b.bottom, 0);
-                    GL.Vertex3(b.left, b.bottom, 0);
-                    GL.End();
+                    LVD.DrawCameraBounds(m.dat_melee.cameraBounds, Color.Blue);
                 }
 
                 if (m.dat_melee != null && m.dat_melee.targets != null)
@@ -1437,11 +1303,11 @@ namespace Smash_Forge
 
                 if (m.dat_melee != null && m.dat_melee.respawns != null)
                     foreach (Point r in m.dat_melee.respawns)
-                        DrawSpawn(r, true);
+                        LVD.DrawSpawn(r, true);
 
                 if (m.dat_melee != null && m.dat_melee.spawns != null)
                     foreach (Point r in m.dat_melee.spawns)
-                        DrawSpawn(r, false);
+                        LVD.DrawSpawn(r, false);
 
                 GL.Color4(Color.FromArgb(200, Color.Fuchsia));
                 if (m.dat_melee != null && m.dat_melee.itemSpawns != null)
@@ -1453,189 +1319,19 @@ namespace Smash_Forge
             {
                 if (Runtime.renderCollisions)
                 {
-                    Color color;
-                    GL.LineWidth(4);
-                    Matrix4 transform = Matrix4.Identity;
-                    foreach (Collision c in Runtime.TargetLVD.collisions)
-                    {
-                        bool colSelected = (Runtime.LVDSelection == c);
-                        float addX = 0, addY = 0, addZ = 0;
-                        if (c.useStartPos)
-                        {
-                            addX = c.startPos[0];
-                            addY = c.startPos[1];
-                            addZ = c.startPos[2];
-                        }
-                        if (c.flag2)
-                        {
-                            //Flag2 == rigged collision
-                            ModelContainer riggedModel = null;
-                            Bone riggedBone = null;
-                            foreach (ModelContainer m in Runtime.ModelContainers)
-                            {
-                                if (m.name.Equals(c.subname))
-                                {
-                                    riggedModel = m;
-                                    if (m.vbn != null)
-                                    {
-                                        foreach(Bone b in m.vbn.bones)
-                                        {
-                                            if (b.Text.Equals(new string(c.unk4)))
-                                            {
-                                                riggedBone = b;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if(riggedModel != null)
-                            {
-                                if(riggedBone == null && riggedModel.vbn != null && riggedModel.vbn.bones.Count > 0)
-                                {
-                                    riggedBone = riggedModel.vbn.bones[0];
-                                }
-                                if (riggedBone != null)
-                                    transform = riggedBone.invert * riggedBone.transform;
-                            }
-                        }
-
-                        for(int i = 0; i < c.verts.Count - 1; i++)
-                        {
-                            Vector3 v1Pos = Vector3.Transform(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ + 5), transform);
-                            Vector3 v1Neg = Vector3.Transform(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ - 5), transform);
-                            Vector3 v1Zero = Vector3.Transform(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ), transform);
-                            Vector3 v2Pos = Vector3.Transform(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ + 5), transform);
-                            Vector3 v2Neg = Vector3.Transform(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ - 5), transform);
-                            Vector3 v2Zero = Vector3.Transform(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ), transform);
-
-                            GL.Begin(PrimitiveType.Quads);
-                            if(c.normals.Count > i)
-                            {
-                                if (Runtime.renderCollisionNormals)
-                                {
-                                    Vector3 v = Vector3.Add(Vector3.Divide(Vector3.Subtract(v1Zero, v2Zero), 2), v2Zero);
-                                    GL.End();
-                                    GL.Begin(PrimitiveType.Lines);
-                                    GL.Color3(Color.Blue);
-                                    GL.Vertex3(v);
-                                    GL.Vertex3(v.X + (c.normals[i].x * 5), v.Y + (c.normals[i].y * 5), v.Z);
-                                    GL.End();
-                                    GL.Begin(PrimitiveType.Quads);
-                                }
-                                
-				                if(c.flag4)
-				                    color = Color.FromArgb(128, Color.Yellow);
-                                else if (c.materials[i].getFlag(4) && Math.Abs(c.normals[i].x) > Math.Abs(c.normals[i].y))
-                                    color = Color.FromArgb(128, Color.Purple);
-                                else if (Math.Abs(c.normals[i].x) > Math.Abs(c.normals[i].y))
-                                    color = Color.FromArgb(128, Color.Lime);
-                                else if(c.normals[i].y < 0)
-                                    color = Color.FromArgb(128, Color.Red);
-                                else
-				                    color = Color.FromArgb(128, Color.Cyan);
-
-                                if ((colSelected || Runtime.LVDSelection == c.normals[i]) && ((int)((timeSinceSelected.ElapsedMilliseconds % 1000) / 500) == 0))
-                                    color = invertColor(color);
-
-                                GL.Color4(color);
-                            }
-                            else
-                            {
-                                GL.Color4(Color.FromArgb(128, Color.Gray));
-                            }
-                            GL.Vertex3(v1Pos);
-                            GL.Vertex3(v1Neg);
-                            GL.Vertex3(v2Neg);
-                            GL.Vertex3(v2Pos);
-                            GL.End();
-
-                            GL.Begin(PrimitiveType.Lines);
-                            if (c.materials.Count > i)
-                            {
-                                if (c.materials[i].getFlag(6) || (i > 0 && c.materials[i - 1].getFlag(7)))
-                                    color = Color.Purple;
-                                else
-                                    color = Color.Orange;
-
-                                if ((colSelected || Runtime.LVDSelection == c.verts[i]) && ((int)((timeSinceSelected.ElapsedMilliseconds % 1000) / 500) == 0))
-                                    color = invertColor(color);
-                                GL.Color4(color);
-                            }
-                            else
-                            {
-                                GL.Color4(Color.Gray);
-                            }
-                            GL.Vertex3(v1Pos);
-                            GL.Vertex3(v1Neg);
-
-                            if (i == c.verts.Count - 2)
-                            {
-                                if (c.materials.Count > i)
-                                {
-                                    if (c.materials[i].getFlag(7))
-                                        color = Color.Purple;
-                                    else
-                                        color = Color.Orange;
-
-                                    if (Runtime.LVDSelection == c.verts[i+1] && ((int)((timeSinceSelected.ElapsedMilliseconds % 1000) / 500) == 0))
-                                        color = invertColor(color);
-                                    GL.Color4(color);
-                                }
-                                else
-                                {
-                                    GL.Color4(Color.Gray);
-                                }
-                                GL.Vertex3(v2Pos);
-                                GL.Vertex3(v2Neg);
-                            }
-                            GL.End();
-                        }
-                    }
+                    LVD.DrawCollisions(timeSinceSelected);
                 }
 
                 if (Runtime.renderItemSpawners)
                 {
-                    foreach (ItemSpawner c in Runtime.TargetLVD.items)
-                    {
-                        foreach (Section s in c.sections)
-                        {
-                            // draw the item spawn quads
-                            GL.LineWidth(2);
-
-                            // draw outside borders
-                            GL.Color3(Color.Black);
-                            GL.Begin(PrimitiveType.LineStrip);
-                            foreach (Vector2D vi in s.points)
-                            {
-                                GL.Vertex3(vi.x, vi.y, 5);
-                            }
-                            GL.End();
-                            GL.Begin(PrimitiveType.LineStrip);
-                            foreach (Vector2D vi in s.points)
-                            {
-                                GL.Vertex3(vi.x, vi.y, -5);
-                            }
-                            GL.End();
-
-
-                            // draw vertices
-                            GL.Color3(Color.White);
-                            GL.Begin(PrimitiveType.Lines);
-                            foreach (Vector2D vi in s.points)
-                            {
-                                GL.Vertex3(vi.x, vi.y, 5);
-                                GL.Vertex3(vi.x, vi.y, -5);
-                            }
-                            GL.End();
-                        }
-                    }
+                    LVD.RenderItemSpawners();
                 }
 
                 if (Runtime.renderSpawns)
                 {
                     foreach (Point s in Runtime.TargetLVD.spawns)
                     {
-                        DrawSpawn(s, false);
+                        LVD.DrawSpawn(s, false);
                     }
                 }
 
@@ -1643,7 +1339,7 @@ namespace Smash_Forge
                 {
                     foreach (Point s in Runtime.TargetLVD.respawns)
                     {
-                        DrawSpawn(s,true);
+                        LVD.DrawSpawn(s,true);
                     }
                 }
 
@@ -1699,26 +1395,15 @@ namespace Smash_Forge
                         RenderTools.drawCylinder(new Vector3(c.x, c.y, c.z), new Vector3(c.x + c.dx, c.y + c.dy, c.z + c.dz), c.r);
                     }
 
-                    GL.Color4(Color.FromArgb(128, Color.Red));
+                  
                     foreach (Bounds b in Runtime.TargetLVD.blastzones)
                     {
-                        GL.Begin(PrimitiveType.LineLoop);
-                        GL.Vertex3(b.left, b.top, 0);
-                        GL.Vertex3(b.right, b.top, 0);
-                        GL.Vertex3(b.right, b.bottom, 0);
-                        GL.Vertex3(b.left, b.bottom, 0);
-                        GL.End();
+                        LVD.DrawBlastZones(b, Color.Red);
                     }
 
-                    GL.Color4(Color.FromArgb(128, Color.Blue));
                     foreach (Bounds b in Runtime.TargetLVD.cameraBounds)
                     {
-                        GL.Begin(PrimitiveType.LineLoop);
-                        GL.Vertex3(b.left, b.top, 0);
-                        GL.Vertex3(b.right, b.top, 0);
-                        GL.Vertex3(b.right, b.bottom, 0);
-                        GL.Vertex3(b.left, b.bottom, 0);
-                        GL.End();
+                        LVD.DrawCameraBounds(b, Color.Blue);
                     }
                 }
             }

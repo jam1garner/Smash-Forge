@@ -1944,6 +1944,11 @@ namespace Smash_Forge
                 return i;
         }
 
+        public static Color invertColor(Color color)
+        {
+            return Color.FromArgb(color.A, 255 - color.R, 255 - color.G, 255 - color.B);
+        }
+
         public static int Float2RGBClamp(float i) 
         {
             // converts input color to int and restricts values to 0 to 255

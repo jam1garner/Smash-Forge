@@ -621,7 +621,6 @@ namespace Smash_Forge
             {
                 GL.ActiveTexture(TextureUnit.Texture20 + loc);
                 GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapLow);
-                Debug.WriteLine("low:" + TextureUnit.Texture20 + loc);
                 return 20 + loc;
 
             }
@@ -629,7 +628,6 @@ namespace Smash_Forge
             {
                 GL.ActiveTexture(TextureUnit.Texture20 + loc);
                 GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
-                Debug.WriteLine("high:" + TextureUnit.Texture20 + loc);
                 return 20 + loc;
 
             }
@@ -1090,7 +1088,14 @@ namespace Smash_Forge
                     v[i].nrm.Y = d.readFloat();
                     v[i].nrm.Z = d.readFloat();
                     d.skip(4); 
-                    d.skip(32); 
+                    v[i].bitan.X = d.readFloat();
+                    v[i].bitan.Y = d.readFloat();
+                    v[i].bitan.Z = d.readFloat();
+                    v[i].bitan.W = d.readFloat();
+                    v[i].tan.X = d.readFloat();
+                    v[i].tan.Y = d.readFloat();
+                    v[i].tan.Z = d.readFloat();
+                    v[i].tan.W = d.readFloat();
                 }
                 else if (nrm == 6)
                 {
@@ -1400,8 +1405,10 @@ namespace Smash_Forge
 
             for (int i = 0; i < m.vertices.Count; i++)
             {
+                
                 Vertex v = m.vertices[i];
-                if(nrm < 8)
+                //Debug.WriteLine(v.tan);
+                if (nrm < 8)
                 {
                     d.writeFloat(v.pos.X);
                     d.writeFloat(v.pos.Y);
@@ -1902,7 +1909,6 @@ namespace Smash_Forge
                 //if ((vertSize & 0xF) != 3 && (vertSize & 0xF) != 7)              
                 //NUD.computeTangentBitangent(this);
                 
-          
                 List<dVertex> vert = new List<dVertex>();
 
                 if (faces.Count <= 3)
@@ -1915,7 +1921,7 @@ namespace Smash_Forge
                         nrm = v.nrm,
                         tan = v.tan.Xyz,
                         bit = v.bitan.Xyz,
-                        col = v.col / 0x7F, // ((NUD)Parent.Parent.Tag).Endian == Endianness.Little ? new Vector4(1f, 1f, 1f, 1f) : v.col / 0x7F,
+                        col = v.col / 0x7F, 
                         tx0 = v.tx.Count > 0 ? v.tx[0] : new Vector2(0, 0),
                         node = new Vector4(v.node.Count > 0 ? v.node[0] : -1,
                         v.node.Count > 1 ? v.node[1] : -1,
@@ -1943,7 +1949,7 @@ namespace Smash_Forge
                 {
                     selectedVerts[i] = 1;
                 }*/
-            }
+                }
 
             public void computeTangentBitangent()
             {
