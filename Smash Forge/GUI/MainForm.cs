@@ -15,6 +15,7 @@ using Microsoft.VisualBasic.Devices;
 using Smash_Forge.GUI.Menus;
 using Smash_Forge.GUI.Editors;
 using SALT.PARAMS;
+using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge
 {
@@ -103,9 +104,7 @@ namespace Smash_Forge
             Runtime.renderIndicators = false;
             Runtime.renderType = Runtime.RenderTypes.Shaded;
             Runtime.paramDir = "";
-            //Pichu.MakePichu();
-            //meshList.refresh();
-            //ReadChimeraLucas();
+
             viewportWindowToolStripMenuItem.Checked = true;
             openFiles();
 
@@ -123,15 +122,15 @@ namespace Smash_Forge
             Runtime.shaders.Add("Point", poi);
 
             Shader sha = new Shader();
-            sha.vertexShader(RenderTools.vs_Shadow);
-            sha.fragmentShader(RenderTools.fs_Shadow);
+            sha.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Shadow_vs.txt"));
+            sha.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Shadow_fs.txt"));
             Runtime.shaders.Add("Shadow", sha);
 
             Shader nud = new Shader();
             nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
             nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
             Runtime.shaders.Add("NUD", nud);
-
+    
             Shader texture = new Shader();           
             texture.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_vs.txt"));
             texture.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_fs.txt"));
@@ -148,8 +147,8 @@ namespace Smash_Forge
             Runtime.shaders.Add("Quad", quad);
 
             Shader blur = new Shader();
-            blur.vertexShader(RenderTools.vs_blur);
-            blur.fragmentShader(RenderTools.fs_blur);
+            blur.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Blur_vs.txt"));
+            blur.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Blur_fs.txt"));
             Runtime.shaders.Add("Blur", blur);
 
             Shader DAT = new Shader();

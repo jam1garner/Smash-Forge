@@ -106,7 +106,9 @@ namespace Smash_Forge
             button1.Visible = false;
             if (e.Node is NUD.Mesh)
             {
-                changingValue = true;//Since we are changing value but we don't want the entire model order to swap we are disabling the event for on change value temporarily
+                //Since we are changing value but we don't want the entire model order to swap,
+                // we are disabling the event for on change value temporarily
+                changingValue = true;
                 numericUpDown1.Maximum = ((NUD)e.Node.Parent.Tag).mesh.Count - 1;
                 numericUpDown1.Value = ((NUD)e.Node.Parent.Tag).mesh.IndexOf((NUD.Mesh)e.Node);
 
@@ -809,6 +811,7 @@ namespace Smash_Forge
                         { XmlAttribute a = doc.CreateAttribute("dstFactor"); a.Value = mat.dstFactor.ToString(); matnode.Attributes.Append(a); }
                         { XmlAttribute a = doc.CreateAttribute("AlphaFunc"); a.Value = mat.AlphaFunc.ToString(); matnode.Attributes.Append(a); }
                         { XmlAttribute a = doc.CreateAttribute("AlphaTest"); a.Value = mat.AlphaTest.ToString(); matnode.Attributes.Append(a); }
+                        { XmlAttribute a = doc.CreateAttribute("RefAlpha"); a.Value = mat.RefAlpha.ToString(); matnode.Attributes.Append(a); }
                         { XmlAttribute a = doc.CreateAttribute("cullmode"); a.Value = mat.cullMode.ToString("x"); matnode.Attributes.Append(a); }
                         { XmlAttribute a = doc.CreateAttribute("zbuffoff"); a.Value = mat.zBufferOffset.ToString(); matnode.Attributes.Append(a); }
 
@@ -832,7 +835,25 @@ namespace Smash_Forge
                             XmlAttribute a = doc.CreateAttribute("name"); a.Value = k.Key; paramnode.Attributes.Append(a);
                             matnode.AppendChild(paramnode);
 
-                            foreach (float f in k.Value) paramnode.InnerText += f.ToString() + " ";
+                            if (k.Key == "NU_materialHash")
+                            {
+                                // material hash should be in hex for easier reading
+                                foreach (float f in k.Value)
+                                    paramnode.InnerText += BitConverter.ToUInt32(BitConverter.GetBytes(f), 0).ToString("x") + " ";
+                            }
+                            else
+                            {
+                                int count = 0;
+                                foreach (float f in k.Value)
+                                {
+                                    // only need to print 4 values and avoids tons of 0's
+                                    if (count <= 4)
+                                        paramnode.InnerText += f.ToString() + " ";
+                                    count += 1;
+                                }
+                                   
+                            }
+                           
                         }
                     }
                     
@@ -903,6 +924,7 @@ namespace Smash_Forge
                                             case "dstFactor": int.TryParse(a.Value, out mat.dstFactor); break;
                                             case "AlphaFunc": int.TryParse(a.Value, out mat.AlphaFunc); break;
                                             case "AlphaTest": int.TryParse(a.Value, out mat.AlphaTest); break;
+                                            case "RefAlpha": int.TryParse(a.Value, out mat.RefAlpha); break;
                                             case "cullmode": int cm = 0; if (int.TryParse(a.Value, NumberStyles.HexNumber, null, out cm)) { mat.cullMode = cm; }; break;
                                             case "zbuffoff": int.TryParse(a.Value, out mat.zBufferOffset); break;
                                         }
@@ -942,7 +964,22 @@ namespace Smash_Forge
                                             string[] values = mnode.InnerText.Split(' ');
                                             List<float> v = new List<float>();
                                             float f = 0;
-                                            foreach (string s in values) if (float.TryParse(s, out f)) v.Add(f);
+                                            foreach (string s in values)
+                                            {
+                                                if (name == "NU_materialHash")
+                                                {
+                                                    int hash;
+                                                    if (int.TryParse(s, NumberStyles.HexNumber, null, out hash))
+                                                    {
+                                                        f = BitConverter.ToSingle(BitConverter.GetBytes(hash), 0);
+                                                        v.Add(f);
+                                                    }
+                                                       
+                                                }                                                  
+                                                else
+                                                    if (float.TryParse(s, out f)) v.Add(f);
+                                            }
+
                                             mat.entries.Add(name, v.ToArray());
                                         }
                                     }

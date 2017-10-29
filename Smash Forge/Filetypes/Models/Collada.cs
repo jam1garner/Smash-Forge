@@ -299,7 +299,6 @@ namespace Smash_Forge
 
             n.Optimize();
             n.PreRender();
-            n.CalculateNewTangentBitangent();
         }
 
         private static void ReadSemantic(ColladaInput input, NUD.Vertex v, int p, Dictionary<string, ColladaSource> sources)

@@ -863,7 +863,7 @@
     </Content>
     <None Include="Resources\UVPattern.png" />
     <None Include="Resources\1.dds.png" />
-    <None Include="Resources\cubemap2.bmp" />
+    <None Include="Resources\10102000.png" />
     <None Include="Resources\10101000.png" />
     <None Include="lib\Shader\Texture_fs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -898,7 +898,15 @@
     <None Include="lib\Shader\DAT_vs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="lib\Shader\Shadow_vs.txt" />
+    <None Include="lib\Shader\Blur_fs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\Blur_vs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\Shadow_vs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Resources\10080000.png" />
     <Content Include="Resources\forge.ico" />
     <Content Include="lib\FITC.exe">

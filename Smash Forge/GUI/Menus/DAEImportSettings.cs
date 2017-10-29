@@ -81,6 +81,10 @@ namespace Smash_Forge
                     if (smoothCB.Checked)
                         poly.SmoothNormals();
 
+                    // we only want to calculate new tangents/bitangents for imports
+                    // vanilla models have special tangents/bitangents for mirrored normal maps
+                    NUD.computeTangentBitangent(poly);
+
                     poly.vertSize = ((poly.vertSize == 0x6 ? 0 : BoneTypes[(string)comboBox2.SelectedItem])) | (VertTypes[(string)comboBox1.SelectedItem]);
 
                     if (!warning && poly.vertSize == 0x27)
@@ -164,10 +168,8 @@ namespace Smash_Forge
                 }
             }
 
-            // we only want to calculate new tangents/bitangents for imports
-            // vanilla models have special tangents/bitangents for mirrored normal maps
             nud.PreRender();
-            nud.CalculateNewTangentBitangent();
+
         }
 
         public VBN getVBN()

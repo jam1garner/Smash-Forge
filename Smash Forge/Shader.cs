@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace Smash_Forge
 {
@@ -126,6 +127,8 @@ namespace Smash_Forge
             string error = GL.GetProgramInfoLog(programID);
             errorLog += error + "\n";
             Console.WriteLine(error);
+
+
         }
 
         void loadShader(string shaderText, ShaderType type, int program, out int address)
@@ -136,6 +139,45 @@ namespace Smash_Forge
             GL.AttachShader(program, address);
 			Console.WriteLine(GL.GetShaderInfoLog(address));
             errorLog += GL.GetShaderInfoLog(address) + "\n";
+        }
+
+        public bool shadersCompiledSuccessfully()
+        {
+            // make sure the shaders were compiled correctly
+            // don't try to render if the shaders have errors to avoid crashes
+            int compileStatusVS;
+            GL.GetShader(vsID, ShaderParameter.CompileStatus, out compileStatusVS);
+
+            int compileStatusFS;
+            GL.GetShader(fsID, ShaderParameter.CompileStatus, out compileStatusFS);
+            if (compileStatusFS == 0 || compileStatusVS == 0)
+                return false;
+            else
+                return true;
+        }
+
+        public void shaderCompilationWarningMessage(string shaderName)
+        {
+            int compileStatusVS;
+            GL.GetShader(vsID, ShaderParameter.CompileStatus, out compileStatusVS);
+            if (compileStatusVS == 0)
+            {
+                MessageBox.Show("The " + shaderName
+                      + " vertex shader failed to compile. Check that your system supports OpenGL and GLSL 3.30." +
+                      " Please export a shader error log and " +
+                      "upload it when reporting rendering issues.", "Shader Compilation Error");
+            }
+
+            int compileStatusFS;
+            GL.GetShader(fsID, ShaderParameter.CompileStatus, out compileStatusFS);
+            if (compileStatusFS == 0)
+            {
+                MessageBox.Show("The " + shaderName
+              + " fragment shader failed to compile. Check that your system supports OpenGL and GLSL 3.30." +
+              " Please export a shader error log and " +
+              "upload it when reporting rendering issues.", "Shader Compilation Error");
+            }
+          
         }
 	}
 }

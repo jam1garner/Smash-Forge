@@ -4,6 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenTK.Graphics.OpenGL;
+using OpenTK;
+using System.Drawing;
+using System.Diagnostics;
+
 
 
 namespace Smash_Forge
@@ -837,24 +842,348 @@ namespace Smash_Forge
 
             return f.getBytes();
         }
+
+        #region rendering
+
+        public static void DrawSpawn(Point s, bool isRespawn)
+        {
+            DrawRespawnQuad(s, Color.Blue);
+
+            //Draw respawn platform
+            if (isRespawn)
+            {
+                DrawRespawnArrow(s, Color.Gray, Color.Black);
+            }
+
+        }
+
+        private static void DrawRespawnQuad(Point s, Color color)
+        {
+            float width = 3.0f;
+            float height = 10.0f;
+            GL.Color4(Color.FromArgb(100, color));
+            GL.Begin(PrimitiveType.QuadStrip);
+            GL.Vertex3(s.x - width, s.y, 0f);
+            GL.Vertex3(s.x + width, s.y, 0f);
+            GL.Vertex3(s.x - width, s.y + height, 0f);
+            GL.Vertex3(s.x + width, s.y + height, 0f);
+            GL.End();
+        }
+
+        private static void DrawRespawnArrow(Point s, Color arrowColor, Color wireframeColor)
+        {
+            float scale = 5.0f;
+            GL.Color4(Color.FromArgb(200, arrowColor));
+            GL.Begin(PrimitiveType.Triangles);
+            GL.Vertex3(s.x - scale, s.y, 0);
+            GL.Vertex3(s.x + scale, s.y, 0);
+            GL.Vertex3(s.x, s.y, scale);
+
+            GL.Vertex3(s.x - scale, s.y, 0);
+            GL.Vertex3(s.x + scale, s.y, 0);
+            GL.Vertex3(s.x, s.y, -scale);
+
+            GL.Vertex3(s.x - scale, s.y, 0);
+            GL.Vertex3(s.x, s.y - scale, 0);
+            GL.Vertex3(s.x, s.y, scale);
+
+            GL.Vertex3(s.x + scale, s.y, 0);
+            GL.Vertex3(s.x, s.y - scale, 0);
+            GL.Vertex3(s.x, s.y, -scale);
+
+            GL.Vertex3(s.x + scale, s.y, 0);
+            GL.Vertex3(s.x, s.y - scale, 0);
+            GL.Vertex3(s.x, s.y, scale);
+
+            GL.Vertex3(s.x - scale, s.y, 0);
+            GL.Vertex3(s.x, s.y - scale, 0);
+            GL.Vertex3(s.x, s.y, -scale);
+            GL.End();
+
+            // wireframe
+            GL.Color4(Color.FromArgb(200, wireframeColor));
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex3(s.x - scale, s.y, 0);
+            GL.Vertex3(s.x, s.y - scale, 0);
+            GL.Vertex3(s.x + scale, s.y, 0);
+            GL.Vertex3(s.x, s.y - scale, 0);
+
+            GL.Vertex3(s.x, s.y, -scale);
+            GL.Vertex3(s.x, s.y - scale, 0);
+            GL.Vertex3(s.x, s.y, scale);
+            GL.Vertex3(s.x, s.y - scale, 0);
+
+            GL.Vertex3(s.x, s.y, -scale);
+            GL.Vertex3(s.x + scale, s.y, 0);
+            GL.Vertex3(s.x, s.y, -scale);
+            GL.Vertex3(s.x - scale, s.y, 0);
+
+            GL.Vertex3(s.x, s.y, scale);
+            GL.Vertex3(s.x + scale, s.y, 0);
+            GL.Vertex3(s.x, s.y, scale);
+            GL.Vertex3(s.x - scale, s.y, 0);
+
+            GL.End();
+        }
+
+        public static void DrawCameraBounds(Bounds b, Color color)
+        {
+            GL.Color4(Color.FromArgb(128, color));
+            GL.Begin(PrimitiveType.LineLoop);
+            GL.Vertex3(b.left, b.top, 0);
+            GL.Vertex3(b.right, b.top, 0);
+            GL.Vertex3(b.right, b.bottom, 0);
+            GL.Vertex3(b.left, b.bottom, 0);
+            GL.End();
+        }
+
+        public static void RenderItemSpawners()
+        {
+            foreach (ItemSpawner c in Runtime.TargetLVD.items)
+            {
+                foreach (Section s in c.sections)
+                {
+                    // draw the item spawn quads
+                    GL.LineWidth(2);
+
+                    // draw outside borders
+                    GL.Color3(Color.Black);
+                    GL.Begin(PrimitiveType.LineStrip);
+                    foreach (Vector2D vi in s.points)
+                    {
+                        GL.Vertex3(vi.x, vi.y, 5);
+                    }
+                    GL.End();
+                    GL.Begin(PrimitiveType.LineStrip);
+                    foreach (Vector2D vi in s.points)
+                    {
+                        GL.Vertex3(vi.x, vi.y, -5);
+                    }
+                    GL.End();
+
+
+                    // draw vertices
+                    GL.Color3(Color.White);
+                    GL.Begin(PrimitiveType.Lines);
+                    foreach (Vector2D vi in s.points)
+                    {
+                        GL.Vertex3(vi.x, vi.y, 5);
+                        GL.Vertex3(vi.x, vi.y, -5);
+                    }
+                    GL.End();
+                }
+            }
+        }
+
+        public static void DrawCollisions(Stopwatch timeSinceSelected)
+        {
+            Color color;
+            GL.LineWidth(4);
+            Matrix4 transform = Matrix4.Identity;
+            foreach (Collision c in Runtime.TargetLVD.collisions)
+            {
+                bool colSelected = (Runtime.LVDSelection == c);
+                float addX = 0, addY = 0, addZ = 0;
+                if (c.useStartPos)
+                {
+                    addX = c.startPos[0];
+                    addY = c.startPos[1];
+                    addZ = c.startPos[2];
+                }
+                if (c.flag2)
+                {
+                    //Flag2 == rigged collision
+                    ModelContainer riggedModel = null;
+                    Bone riggedBone = null;
+                    foreach (ModelContainer m in Runtime.ModelContainers)
+                    {
+                        if (m.name.Equals(c.subname))
+                        {
+                            riggedModel = m;
+                            if (m.vbn != null)
+                            {
+                                foreach (Bone b in m.vbn.bones)
+                                {
+                                    if (b.Text.Equals(new string(c.unk4)))
+                                    {
+                                        riggedBone = b;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (riggedModel != null)
+                    {
+                        if (riggedBone == null && riggedModel.vbn != null && riggedModel.vbn.bones.Count > 0)
+                        {
+                            riggedBone = riggedModel.vbn.bones[0];
+                        }
+                        if (riggedBone != null)
+                            transform = riggedBone.invert * riggedBone.transform;
+                    }
+                }
+
+                for (int i = 0; i < c.verts.Count - 1; i++)
+                {
+                    Vector3 v1Pos = Vector3.Transform(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ + 5), transform);
+                    Vector3 v1Neg = Vector3.Transform(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ - 5), transform);
+                    Vector3 v1Zero = Vector3.Transform(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ), transform);
+                    Vector3 v2Pos = Vector3.Transform(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ + 5), transform);
+                    Vector3 v2Neg = Vector3.Transform(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ - 5), transform);
+                    Vector3 v2Zero = Vector3.Transform(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ), transform);
+
+                    GL.Begin(PrimitiveType.Quads);
+                    if (c.normals.Count > i)
+                    {
+                        if (Runtime.renderCollisionNormals)
+                        {
+                            Vector3 v = Vector3.Add(Vector3.Divide(Vector3.Subtract(v1Zero, v2Zero), 2), v2Zero);
+                            GL.End();
+                            GL.Begin(PrimitiveType.Lines);
+                            GL.Color3(Color.Blue);
+                            GL.Vertex3(v);
+                            GL.Vertex3(v.X + (c.normals[i].x * 5), v.Y + (c.normals[i].y * 5), v.Z);
+                            GL.End();
+                            GL.Begin(PrimitiveType.Quads);
+                        }
+
+                        if (c.flag4)
+                            color = Color.FromArgb(128, Color.Yellow);
+                        else if (c.materials[i].getFlag(4) && Math.Abs(c.normals[i].x) > Math.Abs(c.normals[i].y))
+                            color = Color.FromArgb(128, Color.Purple);
+                        else if (Math.Abs(c.normals[i].x) > Math.Abs(c.normals[i].y))
+                            color = Color.FromArgb(128, Color.Lime);
+                        else if (c.normals[i].y < 0)
+                            color = Color.FromArgb(128, Color.Red);
+                        else
+                            color = Color.FromArgb(128, Color.Cyan);
+
+                        if ((colSelected || Runtime.LVDSelection == c.normals[i]) && ((int)((timeSinceSelected.ElapsedMilliseconds % 1000) / 500) == 0))
+                            color = RenderTools.invertColor(color);
+
+                        GL.Color4(color);
+                    }
+                    else
+                    {
+                        GL.Color4(Color.FromArgb(128, Color.Gray));
+                    }
+                    GL.Vertex3(v1Pos);
+                    GL.Vertex3(v1Neg);
+                    GL.Vertex3(v2Neg);
+                    GL.Vertex3(v2Pos);
+                    GL.End();
+
+                    GL.Begin(PrimitiveType.Lines);
+                    if (c.materials.Count > i)
+                    {
+                        if (c.materials[i].getFlag(6) || (i > 0 && c.materials[i - 1].getFlag(7)))
+                            color = Color.Purple;
+                        else
+                            color = Color.Orange;
+
+                        if ((colSelected || Runtime.LVDSelection == c.verts[i]) && ((int)((timeSinceSelected.ElapsedMilliseconds % 1000) / 500) == 0))
+                            color = RenderTools.invertColor(color);
+                        GL.Color4(color);
+                    }
+                    else
+                    {
+                        GL.Color4(Color.Gray);
+                    }
+                    GL.Vertex3(v1Pos);
+                    GL.Vertex3(v1Neg);
+
+                    if (i == c.verts.Count - 2)
+                    {
+                        if (c.materials.Count > i)
+                        {
+                            if (c.materials[i].getFlag(7))
+                                color = Color.Purple;
+                            else
+                                color = Color.Orange;
+
+                            if (Runtime.LVDSelection == c.verts[i + 1] && ((int)((timeSinceSelected.ElapsedMilliseconds % 1000) / 500) == 0))
+                                color = RenderTools.invertColor(color);
+                            GL.Color4(color);
+                        }
+                        else
+                        {
+                            GL.Color4(Color.Gray);
+                        }
+                        GL.Vertex3(v2Pos);
+                        GL.Vertex3(v2Neg);
+                    }
+                    GL.End();
+                }
+            }
+        }
+
+        private static Color getLinkColor(DAT.COLL_DATA.Link link)
+        {
+            if ((link.flags & 1) != 0)
+                return Color.FromArgb(128, Color.Yellow);
+            if ((link.collisionAngle & 4) + (link.collisionAngle & 8) != 0)
+                return Color.FromArgb(128, Color.Lime);
+            if ((link.collisionAngle & 2) != 0)
+                return Color.FromArgb(128, Color.Red);
+
+            return Color.FromArgb(128, Color.DarkCyan);
+        }
+
+        public static void DrawDATCollisions(ModelContainer m)
+        {
+            float scale = m.dat_melee.stageScale;
+            List<int> ledges = new List<int>();
+            foreach (DAT.COLL_DATA.Link link in m.dat_melee.collisions.links)
+            {
+
+                GL.Begin(PrimitiveType.Quads);
+                GL.Color4(getLinkColor(link));
+                Vector2D vi = m.dat_melee.collisions.vertices[link.vertexIndices[0]];
+                GL.Vertex3(vi.x * scale, vi.y * scale, 5);
+                GL.Vertex3(vi.x * scale, vi.y * scale, -5);
+                vi = m.dat_melee.collisions.vertices[link.vertexIndices[1]];
+                GL.Vertex3(vi.x * scale, vi.y * scale, -5);
+                GL.Vertex3(vi.x * scale, vi.y * scale, 5);
+                GL.End();
+
+                if ((link.flags & 2) != 0)
+                {
+                    ledges.Add(link.vertexIndices[0]);
+                    ledges.Add(link.vertexIndices[1]);
+                }
+            }
+
+            GL.LineWidth(4);
+            for (int i = 0; i < m.dat_melee.collisions.vertices.Count; i++)
+            {
+                Vector2D vi = m.dat_melee.collisions.vertices[i];
+                if (ledges.Contains(i))
+                    GL.Color3(Color.Purple);
+                else
+                    GL.Color3(Color.Tomato);
+                GL.Begin(PrimitiveType.Lines);
+                GL.Vertex3(vi.x * scale, vi.y * scale, 5);
+                GL.Vertex3(vi.x * scale, vi.y * scale, -5);
+                GL.End();
+            }
+        }
+
+        public static void DrawBlastZones(Bounds b, Color color)
+        {
+            GL.Color4(Color.FromArgb(128, color));
+            GL.Begin(PrimitiveType.LineLoop);
+            GL.Vertex3(b.left, b.top, 0);
+            GL.Vertex3(b.right, b.top, 0);
+            GL.Vertex3(b.right, b.bottom, 0);
+            GL.Vertex3(b.left, b.bottom, 0);
+            GL.End();
+        }
+
     }
+
+    #endregion
+
 }
-/*        type 1  - collisions
-          type 2  - spawns
-          type 3  - respawns
-          type 4  - camera bounds
-          type 5  - death boundaries
-          type 6  - ???
-          type 7  - ITEMPT_transform
-          type 8  - enemyGenerator
-          type 9  - ITEMPT
-          type 10 - fsAreaCam (and other fsArea's ? )
-          type 11 - fsCamLimit
-          type 12 - damageShapes (damage sphere and damage capsule are the only ones I've seen, type 2 and 3 respectively)
-          type 13 - item spawners
-          type 14 - general shapes (general rect, general path, etc.)
-          type 15 - general points
-          type 16 - ???
-          type 17 - FsStartPoint
-          type 18 - ???
-          type 19 - ???*/
+
+
+

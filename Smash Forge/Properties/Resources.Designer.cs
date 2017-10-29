@@ -19,7 +19,7 @@ namespace Smash_Forge.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -83,9 +83,9 @@ namespace Smash_Forge.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cubemap {
+        internal static System.Drawing.Bitmap _10102000 {
             get {
-                object obj = ResourceManager.GetObject("cubemap", resourceCulture);
+                object obj = ResourceManager.GetObject("_10102000", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

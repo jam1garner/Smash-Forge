@@ -13,57 +13,127 @@ namespace Smash_Forge
 
     public class Camera
     {
-        Vector3 pos = new Vector3(0, -10, -30);
-        float rot = 0, lookup = 0;
+        // should help eliminate some redundant code once this class is more functional
+        private Vector3 position = new Vector3(0, -10, -30);
+        private float cameraXRotation = 0;
+        private float cameraYRotation = 0;
+        private int renderWidth = 1;
+        private int renderHeight = 1;
+        private float farClipPlane = 10000;
+        private Matrix4 modelViewMatrix = Matrix4.Identity;
+        private Matrix4 mvpMatrix = Matrix4.Identity;
+        private Matrix4 projectionMatrix = Matrix4.Identity;
 
+        // probably shouldn't be hard coded
+        private float zoomMultiplier = Runtime.zoomModifierScale; // convert zoomSpeed to in game stprm zoom speed. still not exact
+        private float zoomSpeed = Runtime.zoomspeed;
+        private float mouseTranslateSpeed = 0.050f;
+        private float scrollWheelZoomSpeed = 1.75f;
+        private float shiftZoomMultiplier = 2.5f;
         public float mouseSLast, mouseYLast, mouseXLast;
 
         public Camera()
         {
-            mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
-            mouseXLast = OpenTK.Input.Mouse.GetState().X;
-            mouseYLast = OpenTK.Input.Mouse.GetState().Y;
+            TrackMouse();
+            // this breaks everything for some reason
         }
 
-        public Matrix4 getViewMatrix()
+        public Camera(Vector3 position, float rotX, float rotY, int renderWidth, int renderHeight)
         {
-            return Matrix4.CreateRotationY(0.5f * rot) *
-                Matrix4.CreateRotationX(0.2f * lookup) *
-                Matrix4.CreateTranslation(pos);
+            //TrackMouse();
+            this.position = position;
+            this.renderHeight = renderHeight;
+            this.renderWidth = renderWidth;
+            cameraXRotation = rotX;
+            cameraYRotation = rotY;
+        }
+
+        public Matrix4 getModelViewMatrix()
+        {
+            return modelViewMatrix;
+        }
+
+        public Matrix4 getMVPMatrix()
+        {
+            return mvpMatrix;
+        }
+
+        public Vector3 getPosition()
+        {
+            return position;
+        }
+
+        public float getFarClipPlane()
+        {
+            return farClipPlane;
+        }
+
+        public void setFarClipPlane(float farClip)
+        {
+            farClipPlane = farClip;
+        }
+
+        public void setRenderWidth(int width)
+        {
+            renderWidth = width;
+        }
+
+        public void setRenderHeight(int height)
+        {
+            renderHeight = height;
         }
 
         public void Update()
         {
-            float zoomscale = Runtime.zoomspeed;
-
+            // left click drag to rotate. right click drag to pan
             if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
             {
-                pos.Y += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                pos.X += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                position.Y += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                position.X += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
             }
             if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
             {
-                rot += 0.025f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                lookup += 0.025f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                cameraYRotation += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                cameraXRotation += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
             }
 
+            float zoomscale = zoomSpeed;
+
+            // hold shift to change zoom speed
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
-                zoomscale = 6;
+                zoomscale *= shiftZoomMultiplier;
 
+            // zoom in or out with arrow keys
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Down))
-                pos.Z -= 1 * zoomscale;
+                position.Z -= 1 * zoomscale;
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Up))
-                pos.Z += 1 * zoomscale;
+                position.Z += 1 * zoomscale;
 
-            pos.Z += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale;
-            
+            TrackMouse();
+
+            // scrollwheel to zoom in our out
+            position.Z += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale * scrollWheelZoomSpeed;
+
+            UpdateMatrices();
+        }
+
+        private void UpdateMatrices()
+        {
+            // need to fix these
+            modelViewMatrix = Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, (float)renderWidth / (float)renderHeight,
+                1.0f, Runtime.renderDepth) * Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation);
+
+            projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, (float)renderWidth / (float)renderHeight,
+                1.0f, Runtime.renderDepth);
+            mvpMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(position.X, -position.Y, position.Z)
+                * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, renderWidth / (float)renderHeight, 1.0f, farClipPlane);
         }
 
         public void TrackMouse()
         {
-            mouseXLast = OpenTK.Input.Mouse.GetState().X;
-            mouseYLast = OpenTK.Input.Mouse.GetState().Y;
-            mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
+            this.mouseXLast = OpenTK.Input.Mouse.GetState().X;
+            this.mouseYLast = OpenTK.Input.Mouse.GetState().Y;
+            this.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
         }
     }
 
@@ -109,10 +179,7 @@ namespace Smash_Forge
 
         public DirectionalLight(float H, float S, float V, Vector3 lightDirection)
         {
-            // calculate light color
             RenderTools.HSV2RGB(H, S, V, out R, out G, out B);
-
-            // calculate light vector
             direction = lightDirection;
         }
 
@@ -140,7 +207,6 @@ namespace Smash_Forge
 
     public class AreaLight
     {
-        // not sure how this should work exactly
         public string ID = "";
     
         // ambient color
@@ -204,16 +270,13 @@ namespace Smash_Forge
 
             direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
         }
-
-
-
     }
 
 
     public class RenderTools
     {
-        public static int defaultTex = -1, userTex;
-        public static int cubeTex, cubeTex2;
+        public static int defaultTex = -1, floorTexture;
+        public static int cubeMapHigh, cubeMapLow;
         public static int defaultRamp;
         public static int UVTestPattern;
 
@@ -221,14 +284,14 @@ namespace Smash_Forge
 
         public static void Setup()
         {
-            cubeTex2 = LoadCubeMap(Smash_Forge.Properties.Resources._10101000);
+            cubeMapHigh = LoadCubeMap(Smash_Forge.Properties.Resources._10102000, TextureUnit.Texture12);
+            cubeMapLow = LoadCubeMap(Smash_Forge.Properties.Resources._10101000, TextureUnit.Texture13);
             defaultRamp = NUT.loadImage(Smash_Forge.Properties.Resources._10080000);
             UVTestPattern = NUT.loadImage(Smash_Forge.Properties.Resources.UVPattern);
 
-            if (defaultTex == -1)
-            cubeTex = LoadCubeMap(Smash_Forge.Properties.Resources.cubemap);
+
             if(defaultTex == -1)
-            defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
+                defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
          
             GL.GenBuffers(1, out cubeVAO);
             GL.GenBuffers(1, out cubeVBO);
@@ -629,16 +692,6 @@ namespace Smash_Forge
 
             //  sides
             GL.PushMatrix();
-
-            //GL.Scale(scale.X, scale.Y, scale.Z);
-            //double[] f = new double[] {
-            //    transform.M11, transform.M12, transform.M13, transform.M14,
-            //    transform.M21, transform.M22, transform.M23, transform.M24,
-            //    transform.M31, transform.M32, transform.M33, transform.M34,
-            //    transform.M41, transform.M42, transform.M43, transform.M44,
-            //};
-            //GL.MultMatrix(f);
-            //Vector3 scale = transform.ExtractScale();
             GL.Translate(mid);
             GL.Rotate(-(float)(angle * (180 / Math.PI)), axis);
 
@@ -1051,7 +1104,7 @@ namespace Smash_Forge
                 GL.Enable(EnableCap.Texture2D);
                 GL.ActiveTexture(TextureUnit.Texture0);
                 if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
-                    GL.BindTexture(TextureTarget.Texture2D, userTex);
+                    GL.BindTexture(TextureTarget.Texture2D, floorTexture);
                 else
                     GL.BindTexture(TextureTarget.Texture2D, defaultTex);
 
@@ -1132,6 +1185,41 @@ namespace Smash_Forge
             }
 
             GL.Enable(EnableCap.DepthTest);
+        }
+
+        public static void RenderBackground()
+        {
+            if (Runtime.floorStyle == Runtime.FloorStyle.Textured || Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
+            {
+                GL.Enable(EnableCap.Texture2D);
+                GL.ActiveTexture(TextureUnit.Texture0);
+                if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
+                    GL.BindTexture(TextureTarget.Texture2D, floorTexture);
+                else
+                    GL.BindTexture(TextureTarget.Texture2D, defaultTex);
+
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)Runtime.floorWrap);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)Runtime.floorWrap);
+
+                GL.Disable(EnableCap.Texture2D);
+            }
+    
+            GL.Begin(PrimitiveType.Quads);
+            GL.Color3(Runtime.back1);
+            GL.TexCoord2(2, 2);
+            GL.Vertex2(1.0, 1.0);
+
+            GL.TexCoord2(0, 2);
+            GL.Vertex2(-1.0, 1.0);
+
+            GL.Color3(Runtime.back2);
+
+            GL.TexCoord2(0, 0);
+            GL.Vertex2(-1.0, -1.0);
+
+            GL.TexCoord2(2, 0);
+            GL.Vertex2(1.0, -1.0);
+            GL.End();
         }
 
         public static void drawCircle(float x, float y, float z, float radius, uint precision)
@@ -1510,9 +1598,7 @@ namespace Smash_Forge
             Vector3 dirToSphere = sphere - vA;
             Vector3 vLineDir = (vB - vA).Normalized();
             float fLineLength = 100;
-            /*(float)Math.Sqrt(Math.Pow(vA.X - vB.X, 2)
-                + Math.Pow(vA.Y - vB.Y, 2)
-                + Math.Pow(vA.Z - vB.Z, 2));*/
+
             float t = Vector3.Dot(dirToSphere, vLineDir);
 
             if (t <= 0.0f)
@@ -1620,12 +1706,15 @@ namespace Smash_Forge
             }
         }
 
-        public static void DrawTexturedQuad(int texture, bool renderR, bool renderG, bool renderB, bool renderAlpha, bool alphaOverride)             
+        public static void DrawTexturedQuad(int texture, int width, int height, bool renderR, bool renderG, bool renderB, 
+            bool renderAlpha, bool alphaOverride, bool preserveAspectRatio)      
         {
             // draw RGB and alpha channels of texture to screen quad
 
             Shader shader = Runtime.shaders["Texture"];
             GL.UseProgram(shader.programID);
+
+            GL.ClearColor(Color.White);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, texture);
@@ -1640,7 +1729,10 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderB"), renderB ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderAlpha"), renderAlpha ? 1 : 0);
             GL.Uniform1(shader.getAttribute("alphaOverride"), alphaOverride ? 1 : 0);
-
+            GL.Uniform1(shader.getAttribute("preserveAspectRatio"), preserveAspectRatio ? 1 : 0);
+            float aspectRatio = (float) width / (float) height;
+            GL.Uniform1(shader.getAttribute("width"), width);
+            GL.Uniform1(shader.getAttribute("height"), height);
 
 
             GL.Disable(EnableCap.DepthTest);
@@ -1723,7 +1815,7 @@ namespace Smash_Forge
 
         }
 
-        public static void RGB2HSV(float R, float G, float B, out float h, out float s, out float v) // need to check weird values for errors
+        public static void RGB2HSV(float R, float G, float B, out float h, out float s, out float v)
         {
             h = 360.0f;
             s = 1.0f;
@@ -1852,6 +1944,11 @@ namespace Smash_Forge
                 return i;
         }
 
+        public static Color invertColor(Color color)
+        {
+            return Color.FromArgb(color.A, 255 - color.R, 255 - color.G, 255 - color.B);
+        }
+
         public static int Float2RGBClamp(float i) 
         {
             // converts input color to int and restricts values to 0 to 255
@@ -1870,12 +1967,12 @@ namespace Smash_Forge
         #endregion
 
         #region Other
-        public static int LoadCubeMap(Bitmap b)
+        public static int LoadCubeMap(Bitmap b, TextureUnit textureUnit)
         {
             int id;
             GL.GenBuffers(1, out id);
 
-            GL.ActiveTexture(0);
+            GL.ActiveTexture(textureUnit);
             
             GL.BindTexture(TextureTarget.TextureCubeMap, id);
 
@@ -1966,7 +2063,7 @@ void main()
             GL.UniformMatrix3(shader.getAttribute("view"), false, ref v);
 
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeTex);
+            GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
             GL.Uniform1(shader.getAttribute("skycube"), 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, cubeVBO);
@@ -2064,90 +2161,6 @@ void main()
 ";
 
         #endregion
-
-        #region Shadow Shader
-
-        public static string vs_Shadow = @"#version 330
-in vec3 vPosition;
-out vec4 outPosition;
-uniform mat4 lightSpaceMatrix;
-uniform mat4 modelMatrix;
-uniform mat4 eyeview; // modelview matrix
-
-void main()
-{
-    gl_Position = lightSpaceMatrix * modelMatrix * vec4(vPosition, 1.0f); //lightSpaceMatrix * eyeview * vec4(vPosition, 1.0f);
-    outPosition = gl_Position;
-}";
-        public static string fs_Shadow = @"#version 330
-//out vec4 outColor;
-in vec4 outPosition;
-void main()
-{   
-    float depth = outPosition.z;
-    depth *= 0.01;
-    //outColor = vec4(vec3(depth), 1);
-}";
-
-
-        #endregion
-
-
-
-
-
-
-        #region blur shader
-        // basically identical to "quad" shader but with guassian blur
-        public static string vs_blur = @"#version 330
-
-out vec2 TexCoords;
- 
-void main()
-{
-    float x = -1.0 + float((gl_VertexID & 1) << 2);
-    float y = -1.0 + float((gl_VertexID & 2) << 1);
-    TexCoords.x = (x+1.0)*0.5;
-    TexCoords.y = (y+1.0)*0.5;
-    gl_Position = vec4(x, y, 0, 1);
-}";
-        public static string fs_blur = @"#version 330 core
-out vec4 FragColor;
-  
-in vec2 TexCoords;
-
-uniform sampler2D image;
-  
-uniform int horizontal;
-uniform float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
-
-void main()
-{             
-    vec2 tex_offset = 1.0 / textureSize(image, 0); // gets size of single texel
-    vec3 result = texture(image, TexCoords).rgb * weight[0]; // current fragment's contribution
-    if(horizontal == 1)
-    {
-        for(int i = 1; i < 5; ++i)
-        {
-            result += texture(image, TexCoords + vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
-            result += texture(image, TexCoords - vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
-        }
-    }
-    else
-    {
-        for(int i = 1; i < 5; ++i)
-        {
-            result += texture(image, TexCoords + vec2(0.0, tex_offset.y * i)).rgb * weight[i];
-            result += texture(image, TexCoords - vec2(0.0, tex_offset.y * i)).rgb * weight[i];
-        }
-    }
-    result = texture(image, TexCoords).rgb;
-    FragColor = vec4(result, 1.0);
-    //FragColor = vec4(TexCoords.x, TexCoords.y, 1, 1);
-}";
-
-        #endregion
-
 
         #endregion
     }

@@ -147,6 +147,8 @@ namespace Smash_Forge
             Init();
             FillForm();
             comboBox1.SelectedIndex = 0;
+
+            Runtime.shaders["Texture"].shaderCompilationWarningMessage("Texture");
         }
 
         public void InitPropList()
@@ -185,12 +187,6 @@ namespace Smash_Forge
 
         private void NUDMaterialEditor_Load(object sender, EventArgs e)
         {
-            /*// Create a timer with a two second interval.
-            System.Timers.Timer aTimer = new System.Timers.Timer((1f / 60) * 1000);
-            // Hook up the Elapsed event for the timer. 
-            aTimer.Elapsed += OnTimedEvent;
-            aTimer.AutoReset = true;
-            aTimer.Enabled = true;*/
         }
 
 
@@ -248,7 +244,6 @@ namespace Smash_Forge
         {
             NUD.Material mat = material[current];
 
-            //mat.flags = mat.RebuildFlags();
             textBox1.Text = mat.flags.ToString("X") + "";
             textBox3.Text = mat.srcFactor + "";
             textBox4.Text = mat.dstFactor + "";
@@ -264,13 +259,12 @@ namespace Smash_Forge
             
             shadowCB.Checked = mat.hasShadow;
             GlowCB.Checked = mat.glow;
-            //sphereMapCB.Checked = mat.useSphereMap;
-            dummy_rampCB.Checked = mat.useDummyRamp;
+            dummy_rampCB.Checked = mat.dummyramp;
             AOCB.Checked = mat.aomap;
             diffuseCB.Checked = mat.diffuse;
             diffuse2CB.Checked = mat.diffuse2;
             normalCB.Checked = mat.normalmap;
-            sphere_mapCB.Checked = mat.useSphereMap;
+            sphere_mapCB.Checked = mat.spheremap;
             cubemapCB.Checked = mat.cubemap;
             stageMapCB.Checked = mat.stagemap;
             rampCB.Checked = mat.ramp;
@@ -282,11 +276,10 @@ namespace Smash_Forge
             if (mat.stagemap) listView1.Items.Add("StageMap");
             if (mat.cubemap) listView1.Items.Add("Cubemap");
             if (mat.spheremap) listView1.Items.Add("SphereMap");
-            //if (mat.diffuse2) listView1.Items.Add("Diffuse2");
             if (mat.aomap) listView1.Items.Add("AO Map");
             if (mat.normalmap) listView1.Items.Add("NormalMap");
             if (mat.ramp) listView1.Items.Add("Ramp");
-            if (mat.useDummyRamp) listView1.Items.Add("Dummy Ramp");
+            if (mat.dummyramp) listView1.Items.Add("Dummy Ramp");
 
             while (listView1.Items.Count > mat.textures.Count)
                 listView1.Items.RemoveAt(1);
@@ -388,7 +381,6 @@ namespace Smash_Forge
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
             int.TryParse(textBox5.Text, out material[current].AlphaTest);
-            //setValue(textBox5, comboBox4, afunc, out material[current].alphaFunc);
         }
         
         private void AlphaFuncCB_SelectedIndexChanged(object sender, EventArgs e)
@@ -788,42 +780,13 @@ namespace Smash_Forge
                 Init();
                 FillForm();
             }
-
-            /*using (var ofd = new OpenFileDialog())
-            {
-                ofd.Filter = "Namco Material (NMT)|*.nmt|" +
-                             "All files(*.*)|*.*";
-
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    if (ofd.FileName.EndsWith(".nmt"))
-                    {
-                        FileData f = new FileData(ofd.FileName);
-
-                        int soff = f.readInt();
-                        
-                        NUD._s_Poly pol = new NUD._s_Poly()
-                        {
-                            texprop1 = f.readInt(),
-                            texprop2 = f.readInt(),
-                            texprop3 = f.readInt(),
-                            texprop4 = f.readInt()
-                        };
-
-                        poly.materials = NUD.readMaterial(f, pol, soff);
-                        material = poly.materials;
-                        Console.WriteLine(material.Count);
-                        current = 0;
-                        Init();
-                        FillForm();
-                    }
-                }
-            }*/
+       
         }
 
         private void RenderTexture()
         {
             if (!tabControl1.SelectedTab.Text.Equals("Textures")) return;
+
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
             GL.ClearColor(Color.White);
@@ -837,7 +800,7 @@ namespace Smash_Forge
             GL.Enable(EnableCap.Texture2D);
 
             NUT.NUD_Texture tex = null;
-            int rt = 0;
+            int texture = 0;
             if (material[current].entries.ContainsKey("NU_materialHash") && listView1.SelectedIndices.Count > 0)
             {
                 int hash = material[current].textures[listView1.SelectedIndices[0]].hash;
@@ -846,28 +809,12 @@ namespace Smash_Forge
                     if (n.draw.ContainsKey(hash))
                     {
                         n.getTextureByID(hash, out tex);
-                        rt = n.draw[hash];
+                        texture = n.draw[hash];
                         break;
                     }
             }
-            float h = 1f, w = 1f;
-            if (tex != null)
-            {
-                float texureRatioW = tex.width / tex.height;
-                float widthPre = texureRatioW * glControl1.Height;
-                w = glControl1.Width / widthPre;
-                if (texureRatioW > glControl1.AspectRatio)
-                {
-                    w = 1f;
-                    float texureRatioH = tex.height / tex.width;
-                    float HeightPre = texureRatioH * glControl1.Width;
-                    h = glControl1.Height / HeightPre;
-                }
-            }
-            if (float.IsInfinity(h)) h = 1;
-            Console.WriteLine(w + " " + h);
-
-            RenderTools.DrawTexturedQuad(rt, true, true, true, false, false);
+     
+            RenderTools.DrawTexturedQuad(texture, 1, 1, true, true, true, false, false, false);
 
             glControl1.SwapBuffers();
         }
@@ -889,7 +836,7 @@ namespace Smash_Forge
             GL.Enable(EnableCap.Texture2D);
 
             NUT.NUD_Texture tex = null;
-            int rt = 0;
+            int texture = 0;
             if (material[current].entries.ContainsKey("NU_materialHash") && listView1.SelectedIndices.Count > 0)
             {
                 int hash = material[current].textures[listView1.SelectedIndices[0]].hash;
@@ -898,7 +845,7 @@ namespace Smash_Forge
                     if (n.draw.ContainsKey(hash))
                     {
                         n.getTextureByID(hash, out tex);
-                        rt = n.draw[hash];
+                        texture = n.draw[hash];
                         break;
                     }
             }
@@ -919,16 +866,13 @@ namespace Smash_Forge
             if (float.IsInfinity(h)) h = 1;
             Console.WriteLine(w + " " + h);
 
-            RenderTools.DrawTexturedQuad(rt, false, false, false, true, true);
+            RenderTools.DrawTexturedQuad(texture, 1, 1, false, false, false, true, true, false);
             glControl2.SwapBuffers();
         }
 
 
         private void glControl1_Click(object sender, EventArgs e)
         {
-
-            //GL.BindTexture(TextureTarget.Texture2D, i);
-            //GL.Begin(PrimitiveType.Quads);
         }
 
         private void button4_Click_1(object sender, EventArgs e)
@@ -1025,17 +969,15 @@ namespace Smash_Forge
             }
         }
 
-        private void rimLightCB_CheckedChanged(object sender, EventArgs e)
+        private void dummyRampCB_CheckedChanged(object sender, EventArgs e)
         {
-            material[current].UseDummyRamp = dummyRampCB.Checked;
-            //if(rimLightCB.Checked)specLightCB.Checked = !rimLightCB.Checked;
+            material[current].dummyramp = dummyRampCB.Checked;
             FillForm();
         }
 
         private void sphereMapCB_CheckedChanged(object sender, EventArgs e)
         {
-            material[current].UseSphereMap = sphereMapCB.Checked;
-            //if (specLightCB.Checked)rimLightCB.Checked = !specLightCB.Checked;
+            material[current].spheremap = sphereMapCB.Checked;
             FillForm();
         }
 
@@ -1094,7 +1036,7 @@ namespace Smash_Forge
 
         private void dummy_rampCB_CheckedChanged(object sender, EventArgs e)
         {
-            material[current].UseDummyRamp = dummy_rampCB.Checked;
+            material[current].dummyramp = dummy_rampCB.Checked;
             FillForm();
         }
 
@@ -1112,7 +1054,7 @@ namespace Smash_Forge
 
         private void sphere_mapCB_CheckedChanged(object sender, EventArgs e)
         {
-            material[current].useSphereMap = sphere_mapCB.Checked;
+            material[current].spheremap = sphere_mapCB.Checked;
             FillForm();
         }
 

@@ -55,7 +55,7 @@ uniform int isTransparent;
 uniform vec4 colorSamplerUV;
 uniform vec4 normalSamplerAUV;
 uniform vec4 colorOffset;
-uniform vec4 minGain;
+uniform vec4 aoMinGain;
 uniform vec4 fresnelColor;
 uniform vec4 specularColor;
 uniform vec4 specularColorGain;
@@ -321,12 +321,12 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
             vec3 aoBlend = vec3(1);
             aoMap = texture(normalMap, texcoord).a;
             float maxAOBlendValue = 1.2;
-            aoBlend = min((vec3(aoMap) + minGain.rgb), vec3(maxAOBlendValue));
-            vec3 aoGain = min((aoMap * (1 + minGain.rgb)), vec3(1.0));
+            aoBlend = min((vec3(aoMap) + aoMinGain.rgb), vec3(maxAOBlendValue));
+            vec3 aoGain = min((aoMap * (1 + aoMinGain.rgb)), vec3(1.0));
 			vec3 c1 = RGB2HSV(aoBlend);
             vec3 c2 = RGB2HSV(aoGain);
 			aoBlend.rgb = HSV2RGB(vec3(c1.x, c2.y, c1.z));
-            float aoMixIntensity = minGain.a;
+            float aoMixIntensity = aoMinGain.a;
 
 
             if (useDiffuseBlend == 1) // aomingain but no ao map (mainly for trophies)
@@ -373,7 +373,6 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
                 else // character lighting
                 {
                     lighting = mix(ambLightColor * ambientIntensity, difLightColor * diffuseIntensity, halfLambert); // gradient based lighting
-
                     // area lights experiment
                     float distanceMixFactor = distance(objectPosition.xyz, vec3(-81, 0, 0));
                     distanceMixFactor = distanceMixFactor / distance(vec3(-55, 0, 0), vec3(-81, 0, 0));
@@ -425,7 +424,8 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
                 if (hasSpecularParams == 1)
                     exponent = specularParams.y;
 
-                float blinnPhongSpec = pow(clamp((dot(halfAngle, N)), 0, 1), exponent);
+                float blinnPhongSpec = dot(halfAngle, N);
+                blinnPhongSpec = pow(blinnPhongSpec, exponent);
             //---------------------------------------------------------------------------------------------
 
 			//---------------------------------------------------------------------------------------------
@@ -445,8 +445,6 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
     			else // default
                 {
                     specularPass += specularColor.rgb * blinnPhongSpec * specularTintColor;
-                    // if (hasRamp == 1) // do ramps affect specular?
-                        // specularPass = RampColor(specularPass);
                 }
 
 			//---------------------------------------------------------------------------------------------
