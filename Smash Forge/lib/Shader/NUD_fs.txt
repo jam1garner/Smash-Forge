@@ -522,14 +522,13 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
 
 	if(renderLighting == 1)
 	{
-    	resultingColor += diffusePass * renderDiffuse;
-    	resultingColor += fresnelPass * renderFresnel;
-    	resultingColor += specularPass * renderSpecular;
-    	resultingColor += reflectionPass * renderReflection;
+    	resultingColor += max((diffusePass * renderDiffuse),0);
+    	resultingColor += max((fresnelPass * renderFresnel),0);
+    	resultingColor += max((specularPass * renderSpecular),0);
+    	resultingColor += max((reflectionPass * renderReflection),0);
 	}
 	else
 		resultingColor = diffusePass;
-
 
     // light_set fog calculations
     float depth = viewPosition.z;
@@ -539,23 +538,6 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
         resultingColor = mix(resultingColor, stageFogColor, fogIntensity);
 
     resultingColor = pow(resultingColor, vec3(1 / gamma)); // gamma correction. gamma correction also done within render passes
-
-    // bone stuff
-    /*resultingColor = vec3(0);
-
-    // int boneIndex1 = vBoneOut.x;
-    // int boneIndex2 = int(vBoneOut.y);
-    // int boneIndex3 = int(vBoneOut.z);
-    // int boneIndex4 = int(vBoneOut.w);
-
-    if (vBoneOut.x == selectedBoneIndex)
-        resultingColor += vec3(vWeightOut.x);
-    if (vBoneOut.y == selectedBoneIndex)
-        resultingColor += vec3(vWeightOut.y);
-    if (vBoneOut.z == selectedBoneIndex)
-        resultingColor += vec3(vWeightOut.z);
-    if (vBoneOut.w == selectedBoneIndex)
-        resultingColor += vec3(vWeightOut.w);*/
 
     return resultingColor;
 }
@@ -597,7 +579,6 @@ void main()
             diffuseMapTotal = mix(diffuse2, diffuse1, diffuse1.a);
             diffuseMapTotal.a = 1.0;
         }
-
     }
 
 
@@ -642,20 +623,14 @@ void main()
         if (hasAo == 1) // should be named differently. isnt always two diffuse
             FragColor.rgb = mix(diffuse2Texture, FragColor.rgb, ((normal.y + 1) / 2));
 
-        // calcuate final color by mixing with vertex color
         if (renderVertColor == 1)
             FragColor *= vertexColor;
 
         // Material lighting done in sm4sh shader
-        //if (renderNormal == 1) // rework this
         FragColor.rgb = sm4shShader(FragColor, texture(normalMap, texcoord).a, bumpMapNormal);
 
         FragColor.rgb *= finalColorGain.rgb;
         FragColor.rgb *= effColorGain.rgb;
-
-
-        //FragColor.rgb = mix(diffuse2.rgb, diffuse1.rgb, vertexColor.r); // umbraf stage vertex color blending
-        //FragColor.rgb *= mix(diffuse3.rgb, vec3(1), 0.5);
 
         //---------------------------------------------------------------------------------------------
             // correct alpha

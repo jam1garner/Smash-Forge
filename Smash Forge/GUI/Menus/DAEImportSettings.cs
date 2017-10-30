@@ -103,7 +103,7 @@ namespace Smash_Forge
 
                         NUD.Material m = new NUD.Material();
                         poly.materials.Add(m);
-                        m.flags = 0xA4011041;
+                        m.flags = 0xA2011001;
                         m.RefAlpha = 128;
                         m.cullMode = 1029;
 
@@ -111,7 +111,7 @@ namespace Smash_Forge
                         m.textures.Add(tex);
 
                         m.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
-                        m.entries.Add("NU_diffuseColor", new float[] { 1, 1, 1, 1f });
+                        m.entries.Add("NU_diffuseColor", new float[] { 1, 1, 1, 0.5f });
                         m.entries.Add("NU_materialHash", new float[] { BitConverter.ToSingle(new byte[] { 0x12, 0xEE, 0x2A, 0x1B }, 0), 0, 0, 0 });
                     }
 

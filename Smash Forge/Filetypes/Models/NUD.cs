@@ -1906,9 +1906,6 @@ namespace Smash_Forge
                 // rearrange faces
                 display = getDisplayFace().ToArray();
 
-                //if ((vertSize & 0xF) != 3 && (vertSize & 0xF) != 7)              
-                //NUD.computeTangentBitangent(this);
-                
                 List<dVertex> vert = new List<dVertex>();
 
                 if (faces.Count <= 3)
@@ -1935,8 +1932,6 @@ namespace Smash_Forge
                     };
 
                     isTransparent = false;
-                    //if (v.col.Z < 0x7F)
-                       //isTransparent = true;
                     if (materials[0].srcFactor > 0 || materials[0].dstFactor > 0 || materials[0].AlphaFunc > 0 || materials[0].AlphaTest > 0)
                         isTransparent = true;
 
@@ -2098,7 +2093,7 @@ namespace Smash_Forge
                 dif.magFilter = 2;
                 dif.mipDetail = 1;
                 dif.mipDetail = 6;
-                dif.hash = 0x10080000;
+                dif.hash = (int) DummyTextures.DummyRamp;
                 return dif;
             }
 
