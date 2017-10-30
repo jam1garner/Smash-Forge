@@ -90,6 +90,7 @@ namespace Smash_Forge.GUI
             checkBox14.Checked = Runtime.renderHurtboxesZone;
             checkBox15.Checked = Runtime.renderECB;
             checkBox16.Checked = Runtime.renderInterpolatedHitboxes;
+            checkBox17.Checked = Runtime.renderSpecialBubbles;
             checkBox18.Checked = Runtime.renderHitboxesNoOverlap;
             swagViewing.Checked = Runtime.renderSwag;
             lightCheckBox.Checked = Runtime.renderLighting;
@@ -238,6 +239,7 @@ namespace Smash_Forge.GUI
                 Runtime.renderHurtboxesZone = checkBox14.Checked;
                 Runtime.renderECB = checkBox15.Checked;
                 Runtime.renderInterpolatedHitboxes = checkBox16.Checked;
+                Runtime.renderSpecialBubbles = checkBox17.Checked;
                 Runtime.renderHitboxesNoOverlap = checkBox18.Checked;
             }
             checkBox12.Enabled = checkBox6.Checked && checkBox7.Checked;
