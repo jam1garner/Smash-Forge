@@ -102,9 +102,9 @@ namespace Smash_Forge
                 {
                     LedgeGrabbox l = new LedgeGrabbox();
                     l.ID = id;
-                    l.X1 = Convert.ToSingle(((ParamGroup)param.Groups[6])[id][0].Value);
+                    l.Z1 = Convert.ToSingle(((ParamGroup)param.Groups[6])[id][0].Value);
                     l.Y1 = Convert.ToSingle(((ParamGroup)param.Groups[6])[id][1].Value);
-                    l.X2 = Convert.ToSingle(((ParamGroup)param.Groups[6])[id][2].Value);
+                    l.Z2 = Convert.ToSingle(((ParamGroup)param.Groups[6])[id][2].Value);
                     l.Y2 = Convert.ToSingle(((ParamGroup)param.Groups[6])[id][3].Value);
 
                     LedgeGrabboxes.Add(id, l);
@@ -296,10 +296,19 @@ namespace Smash_Forge
     public class LedgeGrabbox
     {
         public int ID { get; set; }
-        public float X1 { get; set; }
+        public float Z1 { get; set; }
         public float Y1 { get; set; }
-        public float X2 { get; set; }
+        public float Z2 { get; set; }
         public float Y2 { get; set; }
+
+        public bool Tether
+        {
+            get
+            {
+                //Characters can have tether ledge grabboxes on various IDs so just check those that are very big (all normal grabboxes have values lower than 20)
+                return Z2 > 20 || Y2 > 20; 
+            }
+        }
     }
 
     public class ECB

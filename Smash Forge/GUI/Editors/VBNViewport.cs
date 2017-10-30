@@ -762,6 +762,9 @@ namespace Smash_Forge
             if (Runtime.renderECB)
                 RenderECB();
 
+            if (Runtime.renderLedgeGrabboxes)
+                RenderLedgeGrabboxes();
+
             if (Runtime.renderSpecialBubbles)
                 RenderSpecialBubbles();
 
@@ -1762,11 +1765,68 @@ namespace Smash_Forge
             }
         }
 
+        public void RenderLedgeGrabboxes()
+        {
+            if(Runtime.ParamManager.LedgeGrabboxes.Count > 0)
+            {
+                GL.Enable(EnableCap.Blend);
+                GL.Disable(EnableCap.CullFace);
+
+                foreach (var pair in Runtime.ParamManager.LedgeGrabboxes.Reverse())
+                {
+                    var l = pair.Value;
+
+                    if (l.Tether)
+                    {
+                        if (!Runtime.renderTetherLedgeGrabboxes)
+                            continue;
+                        GL.Color4(Color.FromArgb(90, Color.DarkBlue));
+                    }
+                    else
+                        GL.Color4(Color.FromArgb(90, Color.DarkRed));
+
+                    var va = new Vector3(0, l.Y1, l.Z1);
+                    //Attached to bone 0
+                    Bone b = getBone(0);
+                    var va2 = new Vector3(0, l.Y2, l.Z2);
+
+                    va = Vector3.Transform(va, b.transform);
+                    va2 = Vector3.Transform(va2, b.transform);
+
+                    RenderTools.beginTopLevelStencil();
+
+                    RenderTools.drawRectangularPrism((va2 + va)/2, 10, (va2.Y - va.Y)/2, (va2.Z - va.Z)/2);
+
+                    //RenderTools.beginTopLevelAntiStencil();
+                    //foreach (var pair2 in Runtime.ParamManager.LedgeGrabboxes)
+                    //{
+                    //    if (pair2.Key == pair.Key)
+                    //        break;  // this only works because the list is sorted
+                    //    var l2 = pair2.Value;
+
+                    //    var vab = new Vector3(0, l2.Y1, l2.Z1);
+
+                    //    var vab2 = new Vector3(0, l2.Y2, l2.Z2);
+
+                    //    vab = Vector3.Transform(vab, b.transform);
+                    //    vab2 = Vector3.Transform(vab2, b.transform);
+
+                    //    RenderTools.drawRectangularPrism((vab2 + vab)/2, 10, (vab2.Y - vab.Y)/2, (vab2.Z - vab.Z)/2);
+                    //}
+
+                    RenderTools.endTopLevelStencilAndDraw();
+                }
+                GL.Disable(EnableCap.Blend);
+                GL.Enable(EnableCap.CullFace);
+            }
+        }
+
         public void RenderECB()
         {
             if (Runtime.ParamManager.ECBs.Count > 0)
             {
                 GL.Color4(Color.FromArgb(160, Color.DarkRed));
+                GL.Disable(EnableCap.CullFace);
                 GL.Enable(EnableCap.Blend);
 
                 foreach (var pair in Runtime.ParamManager.ECBs)
@@ -1785,6 +1845,7 @@ namespace Smash_Forge
                 }
 
                 GL.Disable(EnableCap.Blend);
+                GL.Enable(EnableCap.CullFace);
             }
         }
 

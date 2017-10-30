@@ -102,6 +102,8 @@ namespace Smash_Forge
             Runtime.renderHurtboxesZone = true;
             Runtime.renderECB = false;
             Runtime.renderIndicators = false;
+            Runtime.renderLedgeGrabboxes = false;
+            Runtime.renderTetherLedgeGrabboxes = false;
             Runtime.renderType = Runtime.RenderTypes.Shaded;
             Runtime.paramDir = "";
 

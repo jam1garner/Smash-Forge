@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.stageLight3CB = new System.Windows.Forms.CheckBox();
             this.stageLight4CB = new System.Windows.Forms.CheckBox();
@@ -152,6 +152,7 @@
             this.label20 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.checkBox17 = new System.Windows.Forms.CheckBox();
             this.label80 = new System.Windows.Forms.Label();
             this.label81 = new System.Windows.Forms.Label();
             this.pbShieldColor = new System.Windows.Forms.PictureBox();
@@ -313,7 +314,8 @@
             this.areaGroundB = new System.Windows.Forms.TextBox();
             this.areaColCeiling = new System.Windows.Forms.Label();
             this.areaSkyRLabel = new System.Windows.Forms.Label();
-            this.checkBox17 = new System.Windows.Forms.CheckBox();
+            this.checkBox21 = new System.Windows.Forms.CheckBox();
+            this.checkBox22 = new System.Windows.Forms.CheckBox();
             this.tabPage4.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -1631,6 +1633,8 @@
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage2.Controls.Add(this.checkBox22);
+            this.tabPage2.Controls.Add(this.checkBox21);
             this.tabPage2.Controls.Add(this.checkBox17);
             this.tabPage2.Controls.Add(this.label80);
             this.tabPage2.Controls.Add(this.label81);
@@ -1679,9 +1683,20 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(556, 597);
+            this.tabPage2.Size = new System.Drawing.Size(556, 642);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Hit/Hurt boxes";
+            // 
+            // checkBox17
+            // 
+            this.checkBox17.AutoSize = true;
+            this.checkBox17.Location = new System.Drawing.Point(3, 346);
+            this.checkBox17.Name = "checkBox17";
+            this.checkBox17.Size = new System.Drawing.Size(140, 17);
+            this.checkBox17.TabIndex = 69;
+            this.checkBox17.Text = "Render Special Bubbles";
+            this.checkBox17.UseVisualStyleBackColor = true;
+            this.checkBox17.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // label80
             // 
@@ -1811,7 +1826,7 @@
             // 
             // pbHurtboxColorSelected
             // 
-            this.pbHurtboxColorSelected.Location = new System.Drawing.Point(157, 517);
+            this.pbHurtboxColorSelected.Location = new System.Drawing.Point(157, 524);
             this.pbHurtboxColorSelected.Name = "pbHurtboxColorSelected";
             this.pbHurtboxColorSelected.Size = new System.Drawing.Size(16, 16);
             this.pbHurtboxColorSelected.TabIndex = 52;
@@ -1821,7 +1836,7 @@
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(31, 520);
+            this.label18.Location = new System.Drawing.Point(31, 527);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(119, 13);
             this.label18.TabIndex = 51;
@@ -1829,7 +1844,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(497, 564);
+            this.button1.Location = new System.Drawing.Point(497, 616);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(50, 23);
             this.button1.TabIndex = 50;
@@ -1839,7 +1854,7 @@
             // 
             // textParamDir
             // 
-            this.textParamDir.Location = new System.Drawing.Point(89, 566);
+            this.textParamDir.Location = new System.Drawing.Point(89, 618);
             this.textParamDir.Name = "textParamDir";
             this.textParamDir.Size = new System.Drawing.Size(402, 20);
             this.textParamDir.TabIndex = 49;
@@ -1847,7 +1862,7 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(3, 569);
+            this.label17.Location = new System.Drawing.Point(3, 621);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(80, 13);
             this.label17.TabIndex = 48;
@@ -1855,7 +1870,7 @@
             // 
             // pbHurtboxColorLw
             // 
-            this.pbHurtboxColorLw.Location = new System.Drawing.Point(157, 495);
+            this.pbHurtboxColorLw.Location = new System.Drawing.Point(157, 502);
             this.pbHurtboxColorLw.Name = "pbHurtboxColorLw";
             this.pbHurtboxColorLw.Size = new System.Drawing.Size(16, 16);
             this.pbHurtboxColorLw.TabIndex = 47;
@@ -1865,7 +1880,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(31, 498);
+            this.label16.Location = new System.Drawing.Point(31, 505);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(95, 13);
             this.label16.TabIndex = 46;
@@ -1873,7 +1888,7 @@
             // 
             // pbHurtboxColorMed
             // 
-            this.pbHurtboxColorMed.Location = new System.Drawing.Point(157, 473);
+            this.pbHurtboxColorMed.Location = new System.Drawing.Point(157, 480);
             this.pbHurtboxColorMed.Name = "pbHurtboxColorMed";
             this.pbHurtboxColorMed.Size = new System.Drawing.Size(16, 16);
             this.pbHurtboxColorMed.TabIndex = 45;
@@ -1883,7 +1898,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(31, 476);
+            this.label15.Location = new System.Drawing.Point(31, 483);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(99, 13);
             this.label15.TabIndex = 44;
@@ -1891,7 +1906,7 @@
             // 
             // pbHurtboxColorHi
             // 
-            this.pbHurtboxColorHi.Location = new System.Drawing.Point(157, 451);
+            this.pbHurtboxColorHi.Location = new System.Drawing.Point(157, 458);
             this.pbHurtboxColorHi.Name = "pbHurtboxColorHi";
             this.pbHurtboxColorHi.Size = new System.Drawing.Size(16, 16);
             this.pbHurtboxColorHi.TabIndex = 43;
@@ -1901,7 +1916,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(32, 454);
+            this.label14.Location = new System.Drawing.Point(32, 461);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(87, 13);
             this.label14.TabIndex = 42;
@@ -1909,7 +1924,7 @@
             // 
             // pbHurtboxColor
             // 
-            this.pbHurtboxColor.Location = new System.Drawing.Point(157, 429);
+            this.pbHurtboxColor.Location = new System.Drawing.Point(157, 436);
             this.pbHurtboxColor.Name = "pbHurtboxColor";
             this.pbHurtboxColor.Size = new System.Drawing.Size(16, 16);
             this.pbHurtboxColor.TabIndex = 41;
@@ -1919,7 +1934,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(31, 432);
+            this.label13.Location = new System.Drawing.Point(31, 439);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(117, 13);
             this.label13.TabIndex = 40;
@@ -1928,7 +1943,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(32, 408);
+            this.label12.Location = new System.Drawing.Point(32, 415);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(73, 13);
             this.label12.TabIndex = 39;
@@ -1936,7 +1951,7 @@
             // 
             // nudHurtboxAlpha
             // 
-            this.nudHurtboxAlpha.Location = new System.Drawing.Point(107, 406);
+            this.nudHurtboxAlpha.Location = new System.Drawing.Point(107, 413);
             this.nudHurtboxAlpha.Maximum = new decimal(new int[] {
             255,
             0,
@@ -2034,8 +2049,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem3,
-            listViewItem4});
+            listViewItem5,
+            listViewItem6});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -2086,7 +2101,7 @@
             // checkBox13
             // 
             this.checkBox13.AutoSize = true;
-            this.checkBox13.Location = new System.Drawing.Point(3, 362);
+            this.checkBox13.Location = new System.Drawing.Point(3, 369);
             this.checkBox13.Name = "checkBox13";
             this.checkBox13.Size = new System.Drawing.Size(112, 17);
             this.checkBox13.TabIndex = 23;
@@ -2097,7 +2112,7 @@
             // checkBox15
             // 
             this.checkBox15.AutoSize = true;
-            this.checkBox15.Location = new System.Drawing.Point(3, 544);
+            this.checkBox15.Location = new System.Drawing.Point(3, 553);
             this.checkBox15.Name = "checkBox15";
             this.checkBox15.Size = new System.Drawing.Size(196, 17);
             this.checkBox15.TabIndex = 25;
@@ -2108,7 +2123,7 @@
             // checkBox14
             // 
             this.checkBox14.AutoSize = true;
-            this.checkBox14.Location = new System.Drawing.Point(35, 383);
+            this.checkBox14.Location = new System.Drawing.Point(35, 390);
             this.checkBox14.Name = "checkBox14";
             this.checkBox14.Size = new System.Drawing.Size(145, 17);
             this.checkBox14.TabIndex = 24;
@@ -2137,7 +2152,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(556, 597);
+            this.tabPage1.Size = new System.Drawing.Size(556, 642);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
             // 
@@ -2146,7 +2161,7 @@
             this.groupBox4.Controls.Add(this.zScaleTB);
             this.groupBox4.Controls.Add(this.label76);
             this.groupBox4.Controls.Add(this.depthTestCB);
-            this.groupBox4.Location = new System.Drawing.Point(257, 513);
+            this.groupBox4.Location = new System.Drawing.Point(257, 556);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(282, 78);
             this.groupBox4.TabIndex = 18;
@@ -2185,7 +2200,7 @@
             // 
             this.groupBox3.Controls.Add(this.RendererLabel);
             this.groupBox3.Controls.Add(this.OpenGLVersionLabel);
-            this.groupBox3.Location = new System.Drawing.Point(7, 506);
+            this.groupBox3.Location = new System.Drawing.Point(7, 549);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(243, 86);
             this.groupBox3.TabIndex = 17;
@@ -2230,7 +2245,7 @@
             this.groupBox2.Controls.Add(this.checkBox3);
             this.groupBox2.Location = new System.Drawing.Point(6, 6);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(244, 500);
+            this.groupBox2.Size = new System.Drawing.Size(244, 537);
             this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Display Settings";
@@ -2430,7 +2445,7 @@
             this.groupBox1.Controls.Add(this.depthSlider);
             this.groupBox1.Location = new System.Drawing.Point(256, 6);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(283, 500);
+            this.groupBox1.Size = new System.Drawing.Size(283, 537);
             this.groupBox1.TabIndex = 15;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model Render Settings";
@@ -2464,7 +2479,7 @@
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.label9, 0, 5);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 327);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 364);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 6;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -2760,7 +2775,7 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(564, 623);
+            this.tabControl1.Size = new System.Drawing.Size(564, 668);
             this.tabControl1.TabIndex = 17;
             // 
             // tabPage5
@@ -3454,22 +3469,33 @@
             this.areaSkyRLabel.TabIndex = 66;
             this.areaSkyRLabel.Text = "Red";
             // 
-            // checkBox17
+            // checkBox21
             // 
-            this.checkBox17.AutoSize = true;
-            this.checkBox17.Location = new System.Drawing.Point(3, 339);
-            this.checkBox17.Name = "checkBox17";
-            this.checkBox17.Size = new System.Drawing.Size(140, 17);
-            this.checkBox17.TabIndex = 69;
-            this.checkBox17.Text = "Render Special Bubbles";
-            this.checkBox17.UseVisualStyleBackColor = true;
-            this.checkBox17.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.checkBox21.AutoSize = true;
+            this.checkBox21.Location = new System.Drawing.Point(3, 575);
+            this.checkBox21.Name = "checkBox21";
+            this.checkBox21.Size = new System.Drawing.Size(148, 17);
+            this.checkBox21.TabIndex = 70;
+            this.checkBox21.Text = "Render Ledge Grabboxes";
+            this.checkBox21.UseVisualStyleBackColor = true;
+            this.checkBox21.CheckedChanged += new System.EventHandler(this.checkChanged);
+            // 
+            // checkBox22
+            // 
+            this.checkBox22.AutoSize = true;
+            this.checkBox22.Location = new System.Drawing.Point(3, 597);
+            this.checkBox22.Name = "checkBox22";
+            this.checkBox22.Size = new System.Drawing.Size(182, 17);
+            this.checkBox22.TabIndex = 71;
+            this.checkBox22.Text = "Render Tether Ledge Grabboxes";
+            this.checkBox22.UseVisualStyleBackColor = true;
+            this.checkBox22.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 640);
+            this.ClientSize = new System.Drawing.Size(584, 692);
             this.Controls.Add(this.tabControl1);
             this.Icon = global::Smash_Forge.Resources.Resources.forge2;
             this.Name = "RenderSettings";
@@ -3816,5 +3842,7 @@
         private System.Windows.Forms.Label label80;
         private System.Windows.Forms.Label label81;
         private System.Windows.Forms.CheckBox checkBox17;
+        private System.Windows.Forms.CheckBox checkBox22;
+        private System.Windows.Forms.CheckBox checkBox21;
     }
 }

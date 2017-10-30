@@ -83,6 +83,8 @@ namespace Smash_Forge
         public static bool renderECB;
         public static bool renderIndicators;
         public static bool renderSpecialBubbles;
+        public static bool renderLedgeGrabboxes;
+        public static bool renderTetherLedgeGrabboxes;
         public static int hitboxRenderMode;
         public static int hitboxAlpha;
         public static int hurtboxAlpha;
@@ -408,6 +410,8 @@ namespace Smash_Forge
                         case "render_hurtboxes_zone": bool.TryParse(node.InnerText, out renderHurtboxesZone); break;
                         case "render_ECB": bool.TryParse(node.InnerText, out renderECB); break;
                         case "render_special_bubbles": bool.TryParse(node.InnerText, out renderSpecialBubbles); break;
+                        case "render_ledge_grabboxes": bool.TryParse(node.InnerText, out renderLedgeGrabboxes); break;
+                        case "render_tether_ledge_grabboxes": bool.TryParse(node.InnerText, out renderTetherLedgeGrabboxes); break;
                         case "render_bounding_boxes": bool.TryParse(node.InnerText, out renderBoundingBox); break;
                         case "render_path": bool.TryParse(node.InnerText, out renderPath); break;
                         case "render_respawns": bool.TryParse(node.InnerText, out renderRespawns); break;
@@ -605,6 +609,8 @@ for changing default texure
             renderNode.AppendChild(createNode(doc, "render_hitboxes_no_overlap", renderHitboxesNoOverlap.ToString()));
             renderNode.AppendChild(createNode(doc, "render_hitboxes_mode", hitboxRenderMode.ToString()));
             renderNode.AppendChild(createNode(doc, "render_special_bubbles", renderSpecialBubbles.ToString()));
+            renderNode.AppendChild(createNode(doc, "render_ledge_grabboxes", renderLedgeGrabboxes.ToString()));
+            renderNode.AppendChild(createNode(doc, "render_tether_ledge_grabboxes", renderTetherLedgeGrabboxes.ToString()));
             renderNode.AppendChild(createNode(doc, "hitbox_alpha", hitboxAlpha.ToString()));
             renderNode.AppendChild(createNode(doc, "hurtbox_alpha", hurtboxAlpha.ToString()));
             renderNode.AppendChild(createNode(doc, "hurtbox_color", System.Drawing.ColorTranslator.ToHtml(hurtboxColor)));
