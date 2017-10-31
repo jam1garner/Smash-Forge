@@ -22,7 +22,9 @@ namespace Smash_Forge
         public List<NUD.Material> material;
         int current = 0;
         public static Dictionary<string, MatParam> propList;
-        
+
+        private bool hasCheckedCompileStatus = false;
+
         public void trackchange(object sender, EventArgs e)
         {
             Console.WriteLine(((TrackBar)sender).Value);
@@ -147,8 +149,6 @@ namespace Smash_Forge
             Init();
             FillForm();
             comboBox1.SelectedIndex = 0;
-
-            Runtime.shaders["Texture"].shaderCompilationWarningMessage("Texture");
         }
 
         public void InitPropList()
@@ -815,6 +815,12 @@ namespace Smash_Forge
             }
      
             RenderTools.DrawTexturedQuad(texture, 1, 1, true, true, true, false, false, false);
+
+            if (!Runtime.hasCheckedTexShaderCompilation)
+            {
+                Runtime.shaders["Texture"].shaderCompilationWarningMessage("Texture");
+                Runtime.hasCheckedTexShaderCompilation = true;
+            }
 
             glControl1.SwapBuffers();
         }

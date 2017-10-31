@@ -56,6 +56,8 @@ namespace Smash_Forge
             EDITVERT = 1
         }
 
+        public static bool hasCheckedTexShaderCompilation = false;
+
         public static ViewportModes ViewportMode = ViewportModes.EDITVERT;
 
         public static bool renderLVD;

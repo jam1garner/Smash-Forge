@@ -31,7 +31,6 @@ namespace Smash_Forge
         private bool renderAlpha = true;
         private bool preserveAspectRatio = false;
 
-
         public NUTEditor()
         {
             InitializeComponent();
@@ -45,8 +44,6 @@ namespace Smash_Forge
             fw.EnableRaisingEvents = false;
             fw.Changed += new FileSystemEventHandler(OnChanged);
             fw.Filter = "";
-
-            Runtime.shaders["Texture"].shaderCompilationWarningMessage("Texture");
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
@@ -145,6 +142,12 @@ namespace Smash_Forge
             glControl1.Height = glControl1.Width;
 
             glControl1.SwapBuffers();
+
+            if (!Runtime.hasCheckedTexShaderCompilation)
+            {
+                Runtime.shaders["Texture"].shaderCompilationWarningMessage("Texture");
+                Runtime.hasCheckedTexShaderCompilation = true;
+            }
         }
 
         private void openNUTToolStripMenuItem_Click(object sender, EventArgs e)
