@@ -1854,11 +1854,11 @@ namespace Smash_Forge
                         if (Runtime.gameAcmdScript != null)
                         {
                             if (Runtime.gameAcmdScript.ReverseLedgeGrabAllowed)
-                                RenderTools.drawRectangularPrism(((va2 + va) / 2) * r * new Vector3(1, 1, -1), 10, (va2.Y - va.Y) / 2, (va2.Z - va.Z) * r.Z / 2);
+                                RenderTools.drawRectangularPrism((((va2 + va) / 2) - new Vector3(0, 0, (va2.Z - va.Z))) * r, 10, (va2.Y - va.Y) / 2, (va2.Z - va.Z) * r.Z / 2);
                         }
                         else
                         {
-                            RenderTools.drawRectangularPrism(((va2 + va) / 2) * r * new Vector3(1, 1, -1), 10, (va2.Y - va.Y) / 2, (va2.Z - va.Z) * r.Z / 2);
+                            RenderTools.drawRectangularPrism((((va2 + va) / 2) - new Vector3(0, 0, (va2.Z - va.Z))) * r, 10, (va2.Y - va.Y) / 2, (va2.Z - va.Z) * r.Z / 2);
                         }
 
                         RenderTools.endTopLevelStencilAndDraw();
