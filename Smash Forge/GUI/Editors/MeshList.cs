@@ -1030,5 +1030,25 @@ namespace Smash_Forge
                 refresh();
             }
         }
+
+        private void generateTanBitanToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode.Tag is NUD)
+            {
+                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode.Tag).mesh)
+                {
+                    foreach (NUD.Polygon poly in mesh.Nodes)
+                    {
+                        poly.computeTangentBitangent();
+                    }
+                }              
+            }
+        }
+
+        private void generateTanBitanToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Polygon)
+                ((NUD.Polygon)treeView1.SelectedNode).computeTangentBitangent();
+        }
     }
 }

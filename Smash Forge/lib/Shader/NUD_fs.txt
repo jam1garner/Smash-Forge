@@ -550,8 +550,11 @@ void main()
     vec3 bumpMapNormal = CalcBumpedNormal(normal);
     vec3 displayNormal = (bumpMapNormal * 0.5) + 0.5; // remap [-1,1] to [0,1]
     vec3 displayTangent = (tangent * 0.5) + 0.5; // remap [-1,1] to [0,1]
+    if (dot(tangent, vec3(1)) == 0)
+        displayTangent = vec3(0);
     vec3 displayBitangent = (bitangent * 0.5) + 0.5; // remap [-1,1] to [0,1]
-
+    if (dot(bitangent, vec3(1)) == 0)
+        displayBitangent = vec3(0);
     // zOffset correction
     gl_FragDepth = gl_FragCoord.z - (zOffset.x / 1500); // divide by far plane?
 
