@@ -104,6 +104,7 @@ namespace Smash_Forge
             Runtime.renderIndicators = false;
             Runtime.renderLedgeGrabboxes = false;
             Runtime.renderTetherLedgeGrabboxes = false;
+            Runtime.renderReverseLedgeGrabboxes = false;
             Runtime.renderType = Runtime.RenderTypes.Shaded;
             Runtime.paramDir = "";
 

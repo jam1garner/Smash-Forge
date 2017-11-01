@@ -762,7 +762,7 @@ namespace Smash_Forge
             if (Runtime.renderECB)
                 RenderECB();
 
-            if (Runtime.renderLedgeGrabboxes)
+            if (Runtime.renderLedgeGrabboxes || Runtime.renderReverseLedgeGrabboxes)
                 RenderLedgeGrabboxes();
 
             if (Runtime.renderSpecialBubbles)
@@ -1767,6 +1767,10 @@ namespace Smash_Forge
 
         public void RenderLedgeGrabboxes()
         {
+            if (Runtime.gameAcmdScript != null)
+                if (Runtime.gameAcmdScript.LedgeGrabDisallowed)
+                    return;
+
             if(Runtime.ParamManager.LedgeGrabboxes.Count > 0)
             {
                 GL.Enable(EnableCap.Blend);
@@ -1776,15 +1780,6 @@ namespace Smash_Forge
                 {
                     var l = pair.Value;
 
-                    if (l.Tether)
-                    {
-                        if (!Runtime.renderTetherLedgeGrabboxes)
-                            continue;
-                        GL.Color4(Color.FromArgb(90, Color.DarkBlue));
-                    }
-                    else
-                        GL.Color4(Color.FromArgb(90, Color.DarkRed));
-
                     var va = new Vector3(0, l.Y1, l.Z1);
                     //Attached to bone 0
                     Bone b = getBone(0);
@@ -1793,28 +1788,81 @@ namespace Smash_Forge
                     va = Vector3.Transform(va, b.transform);
                     va2 = Vector3.Transform(va2, b.transform);
 
-                    RenderTools.beginTopLevelStencil();
+                    if (Runtime.renderLedgeGrabboxes)
+                    {
+                        if (l.Tether)
+                        {
+                            if (!Runtime.renderTetherLedgeGrabboxes)
+                                continue;
+                            GL.Color4(Color.FromArgb(90, Color.DarkBlue));
+                        }
+                        else
+                            switch (l.ID)
+                            {
+                                case 0:
+                                    GL.Color4(Color.FromArgb(90, Color.DarkRed));
+                                    break;
+                                case 1:
+                                    GL.Color4(Color.FromArgb(90, Color.DarkGreen));
+                                    break;
+                                case 2:
+                                    GL.Color4(Color.FromArgb(90, Color.DarkOrange));
+                                    break;
+                                default:
+                                    GL.Color4(Color.FromArgb(90, Color.DarkRed));
+                                    break;
+                            }
 
-                    RenderTools.drawRectangularPrism((va2 + va)/2, 10, (va2.Y - va.Y)/2, (va2.Z - va.Z)/2);
 
-                    //RenderTools.beginTopLevelAntiStencil();
-                    //foreach (var pair2 in Runtime.ParamManager.LedgeGrabboxes)
-                    //{
-                    //    if (pair2.Key == pair.Key)
-                    //        break;  // this only works because the list is sorted
-                    //    var l2 = pair2.Value;
 
-                    //    var vab = new Vector3(0, l2.Y1, l2.Z1);
+                        RenderTools.beginTopLevelStencil();
 
-                    //    var vab2 = new Vector3(0, l2.Y2, l2.Z2);
+                        RenderTools.drawRectangularPrism((va2 + va) / 2, 10, (va2.Y - va.Y) / 2, (va2.Z - va.Z) / 2);
 
-                    //    vab = Vector3.Transform(vab, b.transform);
-                    //    vab2 = Vector3.Transform(vab2, b.transform);
+                        //RenderTools.beginTopLevelAntiStencil();
+                        //foreach (var pair2 in Runtime.ParamManager.LedgeGrabboxes)
+                        //{
+                        //    if (pair2.Key == pair.Key)
+                        //        break;  // this only works because the list is sorted
+                        //    var l2 = pair2.Value;
 
-                    //    RenderTools.drawRectangularPrism((vab2 + vab)/2, 10, (vab2.Y - vab.Y)/2, (vab2.Z - vab.Z)/2);
-                    //}
+                        //    var vab = new Vector3(0, l2.Y1, l2.Z1);
 
-                    RenderTools.endTopLevelStencilAndDraw();
+                        //    var vab2 = new Vector3(0, l2.Y2, l2.Z2);
+
+                        //    vab = Vector3.Transform(vab, b.transform);
+                        //    vab2 = Vector3.Transform(vab2, b.transform);
+
+                        //    RenderTools.drawRectangularPrism((vab2 + vab)/2, 10, (vab2.Y - vab.Y)/2, (vab2.Z - vab.Z)/2);
+                        //}
+
+                        RenderTools.endTopLevelStencilAndDraw();
+
+
+                    }
+
+
+                    //Reverse ledge grabbox
+                    if (!l.Tether && Runtime.renderReverseLedgeGrabboxes)
+                    {
+                        Vector3 r = new Vector3(1, 1, 0.6f);
+
+                        GL.Color4(Color.FromArgb(90, Color.DarkViolet));
+
+                        RenderTools.beginTopLevelStencil();
+
+                        if (Runtime.gameAcmdScript != null)
+                        {
+                            if (Runtime.gameAcmdScript.ReverseLedgeGrabAllowed)
+                                RenderTools.drawRectangularPrism(((va2 + va) / 2) * r * new Vector3(1, 1, -1), 10, (va2.Y - va.Y) / 2, (va2.Z - va.Z) * r.Z / 2);
+                        }
+                        else
+                        {
+                            RenderTools.drawRectangularPrism(((va2 + va) / 2) * r * new Vector3(1, 1, -1), 10, (va2.Y - va.Y) / 2, (va2.Z - va.Z) * r.Z / 2);
+                        }
+
+                        RenderTools.endTopLevelStencilAndDraw();
+                    }
                 }
                 GL.Disable(EnableCap.Blend);
                 GL.Enable(EnableCap.CullFace);

@@ -86,6 +86,7 @@ namespace Smash_Forge
         public static bool renderIndicators;
         public static bool renderSpecialBubbles;
         public static bool renderLedgeGrabboxes;
+        public static bool renderReverseLedgeGrabboxes;
         public static bool renderTetherLedgeGrabboxes;
         public static int hitboxRenderMode;
         public static int hitboxAlpha;
@@ -413,6 +414,7 @@ namespace Smash_Forge
                         case "render_ECB": bool.TryParse(node.InnerText, out renderECB); break;
                         case "render_special_bubbles": bool.TryParse(node.InnerText, out renderSpecialBubbles); break;
                         case "render_ledge_grabboxes": bool.TryParse(node.InnerText, out renderLedgeGrabboxes); break;
+                        case "render_reverse_ledge_grabboxes": bool.TryParse(node.InnerText, out renderReverseLedgeGrabboxes); break;
                         case "render_tether_ledge_grabboxes": bool.TryParse(node.InnerText, out renderTetherLedgeGrabboxes); break;
                         case "render_bounding_boxes": bool.TryParse(node.InnerText, out renderBoundingBox); break;
                         case "render_path": bool.TryParse(node.InnerText, out renderPath); break;
@@ -612,6 +614,7 @@ for changing default texure
             renderNode.AppendChild(createNode(doc, "render_hitboxes_mode", hitboxRenderMode.ToString()));
             renderNode.AppendChild(createNode(doc, "render_special_bubbles", renderSpecialBubbles.ToString()));
             renderNode.AppendChild(createNode(doc, "render_ledge_grabboxes", renderLedgeGrabboxes.ToString()));
+            renderNode.AppendChild(createNode(doc, "render_reverse_ledge_grabboxes", renderReverseLedgeGrabboxes.ToString()));
             renderNode.AppendChild(createNode(doc, "render_tether_ledge_grabboxes", renderTetherLedgeGrabboxes.ToString()));
             renderNode.AppendChild(createNode(doc, "hitbox_alpha", hitboxAlpha.ToString()));
             renderNode.AppendChild(createNode(doc, "hurtbox_alpha", hurtboxAlpha.ToString()));

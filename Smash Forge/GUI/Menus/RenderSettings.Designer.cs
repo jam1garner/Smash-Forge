@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.stageLight3CB = new System.Windows.Forms.CheckBox();
             this.stageLight4CB = new System.Windows.Forms.CheckBox();
@@ -152,6 +152,8 @@
             this.label20 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.checkBox22 = new System.Windows.Forms.CheckBox();
+            this.checkBox21 = new System.Windows.Forms.CheckBox();
             this.checkBox17 = new System.Windows.Forms.CheckBox();
             this.label80 = new System.Windows.Forms.Label();
             this.label81 = new System.Windows.Forms.Label();
@@ -314,8 +316,7 @@
             this.areaGroundB = new System.Windows.Forms.TextBox();
             this.areaColCeiling = new System.Windows.Forms.Label();
             this.areaSkyRLabel = new System.Windows.Forms.Label();
-            this.checkBox21 = new System.Windows.Forms.CheckBox();
-            this.checkBox22 = new System.Windows.Forms.CheckBox();
+            this.checkBox23 = new System.Windows.Forms.CheckBox();
             this.tabPage4.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -417,7 +418,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(556, 597);
+            this.tabPage4.Size = new System.Drawing.Size(556, 642);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Stage Lighting";
             // 
@@ -1066,7 +1067,7 @@
             this.tabPage3.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage3.Size = new System.Drawing.Size(556, 597);
+            this.tabPage3.Size = new System.Drawing.Size(556, 642);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Character Lighting";
             // 
@@ -1633,6 +1634,7 @@
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage2.Controls.Add(this.checkBox23);
             this.tabPage2.Controls.Add(this.checkBox22);
             this.tabPage2.Controls.Add(this.checkBox21);
             this.tabPage2.Controls.Add(this.checkBox17);
@@ -1683,9 +1685,31 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(556, 642);
+            this.tabPage2.Size = new System.Drawing.Size(556, 672);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Hit/Hurt boxes";
+            // 
+            // checkBox22
+            // 
+            this.checkBox22.AutoSize = true;
+            this.checkBox22.Location = new System.Drawing.Point(3, 618);
+            this.checkBox22.Name = "checkBox22";
+            this.checkBox22.Size = new System.Drawing.Size(182, 17);
+            this.checkBox22.TabIndex = 71;
+            this.checkBox22.Text = "Render Tether Ledge Grabboxes";
+            this.checkBox22.UseVisualStyleBackColor = true;
+            this.checkBox22.CheckedChanged += new System.EventHandler(this.checkChanged);
+            // 
+            // checkBox21
+            // 
+            this.checkBox21.AutoSize = true;
+            this.checkBox21.Location = new System.Drawing.Point(3, 575);
+            this.checkBox21.Name = "checkBox21";
+            this.checkBox21.Size = new System.Drawing.Size(148, 17);
+            this.checkBox21.TabIndex = 70;
+            this.checkBox21.Text = "Render Ledge Grabboxes";
+            this.checkBox21.UseVisualStyleBackColor = true;
+            this.checkBox21.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // checkBox17
             // 
@@ -1844,7 +1868,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(497, 616);
+            this.button1.Location = new System.Drawing.Point(497, 637);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(50, 23);
             this.button1.TabIndex = 50;
@@ -1854,7 +1878,7 @@
             // 
             // textParamDir
             // 
-            this.textParamDir.Location = new System.Drawing.Point(89, 618);
+            this.textParamDir.Location = new System.Drawing.Point(89, 639);
             this.textParamDir.Name = "textParamDir";
             this.textParamDir.Size = new System.Drawing.Size(402, 20);
             this.textParamDir.TabIndex = 49;
@@ -1862,7 +1886,7 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(3, 621);
+            this.label17.Location = new System.Drawing.Point(3, 642);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(80, 13);
             this.label17.TabIndex = 48;
@@ -2049,8 +2073,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem5,
-            listViewItem6});
+            listViewItem11,
+            listViewItem12});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -2152,7 +2176,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(556, 642);
+            this.tabPage1.Size = new System.Drawing.Size(556, 672);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
             // 
@@ -2161,7 +2185,7 @@
             this.groupBox4.Controls.Add(this.zScaleTB);
             this.groupBox4.Controls.Add(this.label76);
             this.groupBox4.Controls.Add(this.depthTestCB);
-            this.groupBox4.Location = new System.Drawing.Point(257, 556);
+            this.groupBox4.Location = new System.Drawing.Point(257, 588);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(282, 78);
             this.groupBox4.TabIndex = 18;
@@ -2200,7 +2224,7 @@
             // 
             this.groupBox3.Controls.Add(this.RendererLabel);
             this.groupBox3.Controls.Add(this.OpenGLVersionLabel);
-            this.groupBox3.Location = new System.Drawing.Point(7, 549);
+            this.groupBox3.Location = new System.Drawing.Point(7, 581);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(243, 86);
             this.groupBox3.TabIndex = 17;
@@ -2245,7 +2269,7 @@
             this.groupBox2.Controls.Add(this.checkBox3);
             this.groupBox2.Location = new System.Drawing.Point(6, 6);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(244, 537);
+            this.groupBox2.Size = new System.Drawing.Size(244, 569);
             this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Display Settings";
@@ -2445,7 +2469,7 @@
             this.groupBox1.Controls.Add(this.depthSlider);
             this.groupBox1.Location = new System.Drawing.Point(256, 6);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(283, 537);
+            this.groupBox1.Size = new System.Drawing.Size(283, 569);
             this.groupBox1.TabIndex = 15;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model Render Settings";
@@ -2479,7 +2503,7 @@
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.label9, 0, 5);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 364);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 396);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 6;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -2775,7 +2799,7 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(564, 668);
+            this.tabControl1.Size = new System.Drawing.Size(564, 698);
             this.tabControl1.TabIndex = 17;
             // 
             // tabPage5
@@ -2789,7 +2813,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(556, 597);
+            this.tabPage5.Size = new System.Drawing.Size(556, 642);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Area Lights WIP";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -3469,33 +3493,22 @@
             this.areaSkyRLabel.TabIndex = 66;
             this.areaSkyRLabel.Text = "Red";
             // 
-            // checkBox21
+            // checkBox23
             // 
-            this.checkBox21.AutoSize = true;
-            this.checkBox21.Location = new System.Drawing.Point(3, 575);
-            this.checkBox21.Name = "checkBox21";
-            this.checkBox21.Size = new System.Drawing.Size(148, 17);
-            this.checkBox21.TabIndex = 70;
-            this.checkBox21.Text = "Render Ledge Grabboxes";
-            this.checkBox21.UseVisualStyleBackColor = true;
-            this.checkBox21.CheckedChanged += new System.EventHandler(this.checkChanged);
-            // 
-            // checkBox22
-            // 
-            this.checkBox22.AutoSize = true;
-            this.checkBox22.Location = new System.Drawing.Point(3, 597);
-            this.checkBox22.Name = "checkBox22";
-            this.checkBox22.Size = new System.Drawing.Size(182, 17);
-            this.checkBox22.TabIndex = 71;
-            this.checkBox22.Text = "Render Tether Ledge Grabboxes";
-            this.checkBox22.UseVisualStyleBackColor = true;
-            this.checkBox22.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.checkBox23.AutoSize = true;
+            this.checkBox23.Location = new System.Drawing.Point(3, 596);
+            this.checkBox23.Name = "checkBox23";
+            this.checkBox23.Size = new System.Drawing.Size(148, 17);
+            this.checkBox23.TabIndex = 72;
+            this.checkBox23.Text = "Render Ledge Grabboxes";
+            this.checkBox23.UseVisualStyleBackColor = true;
+            this.checkBox23.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 692);
+            this.ClientSize = new System.Drawing.Size(584, 718);
             this.Controls.Add(this.tabControl1);
             this.Icon = global::Smash_Forge.Resources.Resources.forge2;
             this.Name = "RenderSettings";
@@ -3844,5 +3857,6 @@
         private System.Windows.Forms.CheckBox checkBox17;
         private System.Windows.Forms.CheckBox checkBox22;
         private System.Windows.Forms.CheckBox checkBox21;
+        private System.Windows.Forms.CheckBox checkBox23;
     }
 }
