@@ -11,6 +11,8 @@ using WeifenLuo.WinFormsUI.Docking;
 using System.Xml;
 using System.Globalization;
 using System.Diagnostics;
+using Smash_Forge.GUI.Menus;
+
 
 namespace Smash_Forge
 {
@@ -469,84 +471,8 @@ namespace Smash_Forge
 
         private void makeMetalToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NUD nud = ((NUD)treeView1.SelectedNode.Tag);
-
-            foreach(NUD.Mesh m in nud.mesh)
-            {
-                foreach (NUD.Polygon p in m.Nodes)
-                {
-                    foreach(NUD.Material mat in p.materials)
-                    {
-                        float hash = -1f;
-                        if (mat.entries.ContainsKey("NU_materialHash"))
-                            hash = mat.entries["NU_materialHash"][0];
-
-
-                        // check flags to determine what texture number the normal map is (0, 1, or 2)
-                        int nrmTexIndex = 0;
-                        if (mat.normalmap)
-                        {
-                            nrmTexIndex = 1;
-
-                            if (2 < mat.textures.Count)
-                            {
-                                if (mat.cubemap || mat.stagemap || mat.spheremap)
-                                   nrmTexIndex = 2;
-
-                            }                         
-                        }
-
-                        //Debug.WriteLine(mat.flags.ToString("X"));
-
-                        mat.anims.Clear();
-                        mat.entries.Clear();
-
-                        if (mat.normalmap)
-                            mat.flags = 0x9601106B;
-                        else
-                            mat.flags = 0x96011069;
-
-                        int difTexID = (int)((long)mat.textures[0].hash);          
-                        int nrmTexID = (int)((long)mat.textures[nrmTexIndex].hash);
-
-                        mat.textures.Clear();
-                        mat.displayTexId = -1;                       
-                        NUD.Mat_Texture dif = NUD.Polygon.makeDefault();
-                        dif.hash = difTexID; // preserve diffuse tex ID
-                        NUD.Mat_Texture cub = NUD.Polygon.makeDefault();
-                        cub.hash = 0x10102000;
-
-                        NUD.Mat_Texture nrm = NUD.Polygon.makeDefault();
-                        nrm.hash = nrmTexID; // preserve normal map tex ID. should work for all common texture flags
-
-                        NUD.Mat_Texture rim = NUD.Polygon.makeDefault();
-                        rim.hash = 0x10080000;
-
-                        if (mat.normalmap)
-                        {
-                            mat.textures.Add(dif);
-                            mat.textures.Add(cub);
-                            mat.textures.Add(nrm);
-                            mat.textures.Add(rim);
-                        }
-                        else
-                            mat.textures.Add(dif);
-                            mat.textures.Add(cub);
-                            mat.textures.Add(rim);
-
-                        // properties
-                        mat.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
-                        mat.entries.Add("NU_fresnelColor", new float[] { 0.6f, 0.6f, 0.6f, 1 });
-                        mat.entries.Add("NU_blinkColor", new float[] { 0f, 0f, 0f, 0 });
-                        mat.entries.Add("NU_reflectionColor", new float[] { 3f, 3f, 3f, 1 });
-                        mat.entries.Add("NU_aoMinGain", new float[] { 0.3f, 0.3f, 0.3f, 1 });
-                        mat.entries.Add("NU_lightMapColorOffset", new float[] { 0f, 0f, 0f, 0 });
-                        mat.entries.Add("NU_fresnelParams", new float[] { 3.7f, 0f, 0f, 1 });
-                        mat.entries.Add("NU_alphaBlendParams", new float[] { 0f, 0f, 0f, 0 });
-                        mat.entries.Add("NU_materialHash", new float[] { hash, 0f, 0f, 0 });
-                    }
-                }
-            }
+            MakeMetal makeMetal = new MakeMetal(((NUD)treeView1.SelectedNode.Tag));
+            makeMetal.Show();
         }
 
         private void merge(TreeNode n)
@@ -1049,6 +975,59 @@ namespace Smash_Forge
         {
             if (treeView1.SelectedNode is NUD.Polygon)
                 ((NUD.Polygon)treeView1.SelectedNode).computeTangentBitangent();
+        }
+
+        private void calculateNormalsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+   
+        }
+
+        private void calculateNormalsToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode.Tag is NUD)
+            {
+                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode.Tag).mesh)
+                {
+                    foreach (NUD.Polygon poly in mesh.Nodes)
+                    {
+                        poly.CalculateNormals();
+                    }
+                }
+            }
+        }
+
+        private void smoothNormalsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode.Tag is NUD)
+            {
+                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode.Tag).mesh)
+                {
+                    foreach (NUD.Polygon poly in mesh.Nodes)
+                    {
+                        poly.SmoothNormals();
+                    }
+                }
+            }
+        }
+
+        private void useAOAsSpecToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode.Tag is NUD)
+            {
+                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode.Tag).mesh)
+                {
+                    foreach (NUD.Polygon poly in mesh.Nodes)
+                    {
+                        poly.AOSpecRefBlend();
+                    }
+                }
+            }
+        }
+
+        private void useAOAsSpecToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Polygon)
+                ((NUD.Polygon)treeView1.SelectedNode).AOSpecRefBlend();
         }
     }
 }

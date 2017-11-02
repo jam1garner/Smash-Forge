@@ -598,7 +598,7 @@ namespace Smash_Forge
             }
             n.MergePoly();
             n.PreRender();
-            n.computeTangentBitangent();
+            n.ComputeTangentBitangent();
         }
         
         public static void SaveBoneNodes(Collada dae, Bone b, VBN vbn, ColladaNode parent)

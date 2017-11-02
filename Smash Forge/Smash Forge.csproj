@@ -361,6 +361,12 @@
     <Compile Include="GUI\Menus\LightColorEditor.Designer.cs">
       <DependentUpon>LightColorEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Menus\MakeMetal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\MakeMetal.Designer.cs">
+      <DependentUpon>MakeMetal.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Menus\MaterialSelector.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -546,6 +552,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\LightColorEditor.resx">
       <DependentUpon>LightColorEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\MakeMetal.resx">
+      <DependentUpon>MakeMetal.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\MaterialSelector.resx">
       <DependentUpon>MaterialSelector.cs</DependentUpon>

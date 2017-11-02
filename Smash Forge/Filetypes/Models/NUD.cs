@@ -476,7 +476,89 @@ namespace Smash_Forge
             string uniformName = propertyName.Substring(3); // remove the NU_ from name
             GL.Uniform4(shader.getAttribute(uniformName), values[0], values[1], values[2], values[3]);
         }
-        
+
+        public void MakeMetal(int diffuseTexID, bool preserveDiffuse, bool useNormalMap, float[] minGain, float[] refColor, float[] fresParams, float[] fresColor)
+        {
+            foreach (Mesh mesh in mesh)
+            {
+                foreach (Polygon poly in mesh.Nodes)
+                {
+                    foreach (Material mat in poly.materials)
+                    {
+                        float hash = -1f;
+                        if (mat.entries.ContainsKey("NU_materialHash"))
+                            hash = mat.entries["NU_materialHash"][0];
+
+                        // check flags to determine what texture number the normal map is (0, 1, or 2)
+                        int nrmTexIndex = 0;
+                        if (mat.normalmap && useNormalMap)
+                        {
+                            nrmTexIndex = 1;
+
+                            if (2 < mat.textures.Count)
+                            {
+                                if (mat.cubemap || mat.stagemap || mat.spheremap)
+                                    nrmTexIndex = 2;
+
+                            }
+                        }
+
+                        mat.anims.Clear();
+                        mat.entries.Clear();
+
+                        if (mat.normalmap && useNormalMap)
+                            mat.flags = 0x9601106B;
+                        else
+                            mat.flags = 0x96011069;
+
+                        int difTexID = 0;
+                        if (preserveDiffuse)
+                            difTexID = (int)((long)mat.textures[0].hash);
+                        else
+                            difTexID = diffuseTexID;
+
+                        int nrmTexID = (int)((long)mat.textures[nrmTexIndex].hash);
+
+                        mat.textures.Clear();
+                        mat.displayTexId = -1;
+                        NUD.Mat_Texture dif = NUD.Polygon.makeDefault();
+                        dif.hash = difTexID; // preserve diffuse tex ID
+                        NUD.Mat_Texture cub = NUD.Polygon.makeDefault();
+                        cub.hash = 0x10102000;
+
+                        NUD.Mat_Texture nrm = NUD.Polygon.makeDefault();
+                        nrm.hash = nrmTexID; // preserve normal map tex ID. should work for all common texture flags
+
+                        NUD.Mat_Texture rim = NUD.Polygon.makeDefault();
+                        rim.hash = 0x10080000;
+
+                        if (mat.normalmap)
+                        {
+                            mat.textures.Add(dif);
+                            mat.textures.Add(cub);
+                            mat.textures.Add(nrm);
+                            mat.textures.Add(rim);
+                        }
+                        else
+                            mat.textures.Add(dif);
+                        mat.textures.Add(cub);
+                        mat.textures.Add(rim);
+
+                        // properties
+                        mat.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
+                        mat.entries.Add("NU_fresnelColor", fresColor);
+                        mat.entries.Add("NU_blinkColor", new float[] { 0f, 0f, 0f, 0 });
+                        mat.entries.Add("NU_reflectionColor", refColor);
+                        mat.entries.Add("NU_aoMinGain", minGain);
+                        mat.entries.Add("NU_lightMapColorOffset", new float[] { 0f, 0f, 0f, 0 });
+                        mat.entries.Add("NU_fresnelParams", fresParams);
+                        mat.entries.Add("NU_alphaBlendParams", new float[] { 0f, 0f, 0f, 0 });
+                        mat.entries.Add("NU_materialHash", new float[] { hash, 0f, 0f, 0 });
+                    }
+                }
+            }
+        }
+
         private static void HasMatPropertyShaderUniform(Shader shader, Material mat, string propertyName, string uniformName)
         {
             float[] values;
@@ -1900,6 +1982,19 @@ namespace Smash_Forge
                 vertices.Add(v);
             }
 
+            public void AOSpecRefBlend()
+            {
+                // change aomingain to only affect specular and reflection
+                // ignore 2nd material
+                if (materials[0].entries.ContainsKey("NU_aoMinGain"))
+                {
+                    materials[0].entries["NU_aoMinGain"][0] = 15.0f;
+                    materials[0].entries["NU_aoMinGain"][1] = 15.0f;
+                    materials[0].entries["NU_aoMinGain"][2] = 15.0f;
+                    materials[0].entries["NU_aoMinGain"][3] = 0.0f;
+                }      
+            }
+
             public void PreRender()
             {
 
@@ -1940,10 +2035,6 @@ namespace Smash_Forge
                 vertdata = vert.ToArray();
                 vert = new List<dVertex>();
                 selectedVerts = new int[vertdata.Length];
-                /*for(int i = 0; i < selectedVerts.Length / 10; i++)
-                {
-                    selectedVerts[i] = 1;
-                }*/
                 }
 
             public void computeTangentBitangent()
@@ -2043,6 +2134,33 @@ namespace Smash_Forge
                         }
                     }
                 }
+
+                PreRender();
+            }
+
+            public void CalculateNormals()
+            {
+                Vector3[] normals = new Vector3[vertices.Count];
+
+                for (int i = 0; i < normals.Length; i++)
+                    normals[i] = new Vector3(0, 0, 0);
+
+                List<int> f = getDisplayFace();
+
+                for (int i = 0; i < displayFaceSize; i += 3)
+                {
+                    Vertex v1 = vertices[f[i]];
+                    Vertex v2 = vertices[f[i + 1]];
+                    Vertex v3 = vertices[f[i + 2]];
+                    Vector3 nrm = CalculateNormal(v1, v2, v3);
+
+                    normals[f[i + 0]] += nrm;// * a1;
+                    normals[f[i + 1]] += nrm;// * a2;
+                    normals[f[i + 2]] += nrm;// * a3;
+                }
+
+                for (int i = 0; i < normals.Length; i++)
+                    vertices[i].nrm = normals[i].Normalized();
 
                 PreRender();
             }
@@ -2310,14 +2428,13 @@ namespace Smash_Forge
         }
 
 
-        public void computeTangentBitangent()
+        public void ComputeTangentBitangent()
         {
             foreach (Mesh m in mesh)
             {
                 foreach (Polygon p in m.Nodes)
                     computeTangentBitangent(p);
             }
-
         }
 
         public static void computeTangentBitangent(Polygon p)
