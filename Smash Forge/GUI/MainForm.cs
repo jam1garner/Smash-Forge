@@ -533,12 +533,19 @@ namespace Smash_Forge
                 {
                     sfd.FileName = sfd.FileName;
 
-                    if (sfd.FileName.EndsWith(".anim"))
+                    if (sfd.FileName.EndsWith(".anim") & Runtime.TargetAnim != null)
                     {
                         if (Runtime.TargetAnim.Tag is AnimTrack)
                             ((AnimTrack)Runtime.TargetAnim.Tag).createANIM(sfd.FileName, Runtime.TargetVBN);
                         else
-                            ANIM.createANIM(sfd.FileName, Runtime.TargetAnim, Runtime.TargetVBN);
+                            if (sfd.FileName.Contains("ALL.anim"))
+                                foreach (string animName in Runtime.Animations.Keys)
+                                {
+                                    ANIM.createANIM(sfd.FileName.Replace("ALL.anim",animName + ".anim"), Runtime.Animations[animName], Runtime.TargetVBN);
+                                }
+                            else
+                                ANIM.createANIM(sfd.FileName, Runtime.TargetAnim, Runtime.TargetVBN);
+                        
                     }
 
                     if (sfd.FileName.EndsWith(".omo"))
