@@ -559,9 +559,14 @@ namespace Smash_Forge
             List<NUD.Polygon> polys = PolygonSelector.Popup();
             foreach (NUD.Polygon poly in polys)
             {
-                poly.materials.Clear();
-                foreach (NUD.Material m in ((NUD.Polygon)treeView1.SelectedNode).materials)
-                    poly.materials.Add(m.Clone());
+                // link materials. don't link a material to itself
+                if (((NUD.Polygon)treeView1.SelectedNode) != poly)
+                {
+                    poly.materials.Clear();
+                    foreach (NUD.Material m in ((NUD.Polygon)treeView1.SelectedNode).materials)
+                        poly.materials.Add(m.Clone());
+                }
+         
             }
         }
 

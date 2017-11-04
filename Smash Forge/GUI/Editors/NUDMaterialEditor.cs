@@ -755,25 +755,93 @@ namespace Smash_Forge
         // Loading Mat
         private void button2_Click(object sender, EventArgs e)
         {
-            MaterialSelector m = new MaterialSelector();
-            m.ShowDialog();
-            if (m.exitStatus == MaterialSelector.Opened)
+            MaterialSelector matSelector = new MaterialSelector();
+            matSelector.ShowDialog();
+            if (matSelector.exitStatus == MaterialSelector.Opened)
             {
-                FileData f = new FileData(m.path);
+                FileData matFile = new FileData(matSelector.path);
 
-                int soff = f.readInt();
+                int soff = matFile.readInt();
 
                 NUD._s_Poly pol = new NUD._s_Poly()
                 {
-                    texprop1 = f.readInt(),
-                    texprop2 = f.readInt(),
-                    texprop3 = f.readInt(),
-                    texprop4 = f.readInt()
+                    texprop1 = matFile.readInt(),
+                    texprop2 = matFile.readInt(),
+                    texprop3 = matFile.readInt(),
+                    texprop4 = matFile.readInt()
                 };
 
-                int texid = poly.materials[0].textures[0].hash;
-                poly.materials = NUD.readMaterial(f, pol, soff);
-                poly.materials[0].textures[0].hash = texid;
+                // store all the tex IDs for each texture type before changing material
+                int diffuseID = poly.materials[0].diffuse1ID;
+                int nrmID = poly.materials[0].normalID;
+
+                // are these variables necessary?
+                int diffuse1ID = poly.materials[0].diffuse1ID;
+                int diffuse2ID = poly.materials[0].diffuse2ID;
+                int diffuse3ID = poly.materials[0].diffuse3ID;
+                int normalID = poly.materials[0].normalID;
+                int rampID = poly.materials[0].rampID;
+                int dummyRampID = poly.materials[0].dummyRampID;
+                int sphereMapID = poly.materials[0].sphereMapID;
+                int aoMapID = poly.materials[0].aoMapID;
+                int stageMapID = poly.materials[0].stageMapID;
+                int cubeMapID = poly.materials[0].cubeMapID;
+
+                poly.materials = NUD.readMaterial(matFile, pol, soff);
+
+                // might be a cleaner way to do this
+                int count = 0;
+                if (poly.materials[0].diffuse && count < poly.materials[0].textures.Count)
+                {
+                    poly.materials[0].textures[count].hash = diffuse1ID;
+                    count++;
+                }
+                if (poly.materials[0].diffuse2 && count < poly.materials[0].textures.Count)
+                {
+                    poly.materials[0].textures[count].hash = diffuse2ID;
+                    count++;
+                }
+                if (poly.materials[0].diffuse3 && count < poly.materials[0].textures.Count)
+                {
+                    poly.materials[0].textures[count].hash = diffuse3ID;
+                    count++;
+                }
+                if (poly.materials[0].stagemap && count < poly.materials[0].textures.Count)
+                {
+                    // don't preserve stageMap ID
+                    count++;
+                }
+                if (poly.materials[0].cubemap && count < poly.materials[0].textures.Count)
+                {
+                    poly.materials[0].textures[count].hash = cubeMapID;
+                    count++;
+                }
+                if (poly.materials[0].spheremap && count < poly.materials[0].textures.Count)
+                {
+                    poly.materials[0].textures[count].hash = sphereMapID;
+                    count++;
+                }
+                if (poly.materials[0].aomap && count < poly.materials[0].textures.Count)
+                {
+                    poly.materials[0].textures[count].hash = aoMapID;
+                    count++;
+                }
+                if (poly.materials[0].normalmap && count < poly.materials[0].textures.Count)
+                {
+                    poly.materials[0].textures[count].hash = normalID;
+                    count++;
+                }
+                if (poly.materials[0].ramp && count < poly.materials[0].textures.Count)
+                {
+                    poly.materials[0].textures[count].hash = rampID;
+                    count++;
+                }
+                if (poly.materials[0].dummyramp && count < poly.materials[0].textures.Count)
+                {
+                    // dummy ramp should almost always be 0x10080000
+                    count++;
+                }
+
                 material = poly.materials;
                 Console.WriteLine(material.Count);
                 current = 0;

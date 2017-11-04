@@ -227,7 +227,7 @@ namespace Smash_Forge
 
             GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha,
                 dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
-
+            Debug.WriteLine(mat.dstFactor);
             if (mat.srcFactor == 0 && mat.dstFactor == 0) GL.Disable(EnableCap.Blend);
 
             // alpha testing
@@ -424,43 +424,62 @@ namespace Smash_Forge
                 int hash = mat.textures[texid].hash;
                 if (mat.displayTexId != -1) hash = mat.displayTexId;
                 GL.Uniform1(shader.getAttribute("dif"), BindTexture(mat.textures[texid], hash, texid));
+                mat.diffuse1ID = mat.textures[texid].hash;
                 texid++;
             }
             if (mat.diffuse2 && texid < mat.textures.Count)
             {
-                GL.Uniform1(shader.getAttribute("dif2"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                GL.Uniform1(shader.getAttribute("dif2"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
+                mat.diffuse2ID = mat.textures[texid].hash;
+                texid++;
             }
             if (mat.diffuse3 && texid < mat.textures.Count)
             {
-                GL.Uniform1(shader.getAttribute("dif3"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                GL.Uniform1(shader.getAttribute("dif3"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
+                mat.diffuse3ID = mat.textures[texid].hash;
+                texid++;
             }
             if (mat.stagemap && texid < mat.textures.Count)
             {
-                GL.Uniform1(shader.getAttribute("stagecube"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                GL.Uniform1(shader.getAttribute("stagecube"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
+                mat.stageMapID = mat.textures[texid].hash;
+                texid++;
             }
             if (mat.cubemap && texid < mat.textures.Count)
             {
-                GL.Uniform1(shader.getAttribute("cube"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                GL.Uniform1(shader.getAttribute("cube"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
+                mat.cubeMapID = mat.textures[texid].hash;
+                texid++;
             }
             if (mat.spheremap && texid < mat.textures.Count)
             {
-                GL.Uniform1(shader.getAttribute("spheremap"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                GL.Uniform1(shader.getAttribute("spheremap"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
+                mat.sphereMapID = mat.textures[texid].hash;
+                texid++;
             }
             if (mat.aomap && texid < mat.textures.Count)
             {
-                GL.Uniform1(shader.getAttribute("ao"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                GL.Uniform1(shader.getAttribute("ao"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
+                mat.aoMapID = mat.textures[texid].hash;
+                texid++;
             }
             if (mat.normalmap && texid < mat.textures.Count)
             {
-                GL.Uniform1(shader.getAttribute("normalMap"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                GL.Uniform1(shader.getAttribute("normalMap"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
+                mat.normalID = mat.textures[texid].hash;
+                texid++;
             }
             if (mat.ramp && texid < mat.textures.Count)
             {
-                GL.Uniform1(shader.getAttribute("ramp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                GL.Uniform1(shader.getAttribute("ramp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
+                mat.rampID = mat.textures[texid].hash;
+                texid++;
             }
             if (mat.dummyramp && texid < mat.textures.Count)
             {
-                GL.Uniform1(shader.getAttribute("dummyRamp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid++));
+                GL.Uniform1(shader.getAttribute("dummyRamp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
+                mat.dummyRampID = mat.textures[texid].hash;
+                texid++;
             }
         }
 
@@ -477,7 +496,7 @@ namespace Smash_Forge
             GL.Uniform4(shader.getAttribute(uniformName), values[0], values[1], values[2], values[3]);
         }
 
-        public void MakeMetal(int diffuseTexID, bool preserveDiffuse, bool useNormalMap, float[] minGain, float[] refColor, float[] fresParams, float[] fresColor)
+        public void MakeMetal(int newDiffuseID, bool preserveDiffuse, bool useNormalMap, float[] minGain, float[] refColor, float[] fresParams, float[] fresColor)
         {
             foreach (Mesh mesh in mesh)
             {
@@ -489,20 +508,6 @@ namespace Smash_Forge
                         if (mat.entries.ContainsKey("NU_materialHash"))
                             hash = mat.entries["NU_materialHash"][0];
 
-                        // check flags to determine what texture number the normal map is (0, 1, or 2)
-                        int nrmTexIndex = 0;
-                        if (mat.normalmap && useNormalMap)
-                        {
-                            nrmTexIndex = 1;
-
-                            if (2 < mat.textures.Count)
-                            {
-                                if (mat.cubemap || mat.stagemap || mat.spheremap)
-                                    nrmTexIndex = 2;
-
-                            }
-                        }
-
                         mat.anims.Clear();
                         mat.entries.Clear();
 
@@ -513,21 +518,21 @@ namespace Smash_Forge
 
                         int difTexID = 0;
                         if (preserveDiffuse)
-                            difTexID = (int)((long)mat.textures[0].hash);
+                            difTexID = mat.diffuse1ID;
                         else
-                            difTexID = diffuseTexID;
+                            difTexID = newDiffuseID;
 
-                        int nrmTexID = (int)((long)mat.textures[nrmTexIndex].hash);
-
+                        // add all the textures
                         mat.textures.Clear();
                         mat.displayTexId = -1;
+
                         NUD.Mat_Texture dif = NUD.Polygon.makeDefault();
                         dif.hash = difTexID; // preserve diffuse tex ID
                         NUD.Mat_Texture cub = NUD.Polygon.makeDefault();
                         cub.hash = 0x10102000;
 
                         NUD.Mat_Texture nrm = NUD.Polygon.makeDefault();
-                        nrm.hash = nrmTexID; // preserve normal map tex ID. should work for all common texture flags
+                        nrm.hash = mat.normalID; // preserve normal map tex ID. should work for all common texture flags
 
                         NUD.Mat_Texture rim = NUD.Polygon.makeDefault();
                         rim.hash = 0x10080000;
@@ -541,10 +546,11 @@ namespace Smash_Forge
                         }
                         else
                             mat.textures.Add(dif);
+
                         mat.textures.Add(cub);
                         mat.textures.Add(rim);
 
-                        // properties
+                        // add material properties
                         mat.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
                         mat.entries.Add("NU_fresnelColor", fresColor);
                         mat.entries.Add("NU_blinkColor", new float[] { 0f, 0f, 0f, 0 });
@@ -1845,11 +1851,24 @@ namespace Smash_Forge
             public bool ramp = false;
             public bool spheremap = false;
             public bool dummyramp = false;
-           
+
+            // texture IDs for preserving existing textures
+            public int diffuse1ID = 0;
+            public int diffuse2ID = 0;
+            public int diffuse3ID = 0;
+            public int normalID = 0;
+            public int rampID = (int)DummyTextures.DummyRamp;
+            public int dummyRampID = (int)DummyTextures.DummyRamp;
+            public int sphereMapID = 0;
+            public int aoMapID = 0;
+            public int stageMapID = (int)DummyTextures.StageMapHigh;
+            public int cubeMapID = 0;
+
+
 
             public Material Clone()
             {
-                Material m = new Smash_Forge.NUD.Material();
+                Material m = new Material();
 
                 foreach (KeyValuePair<string, float[]> e in entries)
                     m.entries.Add(e.Key, e.Value);
