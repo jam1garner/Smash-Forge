@@ -227,7 +227,6 @@ namespace Smash_Forge
 
             GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha,
                 dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
-            Debug.WriteLine(mat.dstFactor);
             if (mat.srcFactor == 0 && mat.dstFactor == 0) GL.Disable(EnableCap.Blend);
 
             // alpha testing
@@ -1142,8 +1141,6 @@ namespace Smash_Forge
                 }
             }
 
-            //Debug.WriteLine(p.UVSize.ToString("x") + " " + p.vertSize.ToString("x") + " " + d.pos().ToString("x"));
-
             for (int i = 0; i < p.vertamt; i++)
             {
                 if (nrm != 8)
@@ -1495,7 +1492,6 @@ namespace Smash_Forge
             {
                 
                 Vertex v = m.vertices[i];
-                //Debug.WriteLine(v.tan);
                 if (nrm < 8)
                 {
                     d.writeFloat(v.pos.X);

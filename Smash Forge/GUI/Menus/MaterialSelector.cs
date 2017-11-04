@@ -14,20 +14,26 @@ namespace Smash_Forge
 {
     public partial class MaterialSelector : Form
     {
-        public MaterialSelector()
-        {
-            InitializeComponent();
-        }
-
         public static int Running = 0;
         public static int Opened = 1;
         public static int Cancelled = 2;
 
         public string path = null;
-
+        ImageList matPresetRenders = new ImageList();
         public int exitStatus = 0; //0 - not done, 1 - one is selected, 2 - cancelled
 
-        public void populate()
+        public MaterialSelector()
+        {
+            InitializeComponent();
+            matPresetRenders.ImageSize = new Size(64, 64);
+            matPresetRenders.ColorDepth = ColorDepth.Depth32Bit;
+            addPresetImages();
+
+            treeView1.ImageList = matPresetRenders;
+        }
+
+
+        public void populateTreeNodes()
         {
             if (Directory.Exists(MainForm.executableDir + "\\materials"))
             {
@@ -35,19 +41,64 @@ namespace Smash_Forge
                 foreach (string folder in Directory.EnumerateDirectories(Path.GetFullPath(MainForm.executableDir + "\\materials")))
                 {
                     DirectoryInfo dir = new DirectoryInfo(folder);
+               
                     TreeNode folderNode = new TreeNode(dir.Name) { Tag = "folder" };
+                    if (dir.Name == "Character Mats")
+                    {
+                        folderNode.ImageKey = "Character";
+                        folderNode.SelectedImageKey = "Character";
+                    }
+                    if (dir.Name == "Stage Mats")
+                    {
+                        folderNode.ImageKey = "Stage";
+                        folderNode.SelectedImageKey = "Stage";
+                    }
+
+
                     foreach (string file in Directory.EnumerateFiles(folder))
                     {
-                        if(Path.GetExtension(file) == ".nmt")
+                        if (Path.GetExtension(file) == ".nmt")
                         {
                             string filename = Path.GetFileNameWithoutExtension(file);
-                            folderNode.Nodes.Add(new TreeNode(filename) { Tag = file });
+                            TreeNode node = new TreeNode(filename) { Tag = file };
+                            if (matPresetRenders.Images.ContainsKey(filename))
+                            {
+                                node.ImageKey = filename;
+                                node.SelectedImageKey = filename;
+
+                            }
+                            folderNode.Nodes.Add(node);
                         }
                     }
-                    treeView1.Nodes.Add(folderNode);
+                    if (dir.Name != "Preview Images")
+                        treeView1.Nodes.Add(folderNode);
                 }
             }
             treeView1.Refresh();
+        }
+
+        public void addPresetImages()
+        {
+            // should use a proper folder for preset images eventually 
+
+            if (Directory.Exists(MainForm.executableDir + "//materials//Preview Images"))
+            {
+                if (File.Exists(MainForm.executableDir + "//materials//Preview Images//Dummy.png"))
+                    matPresetRenders.Images.Add("Dummy", Image.FromFile(MainForm.executableDir + "//materials//Preview Images//Dummy.png"));
+                if (File.Exists(MainForm.executableDir + "/materials/Preview Images//Character.png"))
+                    matPresetRenders.Images.Add("Character", Image.FromFile(MainForm.executableDir + "/materials/Preview Images//Character.png"));
+                if (File.Exists(MainForm.executableDir + "//materials//Preview Images//Stage.png"))
+                    matPresetRenders.Images.Add("Stage", Image.FromFile(MainForm.executableDir + "//materials//Preview Images//Stage.png"));
+
+                foreach (string file in Directory.EnumerateFiles(MainForm.executableDir + "//materials//Preview Images"))
+                {
+                    if (Path.GetExtension(file) == ".png")
+                    {
+                        string filename = Path.GetFileNameWithoutExtension(file);
+                        matPresetRenders.Images.Add(filename, Image.FromFile(file));
+                    }
+                }
+            }
         }
 
         private void openButton()
@@ -73,7 +124,7 @@ namespace Smash_Forge
 
         private void MaterialSelector_Load(object sender, EventArgs e)
         {
-            populate();
+            populateTreeNodes();
         }
 
         private void treeView1_KeyDown(object sender, KeyEventArgs e)
