@@ -840,5 +840,18 @@ namespace Smash_Forge
             preserveAspectRatio = aspectRatioCB.Checked;
             RenderTexture();
         }
+
+        private void glControl1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // toggle channel rendering
+            if (e.KeyChar == 'r')
+                renderChannelR.PerformClick();
+            if (e.KeyChar == 'g')
+                renderChannelG.PerformClick();
+            if (e.KeyChar == 'b')
+                renderChannelB.PerformClick();
+            if (e.KeyChar == 'a')
+                renderChannelA.PerformClick();
+        }
     }
 }

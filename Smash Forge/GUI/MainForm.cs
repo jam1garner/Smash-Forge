@@ -744,11 +744,8 @@ namespace Smash_Forge
 
         private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-            using (var rndr = new GUI.RenderSettings())
-            {
-                rndr.ShowDialog();
-            }
+            GUI.RenderSettings renderSettings = new GUI.RenderSettings();
+            renderSettings.Show();
         }
 
         private void meshListToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1519,7 +1516,6 @@ namespace Smash_Forge
                 DAT_TreeView p = new DAT_TreeView() {ShowHint = DockState.DockLeft};
                 p.setDAT(dat);
                 AddDockedControl(p);
-                //Runtime.TargetVBN = dat.bones;
 
                 meshList.refresh();
                 resyncTargetVBN();
@@ -1599,7 +1595,6 @@ namespace Smash_Forge
 
             if (filename.EndsWith(".mtable"))
             {
-                //project.openACMD(filename);
                 Runtime.Moveset = new MovesetManager(filename);
                 Runtime.acmdEditor.updateCrcList();
             }
@@ -1689,20 +1684,6 @@ namespace Smash_Forge
                 Runtime.ModelContainers.Add(new ModelContainer() { nud = obj.toNUD() });
                 meshList.refresh();
                 AddDockedControl(vp);
-                /*DAEImportSettings m = new DAEImportSettings();
-                m.ShowDialog();
-                if (m.exitStatus == DAEImportSettings.Opened)
-                {
-                    if (Runtime.ModelContainers.Count < 1)
-                        Runtime.ModelContainers.Add(new ModelContainer());
-
-
-                    // apply settings
-                    m.Apply(Runtime.ModelContainers[0].nud);
-                    Runtime.ModelContainers[0].nud.MergePoly();
-
-                    meshList.refresh();
-                }*/
             }
 
             if (filename.EndsWith(".mbn"))

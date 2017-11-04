@@ -412,6 +412,7 @@
             this.glControl1.Size = new System.Drawing.Size(368, 368);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = false;
+            this.glControl1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.glControl1_KeyPress);
             // 
             // NUTEditor
             // 
@@ -424,6 +425,7 @@
             this.Controls.Add(this.glControl1);
             this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "NUTEditor";
