@@ -708,6 +708,7 @@ namespace Smash_Forge
             {
                 GL.ActiveTexture(TextureUnit.Texture20 + loc);
                 GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapLow);
+                Debug.WriteLine("bind stage low");
                 return 20 + loc;
 
             }
@@ -715,6 +716,7 @@ namespace Smash_Forge
             {
                 GL.ActiveTexture(TextureUnit.Texture20 + loc);
                 GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
+                Debug.WriteLine("bind stage high");
                 return 20 + loc;
 
             }

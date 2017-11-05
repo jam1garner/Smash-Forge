@@ -652,12 +652,9 @@ void main()
 
         // if ((flags & 0xF0FF0000u) != 0xF0640000u) // ryu works differently. need to research this more
         FragColor.a += alphaBlendParams.x;
-        if (isTransparent < 1)
-            FragColor.a = 1;
-        // FragColor.rgb = FragColor.aaa;
 
         // alpha override
-        if (renderAlpha < 1)
+        if (renderAlpha != 1)
             FragColor.a = 1;
         //---------------------------------------------------------------------------------------------
 	}
