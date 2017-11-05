@@ -21,7 +21,7 @@ deploy:
   on:
     branch: master
 
-  
+
 after_build:
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\Smash Forge.exe"
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\Smash Forge.exe.config"
@@ -29,5 +29,6 @@ after_build:
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\*.csv"
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\materials"
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\param_labels"
+  - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\Preview Images"
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Forge Updater\bin\Release\updater"
   - appveyor PushArtifact "Smash-Forge-Latest_Commit.zip"
