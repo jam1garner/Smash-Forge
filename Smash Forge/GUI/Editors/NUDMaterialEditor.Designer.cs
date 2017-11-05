@@ -76,10 +76,10 @@
             this.label21 = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
-            this.textBox12 = new System.Windows.Forms.TextBox();
-            this.textBox13 = new System.Windows.Forms.TextBox();
-            this.textBox14 = new System.Windows.Forms.TextBox();
-            this.textBox11 = new System.Windows.Forms.TextBox();
+            this.param1TB = new System.Windows.Forms.TextBox();
+            this.param2TB = new System.Windows.Forms.TextBox();
+            this.param3TB = new System.Windows.Forms.TextBox();
+            this.matPropertyNameTB = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
@@ -90,8 +90,12 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.paramGB = new System.Windows.Forms.TableLayoutPanel();
-            this.textBox15 = new System.Windows.Forms.TextBox();
+            this.param4TrackBar = new System.Windows.Forms.TrackBar();
+            this.param3TrackBar = new System.Windows.Forms.TrackBar();
+            this.param2TrackBar = new System.Windows.Forms.TrackBar();
+            this.param4TB = new System.Windows.Forms.TextBox();
             this.label23 = new System.Windows.Forms.Label();
+            this.param1TrackBar = new System.Windows.Forms.TrackBar();
             this.descriptionLabel = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.glControl2 = new OpenTK.GLControl();
@@ -127,6 +131,10 @@
             this.groupBox1.SuspendLayout();
             this.groupBox8.SuspendLayout();
             this.paramGB.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.param4TrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.param3TrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.param2TrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.param1TrackBar)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -162,7 +170,7 @@
             // listView1
             // 
             this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(6, 137);
+            this.listView1.Location = new System.Drawing.Point(6, 158);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(162, 91);
@@ -245,7 +253,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(252, 192);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(269, 192);
             this.tableLayoutPanel1.TabIndex = 8;
             // 
             // textBox5
@@ -253,7 +261,7 @@
             this.textBox5.Enabled = false;
             this.textBox5.Location = new System.Drawing.Point(83, 57);
             this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(36, 20);
+            this.textBox5.Size = new System.Drawing.Size(55, 20);
             this.textBox5.TabIndex = 15;
             this.textBox5.TextChanged += new System.EventHandler(this.textBox5_TextChanged);
             // 
@@ -261,7 +269,7 @@
             // 
             this.textBox4.Location = new System.Drawing.Point(83, 30);
             this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(36, 20);
+            this.textBox4.Size = new System.Drawing.Size(55, 20);
             this.textBox4.TabIndex = 15;
             this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged_1);
             // 
@@ -269,14 +277,14 @@
             // 
             this.textBox3.Location = new System.Drawing.Point(83, 3);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(36, 20);
+            this.textBox3.Size = new System.Drawing.Size(55, 20);
             this.textBox3.TabIndex = 15;
             this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // comboBox2
             // 
             this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(125, 3);
+            this.comboBox2.Location = new System.Drawing.Point(144, 3);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(121, 21);
             this.comboBox2.TabIndex = 15;
@@ -285,7 +293,7 @@
             // comboBox3
             // 
             this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(125, 30);
+            this.comboBox3.Location = new System.Drawing.Point(144, 30);
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.Size = new System.Drawing.Size(121, 21);
             this.comboBox3.TabIndex = 15;
@@ -294,7 +302,7 @@
             // AlphaTestCB
             // 
             this.AlphaTestCB.FormattingEnabled = true;
-            this.AlphaTestCB.Location = new System.Drawing.Point(125, 57);
+            this.AlphaTestCB.Location = new System.Drawing.Point(144, 57);
             this.AlphaTestCB.Name = "AlphaTestCB";
             this.AlphaTestCB.Size = new System.Drawing.Size(121, 21);
             this.AlphaTestCB.TabIndex = 16;
@@ -302,7 +310,7 @@
             // 
             // textBox8
             // 
-            this.textBox8.Location = new System.Drawing.Point(125, 164);
+            this.textBox8.Location = new System.Drawing.Point(144, 164);
             this.textBox8.Name = "textBox8";
             this.textBox8.Size = new System.Drawing.Size(121, 20);
             this.textBox8.TabIndex = 15;
@@ -311,7 +319,7 @@
             // comboBox6
             // 
             this.comboBox6.FormattingEnabled = true;
-            this.comboBox6.Location = new System.Drawing.Point(125, 137);
+            this.comboBox6.Location = new System.Drawing.Point(144, 137);
             this.comboBox6.Name = "comboBox6";
             this.comboBox6.Size = new System.Drawing.Size(121, 21);
             this.comboBox6.TabIndex = 18;
@@ -319,7 +327,7 @@
             // 
             // textBox6
             // 
-            this.textBox6.Location = new System.Drawing.Point(125, 111);
+            this.textBox6.Location = new System.Drawing.Point(144, 111);
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new System.Drawing.Size(121, 20);
             this.textBox6.TabIndex = 15;
@@ -337,7 +345,7 @@
             // AlphaFuncCB
             // 
             this.AlphaFuncCB.FormattingEnabled = true;
-            this.AlphaFuncCB.Location = new System.Drawing.Point(125, 84);
+            this.AlphaFuncCB.Location = new System.Drawing.Point(144, 84);
             this.AlphaFuncCB.Name = "AlphaFuncCB";
             this.AlphaFuncCB.Size = new System.Drawing.Size(121, 21);
             this.AlphaFuncCB.TabIndex = 19;
@@ -356,7 +364,7 @@
             // 
             this.textBox7.Location = new System.Drawing.Point(83, 137);
             this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(36, 20);
+            this.textBox7.Size = new System.Drawing.Size(55, 20);
             this.textBox7.TabIndex = 15;
             this.textBox7.TextChanged += new System.EventHandler(this.textBox7_TextChanged);
             // 
@@ -374,7 +382,7 @@
             this.textBox2.Enabled = false;
             this.textBox2.Location = new System.Drawing.Point(83, 84);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(36, 20);
+            this.textBox2.Size = new System.Drawing.Size(55, 20);
             this.textBox2.TabIndex = 21;
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
@@ -428,7 +436,7 @@
             this.tableLayoutPanel2.Controls.Add(this.comboBox13, 2, 5);
             this.tableLayoutPanel2.Controls.Add(this.label17, 0, 6);
             this.tableLayoutPanel2.Controls.Add(this.textBox9, 0, 7);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 234);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 255);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 8;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -439,14 +447,14 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(259, 127);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(293, 127);
             this.tableLayoutPanel2.TabIndex = 11;
             this.tableLayoutPanel2.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel2_Paint);
             // 
             // comboBox12
             // 
             this.comboBox12.FormattingEnabled = true;
-            this.comboBox12.Location = new System.Drawing.Point(89, 56);
+            this.comboBox12.Location = new System.Drawing.Point(100, 56);
             this.comboBox12.Name = "comboBox12";
             this.comboBox12.Size = new System.Drawing.Size(80, 21);
             this.comboBox12.TabIndex = 15;
@@ -464,7 +472,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(89, 40);
+            this.label15.Location = new System.Drawing.Point(100, 40);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(53, 13);
             this.label15.TabIndex = 12;
@@ -500,7 +508,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(175, 0);
+            this.label11.Location = new System.Drawing.Point(197, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(58, 13);
             this.label11.TabIndex = 12;
@@ -509,7 +517,7 @@
             // comboBox9
             // 
             this.comboBox9.FormattingEnabled = true;
-            this.comboBox9.Location = new System.Drawing.Point(175, 16);
+            this.comboBox9.Location = new System.Drawing.Point(197, 16);
             this.comboBox9.Name = "comboBox9";
             this.comboBox9.Size = new System.Drawing.Size(80, 21);
             this.comboBox9.TabIndex = 15;
@@ -518,7 +526,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(89, 0);
+            this.label13.Location = new System.Drawing.Point(100, 0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(67, 13);
             this.label13.TabIndex = 12;
@@ -527,7 +535,7 @@
             // comboBox8
             // 
             this.comboBox8.FormattingEnabled = true;
-            this.comboBox8.Location = new System.Drawing.Point(89, 16);
+            this.comboBox8.Location = new System.Drawing.Point(100, 16);
             this.comboBox8.Name = "comboBox8";
             this.comboBox8.Size = new System.Drawing.Size(80, 21);
             this.comboBox8.TabIndex = 15;
@@ -536,7 +544,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(175, 40);
+            this.label16.Location = new System.Drawing.Point(197, 40);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(54, 13);
             this.label16.TabIndex = 12;
@@ -545,7 +553,7 @@
             // comboBox13
             // 
             this.comboBox13.FormattingEnabled = true;
-            this.comboBox13.Location = new System.Drawing.Point(175, 56);
+            this.comboBox13.Location = new System.Drawing.Point(197, 56);
             this.comboBox13.Name = "comboBox13";
             this.comboBox13.Size = new System.Drawing.Size(80, 21);
             this.comboBox13.TabIndex = 15;
@@ -570,7 +578,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(189, 137);
+            this.label10.Location = new System.Drawing.Point(189, 158);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(57, 13);
             this.label10.TabIndex = 12;
@@ -578,7 +586,7 @@
             // 
             // textBox10
             // 
-            this.textBox10.Location = new System.Drawing.Point(181, 153);
+            this.textBox10.Location = new System.Drawing.Point(181, 174);
             this.textBox10.Name = "textBox10";
             this.textBox10.Size = new System.Drawing.Size(80, 20);
             this.textBox10.TabIndex = 17;
@@ -592,7 +600,7 @@
             this.listView2.Location = new System.Drawing.Point(3, 16);
             this.listView2.Name = "listView2";
             this.listView2.ShowGroups = false;
-            this.listView2.Size = new System.Drawing.Size(270, 125);
+            this.listView2.Size = new System.Drawing.Size(287, 133);
             this.listView2.TabIndex = 12;
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.SelectedIndexChanged += new System.EventHandler(this.listView2_SelectedIndexChanged);
@@ -603,7 +611,7 @@
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(3, 52);
+            this.label22.Location = new System.Drawing.Point(3, 54);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(43, 13);
             this.label22.TabIndex = 15;
@@ -612,7 +620,7 @@
             // label21
             // 
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(3, 26);
+            this.label21.Location = new System.Drawing.Point(3, 27);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(43, 13);
             this.label21.TabIndex = 15;
@@ -636,38 +644,38 @@
             this.label19.TabIndex = 15;
             this.label19.Text = "Name";
             // 
-            // textBox12
+            // param1TB
             // 
-            this.textBox12.Location = new System.Drawing.Point(52, 3);
-            this.textBox12.Name = "textBox12";
-            this.textBox12.Size = new System.Drawing.Size(37, 20);
-            this.textBox12.TabIndex = 17;
-            this.textBox12.TextChanged += new System.EventHandler(this.textBox12_TextChanged);
+            this.param1TB.Location = new System.Drawing.Point(52, 3);
+            this.param1TB.Name = "param1TB";
+            this.param1TB.Size = new System.Drawing.Size(58, 20);
+            this.param1TB.TabIndex = 17;
+            this.param1TB.TextChanged += new System.EventHandler(this.param1TB_TextChanged);
             // 
-            // textBox13
+            // param2TB
             // 
-            this.textBox13.Location = new System.Drawing.Point(52, 29);
-            this.textBox13.Name = "textBox13";
-            this.textBox13.Size = new System.Drawing.Size(37, 20);
-            this.textBox13.TabIndex = 18;
-            this.textBox13.TextChanged += new System.EventHandler(this.textBox13_TextChanged);
+            this.param2TB.Location = new System.Drawing.Point(52, 30);
+            this.param2TB.Name = "param2TB";
+            this.param2TB.Size = new System.Drawing.Size(58, 20);
+            this.param2TB.TabIndex = 18;
+            this.param2TB.TextChanged += new System.EventHandler(this.param2TB_TextChanged);
             // 
-            // textBox14
+            // param3TB
             // 
-            this.textBox14.Location = new System.Drawing.Point(52, 55);
-            this.textBox14.Name = "textBox14";
-            this.textBox14.Size = new System.Drawing.Size(37, 20);
-            this.textBox14.TabIndex = 19;
-            this.textBox14.TextChanged += new System.EventHandler(this.textBox14_TextChanged);
+            this.param3TB.Location = new System.Drawing.Point(52, 57);
+            this.param3TB.Name = "param3TB";
+            this.param3TB.Size = new System.Drawing.Size(58, 20);
+            this.param3TB.TabIndex = 19;
+            this.param3TB.TextChanged += new System.EventHandler(this.param3TB_TextChanged);
             // 
-            // textBox11
+            // matPropertyNameTB
             // 
-            this.textBox11.Enabled = false;
-            this.textBox11.Location = new System.Drawing.Point(63, 13);
-            this.textBox11.Name = "textBox11";
-            this.textBox11.Size = new System.Drawing.Size(198, 20);
-            this.textBox11.TabIndex = 16;
-            this.textBox11.TextChanged += new System.EventHandler(this.textBox11_TextChanged);
+            this.matPropertyNameTB.Enabled = false;
+            this.matPropertyNameTB.Location = new System.Drawing.Point(63, 13);
+            this.matPropertyNameTB.Name = "matPropertyNameTB";
+            this.matPropertyNameTB.Size = new System.Drawing.Size(198, 20);
+            this.matPropertyNameTB.TabIndex = 16;
+            this.matPropertyNameTB.TextChanged += new System.EventHandler(this.matPropertyTB_TextChanged);
             // 
             // button1
             // 
@@ -691,7 +699,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(236, 147);
+            this.button4.Location = new System.Drawing.Point(236, 159);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(29, 21);
             this.button4.TabIndex = 20;
@@ -702,7 +710,7 @@
             // comboBox7
             // 
             this.comboBox7.FormattingEnabled = true;
-            this.comboBox7.Location = new System.Drawing.Point(53, 147);
+            this.comboBox7.Location = new System.Drawing.Point(53, 159);
             this.comboBox7.Name = "comboBox7";
             this.comboBox7.Size = new System.Drawing.Size(177, 21);
             this.comboBox7.TabIndex = 21;
@@ -711,9 +719,9 @@
             // glControl1
             // 
             this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(9, 19);
+            this.glControl1.Location = new System.Drawing.Point(6, 19);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(116, 112);
+            this.glControl1.Size = new System.Drawing.Size(130, 130);
             this.glControl1.TabIndex = 23;
             this.glControl1.VSync = false;
             this.glControl1.Click += new System.EventHandler(this.glControl1_Click);
@@ -723,7 +731,7 @@
             // 
             this.colorSelect.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.colorSelect.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.colorSelect.Location = new System.Drawing.Point(8, 145);
+            this.colorSelect.Location = new System.Drawing.Point(8, 157);
             this.colorSelect.Name = "colorSelect";
             this.colorSelect.Size = new System.Drawing.Size(26, 23);
             this.colorSelect.TabIndex = 24;
@@ -740,7 +748,7 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(276, 478);
+            this.groupBox1.Size = new System.Drawing.Size(293, 504);
             this.groupBox1.TabIndex = 25;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Properties";
@@ -752,10 +760,10 @@
             this.groupBox8.Controls.Add(this.paramGB);
             this.groupBox8.Controls.Add(this.descriptionLabel);
             this.groupBox8.Controls.Add(this.label19);
-            this.groupBox8.Controls.Add(this.textBox11);
-            this.groupBox8.Location = new System.Drawing.Point(3, 174);
+            this.groupBox8.Controls.Add(this.matPropertyNameTB);
+            this.groupBox8.Location = new System.Drawing.Point(3, 186);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(267, 298);
+            this.groupBox8.Size = new System.Drawing.Size(287, 310);
             this.groupBox8.TabIndex = 25;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Param";
@@ -768,46 +776,90 @@
             this.paramGB.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.paramGB.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.paramGB.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.paramGB.Controls.Add(this.textBox15, 1, 3);
-            this.paramGB.Controls.Add(this.textBox14, 1, 2);
-            this.paramGB.Controls.Add(this.textBox13, 1, 1);
-            this.paramGB.Controls.Add(this.textBox12, 1, 0);
+            this.paramGB.Controls.Add(this.param4TrackBar, 2, 3);
+            this.paramGB.Controls.Add(this.param3TrackBar, 2, 2);
+            this.paramGB.Controls.Add(this.param2TrackBar, 2, 1);
+            this.paramGB.Controls.Add(this.param4TB, 1, 3);
+            this.paramGB.Controls.Add(this.param3TB, 1, 2);
+            this.paramGB.Controls.Add(this.param2TB, 1, 1);
+            this.paramGB.Controls.Add(this.param1TB, 1, 0);
             this.paramGB.Controls.Add(this.label23, 0, 3);
             this.paramGB.Controls.Add(this.label20, 0, 0);
             this.paramGB.Controls.Add(this.label22, 0, 2);
             this.paramGB.Controls.Add(this.label21, 0, 1);
+            this.paramGB.Controls.Add(this.param1TrackBar, 2, 0);
             this.paramGB.Location = new System.Drawing.Point(5, 39);
             this.paramGB.Name = "paramGB";
             this.paramGB.RowCount = 4;
-            this.paramGB.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.paramGB.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.paramGB.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.paramGB.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.paramGB.Size = new System.Drawing.Size(256, 108);
+            this.paramGB.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.paramGB.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.paramGB.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.paramGB.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.paramGB.Size = new System.Drawing.Size(276, 108);
             this.paramGB.TabIndex = 17;
             // 
-            // textBox15
+            // param4TrackBar
             // 
-            this.textBox15.Location = new System.Drawing.Point(52, 81);
-            this.textBox15.Name = "textBox15";
-            this.textBox15.Size = new System.Drawing.Size(37, 20);
-            this.textBox15.TabIndex = 20;
-            this.textBox15.TextChanged += new System.EventHandler(this.textBox15_TextChanged);
+            this.param4TrackBar.Location = new System.Drawing.Point(116, 84);
+            this.param4TrackBar.Maximum = 200;
+            this.param4TrackBar.Name = "param4TrackBar";
+            this.param4TrackBar.Size = new System.Drawing.Size(156, 21);
+            this.param4TrackBar.TabIndex = 24;
+            this.param4TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.param4TrackBar.Scroll += new System.EventHandler(this.param4TrackBar_Scroll);
+            // 
+            // param3TrackBar
+            // 
+            this.param3TrackBar.Location = new System.Drawing.Point(116, 57);
+            this.param3TrackBar.Maximum = 200;
+            this.param3TrackBar.Name = "param3TrackBar";
+            this.param3TrackBar.Size = new System.Drawing.Size(156, 21);
+            this.param3TrackBar.TabIndex = 23;
+            this.param3TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.param3TrackBar.Scroll += new System.EventHandler(this.param3TrackBar_Scroll);
+            // 
+            // param2TrackBar
+            // 
+            this.param2TrackBar.Location = new System.Drawing.Point(116, 30);
+            this.param2TrackBar.Maximum = 200;
+            this.param2TrackBar.Name = "param2TrackBar";
+            this.param2TrackBar.Size = new System.Drawing.Size(156, 21);
+            this.param2TrackBar.TabIndex = 22;
+            this.param2TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.param2TrackBar.Scroll += new System.EventHandler(this.param2TrackBar_Scroll);
+            // 
+            // param4TB
+            // 
+            this.param4TB.Location = new System.Drawing.Point(52, 84);
+            this.param4TB.Name = "param4TB";
+            this.param4TB.Size = new System.Drawing.Size(58, 20);
+            this.param4TB.TabIndex = 20;
+            this.param4TB.TextChanged += new System.EventHandler(this.param4TB_TextChanged);
             // 
             // label23
             // 
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(3, 78);
+            this.label23.Location = new System.Drawing.Point(3, 81);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(43, 13);
             this.label23.TabIndex = 15;
             this.label23.Text = "Param4";
             // 
+            // param1TrackBar
+            // 
+            this.param1TrackBar.Location = new System.Drawing.Point(116, 3);
+            this.param1TrackBar.Maximum = 200;
+            this.param1TrackBar.Name = "param1TrackBar";
+            this.param1TrackBar.Size = new System.Drawing.Size(156, 21);
+            this.param1TrackBar.TabIndex = 21;
+            this.param1TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.param1TrackBar.Scroll += new System.EventHandler(this.param1TrackBar_Scroll);
+            // 
             // descriptionLabel
             // 
             this.descriptionLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.descriptionLabel.AutoSize = true;
-            this.descriptionLabel.Location = new System.Drawing.Point(2, 150);
+            this.descriptionLabel.Location = new System.Drawing.Point(2, 156);
             this.descriptionLabel.MaximumSize = new System.Drawing.Size(250, 0);
             this.descriptionLabel.Name = "descriptionLabel";
             this.descriptionLabel.Size = new System.Drawing.Size(63, 13);
@@ -826,7 +878,7 @@
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(3, 3);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(270, 472);
+            this.groupBox2.Size = new System.Drawing.Size(287, 498);
             this.groupBox2.TabIndex = 26;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Textures";
@@ -834,9 +886,9 @@
             // glControl2
             // 
             this.glControl2.BackColor = System.Drawing.Color.Black;
-            this.glControl2.Location = new System.Drawing.Point(145, 19);
+            this.glControl2.Location = new System.Drawing.Point(151, 19);
             this.glControl2.Name = "glControl2";
-            this.glControl2.Size = new System.Drawing.Size(116, 112);
+            this.glControl2.Size = new System.Drawing.Size(130, 130);
             this.glControl2.TabIndex = 25;
             this.glControl2.VSync = false;
             this.glControl2.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl2_Paint);
@@ -852,7 +904,7 @@
             this.groupBox7.Controls.Add(this.normalCB);
             this.groupBox7.Controls.Add(this.diffuse2CB);
             this.groupBox7.Controls.Add(this.diffuseCB);
-            this.groupBox7.Location = new System.Drawing.Point(5, 366);
+            this.groupBox7.Location = new System.Drawing.Point(5, 387);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(262, 100);
             this.groupBox7.TabIndex = 24;
@@ -991,7 +1043,7 @@
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox3.Location = new System.Drawing.Point(3, 3);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(270, 472);
+            this.groupBox3.Size = new System.Drawing.Size(287, 498);
             this.groupBox3.TabIndex = 27;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Material";
@@ -1003,7 +1055,7 @@
             this.groupBox6.Controls.Add(this.tableLayoutPanel1);
             this.groupBox6.Location = new System.Drawing.Point(6, 129);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(258, 211);
+            this.groupBox6.Size = new System.Drawing.Size(275, 211);
             this.groupBox6.TabIndex = 21;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Blending";
@@ -1017,7 +1069,7 @@
             this.groupBox5.Controls.Add(this.GlowCB);
             this.groupBox5.Location = new System.Drawing.Point(5, 346);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(258, 89);
+            this.groupBox5.Size = new System.Drawing.Size(275, 146);
             this.groupBox5.TabIndex = 20;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Effects";
@@ -1051,7 +1103,7 @@
             this.groupBox4.Controls.Add(this.tableLayoutPanel4);
             this.groupBox4.Location = new System.Drawing.Point(5, 39);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(260, 84);
+            this.groupBox4.Size = new System.Drawing.Size(277, 84);
             this.groupBox4.TabIndex = 19;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Lighting Channel";
@@ -1071,7 +1123,7 @@
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(254, 65);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(271, 65);
             this.tableLayoutPanel4.TabIndex = 1;
             // 
             // label18
@@ -1110,7 +1162,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 69);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(284, 504);
+            this.tabControl1.Size = new System.Drawing.Size(301, 530);
             this.tabControl1.TabIndex = 19;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
@@ -1120,7 +1172,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(276, 478);
+            this.tabPage1.Size = new System.Drawing.Size(293, 504);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Material Flags";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -1131,7 +1183,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(276, 478);
+            this.tabPage2.Size = new System.Drawing.Size(293, 504);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Textures";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -1141,7 +1193,7 @@
             this.tabPage3.Controls.Add(this.groupBox1);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(276, 478);
+            this.tabPage3.Size = new System.Drawing.Size(293, 504);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Properties";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -1155,7 +1207,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(284, 69);
+            this.panel1.Size = new System.Drawing.Size(301, 69);
             this.panel1.TabIndex = 26;
             // 
             // NUDMaterialEditor
@@ -1163,11 +1215,12 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(284, 573);
+            this.ClientSize = new System.Drawing.Size(301, 599);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.Black;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "NUDMaterialEditor";
             this.TabText = "Material";
             this.Text = "NUDMaterialEditor";
@@ -1183,6 +1236,10 @@
             this.groupBox8.PerformLayout();
             this.paramGB.ResumeLayout(false);
             this.paramGB.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.param4TrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.param3TrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.param2TrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.param1TrackBar)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox7.ResumeLayout(false);
@@ -1252,10 +1309,10 @@
         private System.Windows.Forms.ComboBox comboBox8;
         private System.Windows.Forms.TextBox textBox9;
         private System.Windows.Forms.TextBox textBox10;
-        private System.Windows.Forms.TextBox textBox11;
-        private System.Windows.Forms.TextBox textBox12;
-        private System.Windows.Forms.TextBox textBox13;
-        private System.Windows.Forms.TextBox textBox14;
+        private System.Windows.Forms.TextBox matPropertyNameTB;
+        private System.Windows.Forms.TextBox param1TB;
+        private System.Windows.Forms.TextBox param2TB;
+        private System.Windows.Forms.TextBox param3TB;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button4;
@@ -1289,7 +1346,7 @@
         private System.Windows.Forms.Label label25;
         private System.Windows.Forms.Label descriptionLabel;
         private System.Windows.Forms.Label label23;
-        private System.Windows.Forms.TextBox textBox15;
+        private System.Windows.Forms.TextBox param4TB;
         private System.Windows.Forms.TableLayoutPanel paramGB;
         private OpenTK.GLControl glControl2;
         private System.Windows.Forms.CheckBox cubemapCB;
@@ -1301,5 +1358,9 @@
         private System.Windows.Forms.CheckBox normalCB;
         private System.Windows.Forms.CheckBox diffuse2CB;
         private System.Windows.Forms.CheckBox diffuseCB;
+        private System.Windows.Forms.TrackBar param1TrackBar;
+        private System.Windows.Forms.TrackBar param4TrackBar;
+        private System.Windows.Forms.TrackBar param3TrackBar;
+        private System.Windows.Forms.TrackBar param2TrackBar;
     }
 }

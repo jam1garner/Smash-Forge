@@ -23,8 +23,6 @@ namespace Smash_Forge
         int current = 0;
         public static Dictionary<string, MatParam> propList;
 
-        private bool hasCheckedCompileStatus = false;
-
         public void trackchange(object sender, EventArgs e)
         {
             Console.WriteLine(((TrackBar)sender).Value);
@@ -35,7 +33,14 @@ namespace Smash_Forge
             public string name = "";
             public string description = "";
             public string[] ps = new string[4];
-            public int min = -1, max = -1;
+
+            // users can still manually enter a value higher than max
+            public float max1 = 100.0f;
+            public float max2 = 100.0f;
+            public float max3 = 100.0f;
+            public float max4 = 100.0f;
+
+            public bool useTrackBar = true;
             public List<string> op1, op2, op3, op4;
             public Control control1 = null;
             public Control control2 = null;
@@ -50,22 +55,7 @@ namespace Smash_Forge
                 Console.WriteLine(((TrackBar)sender).Value);
             }
 
-            public void CreateTrackBar(int param)
-            {
-                Control control = new TrackBar();
-                if (param == 1) { control1 = control;} 
-                if (param == 2) control2 = control;
-                if (param == 3) control3 = control;
-                if (param == 4) control4 = control;
-                control = new TrackBar();
-                control.Dock = DockStyle.Fill;
-                control.MaximumSize = new Size(control.MaximumSize.Width, 16);
-                ((TrackBar)control).Minimum = 0;
-                ((TrackBar)control).Maximum = 100;
-                ((TrackBar)control).TickStyle = TickStyle.Both;
-                ((TrackBar)control).TickFrequency = 5;
-                ((TrackBar)control).ValueChanged += trackchange;
-            }
+   
         }
 
         public static Dictionary<int, string> dstFactor = new Dictionary<int, string>(){
@@ -158,7 +148,7 @@ namespace Smash_Forge
             {
                 try
                 {
-                    MatParam p = new MatParam();
+                    MatParam matParam = new MatParam();
                     using (StreamReader sr = new StreamReader("param_labels\\material_params.ini"))
                     {
                         while (!sr.EndOfStream)
@@ -167,17 +157,22 @@ namespace Smash_Forge
                             string line = args[0];
                             switch (line)
                             {
-                                case "[Param]": if (!p.name.Equals("") && !propList.ContainsKey(p.name)) propList.Add(p.name, p); p = new MatParam(); break;
-                                case "name": p.name = args[1]; Console.WriteLine(p.name); break;
-                                case "description": p.description = args[1]; break;
-                                case "param1": p.ps[0] = args[1]; break;
-                                case "param2": p.ps[1] = args[1]; break;
-                                case "param3": p.ps[2] = args[1]; break;
-                                case "param4": p.ps[3] = args[1]; break;
+                                case "[Param]": if (!matParam.name.Equals("") && !propList.ContainsKey(matParam.name)) propList.Add(matParam.name, matParam); matParam = new MatParam(); break;
+                                case "name": matParam.name = args[1]; Console.WriteLine(matParam.name); break;
+                                case "description": matParam.description = args[1]; break;
+                                case "param1": matParam.ps[0] = args[1]; break;
+                                case "param2": matParam.ps[1] = args[1]; break;
+                                case "param3": matParam.ps[2] = args[1]; break;
+                                case "param4": matParam.ps[3] = args[1]; break;
+                                case "max1": float.TryParse(args[1], out matParam.max1); break;
+                                case "max2": float.TryParse(args[1], out matParam.max2); break;
+                                case "max3": float.TryParse(args[1], out matParam.max3); break;
+                                case "max4": float.TryParse(args[1], out matParam.max4); break;
+                                case "useTrackBar": bool.TryParse(args[1], out matParam.useTrackBar); break;
                             }
                         }
                     }
-                    if (!p.name.Equals("") && !propList.ContainsKey(p.name)) propList.Add(p.name, p);
+                    if (!matParam.name.Equals("") && !propList.ContainsKey(matParam.name)) propList.Add(matParam.name, matParam);
                 }
                 catch (Exception)
                 {
@@ -189,6 +184,10 @@ namespace Smash_Forge
         {
         }
 
+        private void UpdateTrackBarFromParam(MatParam param)
+        {
+        
+        }
 
         private void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
@@ -562,75 +561,139 @@ namespace Smash_Forge
         private void listView2_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listView2.SelectedIndices.Count > 0)
-                textBox11.Text = material[current].entries.Keys.ElementAt(listView2.SelectedIndices[0]);
-            if (textBox11.Text.Equals("NU_materialHash"))
+                matPropertyNameTB.Text = material[current].entries.Keys.ElementAt(listView2.SelectedIndices[0]);
+            if (matPropertyNameTB.Text.Equals("NU_materialHash"))
             {
                 
-                textBox12.Text = BitConverter.ToInt32(BitConverter.GetBytes(material[current].entries[textBox11.Text][0]), 0).ToString("X");
-                textBox13.Text = material[current].entries[textBox11.Text][1] + "";
-                textBox14.Text = material[current].entries[textBox11.Text][2] + "";
-                textBox15.Text = material[current].entries[textBox11.Text][3] + "";
+                param1TB.Text = BitConverter.ToInt32(BitConverter.GetBytes(material[current].entries[matPropertyNameTB.Text][0]), 0).ToString("X");
+                param2TB.Text = material[current].entries[matPropertyNameTB.Text][1] + "";
+                param3TB.Text = material[current].entries[matPropertyNameTB.Text][2] + "";
+                param4TB.Text = material[current].entries[matPropertyNameTB.Text][3] + "";
             }
             else
             {
-                textBox12.Text = material[current].entries[textBox11.Text][0] + "";
-                textBox13.Text = material[current].entries[textBox11.Text][1] + "";
-                textBox14.Text = material[current].entries[textBox11.Text][2] + "";
-                textBox15.Text = material[current].entries[textBox11.Text][3] + "";
+                param1TB.Text = material[current].entries[matPropertyNameTB.Text][0] + "";
+                param2TB.Text = material[current].entries[matPropertyNameTB.Text][1] + "";
+                param3TB.Text = material[current].entries[matPropertyNameTB.Text][2] + "";
+                param4TB.Text = material[current].entries[matPropertyNameTB.Text][3] + "";
             }
         }
 
-        private void textBox12_TextChanged(object sender, EventArgs e)
+        private void param1TB_TextChanged(object sender, EventArgs e)
         {
-            if (textBox11.Text.Equals("NU_materialHash"))
+            if (matPropertyNameTB.Text.Equals("NU_materialHash"))
             {
                 int f = -1;
-                int.TryParse(textBox12.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f);
+                int.TryParse(param1TB.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f);
                 if (f != -1 && listView2.SelectedItems.Count > 0)
                     material[current].entries[listView2.SelectedItems[0].Text][0] = BitConverter.ToSingle(BitConverter.GetBytes(f), 0);
             }
             else
             {
                 float f = -1;
-                float.TryParse(textBox12.Text, out f);
+                float.TryParse(param1TB.Text, out f);
                 if (f != -1 && listView2.SelectedItems.Count > 0)
+                {
                     material[current].entries[listView2.SelectedItems[0].Text][0] = f;
+
+                    // udpate trackbar. should clean this up later
+                    MatParam labels = null;
+                    propList.TryGetValue(matPropertyNameTB.Text, out labels);
+                    float max = 1;
+                    if (labels != null)
+                    {
+                        max = labels.max1;
+                    }
+
+                    // clamp slider value to maximum value
+                    int newSliderValue = (int)((f * (float)param1TrackBar.Maximum) / max);
+                    if (newSliderValue <= param1TrackBar.Maximum && newSliderValue >= 0)
+                        param1TrackBar.Value = newSliderValue;
+                }
             }
             updateButton();
         }
 
-        private void textBox13_TextChanged(object sender, EventArgs e)
+        private void param2TB_TextChanged(object sender, EventArgs e)
         {
             float f = -1;
-            float.TryParse(textBox13.Text, out f);
+            float.TryParse(param2TB.Text, out f);
             if (f != -1 && listView2.SelectedItems.Count > 0)
+            {
                 material[current].entries[listView2.SelectedItems[0].Text][1] = f;
+
+                // udpate trackbar
+                MatParam labels = null;
+                propList.TryGetValue(matPropertyNameTB.Text, out labels);
+                float max = 1;
+                if (labels != null)
+                {
+                    max = labels.max2;
+                }
+
+                // clamp slider value to maximum value
+                int newSliderValue = (int)((f * (float)param2TrackBar.Maximum) / max);
+                if (newSliderValue <= param2TrackBar.Maximum && newSliderValue >= 0)
+                    param2TrackBar.Value = newSliderValue;
+            }
             updateButton();
         }
 
-        private void textBox14_TextChanged(object sender, EventArgs e)
+        private void param3TB_TextChanged(object sender, EventArgs e)
         {
             float f = -1;
-            float.TryParse(textBox14.Text, out f);
+            float.TryParse(param3TB.Text, out f);
             if (f != -1 && listView2.SelectedItems.Count > 0)
+            {
                 material[current].entries[listView2.SelectedItems[0].Text][2] = f;
+
+                // udpate trackbar
+                MatParam labels = null;
+                propList.TryGetValue(matPropertyNameTB.Text, out labels);
+                float max = 1;
+                if (labels != null)
+                {
+                    max = labels.max3;
+                }
+
+                // clamp slider value to maximum value
+                int newSliderValue = (int)((f * (float)param2TrackBar.Maximum) / max);
+                if (newSliderValue <= param3TrackBar.Maximum && newSliderValue >= 0)
+                    param3TrackBar.Value = newSliderValue;
+            }
             updateButton();
         }
 
-        private void textBox15_TextChanged(object sender, EventArgs e)
+        private void param4TB_TextChanged(object sender, EventArgs e)
         {
             float f = -1;
-            float.TryParse(textBox15.Text, out f);
+            float.TryParse(param4TB.Text, out f);
             if (f != -1 && listView2.SelectedItems.Count > 0)
+            {
                 material[current].entries[listView2.SelectedItems[0].Text][3] = f;
+
+                // udpate trackbar
+                MatParam labels = null;
+                propList.TryGetValue(matPropertyNameTB.Text, out labels);
+                float max = 1;
+                if (labels != null)
+                {
+                    max = labels.max4;
+                }
+
+                // clamp slider value to maximum value
+                int newSliderValue = (int)((f * (float)param4TrackBar.Maximum) / max);
+                if (newSliderValue <= param4TrackBar.Maximum && newSliderValue >= 0)
+                    param4TrackBar.Value = newSliderValue;
+            }
         }
         #endregion
 
         // property change
-        private void textBox11_TextChanged(object sender, EventArgs e)
+        private void matPropertyTB_TextChanged(object sender, EventArgs e)
         {
             MatParam labels = null;
-            propList.TryGetValue(textBox11.Text, out labels);
+            propList.TryGetValue(matPropertyNameTB.Text, out labels);
             descriptionLabel.Text = "Description:\n";
             tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 0));
             tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 1));
@@ -651,6 +714,12 @@ namespace Smash_Forge
                     paramGB.Controls.Add(labels.control3, 2, 2);
                 if (labels.control4 != null)
                     paramGB.Controls.Add(labels.control4, 2, 3);
+
+                // not all material properties need a trackbar
+                param1TrackBar.Enabled = labels.useTrackBar;
+                param2TrackBar.Enabled = labels.useTrackBar;
+                param3TrackBar.Enabled = labels.useTrackBar;
+                param4TrackBar.Enabled = labels.useTrackBar;
             } else
             {
                 label20.Text = "Param1";
@@ -1024,9 +1093,9 @@ namespace Smash_Forge
             colorDialog1.Color = colorSelect.BackColor;
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
-                textBox12.Text = colorDialog1.Color.R / 255f + "";
-                textBox13.Text = colorDialog1.Color.G / 255f + "";
-                textBox14.Text = colorDialog1.Color.B / 255f + "";
+                param1TB.Text = colorDialog1.Color.R / 255f + "";
+                param2TB.Text = colorDialog1.Color.G / 255f + "";
+                param3TB.Text = colorDialog1.Color.B / 255f + "";
                 
             }
         }
@@ -1154,6 +1223,50 @@ namespace Smash_Forge
         {
             material[current].cubemap = cubemapCB.Checked;
             FillForm();
+        }
+
+        private void param1TrackBar_Scroll(object sender, EventArgs e)
+        {
+            MatParam labels = null;
+            propList.TryGetValue(matPropertyNameTB.Text, out labels);
+            
+            if (labels != null)
+            {
+                param1TB.Text = ((float)param1TrackBar.Value * labels.max1 / (float)param1TrackBar.Maximum) + "";
+            }
+        }
+
+        private void param2TrackBar_Scroll(object sender, EventArgs e)
+        {
+            MatParam labels = null;
+            propList.TryGetValue(matPropertyNameTB.Text, out labels);
+
+            if (labels != null)
+            {
+                param2TB.Text = ((float)param2TrackBar.Value * labels.max2 / (float)param2TrackBar.Maximum) + "";
+            }
+        }
+
+        private void param3TrackBar_Scroll(object sender, EventArgs e)
+        {
+            MatParam labels = null;
+            propList.TryGetValue(matPropertyNameTB.Text, out labels);
+
+            if (labels != null)
+            {
+                param3TB.Text = ((float)param3TrackBar.Value * labels.max3 / (float)param3TrackBar.Maximum) + "";
+            }
+        }
+
+        private void param4TrackBar_Scroll(object sender, EventArgs e)
+        {
+            MatParam labels = null;
+            propList.TryGetValue(matPropertyNameTB.Text, out labels);
+
+            if (labels != null)
+            {
+                param4TB.Text = ((float)param4TrackBar.Value * labels.max4 / (float)param4TrackBar.Maximum) + "";
+            }
         }
     }
 }
