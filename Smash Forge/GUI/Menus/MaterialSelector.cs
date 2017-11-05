@@ -81,16 +81,16 @@ namespace Smash_Forge
         {
             // should use a proper folder for preset images eventually 
 
-            if (Directory.Exists(MainForm.executableDir + "//materials//Preview Images"))
+            if (Directory.Exists(MainForm.executableDir + "//Preview Images"))
             {
-                if (File.Exists(MainForm.executableDir + "//materials//Preview Images//Dummy.png"))
-                    matPresetRenders.Images.Add("Dummy", Image.FromFile(MainForm.executableDir + "//materials//Preview Images//Dummy.png"));
-                if (File.Exists(MainForm.executableDir + "/materials/Preview Images//Character.png"))
-                    matPresetRenders.Images.Add("Character", Image.FromFile(MainForm.executableDir + "/materials/Preview Images//Character.png"));
-                if (File.Exists(MainForm.executableDir + "//materials//Preview Images//Stage.png"))
-                    matPresetRenders.Images.Add("Stage", Image.FromFile(MainForm.executableDir + "//materials//Preview Images//Stage.png"));
+                if (File.Exists(MainForm.executableDir + "//Preview Images//Dummy.png"))
+                    matPresetRenders.Images.Add("Dummy", Image.FromFile(MainForm.executableDir + "//Preview Images//Dummy.png"));
+                if (File.Exists(MainForm.executableDir + "//Preview Images//Character.png"))
+                    matPresetRenders.Images.Add("Character", Image.FromFile(MainForm.executableDir + "//Preview Images//Character.png"));
+                if (File.Exists(MainForm.executableDir + "//Preview Images//Stage.png"))
+                    matPresetRenders.Images.Add("Stage", Image.FromFile(MainForm.executableDir + "//Preview Images//Stage.png"));
 
-                foreach (string file in Directory.EnumerateFiles(MainForm.executableDir + "//materials//Preview Images"))
+                foreach (string file in Directory.EnumerateFiles(MainForm.executableDir + "//Preview Images"))
                 {
                     if (Path.GetExtension(file) == ".png")
                     {

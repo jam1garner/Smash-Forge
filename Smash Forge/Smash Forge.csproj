@@ -916,37 +916,37 @@
     <None Include="lib\Shader\Shadow_vs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Preview Images\Mat01 [Beginners Material].png">
+    <None Include="Preview Images\Mat01 [Beginners Material].png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Preview Images\Mat02 [Standard Nrm Map].png">
+    <None Include="Preview Images\Mat02 [Standard Nrm Map].png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Preview Images\Mat03 [Skin Ramp].png">
+    <None Include="Preview Images\Mat03 [Skin Ramp].png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Preview Images\Mat04 [Metal NUD].png">
+    <None Include="Preview Images\Mat04 [Metal NUD].png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Preview Images\Mat08 [Material Colored Hair].png">
+    <None Include="Preview Images\Mat08 [Material Colored Hair].png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Preview Images\Mat09 [Satin].png">
+    <None Include="Preview Images\Mat09 [Satin].png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Preview Images\Character.png">
+    <None Include="Preview Images\Character.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Preview Images\Dummy.png">
+    <None Include="Preview Images\Dummy.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Preview Images\Mat06 [Metal Reflectivity Map].png">
+    <None Include="Preview Images\Mat06 [Metal Reflectivity Map].png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Preview Images\Mat07 [Cel-Shade].png">
+    <None Include="Preview Images\Mat07 [Cel-Shade].png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Preview Images\Stage.png">
+    <None Include="Preview Images\Stage.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="Resources\10080000.png" />
