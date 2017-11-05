@@ -367,8 +367,6 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
                     vec3 stageLight3 = stageLight3Color * max((dot(N, stageLight3Direction)), 0);
                     vec3 stageLight4 = stageLight4Color * max((dot(N, stageLight4Direction)), 0);
                     lighting = (stageLight1 * renderStageLight1) + (stageLight2 * renderStageLight2) + (stageLight3 * renderStageLight3) + (stageLight4 * renderStageLight4);
-
-
                 }
                 else // character lighting
                 {
@@ -378,6 +376,8 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
                     distanceMixFactor = distanceMixFactor / distance(vec3(-55, 0, 0), vec3(-81, 0, 0));
                     //lighting = mix(vec3(2), vec3(0), distanceMixFactor);
                 }
+                if ((flags & 0x02000000u) == 0x02000000u || (flags & 0x03000000u) == 0x03000000u)
+                    lighting = vec3(1); // flags for "no lighting"
 
                 diffusePass = diffuseColorFinal * lighting;
             //---------------------------------------------------------------------------------------------
