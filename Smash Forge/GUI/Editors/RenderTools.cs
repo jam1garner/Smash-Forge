@@ -298,10 +298,8 @@ namespace Smash_Forge
             GL.GenBuffers(1, out cubeVBO);
         }
 
-        public static void stageDifLightsFromLightSet()
+        public static void SetLightsFromLightSetParam(ParamFile lightSet)
         {
-            ParamFile lightSet = Runtime.lightSetParam;
-
             if (lightSet != null)
             {
                 // stage diffuse
@@ -330,6 +328,40 @@ namespace Smash_Forge
                     RenderTools.HSV2RGB(hue, saturation, value, out fogR, out fogG, out fogB);
                     Vector3 color = new Vector3(fogR, fogG, fogB);
                     VBNViewport.stageFogSet[i] = color;
+                }
+
+                // character diffuse
+                {
+                    float hue = (float)GetValueFromParamFile(lightSet, 0, 0, 29);
+                    float saturation = (float)GetValueFromParamFile(lightSet, 0, 0, 30);
+                    float value = (float)GetValueFromParamFile(lightSet, 0, 0, 31);
+
+                    float rotX = (float)GetValueFromParamFile(lightSet, 1, 4, 5);
+                    float rotY = (float)GetValueFromParamFile(lightSet, 1, 4, 6);
+                    float rotZ = (float)GetValueFromParamFile(lightSet, 1, 4, 7);
+
+                    VBNViewport.diffuseLight = new DirectionalLight(hue, saturation, value, 0, 0, 0);
+                }
+
+                // fresnel sky color
+                {
+                    Runtime.fres_sky_hue = (float)GetValueFromParamFile(lightSet, 0, 0, 8);
+                    Runtime.fres_sky_saturation = (float)GetValueFromParamFile(lightSet, 0, 0, 9);
+                    Runtime.fres_sky_intensity = (float)GetValueFromParamFile(lightSet, 0, 0, 10);
+                }
+
+                // fresnel ground color
+                {
+                    Runtime.fres_ground_hue = (float)GetValueFromParamFile(lightSet, 0, 0, 11);
+                    Runtime.fres_ground_saturation = (float)GetValueFromParamFile(lightSet, 0, 0, 12);
+                    Runtime.fres_ground_intensity = (float)GetValueFromParamFile(lightSet, 0, 0, 13);
+                }
+
+                // ambient color
+                {
+                    Runtime.amb_hue = (float)GetValueFromParamFile(lightSet, 0, 0, 33);
+                    Runtime.amb_saturation = (float)GetValueFromParamFile(lightSet, 0, 0, 34);
+                    Runtime.amb_intensity = (float)GetValueFromParamFile(lightSet, 0, 0, 35);
                 }
 
             }

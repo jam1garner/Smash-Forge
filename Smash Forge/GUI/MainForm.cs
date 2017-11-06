@@ -1042,7 +1042,7 @@ namespace Smash_Forge
                             if (Path.GetExtension(f).Equals(".bin") && Runtime.lightSetParam == null)
                             {
                                 Runtime.lightSetParam = new ParamFile(f);
-                                RenderTools.stageDifLightsFromLightSet();
+                                RenderTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
                             }
                         }
                     }
@@ -1632,6 +1632,13 @@ namespace Smash_Forge
                     p.Text = Path.GetFileName(filename);
                     AddDockedControl(p);
                     paramEditors.Add(p);
+
+                    if (filename.EndsWith("light_set_param.bin"))
+                    {
+                        Runtime.lightSetParam = new ParamFile(filename);
+                        RenderTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                    }
+                        
                 }
                 else if (f.readString(4,4) == "PATH")
                 {
