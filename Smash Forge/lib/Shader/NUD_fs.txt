@@ -535,7 +535,7 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
     depth = min((depth / fogParams.y),1);
     float fogIntensity = mix(fogParams.z, fogParams.w, depth);
     if(renderFog == 1)
-        resultingColor = mix(resultingColor, stageFogColor, fogIntensity);
+        resultingColor = mix(resultingColor, pow((stageFogColor), vec3(gamma)), fogIntensity);
 
     resultingColor = pow(resultingColor, vec3(1 / gamma)); // gamma correction. gamma correction also done within render passes
 

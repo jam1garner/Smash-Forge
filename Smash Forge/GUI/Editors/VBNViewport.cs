@@ -1068,10 +1068,10 @@ namespace Smash_Forge
                     GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
                     float stageFogR, stageFogG, stageFogB = 1.0f;
                     RenderTools.HSV2RGB(Runtime.fog_hue, Runtime.fog_saturation, Runtime.fog_intensity, out stageFogR, out stageFogG, out stageFogB);
-                    if (m.nud.lightSetNumber > 0)
+                    //if (m.nud.lightSetNumber > 0)
                         GL.Uniform3(shader.getAttribute("stageFogColor"), stageFogSet[0]);
-                    else
-                        GL.Uniform3(shader.getAttribute("stageFogColor"), 0, 0, 0);
+                    //else
+                      //  GL.Uniform3(shader.getAttribute("stageFogColor"), 0, 0, 0);
 
                     Vector3 lightDirection = new Vector3(0f, 0f, -1f);
 

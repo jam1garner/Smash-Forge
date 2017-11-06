@@ -16,7 +16,11 @@ namespace Smash_Forge
     {
         public NUD()
         {
-            Runtime.shaders["NUD"].shaderCompilationWarningMessage("NUD");
+            if (!Runtime.hasCheckedNUDShaderCompilation)
+            {
+                Runtime.shaders["NUD"].shaderCompilationWarningMessage("NUD");
+                Runtime.hasCheckedNUDShaderCompilation = true;
+            }
 
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out ibo_elements);

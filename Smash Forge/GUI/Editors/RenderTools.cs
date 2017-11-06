@@ -298,6 +298,16 @@ namespace Smash_Forge
             GL.GenBuffers(1, out cubeVBO);
         }
 
+        public static void SetCameraFromSTPRM(ParamFile stprm)
+        {
+            if (stprm != null)
+            {
+                float fov = (float)GetValueFromParamFile(stprm, 0, 0, 6);
+                Runtime.fov = fov * ((float)Math.PI / 180.0f);
+            }
+        }
+
+
         public static void SetLightsFromLightSetParam(ParamFile lightSet)
         {
             if (lightSet != null)

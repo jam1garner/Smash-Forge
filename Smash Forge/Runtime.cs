@@ -47,6 +47,7 @@ namespace Smash_Forge
         public static GUI.Editors.VariableList variableViewer { get; set; }
 
         public static ParamFile lightSetParam = null;
+        public static ParamFile stprmParam = null;
 
         public static int SelectedHitboxID { get; set; } = -1;
         public static int SelectedHurtboxID { get; set; } = -1;
@@ -60,6 +61,8 @@ namespace Smash_Forge
         }
 
         public static bool hasCheckedTexShaderCompilation = false;
+        public static bool hasCheckedNUDShaderCompilation = false;
+
 
         public static ViewportModes ViewportMode = ViewportModes.EDITVERT;
 
@@ -255,7 +258,7 @@ namespace Smash_Forge
         public static float stagelight4_rotY = 0.0f;
         public static float stagelight4_rotZ = 0.0f;
 
-        public static bool renderFog = false;
+        public static bool renderFog = true;
         public static float fog_hue = 360.0f;
         public static float fog_saturation = 0.00f;
         public static float fog_intensity = 0.00f;
