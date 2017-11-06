@@ -8,6 +8,7 @@ using System.Diagnostics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
 using System.Windows.Forms;
+using SALT.Graphics;
 
 namespace Smash_Forge
 {
@@ -43,6 +44,9 @@ namespace Smash_Forge
         public List<Mesh> mesh = new List<Mesh>();
         public float[] param = new float[4];
 
+        // xmb stuff
+        public int lightSetNumber = 0;
+
         public override Endianness Endian { get; set; }
 
         #region Rendering
@@ -74,6 +78,7 @@ namespace Smash_Forge
             StageMapHigh = 0x10102000,
             DummyRamp =  0x10080000
         }
+
 
         public void PreRender()
         {
@@ -154,6 +159,30 @@ namespace Smash_Forge
             {
                 if (mesh.Checked)
                     RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
+            }
+        }
+
+        public void SetPropertiesFromXMB(XMBFile xmb)
+        {
+            if (xmb != null)
+            {
+                foreach (XMBEntry a in xmb.Entries)
+                {
+                    if (a.Children.Count > 0)
+                    {
+                        foreach (XMBEntry b in a.Children)
+                        {
+                            if (xmb.Values.Count >= b.FirstPropertyIndex)
+                            {
+                                if (b.Name == "lightset")
+                                {
+                                    int.TryParse(xmb.Values[b.FirstPropertyIndex], out this.lightSetNumber);
+                                    Debug.WriteLine("lightSet: " + this.lightSetNumber);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -1286,7 +1315,7 @@ namespace Smash_Forge
             foreach (ModelContainer con in Runtime.ModelContainers)
             {
                 if (con.nud == this && con.vbn!=null)
-                    boneCount = con.vbn.bones.Count;
+                    boneCount = con.vbn.bones.Count;   
             }
 
             d.writeShort(boneCount == 0 ? 0 : 2); // type

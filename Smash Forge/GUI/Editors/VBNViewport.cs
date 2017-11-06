@@ -99,6 +99,9 @@ namespace Smash_Forge
         public static DirectionalLight stageLight3 = new DirectionalLight();
         public static DirectionalLight stageLight4 = new DirectionalLight();
 
+        public static DirectionalLight[] stageDiffuseLightSet = new DirectionalLight[16];
+        public static Vector3[] stageFogSet = new Vector3[16];
+
         //Camera camera = new Camera();
 
 
@@ -405,6 +408,18 @@ namespace Smash_Forge
             SetupFrameBuffersRenderBuffers();
 
             GetOpenGLSystemInfo();
+
+            for(int i = 0; i < VBNViewport.stageDiffuseLightSet.Length; i++)
+            {
+                // should properly initialize these eventually
+                VBNViewport.stageDiffuseLightSet[i] = new DirectionalLight();
+            }
+
+            for (int i = 0; i < VBNViewport.stageFogSet.Length; i++)
+            {
+                // should properly initialize these eventually
+                VBNViewport.stageFogSet[i] = new Vector3(0);
+            }
 
             Debug.WriteLine(GL.GetError());
             CalculateLightSource();
@@ -873,112 +888,10 @@ namespace Smash_Forge
             GL.UseProgram(shader.programID);
 
             int renderType = (int)Runtime.renderType;
-            GL.Uniform1(shader.getAttribute("renderType"), renderType);
 
-            GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderDiffuse"), Runtime.renderDiffuse ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
-          
-            GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
-
-            GL.Uniform1(shader.getAttribute("ambientIntensity"), Runtime.amb_inten);
-            GL.Uniform1(shader.getAttribute("diffuseIntensity"), Runtime.dif_inten);
-            GL.Uniform1(shader.getAttribute("specularIntensity"), Runtime.spc_inten);
-            GL.Uniform1(shader.getAttribute("fresnelIntensity"), Runtime.frs_inten);
-            GL.Uniform1(shader.getAttribute("reflectionIntensity"), Runtime.ref_inten);
-
-            GL.Uniform1(shader.getAttribute("zScale"), Runtime.zScale);
-
-            GL.ActiveTexture(TextureUnit.Texture11);
-            GL.BindTexture(TextureTarget.Texture2D, depthmap);
-            GL.Uniform1(shader.getAttribute("shadowmap"), 11);
-
-            GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
-            GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
-
-            // fresnel ground color for characters & stages
-            float fresGroundR, fresGroundG, fresGroundB = 1.0f;
-            RenderTools.HSV2RGB(Runtime.fres_ground_hue, Runtime.fres_ground_saturation, Runtime.fres_ground_intensity, out fresGroundR, out fresGroundG, out fresGroundB);
-            GL.Uniform3(shader.getAttribute("fresGroundColor"), fresGroundR, fresGroundG, fresGroundB);
-            // fresnel sky color for characters & stages
-            float fresSkyR, fresSkyG, fresSkyB = 1.0f;
-            RenderTools.HSV2RGB(Runtime.fres_sky_hue, Runtime.fres_sky_saturation, Runtime.fres_sky_intensity, out fresSkyR, out fresSkyG, out fresSkyB);
-            GL.Uniform3(shader.getAttribute("fresSkyColor"), fresSkyR, fresSkyG, fresSkyB);
-
-            // reflection color for characters & stages
-            float refR, refG, refB = 1.0f;
-            RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
-            GL.Uniform3(shader.getAttribute("refLightColor"), refR, refG, refB);
-
-            // character diffuse light
-            diffuseLight.setColorFromHSV(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity);
-            diffuseLight.setDirectionFromXYZAngles(Runtime.dif_rotX, Runtime.dif_rotY, Runtime.dif_rotZ);
-            GL.Uniform3(shader.getAttribute("difLightColor"), diffuseLight.R, diffuseLight.G, diffuseLight.B);
             // character ambient light
             float ambR, ambG, ambB = 1.0f;
             RenderTools.HSV2RGB(Runtime.amb_hue, Runtime.amb_saturation, Runtime.amb_intensity, out ambR, out ambG, out ambB);
-            GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
-
-            // character specular light
-            specularLight.setColorFromHSV(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity);
-            specularLight.setDirectionFromXYZAngles(Runtime.specular_rotX, Runtime.specular_rotY, Runtime.specular_rotZ);
-            GL.Uniform3(shader.getAttribute("specLightColor"), specularLight.R, specularLight.G, specularLight.B);
-
-            // stage light 1
-            GL.Uniform1(shader.getAttribute("renderStageLight1"), Runtime.renderStageLight1 ? 1 : 0);
-            stageLight1.setColorFromHSV(Runtime.stagelight1_hue, Runtime.stagelight1_saturation, Runtime.stagelight1_intensity);
-            stageLight1.setDirectionFromXYZAngles(Runtime.stagelight1_rotX, Runtime.stagelight1_rotY, Runtime.stagelight1_rotZ);
-            GL.Uniform3(shader.getAttribute("stageLight1Color"), stageLight1.R, stageLight1.G, stageLight1.B);
-
-            // stage light 2
-            GL.Uniform1(shader.getAttribute("renderStageLight2"), Runtime.renderStageLight2 ? 1 : 0);
-            stageLight2.setColorFromHSV(Runtime.stagelight2_hue, Runtime.stagelight2_saturation, Runtime.stagelight2_intensity);
-            stageLight2.setDirectionFromXYZAngles(Runtime.stagelight2_rotX, Runtime.stagelight2_rotY, Runtime.stagelight2_rotZ);
-            GL.Uniform3(shader.getAttribute("stageLight2Color"), stageLight2.R, stageLight2.G, stageLight2.B);
-
-            // stage light 3
-            GL.Uniform1(shader.getAttribute("renderStageLight3"), Runtime.renderStageLight3 ? 1 : 0);
-            stageLight3.setColorFromHSV(Runtime.stagelight3_hue, Runtime.stagelight3_saturation, Runtime.stagelight3_intensity);
-            stageLight3.setDirectionFromXYZAngles(Runtime.stagelight3_rotX, Runtime.stagelight3_rotY, Runtime.stagelight3_rotZ);
-            GL.Uniform3(shader.getAttribute("stageLight3Color"), stageLight3.R, stageLight3.G, stageLight3.B);
-
-            // stage light 4
-            GL.Uniform1(shader.getAttribute("renderStageLight4"), Runtime.renderStageLight4 ? 1 : 0);
-            stageLight4.setColorFromHSV(Runtime.stagelight4_hue, Runtime.stagelight4_saturation, Runtime.stagelight4_intensity);
-            stageLight4.setDirectionFromXYZAngles(Runtime.stagelight4_rotX, Runtime.stagelight4_rotY, Runtime.stagelight4_rotZ);
-            GL.Uniform3(shader.getAttribute("stageLight4Color"), stageLight4.R, stageLight4.G, stageLight4.B);
-
-            // stage fog
-            GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
-            float stageFogR, stageFogG, stageFogB = 1.0f;
-            RenderTools.HSV2RGB(Runtime.fog_hue, Runtime.fog_saturation, Runtime.fog_intensity, out stageFogR, out stageFogG, out stageFogB);
-            GL.Uniform3(shader.getAttribute("stageFogColor"), stageFogR, stageFogG, stageFogB);
-
-            Vector3 lightDirection = new Vector3(0f, 0f, -1f);
-
-            if (Runtime.cameraLight) // camera light should only affects character lighting
-            {
-                GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
-                GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
-                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
-                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, mvpMatrix));
-            }
-            else
-            {
-                GL.Uniform3(shader.getAttribute("specLightDirection"), specularLight.direction);
-                GL.Uniform3(shader.getAttribute("difLightDirection"), diffuseLight.direction);
-                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, mvpMatrix));
-                GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
-            }
-
-            GL.Uniform3(shader.getAttribute("stageLight1Direction"), stageLight1.direction);
-            GL.Uniform3(shader.getAttribute("stageLight2Direction"), stageLight2.direction);
-            GL.Uniform3(shader.getAttribute("stageLight3Direction"), stageLight3.direction);
-            GL.Uniform3(shader.getAttribute("stageLight4Direction"), stageLight4.direction);
 
             #region MBN Uniforms
 
@@ -987,7 +900,7 @@ namespace Smash_Forge
 
             if (Runtime.cameraLight)
             {
-                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(new Vector3(0f, 0f, -1f), mvpMatrix.Inverted()).Normalized());
             }
             else
             {
@@ -1051,6 +964,131 @@ namespace Smash_Forge
                     GL.ActiveTexture(TextureUnit.Texture11);
                     GL.BindTexture(TextureTarget.Texture2D, depthmap);
                     GL.Uniform1(shader.getAttribute("shadowMap"), 11);
+
+                    GL.Uniform1(shader.getAttribute("renderType"), renderType);
+
+                    GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
+                    GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
+                    GL.Uniform1(shader.getAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
+                    GL.Uniform1(shader.getAttribute("renderDiffuse"), Runtime.renderDiffuse ? 1 : 0);
+                    GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
+                    GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
+                    GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
+
+                    GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
+
+                    GL.Uniform1(shader.getAttribute("ambientIntensity"), Runtime.amb_inten);
+                    GL.Uniform1(shader.getAttribute("diffuseIntensity"), Runtime.dif_inten);
+                    GL.Uniform1(shader.getAttribute("specularIntensity"), Runtime.spc_inten);
+                    GL.Uniform1(shader.getAttribute("fresnelIntensity"), Runtime.frs_inten);
+                    GL.Uniform1(shader.getAttribute("reflectionIntensity"), Runtime.ref_inten);
+
+                    GL.Uniform1(shader.getAttribute("zScale"), Runtime.zScale);
+
+                    GL.ActiveTexture(TextureUnit.Texture11);
+                    GL.BindTexture(TextureTarget.Texture2D, depthmap);
+                    GL.Uniform1(shader.getAttribute("shadowmap"), 11);
+
+                    GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
+                    GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
+
+                    // fresnel ground color for characters & stages
+                    float fresGroundR, fresGroundG, fresGroundB = 1.0f;
+                    RenderTools.HSV2RGB(Runtime.fres_ground_hue, Runtime.fres_ground_saturation, Runtime.fres_ground_intensity, out fresGroundR, out fresGroundG, out fresGroundB);
+                    GL.Uniform3(shader.getAttribute("fresGroundColor"), fresGroundR, fresGroundG, fresGroundB);
+                    // fresnel sky color for characters & stages
+                    float fresSkyR, fresSkyG, fresSkyB = 1.0f;
+                    RenderTools.HSV2RGB(Runtime.fres_sky_hue, Runtime.fres_sky_saturation, Runtime.fres_sky_intensity, out fresSkyR, out fresSkyG, out fresSkyB);
+                    GL.Uniform3(shader.getAttribute("fresSkyColor"), fresSkyR, fresSkyG, fresSkyB);
+
+                    // reflection color for characters & stages
+                    float refR, refG, refB = 1.0f;
+                    RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
+                    GL.Uniform3(shader.getAttribute("refLightColor"), refR, refG, refB);
+
+                    // character diffuse light
+                    diffuseLight.setColorFromHSV(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity);
+                    diffuseLight.setDirectionFromXYZAngles(Runtime.dif_rotX, Runtime.dif_rotY, Runtime.dif_rotZ);
+                    GL.Uniform3(shader.getAttribute("difLightColor"), diffuseLight.R, diffuseLight.G, diffuseLight.B);
+                    
+                    GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
+
+                    // character specular light
+                    specularLight.setColorFromHSV(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity);
+                    specularLight.setDirectionFromXYZAngles(Runtime.specular_rotX, Runtime.specular_rotY, Runtime.specular_rotZ);
+                    GL.Uniform3(shader.getAttribute("specLightColor"), specularLight.R, specularLight.G, specularLight.B);
+
+                    // stage light 1
+                    int index1 = 0 + 4 * (m.nud.lightSetNumber - 1);
+                    GL.Uniform1(shader.getAttribute("renderStageLight1"), Runtime.renderStageLight1 ? 1 : 0);
+                    stageLight1.setColorFromHSV(Runtime.stagelight1_hue, Runtime.stagelight1_saturation, Runtime.stagelight1_intensity);
+                    stageLight1.setDirectionFromXYZAngles(Runtime.stagelight1_rotX, Runtime.stagelight1_rotY, Runtime.stagelight1_rotZ);
+                    if (m.nud.lightSetNumber > 0)
+                        GL.Uniform3(shader.getAttribute("stageLight1Color"), stageDiffuseLightSet[index1].R, stageDiffuseLightSet[index1].G, stageDiffuseLightSet[index1].B);
+                    else
+                        GL.Uniform3(shader.getAttribute("stageLight1Color"), 1, 1, 1);
+
+                    // stage light 2
+                    int index2 = 1 + 4 * (m.nud.lightSetNumber - 1);
+                    GL.Uniform1(shader.getAttribute("renderStageLight2"), Runtime.renderStageLight2 ? 1 : 0);
+                    stageLight2.setColorFromHSV(Runtime.stagelight2_hue, Runtime.stagelight2_saturation, Runtime.stagelight2_intensity);
+                    stageLight2.setDirectionFromXYZAngles(Runtime.stagelight2_rotX, Runtime.stagelight2_rotY, Runtime.stagelight2_rotZ);
+                    if (m.nud.lightSetNumber > 0)
+                        GL.Uniform3(shader.getAttribute("stageLight2Color"), stageDiffuseLightSet[index2].R, stageDiffuseLightSet[index2].G, stageDiffuseLightSet[index2].B);
+                    else
+                        GL.Uniform3(shader.getAttribute("stageLight2Color"), 1, 1, 1);
+
+                    // stage light 3
+                    int index3 = 2 + 4 * (m.nud.lightSetNumber - 1);
+                    GL.Uniform1(shader.getAttribute("renderStageLight3"), Runtime.renderStageLight3 ? 1 : 0);
+                    stageLight3.setColorFromHSV(Runtime.stagelight3_hue, Runtime.stagelight3_saturation, Runtime.stagelight3_intensity);
+                    stageLight3.setDirectionFromXYZAngles(Runtime.stagelight3_rotX, Runtime.stagelight3_rotY, Runtime.stagelight3_rotZ);
+                    if (m.nud.lightSetNumber > 0)
+                        GL.Uniform3(shader.getAttribute("stageLight3Color"), stageDiffuseLightSet[index3].R, stageDiffuseLightSet[index3].G, stageDiffuseLightSet[index3].B);
+                    else
+                        GL.Uniform3(shader.getAttribute("stageLight3Color"), 1, 1, 1);
+
+                    // stage light 4
+                    int index4 = 3 + 4 * (m.nud.lightSetNumber - 1);
+                    GL.Uniform1(shader.getAttribute("renderStageLight4"), Runtime.renderStageLight4 ? 1 : 0);
+                    stageLight4.setColorFromHSV(Runtime.stagelight4_hue, Runtime.stagelight4_saturation, Runtime.stagelight4_intensity);
+                    stageLight4.setDirectionFromXYZAngles(Runtime.stagelight4_rotX, Runtime.stagelight4_rotY, Runtime.stagelight4_rotZ);
+                    if (m.nud.lightSetNumber > 0)
+                        GL.Uniform3(shader.getAttribute("stageLight4Color"), stageDiffuseLightSet[index4].R, stageDiffuseLightSet[index4].G, stageDiffuseLightSet[index4].B);
+                    else
+                        GL.Uniform3(shader.getAttribute("stageLight4Color"), 1, 1, 1);
+
+
+                    // stage fog
+                    GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
+                    float stageFogR, stageFogG, stageFogB = 1.0f;
+                    RenderTools.HSV2RGB(Runtime.fog_hue, Runtime.fog_saturation, Runtime.fog_intensity, out stageFogR, out stageFogG, out stageFogB);
+                    if (m.nud.lightSetNumber > 0)
+                        GL.Uniform3(shader.getAttribute("stageFogColor"), stageFogSet[0]);
+                    else
+                        GL.Uniform3(shader.getAttribute("stageFogColor"), 0, 0, 0);
+
+                    Vector3 lightDirection = new Vector3(0f, 0f, -1f);
+
+                    if (Runtime.cameraLight) // camera light should only affects character lighting
+                    {
+                        GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
+                        GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
+                        GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
+                        GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, mvpMatrix));
+                    }
+                    else
+                    {
+                        GL.Uniform3(shader.getAttribute("specLightDirection"), specularLight.direction);
+                        GL.Uniform3(shader.getAttribute("difLightDirection"), diffuseLight.direction);
+                        GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, mvpMatrix));
+                        GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
+                    }
+
+                    GL.Uniform3(shader.getAttribute("stageLight1Direction"), stageLight1.direction);
+                    GL.Uniform3(shader.getAttribute("stageLight2Direction"), stageLight2.direction);
+                    GL.Uniform3(shader.getAttribute("stageLight3Direction"), stageLight3.direction);
+                    GL.Uniform3(shader.getAttribute("stageLight4Direction"), stageLight4.direction);
 
                     if (m.vbn != null)
                     {

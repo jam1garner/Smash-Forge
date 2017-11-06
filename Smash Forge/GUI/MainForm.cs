@@ -15,6 +15,7 @@ using Microsoft.VisualBasic.Devices;
 using Smash_Forge.GUI.Menus;
 using Smash_Forge.GUI.Editors;
 using SALT.PARAMS;
+using SALT.Graphics;
 using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge
@@ -372,57 +373,58 @@ namespace Smash_Forge
         {
             string[] files = Directory.GetFiles(System.IO.Path.GetDirectoryName(filename));
 
-            string pnud = filename;
-            string pnut = "";
-            string pjtb = "";
-            string pvbn = "";
-            string pmta = "";
-            string psb = "";
-            string pmoi = "";
+            string pathNUD = filename;
+            string pathNUT = "";
+            string pathJTB = "";
+            string pathVBN = "";
+            string pathMTA = "";
+            string pathSB = "";
+            string pathMOI = "";
+            string pathXMB = "";
             List<string> pacs = new List<string>();
 
-            foreach (string s in files)
+            foreach (string file in files)
             {
-                if (s.EndsWith(".nut"))
-                    pnut = s;
-                if (s.EndsWith(".vbn"))
-                    pvbn = s;
-                if (s.EndsWith(".jtb"))
-                    pjtb = s;
-                if (s.EndsWith(".mta"))
-                    pmta = s;
-                if (s.EndsWith(".sb"))
-                    psb = s;
-                if (s.EndsWith(".moi"))
-                    pmoi = s;
-                if (s.EndsWith(".pac"))
-                    pacs.Add(s);
+                if (file.EndsWith(".nut"))
+                    pathNUT = file;
+                if (file.EndsWith(".vbn"))
+                    pathVBN = file;
+                if (file.EndsWith(".jtb"))
+                    pathJTB = file;
+                if (file.EndsWith(".mta"))
+                    pathMTA = file;
+                if (file.EndsWith(".sb"))
+                    pathSB = file;
+                if (file.EndsWith(".moi"))
+                    pathMOI = file;
+                if (file.EndsWith(".pac"))
+                    pacs.Add(file);
+                if (file.EndsWith("xmb"))
+                    pathXMB = file;
             }
 
             ModelContainer model = new ModelContainer();
             model.name = name;
-            if (!pvbn.Equals(""))
+            if (!pathVBN.Equals(""))
             {
-                model.vbn = new VBN(pvbn);
+                model.vbn = new VBN(pathVBN);
                 Runtime.TargetVBN = model.vbn;
-                if (!pjtb.Equals(""))
-                    model.vbn.readJointTable(pjtb);
-                if (!psb.Equals(""))
-                    model.vbn.swingBones.Read(psb);
+                if (!pathJTB.Equals(""))
+                    model.vbn.readJointTable(pathJTB);
+                if (!pathSB.Equals(""))
+                    model.vbn.swingBones.Read(pathSB);
             }
 
             NUT nut = null;
-            if (!pnut.Equals(""))
+            if (!pathNUT.Equals(""))
             {
-                nut = new NUT(pnut);
+                nut = new NUT(pathNUT);
                 Runtime.TextureContainers.Add(nut);
             }
 
-            if (!pnud.Equals(""))
+            if (!pathNUD.Equals(""))
             {
-                model.nud = new NUD(pnud);
-
-                //AddDockedControl(new NUDMaterialEditor(model.nud.mesh[0].polygons[0].materials));
+                model.nud = new NUD(pathNUD);
 
                 foreach (string s in pacs)
                 {
@@ -439,13 +441,19 @@ namespace Smash_Forge
                 }
             }
 
-            if (!pmta.Equals(""))
+            if (!pathXMB.Equals(""))
+            {
+                model.xmb = new XMBFile(pathXMB);
+                model.nud.SetPropertiesFromXMB(model.xmb);
+            }
+
+            if (!pathMTA.Equals(""))
             {
                 try
                 {
                     model.mta = new MTA();
-                    model.mta.Read(pmta);
-                    string mtaName = Path.Combine(Path.GetFileName(Path.GetDirectoryName(pmta)), Path.GetFileName(pmta));
+                    model.mta.Read(pathMTA);
+                    string mtaName = Path.Combine(Path.GetFileName(Path.GetDirectoryName(pathMTA)), Path.GetFileName(pathMTA));
                     Console.WriteLine($"MTA Name - {mtaName}");
                     addMaterialAnimation(mtaName, model.mta);
                 }
@@ -455,9 +463,9 @@ namespace Smash_Forge
                 }
             }
 
-            if (!pmoi.Equals(""))
+            if (!pathMOI.Equals(""))
             {
-                model.moi = new MOI(pmoi);
+                model.moi = new MOI(pathMOI);
             }
 
             if (model.nud != null)
@@ -477,10 +485,6 @@ namespace Smash_Forge
             project.treeView1.Nodes.Add(n);
             project.treeView1.EndUpdate();
             project.treeView1.Refresh();
-
-            //ModelViewport viewport = new ModelViewport();
-            //viewport.draw.Add(model);
-            //AddDockedControl(viewport);
         }
 
         private void addMaterialAnimation(string name, MTA m)
@@ -495,7 +499,7 @@ namespace Smash_Forge
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd;*.mta;*.pac;*.dat|" +
+                ofd.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd;*.mta;*.pac;*.dat;*.xmb|" +
                              "Object Motion|*.omo|" +
                              "Maya Animation|*.anim|" +
                              "NW4R Animation|*.chr0|" +
@@ -1001,6 +1005,7 @@ namespace Smash_Forge
                     string modelPath = stagePath + "\\model\\";
                     string paramPath = stagePath + "\\param\\";
                     string animationPath = stagePath + "\\animation\\";
+                    string renderPath = stagePath + "\\render\\";
                     List<string> nuds = new List<string>();
 
                     if (Directory.Exists(modelPath))
@@ -1026,6 +1031,18 @@ namespace Smash_Forge
                             {
                                 Runtime.TargetLVD = new LVD(f);
                                 lvdList.fillList();
+                            }
+                        }
+                    }
+
+                    if (Directory.Exists(renderPath))
+                    {
+                        foreach (string f in Directory.GetFiles(renderPath))
+                        {
+                            if (Path.GetExtension(f).Equals(".bin") && Runtime.lightSetParam == null)
+                            {
+                                Runtime.lightSetParam = new ParamFile(f);
+                                RenderTools.stageDifLightsFromLightSet();
                             }
                         }
                     }
@@ -1788,7 +1805,7 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc, .mbn)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.obj;*.dat;*.mta;*.wrkspc;*.nut;*.sb;*.mbn;*.tex;*.drp;*.nus3bank;*.wav|" +
+                    "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc, .mbn)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.xmb;*.mtable;*.bin;*.dae;*.obj;*.dat;*.mta;*.wrkspc;*.nut;*.sb;*.mbn;*.tex;*.drp;*.nus3bank;*.wav|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +

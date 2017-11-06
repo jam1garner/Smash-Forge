@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.Xml;
 using OpenTK.Graphics.OpenGL;
+using SALT.PARAMS;
 
 namespace Smash_Forge
 {
@@ -44,6 +45,8 @@ namespace Smash_Forge
         private static SkelAnimation _targetAnim;
         public static GUI.Editors.HitboxList hitboxList { get; set; }
         public static GUI.Editors.VariableList variableViewer { get; set; }
+
+        public static ParamFile lightSetParam = null;
 
         public static int SelectedHitboxID { get; set; } = -1;
         public static int SelectedHurtboxID { get; set; } = -1;

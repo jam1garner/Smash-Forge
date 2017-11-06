@@ -7,6 +7,7 @@ using OpenTK.Graphics.OpenGL;
 using System.Drawing.Imaging;
 using System.Diagnostics;
 using System.Reflection;
+using SALT.PARAMS;
 
 namespace Smash_Forge
 {
@@ -297,6 +298,71 @@ namespace Smash_Forge
             GL.GenBuffers(1, out cubeVBO);
         }
 
+        public static void stageDifLightsFromLightSet()
+        {
+            ParamFile lightSet = Runtime.lightSetParam;
+
+            if (lightSet != null)
+            {
+                // stage diffuse
+                for (int i = 0; i < VBNViewport.stageDiffuseLightSet.Length; i++)
+                {
+                    float hue = (float) GetValueFromParamFile(lightSet, 1, 4 + i, 2);
+                    float saturation = (float)GetValueFromParamFile(lightSet, 1, 4 + i, 3);
+                    float value = (float)GetValueFromParamFile(lightSet, 1, 4 + i, 4);
+
+                    //Debug.WriteLine(hue + ", " + saturation + ", " + value);
+                    float rotX = (float)GetValueFromParamFile(lightSet, 1, 4 + i, 5);
+                    float rotY = (float)GetValueFromParamFile(lightSet, 1, 4 + i, 6);
+                    float rotZ = (float)GetValueFromParamFile(lightSet, 1, 4 + i, 7);
+
+                    DirectionalLight light = new DirectionalLight(hue, saturation, value, rotX, rotY, rotZ);
+                    VBNViewport.stageDiffuseLightSet[i] = light;
+                }
+
+                // stage fog
+                for (int i = 0; i < VBNViewport.stageFogSet.Length; i++)
+                {
+                    float hue = (float)GetValueFromParamFile(lightSet, 2, 1 + i, 0);
+                    float saturation = (float)GetValueFromParamFile(lightSet, 2, 1 + i, 1);
+                    float value = (float)GetValueFromParamFile(lightSet, 2, 1 + i, 2);
+                    float fogR = 0.0f, fogB= 0.0f, fogG = 0.0f;
+                    RenderTools.HSV2RGB(hue, saturation, value, out fogR, out fogG, out fogB);
+                    Vector3 color = new Vector3(fogR, fogG, fogB);
+                    VBNViewport.stageFogSet[i] = color;
+                }
+
+            }
+
+        }
+
+        private static object GetValueFromParamFile(ParamFile paramFile, int groupNum, int entryNum, int valNum)
+        {
+            if (paramFile.Groups.Count > groupNum)
+            {
+                if (!(paramFile.Groups[groupNum] is ParamGroup))
+                {
+                    int count = 0;
+                    foreach (ParamEntry val in paramFile.Groups[groupNum].Values)
+                    {
+                        if (count == valNum)
+                            return (val.Value);
+                        count++;
+                    }
+                }
+                else
+                {
+                    int entrySize = ((ParamGroup)paramFile.Groups[groupNum]).EntrySize;
+                    for (int index = 0; index < entrySize; index++)
+                    {
+                        if (index == valNum)
+                            return paramFile.Groups[groupNum].Values[entrySize * entryNum + index].Value;
+                    }
+                }
+            }
+
+            return null;
+        }
 
         public static void drawTranslator(Matrix4 view)
         {
