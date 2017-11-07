@@ -2746,7 +2746,8 @@
             "UV Coords",
             "UV Test Pattern",
             "Tangents",
-            "Bitangents"});
+            "Bitangents",
+            "Light Set"});
             this.renderMode.Location = new System.Drawing.Point(87, 134);
             this.renderMode.Name = "renderMode";
             this.renderMode.Size = new System.Drawing.Size(190, 21);

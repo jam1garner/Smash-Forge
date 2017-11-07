@@ -966,6 +966,7 @@ namespace Smash_Forge
                     GL.Uniform1(shader.getAttribute("shadowMap"), 11);
 
                     GL.Uniform1(shader.getAttribute("renderType"), renderType);
+                    GL.Uniform1(shader.getAttribute("lightSet"), m.nud.lightSetNumber);
 
                     GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
                     GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
@@ -1025,43 +1026,27 @@ namespace Smash_Forge
 
                     // stage light 1
                     int index1 = 0 + (4 * m.nud.lightSetNumber);
+                    stageLight1 = stageDiffuseLightSet[index1];
                     GL.Uniform1(shader.getAttribute("renderStageLight1"), Runtime.renderStageLight1 ? 1 : 0);
-                    stageLight1.setColorFromHSV(Runtime.stagelight1_hue, Runtime.stagelight1_saturation, Runtime.stagelight1_intensity);
-                    stageLight1.setDirectionFromXYZAngles(Runtime.stagelight1_rotX, Runtime.stagelight1_rotY, Runtime.stagelight1_rotZ);
-                    if (m.nud.lightSetNumber > 0)
-                        GL.Uniform3(shader.getAttribute("stageLight1Color"), stageDiffuseLightSet[index1].R, stageDiffuseLightSet[index1].G, stageDiffuseLightSet[index1].B);
-                    else
-                        GL.Uniform3(shader.getAttribute("stageLight1Color"), 1, 1, 1);
+                    GL.Uniform3(shader.getAttribute("stageLight1Color"), stageLight1.R, stageLight1.G, stageLight1.B);
 
                     // stage light 2
                     int index2 = 1 + (4 * m.nud.lightSetNumber);
+                    stageLight2 = stageDiffuseLightSet[index2];
                     GL.Uniform1(shader.getAttribute("renderStageLight2"), Runtime.renderStageLight2 ? 1 : 0);
-                    stageLight2.setColorFromHSV(Runtime.stagelight2_hue, Runtime.stagelight2_saturation, Runtime.stagelight2_intensity);
-                    stageLight2.setDirectionFromXYZAngles(Runtime.stagelight2_rotX, Runtime.stagelight2_rotY, Runtime.stagelight2_rotZ);
-                    if (m.nud.lightSetNumber > 0)
-                        GL.Uniform3(shader.getAttribute("stageLight2Color"), stageDiffuseLightSet[index2].R, stageDiffuseLightSet[index2].G, stageDiffuseLightSet[index2].B);
-                    else
-                        GL.Uniform3(shader.getAttribute("stageLight2Color"), 1, 1, 1);
+                    GL.Uniform3(shader.getAttribute("stageLight2Color"), stageLight2.R, stageLight2.G, stageLight2.B);
 
                     // stage light 3
                     int index3 = 2 + (4 * m.nud.lightSetNumber);
+                    stageLight3 = stageDiffuseLightSet[index3];
                     GL.Uniform1(shader.getAttribute("renderStageLight3"), Runtime.renderStageLight3 ? 1 : 0);
-                    stageLight3.setColorFromHSV(Runtime.stagelight3_hue, Runtime.stagelight3_saturation, Runtime.stagelight3_intensity);
-                    stageLight3.setDirectionFromXYZAngles(Runtime.stagelight3_rotX, Runtime.stagelight3_rotY, Runtime.stagelight3_rotZ);
-                    if (m.nud.lightSetNumber > 0)
-                        GL.Uniform3(shader.getAttribute("stageLight3Color"), stageDiffuseLightSet[index3].R, stageDiffuseLightSet[index3].G, stageDiffuseLightSet[index3].B);
-                    else
-                        GL.Uniform3(shader.getAttribute("stageLight3Color"), 1, 1, 1);
+                    GL.Uniform3(shader.getAttribute("stageLight3Color"), stageLight3.R, stageLight3.G, stageLight3.B);
 
                     // stage light 4
                     int index4 = 3 + (4 * m.nud.lightSetNumber);
+                    stageLight4 = stageDiffuseLightSet[index4];
                     GL.Uniform1(shader.getAttribute("renderStageLight4"), Runtime.renderStageLight4 ? 1 : 0);
-                    stageLight4.setColorFromHSV(Runtime.stagelight4_hue, Runtime.stagelight4_saturation, Runtime.stagelight4_intensity);
-                    stageLight4.setDirectionFromXYZAngles(Runtime.stagelight4_rotX, Runtime.stagelight4_rotY, Runtime.stagelight4_rotZ);
-                    if (m.nud.lightSetNumber > 0)
-                        GL.Uniform3(shader.getAttribute("stageLight4Color"), stageDiffuseLightSet[index4].R, stageDiffuseLightSet[index4].G, stageDiffuseLightSet[index4].B);
-                    else
-                        GL.Uniform3(shader.getAttribute("stageLight4Color"), 1, 1, 1);
+                    GL.Uniform3(shader.getAttribute("stageLight4Color"), stageLight4.R, stageLight4.G, stageLight4.B);
 
 
                     // stage fog

@@ -109,6 +109,7 @@ namespace Smash_Forge
 
             int renderType = (int)Runtime.renderType;
             GL.Uniform1(shader.getAttribute("renderType"), renderType);
+
             GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderNormal"), Runtime.renderAlpha ? 1 : 0);
@@ -119,7 +120,6 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
 
             {
-
                 GL.ActiveTexture(TextureUnit.Texture10);
                 GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
                 GL.Uniform1(shader.getAttribute("cmap"), 10);

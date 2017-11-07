@@ -160,17 +160,26 @@ namespace Smash_Forge
         public float R = 1.0f;
         public float G = 1.0f;
         public float B = 1.0f;
+        public float hue = 0.0f;
+        public float saturation = 0.0f;
+        public float intensity = 1.0f;
         public float rotX = 0.0f; // in degrees (converted to radians)
         public float rotY = 0.0f; // in degrees (converted to radians)
         public float rotZ = 0.0f; // in degrees (converted to radians)
         public Vector3 direction = new Vector3(0f, 0f, 1f);
 
-        public DirectionalLight(float H, float S, float V, float rotX, float rot, float rotZ)
+        public DirectionalLight(float H, float S, float V, float rotX, float rotY, float rotZ)
         {
             // calculate light color
-            RenderTools.HSV2RGB(H, S, V, out R, out G, out B);
+            hue = H;
+            saturation = S;
+            intensity = V;
+            RenderTools.HSV2RGB(hue, saturation, intensity, out R, out G, out B);
 
             // calculate light vector
+            this.rotX = rotX;
+            this.rotY = rotY;
+            this.rotZ = rotZ;
             Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, rotX * ((float)Math.PI / 180f))
              * Matrix4.CreateFromAxisAngle(Vector3.UnitY, rotY * ((float)Math.PI / 180f))
              * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, rotZ * ((float)Math.PI / 180f));
@@ -180,13 +189,36 @@ namespace Smash_Forge
 
         public DirectionalLight(float H, float S, float V, Vector3 lightDirection)
         {
-            RenderTools.HSV2RGB(H, S, V, out R, out G, out B);
+            // calculate light color
+            hue = H;
+            saturation = S;
+            intensity = V;
+            RenderTools.HSV2RGB(hue, saturation, intensity, out R, out G, out B);
+
             direction = lightDirection;
         }
 
         public DirectionalLight()
         {
 
+        }
+
+        public void setHue(float hue)
+        {
+            this.hue = hue;
+            RenderTools.HSV2RGB(hue, saturation, intensity, out R, out G, out B);
+        }
+
+        public void setSaturation(float saturation)
+        {
+            this.saturation = saturation;
+            RenderTools.HSV2RGB(hue, saturation, intensity, out R, out G, out B);
+        }
+
+        public void setIntensity(float intensity)
+        {
+            this.intensity = intensity;
+            RenderTools.HSV2RGB(hue, saturation, this.intensity, out R, out G, out B);
         }
 
         public void setDirectionFromXYZAngles(float rotX, float rotY, float rotZ)
@@ -201,7 +233,11 @@ namespace Smash_Forge
 
         public void setColorFromHSV(float H, float S, float V)
         {
-            RenderTools.HSV2RGB(H, S, V, out R, out G, out B);
+            // calculate light color
+            hue = H;
+            saturation = S;
+            intensity = V;
+            RenderTools.HSV2RGB(hue, saturation, intensity, out R, out G, out B);
         }
 
     }

@@ -150,33 +150,33 @@ namespace Smash_Forge.GUI
             reflectionSaturation.Text = Runtime.reflection_saturation + "";
             reflectionIntensity.Text = Runtime.reflection_intensity + "";
 
-            stage1Hue.Text = Runtime.stagelight1_hue + "";
-            stage1Saturation.Text = Runtime.stagelight1_saturation + "";
-            stage1Intensity.Text = Runtime.stagelight1_intensity + "";
-            stage1RotX.Text = Runtime.stagelight1_rotX + "";
-            stage1RotY.Text = Runtime.stagelight1_rotY + "";
-            stage1RotZ.Text = Runtime.stagelight1_rotZ + "";
+            stage1Hue.Text = VBNViewport.stageLight1.hue + "";
+            stage1Saturation.Text = VBNViewport.stageLight1.saturation + "";
+            stage1Intensity.Text = VBNViewport.stageLight1.intensity + "";
+            stage1RotX.Text = VBNViewport.stageLight1.rotX + "";
+            stage1RotY.Text = VBNViewport.stageLight1.rotY + "";
+            stage1RotZ.Text = VBNViewport.stageLight1.rotZ + "";
 
-            stage2Hue.Text = Runtime.stagelight2_hue + "";
-            stage2Saturation.Text = Runtime.stagelight2_saturation + "";
-            stage2Intensity.Text = Runtime.stagelight2_intensity + "";
-            stage2RotX.Text = Runtime.stagelight2_rotX + "";
-            stage2RotY.Text = Runtime.stagelight2_rotY + "";
-            stage2RotZ.Text = Runtime.stagelight2_rotZ + "";
+            stage2Hue.Text = VBNViewport.stageLight2.hue + "";
+            stage2Saturation.Text = VBNViewport.stageLight2.saturation + "";
+            stage2Intensity.Text = VBNViewport.stageLight2.intensity + "";
+            stage2RotX.Text = VBNViewport.stageLight2.rotX + "";
+            stage2RotY.Text = VBNViewport.stageLight2.rotY + "";
+            stage2RotZ.Text = VBNViewport.stageLight2.rotZ + "";
 
-            stage3Hue.Text = Runtime.stagelight3_hue + "";
-            stage3Saturation.Text = Runtime.stagelight3_saturation + "";
-            stage3Intensity.Text = Runtime.stagelight3_intensity + "";
-            stage3RotX.Text = Runtime.stagelight3_rotX + "";
-            stage3RotY.Text = Runtime.stagelight3_rotY + "";
-            stage3RotZ.Text = Runtime.stagelight3_rotZ + "";
+            stage3Hue.Text = VBNViewport.stageLight3.hue + "";
+            stage3Saturation.Text = VBNViewport.stageLight3.saturation + "";
+            stage3Intensity.Text = VBNViewport.stageLight3.intensity + "";
+            stage3RotX.Text = VBNViewport.stageLight3.rotX + "";
+            stage3RotY.Text = VBNViewport.stageLight3.rotY + "";
+            stage3RotZ.Text = VBNViewport.stageLight3.rotZ + "";
 
-            stage4Hue.Text = Runtime.stagelight4_hue + "";
-            stage4Saturation.Text = Runtime.stagelight4_saturation + "";
-            stage4Intensity.Text = Runtime.stagelight4_intensity + "";
-            stage4RotX.Text = Runtime.stagelight4_rotX + "";
-            stage4RotY.Text = Runtime.stagelight4_rotY + "";
-            stage4RotZ.Text = Runtime.stagelight4_rotZ + "";
+            stage4Hue.Text = VBNViewport.stageLight4.hue + "";
+            stage4Saturation.Text = VBNViewport.stageLight4.saturation + "";
+            stage4Intensity.Text = VBNViewport.stageLight4.intensity + "";
+            stage4RotX.Text = VBNViewport.stageLight4.rotX + "";
+            stage4RotY.Text = VBNViewport.stageLight4.rotY + "";
+            stage4RotZ.Text = VBNViewport.stageLight4.rotZ + "";
 
             RendererLabel.Text = "Renderer: " + Runtime.renderer;
             OpenGLVersionLabel.Text = "OpenGL Version: " + Runtime.GLSLVersion;
@@ -1074,7 +1074,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage1Hue.Text, out i))
             {
                 stage1Hue.BackColor = Color.White;
-                Runtime.stagelight1_hue = i;
+                VBNViewport.stageLight1.setHue(i);
             }
             else
                 stage1Hue.BackColor = Color.Red;
@@ -1086,7 +1086,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage1Saturation.Text, out i))
             {
                 stage1Saturation.BackColor = Color.White;
-                Runtime.stagelight1_saturation = i;
+                VBNViewport.stageLight1.setSaturation(i);
             }
             else
                 stage1Saturation.BackColor = Color.Red;
@@ -1098,7 +1098,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage1Intensity.Text, out i))
             {
                 stage1Intensity.BackColor = Color.White;
-                Runtime.stagelight1_intensity = i;
+                VBNViewport.stageLight1.setIntensity(i);
             }
             else
                 stage1Intensity.BackColor = Color.Red;
@@ -1110,7 +1110,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage1RotX.Text, out i))
             {
                 stage1RotX.BackColor = Color.White;
-                Runtime.stagelight1_rotX = i;
+                VBNViewport.stageLight1.rotX = i;
             }
             else
                 stage1RotX.BackColor = Color.Red;
@@ -1122,7 +1122,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage1RotY.Text, out i))
             {
                 stage1RotY.BackColor = Color.White;
-                Runtime.stagelight1_rotY = i;
+                VBNViewport.stageLight1.rotY = i;
             }
             else
                 stage1RotY.BackColor = Color.Red;
@@ -1134,7 +1134,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage1RotZ.Text, out i))
             {
                 stage1RotZ.BackColor = Color.White;
-                Runtime.stagelight1_rotZ = i;
+                VBNViewport.stageLight1.rotZ = i;
             }
             else
                 stage1RotZ.BackColor = Color.Red;
@@ -1180,7 +1180,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage2Hue.Text, out i))
             {
                 stage2Hue.BackColor = Color.White;
-                Runtime.stagelight2_hue = i;
+                VBNViewport.stageLight2.setHue(i);
             }
             else
                 stage2Hue.BackColor = Color.Red;
@@ -1192,7 +1192,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage2Saturation.Text, out i))
             {
                 stage2Saturation.BackColor = Color.White;
-                Runtime.stagelight2_saturation = i;
+                VBNViewport.stageLight2.setSaturation(i);
             }
             else
                 stage2Saturation.BackColor = Color.Red;
@@ -1204,7 +1204,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage2Intensity.Text, out i))
             {
                 stage2Intensity.BackColor = Color.White;
-                Runtime.stagelight2_intensity = i;
+                VBNViewport.stageLight2.setIntensity(i);
             }
             else
                 stage2Intensity.BackColor = Color.Red;
@@ -1216,7 +1216,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage2RotX.Text, out i))
             {
                 stage2RotX.BackColor = Color.White;
-                Runtime.stagelight2_rotX = i;
+                VBNViewport.stageLight2.rotX = i;
             }
             else
                 stage2RotX.BackColor = Color.Red;
@@ -1228,7 +1228,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage2RotY.Text, out i))
             {
                 stage2RotY.BackColor = Color.White;
-                Runtime.stagelight2_rotY = i;
+                VBNViewport.stageLight2.rotY = i;
             }
             else
                 stage2RotY.BackColor = Color.Red;
@@ -1240,7 +1240,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage2RotZ.Text, out i))
             {
                 stage2RotZ.BackColor = Color.White;
-                Runtime.stagelight2_rotZ = i;
+                VBNViewport.stageLight2.rotZ = i;
             }
             else
                 stage2RotZ.BackColor = Color.Red;
@@ -1269,7 +1269,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage3Hue.Text, out i))
             {
                 stage3Hue.BackColor = Color.White;
-                Runtime.stagelight3_hue = i;
+                VBNViewport.stageLight3.setHue(i);
             }
             else
                 stage3Hue.BackColor = Color.Red;
@@ -1281,7 +1281,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage3Saturation.Text, out i))
             {
                 stage3Saturation.BackColor = Color.White;
-                Runtime.stagelight3_saturation = i;
+                VBNViewport.stageLight3.setSaturation(i);
             }
             else
                 stage3Saturation.BackColor = Color.Red;
@@ -1293,7 +1293,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage3Intensity.Text, out i))
             {
                 stage3Intensity.BackColor = Color.White;
-                Runtime.stagelight3_intensity = i;
+                VBNViewport.stageLight3.setIntensity(i);
             }
             else
                 stage3Intensity.BackColor = Color.Red;
@@ -1305,7 +1305,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage3RotX.Text, out i))
             {
                 stage3RotX.BackColor = Color.White;
-                Runtime.stagelight3_rotX = i;
+                VBNViewport.stageLight3.rotX = i;
             }
             else
                 stage3RotX.BackColor = Color.Red;
@@ -1317,7 +1317,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage3RotY.Text, out i))
             {
                 stage3RotY.BackColor = Color.White;
-                Runtime.stagelight3_rotY = i;
+                VBNViewport.stageLight3.rotY = i;
             }
             else
                 stage3RotY.BackColor = Color.Red;
@@ -1329,7 +1329,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage3RotZ.Text, out i))
             {
                 stage3RotZ.BackColor = Color.White;
-                Runtime.stagelight3_rotZ = i;
+                VBNViewport.stageLight3.rotZ = i;
             }
             else
                 stage3RotZ.BackColor = Color.Red;
@@ -1406,7 +1406,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage4Hue.Text, out i))
             {
                 stage4Hue.BackColor = Color.White;
-                Runtime.stagelight4_hue = i;
+                VBNViewport.stageLight4.setHue(i);
             }
             else
                 stage4Hue.BackColor = Color.Red;
@@ -1418,7 +1418,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage4RotX.Text, out i))
             {
                 stage4RotX.BackColor = Color.White;
-                Runtime.stagelight4_rotX = i;
+                VBNViewport.stageLight4.rotX = i;
             }
             else
                 stage4RotX.BackColor = Color.Red;
@@ -1430,7 +1430,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage4RotY.Text, out i))
             {
                 stage4RotY.BackColor = Color.White;
-                Runtime.stagelight4_rotY = i;
+                VBNViewport.stageLight4.rotY = i;
             }
             else
                 stage4RotY.BackColor = Color.Red;
@@ -1442,7 +1442,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage4Intensity.Text, out i))
             {
                 stage4Intensity.BackColor = Color.White;
-                Runtime.stagelight4_intensity = i;
+                VBNViewport.stageLight4.setIntensity(i);
             }
             else
                 stage4Intensity.BackColor = Color.Red;
@@ -1454,7 +1454,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage4Saturation.Text, out i))
             {
                 stage4Saturation.BackColor = Color.White;
-                Runtime.stagelight4_saturation = i;
+                VBNViewport.stageLight4.setSaturation(i);
             }
             else
                 stage4Saturation.BackColor = Color.Red;
@@ -1466,7 +1466,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(stage4RotZ.Text, out i))
             {
                 stage4RotZ.BackColor = Color.White;
-                Runtime.stagelight4_rotZ = i;
+                VBNViewport.stageLight4.rotZ = i;
             }
             else
                 stage4RotZ.BackColor = Color.Red;

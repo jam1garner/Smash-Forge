@@ -227,8 +227,8 @@ namespace Smash_Forge
 
         public static bool renderStageLight1 = true;
         public static bool renderStageLight2 = true;
-        public static bool renderStageLight3 = false;
-        public static bool renderStageLight4 = false;
+        public static bool renderStageLight3 = true;
+        public static bool renderStageLight4 = true;
 
         public static float stagelight1_hue = 360.0f;
         public static float stagelight1_saturation = 0.0f;
@@ -291,7 +291,8 @@ namespace Smash_Forge
             UVCoords = 7,
             UVTestPattern = 8,
             Tangents = 9,
-            Bitangents = 10
+            Bitangents = 10,
+            LightSet = 11
         }
         public enum FloorStyle
         {
