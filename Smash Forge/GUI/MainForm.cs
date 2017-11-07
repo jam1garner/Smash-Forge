@@ -2159,5 +2159,11 @@ namespace Smash_Forge
                 }
             }
         }
+
+        private void stageLightingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            StageLighting stageLightForm = new StageLighting();
+            stageLightForm.Show();
+        }
     }
 }
