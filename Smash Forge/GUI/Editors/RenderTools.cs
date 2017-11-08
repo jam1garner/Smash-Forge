@@ -226,7 +226,30 @@ namespace Smash_Forge
             RenderTools.HSV2RGB(hue, saturation, this.intensity, out R, out G, out B);
         }
 
+        public void setRotX(float rotX)
+        {
+            this.rotX = rotX;
+            UpdateDirection(rotX, rotY, rotZ);
+        }
+
+        public void setRotY(float rotY)
+        {
+            this.rotY = rotY;
+            UpdateDirection(rotX, rotY, rotZ);
+        }
+
+        public void setRotZ(float rotZ)
+        {
+            this.rotZ = rotZ;
+            UpdateDirection(rotX, rotY, rotZ);
+        }
+
         public void setDirectionFromXYZAngles(float rotX, float rotY, float rotZ)
+        {
+            UpdateDirection(rotX, rotY, rotZ);
+        }
+
+        private void UpdateDirection(float rotX, float rotY, float rotZ)
         {
             // calculate light vector from 3 rotation angles
             Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, rotX * ((float)Math.PI / 180f))
@@ -250,6 +273,72 @@ namespace Smash_Forge
             return name;
         }
 
+    }
+
+    public class HemisphereFresnel
+    {
+        // ground color
+        public float groundR = 1.0f;
+        public float groundG = 1.0f;
+        public float groundB = 1.0f;
+        public float groundHue = 0.0f;
+        public float groundSaturation = 0.0f;
+        public float groundIntensity = 1.0f;
+
+        // sky color
+        public float skyR = 1.0f;
+        public float skyG = 1.0f;
+        public float skyB = 1.0f;
+        public float skyHue = 0.0f;
+        public float skySaturation = 0.0f;
+        public float skyIntensity = 1.0f;
+
+        // direction
+        public float skyAngle = 0;
+        public float groundAngle = 0;
+
+        public string name = "";
+
+        public HemisphereFresnel()
+        {
+
+        }
+
+        public HemisphereFresnel(float groundH, float groundS, float groundV, float skyH, float skyS, float skyV, string name)
+        {
+            this.groundHue = groundH;
+            this.groundSaturation = groundS;
+            this.groundIntensity = groundV;
+            this.skyHue = skyH;
+            this.skySaturation = skyS;
+            this.skyIntensity = skyV;
+            RenderTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
+
+            this.name = name;
+        }
+
+        public void setSkyHue(float skyHue)
+        {
+            this.skyHue = skyHue;
+            RenderTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
+        }
+
+        public void setSkySaturation(float skySaturation)
+        {
+            this.skySaturation = skySaturation;
+            RenderTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
+        }
+
+        public void setSkyIntensity(float skyIntensity)
+        {
+            this.skyIntensity = skyIntensity;
+            RenderTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
+        }
+
+        public override string ToString()
+        {
+            return name;
+        }
     }
 
     public class AreaLight
@@ -399,18 +488,17 @@ namespace Smash_Forge
                     VBNViewport.diffuseLight = new DirectionalLight(hue, saturation, value, 0, 0, 0, "Diffuse");
                 }
 
-                // fresnel sky color
+                // fresnel lighting
                 {
-                    Runtime.fres_sky_hue = (float)GetValueFromParamFile(lightSet, 0, 0, 8);
-                    Runtime.fres_sky_saturation = (float)GetValueFromParamFile(lightSet, 0, 0, 9);
-                    Runtime.fres_sky_intensity = (float)GetValueFromParamFile(lightSet, 0, 0, 10);
-                }
+                    float hueSky = (float)GetValueFromParamFile(lightSet, 0, 0, 8);
+                    float satSky = (float)GetValueFromParamFile(lightSet, 0, 0, 9);
+                    float intensitySky = (float)GetValueFromParamFile(lightSet, 0, 0, 10);
 
-                // fresnel ground color
-                {
-                    Runtime.fres_ground_hue = (float)GetValueFromParamFile(lightSet, 0, 0, 11);
-                    Runtime.fres_ground_saturation = (float)GetValueFromParamFile(lightSet, 0, 0, 12);
-                    Runtime.fres_ground_intensity = (float)GetValueFromParamFile(lightSet, 0, 0, 13);
+                    float hueGround = (float)GetValueFromParamFile(lightSet, 0, 0, 11);
+                    float satGround = (float)GetValueFromParamFile(lightSet, 0, 0, 12);
+                    float intensityGround = (float)GetValueFromParamFile(lightSet, 0, 0, 13);
+
+                    VBNViewport.fresnelLight = new HemisphereFresnel(hueGround, satGround, intensityGround, hueSky, satSky, intensitySky, "Fresnel");
                 }
 
                 // ambient color

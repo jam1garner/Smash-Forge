@@ -94,6 +94,7 @@ namespace Smash_Forge
 
         public static DirectionalLight diffuseLight = new DirectionalLight();
         public static DirectionalLight specularLight = new DirectionalLight();
+        public static HemisphereFresnel fresnelLight = new HemisphereFresnel();
         public static DirectionalLight stageLight1 = new DirectionalLight();
         public static DirectionalLight stageLight2 = new DirectionalLight();
         public static DirectionalLight stageLight3 = new DirectionalLight();
@@ -1007,14 +1008,9 @@ namespace Smash_Forge
                     GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
                     GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
 
-                    // fresnel ground color for characters & stages
-                    float fresGroundR, fresGroundG, fresGroundB = 1.0f;
-                    RenderTools.HSV2RGB(Runtime.fres_ground_hue, Runtime.fres_ground_saturation, Runtime.fres_ground_intensity, out fresGroundR, out fresGroundG, out fresGroundB);
-                    GL.Uniform3(shader.getAttribute("fresGroundColor"), fresGroundR, fresGroundG, fresGroundB);
-                    // fresnel sky color for characters & stages
-                    float fresSkyR, fresSkyG, fresSkyB = 1.0f;
-                    RenderTools.HSV2RGB(Runtime.fres_sky_hue, Runtime.fres_sky_saturation, Runtime.fres_sky_intensity, out fresSkyR, out fresSkyG, out fresSkyB);
-                    GL.Uniform3(shader.getAttribute("fresSkyColor"), fresSkyR, fresSkyG, fresSkyB);
+                    // fresnel sky/ground color for characters & stages
+                    GL.Uniform3(shader.getAttribute("fresGroundColor"), fresnelLight.groundR, fresnelLight.groundG, fresnelLight.groundB);
+                    GL.Uniform3(shader.getAttribute("fresSkyColor"), fresnelLight.skyR, fresnelLight.skyR, fresnelLight.skyR);
 
                     // reflection color for characters & stages
                     float refR, refG, refB = 1.0f;
