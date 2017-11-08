@@ -16,6 +16,21 @@ namespace Smash_Forge.GUI.Editors
         public StageLighting()
         {
             InitializeComponent();
+            for (int i = 0; i < VBNViewport.stageDiffuseLightSet.Length; i++)
+            {
+                lightSetLightListBox.Items.Add(VBNViewport.stageDiffuseLightSet[i].name);
+            }
+         
+        }
+
+        private void openLightSetButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charLightsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

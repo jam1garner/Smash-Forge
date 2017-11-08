@@ -167,8 +167,9 @@ namespace Smash_Forge
         public float rotY = 0.0f; // in degrees (converted to radians)
         public float rotZ = 0.0f; // in degrees (converted to radians)
         public Vector3 direction = new Vector3(0f, 0f, 1f);
+        public string name = "";
 
-        public DirectionalLight(float H, float S, float V, float rotX, float rotY, float rotZ)
+        public DirectionalLight(float H, float S, float V, float rotX, float rotY, float rotZ, string name)
         {
             // calculate light color
             hue = H;
@@ -185,9 +186,11 @@ namespace Smash_Forge
              * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, rotZ * ((float)Math.PI / 180f));
 
             direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
+
+            this.name = name;
         }
 
-        public DirectionalLight(float H, float S, float V, Vector3 lightDirection)
+        public DirectionalLight(float H, float S, float V, Vector3 lightDirection, string name)
         {
             // calculate light color
             hue = H;
@@ -196,6 +199,8 @@ namespace Smash_Forge
             RenderTools.HSV2RGB(hue, saturation, intensity, out R, out G, out B);
 
             direction = lightDirection;
+
+            this.name = name;
         }
 
         public DirectionalLight()
@@ -238,6 +243,11 @@ namespace Smash_Forge
             saturation = S;
             intensity = V;
             RenderTools.HSV2RGB(hue, saturation, intensity, out R, out G, out B);
+        }
+
+        public override string ToString()
+        {
+            return name;
         }
 
     }
@@ -340,9 +350,9 @@ namespace Smash_Forge
             {
                 float fov = (float)GetValueFromParamFile(stprm, 0, 0, 6);
                 Runtime.fov = fov * ((float)Math.PI / 180.0f);
+                Runtime.renderDepth = (float)GetValueFromParamFile(stprm, 0, 0, 77);
             }
         }
-
 
         public static void SetLightsFromLightSetParam(ParamFile lightSet)
         {
@@ -360,7 +370,7 @@ namespace Smash_Forge
                     float rotY = (float)GetValueFromParamFile(lightSet, 1, 4 + i, 6);
                     float rotZ = (float)GetValueFromParamFile(lightSet, 1, 4 + i, 7);
 
-                    DirectionalLight light = new DirectionalLight(hue, saturation, value, rotX, rotY, rotZ);
+                    DirectionalLight light = new DirectionalLight(hue, saturation, value, rotX, rotY, rotZ, "Stage" + i.ToString());
                     VBNViewport.stageDiffuseLightSet[i] = light;
                 }
 
@@ -386,7 +396,7 @@ namespace Smash_Forge
                     float rotY = (float)GetValueFromParamFile(lightSet, 1, 4, 6);
                     float rotZ = (float)GetValueFromParamFile(lightSet, 1, 4, 7);
 
-                    VBNViewport.diffuseLight = new DirectionalLight(hue, saturation, value, 0, 0, 0);
+                    VBNViewport.diffuseLight = new DirectionalLight(hue, saturation, value, 0, 0, 0, "Diffuse");
                 }
 
                 // fresnel sky color
@@ -409,9 +419,7 @@ namespace Smash_Forge
                     Runtime.amb_saturation = (float)GetValueFromParamFile(lightSet, 0, 0, 34);
                     Runtime.amb_intensity = (float)GetValueFromParamFile(lightSet, 0, 0, 35);
                 }
-
             }
-
         }
 
         private static object GetValueFromParamFile(ParamFile paramFile, int groupNum, int entryNum, int valNum)

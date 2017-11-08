@@ -93,7 +93,9 @@
             this.movesetModdingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stageWorkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cleanViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.renderSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stageLightingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.masterpiecesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -104,8 +106,6 @@
             this.glControl1 = new OpenTK.GLControl();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.stageLightingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -515,8 +515,8 @@
             this.viewsToolStripMenuItem,
             this.dockPresetsToolStripMenuItem,
             this.toolStripSeparator6,
-            this.renderSettingsToolStripMenuItem,
             this.stageLightingToolStripMenuItem,
+            this.renderSettingsToolStripMenuItem,
             this.toolStripSeparator3,
             this.aboutToolStripMenuItem1});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
@@ -626,12 +626,24 @@
             this.cleanViewToolStripMenuItem.Text = "Clean/Blank";
             this.cleanViewToolStripMenuItem.Click += new System.EventHandler(this.cleanPreset);
             // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(155, 6);
+            // 
             // renderSettingsToolStripMenuItem
             // 
             this.renderSettingsToolStripMenuItem.Name = "renderSettingsToolStripMenuItem";
             this.renderSettingsToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.renderSettingsToolStripMenuItem.Text = "Render Settings";
             this.renderSettingsToolStripMenuItem.Click += new System.EventHandler(this.renderSettingsToolStripMenuItem_Click);
+            // 
+            // stageLightingToolStripMenuItem
+            // 
+            this.stageLightingToolStripMenuItem.Name = "stageLightingToolStripMenuItem";
+            this.stageLightingToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.stageLightingToolStripMenuItem.Text = "Stage Lighting";
+            this.stageLightingToolStripMenuItem.Click += new System.EventHandler(this.stageLightingToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
@@ -724,18 +736,6 @@
             this.pictureBox1.TabIndex = 25;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
-            // 
-            // stageLightingToolStripMenuItem
-            // 
-            this.stageLightingToolStripMenuItem.Name = "stageLightingToolStripMenuItem";
-            this.stageLightingToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.stageLightingToolStripMenuItem.Text = "Stage Lighting";
-            this.stageLightingToolStripMenuItem.Click += new System.EventHandler(this.stageLightingToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator6
-            // 
-            this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(155, 6);
             // 
             // MainForm
             // 

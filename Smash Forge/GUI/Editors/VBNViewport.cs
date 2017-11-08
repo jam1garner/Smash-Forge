@@ -90,7 +90,7 @@ namespace Smash_Forge
         bool isPlaying = false;
         bool fpsView = false;
         public Stopwatch timeSinceSelected = new Stopwatch();
-        public Stopwatch directUVTime = new Stopwatch();
+        public Stopwatch directUVTimeStopWatch = new Stopwatch();
 
         public static DirectionalLight diffuseLight = new DirectionalLight();
         public static DirectionalLight specularLight = new DirectionalLight();
@@ -101,9 +101,6 @@ namespace Smash_Forge
 
         public static DirectionalLight[] stageDiffuseLightSet = new DirectionalLight[64];
         public static Vector3[] stageFogSet = new Vector3[16];
-
-        //Camera camera = new Camera();
-
 
         Shader shader;
         #endregion
@@ -260,10 +257,14 @@ namespace Smash_Forge
             if (isPlaying)
             {
                 btnPlay.Text = "Pause";
+
+                directUVTimeStopWatch.Start();
             }
             else
             {
                 btnPlay.Text = "Play";
+
+                directUVTimeStopWatch.Stop();
             }
         }
         private void nupdFrame_ValueChanged(Object sender, EventArgs e)
@@ -422,9 +423,7 @@ namespace Smash_Forge
             }
 
             Debug.WriteLine(GL.GetError());
-            CalculateLightSource();
-
-            directUVTime.Start();
+            CalculateLightSource();           
         }
 
         private void SetupFrameBuffersRenderBuffers()
@@ -972,14 +971,14 @@ namespace Smash_Forge
                     float elapsedSeconds = 0;
                     if (m.nud.useDirectUVTime)
                     {
-                        elapsedSeconds = (float)directUVTime.ElapsedMilliseconds / 1000.0f;
+                        elapsedSeconds = (float)directUVTimeStopWatch.ElapsedMilliseconds / 1000.0f;
                         if (elapsedSeconds >= 100) // should be based on XMB eventually
                         {
-                            directUVTime.Restart();
+                            directUVTimeStopWatch.Restart();
                         }
                     }
                     else
-                        directUVTime.Stop();
+                        directUVTimeStopWatch.Stop();
 
                     GL.Uniform1(shader.getAttribute("elapsedTime"), elapsedSeconds);
 
