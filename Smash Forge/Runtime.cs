@@ -275,6 +275,7 @@ namespace Smash_Forge
         public static string fighterDir = "";
         public static string paramDir;
 
+        // OpenGL System Information
         public static string renderer = "";
         public static string openGLVersion = "";
         public static string GLSLVersion = "";
@@ -294,6 +295,7 @@ namespace Smash_Forge
             Bitangents = 10,
             LightSet = 11
         }
+
         public enum FloorStyle
         {
             Normal = 0,

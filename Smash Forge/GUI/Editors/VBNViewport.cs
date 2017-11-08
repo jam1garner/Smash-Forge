@@ -90,7 +90,7 @@ namespace Smash_Forge
         bool isPlaying = false;
         bool fpsView = false;
         public Stopwatch timeSinceSelected = new Stopwatch();
-        public Stopwatch renderTime = new Stopwatch();
+        public Stopwatch directUVTime = new Stopwatch();
 
         public static DirectionalLight diffuseLight = new DirectionalLight();
         public static DirectionalLight specularLight = new DirectionalLight();
@@ -423,6 +423,8 @@ namespace Smash_Forge
 
             Debug.WriteLine(GL.GetError());
             CalculateLightSource();
+
+            directUVTime.Start();
         }
 
         private void SetupFrameBuffersRenderBuffers()
@@ -966,7 +968,20 @@ namespace Smash_Forge
                     GL.Uniform1(shader.getAttribute("shadowMap"), 11);
 
                     GL.Uniform1(shader.getAttribute("renderType"), renderType);
-                    GL.Uniform1(shader.getAttribute("lightSet"), m.nud.lightSetNumber);
+
+                    float elapsedSeconds = 0;
+                    if (m.nud.useDirectUVTime)
+                    {
+                        elapsedSeconds = (float)directUVTime.ElapsedMilliseconds / 1000.0f;
+                        if (elapsedSeconds >= 100) // should be based on XMB eventually
+                        {
+                            directUVTime.Restart();
+                        }
+                    }
+                    else
+                        directUVTime.Stop();
+
+                    GL.Uniform1(shader.getAttribute("elapsedTime"), elapsedSeconds);
 
                     GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
                     GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
@@ -1019,11 +1034,6 @@ namespace Smash_Forge
                     specularLight.setDirectionFromXYZAngles(Runtime.specular_rotX, Runtime.specular_rotY, Runtime.specular_rotZ);
                     GL.Uniform3(shader.getAttribute("specLightColor"), specularLight.R, specularLight.G, specularLight.B);
 
-
-                    //////////////////////////////////
-                    // Should simplify this section
-                    //////////////////////////////////
-
                     // stage light 1
                     int index1 = 0 + (4 * m.nud.lightSetNumber);
                     stageLight1 = stageDiffuseLightSet[index1];
@@ -1053,10 +1063,8 @@ namespace Smash_Forge
                     GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
                     float stageFogR, stageFogG, stageFogB = 1.0f;
                     RenderTools.HSV2RGB(Runtime.fog_hue, Runtime.fog_saturation, Runtime.fog_intensity, out stageFogR, out stageFogG, out stageFogB);
-                    //if (m.nud.lightSetNumber > 0)
-                        GL.Uniform3(shader.getAttribute("stageFogColor"), stageFogSet[0]);
-                    //else
-                      //  GL.Uniform3(shader.getAttribute("stageFogColor"), 0, 0, 0);
+                    GL.Uniform3(shader.getAttribute("stageFogColor"), stageFogSet[m.nud.lightSetNumber]);
+
 
                     Vector3 lightDirection = new Vector3(0f, 0f, -1f);
 
@@ -1157,13 +1165,11 @@ namespace Smash_Forge
                 if (horizontal)
                 {
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, pingPongFBO1);
-                    //Debug.WriteLine("pingPongFBO1");
                 }
     
                 else
                 {
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, pingPongFBO2);
-                    //Debug.WriteLine("pingPongFBO2");
                 }
                  
 
@@ -1172,7 +1178,6 @@ namespace Smash_Forge
                 if (first_iteration)
                 {
                     GL.BindTexture(TextureTarget.Texture2D, colorTexture2);
-                    Debug.WriteLine("First Iteration");
                 }
                    
                 else
@@ -1180,13 +1185,11 @@ namespace Smash_Forge
 
                     if (horizontal)
                     {
-                        Debug.WriteLine("ColorTexture1");
                         GL.BindTexture(TextureTarget.Texture2D, pingPongColorTexture1);
                     }
 
                     else if (!horizontal)
                     {
-                        Debug.WriteLine("ColorTexture2");
                         GL.BindTexture(TextureTarget.Texture2D, pingPongColorTexture2);
                     }
                
