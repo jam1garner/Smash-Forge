@@ -72,6 +72,14 @@ namespace Smash_Forge
             GL.GenBuffers(1, out vbo_weight);
             GL.GenBuffers(1, out ibo_elements);
 
+            if (!Runtime.shaders.ContainsKey("DAT"))
+            {
+                Shader DAT = new Shader();
+                DAT.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_vs.txt"));
+                DAT.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_fs.txt"));
+                Runtime.shaders.Add("DAT", DAT);
+            }
+
             Runtime.shaders["DAT"].shaderCompilationWarningMessage("DAT");
         }
 

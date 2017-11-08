@@ -16,6 +16,14 @@ namespace Smash_Forge
     {
         public NUD()
         {
+            if (!Runtime.shaders.ContainsKey("NUD"))
+            {
+                Shader nud = new Shader();
+                nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
+                nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
+                Runtime.shaders.Add("NUD", nud);
+            }
+
             if (!Runtime.hasCheckedNUDShaderCompilation)
             {
                 Runtime.shaders["NUD"].shaderCompilationWarningMessage("NUD");
@@ -57,6 +65,7 @@ namespace Smash_Forge
         public override Endianness Endian { get; set; }
 
         #region Rendering
+
         public void Destroy()
         {
             GL.DeleteBuffer(vbo_position);
