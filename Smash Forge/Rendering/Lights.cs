@@ -78,7 +78,7 @@ namespace Smash_Forge
 
     public class AreaLight
     {
-        public string ID = "";
+        public string id = "";
 
         // ambient color
         public float groundR = 1.0f;
@@ -112,12 +112,12 @@ namespace Smash_Forge
 
         public AreaLight(string areaLightID)
         {
-            ID = areaLightID;
+            id = areaLightID;
         }
 
         public AreaLight(string areaLightID, Vector3 groundColor, Vector3 skyColor, Vector3 position, Vector3 scale, Vector3 direction)
         {
-            ID = areaLightID;
+            id = areaLightID;
             groundR = groundColor.X;
             groundG = groundColor.Y;
             groundB = groundColor.Z;
@@ -129,7 +129,24 @@ namespace Smash_Forge
 
         public AreaLight(string areaLightID, Vector3 groundColor, Vector3 skyColor, Vector3 position, Vector3 scale, float rotX, float rotY, float rotZ)
         {
-            ID = areaLightID;
+            id = areaLightID;
+
+            positionX = position.X;
+            positionY = position.Y;
+            positionZ = position.Z;
+
+            scaleX = scale.X;
+            scaleY = scale.Y;
+            scaleZ = scale.Z;
+
+            skyR = skyColor.X;
+            skyG = skyColor.Y;
+            skyB = skyColor.Z;
+
+            groundR = groundColor.X;
+            groundB = groundColor.Y;
+            groundG = groundColor.Z;
+
         }
 
         public void setDirectionFromXYZAngles(float rotX, float rotY, float rotZ)
@@ -140,6 +157,11 @@ namespace Smash_Forge
              * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, rotZ * ((float)Math.PI / 180f));
 
             direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
+        }
+
+        public override string ToString()
+        {
+            return id;
         }
     }
 
@@ -357,15 +379,10 @@ namespace Smash_Forge
                 {
                     if (entry.Children.Count > 0)
                     {
-                        foreach (XMBEntry light in entry.Children)
+                        foreach (XMBEntry lightEntry in entry.Children)
                         {
-                            if (xmb.Values.Count >= light.FirstPropertyIndex)
-                            {
-                                for (int i = 0; i < light.Expressions.Count; i++)
-                                {
-                                    Debug.WriteLine(light.Expressions[i]);
-                                }
-                            }
+                            AreaLight newAreaLight = CreateAreaLightFromXMBEntry(lightEntry);
+                            areaLights.Add(newAreaLight);
                             Debug.WriteLine("\n");
                         }
                     }
@@ -373,6 +390,82 @@ namespace Smash_Forge
             }
         }
 
+        private static AreaLight CreateAreaLightFromXMBEntry(XMBEntry entry)
+        {
+            // really need to clean this up
+            string id = "";
+            float posX = 0;
+            float posY = 0;
+            float posZ = 0;
+            float scaleX = 0;
+            float scaleY = 0;
+            float scaleZ = 0;
+            float groundR = 0;
+            float groundG = 0;
+            float groundB = 0;
+            float skyR = 0;
+            float skyG = 0;
+            float skyB = 0;
 
+            for (int i = 0; i < entry.Expressions.Count; i++)
+            {
+                string expression = entry.Expressions[i];
+
+                string[] sections = expression.Split('=');
+                Debug.WriteLine(sections[0]);
+                string name = sections[0];
+                string[] values = sections[1].Split(',');
+
+                if (name.Contains("id"))
+                {
+                    id = values[0];
+                }
+                if (name.Contains("pos"))
+                {
+                    float.TryParse(values[0], out posX);
+                    float.TryParse(values[1], out posY);
+                    float.TryParse(values[2], out posZ);
+                    Debug.WriteLine("position:" + posX + "," + posY + "," + posZ);
+
+                }
+                if (name.Contains("scale"))
+                {
+                    float.TryParse(values[0], out scaleX);
+                    float.TryParse(values[1], out scaleY);
+                    float.TryParse(values[2], out scaleZ);
+                    Debug.WriteLine("scale:" + scaleX + "," + scaleY + "," + scaleZ);
+                }
+                if (name.Contains("col_ground"))
+                {
+                    float.TryParse(values[0], out groundR);
+                    float.TryParse(values[1], out groundG);
+                    float.TryParse(values[2], out groundB);
+                }
+                if (name.Contains("col_ceiling"))
+                {
+                    float.TryParse(values[0], out skyR);
+                    float.TryParse(values[1], out skyG);
+                    float.TryParse(values[2], out skyB);
+                }
+            }
+
+            AreaLight newAreaLight = new AreaLight(id, new Vector3(groundR, groundG, groundB), new Vector3(skyR, skyG, skyB), 
+                new Vector3(posX, posY, posZ), new Vector3(scaleX, scaleY, scaleZ), 0, 0, 0);
+            return newAreaLight;
+        }
+
+        private static void ParseAreaLightExpression(string entry, AreaLight light)
+        {
+            string[] sections = entry.Split('=');
+            Debug.WriteLine(sections[0]);
+            string name = sections[0];
+            string[] values = sections[1].Split(',');
+
+            if (name == "id")
+            {
+                light.id = values[0];
+            }
+                
+        }
     }
 }

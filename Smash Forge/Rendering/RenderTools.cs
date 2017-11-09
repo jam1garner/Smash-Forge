@@ -1277,8 +1277,8 @@ namespace Smash_Forge
 
         public static void drawRectangularPrismWireframe(Vector3 center, float sizeX, float sizeY, float sizeZ)
         {
-            //GL.Color3(Color.Black);
-            GL.LineWidth(2);
+            GL.Color3(Color.White);
+            GL.LineWidth(3);
             GL.Begin(PrimitiveType.LineLoop);
             GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z - sizeZ);
             GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z - sizeZ);

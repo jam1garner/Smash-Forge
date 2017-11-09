@@ -21,6 +21,15 @@ namespace Smash_Forge.GUI.Editors
             InitializeComponent();
             InitializeStageLightSetListBox();
             InitializeCharLightListBox();
+            InitializeAreaLightListBox();
+        }
+
+        private void InitializeAreaLightListBox()
+        {
+            foreach (AreaLight light in Lights.areaLights)
+            {
+                areaLightListBox.Items.Add(light);
+            }
         }
 
         private void InitializeStageLightSetListBox()
@@ -192,6 +201,11 @@ namespace Smash_Forge.GUI.Editors
         }
 
         private void charColor2IntenTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void areaLightListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }

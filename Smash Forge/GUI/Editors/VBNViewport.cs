@@ -783,13 +783,11 @@ namespace Smash_Forge
 
         private static void DrawAreaLightBoundingBoxes()
         {
-            foreach (KeyValuePair<string, AreaLight> areaLight in Runtime.areaLights)
+            foreach (AreaLight light in Lights.areaLights)
             {
-                if (areaLight.Value.renderBoundingBox)
-                {
-                    Vector3 center = new Vector3(areaLight.Value.positionX, areaLight.Value.positionY, areaLight.Value.positionZ);
-                    RenderTools.drawRectangularPrismWireframe(center, areaLight.Value.scaleX, areaLight.Value.scaleY, areaLight.Value.scaleZ);
-                }
+                RenderTools.drawRectangularPrismWireframe(new Vector3(light.positionX, light.positionY, light.positionZ),
+                    light.scaleX, light.scaleY, light.scaleZ);          
+                //Debug.WriteLine(light.scaleX);
             }
         }
 

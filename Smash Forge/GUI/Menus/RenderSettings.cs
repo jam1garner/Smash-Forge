@@ -1548,8 +1548,8 @@ namespace Smash_Forge.GUI
         private void addAreaLightButton_Click(object sender, EventArgs e)
         {
             AreaLight areaLight = new AreaLight(areaLightID);
-            Runtime.areaLights.Add(areaLight.ID, areaLight);
-            areaLightIDList.Add(areaLight.ID);
+            Runtime.areaLights.Add(areaLight.id, areaLight);
+            areaLightIDList.Add(areaLight.id);
             FillForm();
         }
 
