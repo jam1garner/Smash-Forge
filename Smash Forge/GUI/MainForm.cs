@@ -1046,7 +1046,7 @@ namespace Smash_Forge
                             {
                                 // should this always replace existing settings?
                                 Runtime.stprmParam = new ParamFile(fileName);
-                                RenderTools.SetCameraFromSTPRM(Runtime.stprmParam);
+                                Camera.SetCameraFromSTPRM(Runtime.stprmParam);
                             }
                         }
                     }
@@ -1060,6 +1060,11 @@ namespace Smash_Forge
                                 // should this always replace existing settings?
                                 Runtime.lightSetParam = new ParamFile(fileName);
                                 Lights.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                            }
+
+                            if (fileName.EndsWith("area_light.xmb"))
+                            {
+                                Lights.CreateAreaLightsFromXMB(new XMBFile(fileName));
                             }
                         }
                     }
@@ -1660,7 +1665,7 @@ namespace Smash_Forge
                     {
                         // should this always replace existing settings?
                         Runtime.stprmParam = new ParamFile(fileName);
-                        RenderTools.SetCameraFromSTPRM(Runtime.stprmParam);
+                        Camera.SetCameraFromSTPRM(Runtime.stprmParam);
                     }
 
                 }

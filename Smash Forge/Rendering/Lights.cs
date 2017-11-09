@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 using SALT.PARAMS;
+using SALT.Graphics;
+using System.Diagnostics;
 
 namespace Smash_Forge
 {
@@ -278,6 +280,8 @@ namespace Smash_Forge
         public static DirectionalLight[] stageDiffuseLightSet = new DirectionalLight[64];
         public static Vector3[] stageFogSet = new Vector3[16];
 
+        public static List<AreaLight> areaLights = new List<AreaLight>();
+
         public static void SetLightsFromLightSetParam(ParamFile lightSet)
         {
             if (lightSet != null)
@@ -294,7 +298,7 @@ namespace Smash_Forge
                     float rotY = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 6);
                     float rotZ = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 7);
 
-                    DirectionalLight light = new DirectionalLight(hue, saturation, value, rotX, rotY, rotZ, "Stage" + i.ToString());
+                    DirectionalLight light = new DirectionalLight(hue, saturation, value, rotX, rotY, rotZ, "Stage " + i.ToString());
                     stageDiffuseLightSet[i] = light;
                 }
 
@@ -344,6 +348,31 @@ namespace Smash_Forge
                 }
             }
         }
+
+        public static void CreateAreaLightsFromXMB(XMBFile xmb)
+        {
+            if (xmb != null)
+            {
+                foreach (XMBEntry entry in xmb.Entries)
+                {
+                    if (entry.Children.Count > 0)
+                    {
+                        foreach (XMBEntry light in entry.Children)
+                        {
+                            if (xmb.Values.Count >= light.FirstPropertyIndex)
+                            {
+                                for (int i = 0; i < light.Expressions.Count; i++)
+                                {
+                                    Debug.WriteLine(light.Expressions[i]);
+                                }
+                            }
+                            Debug.WriteLine("\n");
+                        }
+                    }
+                }
+            }
+        }
+
 
     }
 }

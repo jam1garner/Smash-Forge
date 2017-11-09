@@ -21,7 +21,6 @@ namespace Smash_Forge.GUI.Editors
             InitializeComponent();
             InitializeStageLightSetListBox();
             InitializeCharLightListBox();
-
         }
 
         private void InitializeStageLightSetListBox()
@@ -58,7 +57,16 @@ namespace Smash_Forge.GUI.Editors
 
         private void charLightsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
+            {
+                charColor1GroupBox.Text = "Fresnel Sky Color";
+                charColor1GroupBox.Text = "Fresnel Ground Color";
+            }
+            else
+            {
+                charColor1GroupBox.Text = "Diffuse Color";
+                charColor1GroupBox.Text = "Ambient Color";
+            }
         }
 
         private void lightSetGroupListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -156,6 +164,36 @@ namespace Smash_Forge.GUI.Editors
             }
             else
                 stageDifRotZTB.BackColor = Color.Red;
+        }
+
+        private void charColor1HueTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charColor1SatTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charColor1IntenTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charColor2HueTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charColor2SatTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charColor2IntenTB_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
