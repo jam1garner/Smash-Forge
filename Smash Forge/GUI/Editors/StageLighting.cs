@@ -34,8 +34,8 @@ namespace Smash_Forge.GUI.Editors
 
         private void InitializeCharLightListBox()
         {
-            charLightsListBox.Items.Add(VBNViewport.diffuseLight);
-            charLightsListBox.Items.Add(VBNViewport.fresnelLight);
+            charLightsListBox.Items.Add(Lights.diffuseLight);
+            charLightsListBox.Items.Add(Lights.fresnelLight);
         }
 
         private void openLightSetButton_Click(object sender, EventArgs e)
@@ -49,7 +49,8 @@ namespace Smash_Forge.GUI.Editors
                     if (ofd.FileName.EndsWith("light_set_param.bin"))
                     {
                         Runtime.lightSetParam = new ParamFile(ofd.FileName);
-                        RenderTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                        Lights.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                        lightSetDirTB.Text = ofd.FileName;
                     }
                 }
             }
@@ -65,13 +66,13 @@ namespace Smash_Forge.GUI.Editors
             lightSetLightListBox.Items.Clear();
             for (int i = 0; i < 4; i++)
             {
-                lightSetLightListBox.Items.Add(VBNViewport.stageDiffuseLightSet[(lightSetGroupListBox.SelectedIndex * 4) + i]);
+                lightSetLightListBox.Items.Add(Lights.stageDiffuseLightSet[(lightSetGroupListBox.SelectedIndex * 4) + i]);
             }
         }
 
         private void UpdateCurrentStageLightValues()
         {
-            selectedStageLight = VBNViewport.stageDiffuseLightSet[(lightSetGroupListBox.SelectedIndex * 4) + lightSetLightListBox.SelectedIndex];
+            selectedStageLight = Lights.stageDiffuseLightSet[(lightSetGroupListBox.SelectedIndex * 4) + lightSetLightListBox.SelectedIndex];
             stageDifHueTB.Text = selectedStageLight.hue + "";
             stageDifSatTB.Text = selectedStageLight.saturation + "";
             stageDifIntensityTB.Text = selectedStageLight.intensity + "";

@@ -436,6 +436,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Lights.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Controls\MeshMover.resx">
@@ -842,14 +843,14 @@
     <Compile Include="Runtime.cs" />
     <Compile Include="SkelAnimation.cs" />
     <Compile Include="Filetypes\SMD.cs" />
-    <Compile Include="Shader.cs" />
+    <Compile Include="Rendering\Shader.cs" />
     <Compile Include="Filetypes\Textures\DDS.cs" />
     <Compile Include="Filetypes\Models\NUD.cs" />
     <Compile Include="Filetypes\Textures\NUT.cs" />
     <Compile Include="Filetypes\Textures\GTX.cs" />
     <Compile Include="Filetypes\Models\JTB.cs" />
     <Compile Include="Filetypes\Animation\CMR0.cs" />
-    <Compile Include="GUI\Editors\RenderTools.cs" />
+    <Compile Include="Rendering\RenderTools.cs" />
     <None Include="GUI\Editors\MeshList.resx">
       <DependentUpon>MeshList.cs</DependentUpon>
     </None>

@@ -47,6 +47,8 @@ namespace Smash_Forge
         public static GUI.Editors.VariableList variableViewer { get; set; }
 
         public static ParamFile lightSetParam = null;
+        public static string lightSetDirectory = "";
+
         public static ParamFile stprmParam = null;
 
         public static int SelectedHitboxID { get; set; } = -1;
@@ -205,7 +207,6 @@ namespace Smash_Forge
         public static float amb_saturation = 0.00f;
         public static float amb_intensity = 0.85f;
 
-        // shared with stages for now (may be correct but idk)
         public static float fres_ground_hue = 360.0f;
         public static float fres_ground_saturation = 0.00f;
         public static float fres_ground_intensity = 0.00f;

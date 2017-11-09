@@ -1059,7 +1059,7 @@ namespace Smash_Forge
                             {
                                 // should this always replace existing settings?
                                 Runtime.lightSetParam = new ParamFile(fileName);
-                                RenderTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                                Lights.SetLightsFromLightSetParam(Runtime.lightSetParam);
                             }
                         }
                     }
@@ -1653,7 +1653,7 @@ namespace Smash_Forge
                     if (fileName.EndsWith("light_set_param.bin"))
                     {
                         Runtime.lightSetParam = new ParamFile(fileName);
-                        RenderTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                        Lights.SetLightsFromLightSetParam(Runtime.lightSetParam);
                     }
 
                     if (fileName.EndsWith("stprm.bin"))
