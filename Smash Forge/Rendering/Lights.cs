@@ -39,7 +39,8 @@ namespace Smash_Forge
 
         }
 
-        public HemisphereFresnel(float groundH, float groundS, float groundV, float skyH, float skyS, float skyV, string name)
+        public HemisphereFresnel(float groundH, float groundS, float groundV, float skyH, float skyS, float skyV, 
+            float skyAngle, float groundAngle, string name)
         {
             this.groundHue = groundH;
             this.groundSaturation = groundS;
@@ -48,6 +49,9 @@ namespace Smash_Forge
             this.skySaturation = skyS;
             this.skyIntensity = skyV;
             RenderTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
+
+            this.skyAngle = skyAngle;
+            this.groundAngle = groundAngle;
 
             this.name = name;
         }
@@ -167,12 +171,19 @@ namespace Smash_Forge
 
     public class DirectionalLight
     {
-        public float R = 1.0f;
-        public float G = 1.0f;
-        public float B = 1.0f;
-        public float hue = 0.0f;
-        public float saturation = 0.0f;
-        public float intensity = 1.0f;
+        public float difR = 1.0f;
+        public float difG = 1.0f;
+        public float difB = 1.0f;
+        public float difHue = 0.0f;
+        public float difSaturation = 0.0f;
+        public float difIntensity = 1.0f;
+
+        public float ambR = 0.0f;
+        public float ambG = 0.0f;
+        public float ambB = 0.0f;
+        public float ambHue = 0.0f;
+        public float ambSaturation = 0.0f;
+        public float ambIntensity = 1.0f;
 
         // in degrees (converted to radians for calcultions)
         public float rotX = 0.0f; 
@@ -183,13 +194,17 @@ namespace Smash_Forge
 
         public string name = "";
 
-        public DirectionalLight(float H, float S, float V, float rotX, float rotY, float rotZ, string name)
+        public DirectionalLight(float difH, float difS, float difV, float ambH, float ambS, float ambV, float rotX, float rotY, float rotZ, string name)
         {
             // calculate light color
-            hue = H;
-            saturation = S;
-            intensity = V;
-            RenderTools.HSV2RGB(hue, saturation, intensity, out R, out G, out B);
+            difHue = difH;
+            difSaturation = difS;
+            difIntensity = difV;
+            ambHue = ambH;
+            ambSaturation = ambS;
+            ambIntensity = ambV;
+            RenderTools.HSV2RGB(difHue, difSaturation, difIntensity, out difR, out difG, out difB);
+            RenderTools.HSV2RGB(ambHue, ambSaturation, ambIntensity, out ambR, out ambG, out ambB);
 
             // calculate light vector
             this.rotX = rotX;
@@ -207,10 +222,10 @@ namespace Smash_Forge
         public DirectionalLight(float H, float S, float V, Vector3 lightDirection, string name)
         {
             // calculate light color
-            hue = H;
-            saturation = S;
-            intensity = V;
-            RenderTools.HSV2RGB(hue, saturation, intensity, out R, out G, out B);
+            difHue = H;
+            difSaturation = S;
+            difIntensity = V;
+            RenderTools.HSV2RGB(difHue, difSaturation, difIntensity, out difR, out difG, out difB);
 
             direction = lightDirection;
 
@@ -224,20 +239,20 @@ namespace Smash_Forge
 
         public void setHue(float hue)
         {
-            this.hue = hue;
-            RenderTools.HSV2RGB(hue, saturation, intensity, out R, out G, out B);
+            this.difHue = hue;
+            RenderTools.HSV2RGB(hue, difSaturation, difIntensity, out difR, out difG, out difB);
         }
 
         public void setSaturation(float saturation)
         {
-            this.saturation = saturation;
-            RenderTools.HSV2RGB(hue, saturation, intensity, out R, out G, out B);
+            this.difSaturation = saturation;
+            RenderTools.HSV2RGB(difHue, saturation, difIntensity, out difR, out difG, out difB);
         }
 
         public void setIntensity(float intensity)
         {
-            this.intensity = intensity;
-            RenderTools.HSV2RGB(hue, saturation, this.intensity, out R, out G, out B);
+            this.difIntensity = intensity;
+            RenderTools.HSV2RGB(difHue, difSaturation, this.difIntensity, out difR, out difG, out difB);
         }
 
         public void setRotX(float rotX)
@@ -276,10 +291,10 @@ namespace Smash_Forge
         public void setColorFromHSV(float H, float S, float V)
         {
             // calculate light color
-            hue = H;
-            saturation = S;
-            intensity = V;
-            RenderTools.HSV2RGB(hue, saturation, intensity, out R, out G, out B);
+            difHue = H;
+            difSaturation = S;
+            difIntensity = V;
+            RenderTools.HSV2RGB(difHue, difSaturation, difIntensity, out difR, out difG, out difB);
         }
 
         public override string ToString()
@@ -320,7 +335,7 @@ namespace Smash_Forge
                     float rotY = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 6);
                     float rotZ = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 7);
 
-                    DirectionalLight light = new DirectionalLight(hue, saturation, value, rotX, rotY, rotZ, "Stage " + i.ToString());
+                    DirectionalLight light = new DirectionalLight(hue, saturation, value, 0, 0, 0, rotX, rotY, rotZ, "Stage " + i.ToString());
                     stageDiffuseLightSet[i] = light;
                 }
 
@@ -338,15 +353,19 @@ namespace Smash_Forge
 
                 // character diffuse
                 {
-                    float hue = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 29);
-                    float saturation = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 30);
-                    float value = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 31);
+                    float difHue = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 29);
+                    float difSaturation = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 30);
+                    float difIntensity = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 31);
+
+                    float ambHue = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 33);
+                    float ambSaturation = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 34);
+                    float ambIntensity = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 35);
 
                     float rotX = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4, 5);
                     float rotY = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4, 6);
                     float rotZ = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4, 7);
 
-                    diffuseLight = new DirectionalLight(hue, saturation, value, 0, 0, 0, "Diffuse");
+                    diffuseLight = new DirectionalLight(difHue, difSaturation, difIntensity, ambHue, ambSaturation, ambIntensity, 0, 0, 0, "Diffuse");
                 }
 
                 // fresnel lighting
@@ -359,14 +378,11 @@ namespace Smash_Forge
                     float satGround = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 12);
                     float intensityGround = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 13);
 
-                    fresnelLight = new HemisphereFresnel(hueGround, satGround, intensityGround, hueSky, satSky, intensitySky, "Fresnel");
-                }
+                    float skyAngle = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 14);
+                    float groundAngle = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 15);
 
-                // ambient color
-                {
-                    Runtime.amb_hue = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 33);
-                    Runtime.amb_saturation = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 34);
-                    Runtime.amb_intensity = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 35);
+                    fresnelLight = new HemisphereFresnel(hueGround, satGround, intensityGround, hueSky, satSky, intensitySky, 
+                        skyAngle, groundAngle, "Fresnel");
                 }
             }
         }
@@ -454,18 +470,5 @@ namespace Smash_Forge
             return newAreaLight;
         }
 
-        private static void ParseAreaLightExpression(string entry, AreaLight light)
-        {
-            string[] sections = entry.Split('=');
-            Debug.WriteLine(sections[0]);
-            string name = sections[0];
-            string[] values = sections[1].Split(',');
-
-            if (name == "id")
-            {
-                light.id = values[0];
-            }
-                
-        }
     }
 }

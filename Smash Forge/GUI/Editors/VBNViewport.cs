@@ -538,7 +538,7 @@ namespace Smash_Forge
                 new Vector3(0, 1, 0));
             lightMatrix = lightProjection * lightView;
             lightMatrix = Matrix4.CreateTranslation(width, -height, zoom)
-                * lightProjection * Matrix4.CreateRotationY(Runtime.dif_rotY) * Matrix4.CreateRotationX(Runtime.dif_rotX);
+                * lightProjection * Matrix4.CreateRotationY(Lights.diffuseLight.rotY) * Matrix4.CreateRotationX(Lights.diffuseLight.rotX);
         }
 
         public void Render()
@@ -665,11 +665,11 @@ namespace Smash_Forge
             Vector3 p2 = new Vector3(0.0f, 5.0f, 0.0f);
 
             // set color to light color
-            int r = (int)(Lights.diffuseLight.R * 255);
+            int r = (int)(Lights.diffuseLight.difR * 255);
             r = RenderTools.ClampInt(r);
-            int g = (int)(Lights.diffuseLight.G * 255);
+            int g = (int)(Lights.diffuseLight.difG * 255);
             g = RenderTools.ClampInt(g);
-            int b = (int)(Lights.diffuseLight.G * 255);
+            int b = (int)(Lights.diffuseLight.difG * 255);
             b = RenderTools.ClampInt(b);
             GL.Color4(Color.FromArgb(255, r, g, b));
 
@@ -877,10 +877,6 @@ namespace Smash_Forge
 
             int renderType = (int)Runtime.renderType;
 
-            // character ambient light
-            float ambR, ambG, ambB = 1.0f;
-            RenderTools.HSV2RGB(Runtime.amb_hue, Runtime.amb_saturation, Runtime.amb_intensity, out ambR, out ambG, out ambB);
-
             #region MBN Uniforms
 
             shader = Runtime.shaders["MBN"];
@@ -895,8 +891,8 @@ namespace Smash_Forge
                 GL.Uniform3(shader.getAttribute("difLightDirection"), Lights.diffuseLight.direction);
             }
 
-            GL.Uniform3(shader.getAttribute("difLightColor"), Lights.diffuseLight.R, Lights.diffuseLight.G, Lights.diffuseLight.B);
-            GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
+            GL.Uniform3(shader.getAttribute("difLightColor"), Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB);
+            GL.Uniform3(shader.getAttribute("ambLightColor"), Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB);
 
             GL.ActiveTexture(TextureUnit.Texture10);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
@@ -911,8 +907,8 @@ namespace Smash_Forge
             shader = Runtime.shaders["DAT"];
             GL.UseProgram(shader.programID);
 
-            GL.Uniform3(shader.getAttribute("difLightColor"), Lights.diffuseLight.R, Lights.diffuseLight.G, Lights.diffuseLight.B);
-            GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
+            GL.Uniform3(shader.getAttribute("difLightColor"), Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB);
+            GL.Uniform3(shader.getAttribute("ambLightColor"), Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB);
 
             GL.ActiveTexture(TextureUnit.Texture10);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
@@ -932,8 +928,7 @@ namespace Smash_Forge
                 {
                     if (m.bch.mbn != null && Runtime.shaders["MBN"].shadersCompiledSuccessfully())
                     {
-                        m.bch.mbn.Render(mvpMatrix);
-                       
+                        m.bch.mbn.Render(mvpMatrix);                      
                     }
                 }
 
@@ -1004,39 +999,39 @@ namespace Smash_Forge
                     GL.Uniform3(shader.getAttribute("refLightColor"), refR, refG, refB);
 
                     // character diffuse light
-                    Lights.diffuseLight.setDirectionFromXYZAngles(Runtime.dif_rotX, Runtime.dif_rotY, Runtime.dif_rotZ);
-                    GL.Uniform3(shader.getAttribute("difLightColor"), Lights.diffuseLight.R, Lights.diffuseLight.G, Lights.diffuseLight.B);
-                    
-                    GL.Uniform3(shader.getAttribute("ambLightColor"), ambR, ambG, ambB);
+                    Lights.diffuseLight.setDirectionFromXYZAngles(Lights.diffuseLight.rotX, Lights.diffuseLight.rotY, Lights.diffuseLight.rotZ);
+                    GL.Uniform3(shader.getAttribute("difLightColor"), Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB);
+
+                    GL.Uniform3(shader.getAttribute("ambLightColor"), Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB);
 
                     // character specular light
                     Lights.specularLight.setColorFromHSV(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity);
                     Lights.specularLight.setDirectionFromXYZAngles(Runtime.specular_rotX, Runtime.specular_rotY, Runtime.specular_rotZ);
-                    GL.Uniform3(shader.getAttribute("specLightColor"), Lights.specularLight.R, Lights.specularLight.G, Lights.specularLight.B);
+                    GL.Uniform3(shader.getAttribute("specLightColor"), Lights.specularLight.difR, Lights.specularLight.difG, Lights.specularLight.difB);
 
                     // stage light 1
                     int index1 = 0 + (4 * m.nud.lightSetNumber);
                     Lights.stageLight1 = Lights.stageDiffuseLightSet[index1];
                     GL.Uniform1(shader.getAttribute("renderLights.stageLight1"), Runtime.renderStageLight1 ? 1 : 0);
-                    GL.Uniform3(shader.getAttribute("Lights.stageLight1Color"), Lights.stageLight1.R, Lights.stageLight1.G, Lights.stageLight1.B);
+                    GL.Uniform3(shader.getAttribute("Lights.stageLight1Color"), Lights.stageLight1.difR, Lights.stageLight1.difG, Lights.stageLight1.difB);
 
                     // stage light 2
                     int index2 = 1 + (4 * m.nud.lightSetNumber);
                     Lights.stageLight2 = Lights.stageDiffuseLightSet[index2];
                     GL.Uniform1(shader.getAttribute("renderLights.stageLight2"), Runtime.renderStageLight2 ? 1 : 0);
-                    GL.Uniform3(shader.getAttribute("Lights.stageLight2Color"), Lights.stageLight2.R, Lights.stageLight2.G, Lights.stageLight2.B);
+                    GL.Uniform3(shader.getAttribute("Lights.stageLight2Color"), Lights.stageLight2.difR, Lights.stageLight2.difG, Lights.stageLight2.difB);
 
                     // stage light 3
                     int index3 = 2 + (4 * m.nud.lightSetNumber);
                     Lights.stageLight3 = Lights.stageDiffuseLightSet[index3];
                     GL.Uniform1(shader.getAttribute("renderLights.stageLight3"), Runtime.renderStageLight3 ? 1 : 0);
-                    GL.Uniform3(shader.getAttribute("Lights.stageLight3Color"), Lights.stageLight3.R, Lights.stageLight3.G, Lights.stageLight3.B);
+                    GL.Uniform3(shader.getAttribute("Lights.stageLight3Color"), Lights.stageLight3.difR, Lights.stageLight3.difG, Lights.stageLight3.difB);
 
                     // stage light 4
                     int index4 = 3 + (4 * m.nud.lightSetNumber);
                     Lights.stageLight4 = Lights.stageDiffuseLightSet[index4];
                     GL.Uniform1(shader.getAttribute("renderLights.stageLight4"), Runtime.renderStageLight4 ? 1 : 0);
-                    GL.Uniform3(shader.getAttribute("Lights.stageLight4Color"), Lights.stageLight4.R, Lights.stageLight4.G, Lights.stageLight4.B);
+                    GL.Uniform3(shader.getAttribute("Lights.stageLight4Color"), Lights.stageLight4.difR, Lights.stageLight4.difG, Lights.stageLight4.difB);
 
 
                     // stage fog

@@ -193,14 +193,6 @@ namespace Smash_Forge
 
         public static int selectedBoneIndex = -1;
 
-        public static float dif_rotX = 0.0f;
-        public static float dif_rotY = 0.0f;
-        public static float dif_rotZ = 0.0f;
-
-        public static float amb_hue = 360.0f;
-        public static float amb_saturation = 0.00f;
-        public static float amb_intensity = 0.85f;
-
         public static float specular_hue = 360.0f;
         public static float specular_saturation = 0.0f;
         public static float specular_intensity = 0.75f;

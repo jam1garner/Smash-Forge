@@ -73,13 +73,33 @@ namespace Smash_Forge.GUI.Editors
             if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
             {
                 charColor1GroupBox.Text = "Fresnel Sky Color";
-                charColor1GroupBox.Text = "Fresnel Ground Color";
+                charColor2GroupBox.Text = "Fresnel Ground Color";
+                RenderCharacterLightColor(new Vector3(Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB),
+                    new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
+                UpdateCharFresnelValues();
             }
-            else
+            else if(charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
             {
                 charColor1GroupBox.Text = "Diffuse Color";
-                charColor1GroupBox.Text = "Ambient Color";
+                charColor2GroupBox.Text = "Ambient Color";
+                RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
+                      new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
+                UpdateCharDiffuseValues();
             }
+        }
+
+        private void UpdateCharFresnelValues()
+        {
+            charColor1XTB.Text = Lights.fresnelLight.skyR + "";
+            charColor1YTB.Text = Lights.fresnelLight.skyG + "";
+            charColor1ZTB.Text = Lights.fresnelLight.skyB + "";
+        }
+
+        private void UpdateCharDiffuseValues()
+        {
+            charColor1XTB.Text = Lights.diffuseLight.difR + "";
+            charColor1YTB.Text = Lights.diffuseLight.difG + "";
+            charColor1ZTB.Text = Lights.diffuseLight.difB + "";
         }
 
         private void lightSetGroupListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -94,9 +114,9 @@ namespace Smash_Forge.GUI.Editors
         private void UpdateCurrentStageLightValues()
         {
             selectedStageLight = Lights.stageDiffuseLightSet[(lightSetGroupListBox.SelectedIndex * 4) + lightSetLightListBox.SelectedIndex];
-            stageDifHueTB.Text = selectedStageLight.hue + "";
-            stageDifSatTB.Text = selectedStageLight.saturation + "";
-            stageDifIntensityTB.Text = selectedStageLight.intensity + "";
+            stageDifHueTB.Text = selectedStageLight.difHue + "";
+            stageDifSatTB.Text = selectedStageLight.difSaturation + "";
+            stageDifIntensityTB.Text = selectedStageLight.difIntensity + "";
             stageDifRotXTB.Text = selectedStageLight.rotX + "";
             stageDifRotYTB.Text = selectedStageLight.rotY + "";
             stageDifRotZTB.Text = selectedStageLight.rotZ + "";
@@ -114,6 +134,24 @@ namespace Smash_Forge.GUI.Editors
             stageDifColorButton.BackColor = stageColor;
         }
 
+        private void RenderCharacterLightColor(Vector3 topColor, Vector3 bottomColor)
+        {
+            charDifColorGLControl.MakeCurrent();
+            GL.Viewport(charDifColorGLControl.ClientRectangle);
+            GL.ClearColor(Color.White);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.MatrixMode(MatrixMode.Projection);
+
+            GL.Enable(EnableCap.Texture2D);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+
+            RenderTools.DrawQuadGradient(topColor.X, topColor.Y, topColor.Z, bottomColor.X, bottomColor.Y, bottomColor.Z);
+
+            charDifColorGLControl.SwapBuffers();
+        }
 
         private void RenderAreaLightColor()
         {

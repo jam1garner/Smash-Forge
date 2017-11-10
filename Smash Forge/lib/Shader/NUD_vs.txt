@@ -88,7 +88,7 @@ void main()
 
     gl_Position = objPos;
 
-    if (useDirectUVTime == 1 && (flags & 0x00001900u) > 0)
+    if ((useDirectUVTime == 1) && (flags & 0x00001900u) == 0x00001900u)
     {
         texcoord = vec2((vUV * colorSamplerUV.xy) + (colorSamplerUV.zw * elapsedTime));
         normaltexcoord = vec2((vUV * normalSamplerAUV.xy) + (normalSamplerAUV.zw * elapsedTime));
