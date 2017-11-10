@@ -1004,7 +1004,6 @@ namespace Smash_Forge
                     GL.Uniform3(shader.getAttribute("refLightColor"), refR, refG, refB);
 
                     // character diffuse light
-                    Lights.diffuseLight.setColorFromHSV(Runtime.dif_hue, Runtime.dif_saturation, Runtime.dif_intensity);
                     Lights.diffuseLight.setDirectionFromXYZAngles(Runtime.dif_rotX, Runtime.dif_rotY, Runtime.dif_rotZ);
                     GL.Uniform3(shader.getAttribute("difLightColor"), Lights.diffuseLight.R, Lights.diffuseLight.G, Lights.diffuseLight.B);
                     
@@ -1042,8 +1041,6 @@ namespace Smash_Forge
 
                     // stage fog
                     GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
-                    float stageFogR, stageFogG, stageFogB = 1.0f;
-                    RenderTools.HSV2RGB(Runtime.fog_hue, Runtime.fog_saturation, Runtime.fog_intensity, out stageFogR, out stageFogG, out stageFogB);
                     GL.Uniform3(shader.getAttribute("stageFogColor"), Lights.stageFogSet[m.nud.lightSetNumber]);
 
 

@@ -1481,6 +1481,7 @@ namespace Smash_Forge
                         }
                     }*/
                 }
+
                 if (selectedBone != null)
                 {
                     GL.Clear(ClearBufferMask.DepthBufferBit);
@@ -1489,11 +1490,26 @@ namespace Smash_Forge
             }
         }
 
+        public static void DrawQuadGradient(float topR, float topG, float topB, float bottomR, float bottomG, float bottomB)
+        {
+            // draw RGB and alpha channels of texture to screen quad
+            Shader shader = Runtime.shaders["Gradient"];
+            GL.UseProgram(shader.programID);
+
+            GL.ClearColor(Color.White);
+
+            GL.Uniform3(shader.getAttribute("topColor"), topR, topG, topB);
+            GL.Uniform3(shader.getAttribute("bottomColor"), bottomR, bottomG, bottomB);
+
+            GL.Disable(EnableCap.DepthTest);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // draw full screen "quad" (big triangle)
+            GL.BindVertexArray(0);
+        }
+
         public static void DrawTexturedQuad(int texture, int width, int height, bool renderR, bool renderG, bool renderB, 
             bool renderAlpha, bool alphaOverride, bool preserveAspectRatio)      
         {
             // draw RGB and alpha channels of texture to screen quad
-
             Shader shader = Runtime.shaders["Texture"];
             GL.UseProgram(shader.programID);
 
@@ -1516,7 +1532,6 @@ namespace Smash_Forge
             float aspectRatio = (float) width / (float) height;
             GL.Uniform1(shader.getAttribute("width"), width);
             GL.Uniform1(shader.getAttribute("height"), height);
-
 
             GL.Disable(EnableCap.DepthTest);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // draw full screen "quad" (big triangle)

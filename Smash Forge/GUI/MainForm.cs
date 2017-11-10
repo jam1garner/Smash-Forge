@@ -135,6 +135,11 @@ namespace Smash_Forge
             texture.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_fs.txt"));
             Runtime.shaders.Add("Texture", texture);
 
+            Shader gradient = new Shader();
+            gradient.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Gradient_vs.txt"));
+            gradient.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Gradient_fs.txt"));
+            Runtime.shaders.Add("Gradient", gradient);
+
             if (!Runtime.shaders.ContainsKey("NUD"))
             {
                 Shader nud = new Shader();
@@ -2078,6 +2083,7 @@ namespace Smash_Forge
             Runtime.shaders["DAT"].SaveErrorLog("DAT");
             Runtime.shaders["Texture"].SaveErrorLog("Texture");
             Runtime.shaders["Quad"].SaveErrorLog("Quad");
+            Runtime.shaders["Gradient"].SaveErrorLog("Gradient");
 
             MessageBox.Show("Error logs saved to Forge directory");
         }
@@ -2090,7 +2096,7 @@ namespace Smash_Forge
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            e.Cancel = false;// (MessageBox.Show("Would you like to close Forge? Any and all unsaved work will be lost.", "Close Confirmation" , MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No);
+            e.Cancel = false;
         }
 
         private void importParamsToolStripMenuItem_Click(object sender, EventArgs e)

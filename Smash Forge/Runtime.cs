@@ -193,12 +193,6 @@ namespace Smash_Forge
 
         public static int selectedBoneIndex = -1;
 
-        public static float dif_hue = 360.0f;
-        public static float dif_saturation = 0.00f;
-        public static float dif_intensity = 1.00f;
-        public static float difR = 1.0f;
-        public static float difG = 1.0f;
-        public static float difB = 1.0f;
         public static float dif_rotX = 0.0f;
         public static float dif_rotY = 0.0f;
         public static float dif_rotZ = 0.0f;
@@ -206,14 +200,6 @@ namespace Smash_Forge
         public static float amb_hue = 360.0f;
         public static float amb_saturation = 0.00f;
         public static float amb_intensity = 0.85f;
-
-        public static float fres_ground_hue = 360.0f;
-        public static float fres_ground_saturation = 0.00f;
-        public static float fres_ground_intensity = 0.00f;
-
-        public static float fres_sky_hue = 360.0f;
-        public static float fres_sky_saturation = 0.00f;
-        public static float fres_sky_intensity = 1.00f;
 
         public static float specular_hue = 360.0f;
         public static float specular_saturation = 0.0f;
@@ -231,38 +217,7 @@ namespace Smash_Forge
         public static bool renderStageLight3 = true;
         public static bool renderStageLight4 = true;
 
-        public static float stagelight1_hue = 360.0f;
-        public static float stagelight1_saturation = 0.0f;
-        public static float stagelight1_intensity = 1.00f;
-        public static float stagelight1_rotX = -90.0f;
-        public static float stagelight1_rotY = 0.0f;
-        public static float stagelight1_rotZ = 0.0f;
-
-        public static float stagelight2_hue = 360.0f;
-        public static float stagelight2_saturation = 0.0f;
-        public static float stagelight2_intensity = 1.00f;
-        public static float stagelight2_rotX = 0.0f;
-        public static float stagelight2_rotY = 0.0f;
-        public static float stagelight2_rotZ = 0.0f;
-
-        public static float stagelight3_hue = 360.0f;
-        public static float stagelight3_saturation = 0.0f;
-        public static float stagelight3_intensity = 1.00f;
-        public static float stagelight3_rotX = 0.0f;
-        public static float stagelight3_rotY = 0.0f;
-        public static float stagelight3_rotZ = 0.0f;
-
-        public static float stagelight4_hue = 360.0f;
-        public static float stagelight4_saturation = 0.0f;
-        public static float stagelight4_intensity = 1.00f;
-        public static float stagelight4_rotX = 0.0f;
-        public static float stagelight4_rotY = 0.0f;
-        public static float stagelight4_rotZ = 0.0f;
-
         public static bool renderFog = true;
-        public static float fog_hue = 360.0f;
-        public static float fog_saturation = 0.00f;
-        public static float fog_intensity = 0.00f;
 
         public static float renderDepth = 100000.0f;
         public static bool renderAlpha = true;

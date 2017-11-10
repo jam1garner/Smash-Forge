@@ -7,14 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SALT.PARAMS;
+using System.Diagnostics;
 
 namespace Smash_Forge.GUI.Editors
 {
     public partial class StageLighting : Form
     {
-        private DirectionalLight selectedStageLight;
+        private DirectionalLight selectedStageLight = new DirectionalLight();
+        private AreaLight selectedAreaLight = new AreaLight("");
 
         public StageLighting()
         {
@@ -101,8 +105,37 @@ namespace Smash_Forge.GUI.Editors
         private void lightSetLightListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateCurrentStageLightValues();
+            UpdateStageButtonColor();
         }
 
+        private void UpdateStageButtonColor()
+        {
+            Color stageColor = Color.FromArgb(255, 255, 255, 255);
+            stageDifColorButton.BackColor = stageColor;
+        }
+
+
+        private void RenderAreaLightColor()
+        {
+            areaColorGLControl.MakeCurrent();
+            GL.Viewport(areaColorGLControl.ClientRectangle);
+            GL.ClearColor(Color.White);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.MatrixMode(MatrixMode.Projection);
+
+            GL.Enable(EnableCap.Texture2D);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+
+            Debug.WriteLine(selectedAreaLight.skyR);
+            RenderTools.DrawQuadGradient(selectedAreaLight.skyR, selectedAreaLight.skyG, selectedAreaLight.skyB, selectedAreaLight.groundR, selectedAreaLight.groundG, selectedAreaLight.groundB);
+
+            areaColorGLControl.SwapBuffers();
+        }
+
+        #region stage color events
         private void stageDifHueTB_TextChanged(object sender, EventArgs e)
         {
             float i = 0;
@@ -138,7 +171,9 @@ namespace Smash_Forge.GUI.Editors
             else
                 stageDifIntensityTB.BackColor = Color.Red;
         }
+        #endregion
 
+        #region stage rotation events
         private void stageDifRotXTB_TextChanged(object sender, EventArgs e)
         {
             float i = 0;
@@ -174,7 +209,9 @@ namespace Smash_Forge.GUI.Editors
             else
                 stageDifRotZTB.BackColor = Color.Red;
         }
+        #endregion
 
+        #region character color events
         private void charColor1HueTB_TextChanged(object sender, EventArgs e)
         {
 
@@ -204,10 +241,114 @@ namespace Smash_Forge.GUI.Editors
         {
 
         }
+        #endregion
 
+        #region area light color events
         private void areaLightListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateCurrentAreaLightValues();
+            RenderAreaLightColor();
+        }
+
+        private void UpdateCurrentAreaLightValues()
+        {
+            selectedAreaLight = (AreaLight)areaLightListBox.SelectedItem;
+            areaCeilRedTB.Text = selectedAreaLight.skyR + "";
+            areaCeilBlueTB.Text = selectedAreaLight.skyB + "";
+            areaCeilGreenTB.Text = selectedAreaLight.skyG + "";
+            areaGroundRedTB.Text = selectedAreaLight.groundR + "";
+            areaGroundGreenTB.Text = selectedAreaLight.groundG + "";
+            areaGroundBlueTB.Text = selectedAreaLight.groundB + "";
+            areaRotX.Text = selectedAreaLight.rotX + "";
+            areaRotY.Text = selectedAreaLight.rotY + "";
+            areaRotZ.Text = selectedAreaLight.rotZ + "";
+            areaPosXTB.Text = selectedAreaLight.positionX + "";
+            areaPosYTB.Text = selectedAreaLight.positionY + "";
+            areaPosZTB.Text = selectedAreaLight.positionZ + "";
+            areaScaleXTB.Text = selectedAreaLight.scaleX + "";
+            areaScaleYTB.Text = selectedAreaLight.scaleY + "";
+            areaScaleZTB.Text = selectedAreaLight.scaleZ + "";
+        }
+
+        private void areaCeilRedTB_TextChanged(object sender, EventArgs e)
         {
 
         }
+
+        private void areaCeilGreenTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void areaCeilBlueTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void areaGroundRedTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void areaGroundGreenTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void areaGroundBlueTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        #endregion
+
+        #region area light transformations events
+
+        private void areaPosXTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void areaPosYTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void areaPosZTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void areaScaleXTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void areaScaleYTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void areaScaleZTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void areaRotX_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void areaRotY_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void areaRotZ_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        #endregion events
     }
 }
