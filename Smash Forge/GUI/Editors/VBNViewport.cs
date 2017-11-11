@@ -1776,8 +1776,11 @@ namespace Smash_Forge
                 GL.Enable(EnableCap.Blend);
                 GL.Disable(EnableCap.CullFace);
 
-                foreach (var pair in Runtime.ParamManager.LedgeGrabboxes.Reverse())
+                foreach (var pair in Runtime.ParamManager.LedgeGrabboxes)
                 {
+                    if (pair.Key >= 3) //ID 3 is only used for ZSS Brawl Up B which is unused in this game
+                        return;
+
                     var l = pair.Value;
 
                     var va = new Vector3(0, l.Y1, l.Z1);
@@ -1802,39 +1805,23 @@ namespace Smash_Forge
                                 case 0:
                                     GL.Color4(Color.FromArgb(90, Color.DarkRed));
                                     break;
-                                case 1:
-                                    GL.Color4(Color.FromArgb(90, Color.DarkGreen));
-                                    break;
-                                case 2:
-                                    GL.Color4(Color.FromArgb(90, Color.DarkOrange));
-                                    break;
                                 default:
-                                    GL.Color4(Color.FromArgb(90, Color.DarkRed));
-                                    break;
+                                    continue;
+                                //case 1:
+                                //    GL.Color4(Color.FromArgb(90, Color.DarkGreen));
+                                //    break;
+                                //case 2:
+                                //    GL.Color4(Color.FromArgb(90, Color.DarkOrange));
+                                //    break;
+                                //default:
+                                //    GL.Color4(Color.FromArgb(90, Color.DarkRed));
+                                //    break;
                             }
-
 
 
                         RenderTools.beginTopLevelStencil();
 
                         RenderTools.drawRectangularPrism((va2 + va) / 2, 10, (va2.Y - va.Y) / 2, (va2.Z - va.Z) / 2);
-
-                        //RenderTools.beginTopLevelAntiStencil();
-                        //foreach (var pair2 in Runtime.ParamManager.LedgeGrabboxes)
-                        //{
-                        //    if (pair2.Key == pair.Key)
-                        //        break;  // this only works because the list is sorted
-                        //    var l2 = pair2.Value;
-
-                        //    var vab = new Vector3(0, l2.Y1, l2.Z1);
-
-                        //    var vab2 = new Vector3(0, l2.Y2, l2.Z2);
-
-                        //    vab = Vector3.Transform(vab, b.transform);
-                        //    vab2 = Vector3.Transform(vab2, b.transform);
-
-                        //    RenderTools.drawRectangularPrism((vab2 + vab)/2, 10, (vab2.Y - vab.Y)/2, (vab2.Z - vab.Z)/2);
-                        //}
 
                         RenderTools.endTopLevelStencilAndDraw();
 
@@ -1891,6 +1878,16 @@ namespace Smash_Forge
                     // End stenciling and draw over all the stenciled bits
                     RenderTools.endTopLevelStencilAndDraw();
                 }
+
+                //Render HipN bone point
+                GL.Color4(Color.FromArgb(160, Color.DarkBlue));
+                var v = new Vector3(0, 0, 0);
+                Bone bone = getBone(3);
+                v = Vector3.Transform(v, bone.transform.ClearScale());
+
+                RenderTools.beginTopLevelStencil();
+                RenderTools.drawSphere(v, 0.5f, 30);
+                RenderTools.endTopLevelStencilAndDraw();
 
                 GL.Disable(EnableCap.Blend);
                 GL.Enable(EnableCap.CullFace);
@@ -2065,6 +2062,16 @@ namespace Smash_Forge
                 else if (animname.Contains("ZeldaPhantomMainPhantom"))
                 {
                     HandleACMD(animname.Replace("ZeldaPhantomMainPhantom", ""));
+                    return;
+                }
+                else if (animname == "SpecialHi1.omo")
+                {
+                    HandleACMD("SpecialHi.omo");
+                    return;
+                }
+                else if (animname == "SpecialAirHi1.omo")
+                {
+                    HandleACMD("SpecialAirHi.omo");
                     return;
                 }
                 else

@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.stageLight3CB = new System.Windows.Forms.CheckBox();
             this.stageLight4CB = new System.Windows.Forms.CheckBox();
@@ -152,6 +152,7 @@
             this.label20 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.checkBox23 = new System.Windows.Forms.CheckBox();
             this.checkBox22 = new System.Windows.Forms.CheckBox();
             this.checkBox21 = new System.Windows.Forms.CheckBox();
             this.checkBox17 = new System.Windows.Forms.CheckBox();
@@ -316,7 +317,6 @@
             this.areaGroundB = new System.Windows.Forms.TextBox();
             this.areaColCeiling = new System.Windows.Forms.Label();
             this.areaSkyRLabel = new System.Windows.Forms.Label();
-            this.checkBox23 = new System.Windows.Forms.CheckBox();
             this.tabPage4.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -418,7 +418,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(556, 642);
+            this.tabPage4.Size = new System.Drawing.Size(556, 672);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Stage Lighting";
             // 
@@ -1067,7 +1067,7 @@
             this.tabPage3.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage3.Size = new System.Drawing.Size(556, 642);
+            this.tabPage3.Size = new System.Drawing.Size(556, 672);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Character Lighting";
             // 
@@ -1689,6 +1689,17 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Hit/Hurt boxes";
             // 
+            // checkBox23
+            // 
+            this.checkBox23.AutoSize = true;
+            this.checkBox23.Location = new System.Drawing.Point(3, 596);
+            this.checkBox23.Name = "checkBox23";
+            this.checkBox23.Size = new System.Drawing.Size(191, 17);
+            this.checkBox23.TabIndex = 72;
+            this.checkBox23.Text = "Render Reverse Ledge Grabboxes";
+            this.checkBox23.UseVisualStyleBackColor = true;
+            this.checkBox23.CheckedChanged += new System.EventHandler(this.checkChanged);
+            // 
             // checkBox22
             // 
             this.checkBox22.AutoSize = true;
@@ -2073,8 +2084,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem11,
-            listViewItem12});
+            listViewItem1,
+            listViewItem2});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -2813,7 +2824,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(556, 642);
+            this.tabPage5.Size = new System.Drawing.Size(556, 672);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Area Lights WIP";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -3492,17 +3503,6 @@
             this.areaSkyRLabel.Size = new System.Drawing.Size(27, 13);
             this.areaSkyRLabel.TabIndex = 66;
             this.areaSkyRLabel.Text = "Red";
-            // 
-            // checkBox23
-            // 
-            this.checkBox23.AutoSize = true;
-            this.checkBox23.Location = new System.Drawing.Point(3, 596);
-            this.checkBox23.Name = "checkBox23";
-            this.checkBox23.Size = new System.Drawing.Size(148, 17);
-            this.checkBox23.TabIndex = 72;
-            this.checkBox23.Text = "Render Ledge Grabboxes";
-            this.checkBox23.UseVisualStyleBackColor = true;
-            this.checkBox23.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // RenderSettings
             // 
