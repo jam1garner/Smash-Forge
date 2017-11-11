@@ -112,7 +112,8 @@ namespace Smash_Forge
         public Vector3 direction = new Vector3(0f, 0f, 1f);
 
         public bool noDirectional = false;
-        public bool renderBoundingBox = true;
+        public bool isSelected = false;
+
 
         public AreaLight(string areaLightID)
         {

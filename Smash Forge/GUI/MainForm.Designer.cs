@@ -94,8 +94,8 @@
             this.stageWorkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cleanViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
-            this.renderSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stageLightingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.renderSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.masterpiecesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -631,19 +631,19 @@
             this.toolStripSeparator6.Name = "toolStripSeparator6";
             this.toolStripSeparator6.Size = new System.Drawing.Size(155, 6);
             // 
-            // renderSettingsToolStripMenuItem
-            // 
-            this.renderSettingsToolStripMenuItem.Name = "renderSettingsToolStripMenuItem";
-            this.renderSettingsToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.renderSettingsToolStripMenuItem.Text = "Render Settings";
-            this.renderSettingsToolStripMenuItem.Click += new System.EventHandler(this.renderSettingsToolStripMenuItem_Click);
-            // 
             // stageLightingToolStripMenuItem
             // 
             this.stageLightingToolStripMenuItem.Name = "stageLightingToolStripMenuItem";
             this.stageLightingToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.stageLightingToolStripMenuItem.Text = "Stage Lighting";
             this.stageLightingToolStripMenuItem.Click += new System.EventHandler(this.stageLightingToolStripMenuItem_Click);
+            // 
+            // renderSettingsToolStripMenuItem
+            // 
+            this.renderSettingsToolStripMenuItem.Name = "renderSettingsToolStripMenuItem";
+            this.renderSettingsToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.renderSettingsToolStripMenuItem.Text = "Render Settings";
+            this.renderSettingsToolStripMenuItem.Click += new System.EventHandler(this.renderSettingsToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 

@@ -758,6 +758,7 @@ namespace Smash_Forge
             hurtboxList.refresh();
             Runtime.Animnames.Clear();
             Runtime.clearMoveset();
+            Lights.areaLights.Clear();
         }
 
         private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1732,6 +1733,10 @@ namespace Smash_Forge
                 }
             }
 
+            if (fileName.EndsWith("area_light.xmb"))
+            {
+                Lights.CreateAreaLightsFromXMB(new XMBFile(fileName));
+            }
 
             if (fileName.ToLower().EndsWith(".obj"))
             {

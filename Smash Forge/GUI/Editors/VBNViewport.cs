@@ -626,7 +626,8 @@ namespace Smash_Forge
                 DrawPathDisplay();
 
             // area light bounding boxes should intersect stage geometry and not render on top
-            DrawAreaLightBoundingBoxes();
+            if (Runtime.drawAreaLightBoundingBoxes)
+                DrawAreaLightBoundingBoxes();
 
             // clear depth buffer so stuff will render on top of the models
             GL.Clear(ClearBufferMask.DepthBufferBit);
@@ -674,7 +675,7 @@ namespace Smash_Forge
             GL.Color4(Color.FromArgb(255, r, g, b));
 
             RenderTools.drawPyramidWireframe(p1, 5.0f, 3.0f);
-            RenderTools.drawRectangularPrismWireframe(p2, 2.0f, 5.0f, 2.0f);
+            RenderTools.drawRectangularPrismWireframe(p2, 2.0f, 5.0f, 2.0f, Color.White);
         }
 
         private static void SetupFixedFunctionRendering()
@@ -785,9 +786,10 @@ namespace Smash_Forge
         {
             foreach (AreaLight light in Lights.areaLights)
             {
+                Color color = Color.White;
+         
                 RenderTools.drawRectangularPrismWireframe(new Vector3(light.positionX, light.positionY, light.positionZ),
-                    light.scaleX, light.scaleY, light.scaleZ);          
-                //Debug.WriteLine(light.scaleX);
+                    light.scaleX, light.scaleY, light.scaleZ, color);          
             }
         }
 
@@ -964,7 +966,7 @@ namespace Smash_Forge
 
                     GL.Uniform1(shader.getAttribute("elapsedTime"), elapsedSeconds);
 
-                    GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
+                    GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderMaterialLighting ? 1 : 0);
                     GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
                     GL.Uniform1(shader.getAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
                     GL.Uniform1(shader.getAttribute("renderDiffuse"), Runtime.renderDiffuse ? 1 : 0);
@@ -972,7 +974,7 @@ namespace Smash_Forge
                     GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
                     GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
 
-                    GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
+                    GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.renderNormalMap ? 1 : 0);
 
                     GL.Uniform1(shader.getAttribute("ambientIntensity"), Runtime.amb_inten);
                     GL.Uniform1(shader.getAttribute("diffuseIntensity"), Runtime.dif_inten);

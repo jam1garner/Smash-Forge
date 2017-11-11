@@ -53,6 +53,7 @@ uniform int isTransparent;
 
 uniform int lightSet;
 uniform int isStage;
+uniform int renderStageLighting;
 
 // NU_ Material Properties
 uniform vec4 colorSamplerUV;
@@ -386,7 +387,7 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
                     distanceMixFactor = distanceMixFactor / distance(vec3(-55, 0, 0), vec3(-81, 0, 0));
                     //lighting = mix(vec3(2), vec3(0), distanceMixFactor);
                 }
-                if ((flags & 0x0F000000u) < 0x04000000u)
+                if (((flags & 0x0F000000u) <= 0x04000000u) || renderStageLighting != 1)
                     lighting = vec3(1); // flags for "no lighting"
 
                 diffusePass = diffuseColorFinal * lighting;

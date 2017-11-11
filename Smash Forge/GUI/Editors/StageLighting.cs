@@ -62,7 +62,6 @@ namespace Smash_Forge.GUI.Editors
                     {
                         Runtime.lightSetParam = new ParamFile(ofd.FileName);
                         Lights.SetLightsFromLightSetParam(Runtime.lightSetParam);
-                        lightSetDirTB.Text = ofd.FileName;
                     }
                 }
             }
@@ -310,31 +309,102 @@ namespace Smash_Forge.GUI.Editors
 
         private void areaCeilRedTB_TextChanged(object sender, EventArgs e)
         {
+            float i = 0;
+            if (float.TryParse(areaCeilRedTB.Text, out i))
+            {
+                areaCeilRedTB.BackColor = Color.White;
+                selectedAreaLight.skyR = i;
+            }
+            else
+                areaCeilRedTB.BackColor = Color.Red;
 
+            RenderAreaLightColor();
         }
 
         private void areaCeilGreenTB_TextChanged(object sender, EventArgs e)
         {
+            float i = 0;
+            if (float.TryParse(areaCeilGreenTB.Text, out i))
+            {
+                areaCeilGreenTB.BackColor = Color.White;
+                selectedAreaLight.skyG = i;
+            }
+            else
+                areaCeilGreenTB.BackColor = Color.Red;
 
+            RenderAreaLightColor();
         }
 
         private void areaCeilBlueTB_TextChanged(object sender, EventArgs e)
         {
+            float i = 0;
+            if (float.TryParse(areaCeilBlueTB.Text, out i))
+            {
+                areaCeilBlueTB.BackColor = Color.White;
+                selectedAreaLight.skyB = i;
+            }
+            else
+                areaCeilBlueTB.BackColor = Color.Red;
 
+            RenderAreaLightColor();
         }
 
         private void areaGroundRedTB_TextChanged(object sender, EventArgs e)
         {
+            float i = 0;
+            if (float.TryParse(areaGroundRedTB.Text, out i))
+            {
+                areaGroundRedTB.BackColor = Color.White;
+                selectedAreaLight.groundR = i;
+            }
+            else
+                areaGroundRedTB.BackColor = Color.Red;
 
+            RenderAreaLightColor();
         }
 
         private void areaGroundGreenTB_TextChanged(object sender, EventArgs e)
         {
+            float i = 0;
+            if (float.TryParse(areaGroundGreenTB.Text, out i))
+            {
+                areaGroundGreenTB.BackColor = Color.White;
+                selectedAreaLight.groundG = i;
+            }
+            else
+                areaGroundGreenTB.BackColor = Color.Red;
 
+            RenderAreaLightColor();
         }
 
         private void areaGroundBlueTB_TextChanged(object sender, EventArgs e)
         {
+            float i = 0;
+            if (float.TryParse(areaGroundBlueTB.Text, out i))
+            {
+                areaGroundBlueTB.BackColor = Color.White;
+                selectedAreaLight.groundB = i;
+            }
+            else
+                areaGroundBlueTB.BackColor = Color.Red;
+
+            RenderAreaLightColor();
+        }
+
+        private void areaCeilRedTrackBar_Scroll(object sender, EventArgs e)
+        {
+            areaCeilRedTB.Text = (float)(5 * (areaCeilRedTrackBar.Value / (float)areaCeilRedTrackBar.Maximum)) + "";
+        }
+
+        private void areaCeilGreenTrackBar_Scroll(object sender, EventArgs e)
+        {
+            areaCeilGreenTB.Text = (float)(5 * (areaCeilGreenTrackBar.Value / (float)areaCeilGreenTrackBar.Maximum)) + "";
+
+        }
+
+        private void areaCeilBlueTrackBar_Scroll(object sender, EventArgs e)
+        {
+            areaCeilBlueTB.Text = (float)(5 * (areaCeilBlueTrackBar.Value / (float)areaCeilBlueTrackBar.Maximum)) + "";
 
         }
 
@@ -344,49 +414,149 @@ namespace Smash_Forge.GUI.Editors
 
         private void areaPosXTB_TextChanged(object sender, EventArgs e)
         {
-
+            float i = 0;
+            if (float.TryParse(areaPosXTB.Text, out i))
+            {
+                areaPosXTB.BackColor = Color.White;
+                selectedAreaLight.positionX = i;
+            }
+            else
+                areaPosXTB.BackColor = Color.Red;
         }
 
         private void areaPosYTB_TextChanged(object sender, EventArgs e)
         {
-
+            float i = 0;
+            if (float.TryParse(areaPosYTB.Text, out i))
+            {
+                areaPosYTB.BackColor = Color.White;
+                selectedAreaLight.positionY = i;
+            }
+            else
+                areaPosYTB.BackColor = Color.Red;
         }
 
         private void areaPosZTB_TextChanged(object sender, EventArgs e)
         {
-
+            float i = 0;
+            if (float.TryParse(areaPosZTB.Text, out i))
+            {
+                areaPosZTB.BackColor = Color.White;
+                selectedAreaLight.positionZ = i;
+            }
+            else
+                areaPosZTB.BackColor = Color.Red;
         }
 
         private void areaScaleXTB_TextChanged(object sender, EventArgs e)
         {
-
+            float i = 0;
+            if (float.TryParse(areaScaleXTB.Text, out i))
+            {
+                areaScaleXTB.BackColor = Color.White;
+                selectedAreaLight.scaleX = i;
+            }
+            else
+                areaScaleXTB.BackColor = Color.Red;
         }
 
         private void areaScaleYTB_TextChanged(object sender, EventArgs e)
         {
-
+            float i = 0;
+            if (float.TryParse(areaScaleYTB.Text, out i))
+            {
+                areaScaleYTB.BackColor = Color.White;
+                selectedAreaLight.scaleY = i;
+            }
+            else
+                areaScaleYTB.BackColor = Color.Red;
         }
 
         private void areaScaleZTB_TextChanged(object sender, EventArgs e)
         {
-
+            float i = 0;
+            if (float.TryParse(areaScaleZTB.Text, out i))
+            {
+                areaScaleZTB.BackColor = Color.White;
+                selectedAreaLight.scaleZ = i;
+            }
+            else
+                areaScaleZTB.BackColor = Color.Red;
         }
 
         private void areaRotX_TextChanged(object sender, EventArgs e)
         {
-
+            float i = 0;
+            if (float.TryParse(areaRotX.Text, out i))
+            {
+                areaRotX.BackColor = Color.White;
+                selectedAreaLight.rotX = i;
+            }
+            else
+                areaRotX.BackColor = Color.Red;
         }
 
         private void areaRotY_TextChanged(object sender, EventArgs e)
         {
-
+            float i = 0;
+            if (float.TryParse(areaRotY.Text, out i))
+            {
+                areaRotY.BackColor = Color.White;
+                selectedAreaLight.rotY = i;
+            }
+            else
+                areaRotY.BackColor = Color.Red;
         }
 
         private void areaRotZ_TextChanged(object sender, EventArgs e)
         {
+            float i = 0;
+            if (float.TryParse(areaRotZ.Text, out i))
+            {
+                areaRotZ.BackColor = Color.White;
+                selectedAreaLight.rotZ = i;
+            }
+            else
+                areaRotZ.BackColor = Color.Red;
+        }
+
+        private void areaPosXTrackBar_Scroll(object sender, EventArgs e)
+        {
+            areaPosXTB.Text = (float)(500.0f * (areaPosXTrackBar.Value - ((float)areaPosXTrackBar.Maximum / 2.0f)) / (float)areaPosXTrackBar.Maximum) + "";
+        }
+
+        private void areaPosYTrackBar_Scroll(object sender, EventArgs e)
+        {
+            areaPosYTB.Text = (float)(500.0f * (areaPosYTrackBar.Value - ((float)areaPosYTrackBar.Maximum / 2.0f)) / (float)areaPosYTrackBar.Maximum) + "";
 
         }
 
+        private void areaPosZTrackBar_Scroll(object sender, EventArgs e)
+        {
+            areaPosZTB.Text = (float)(500.0f * (areaPosZTrackBar.Value - ((float)areaPosZTrackBar.Maximum / 2.0f)) / (float)areaPosZTrackBar.Maximum) + "";
+
+        }
+
+        private void areaScaleXTrackBar_Scroll(object sender, EventArgs e)
+        {
+            areaScaleXTB.Text = (float)(250 * (areaScaleXTrackBar.Value / (float)areaScaleXTrackBar.Maximum)) + "";
+        }
+
+        private void areaScaleYTrackBar_Scroll(object sender, EventArgs e)
+        {
+            areaScaleYTB.Text = (float)(250 * (areaScaleYTrackBar.Value / (float)areaScaleYTrackBar.Maximum)) + "";
+
+        }
+
+        private void areaScaleZTrackBar_Scroll(object sender, EventArgs e)
+        {
+            areaScaleZTB.Text = (float)(250 * (areaScaleZTrackBar.Value / (float)areaScaleZTrackBar.Maximum)) + "";
+
+        }
+
+
         #endregion events
+
+
     }
 }

@@ -50,8 +50,8 @@ namespace Smash_Forge.GUI
             checkBox22.Checked = Runtime.renderTetherLedgeGrabboxes;
             checkBox23.Checked = Runtime.renderReverseLedgeGrabboxes;
             swagViewing.Checked = Runtime.renderSwag;
-            lightCheckBox.Checked = Runtime.renderLighting;
-            useNormCB.Checked = Runtime.useNormalMap;
+            lightCheckBox.Checked = Runtime.renderMaterialLighting;
+            useNormCB.Checked = Runtime.renderNormalMap;
             boundingCB.Checked = Runtime.renderBoundingBox;
             wireframeCB.Checked = Runtime.renderModelWireframe;
             modelSelectCB.Checked = Runtime.renderModelSelection;
@@ -210,7 +210,7 @@ namespace Smash_Forge.GUI
 
         private void lightCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.renderLighting = lightCheckBox.Checked;
+            Runtime.renderMaterialLighting = lightCheckBox.Checked;
             
             diffuseCB.Enabled = lightCheckBox.Checked;
             fresnelCB.Enabled = lightCheckBox.Checked;
@@ -250,7 +250,7 @@ namespace Smash_Forge.GUI
 
         private void useNormCB_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.useNormalMap = useNormCB.Checked;
+            Runtime.renderNormalMap = useNormCB.Checked;
         }
 
         private void fovSlider_Scroll(object sender, EventArgs e)
@@ -644,6 +644,16 @@ namespace Smash_Forge.GUI
                 Runtime.shieldBubbleColor = Color.FromArgb(0xFF, colorDialog.Color);
                 pbShieldColor.BackColor = Runtime.shieldBubbleColor;
             }
+        }
+
+        private void areaLightBoundingBoxCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.drawAreaLightBoundingBoxes = areaLightBoundingBoxCB.Checked;
+        }
+
+        private void stageLightingCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderStageLighting = stageLightingCB.Checked;
         }
     }
     

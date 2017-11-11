@@ -122,14 +122,14 @@ namespace Smash_Forge
             int renderType = (int)Runtime.renderType;
             GL.Uniform1(shader.getAttribute("renderType"), renderType);
 
-            GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderMaterialLighting ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderNormal"), Runtime.renderAlpha ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderDiffuse"), Runtime.renderDiffuse ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.renderNormalMap ? 1 : 0);
 
             {
                 GL.ActiveTexture(TextureUnit.Texture10);
@@ -241,7 +241,7 @@ namespace Smash_Forge
             foreach (Polygon p in trans)
                 if (((Mesh)p.Parent).Checked)
                     DrawPolygon(p, shader);
-
+            
             foreach (Mesh m in mesh)
             {
                 for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
@@ -268,6 +268,7 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("flags"), mat.flags);
             GL.Uniform1(shader.getAttribute("isTransparent"), p.isTransparent ? 1 : 0);
             GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
+            GL.Uniform1(shader.getAttribute("renderStageLighting"), Runtime.renderStageLighting ? 1 : 0);
 
             // shader uniforms
             SetTextureUniforms(shader, mat);

@@ -214,9 +214,11 @@ namespace Smash_Forge
         public static float renderDepth = 100000.0f;
         public static bool renderAlpha = true;
         public static bool renderVertColor = true;
-        public static bool renderLighting = true;
-        public static bool useNormalMap = true;
+        public static bool renderMaterialLighting = true;
+        public static bool renderNormalMap = true;
         public static bool useDepthTest = true;
+        public static bool drawAreaLightBoundingBoxes = true;
+        public static bool renderStageLighting = true;
         public static RenderTypes renderType;
 
         // ETC
@@ -265,6 +267,7 @@ namespace Smash_Forge
         public static ForgeACMDScript gameAcmdScript;
         public static Dictionary<uint, string> Animnames { get; set; }
         public static int scriptId = -1;
+
 
         public static string CanonicalizePath(string path)
         {
@@ -349,7 +352,7 @@ namespace Smash_Forge
 
                         case "type": if (node.ParentNode != null && node.ParentNode.Name.Equals("RENDERSETTINGS")) Enum.TryParse(node.InnerText, out renderType); break;
                         case "camera_light": bool.TryParse(node.InnerText, out cameraLight); break;
-                        case "use_normal_map": bool.TryParse(node.InnerText, out useNormalMap); break;
+                        case "use_normal_map": bool.TryParse(node.InnerText, out renderNormalMap); break;
                         case "render_vertex_color": bool.TryParse(node.InnerText, out renderVertColor); break;
                         case "render_alpha": bool.TryParse(node.InnerText, out renderAlpha); break;
                         case "render_diffuse": bool.TryParse(node.InnerText, out renderDiffuse); break;
@@ -410,7 +413,7 @@ namespace Smash_Forge
                                     case "fresnel": bool.TryParse(node.InnerText, out renderFresnel); break;
                                     case "reflection": bool.TryParse(node.InnerText, out renderReflection); break;
                                     case "floor": bool.TryParse(node.InnerText, out renderFloor); break;
-                                    case "lighting": bool.TryParse(node.InnerText, out renderLighting); break;
+                                    case "lighting": bool.TryParse(node.InnerText, out renderMaterialLighting); break;
                                     case "render_model": bool.TryParse(node.InnerText, out renderModel); break;
                                     case "render_LVD": bool.TryParse(node.InnerText, out renderLVD); break;
                                 }
@@ -511,12 +514,12 @@ for changing default texure
             renderNode.AppendChild(createNode(doc, "render_vertex_color", renderVertColor.ToString()));
             renderNode.AppendChild(createNode(doc, "render_alpha", renderAlpha.ToString()));
             renderNode.AppendChild(createNode(doc, "camera_light", cameraLight.ToString()));
-            renderNode.AppendChild(createNode(doc, "use_normal_map", useNormalMap.ToString()));
+            renderNode.AppendChild(createNode(doc, "use_normal_map", renderNormalMap.ToString()));
 
             {
                 XmlNode node = doc.CreateElement("lighting");
                 renderNode.AppendChild(node);
-                node.AppendChild(createNode(doc, "enabled", renderLighting.ToString()));
+                node.AppendChild(createNode(doc, "enabled", renderMaterialLighting.ToString()));
                 node.AppendChild(createNode(doc, "render_diffuse", renderDiffuse.ToString()));
                 node.AppendChild(createNode(doc, "render_specular", renderSpecular.ToString()));
                 node.AppendChild(createNode(doc, "render_fresnel", renderFresnel.ToString()));
