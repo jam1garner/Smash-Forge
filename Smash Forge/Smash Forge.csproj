@@ -281,6 +281,12 @@
     <Compile Include="GUI\Editors\ProjectTree.Designer.cs">
       <DependentUpon>ProjectTree.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\StageLighting.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\StageLighting.Designer.cs">
+      <DependentUpon>StageLighting.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\SwagEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -430,6 +436,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Camera.cs" />
+    <Compile Include="Rendering\Lights.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Controls\MeshMover.resx">
@@ -518,6 +526,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\ProjectTree.resx">
       <DependentUpon>ProjectTree.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\StageLighting.resx">
+      <DependentUpon>StageLighting.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\SwagEditor.resx">
       <DependentUpon>SwagEditor.cs</DependentUpon>
@@ -833,14 +844,14 @@
     <Compile Include="Runtime.cs" />
     <Compile Include="SkelAnimation.cs" />
     <Compile Include="Filetypes\SMD.cs" />
-    <Compile Include="Shader.cs" />
+    <Compile Include="Rendering\Shader.cs" />
     <Compile Include="Filetypes\Textures\DDS.cs" />
     <Compile Include="Filetypes\Models\NUD.cs" />
     <Compile Include="Filetypes\Textures\NUT.cs" />
     <Compile Include="Filetypes\Textures\GTX.cs" />
     <Compile Include="Filetypes\Models\JTB.cs" />
     <Compile Include="Filetypes\Animation\CMR0.cs" />
-    <Compile Include="GUI\Editors\RenderTools.cs" />
+    <Compile Include="Rendering\RenderTools.cs" />
     <None Include="GUI\Editors\MeshList.resx">
       <DependentUpon>MeshList.cs</DependentUpon>
     </None>
@@ -947,6 +958,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Preview Images\Stage.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\Gradient_vs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\Gradient_fs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="Resources\10080000.png" />

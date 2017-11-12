@@ -51,6 +51,10 @@ uniform int hasCustomSoftLight;
 uniform uint flags;
 uniform int isTransparent;
 
+uniform int lightSet;
+uniform int isStage;
+uniform int renderStageLighting;
+
 // NU_ Material Properties
 uniform vec4 colorSamplerUV;
 uniform vec4 normalSamplerAUV;
@@ -137,6 +141,8 @@ uniform vec3 lightDirection;
 uniform sampler2D shadowMap;
 
 uniform int selectedBoneIndex;
+
+uniform float elapsedTime;
 
 // Constants
 #define gamma 2.2
@@ -359,14 +365,19 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
             //---------------------------------------------------------------------------------------------
                 // stage lighting
                 vec3 lighting = vec3(1);
-                if ((flags & 0xF0000000u) == 0xA0000000u) // stage lighting. should actually be based on xmb in future.
+                if (isStage == 1) // stage lighting
                 {
                     // should this be half lambert?
                     vec3 stageLight1 = stageLight1Color * max((dot(N, stageLight1Direction)), 0);
                     vec3 stageLight2 = stageLight2Color * max((dot(N, stageLight2Direction)), 0);
                     vec3 stageLight3 = stageLight3Color * max((dot(N, stageLight3Direction)), 0);
                     vec3 stageLight4 = stageLight4Color * max((dot(N, stageLight4Direction)), 0);
-                    lighting = (stageLight1 * renderStageLight1) + (stageLight2 * renderStageLight2) + (stageLight3 * renderStageLight3) + (stageLight4 * renderStageLight4);
+
+                    lighting = vec3(0);
+                    lighting += (stageLight1 * renderStageLight1);
+                    lighting += (stageLight2 * renderStageLight2);
+                    lighting += (stageLight3 * renderStageLight3);
+                    lighting += (stageLight4 * renderStageLight4);
                 }
                 else // character lighting
                 {
@@ -376,8 +387,12 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
                     distanceMixFactor = distanceMixFactor / distance(vec3(-55, 0, 0), vec3(-81, 0, 0));
                     //lighting = mix(vec3(2), vec3(0), distanceMixFactor);
                 }
-                if ((flags & 0x02000000u) == 0x02000000u || (flags & 0x03000000u) == 0x03000000u)
+                if (((flags & 0x0F000000u) < 0x04000000u) || renderStageLighting != 1)
                     lighting = vec3(1); // flags for "no lighting"
+
+
+
+
 
                 diffusePass = diffuseColorFinal * lighting;
             //---------------------------------------------------------------------------------------------
@@ -534,8 +549,8 @@ vec3 sm4shShader(vec4 diffuseMap, float aoMap, vec3 N){
     float depth = viewPosition.z;
     depth = min((depth / fogParams.y),1);
     float fogIntensity = mix(fogParams.z, fogParams.w, depth);
-    if(renderFog == 1)
-        resultingColor = mix(resultingColor, stageFogColor, fogIntensity);
+    if(renderFog == 1 && renderStageLighting == 1)
+        resultingColor = mix(resultingColor, pow((stageFogColor), vec3(gamma)), fogIntensity);
 
     resultingColor = pow(resultingColor, vec3(1 / gamma)); // gamma correction. gamma correction also done within render passes
 
@@ -613,6 +628,21 @@ void main()
         FragColor.rgb = displayTangent;
     else if (renderType == 10) // bitangents
         FragColor.rgb = displayBitangent;
+    else if (renderType == 11) // light set #
+    {
+        if (lightSet == 0)
+            FragColor.rgb = vec3(0,0,0);
+        else if (lightSet == 1)
+            FragColor.rgb = vec3(0,1,1);
+        else if (lightSet == 2)
+            FragColor.rgb = vec3(0,0,1);
+        else if (lightSet == 3)
+            FragColor.rgb = vec3(1,1,0);
+        else if (lightSet == 4)
+            FragColor.rgb = vec3(1,0,1);
+        else
+            FragColor.rgb = vec3(1);
+    }
 	else // Shaded
     {
 

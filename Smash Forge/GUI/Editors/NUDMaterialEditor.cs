@@ -607,8 +607,9 @@ namespace Smash_Forge
 
                     // clamp slider value to maximum value
                     int newSliderValue = (int)((f * (float)param1TrackBar.Maximum) / max);
-                    if (newSliderValue <= param1TrackBar.Maximum && newSliderValue >= 0)
-                        param1TrackBar.Value = newSliderValue;
+                    newSliderValue = Math.Min(newSliderValue, param1TrackBar.Maximum);
+                    newSliderValue = Math.Max(newSliderValue, 0);
+                    param1TrackBar.Value = newSliderValue;
                 }
             }
             updateButton();
@@ -631,10 +632,11 @@ namespace Smash_Forge
                     max = labels.max2;
                 }
 
-                // clamp slider value to maximum value
+                // clamp slider values. values outside range can still be entered in text box
                 int newSliderValue = (int)((f * (float)param2TrackBar.Maximum) / max);
-                if (newSliderValue <= param2TrackBar.Maximum && newSliderValue >= 0)
-                    param2TrackBar.Value = newSliderValue;
+                newSliderValue = Math.Min(newSliderValue, param2TrackBar.Maximum);
+                newSliderValue = Math.Max(newSliderValue, 0);
+                param2TrackBar.Value = newSliderValue;
             }
             updateButton();
         }
@@ -656,10 +658,11 @@ namespace Smash_Forge
                     max = labels.max3;
                 }
 
-                // clamp slider value to maximum value
+                // clamp slider values. values outside range can still be entered in text box
                 int newSliderValue = (int)((f * (float)param2TrackBar.Maximum) / max);
-                if (newSliderValue <= param3TrackBar.Maximum && newSliderValue >= 0)
-                    param3TrackBar.Value = newSliderValue;
+                newSliderValue = Math.Min(newSliderValue, param3TrackBar.Maximum);
+                newSliderValue = Math.Max(newSliderValue, 0);
+                param3TrackBar.Value = newSliderValue;
             }
             updateButton();
         }
@@ -681,10 +684,11 @@ namespace Smash_Forge
                     max = labels.max4;
                 }
 
-                // clamp slider value to maximum value
+                // clamp slider values. values outside range can still be entered in text box
                 int newSliderValue = (int)((f * (float)param4TrackBar.Maximum) / max);
-                if (newSliderValue <= param4TrackBar.Maximum && newSliderValue >= 0)
-                    param4TrackBar.Value = newSliderValue;
+                newSliderValue = Math.Min(newSliderValue, param3TrackBar.Maximum);
+                newSliderValue = Math.Max(newSliderValue, 0);
+                param4TrackBar.Value = newSliderValue;
             }
         }
         #endregion

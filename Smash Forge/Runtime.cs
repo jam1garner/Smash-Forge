@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.Xml;
 using OpenTK.Graphics.OpenGL;
+using SALT.PARAMS;
 
 namespace Smash_Forge
 {
@@ -45,6 +46,11 @@ namespace Smash_Forge
         public static GUI.Editors.HitboxList hitboxList { get; set; }
         public static GUI.Editors.VariableList variableViewer { get; set; }
 
+        public static ParamFile lightSetParam = null;
+        public static string lightSetDirectory = "";
+
+        public static ParamFile stprmParam = null;
+
         public static int SelectedHitboxID { get; set; } = -1;
         public static int SelectedHurtboxID { get; set; } = -1;
         //Hitboxes can be removed halfway on an animation and set again multiple times, this list contains the IDs of the hitboxes that aren't visible
@@ -57,6 +63,8 @@ namespace Smash_Forge
         }
 
         public static bool hasCheckedTexShaderCompilation = false;
+        public static bool hasCheckedNUDShaderCompilation = false;
+
 
         public static ViewportModes ViewportMode = ViewportModes.EDITVERT;
 
@@ -185,29 +193,6 @@ namespace Smash_Forge
 
         public static int selectedBoneIndex = -1;
 
-        public static float dif_hue = 360.0f;
-        public static float dif_saturation = 0.00f;
-        public static float dif_intensity = 1.00f;
-        public static float difR = 1.0f;
-        public static float difG = 1.0f;
-        public static float difB = 1.0f;
-        public static float dif_rotX = 0.0f;
-        public static float dif_rotY = 0.0f;
-        public static float dif_rotZ = 0.0f;
-
-        public static float amb_hue = 360.0f;
-        public static float amb_saturation = 0.00f;
-        public static float amb_intensity = 0.85f;
-
-        // shared with stages for now (may be correct but idk)
-        public static float fres_ground_hue = 360.0f;
-        public static float fres_ground_saturation = 0.00f;
-        public static float fres_ground_intensity = 0.00f;
-
-        public static float fres_sky_hue = 360.0f;
-        public static float fres_sky_saturation = 0.00f;
-        public static float fres_sky_intensity = 1.00f;
-
         public static float specular_hue = 360.0f;
         public static float specular_saturation = 0.0f;
         public static float specular_intensity = 0.75f;
@@ -221,54 +206,26 @@ namespace Smash_Forge
 
         public static bool renderStageLight1 = true;
         public static bool renderStageLight2 = true;
-        public static bool renderStageLight3 = false;
-        public static bool renderStageLight4 = false;
+        public static bool renderStageLight3 = true;
+        public static bool renderStageLight4 = true;
 
-        public static float stagelight1_hue = 360.0f;
-        public static float stagelight1_saturation = 0.0f;
-        public static float stagelight1_intensity = 1.00f;
-        public static float stagelight1_rotX = -90.0f;
-        public static float stagelight1_rotY = 0.0f;
-        public static float stagelight1_rotZ = 0.0f;
-
-        public static float stagelight2_hue = 360.0f;
-        public static float stagelight2_saturation = 0.0f;
-        public static float stagelight2_intensity = 1.00f;
-        public static float stagelight2_rotX = 0.0f;
-        public static float stagelight2_rotY = 0.0f;
-        public static float stagelight2_rotZ = 0.0f;
-
-        public static float stagelight3_hue = 360.0f;
-        public static float stagelight3_saturation = 0.0f;
-        public static float stagelight3_intensity = 1.00f;
-        public static float stagelight3_rotX = 0.0f;
-        public static float stagelight3_rotY = 0.0f;
-        public static float stagelight3_rotZ = 0.0f;
-
-        public static float stagelight4_hue = 360.0f;
-        public static float stagelight4_saturation = 0.0f;
-        public static float stagelight4_intensity = 1.00f;
-        public static float stagelight4_rotX = 0.0f;
-        public static float stagelight4_rotY = 0.0f;
-        public static float stagelight4_rotZ = 0.0f;
-
-        public static bool renderFog = false;
-        public static float fog_hue = 360.0f;
-        public static float fog_saturation = 0.00f;
-        public static float fog_intensity = 0.00f;
+        public static bool renderFog = true;
 
         public static float renderDepth = 100000.0f;
         public static bool renderAlpha = true;
         public static bool renderVertColor = true;
-        public static bool renderLighting = true;
-        public static bool useNormalMap = true;
+        public static bool renderMaterialLighting = true;
+        public static bool renderNormalMap = true;
         public static bool useDepthTest = true;
+        public static bool drawAreaLightBoundingBoxes = true;
+        public static bool renderStageLighting = false;
         public static RenderTypes renderType;
 
         // ETC
         public static string fighterDir = "";
         public static string paramDir;
 
+        // OpenGL System Information
         public static string renderer = "";
         public static string openGLVersion = "";
         public static string GLSLVersion = "";
@@ -285,8 +242,10 @@ namespace Smash_Forge
             UVCoords = 7,
             UVTestPattern = 8,
             Tangents = 9,
-            Bitangents = 10
+            Bitangents = 10,
+            LightSet = 11
         }
+
         public enum FloorStyle
         {
             Normal = 0,
@@ -308,6 +267,7 @@ namespace Smash_Forge
         public static ForgeACMDScript gameAcmdScript;
         public static Dictionary<uint, string> Animnames { get; set; }
         public static int scriptId = -1;
+
 
         public static string CanonicalizePath(string path)
         {
@@ -392,7 +352,7 @@ namespace Smash_Forge
 
                         case "type": if (node.ParentNode != null && node.ParentNode.Name.Equals("RENDERSETTINGS")) Enum.TryParse(node.InnerText, out renderType); break;
                         case "camera_light": bool.TryParse(node.InnerText, out cameraLight); break;
-                        case "use_normal_map": bool.TryParse(node.InnerText, out useNormalMap); break;
+                        case "use_normal_map": bool.TryParse(node.InnerText, out renderNormalMap); break;
                         case "render_vertex_color": bool.TryParse(node.InnerText, out renderVertColor); break;
                         case "render_alpha": bool.TryParse(node.InnerText, out renderAlpha); break;
                         case "render_diffuse": bool.TryParse(node.InnerText, out renderDiffuse); break;
@@ -453,7 +413,7 @@ namespace Smash_Forge
                                     case "fresnel": bool.TryParse(node.InnerText, out renderFresnel); break;
                                     case "reflection": bool.TryParse(node.InnerText, out renderReflection); break;
                                     case "floor": bool.TryParse(node.InnerText, out renderFloor); break;
-                                    case "lighting": bool.TryParse(node.InnerText, out renderLighting); break;
+                                    case "lighting": bool.TryParse(node.InnerText, out renderMaterialLighting); break;
                                     case "render_model": bool.TryParse(node.InnerText, out renderModel); break;
                                     case "render_LVD": bool.TryParse(node.InnerText, out renderLVD); break;
                                 }
@@ -554,12 +514,12 @@ for changing default texure
             renderNode.AppendChild(createNode(doc, "render_vertex_color", renderVertColor.ToString()));
             renderNode.AppendChild(createNode(doc, "render_alpha", renderAlpha.ToString()));
             renderNode.AppendChild(createNode(doc, "camera_light", cameraLight.ToString()));
-            renderNode.AppendChild(createNode(doc, "use_normal_map", useNormalMap.ToString()));
+            renderNode.AppendChild(createNode(doc, "use_normal_map", renderNormalMap.ToString()));
 
             {
                 XmlNode node = doc.CreateElement("lighting");
                 renderNode.AppendChild(node);
-                node.AppendChild(createNode(doc, "enabled", renderLighting.ToString()));
+                node.AppendChild(createNode(doc, "enabled", renderMaterialLighting.ToString()));
                 node.AppendChild(createNode(doc, "render_diffuse", renderDiffuse.ToString()));
                 node.AppendChild(createNode(doc, "render_specular", renderSpecular.ToString()));
                 node.AppendChild(createNode(doc, "render_fresnel", renderFresnel.ToString()));

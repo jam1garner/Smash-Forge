@@ -36,6 +36,10 @@ uniform uint flags;
 uniform float zScale;
 uniform vec4 zOffset;
 
+uniform float elapsedTime;
+uniform int useDirectUVTime;
+
+
 uniform bones
 {
     mat4 transforms[200];
@@ -84,9 +88,17 @@ void main()
 
     gl_Position = objPos;
 
+    if ((useDirectUVTime == 1) && (flags & 0x00001900u) == 0x00001900u)
+    {
+        texcoord = vec2((vUV * colorSamplerUV.xy) + (colorSamplerUV.zw * elapsedTime));
+        normaltexcoord = vec2((vUV * normalSamplerAUV.xy) + (normalSamplerAUV.zw * elapsedTime));
+    }
+    else
+    {
+        texcoord = vec2((vUV * colorSamplerUV.xy) + colorSamplerUV.zw);
+        normaltexcoord = vec2((vUV * normalSamplerAUV.xy) + normalSamplerAUV.zw);
+    }
 
-    texcoord = vec2((vUV * colorSamplerUV.xy) + colorSamplerUV.zw);
-    normaltexcoord = vec2((vUV * normalSamplerAUV.xy) + normalSamplerAUV.zw);
     normal = vec3(0,0,0);
     tangent.xyz = vTangent.xyz;
     bitangent.xyz = vBiTangent.xyz;

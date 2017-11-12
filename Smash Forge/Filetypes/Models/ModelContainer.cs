@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SALT.Graphics;
 
 namespace Smash_Forge
 {
@@ -10,6 +11,7 @@ namespace Smash_Forge
         public VBN vbn;
         public MTA mta;
         public MOI moi;
+        public XMBFile xmb;
 
         public BCH bch;
 

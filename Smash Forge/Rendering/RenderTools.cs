@@ -7,136 +7,10 @@ using OpenTK.Graphics.OpenGL;
 using System.Drawing.Imaging;
 using System.Diagnostics;
 using System.Reflection;
+using SALT.PARAMS;
 
 namespace Smash_Forge
 {
-
-    public class Camera
-    {
-        // should help eliminate some redundant code once this class is more functional
-        private Vector3 position = new Vector3(0, -10, -30);
-        private float cameraXRotation = 0;
-        private float cameraYRotation = 0;
-        private int renderWidth = 1;
-        private int renderHeight = 1;
-        private float farClipPlane = 10000;
-        private Matrix4 modelViewMatrix = Matrix4.Identity;
-        private Matrix4 mvpMatrix = Matrix4.Identity;
-        private Matrix4 projectionMatrix = Matrix4.Identity;
-
-        // probably shouldn't be hard coded
-        private float zoomMultiplier = Runtime.zoomModifierScale; // convert zoomSpeed to in game stprm zoom speed. still not exact
-        private float zoomSpeed = Runtime.zoomspeed;
-        private float mouseTranslateSpeed = 0.050f;
-        private float scrollWheelZoomSpeed = 1.75f;
-        private float shiftZoomMultiplier = 2.5f;
-        public float mouseSLast, mouseYLast, mouseXLast;
-
-        public Camera()
-        {
-            TrackMouse();
-            // this breaks everything for some reason
-        }
-
-        public Camera(Vector3 position, float rotX, float rotY, int renderWidth, int renderHeight)
-        {
-            //TrackMouse();
-            this.position = position;
-            this.renderHeight = renderHeight;
-            this.renderWidth = renderWidth;
-            cameraXRotation = rotX;
-            cameraYRotation = rotY;
-        }
-
-        public Matrix4 getModelViewMatrix()
-        {
-            return modelViewMatrix;
-        }
-
-        public Matrix4 getMVPMatrix()
-        {
-            return mvpMatrix;
-        }
-
-        public Vector3 getPosition()
-        {
-            return position;
-        }
-
-        public float getFarClipPlane()
-        {
-            return farClipPlane;
-        }
-
-        public void setFarClipPlane(float farClip)
-        {
-            farClipPlane = farClip;
-        }
-
-        public void setRenderWidth(int width)
-        {
-            renderWidth = width;
-        }
-
-        public void setRenderHeight(int height)
-        {
-            renderHeight = height;
-        }
-
-        public void Update()
-        {
-            // left click drag to rotate. right click drag to pan
-            if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
-            {
-                position.Y += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                position.X += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-            }
-            if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
-            {
-                cameraYRotation += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                cameraXRotation += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-            }
-
-            float zoomscale = zoomSpeed;
-
-            // hold shift to change zoom speed
-            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
-                zoomscale *= shiftZoomMultiplier;
-
-            // zoom in or out with arrow keys
-            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Down))
-                position.Z -= 1 * zoomscale;
-            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Up))
-                position.Z += 1 * zoomscale;
-
-            TrackMouse();
-
-            // scrollwheel to zoom in our out
-            position.Z += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale * scrollWheelZoomSpeed;
-
-            UpdateMatrices();
-        }
-
-        private void UpdateMatrices()
-        {
-            // need to fix these
-            modelViewMatrix = Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, (float)renderWidth / (float)renderHeight,
-                1.0f, Runtime.renderDepth) * Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation);
-
-            projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, (float)renderWidth / (float)renderHeight,
-                1.0f, Runtime.renderDepth);
-            mvpMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(position.X, -position.Y, position.Z)
-                * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, renderWidth / (float)renderHeight, 1.0f, farClipPlane);
-        }
-
-        public void TrackMouse()
-        {
-            this.mouseXLast = OpenTK.Input.Mouse.GetState().X;
-            this.mouseYLast = OpenTK.Input.Mouse.GetState().Y;
-            this.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
-        }
-    }
-
 
     public class Ray
     {
@@ -151,124 +25,6 @@ namespace Smash_Forge
         public bool TrySphereHit(Vector3 sphere, float rad, out Vector3 closest)
         {
             return RenderTools.CheckSphereHit(sphere, rad, p1, p2,  out closest);
-        }
-    }
-
-    public class DirectionalLight
-    {
-        public float R = 1.0f;
-        public float G = 1.0f;
-        public float B = 1.0f;
-        public float rotX = 0.0f; // in degrees (converted to radians)
-        public float rotY = 0.0f; // in degrees (converted to radians)
-        public float rotZ = 0.0f; // in degrees (converted to radians)
-        public Vector3 direction = new Vector3(0f, 0f, 1f);
-
-        public DirectionalLight(float H, float S, float V, float rotX, float rot, float rotZ)
-        {
-            // calculate light color
-            RenderTools.HSV2RGB(H, S, V, out R, out G, out B);
-
-            // calculate light vector
-            Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, rotX * ((float)Math.PI / 180f))
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, rotY * ((float)Math.PI / 180f))
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, rotZ * ((float)Math.PI / 180f));
-
-            direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
-        }
-
-        public DirectionalLight(float H, float S, float V, Vector3 lightDirection)
-        {
-            RenderTools.HSV2RGB(H, S, V, out R, out G, out B);
-            direction = lightDirection;
-        }
-
-        public DirectionalLight()
-        {
-
-        }
-
-        public void setDirectionFromXYZAngles(float rotX, float rotY, float rotZ)
-        {
-            // calculate light vector from 3 rotation angles
-            Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, rotX * ((float)Math.PI / 180f))
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, rotY * ((float)Math.PI / 180f))
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, rotZ * ((float)Math.PI / 180f));
-
-            direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
-        }
-
-        public void setColorFromHSV(float H, float S, float V)
-        {
-            RenderTools.HSV2RGB(H, S, V, out R, out G, out B);
-        }
-
-    }
-
-    public class AreaLight
-    {
-        public string ID = "";
-    
-        // ambient color
-        public float groundR = 1.0f;
-        public float groundG = 1.0f;
-        public float groundB = 1.0f;
-
-        // diffuse color
-        public float skyR = 1.0f;
-        public float skyG = 1.0f;
-        public float skyB = 1.0f;
-        
-        // size
-        public float scaleX = 1.0f;
-        public float scaleY = 1.0f;
-        public float scaleZ = 1.0f;
-
-        // position of the center of the region
-        public float positionX = 0.0f;
-        public float positionY = 0.0f;
-        public float positionZ = 0.0f;
-
-        // XYZ angles
-        // How should "non directional" area lights work?
-        public float rotX = 0.0f; // in degrees (converted to radians)
-        public float rotY = 0.0f; // in degrees (converted to radians)
-        public float rotZ = 0.0f; // in degrees (converted to radians)
-        public Vector3 direction = new Vector3(0f, 0f, 1f);
-
-        public bool noDirectional = false;
-        public bool renderBoundingBox = true;
-
-        public AreaLight(string areaLightID)
-        {
-            ID = areaLightID;
-        }
-
-        public AreaLight(string areaLightID, Vector3 groundColor, Vector3 skyColor, Vector3 position, Vector3 scale, Vector3 direction)
-        {
-            ID = areaLightID;
-            groundR = groundColor.X;
-            groundG = groundColor.Y;
-            groundB = groundColor.Z;
-
-            skyR = skyColor.X;
-            skyG = skyColor.Y;
-            skyB = skyColor.Z;
-        }
-
-        public AreaLight(string areaLightID, Vector3 groundColor, Vector3 skyColor, Vector3 position, Vector3 scale, float rotX, float rotY, float rotZ)
-        {
-            ID = areaLightID;
-        }
-
-        public void setDirectionFromXYZAngles(float rotX, float rotY, float rotZ)
-        {
-            // calculate light vector from 3 rotation angles
-            Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, rotX * ((float)Math.PI / 180f))
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, rotY * ((float)Math.PI / 180f))
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, rotZ * ((float)Math.PI / 180f));
-
-            direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
         }
     }
 
@@ -297,6 +53,33 @@ namespace Smash_Forge
             GL.GenBuffers(1, out cubeVBO);
         }
 
+        public static object GetValueFromParamFile(ParamFile paramFile, int groupNum, int entryNum, int valNum)
+        {
+            if (paramFile.Groups.Count > groupNum)
+            {
+                if (!(paramFile.Groups[groupNum] is ParamGroup))
+                {
+                    int count = 0;
+                    foreach (ParamEntry val in paramFile.Groups[groupNum].Values)
+                    {
+                        if (count == valNum)
+                            return (val.Value);
+                        count++;
+                    }
+                }
+                else
+                {
+                    int entrySize = ((ParamGroup)paramFile.Groups[groupNum]).EntrySize;
+                    for (int index = 0; index < entrySize; index++)
+                    {
+                        if (index == valNum)
+                            return paramFile.Groups[groupNum].Values[entrySize * entryNum + index].Value;
+                    }
+                }
+            }
+
+            return null;
+        }
 
         public static void drawTranslator(Matrix4 view)
         {
@@ -1492,9 +1275,9 @@ namespace Smash_Forge
             GL.End();
         }
 
-        public static void drawRectangularPrismWireframe(Vector3 center, float sizeX, float sizeY, float sizeZ)
+        public static void drawRectangularPrismWireframe(Vector3 center, float sizeX, float sizeY, float sizeZ, Color color)
         {
-            //GL.Color3(Color.Black);
+            GL.Color3(color);
             GL.LineWidth(2);
             GL.Begin(PrimitiveType.LineLoop);
             GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z - sizeZ);
@@ -1698,6 +1481,7 @@ namespace Smash_Forge
                         }
                     }*/
                 }
+
                 if (selectedBone != null)
                 {
                     GL.Clear(ClearBufferMask.DepthBufferBit);
@@ -1706,11 +1490,26 @@ namespace Smash_Forge
             }
         }
 
+        public static void DrawQuadGradient(float topR, float topG, float topB, float bottomR, float bottomG, float bottomB)
+        {
+            // draw RGB and alpha channels of texture to screen quad
+            Shader shader = Runtime.shaders["Gradient"];
+            GL.UseProgram(shader.programID);
+
+            GL.ClearColor(Color.White);
+
+            GL.Uniform3(shader.getAttribute("topColor"), topR, topG, topB);
+            GL.Uniform3(shader.getAttribute("bottomColor"), bottomR, bottomG, bottomB);
+
+            GL.Disable(EnableCap.DepthTest);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // draw full screen "quad" (big triangle)
+            GL.BindVertexArray(0);
+        }
+
         public static void DrawTexturedQuad(int texture, int width, int height, bool renderR, bool renderG, bool renderB, 
             bool renderAlpha, bool alphaOverride, bool preserveAspectRatio)      
         {
             // draw RGB and alpha channels of texture to screen quad
-
             Shader shader = Runtime.shaders["Texture"];
             GL.UseProgram(shader.programID);
 
@@ -1733,7 +1532,6 @@ namespace Smash_Forge
             float aspectRatio = (float) width / (float) height;
             GL.Uniform1(shader.getAttribute("width"), width);
             GL.Uniform1(shader.getAttribute("height"), height);
-
 
             GL.Disable(EnableCap.DepthTest);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // draw full screen "quad" (big triangle)

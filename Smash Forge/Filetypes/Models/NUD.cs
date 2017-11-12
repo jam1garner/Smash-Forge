@@ -8,6 +8,7 @@ using System.Diagnostics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
 using System.Windows.Forms;
+using SALT.Graphics;
 
 namespace Smash_Forge
 {
@@ -15,7 +16,19 @@ namespace Smash_Forge
     {
         public NUD()
         {
-            Runtime.shaders["NUD"].shaderCompilationWarningMessage("NUD");
+            if (!Runtime.shaders.ContainsKey("NUD"))
+            {
+                Shader nud = new Shader();
+                nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
+                nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
+                Runtime.shaders.Add("NUD", nud);
+            }
+
+            if (!Runtime.hasCheckedNUDShaderCompilation)
+            {
+                Runtime.shaders["NUD"].shaderCompilationWarningMessage("NUD");
+                Runtime.hasCheckedNUDShaderCompilation = true;
+            }
 
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out ibo_elements);
@@ -43,9 +56,16 @@ namespace Smash_Forge
         public List<Mesh> mesh = new List<Mesh>();
         public float[] param = new float[4];
 
+        // xmb stuff
+        public int lightSetNumber = 0;
+        public int directUVTime = 0;
+        public bool useDirectUVTime = false;
+        public string modelType = "";
+
         public override Endianness Endian { get; set; }
 
         #region Rendering
+
         public void Destroy()
         {
             GL.DeleteBuffer(vbo_position);
@@ -75,6 +95,7 @@ namespace Smash_Forge
             DummyRamp =  0x10080000
         }
 
+
         public void PreRender()
         {
             for (int mes = mesh.Count - 1; mes >= 0; mes--)
@@ -100,17 +121,17 @@ namespace Smash_Forge
 
             int renderType = (int)Runtime.renderType;
             GL.Uniform1(shader.getAttribute("renderType"), renderType);
-            GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderLighting ? 1 : 0);
+
+            GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderMaterialLighting ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderNormal"), Runtime.renderAlpha ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderDiffuse"), Runtime.renderDiffuse ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.useNormalMap ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.renderNormalMap ? 1 : 0);
 
             {
-
                 GL.ActiveTexture(TextureUnit.Texture10);
                 GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
                 GL.Uniform1(shader.getAttribute("cmap"), 10);
@@ -157,6 +178,38 @@ namespace Smash_Forge
             }
         }
 
+        public void SetPropertiesFromXMB(XMBFile xmb)
+        {
+            if (xmb != null)
+            {
+                foreach (XMBEntry entry in xmb.Entries)
+                {
+                    if (entry.Name == "model")
+                        modelType = xmb.Values[entry.FirstPropertyIndex];
+
+                    if (entry.Children.Count > 0)
+                    {
+                        foreach (XMBEntry value in entry.Children)
+                        {
+                            if (xmb.Values.Count >= value.FirstPropertyIndex)
+                            {
+                                if (value.Name == "lightset")
+                                {
+                                    int.TryParse(xmb.Values[value.FirstPropertyIndex], out lightSetNumber);
+                                }
+
+                                if (value.Name == "directuvtime")
+                                {
+                                    useDirectUVTime = true;
+                                    int.TryParse(xmb.Values[value.FirstPropertyIndex], out directUVTime);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         public void Render(Shader shader)
         {
             // create lists...
@@ -188,7 +241,7 @@ namespace Smash_Forge
             foreach (Polygon p in trans)
                 if (((Mesh)p.Parent).Checked)
                     DrawPolygon(p, shader);
-
+            
             foreach (Mesh m in mesh)
             {
                 for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
@@ -215,12 +268,12 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("flags"), mat.flags);
             GL.Uniform1(shader.getAttribute("isTransparent"), p.isTransparent ? 1 : 0);
             GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
+            GL.Uniform1(shader.getAttribute("renderStageLighting"), Runtime.renderStageLighting ? 1 : 0);
 
-            // pass all the textures from the model.NUT to shader (no cubemaps from NUT yet)
+            // shader uniforms
             SetTextureUniforms(shader, mat);
-
-            // pass all researched material values to the shader for viewport rendering
             SetMaterialPropertyUniforms(shader, mat);
+            SetXMBUniforms(shader);
 
             // alpha blending
             GL.Enable(EnableCap.Blend);
@@ -285,7 +338,14 @@ namespace Smash_Forge
                     GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
                 }
             }
-       
+
+        }
+
+        private void SetXMBUniforms(Shader shader)
+        {
+            GL.Uniform1(shader.getAttribute("isStage"), modelType == "stage" ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("useDirectUVTime"), useDirectUVTime ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("lightSet"), lightSetNumber);
         }
 
         private void SetVertexAttributes(Polygon p, Shader shader)
@@ -673,7 +733,7 @@ namespace Smash_Forge
                     { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
                     { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
                     { 0x05, BlendingFactorDest.ConstantAlpha},
-                };
+        };
 
         static Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
                     { 0x01, BlendingFactorSrc.SrcAlpha},
@@ -681,7 +741,7 @@ namespace Smash_Forge
                     { 0x03, BlendingFactorSrc.SrcAlpha},
                     { 0x04, BlendingFactorSrc.SrcAlpha},
                     { 0x0a, BlendingFactorSrc.Zero}
-                };
+        };
 
         static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>(){
                     { 0x01, TextureWrapMode.Repeat},
@@ -708,7 +768,6 @@ namespace Smash_Forge
             {
                 GL.ActiveTexture(TextureUnit.Texture20 + loc);
                 GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapLow);
-                Debug.WriteLine("bind stage low");
                 return 20 + loc;
 
             }
@@ -716,7 +775,6 @@ namespace Smash_Forge
             {
                 GL.ActiveTexture(TextureUnit.Texture20 + loc);
                 GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
-                Debug.WriteLine("bind stage high");
                 return 20 + loc;
 
             }
@@ -791,11 +849,9 @@ namespace Smash_Forge
 
                                 if (matHash == mat.matHash || matHash == mat.matHash2)
                                 {
-                                    //Console.WriteLine("MTA mat hash match");
                                     if (mat.hasPat)
                                     {
                                         ma.displayTexId = mat.pat0.getTexId(frm);
-                                        //Console.WriteLine("PAT0 TexID - " + ma.displayTexId);
                                     }
 
                                     foreach(MatData md in mat.properties)
@@ -807,7 +863,6 @@ namespace Smash_Forge
                                             else
                                                 if(md.frames.Count > frm)
                                                     ma.anims.Add(md.name, md.frames[frm].values);
-                                            //Console.WriteLine(""+md.frames[frame % md.frames.Count].values[0]+"," + md.frames[frame % md.frames.Count].values[1] + "," + md.frames[frame % md.frames.Count].values[2] + "," + md.frames[frame % md.frames.Count].values[3]);
                                         }
                                             
                                     }
@@ -825,7 +880,6 @@ namespace Smash_Forge
                 {
                     if (me.Text.Equals(e.name))
                     {
-                        //Console.WriteLine("Set " + me.name + " to " + state);
                         if (state == 0)
                         {
                             me.Checked = false;
@@ -939,7 +993,6 @@ namespace Smash_Forge
             foreach (var o in obj)
             {
                 Mesh m = new Mesh();
-                //Console.WriteLine($"{o.name} singlebind: {o.singlebind}");
                 m.Text = o.name;
                 mesh.Add(m);
                 m.boneflag = boneflags[mi];
@@ -1286,7 +1339,7 @@ namespace Smash_Forge
             foreach (ModelContainer con in Runtime.ModelContainers)
             {
                 if (con.nud == this && con.vbn!=null)
-                    boneCount = con.vbn.bones.Count;
+                    boneCount = con.vbn.bones.Count;   
             }
 
             d.writeShort(boneCount == 0 ? 0 : 2); // type
@@ -1813,7 +1866,7 @@ namespace Smash_Forge
 
             public uint flags { get
                 {
-                    return RebuildFlags();
+                    return RebuildFlag4thByte();
                 } set
                 {
                     InterpretFlags(value);
@@ -1862,8 +1915,6 @@ namespace Smash_Forge
             public int stageMapID = (int)DummyTextures.StageMapHigh;
             public int cubeMapID = 0;
 
-
-
             public Material Clone()
             {
                 Material m = new Material();
@@ -1897,7 +1948,7 @@ namespace Smash_Forge
             {
             }
 
-            public uint RebuildFlags()
+            public uint RebuildFlag4thByte()
             {
                 int t = 0;
                 if (diffuse) t |= (int)TextureFlags.DiffuseMap;
@@ -1957,7 +2008,6 @@ namespace Smash_Forge
                 ramp = (flag & (int) TextureFlags.RampCubeMap) > 0 && dummyramp; 
 
                 diffuse = (flag & (int)TextureFlags.DiffuseMap) > 0;
-                // mostly correct (I hope)
                 diffuse3 = (flag & 0x00009100) == 0x00009100 || (flag & 0x00009600) == 0x00009600 || (flag & 0x00009900) == 0x00009900; 
                 diffuse2 = (flag & (int)TextureFlags.RampCubeMap) > 0 && (flag & (int)TextureFlags.NormalMap) == 0 
                     && dummyramp || diffuse3;
@@ -2390,7 +2440,7 @@ namespace Smash_Forge
                 {
                     List<Vertex> nVert = new List<Vertex>();
                     List<int> nFace = new List<int>();
-                    //Console.WriteLine("Optimizing " + m.Text);
+
                     foreach (int f in p.faces)
                     {
                         int pos = -1; // nVert.IndexOf(p.vertices[f]);

@@ -15,6 +15,7 @@ using Microsoft.VisualBasic.Devices;
 using Smash_Forge.GUI.Menus;
 using Smash_Forge.GUI.Editors;
 using SALT.PARAMS;
+using SALT.Graphics;
 using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge
@@ -128,21 +129,32 @@ namespace Smash_Forge
             sha.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Shadow_vs.txt"));
             sha.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Shadow_fs.txt"));
             Runtime.shaders.Add("Shadow", sha);
-
-            Shader nud = new Shader();
-            nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
-            nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
-            Runtime.shaders.Add("NUD", nud);
     
             Shader texture = new Shader();           
             texture.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_vs.txt"));
             texture.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_fs.txt"));
             Runtime.shaders.Add("Texture", texture);
 
-            Shader mbn = new Shader();
-            mbn.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_vs.txt"));
-            mbn.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_fs.txt"));
-            Runtime.shaders.Add("MBN", mbn);
+            Shader gradient = new Shader();
+            gradient.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Gradient_vs.txt"));
+            gradient.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Gradient_fs.txt"));
+            Runtime.shaders.Add("Gradient", gradient);
+
+            if (!Runtime.shaders.ContainsKey("NUD"))
+            {
+                Shader nud = new Shader();
+                nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
+                nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
+                Runtime.shaders.Add("NUD", nud);
+            }
+
+            if (!Runtime.shaders.ContainsKey("MBN"))
+            {
+                Shader mbn = new Shader();
+                mbn.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_vs.txt"));
+                mbn.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_fs.txt"));
+                Runtime.shaders.Add("MBN", mbn);
+            }
 
             Shader quad = new Shader();
             quad.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Quad_vs.txt"));
@@ -154,10 +166,13 @@ namespace Smash_Forge
             blur.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Blur_fs.txt"));
             Runtime.shaders.Add("Blur", blur);
 
-            Shader DAT = new Shader();
-            DAT.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_vs.txt"));
-            DAT.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_fs.txt"));
-            Runtime.shaders.Add("DAT", DAT);
+            if (!Runtime.shaders.ContainsKey("DAT"))
+            {
+                Shader DAT = new Shader();
+                DAT.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_vs.txt"));
+                DAT.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_fs.txt"));
+                Runtime.shaders.Add("DAT", DAT);
+            }
 
             RenderTools.Setup();
         }
@@ -372,57 +387,58 @@ namespace Smash_Forge
         {
             string[] files = Directory.GetFiles(System.IO.Path.GetDirectoryName(filename));
 
-            string pnud = filename;
-            string pnut = "";
-            string pjtb = "";
-            string pvbn = "";
-            string pmta = "";
-            string psb = "";
-            string pmoi = "";
+            string pathNUD = filename;
+            string pathNUT = "";
+            string pathJTB = "";
+            string pathVBN = "";
+            string pathMTA = "";
+            string pathSB = "";
+            string pathMOI = "";
+            string pathXMB = "";
             List<string> pacs = new List<string>();
 
-            foreach (string s in files)
+            foreach (string file in files)
             {
-                if (s.EndsWith(".nut"))
-                    pnut = s;
-                if (s.EndsWith(".vbn"))
-                    pvbn = s;
-                if (s.EndsWith(".jtb"))
-                    pjtb = s;
-                if (s.EndsWith(".mta"))
-                    pmta = s;
-                if (s.EndsWith(".sb"))
-                    psb = s;
-                if (s.EndsWith(".moi"))
-                    pmoi = s;
-                if (s.EndsWith(".pac"))
-                    pacs.Add(s);
+                if (file.EndsWith(".nut"))
+                    pathNUT = file;
+                if (file.EndsWith(".vbn"))
+                    pathVBN = file;
+                if (file.EndsWith(".jtb"))
+                    pathJTB = file;
+                if (file.EndsWith(".mta"))
+                    pathMTA = file;
+                if (file.EndsWith(".sb"))
+                    pathSB = file;
+                if (file.EndsWith(".moi"))
+                    pathMOI = file;
+                if (file.EndsWith(".pac"))
+                    pacs.Add(file);
+                if (file.EndsWith("xmb"))
+                    pathXMB = file;
             }
 
             ModelContainer model = new ModelContainer();
             model.name = name;
-            if (!pvbn.Equals(""))
+            if (!pathVBN.Equals(""))
             {
-                model.vbn = new VBN(pvbn);
+                model.vbn = new VBN(pathVBN);
                 Runtime.TargetVBN = model.vbn;
-                if (!pjtb.Equals(""))
-                    model.vbn.readJointTable(pjtb);
-                if (!psb.Equals(""))
-                    model.vbn.swingBones.Read(psb);
+                if (!pathJTB.Equals(""))
+                    model.vbn.readJointTable(pathJTB);
+                if (!pathSB.Equals(""))
+                    model.vbn.swingBones.Read(pathSB);
             }
 
             NUT nut = null;
-            if (!pnut.Equals(""))
+            if (!pathNUT.Equals(""))
             {
-                nut = new NUT(pnut);
+                nut = new NUT(pathNUT);
                 Runtime.TextureContainers.Add(nut);
             }
 
-            if (!pnud.Equals(""))
+            if (!pathNUD.Equals(""))
             {
-                model.nud = new NUD(pnud);
-
-                //AddDockedControl(new NUDMaterialEditor(model.nud.mesh[0].polygons[0].materials));
+                model.nud = new NUD(pathNUD);
 
                 foreach (string s in pacs)
                 {
@@ -439,13 +455,19 @@ namespace Smash_Forge
                 }
             }
 
-            if (!pmta.Equals(""))
+            if (!pathXMB.Equals(""))
+            {
+                model.xmb = new XMBFile(pathXMB);
+                model.nud.SetPropertiesFromXMB(model.xmb);
+            }
+
+            if (!pathMTA.Equals(""))
             {
                 try
                 {
                     model.mta = new MTA();
-                    model.mta.Read(pmta);
-                    string mtaName = Path.Combine(Path.GetFileName(Path.GetDirectoryName(pmta)), Path.GetFileName(pmta));
+                    model.mta.Read(pathMTA);
+                    string mtaName = Path.Combine(Path.GetFileName(Path.GetDirectoryName(pathMTA)), Path.GetFileName(pathMTA));
                     Console.WriteLine($"MTA Name - {mtaName}");
                     addMaterialAnimation(mtaName, model.mta);
                 }
@@ -455,9 +477,9 @@ namespace Smash_Forge
                 }
             }
 
-            if (!pmoi.Equals(""))
+            if (!pathMOI.Equals(""))
             {
-                model.moi = new MOI(pmoi);
+                model.moi = new MOI(pathMOI);
             }
 
             if (model.nud != null)
@@ -477,10 +499,6 @@ namespace Smash_Forge
             project.treeView1.Nodes.Add(n);
             project.treeView1.EndUpdate();
             project.treeView1.Refresh();
-
-            //ModelViewport viewport = new ModelViewport();
-            //viewport.draw.Add(model);
-            //AddDockedControl(viewport);
         }
 
         private void addMaterialAnimation(string name, MTA m)
@@ -495,7 +513,7 @@ namespace Smash_Forge
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd;*.mta;*.pac;*.dat|" +
+                ofd.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd;*.mta;*.pac;*.dat;*.xmb|" +
                              "Object Motion|*.omo|" +
                              "Maya Animation|*.anim|" +
                              "NW4R Animation|*.chr0|" +
@@ -740,6 +758,7 @@ namespace Smash_Forge
             hurtboxList.refresh();
             Runtime.Animnames.Clear();
             Runtime.clearMoveset();
+            Lights.areaLights.Clear();
         }
 
         private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1001,6 +1020,7 @@ namespace Smash_Forge
                     string modelPath = stagePath + "\\model\\";
                     string paramPath = stagePath + "\\param\\";
                     string animationPath = stagePath + "\\animation\\";
+                    string renderPath = stagePath + "\\render\\";
                     List<string> nuds = new List<string>();
 
                     if (Directory.Exists(modelPath))
@@ -1020,12 +1040,37 @@ namespace Smash_Forge
                     if (Directory.Exists(paramPath))
                     {
                         Runtime.TargetLVD = null;
-                        foreach (string f in Directory.GetFiles(paramPath))
+                        foreach (string fileName in Directory.GetFiles(paramPath))
                         {
-                            if (Path.GetExtension(f).Equals(".lvd") && Runtime.TargetLVD == null)
+                            if (Path.GetExtension(fileName).Equals(".lvd") && Runtime.TargetLVD == null)
                             {
-                                Runtime.TargetLVD = new LVD(f);
+                                Runtime.TargetLVD = new LVD(fileName);
                                 lvdList.fillList();
+                            }
+
+                            if (fileName.EndsWith("stprm.bin"))
+                            {
+                                // should this always replace existing settings?
+                                Runtime.stprmParam = new ParamFile(fileName);
+                                Camera.SetCameraFromSTPRM(Runtime.stprmParam);
+                            }
+                        }
+                    }
+
+                    if (Directory.Exists(renderPath))
+                    {
+                        foreach (string fileName in Directory.GetFiles(renderPath))
+                        {
+                            if (fileName.EndsWith("light_set_param.bin"))
+                            {
+                                // should this always replace existing settings?
+                                Runtime.lightSetParam = new ParamFile(fileName);
+                                Lights.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                            }
+
+                            if (fileName.EndsWith("area_light.xmb"))
+                            {
+                                Lights.CreateAreaLightsFromXMB(new XMBFile(fileName));
                             }
                         }
                     }
@@ -1463,15 +1508,15 @@ namespace Smash_Forge
         ///<summary>
         ///Open a file based on the filename
         ///</summary>
-        /// <param name="filename"> Filename of file to open</param>
-        public void openFile(string filename)
+        /// <param name="fileName"> Filename of file to open</param>
+        public void openFile(string fileName)
         {
-            if (!filename.EndsWith(".mta") && !filename.EndsWith(".dat") && !filename.EndsWith(".smd"))
-                openAnimation(filename);
+            if (!fileName.EndsWith(".mta") && !fileName.EndsWith(".dat") && !fileName.EndsWith(".smd"))
+                openAnimation(fileName);
 
-            if (filename.EndsWith(".vbn"))
+            if (fileName.EndsWith(".vbn"))
             {
-                Runtime.TargetVBN = new VBN(filename);
+                Runtime.TargetVBN = new VBN(fileName);
 
                 ModelContainer con = resyncTargetVBN();
                 if (Directory.Exists("Skapon\\"))
@@ -1481,25 +1526,25 @@ namespace Smash_Forge
                 }
             }
 
-            if (filename.EndsWith(".sb"))
+            if (fileName.EndsWith(".sb"))
             {
                 SB sb = new SB();
-                sb.Read(filename);
+                sb.Read(fileName);
                 SwagEditor swagEditor = new SwagEditor(sb) {ShowHint = DockState.DockRight};
                 AddDockedControl(swagEditor);
                 SwagEditors.Add(swagEditor);
             }
 
-            if (filename.EndsWith(".dat"))
+            if (fileName.EndsWith(".dat"))
             {
-                if (filename.EndsWith("AJ.dat"))
+                if (fileName.EndsWith("AJ.dat"))
                 {
                     MessageBox.Show("This is animation; load with Animation -> Import");
                     return;
                 }
                 DAT dat = new DAT();
-                dat.filename = filename;
-                dat.Read(new FileData(filename));
+                dat.filename = fileName;
+                dat.Read(new FileData(fileName));
                 ModelContainer c = new ModelContainer();
                 Runtime.ModelContainers.Add(c);
                 c.dat_melee = dat;
@@ -1521,9 +1566,9 @@ namespace Smash_Forge
                 resyncTargetVBN();
             }
 
-            if (filename.EndsWith(".nut"))
+            if (fileName.EndsWith(".nut"))
             {
-                Runtime.TextureContainers.Add(new NUT(filename));
+                Runtime.TextureContainers.Add(new NUT(fileName));
                 if (nutEditor == null || nutEditor.IsDisposed)
                 {
                     nutEditor = new NUTEditor();
@@ -1536,7 +1581,7 @@ namespace Smash_Forge
                 nutEditor.FillForm();
             }
 
-            if (filename.EndsWith(".tex"))
+            if (fileName.EndsWith(".tex"))
             {
                 if (texEditor == null || texEditor.IsDisposed)
                 {
@@ -1547,20 +1592,20 @@ namespace Smash_Forge
                 {
                     texEditor.BringToFront();
                 }
-                texEditor.OpenTEX(filename);
+                texEditor.OpenTEX(fileName);
             }
 
-            if (filename.EndsWith(".lvd"))
+            if (fileName.EndsWith(".lvd"))
             {
-                Runtime.TargetLVD = new LVD(filename);
+                Runtime.TargetLVD = new LVD(fileName);
                 LVD test = Runtime.TargetLVD;
                 lvdList.fillList();
             }
             
-            if (filename.EndsWith(".nus3bank"))
+            if (fileName.EndsWith(".nus3bank"))
             {
                 NUS3BANK nus = new NUS3BANK();
-                nus.Read(filename);
+                nus.Read(fileName);
                 Runtime.SoundContainers.Add(nus);
                 if (nusEditor == null || nusEditor.IsDisposed)
                 {
@@ -1574,85 +1619,99 @@ namespace Smash_Forge
                 nusEditor.FillForm();
             }
 
-            if (filename.EndsWith(".wav"))
+            if (fileName.EndsWith(".wav"))
             {
                 WAVE wav = new WAVE();
-                wav.Read(filename);
+                wav.Read(fileName);
             }
 
-            if (filename.EndsWith(".mta"))
+            if (fileName.EndsWith(".mta"))
             {
                 MTA TargetMTA = new MTA();
-                TargetMTA.Read(filename);
+                TargetMTA.Read(fileName);
                 viewports[0].loadMTA(TargetMTA);
                 Runtime.TargetMTA.Clear();
                 Runtime.TargetMTA.Add(TargetMTA);
                 MTAEditor temp = new MTAEditor(TargetMTA) {ShowHint = DockState.DockLeft};
-                temp.Text = Path.GetFileName(filename);
+                temp.Text = Path.GetFileName(fileName);
                 AddDockedControl(temp);
                 mtaEditors.Add(temp);
             }
 
-            if (filename.EndsWith(".mtable"))
+            if (fileName.EndsWith(".mtable"))
             {
-                Runtime.Moveset = new MovesetManager(filename);
+                Runtime.Moveset = new MovesetManager(fileName);
                 Runtime.acmdEditor.updateCrcList();
             }
-            if (filename.EndsWith(".atkd"))
+            if (fileName.EndsWith(".atkd"))
             {
-                AddDockedControl(new ATKD_Editor(new ATKD().Read(filename)));
+                AddDockedControl(new ATKD_Editor(new ATKD().Read(fileName)));
             }
-            if (filename.EndsWith("path.bin"))
+            if (fileName.EndsWith("path.bin"))
             {
-                Runtime.TargetPath = new PathBin(filename);
+                Runtime.TargetPath = new PathBin(fileName);
             }
-            else if (filename.EndsWith(".bin"))
+            else if (fileName.EndsWith(".bin"))
             {
-                FileData f = new FileData(filename);
+                FileData f = new FileData(fileName);
                 if(f.readShort() == 0xFFFF)
                 {
-                    PARAMEditor p = new PARAMEditor(filename) { ShowHint = DockState.Document };
-                    p.Text = Path.GetFileName(filename);
+                    PARAMEditor p = new PARAMEditor(fileName) { ShowHint = DockState.Document };
+                    p.Text = Path.GetFileName(fileName);
                     AddDockedControl(p);
                     paramEditors.Add(p);
+
+                    if (fileName.EndsWith("light_set_param.bin"))
+                    {
+                        Runtime.lightSetParam = new ParamFile(fileName);
+                        Lights.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                    }
+
+                    if (fileName.EndsWith("stprm.bin"))
+                    {
+                        // should this always replace existing settings?
+                        Runtime.stprmParam = new ParamFile(fileName);
+                        Camera.SetCameraFromSTPRM(Runtime.stprmParam);
+                    }
+
                 }
                 else if (f.readString(4,4) == "PATH")
                 {
-                    Runtime.TargetPath = new PathBin(filename);
+                    Runtime.TargetPath = new PathBin(fileName);
                 }
                 else if (f.readString(0,4) == "ATKD")
                 {
-                    AddDockedControl(new ATKD_Editor(new ATKD().Read(filename)));
+                    AddDockedControl(new ATKD_Editor(new ATKD().Read(fileName)));
                 }
                 else
                 {
                     Runtime.TargetCMR0 = new CMR0();
-                    Runtime.TargetCMR0.read(new FileData(filename));
+                    Runtime.TargetCMR0.read(new FileData(fileName));
                 }
             }
 
-            if (filename.EndsWith(".mdl0"))
+            if (fileName.EndsWith(".mdl0"))
             {
                 MDL0Bones mdl0 = new MDL0Bones();
-                Runtime.TargetVBN = mdl0.GetVBN(new FileData(filename));
+                Runtime.TargetVBN = mdl0.GetVBN(new FileData(fileName));
 
                 resyncTargetVBN();
             }
 
-            if (filename.EndsWith(".smd"))
+            if (fileName.EndsWith(".smd"))
             {
                 Runtime.TargetVBN = new VBN();
-                SMD.read(filename, new SkelAnimation(), Runtime.TargetVBN);
+                SMD.read(fileName, new SkelAnimation(), Runtime.TargetVBN);
 
                 ModelContainer m = resyncTargetVBN();
                 if (m != null)
                 {
-                    m.nud = SMD.toNUD(filename);
+                    m.nud = SMD.toNUD(fileName);
                     meshList.refresh();
                 }
             }
 
-            if (filename.ToLower().EndsWith(".dae"))
+            if (fileName.ToLower().EndsWith(".dae"))
             {
                 DAEImportSettings m = new DAEImportSettings();
                 m.ShowDialog();
@@ -1664,7 +1723,7 @@ namespace Smash_Forge
                     // load vbn
                     con.vbn = m.getVBN();
 
-                    Collada.DAEtoNUD(filename, con, m.checkBox5.Checked);
+                    Collada.DAEtoNUD(fileName, con, m.checkBox5.Checked);
 
                     // apply settings
                     m.Apply(con.nud);
@@ -1674,27 +1733,31 @@ namespace Smash_Forge
                 }
             }
 
+            if (fileName.EndsWith("area_light.xmb"))
+            {
+                Lights.CreateAreaLightsFromXMB(new XMBFile(fileName));
+            }
 
-            if (filename.ToLower().EndsWith(".obj"))
+            if (fileName.ToLower().EndsWith(".obj"))
             {
                 ModelViewport vp = new ModelViewport();
                 OBJ obj = new OBJ();
-                obj.Read(filename);
+                obj.Read(fileName);
                 vp.draw.Add(new ModelContainer() { nud = obj.toNUD() });
                 Runtime.ModelContainers.Add(new ModelContainer() { nud = obj.toNUD() });
                 meshList.refresh();
                 AddDockedControl(vp);
             }
 
-            if (filename.EndsWith(".mbn"))
+            if (fileName.EndsWith(".mbn"))
             {
                 MBN m = new MBN();
-                m.Read(filename);
+                m.Read(fileName);
                 ModelContainer con = new ModelContainer();
                 BCH b = new BCH();
                 con.bch = b;
                 b.mbn = m;
-                b.Read(filename.Replace(".mbn", ".bch"));
+                b.Read(fileName.Replace(".mbn", ".bch"));
                 Runtime.ModelContainers.Add(con);
             }
 
@@ -1707,21 +1770,21 @@ namespace Smash_Forge
                 Runtime.ModelContainers.Add(con);
             }*/
 
-            if (filename.EndsWith(".nud"))
+            if (fileName.EndsWith(".nud"))
             {
-                openNud(filename);
+                openNud(fileName);
                 resyncTargetVBN();
             }
 
-            if (filename.EndsWith(".moi"))
+            if (fileName.EndsWith(".moi"))
             {
-                MOI moi = new MOI(filename);
+                MOI moi = new MOI(fileName);
                 AddDockedControl(new MOIEditor(moi) {ShowHint = DockState.DockRight});
             }
 
-            if (filename.EndsWith(".drp"))
+            if (fileName.EndsWith(".drp"))
             {
-                DRP drp = new DRP(filename);
+                DRP drp = new DRP(fileName);
                 DRPViewer v = new DRPViewer();
                 v.treeView1.Nodes.Add(drp);
                 v.Show();
@@ -1730,15 +1793,15 @@ namespace Smash_Forge
                 //project.treeView1.Refresh();
             }
 
-            if (filename.EndsWith(".wrkspc"))
+            if (fileName.EndsWith(".wrkspc"))
             {
                 Workspace = new WorkspaceManager(project);
-                Workspace.OpenWorkspace(filename);
+                Workspace.OpenWorkspace(fileName);
             }
 
             // Don't want to mess up the project tree if we
             // just set it up already
-            if (!filename.EndsWith(".wrkspc"))
+            if (!fileName.EndsWith(".wrkspc"))
                 project.fillTree();
         }
 
@@ -1788,7 +1851,7 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc, .mbn)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.mtable;*.bin;*.dae;*.obj;*.dat;*.mta;*.wrkspc;*.nut;*.sb;*.mbn;*.tex;*.drp;*.nus3bank;*.wav|" +
+                    "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc, .mbn)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.xmb;*.mtable;*.bin;*.dae;*.obj;*.dat;*.mta;*.wrkspc;*.nut;*.sb;*.mbn;*.tex;*.drp;*.nus3bank;*.wav|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +
@@ -2025,6 +2088,7 @@ namespace Smash_Forge
             Runtime.shaders["DAT"].SaveErrorLog("DAT");
             Runtime.shaders["Texture"].SaveErrorLog("Texture");
             Runtime.shaders["Quad"].SaveErrorLog("Quad");
+            Runtime.shaders["Gradient"].SaveErrorLog("Gradient");
 
             MessageBox.Show("Error logs saved to Forge directory");
         }
@@ -2037,7 +2101,7 @@ namespace Smash_Forge
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            e.Cancel = false;// (MessageBox.Show("Would you like to close Forge? Any and all unsaved work will be lost.", "Close Confirmation" , MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No);
+            e.Cancel = false;
         }
 
         private void importParamsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2119,6 +2183,12 @@ namespace Smash_Forge
                     }
                 }
             }
+        }
+
+        private void stageLightingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            StageLighting stageLightForm = new StageLighting();
+            stageLightForm.Show();
         }
     }
 }
