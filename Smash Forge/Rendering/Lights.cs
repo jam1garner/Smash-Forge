@@ -74,6 +74,24 @@ namespace Smash_Forge
             RenderTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
         }
 
+        public void setGroundHue(float groundHue)
+        {
+            this.groundHue = groundHue;
+            RenderTools.HSV2RGB(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
+        }
+
+        public void setGroundSaturation(float groundSaturation)
+        {
+            this.groundSaturation = groundSaturation;
+            RenderTools.HSV2RGB(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
+        }
+
+        public void setGroundIntensity(float groundIntensity)
+        {
+            this.groundIntensity = groundIntensity;
+            RenderTools.HSV2RGB(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
+        }
+
         public override string ToString()
         {
             return name;
@@ -106,14 +124,14 @@ namespace Smash_Forge
 
         // XYZ angles
         // How should "non directional" area lights work?
-        public float rotX = 0.0f; // in degrees (converted to radians)
-        public float rotY = 0.0f; // in degrees (converted to radians)
-        public float rotZ = 0.0f; // in degrees (converted to radians)
+        // in degrees (converted to radians)
+        public float rotX = 0.0f; 
+        public float rotY = 0.0f;
+        public float rotZ = 0.0f; 
         public Vector3 direction = new Vector3(0f, 0f, 1f);
 
         public bool noDirectional = false;
         public bool isSelected = false;
-
 
         public AreaLight(string areaLightID)
         {
@@ -238,22 +256,40 @@ namespace Smash_Forge
 
         }
 
-        public void setHue(float hue)
+        public void setDifHue(float hue)
         {
             this.difHue = hue;
             RenderTools.HSV2RGB(hue, difSaturation, difIntensity, out difR, out difG, out difB);
         }
 
-        public void setSaturation(float saturation)
+        public void setDifSaturation(float saturation)
         {
             this.difSaturation = saturation;
             RenderTools.HSV2RGB(difHue, saturation, difIntensity, out difR, out difG, out difB);
         }
 
-        public void setIntensity(float intensity)
+        public void setDifIntensity(float intensity)
         {
             this.difIntensity = intensity;
-            RenderTools.HSV2RGB(difHue, difSaturation, this.difIntensity, out difR, out difG, out difB);
+            RenderTools.HSV2RGB(difHue, difSaturation, difIntensity, out difR, out difG, out difB);
+        }
+
+        public void setAmbHue(float hue)
+        {
+            this.ambHue = hue;
+            RenderTools.HSV2RGB(ambHue, ambSaturation, ambIntensity, out ambR, out ambG, out ambB);
+        }
+
+        public void setAmbSaturation(float saturation)
+        {
+            this.ambSaturation = saturation;
+            RenderTools.HSV2RGB(ambHue, ambSaturation, ambIntensity, out ambR, out ambG, out ambB);
+        }
+
+        public void setAmbIntensity(float intensity)
+        {
+            this.ambIntensity = intensity;
+            RenderTools.HSV2RGB(ambHue, ambSaturation, ambIntensity, out ambR, out ambG, out ambB);
         }
 
         public void setRotX(float rotX)

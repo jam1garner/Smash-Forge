@@ -57,8 +57,9 @@ namespace Smash_Forge.GUI
             modelSelectCB.Checked = Runtime.renderModelSelection;
             wireframeCB.Enabled = checkBox1.Checked;
             modelSelectCB.Enabled = checkBox1.Checked;
+            renderFogCB.Checked = Runtime.renderFog;
 
-            depthSlider.Value = (int)Runtime.renderDepth;
+            depthSlider.Value = Math.Min((int)Runtime.renderDepth, depthSlider.Maximum);
             fovSlider.Value = (int)(Runtime.fov * 180.0f / Math.PI);
             fovLabel.Text = "FOV (Degrees): " + fovSlider.Value;
 
@@ -654,6 +655,13 @@ namespace Smash_Forge.GUI
         private void stageLightingCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderStageLighting = stageLightingCB.Checked;
+
+            renderFogCB.Enabled = stageLightingCB.Checked;
+        }
+
+        private void renderFogCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderFog = renderFogCB.Checked;
         }
     }
     

@@ -40,8 +40,32 @@ namespace Smash_Forge.GUI.Editors
         {
             for (int i = 0; i < 16; i++)
             {
-                lightSetGroupListBox.Items.Add(i.ToString());
+                string name = i.ToString();
+                switch (i)
+                {
+                    case 0:
+                        name += " black";
+                        break;
+                    case 1:
+                        name += " cyan";
+                        break;
+                    case 2:
+                        name += " red";
+                        break;
+                    case 3:
+                        name += " yellow";
+                        break;
+                    case 4:
+                        name += " magenta";
+                        break;
+                    default:
+                        name += "";
+                        break;
+                }
+        
+                lightSetGroupListBox.Items.Add(name);
             }
+
         }
 
         private void InitializeCharLightListBox()
@@ -92,13 +116,19 @@ namespace Smash_Forge.GUI.Editors
             charColor1XTB.Text = Lights.fresnelLight.skyR + "";
             charColor1YTB.Text = Lights.fresnelLight.skyG + "";
             charColor1ZTB.Text = Lights.fresnelLight.skyB + "";
+            charColor2XTB.Text = Lights.fresnelLight.groundR + "";
+            charColor2YTB.Text = Lights.fresnelLight.groundG + "";
+            charColor2ZTB.Text = Lights.fresnelLight.groundB + "";
         }
 
         private void UpdateCharDiffuseValues()
         {
-            charColor1XTB.Text = Lights.diffuseLight.difR + "";
-            charColor1YTB.Text = Lights.diffuseLight.difG + "";
-            charColor1ZTB.Text = Lights.diffuseLight.difB + "";
+            charColor1XTB.Text = Lights.diffuseLight.difHue + "";
+            charColor1YTB.Text = Lights.diffuseLight.difSaturation + "";
+            charColor1ZTB.Text = Lights.diffuseLight.difIntensity + "";
+            charColor2XTB.Text = Lights.diffuseLight.ambHue + "";
+            charColor2YTB.Text = Lights.diffuseLight.ambSaturation + "";
+            charColor2ZTB.Text = Lights.diffuseLight.ambIntensity + "";
         }
 
         private void lightSetGroupListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -129,7 +159,10 @@ namespace Smash_Forge.GUI.Editors
 
         private void UpdateStageButtonColor()
         {
-            Color stageColor = Color.FromArgb(255, 255, 255, 255);
+            int red = RenderTools.ClampInt((int)(selectedStageLight.difR * 255));
+            int green = RenderTools.ClampInt((int)(selectedStageLight.difG * 255));
+            int blue = RenderTools.ClampInt((int)(selectedStageLight.difB * 255));
+            Color stageColor = Color.FromArgb(255, red, green, blue);
             stageDifColorButton.BackColor = stageColor;
         }
 
@@ -173,16 +206,24 @@ namespace Smash_Forge.GUI.Editors
         }
 
         #region stage color events
+
         private void stageDifHueTB_TextChanged(object sender, EventArgs e)
         {
             float i = 0;
             if (float.TryParse(stageDifHueTB.Text, out i))
             {
                 stageDifHueTB.BackColor = Color.White;
-                selectedStageLight.setHue(i);
+                selectedStageLight.setDifHue(i);
             }
             else
                 stageDifHueTB.BackColor = Color.Red;
+
+            UpdateStageButtonColor();
+
+            int newSliderValue = (int) (selectedStageLight.difHue * (float)stageDifHueTrackBar.Maximum / 360.0f);
+            newSliderValue = Math.Min(newSliderValue, stageDifHueTrackBar.Maximum);
+            newSliderValue = Math.Max(newSliderValue, 0);
+            stageDifHueTrackBar.Value = newSliderValue;
         }
 
         private void stageDifSatTB_TextChanged(object sender, EventArgs e)
@@ -191,10 +232,17 @@ namespace Smash_Forge.GUI.Editors
             if (float.TryParse(stageDifSatTB.Text, out i))
             {
                 stageDifSatTB.BackColor = Color.White;
-                selectedStageLight.setSaturation(i);
+                selectedStageLight.setDifSaturation(i);
             }
             else
                 stageDifSatTB.BackColor = Color.Red;
+
+            UpdateStageButtonColor();
+
+            int newSliderValue = (int)(selectedStageLight.difSaturation * (float)stageDifSatTrackBar.Maximum / 1.0f);
+            newSliderValue = Math.Min(newSliderValue, stageDifSatTrackBar.Maximum);
+            newSliderValue = Math.Max(newSliderValue, 0);
+            stageDifSatTrackBar.Value = newSliderValue;
         }
 
         private void stageDifIntensityTB_TextChanged(object sender, EventArgs e)
@@ -203,11 +251,35 @@ namespace Smash_Forge.GUI.Editors
             if (float.TryParse(stageDifIntensityTB.Text, out i))
             {
                 stageDifIntensityTB.BackColor = Color.White;
-                selectedStageLight.setIntensity(i);
+                selectedStageLight.setDifIntensity(i);
             }
             else
                 stageDifIntensityTB.BackColor = Color.Red;
+
+            UpdateStageButtonColor();
+
+            int newSliderValue = (int)(selectedStageLight.difIntensity * (float)stageDifIntensityTrackBar.Maximum / 5.0f);
+            newSliderValue = Math.Min(newSliderValue, stageDifIntensityTrackBar.Maximum);
+            newSliderValue = Math.Max(newSliderValue, 0);
+            stageDifIntensityTrackBar.Value = newSliderValue;
         }
+
+        private void stageDifHueTrackBar_Scroll(object sender, EventArgs e)
+        {
+            stageDifHueTB.Text = (float)(360.0f * (stageDifHueTrackBar.Value / (float)stageDifHueTrackBar.Maximum)) + "";
+        }
+
+        private void stageDifSatTrackBar_Scroll(object sender, EventArgs e)
+        {
+            stageDifSatTB.Text = (float)(1.0f * (stageDifSatTrackBar.Value / (float)stageDifSatTrackBar.Maximum)) + "";
+        }
+
+        private void stageDifIntensityTrackBar_Scroll(object sender, EventArgs e)
+        {
+            stageDifIntensityTB.Text = (float)(5.0f * (stageDifIntensityTrackBar.Value / (float)stageDifIntensityTrackBar.Maximum)) + "";
+        }
+
+
         #endregion
 
         #region stage rotation events
@@ -249,38 +321,235 @@ namespace Smash_Forge.GUI.Editors
         #endregion
 
         #region character color events
-        private void charColor1HueTB_TextChanged(object sender, EventArgs e)
+        private void charColor1XTB_TextChanged(object sender, EventArgs e)
+        {
+            if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
+            {
+                float i = 0;
+                if (float.TryParse(charColor1XTB.Text, out i))
+                {
+                    charColor1XTB.BackColor = Color.White;
+                    Lights.fresnelLight.setSkyHue(i);
+                }
+                else
+                    charColor1XTB.BackColor = Color.Red;
+
+                RenderCharacterLightColor(new Vector3(Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB),
+                    new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
+            }
+            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
+            {
+                float i = 0;
+                if (float.TryParse(charColor1XTB.Text, out i))
+                {
+                    charColor1XTB.BackColor = Color.White;
+                    Lights.diffuseLight.setDifHue(i);
+                }
+                else
+                    charColor1XTB.BackColor = Color.Red;
+
+                RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
+                    new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
+            }
+        }
+
+        private void charColor1YTB_TextChanged(object sender, EventArgs e)
+        {
+            if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
+            {
+                float i = 0;
+                if (float.TryParse(charColor1YTB.Text, out i))
+                {
+                    charColor1YTB.BackColor = Color.White;
+                    Lights.fresnelLight.setSkySaturation(i);
+                }
+                else
+                    charColor1YTB.BackColor = Color.Red;
+
+                RenderCharacterLightColor(new Vector3(Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB),
+                    new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
+            }
+            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
+            {
+                float i = 0;
+                if (float.TryParse(charColor1YTB.Text, out i))
+                {
+                    charColor1YTB.BackColor = Color.White;
+                    Lights.diffuseLight.setDifSaturation(i);
+                }
+                else
+                    charColor1YTB.BackColor = Color.Red;
+
+
+                RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
+                    new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
+            }
+        }
+
+        private void charColor1ZTB_TextChanged(object sender, EventArgs e)
+        {
+            if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
+            {
+                float i = 0;
+                if (float.TryParse(charColor1ZTB.Text, out i))
+                {
+                    charColor1ZTB.BackColor = Color.White;
+                    Lights.fresnelLight.setSkyIntensity(i);
+                }
+                else
+                    charColor1ZTB.BackColor = Color.Red;
+
+                RenderCharacterLightColor(new Vector3(Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB),
+                    new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
+            }
+            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
+            {
+                float i = 0;
+                if (float.TryParse(charColor1ZTB.Text, out i))
+                {
+                    charColor1ZTB.BackColor = Color.White;
+                    Lights.diffuseLight.setDifIntensity(i);
+                }
+                else
+                    charColor1ZTB.BackColor = Color.Red;
+
+
+                RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
+                    new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
+            }
+        }
+
+        private void charColor2XTB_TextChanged(object sender, EventArgs e)
+        {
+            if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
+            {
+                float i = 0;
+                if (float.TryParse(charColor2XTB.Text, out i))
+                {
+                    charColor2XTB.BackColor = Color.White;
+                    Lights.fresnelLight.setGroundHue(i);
+                }
+                else
+                    charColor2XTB.BackColor = Color.Red;
+
+                RenderCharacterLightColor(new Vector3(Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB),
+                    new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
+            }
+            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
+            {
+                float i = 0;
+                if (float.TryParse(charColor2XTB.Text, out i))
+                {
+                    charColor2XTB.BackColor = Color.White;
+                    Lights.diffuseLight.setAmbHue(i);
+                }
+                else
+                    charColor2XTB.BackColor = Color.Red;
+
+
+                RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
+                    new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
+            }
+        }
+
+        private void charColor2YTB_TextChanged(object sender, EventArgs e)
+        {
+            if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
+            {
+                float i = 0;
+                if (float.TryParse(charColor2YTB.Text, out i))
+                {
+                    charColor2YTB.BackColor = Color.White;
+                    Lights.fresnelLight.setGroundSaturation(i);
+                }
+                else
+                    charColor2YTB.BackColor = Color.Red;
+
+                RenderCharacterLightColor(new Vector3(Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB),
+                    new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
+            }
+            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
+            {
+                float i = 0;
+                if (float.TryParse(charColor2YTB.Text, out i))
+                {
+                    charColor2YTB.BackColor = Color.White;
+                    Lights.diffuseLight.setAmbSaturation(i);
+                }
+                else
+                    charColor2YTB.BackColor = Color.Red;
+
+                RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
+                    new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
+            }
+        }
+
+        private void charColor2ZTB_TextChanged(object sender, EventArgs e)
+        {
+            if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
+            {
+                float i = 0;
+                if (float.TryParse(charColor2ZTB.Text, out i))
+                {
+                    charColor2ZTB.BackColor = Color.White;
+                    Lights.fresnelLight.setGroundIntensity(i);
+                }
+                else
+                    charColor2ZTB.BackColor = Color.Red;
+
+                RenderCharacterLightColor(new Vector3(Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB),
+                    new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
+            }
+            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
+            {
+                float i = 0;
+                if (float.TryParse(charColor2ZTB.Text, out i))
+                {
+                    charColor2ZTB.BackColor = Color.White;
+                    Lights.diffuseLight.setAmbIntensity(i);
+                }
+                else
+                    charColor2ZTB.BackColor = Color.Red;
+
+                RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
+                    new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
+            }
+        }
+
+        private void charColor1XTrackBar_Scroll(object sender, EventArgs e)
         {
 
         }
 
-        private void charColor1SatTB_TextChanged(object sender, EventArgs e)
+        private void charColor1YTrackBar_Scroll(object sender, EventArgs e)
         {
 
         }
 
-        private void charColor1IntenTB_TextChanged(object sender, EventArgs e)
+        private void charColor1ZTrackBar_Scroll(object sender, EventArgs e)
         {
 
         }
 
-        private void charColor2HueTB_TextChanged(object sender, EventArgs e)
+        private void charColor2XTrackBar_Scroll(object sender, EventArgs e)
         {
 
         }
 
-        private void charColor2SatTB_TextChanged(object sender, EventArgs e)
+        private void charColor2YTrackBar_Scroll(object sender, EventArgs e)
         {
 
         }
 
-        private void charColor2IntenTB_TextChanged(object sender, EventArgs e)
+        private void charColor2ZTrackBar_Scroll(object sender, EventArgs e)
         {
 
         }
+
         #endregion
 
         #region area light color events
+
         private void areaLightListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateCurrentAreaLightValues();
@@ -553,6 +822,8 @@ namespace Smash_Forge.GUI.Editors
             areaScaleZTB.Text = (float)(250 * (areaScaleZTrackBar.Value / (float)areaScaleZTrackBar.Maximum)) + "";
 
         }
+
+
 
 
         #endregion events

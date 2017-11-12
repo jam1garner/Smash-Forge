@@ -89,6 +89,7 @@
             this.RendererLabel = new System.Windows.Forms.Label();
             this.OpenGLVersionLabel = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.areaLightBoundingBoxCB = new System.Windows.Forms.CheckBox();
             this.checkBox11 = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox7 = new System.Windows.Forms.CheckBox();
@@ -106,6 +107,8 @@
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.renderFogCB = new System.Windows.Forms.CheckBox();
+            this.stageLightingCB = new System.Windows.Forms.CheckBox();
             this.cameraLightCB = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.modelscaleTB = new System.Windows.Forms.TextBox();
@@ -135,10 +138,6 @@
             this.renderDepthLabel = new System.Windows.Forms.Label();
             this.depthSlider = new System.Windows.Forms.TrackBar();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.checkBox24 = new System.Windows.Forms.CheckBox();
-            this.checkBox25 = new System.Windows.Forms.CheckBox();
-            this.stageLightingCB = new System.Windows.Forms.CheckBox();
-            this.areaLightBoundingBoxCB = new System.Windows.Forms.CheckBox();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAbsorbColor)).BeginInit();
@@ -820,6 +819,17 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Display Settings";
             // 
+            // areaLightBoundingBoxCB
+            // 
+            this.areaLightBoundingBoxCB.AutoSize = true;
+            this.areaLightBoundingBoxCB.Location = new System.Drawing.Point(16, 392);
+            this.areaLightBoundingBoxCB.Name = "areaLightBoundingBoxCB";
+            this.areaLightBoundingBoxCB.Size = new System.Drawing.Size(192, 17);
+            this.areaLightBoundingBoxCB.TabIndex = 27;
+            this.areaLightBoundingBoxCB.Text = "Render Area Light Bounding Boxes";
+            this.areaLightBoundingBoxCB.UseVisualStyleBackColor = true;
+            this.areaLightBoundingBoxCB.CheckedChanged += new System.EventHandler(this.areaLightBoundingBoxCB_CheckedChanged);
+            // 
             // checkBox11
             // 
             this.checkBox11.AutoSize = true;
@@ -997,8 +1007,7 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.checkBox24);
-            this.groupBox1.Controls.Add(this.checkBox25);
+            this.groupBox1.Controls.Add(this.renderFogCB);
             this.groupBox1.Controls.Add(this.stageLightingCB);
             this.groupBox1.Controls.Add(this.cameraLightCB);
             this.groupBox1.Controls.Add(this.tableLayoutPanel1);
@@ -1022,6 +1031,31 @@
             this.groupBox1.TabIndex = 15;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model Render Settings";
+            // 
+            // renderFogCB
+            // 
+            this.renderFogCB.AutoSize = true;
+            this.renderFogCB.Enabled = false;
+            this.renderFogCB.Location = new System.Drawing.Point(183, 208);
+            this.renderFogCB.Name = "renderFogCB";
+            this.renderFogCB.Size = new System.Drawing.Size(44, 17);
+            this.renderFogCB.TabIndex = 34;
+            this.renderFogCB.Text = "Fog";
+            this.renderFogCB.UseVisualStyleBackColor = true;
+            this.renderFogCB.CheckedChanged += new System.EventHandler(this.renderFogCB_CheckedChanged);
+            // 
+            // stageLightingCB
+            // 
+            this.stageLightingCB.AutoSize = true;
+            this.stageLightingCB.Checked = true;
+            this.stageLightingCB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.stageLightingCB.Location = new System.Drawing.Point(157, 185);
+            this.stageLightingCB.Name = "stageLightingCB";
+            this.stageLightingCB.Size = new System.Drawing.Size(94, 17);
+            this.stageLightingCB.TabIndex = 33;
+            this.stageLightingCB.Text = "Stage Lighting";
+            this.stageLightingCB.UseVisualStyleBackColor = true;
+            this.stageLightingCB.CheckedChanged += new System.EventHandler(this.stageLightingCB_CheckedChanged);
             // 
             // cameraLightCB
             // 
@@ -1349,52 +1383,6 @@
             this.tabControl1.Size = new System.Drawing.Size(564, 698);
             this.tabControl1.TabIndex = 17;
             // 
-            // checkBox24
-            // 
-            this.checkBox24.AutoSize = true;
-            this.checkBox24.Enabled = false;
-            this.checkBox24.Location = new System.Drawing.Point(183, 231);
-            this.checkBox24.Name = "checkBox24";
-            this.checkBox24.Size = new System.Drawing.Size(79, 17);
-            this.checkBox24.TabIndex = 35;
-            this.checkBox24.Text = "Area Lights";
-            this.checkBox24.UseVisualStyleBackColor = true;
-            // 
-            // checkBox25
-            // 
-            this.checkBox25.AutoSize = true;
-            this.checkBox25.Enabled = false;
-            this.checkBox25.Location = new System.Drawing.Point(183, 208);
-            this.checkBox25.Name = "checkBox25";
-            this.checkBox25.Size = new System.Drawing.Size(44, 17);
-            this.checkBox25.TabIndex = 34;
-            this.checkBox25.Text = "Fog";
-            this.checkBox25.UseVisualStyleBackColor = true;
-            // 
-            // stageLightingCB
-            // 
-            this.stageLightingCB.AutoSize = true;
-            this.stageLightingCB.Checked = true;
-            this.stageLightingCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.stageLightingCB.Location = new System.Drawing.Point(157, 185);
-            this.stageLightingCB.Name = "stageLightingCB";
-            this.stageLightingCB.Size = new System.Drawing.Size(94, 17);
-            this.stageLightingCB.TabIndex = 33;
-            this.stageLightingCB.Text = "Stage Lighting";
-            this.stageLightingCB.UseVisualStyleBackColor = true;
-            this.stageLightingCB.CheckedChanged += new System.EventHandler(this.stageLightingCB_CheckedChanged);
-            // 
-            // areaLightBoundingBoxCB
-            // 
-            this.areaLightBoundingBoxCB.AutoSize = true;
-            this.areaLightBoundingBoxCB.Location = new System.Drawing.Point(16, 392);
-            this.areaLightBoundingBoxCB.Name = "areaLightBoundingBoxCB";
-            this.areaLightBoundingBoxCB.Size = new System.Drawing.Size(192, 17);
-            this.areaLightBoundingBoxCB.TabIndex = 27;
-            this.areaLightBoundingBoxCB.Text = "Render Area Light Bounding Boxes";
-            this.areaLightBoundingBoxCB.UseVisualStyleBackColor = true;
-            this.areaLightBoundingBoxCB.CheckedChanged += new System.EventHandler(this.areaLightBoundingBoxCB_CheckedChanged);
-            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1547,8 +1535,7 @@
         private System.Windows.Forms.TrackBar depthSlider;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.CheckBox areaLightBoundingBoxCB;
-        private System.Windows.Forms.CheckBox checkBox24;
-        private System.Windows.Forms.CheckBox checkBox25;
+        private System.Windows.Forms.CheckBox renderFogCB;
         private System.Windows.Forms.CheckBox stageLightingCB;
     }
 }
