@@ -218,7 +218,7 @@ namespace Smash_Forge
         public static bool renderNormalMap = true;
         public static bool useDepthTest = true;
         public static bool drawAreaLightBoundingBoxes = true;
-        public static bool renderStageLighting = false;
+        public static bool renderStageLighting = true;
         public static RenderTypes renderType;
 
         // ETC

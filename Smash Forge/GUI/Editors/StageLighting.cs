@@ -823,10 +823,7 @@ namespace Smash_Forge.GUI.Editors
 
         }
 
-
-
-
-        #endregion events
+        #endregion
 
 
     }

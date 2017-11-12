@@ -1056,10 +1056,10 @@ namespace Smash_Forge
                         GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
                     }
 
-                    GL.Uniform3(shader.getAttribute("Lights.stageLight1Direction"), Lights.stageLight1.direction);
-                    GL.Uniform3(shader.getAttribute("Lights.stageLight2Direction"), Lights.stageLight2.direction);
-                    GL.Uniform3(shader.getAttribute("Lights.stageLight3Direction"), Lights.stageLight3.direction);
-                    GL.Uniform3(shader.getAttribute("Lights.stageLight4Direction"), Lights.stageLight4.direction);
+                    GL.Uniform3(shader.getAttribute("stageLight1Direction"), Lights.stageLight1.direction);
+                    GL.Uniform3(shader.getAttribute("stageLight2Direction"), Lights.stageLight2.direction);
+                    GL.Uniform3(shader.getAttribute("stageLight3Direction"), Lights.stageLight3.direction);
+                    GL.Uniform3(shader.getAttribute("stageLight4Direction"), Lights.stageLight4.direction);
 
                     if (m.vbn != null)
                     {
