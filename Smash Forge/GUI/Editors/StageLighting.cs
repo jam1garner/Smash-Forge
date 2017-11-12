@@ -113,12 +113,12 @@ namespace Smash_Forge.GUI.Editors
 
         private void UpdateCharFresnelValues()
         {
-            charColor1XTB.Text = Lights.fresnelLight.skyR + "";
-            charColor1YTB.Text = Lights.fresnelLight.skyG + "";
-            charColor1ZTB.Text = Lights.fresnelLight.skyB + "";
-            charColor2XTB.Text = Lights.fresnelLight.groundR + "";
-            charColor2YTB.Text = Lights.fresnelLight.groundG + "";
-            charColor2ZTB.Text = Lights.fresnelLight.groundB + "";
+            charColor1XTB.Text = Lights.fresnelLight.skyHue + "";
+            charColor1YTB.Text = Lights.fresnelLight.skySaturation + "";
+            charColor1ZTB.Text = Lights.fresnelLight.skyIntensity + "";
+            charColor2XTB.Text = Lights.fresnelLight.groundHue + "";
+            charColor2YTB.Text = Lights.fresnelLight.groundSaturation + "";
+            charColor2ZTB.Text = Lights.fresnelLight.groundIntensity + "";
         }
 
         private void UpdateCharDiffuseValues()

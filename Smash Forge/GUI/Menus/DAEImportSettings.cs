@@ -53,8 +53,8 @@ namespace Smash_Forge
             foreach (string key in BoneTypes.Keys)
                 comboBox2.Items.Add(key);
 
-            comboBox1.SelectedIndex = 3;
-            comboBox2.SelectedIndex = 2;
+            comboBox1.SelectedIndex = 2;
+            comboBox2.SelectedIndex = 1;
         }
 
         public void Apply(NUD nud)
