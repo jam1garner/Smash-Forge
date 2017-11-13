@@ -31,11 +31,23 @@
             this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.listBox1 = new System.Windows.Forms.ListBox();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.label2 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.boneButton9 = new Smash_Forge.BoneButton();
+            this.boneButton8 = new Smash_Forge.BoneButton();
+            this.boneButton7 = new Smash_Forge.BoneButton();
+            this.boneButton6 = new Smash_Forge.BoneButton();
+            this.boneButton5 = new Smash_Forge.BoneButton();
+            this.boneButton4 = new Smash_Forge.BoneButton();
+            this.boneButton3 = new Smash_Forge.BoneButton();
+            this.boneButton2 = new Smash_Forge.BoneButton();
             this.label1 = new System.Windows.Forms.Label();
+            this.boneButton1 = new Smash_Forge.BoneButton();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.zMin = new System.Windows.Forms.NumericUpDown();
@@ -96,22 +108,11 @@
             this.numericUpDown17 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown18 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown19 = new System.Windows.Forms.NumericUpDown();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.addEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.boneButton9 = new Smash_Forge.BoneButton();
-            this.boneButton8 = new Smash_Forge.BoneButton();
-            this.boneButton7 = new Smash_Forge.BoneButton();
-            this.boneButton6 = new Smash_Forge.BoneButton();
-            this.boneButton5 = new Smash_Forge.BoneButton();
-            this.boneButton4 = new Smash_Forge.BoneButton();
-            this.boneButton3 = new Smash_Forge.BoneButton();
-            this.boneButton2 = new Smash_Forge.BoneButton();
-            this.boneButton1 = new Smash_Forge.BoneButton();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -150,7 +151,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown17)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown18)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown19)).BeginInit();
-            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -167,7 +167,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.tabControl1);
-            this.splitContainer1.Size = new System.Drawing.Size(236, 593);
+            this.splitContainer1.Size = new System.Drawing.Size(281, 593);
             this.splitContainer1.SplitterDistance = 234;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -178,9 +178,32 @@
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(0, 0);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(236, 234);
+            this.listBox1.Size = new System.Drawing.Size(281, 234);
             this.listBox1.TabIndex = 0;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addEntryToolStripMenuItem,
+            this.removeEntryToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(148, 48);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
+            // 
+            // addEntryToolStripMenuItem
+            // 
+            this.addEntryToolStripMenuItem.Name = "addEntryToolStripMenuItem";
+            this.addEntryToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.addEntryToolStripMenuItem.Text = "Add Entry";
+            this.addEntryToolStripMenuItem.Click += new System.EventHandler(this.addEntryToolStripMenuItem_Click);
+            // 
+            // removeEntryToolStripMenuItem
+            // 
+            this.removeEntryToolStripMenuItem.Name = "removeEntryToolStripMenuItem";
+            this.removeEntryToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.removeEntryToolStripMenuItem.Text = "Remove Entry";
+            this.removeEntryToolStripMenuItem.Click += new System.EventHandler(this.removeEntryToolStripMenuItem_Click);
             // 
             // tabControl1
             // 
@@ -192,7 +215,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(236, 355);
+            this.tabControl1.Size = new System.Drawing.Size(281, 355);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -204,7 +227,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(228, 329);
+            this.tabPage1.Size = new System.Drawing.Size(273, 329);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Bones";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -213,7 +236,7 @@
             // 
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(78, 44);
+            this.label2.Location = new System.Drawing.Point(100, 44);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(74, 13);
             this.label2.TabIndex = 3;
@@ -241,8 +264,88 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 55.40541F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(216, 140);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(261, 140);
             this.tableLayoutPanel1.TabIndex = 2;
+            // 
+            // boneButton9
+            // 
+            this.boneButton9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneButton9.Location = new System.Drawing.Point(133, 107);
+            this.boneButton9.Name = "boneButton9";
+            this.boneButton9.Size = new System.Drawing.Size(125, 30);
+            this.boneButton9.TabIndex = 7;
+            this.boneButton9.Text = "boneButton9";
+            this.boneButton9.UseVisualStyleBackColor = true;
+            // 
+            // boneButton8
+            // 
+            this.boneButton8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneButton8.Location = new System.Drawing.Point(3, 107);
+            this.boneButton8.Name = "boneButton8";
+            this.boneButton8.Size = new System.Drawing.Size(124, 30);
+            this.boneButton8.TabIndex = 6;
+            this.boneButton8.Text = "boneButton8";
+            this.boneButton8.UseVisualStyleBackColor = true;
+            // 
+            // boneButton7
+            // 
+            this.boneButton7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneButton7.Location = new System.Drawing.Point(133, 73);
+            this.boneButton7.Name = "boneButton7";
+            this.boneButton7.Size = new System.Drawing.Size(125, 28);
+            this.boneButton7.TabIndex = 5;
+            this.boneButton7.Text = "boneButton7";
+            this.boneButton7.UseVisualStyleBackColor = true;
+            // 
+            // boneButton6
+            // 
+            this.boneButton6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneButton6.Location = new System.Drawing.Point(3, 73);
+            this.boneButton6.Name = "boneButton6";
+            this.boneButton6.Size = new System.Drawing.Size(124, 28);
+            this.boneButton6.TabIndex = 4;
+            this.boneButton6.Text = "boneButton6";
+            this.boneButton6.UseVisualStyleBackColor = true;
+            // 
+            // boneButton5
+            // 
+            this.boneButton5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneButton5.Location = new System.Drawing.Point(133, 34);
+            this.boneButton5.Name = "boneButton5";
+            this.boneButton5.Size = new System.Drawing.Size(125, 33);
+            this.boneButton5.TabIndex = 3;
+            this.boneButton5.Text = "boneButton5";
+            this.boneButton5.UseVisualStyleBackColor = true;
+            // 
+            // boneButton4
+            // 
+            this.boneButton4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneButton4.Location = new System.Drawing.Point(3, 34);
+            this.boneButton4.Name = "boneButton4";
+            this.boneButton4.Size = new System.Drawing.Size(124, 33);
+            this.boneButton4.TabIndex = 2;
+            this.boneButton4.Text = "boneButton4";
+            this.boneButton4.UseVisualStyleBackColor = true;
+            // 
+            // boneButton3
+            // 
+            this.boneButton3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneButton3.Location = new System.Drawing.Point(133, 3);
+            this.boneButton3.Name = "boneButton3";
+            this.boneButton3.Size = new System.Drawing.Size(125, 25);
+            this.boneButton3.TabIndex = 1;
+            this.boneButton3.Text = "boneButton3";
+            this.boneButton3.UseVisualStyleBackColor = true;
+            // 
+            // boneButton2
+            // 
+            this.boneButton2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneButton2.Location = new System.Drawing.Point(3, 3);
+            this.boneButton2.Name = "boneButton2";
+            this.boneButton2.Size = new System.Drawing.Size(124, 25);
+            this.boneButton2.TabIndex = 0;
+            this.boneButton2.Text = "boneButton2";
+            this.boneButton2.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
@@ -253,12 +356,21 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "Entry Bone";
             // 
+            // boneButton1
+            // 
+            this.boneButton1.Location = new System.Drawing.Point(84, 6);
+            this.boneButton1.Name = "boneButton1";
+            this.boneButton1.Size = new System.Drawing.Size(138, 23);
+            this.boneButton1.TabIndex = 0;
+            this.boneButton1.Text = "boneButton1";
+            this.boneButton1.UseVisualStyleBackColor = true;
+            // 
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.splitContainer2);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(228, 329);
+            this.tabPage3.Size = new System.Drawing.Size(273, 329);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Rotation Limitation";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -288,8 +400,8 @@
             this.splitContainer2.Panel2.Controls.Add(this.label10);
             this.splitContainer2.Panel2.Controls.Add(this.label8);
             this.splitContainer2.Panel2.Controls.Add(this.label9);
-            this.splitContainer2.Size = new System.Drawing.Size(228, 329);
-            this.splitContainer2.SplitterDistance = 111;
+            this.splitContainer2.Size = new System.Drawing.Size(273, 329);
+            this.splitContainer2.SplitterDistance = 132;
             this.splitContainer2.TabIndex = 1;
             // 
             // zMin
@@ -309,7 +421,7 @@
             0,
             -2147483648});
             this.zMin.Name = "zMin";
-            this.zMin.Size = new System.Drawing.Size(78, 20);
+            this.zMin.Size = new System.Drawing.Size(99, 20);
             this.zMin.TabIndex = 6;
             this.zMin.ValueChanged += new System.EventHandler(this.valueChanged);
             // 
@@ -330,7 +442,7 @@
             0,
             -2147483648});
             this.yMin.Name = "yMin";
-            this.yMin.Size = new System.Drawing.Size(78, 20);
+            this.yMin.Size = new System.Drawing.Size(99, 20);
             this.yMin.TabIndex = 5;
             this.yMin.ValueChanged += new System.EventHandler(this.valueChanged);
             // 
@@ -351,7 +463,7 @@
             0,
             -2147483648});
             this.xMin.Name = "xMin";
-            this.xMin.Size = new System.Drawing.Size(78, 20);
+            this.xMin.Size = new System.Drawing.Size(99, 20);
             this.xMin.TabIndex = 4;
             this.xMin.ValueChanged += new System.EventHandler(this.valueChanged);
             // 
@@ -408,7 +520,7 @@
             0,
             -2147483648});
             this.zMax.Name = "zMax";
-            this.zMax.Size = new System.Drawing.Size(79, 20);
+            this.zMax.Size = new System.Drawing.Size(103, 20);
             this.zMax.TabIndex = 12;
             this.zMax.ValueChanged += new System.EventHandler(this.valueChanged);
             // 
@@ -438,7 +550,7 @@
             0,
             -2147483648});
             this.yMax.Name = "yMax";
-            this.yMax.Size = new System.Drawing.Size(79, 20);
+            this.yMax.Size = new System.Drawing.Size(103, 20);
             this.yMax.TabIndex = 11;
             this.yMax.ValueChanged += new System.EventHandler(this.valueChanged);
             // 
@@ -459,7 +571,7 @@
             0,
             -2147483648});
             this.xMax.Name = "xMax";
-            this.xMax.Size = new System.Drawing.Size(79, 20);
+            this.xMax.Size = new System.Drawing.Size(103, 20);
             this.xMax.TabIndex = 10;
             this.xMax.ValueChanged += new System.EventHandler(this.valueChanged);
             // 
@@ -496,7 +608,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(228, 329);
+            this.tabPage2.Size = new System.Drawing.Size(273, 329);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Other";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -534,14 +646,14 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(222, 323);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(267, 323);
             this.tableLayoutPanel2.TabIndex = 2;
             // 
             // numericUpDown7
             // 
             this.numericUpDown7.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.numericUpDown7.DecimalPlaces = 3;
-            this.numericUpDown7.Location = new System.Drawing.Point(78, 291);
+            this.numericUpDown7.Location = new System.Drawing.Point(108, 291);
             this.numericUpDown7.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -560,7 +672,7 @@
             // numericUpDown6
             // 
             this.numericUpDown6.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.numericUpDown6.Location = new System.Drawing.Point(78, 250);
+            this.numericUpDown6.Location = new System.Drawing.Point(108, 250);
             this.numericUpDown6.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -579,7 +691,7 @@
             // numericUpDown5
             // 
             this.numericUpDown5.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.numericUpDown5.Location = new System.Drawing.Point(78, 210);
+            this.numericUpDown5.Location = new System.Drawing.Point(108, 210);
             this.numericUpDown5.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -599,7 +711,7 @@
             // 
             this.numericUpDown4.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.numericUpDown4.DecimalPlaces = 3;
-            this.numericUpDown4.Location = new System.Drawing.Point(78, 170);
+            this.numericUpDown4.Location = new System.Drawing.Point(108, 170);
             this.numericUpDown4.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -618,7 +730,7 @@
             // numericUpDown3
             // 
             this.numericUpDown3.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.numericUpDown3.Location = new System.Drawing.Point(78, 130);
+            this.numericUpDown3.Location = new System.Drawing.Point(108, 130);
             this.numericUpDown3.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -637,7 +749,7 @@
             // numericUpDown2
             // 
             this.numericUpDown2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.numericUpDown2.Location = new System.Drawing.Point(78, 90);
+            this.numericUpDown2.Location = new System.Drawing.Point(108, 90);
             this.numericUpDown2.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -657,7 +769,7 @@
             // 
             this.numericUpDown1.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.numericUpDown1.DecimalPlaces = 3;
-            this.numericUpDown1.Location = new System.Drawing.Point(78, 50);
+            this.numericUpDown1.Location = new System.Drawing.Point(108, 50);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -677,7 +789,7 @@
             // 
             this.weightBox.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.weightBox.DecimalPlaces = 3;
-            this.weightBox.Location = new System.Drawing.Point(78, 10);
+            this.weightBox.Location = new System.Drawing.Point(108, 10);
             this.weightBox.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -697,7 +809,7 @@
             // 
             this.label11.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(15, 13);
+            this.label11.Location = new System.Drawing.Point(22, 13);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(41, 13);
             this.label11.TabIndex = 0;
@@ -707,78 +819,78 @@
             // 
             this.unk1.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.unk1.AutoSize = true;
-            this.unk1.Location = new System.Drawing.Point(20, 53);
+            this.unk1.Location = new System.Drawing.Point(13, 53);
             this.unk1.Name = "unk1";
-            this.unk1.Size = new System.Drawing.Size(31, 13);
+            this.unk1.Size = new System.Drawing.Size(59, 13);
             this.unk1.TabIndex = 2;
-            this.unk1.Text = "unk1";
+            this.unk1.Text = "Momentum";
             // 
             // label12
             // 
             this.label12.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(20, 93);
+            this.label12.Location = new System.Drawing.Point(27, 93);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(31, 13);
             this.label12.TabIndex = 3;
-            this.label12.Text = "unk2";
+            this.label12.Text = "unk1";
             // 
             // label13
             // 
             this.label13.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(20, 133);
+            this.label13.Location = new System.Drawing.Point(27, 133);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(31, 13);
             this.label13.TabIndex = 4;
-            this.label13.Text = "unk3";
+            this.label13.Text = "unk2";
             // 
             // label14
             // 
             this.label14.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(20, 173);
+            this.label14.Location = new System.Drawing.Point(14, 173);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(31, 13);
+            this.label14.Size = new System.Drawing.Size(57, 13);
             this.label14.TabIndex = 5;
-            this.label14.Text = "unk4";
+            this.label14.Text = "Movement";
             // 
             // label15
             // 
             this.label15.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(20, 213);
+            this.label15.Location = new System.Drawing.Point(27, 213);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(31, 13);
             this.label15.TabIndex = 6;
-            this.label15.Text = "unk5";
+            this.label15.Text = "unk3";
             // 
             // label16
             // 
             this.label16.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(20, 253);
+            this.label16.Location = new System.Drawing.Point(27, 253);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(31, 13);
             this.label16.TabIndex = 7;
-            this.label16.Text = "unk6";
+            this.label16.Text = "unk4";
             // 
             // label17
             // 
             this.label17.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(20, 295);
+            this.label17.Location = new System.Drawing.Point(27, 295);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(31, 13);
             this.label17.TabIndex = 8;
-            this.label17.Text = "unk7";
+            this.label17.Text = "unk5";
             // 
             // other2
             // 
             this.other2.Controls.Add(this.tableLayoutPanel3);
             this.other2.Location = new System.Drawing.Point(4, 22);
             this.other2.Name = "other2";
-            this.other2.Size = new System.Drawing.Size(228, 329);
+            this.other2.Size = new System.Drawing.Size(273, 329);
             this.other2.TabIndex = 3;
             this.other2.Text = "Other 2";
             this.other2.UseVisualStyleBackColor = true;
@@ -829,34 +941,34 @@
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 7.692307F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 7.692307F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 7.692307F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(228, 329);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(273, 329);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // label28
             // 
             this.label28.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(19, 306);
+            this.label28.Location = new System.Drawing.Point(27, 306);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(37, 13);
             this.label28.TabIndex = 23;
-            this.label28.Text = "unk19";
+            this.label28.Text = "unk17";
             // 
             // label27
             // 
             this.label27.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(19, 277);
+            this.label27.Location = new System.Drawing.Point(27, 277);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(37, 13);
             this.label27.TabIndex = 20;
-            this.label27.Text = "unk18";
+            this.label27.Text = "unk16";
             // 
             // numericUpDown15
             // 
             this.numericUpDown15.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.numericUpDown15.DecimalPlaces = 3;
-            this.numericUpDown15.Location = new System.Drawing.Point(83, 192);
+            this.numericUpDown15.Location = new System.Drawing.Point(114, 192);
             this.numericUpDown15.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -876,17 +988,17 @@
             // 
             this.label25.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(19, 196);
+            this.label25.Location = new System.Drawing.Point(27, 196);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(37, 13);
             this.label25.TabIndex = 15;
-            this.label25.Text = "unk15";
+            this.label25.Text = "unk13";
             // 
             // numericUpDown14
             // 
             this.numericUpDown14.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.numericUpDown14.DecimalPlaces = 3;
-            this.numericUpDown14.Location = new System.Drawing.Point(83, 165);
+            this.numericUpDown14.Location = new System.Drawing.Point(114, 165);
             this.numericUpDown14.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -906,17 +1018,17 @@
             // 
             this.label24.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(19, 169);
+            this.label24.Location = new System.Drawing.Point(27, 169);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(37, 13);
             this.label24.TabIndex = 13;
-            this.label24.Text = "unk14";
+            this.label24.Text = "unk12";
             // 
             // numericUpDown13
             // 
             this.numericUpDown13.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.numericUpDown13.DecimalPlaces = 3;
-            this.numericUpDown13.Location = new System.Drawing.Point(83, 138);
+            this.numericUpDown13.Location = new System.Drawing.Point(114, 138);
             this.numericUpDown13.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -936,17 +1048,17 @@
             // 
             this.label23.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(19, 142);
+            this.label23.Location = new System.Drawing.Point(27, 142);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(37, 13);
             this.label23.TabIndex = 11;
-            this.label23.Text = "unk13";
+            this.label23.Text = "unk11";
             // 
             // numericUpDown12
             // 
             this.numericUpDown12.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.numericUpDown12.DecimalPlaces = 3;
-            this.numericUpDown12.Location = new System.Drawing.Point(83, 111);
+            this.numericUpDown12.Location = new System.Drawing.Point(114, 111);
             this.numericUpDown12.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -966,17 +1078,17 @@
             // 
             this.label22.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(19, 115);
+            this.label22.Location = new System.Drawing.Point(27, 115);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(37, 13);
             this.label22.TabIndex = 9;
-            this.label22.Text = "unk12";
+            this.label22.Text = "unk10";
             // 
             // numericUpDown11
             // 
             this.numericUpDown11.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.numericUpDown11.DecimalPlaces = 3;
-            this.numericUpDown11.Location = new System.Drawing.Point(83, 84);
+            this.numericUpDown11.Location = new System.Drawing.Point(114, 84);
             this.numericUpDown11.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -996,17 +1108,17 @@
             // 
             this.label21.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(19, 88);
+            this.label21.Location = new System.Drawing.Point(30, 88);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(37, 13);
+            this.label21.Size = new System.Drawing.Size(31, 13);
             this.label21.TabIndex = 7;
-            this.label21.Text = "unk11";
+            this.label21.Text = "unk9";
             // 
             // numericUpDown10
             // 
             this.numericUpDown10.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.numericUpDown10.DecimalPlaces = 3;
-            this.numericUpDown10.Location = new System.Drawing.Point(83, 57);
+            this.numericUpDown10.Location = new System.Drawing.Point(114, 57);
             this.numericUpDown10.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -1026,17 +1138,17 @@
             // 
             this.label20.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(19, 61);
+            this.label20.Location = new System.Drawing.Point(30, 61);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(37, 13);
+            this.label20.Size = new System.Drawing.Size(31, 13);
             this.label20.TabIndex = 5;
-            this.label20.Text = "unk10";
+            this.label20.Text = "unk8";
             // 
             // numericUpDown9
             // 
             this.numericUpDown9.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.numericUpDown9.DecimalPlaces = 3;
-            this.numericUpDown9.Location = new System.Drawing.Point(83, 30);
+            this.numericUpDown9.Location = new System.Drawing.Point(114, 30);
             this.numericUpDown9.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -1056,17 +1168,17 @@
             // 
             this.label19.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(22, 34);
+            this.label19.Location = new System.Drawing.Point(30, 34);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(31, 13);
             this.label19.TabIndex = 3;
-            this.label19.Text = "unk9";
+            this.label19.Text = "unk7";
             // 
             // numericUpDown8
             // 
             this.numericUpDown8.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.numericUpDown8.DecimalPlaces = 3;
-            this.numericUpDown8.Location = new System.Drawing.Point(83, 3);
+            this.numericUpDown8.Location = new System.Drawing.Point(114, 3);
             this.numericUpDown8.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -1086,26 +1198,26 @@
             // 
             this.unk8.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.unk8.AutoSize = true;
-            this.unk8.Location = new System.Drawing.Point(22, 7);
+            this.unk8.Location = new System.Drawing.Point(30, 7);
             this.unk8.Name = "unk8";
             this.unk8.Size = new System.Drawing.Size(31, 13);
             this.unk8.TabIndex = 0;
-            this.unk8.Text = "unk8";
+            this.unk8.Text = "unk6";
             // 
             // label18
             // 
             this.label18.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(19, 223);
+            this.label18.Location = new System.Drawing.Point(27, 223);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(37, 13);
             this.label18.TabIndex = 17;
-            this.label18.Text = "unk16";
+            this.label18.Text = "unk14";
             // 
             // numericUpDown16
             // 
             this.numericUpDown16.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.numericUpDown16.Location = new System.Drawing.Point(83, 219);
+            this.numericUpDown16.Location = new System.Drawing.Point(114, 219);
             this.numericUpDown16.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -1125,16 +1237,16 @@
             // 
             this.label26.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(19, 250);
+            this.label26.Location = new System.Drawing.Point(27, 250);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(37, 13);
             this.label26.TabIndex = 19;
-            this.label26.Text = "unk17";
+            this.label26.Text = "unk15";
             // 
             // numericUpDown17
             // 
             this.numericUpDown17.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.numericUpDown17.Location = new System.Drawing.Point(83, 246);
+            this.numericUpDown17.Location = new System.Drawing.Point(114, 246);
             this.numericUpDown17.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -1153,7 +1265,7 @@
             // numericUpDown18
             // 
             this.numericUpDown18.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.numericUpDown18.Location = new System.Drawing.Point(83, 273);
+            this.numericUpDown18.Location = new System.Drawing.Point(114, 273);
             this.numericUpDown18.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -1172,7 +1284,7 @@
             // numericUpDown19
             // 
             this.numericUpDown19.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.numericUpDown19.Location = new System.Drawing.Point(83, 303);
+            this.numericUpDown19.Location = new System.Drawing.Point(114, 303);
             this.numericUpDown19.Maximum = new decimal(new int[] {
             1410065408,
             2,
@@ -1188,123 +1300,11 @@
             this.numericUpDown19.TabIndex = 24;
             this.numericUpDown19.ValueChanged += new System.EventHandler(this.valueChanged);
             // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addEntryToolStripMenuItem,
-            this.removeEntryToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 70);
-            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
-            // 
-            // addEntryToolStripMenuItem
-            // 
-            this.addEntryToolStripMenuItem.Name = "addEntryToolStripMenuItem";
-            this.addEntryToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
-            this.addEntryToolStripMenuItem.Text = "Add Entry";
-            this.addEntryToolStripMenuItem.Click += new System.EventHandler(this.addEntryToolStripMenuItem_Click);
-            // 
-            // removeEntryToolStripMenuItem
-            // 
-            this.removeEntryToolStripMenuItem.Name = "removeEntryToolStripMenuItem";
-            this.removeEntryToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
-            this.removeEntryToolStripMenuItem.Text = "Remove Entry";
-            this.removeEntryToolStripMenuItem.Click += new System.EventHandler(this.removeEntryToolStripMenuItem_Click);
-            // 
-            // boneButton9
-            // 
-            this.boneButton9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton9.Location = new System.Drawing.Point(111, 107);
-            this.boneButton9.Name = "boneButton9";
-            this.boneButton9.Size = new System.Drawing.Size(102, 30);
-            this.boneButton9.TabIndex = 7;
-            this.boneButton9.Text = "boneButton9";
-            this.boneButton9.UseVisualStyleBackColor = true;
-            // 
-            // boneButton8
-            // 
-            this.boneButton8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton8.Location = new System.Drawing.Point(3, 107);
-            this.boneButton8.Name = "boneButton8";
-            this.boneButton8.Size = new System.Drawing.Size(102, 30);
-            this.boneButton8.TabIndex = 6;
-            this.boneButton8.Text = "boneButton8";
-            this.boneButton8.UseVisualStyleBackColor = true;
-            // 
-            // boneButton7
-            // 
-            this.boneButton7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton7.Location = new System.Drawing.Point(111, 73);
-            this.boneButton7.Name = "boneButton7";
-            this.boneButton7.Size = new System.Drawing.Size(102, 28);
-            this.boneButton7.TabIndex = 5;
-            this.boneButton7.Text = "boneButton7";
-            this.boneButton7.UseVisualStyleBackColor = true;
-            // 
-            // boneButton6
-            // 
-            this.boneButton6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton6.Location = new System.Drawing.Point(3, 73);
-            this.boneButton6.Name = "boneButton6";
-            this.boneButton6.Size = new System.Drawing.Size(102, 28);
-            this.boneButton6.TabIndex = 4;
-            this.boneButton6.Text = "boneButton6";
-            this.boneButton6.UseVisualStyleBackColor = true;
-            // 
-            // boneButton5
-            // 
-            this.boneButton5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton5.Location = new System.Drawing.Point(111, 34);
-            this.boneButton5.Name = "boneButton5";
-            this.boneButton5.Size = new System.Drawing.Size(102, 33);
-            this.boneButton5.TabIndex = 3;
-            this.boneButton5.Text = "boneButton5";
-            this.boneButton5.UseVisualStyleBackColor = true;
-            // 
-            // boneButton4
-            // 
-            this.boneButton4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton4.Location = new System.Drawing.Point(3, 34);
-            this.boneButton4.Name = "boneButton4";
-            this.boneButton4.Size = new System.Drawing.Size(102, 33);
-            this.boneButton4.TabIndex = 2;
-            this.boneButton4.Text = "boneButton4";
-            this.boneButton4.UseVisualStyleBackColor = true;
-            // 
-            // boneButton3
-            // 
-            this.boneButton3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton3.Location = new System.Drawing.Point(111, 3);
-            this.boneButton3.Name = "boneButton3";
-            this.boneButton3.Size = new System.Drawing.Size(102, 25);
-            this.boneButton3.TabIndex = 1;
-            this.boneButton3.Text = "boneButton3";
-            this.boneButton3.UseVisualStyleBackColor = true;
-            // 
-            // boneButton2
-            // 
-            this.boneButton2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneButton2.Location = new System.Drawing.Point(3, 3);
-            this.boneButton2.Name = "boneButton2";
-            this.boneButton2.Size = new System.Drawing.Size(102, 25);
-            this.boneButton2.TabIndex = 0;
-            this.boneButton2.Text = "boneButton2";
-            this.boneButton2.UseVisualStyleBackColor = true;
-            // 
-            // boneButton1
-            // 
-            this.boneButton1.Location = new System.Drawing.Point(84, 6);
-            this.boneButton1.Name = "boneButton1";
-            this.boneButton1.Size = new System.Drawing.Size(138, 23);
-            this.boneButton1.TabIndex = 0;
-            this.boneButton1.Text = "boneButton1";
-            this.boneButton1.UseVisualStyleBackColor = true;
-            // 
             // SwagEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(236, 593);
+            this.ClientSize = new System.Drawing.Size(281, 593);
             this.Controls.Add(this.splitContainer1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "SwagEditor";
@@ -1314,6 +1314,7 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
@@ -1357,7 +1358,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown17)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown18)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown19)).EndInit();
-            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
