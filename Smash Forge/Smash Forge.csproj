@@ -76,6 +76,7 @@
     <Compile Include="Filetypes\Animation\OMO.cs" />
     <Compile Include="Filetypes\ATKD.cs" />
     <Compile Include="Filetypes\DRP.cs" />
+    <Compile Include="Filetypes\MaterialXML.cs" />
     <Compile Include="Filetypes\Melee\DAT.cs" />
     <Compile Include="Filetypes\Melee\DAT_Animation.cs" />
     <Compile Include="Filetypes\LVD.cs" />
