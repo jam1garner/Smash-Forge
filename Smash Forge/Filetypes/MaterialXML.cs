@@ -6,12 +6,20 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Globalization;
 using System.Windows.Forms;
-
-
+using System.Diagnostics;
 
 
 namespace Smash_Forge
 {
+    class MaterialXMLPolycountException : Exception
+    {
+
+    }
+
+    class MaterialXMLParamArrayLengthException : Exception
+    {
+    }
+
     class MaterialXML
     {
         public static void exportMaterialAsXML(NUD n, string filename)
@@ -23,7 +31,7 @@ namespace Smash_Forge
             mainNode.Attributes.Append(polycount);
             doc.AppendChild(mainNode);
 
-            int pcount = 0;
+            int polyCount = 0;
 
             foreach (NUD.Mesh m in n.mesh)
             {
@@ -33,7 +41,7 @@ namespace Smash_Forge
                 foreach (NUD.Polygon p in m.Nodes)
                 {
                     XmlNode polynode = doc.CreateElement("polygon");
-                    XmlAttribute pid = doc.CreateAttribute("id"); pid.Value = pcount.ToString(); polynode.Attributes.Append(pid);
+                    XmlAttribute pid = doc.CreateAttribute("id"); pid.Value = polyCount.ToString(); polynode.Attributes.Append(pid);
                     meshnode.AppendChild(polynode);
 
                     foreach (NUD.Material mat in p.materials)
@@ -92,20 +100,31 @@ namespace Smash_Forge
                         }
                     }
 
-                    pcount++;
+                    polyCount++;
                 }
             }
-            polycount.Value = pcount.ToString();
+            polycount.Value = polyCount.ToString();
 
             doc.Save(filename);
         }
 
         public static void importMaterialAsXML(NUD n, string filename)
         {
+            int polyCount = 0;
+            foreach (NUD.Mesh m in n.mesh)
+            {
+                foreach (NUD.Polygon p in m.Nodes)
+                {
+                    polyCount++;
+                }
+            }
+
             XmlDocument doc = new XmlDocument();
             doc.Load(filename);
 
             XmlNode main = doc.ChildNodes[0];
+            Debug.WriteLine(main.Attributes.GetNamedItem("polycount").Value);
+
 
             List<NUD.Material> materials = new List<NUD.Material>();
             List<int> ids = new List<int>();
@@ -120,6 +139,13 @@ namespace Smash_Forge
                         if (polynode.Name.Equals("polygon"))
                         {
                             ids.Add(polynode.ChildNodes.Count);
+
+                            if (ids.Count > polyCount)
+                            {
+                                int countDif = ids.Count - polyCount;
+                                MessageBox.Show(String.Format("Expected {0} polygons but found {1} in the XML file. The last {2} polygon(s) will be ignored.", 
+                                    polyCount, ids.Count, countDif));
+                            }
 
                             foreach (XmlNode matnode in polynode.ChildNodes)
                             {
@@ -187,18 +213,26 @@ namespace Smash_Forge
                                                         f = BitConverter.ToSingle(BitConverter.GetBytes(hash), 0);
                                                         v.Add(f);
                                                     }
-
                                                 }
                                                 else
                                                     if (float.TryParse(s, out f)) v.Add(f);
+                                                else
+                                                    v.Add(0.0f);
                                             }
+
+                                            // array should always have 4 values                                           
+                                            // should do something more meaningful with this
+                                            if (v.Count != 4)
+                                                throw new MaterialXMLParamArrayLengthException();
+
                                             try
                                             {
                                                 mat.entries.Add(name, v.ToArray());
                                             }
                                             catch (System.ArgumentException)
                                             {
-                                                MessageBox.Show("polygon" + polynode.ChildNodes.Count + " contains more than 1 instance of  " + name);
+                                                MessageBox.Show(String.Format("Polygon{0} contains more than 1 instance of {1}. \n"
+                                                    + "Only the first instance of {1} will be added.", polynode.ChildNodes.Count.ToString(), name));
                                             }
                                         }
                                     }

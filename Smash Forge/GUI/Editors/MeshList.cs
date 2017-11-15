@@ -726,7 +726,14 @@ namespace Smash_Forge
                     filename = save.FileName;
                     if (filename.EndsWith(".xml"))
                     {
-                        MaterialXML.importMaterialAsXML(nud, filename);
+                        try
+                        {
+                            MaterialXML.importMaterialAsXML(nud, filename);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("An error occurred reading the XML file. \n" + ex.Message);
+                        }
                     }
                 }
             }
