@@ -666,7 +666,8 @@
             // cubemapCB
             // 
             this.cubemapCB.AutoSize = true;
-            this.cubemapCB.Location = new System.Drawing.Point(165, 66);
+            this.cubemapCB.Enabled = false;
+            this.cubemapCB.Location = new System.Drawing.Point(7, 66);
             this.cubemapCB.Name = "cubemapCB";
             this.cubemapCB.Size = new System.Drawing.Size(71, 17);
             this.cubemapCB.TabIndex = 8;
@@ -677,7 +678,8 @@
             // stageMapCB
             // 
             this.stageMapCB.AutoSize = true;
-            this.stageMapCB.Location = new System.Drawing.Point(78, 91);
+            this.stageMapCB.Enabled = false;
+            this.stageMapCB.Location = new System.Drawing.Point(76, 89);
             this.stageMapCB.Name = "stageMapCB";
             this.stageMapCB.Size = new System.Drawing.Size(78, 17);
             this.stageMapCB.TabIndex = 7;
@@ -688,6 +690,7 @@
             // dummy_rampCB
             // 
             this.dummy_rampCB.AutoSize = true;
+            this.dummy_rampCB.Enabled = false;
             this.dummy_rampCB.Location = new System.Drawing.Point(165, 18);
             this.dummy_rampCB.Name = "dummy_rampCB";
             this.dummy_rampCB.Size = new System.Drawing.Size(92, 17);
@@ -699,6 +702,7 @@
             // rampCB
             // 
             this.rampCB.AutoSize = true;
+            this.rampCB.Enabled = false;
             this.rampCB.Location = new System.Drawing.Point(78, 66);
             this.rampCB.Name = "rampCB";
             this.rampCB.Size = new System.Drawing.Size(54, 17);
@@ -710,7 +714,8 @@
             // AOCB
             // 
             this.AOCB.AutoSize = true;
-            this.AOCB.Location = new System.Drawing.Point(6, 91);
+            this.AOCB.Enabled = false;
+            this.AOCB.Location = new System.Drawing.Point(7, 89);
             this.AOCB.Name = "AOCB";
             this.AOCB.Size = new System.Drawing.Size(41, 17);
             this.AOCB.TabIndex = 4;
@@ -721,6 +726,7 @@
             // sphere_mapCB
             // 
             this.sphere_mapCB.AutoSize = true;
+            this.sphere_mapCB.Enabled = false;
             this.sphere_mapCB.Location = new System.Drawing.Point(78, 18);
             this.sphere_mapCB.Name = "sphere_mapCB";
             this.sphere_mapCB.Size = new System.Drawing.Size(84, 17);
@@ -732,6 +738,7 @@
             // normalCB
             // 
             this.normalCB.AutoSize = true;
+            this.normalCB.Enabled = false;
             this.normalCB.Location = new System.Drawing.Point(78, 43);
             this.normalCB.Name = "normalCB";
             this.normalCB.Size = new System.Drawing.Size(59, 17);
@@ -743,6 +750,7 @@
             // diffuse2CB
             // 
             this.diffuse2CB.AutoSize = true;
+            this.diffuse2CB.Enabled = false;
             this.diffuse2CB.Location = new System.Drawing.Point(7, 44);
             this.diffuse2CB.Name = "diffuse2CB";
             this.diffuse2CB.Size = new System.Drawing.Size(65, 17);
@@ -754,6 +762,7 @@
             // diffuseCB
             // 
             this.diffuseCB.AutoSize = true;
+            this.diffuseCB.Enabled = false;
             this.diffuseCB.Location = new System.Drawing.Point(7, 20);
             this.diffuseCB.Name = "diffuseCB";
             this.diffuseCB.Size = new System.Drawing.Size(59, 17);
