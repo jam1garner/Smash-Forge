@@ -2171,19 +2171,11 @@ namespace Smash_Forge
             if (e.KeyChar == 'i')
             {
                 // the shaders will always be present in the lib/Shader folder, so this is safe to do
-                // SMG's super secret developer tools
-                reloadShaderFromFile("MBN", File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_vs.txt"), 
-                    File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_fs.txt"));
-                reloadShaderFromFile("NUD", File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"),
-                    File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
-                reloadShaderFromFile("DAT", File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_vs.txt"),
-                    File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_fs.txt"));
-                reloadShaderFromFile("Texture", File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_vs.txt"),
-                    File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_fs.txt"));
-
+                reloadShaderFromFile("NUD", MainForm.executableDir + "/lib/Shader/NUD_vs.txt", MainForm.executableDir + "/lib/Shader/NUD_fs.txt");
+                reloadShaderFromFile("Texture", MainForm.executableDir + "/lib/Shader/Texture_vs.txt", MainForm.executableDir + "/lib/Shader/Texture_fs.txt");
+                reloadShaderFromFile("MBN", MainForm.executableDir + "/lib/Shader/MBN_vs.txt", MainForm.executableDir + "/lib/Shader/MBN_fs.txt");
+                reloadShaderFromFile("DAT", MainForm.executableDir + "/lib/Shader/DAT_vs.txt", MainForm.executableDir + "/lib/Shader/DAT_fs.txt");
             }
-
-
             if (e.KeyChar == 'r')
             {
                 CaptureScreen(true).Save(MainForm.executableDir + "\\Render.png");
