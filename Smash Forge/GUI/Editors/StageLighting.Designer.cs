@@ -57,9 +57,9 @@
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.trackBar4 = new System.Windows.Forms.TrackBar();
-            this.trackBar5 = new System.Windows.Forms.TrackBar();
-            this.trackBar6 = new System.Windows.Forms.TrackBar();
+            this.stageRotXTrackBar = new System.Windows.Forms.TrackBar();
+            this.stageRotYTrackBar = new System.Windows.Forms.TrackBar();
+            this.stageRotZTrackBar = new System.Windows.Forms.TrackBar();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -154,9 +154,9 @@
             this.tabPage3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar5)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.stageRotXTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.stageRotYTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.stageRotZTrackBar)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.stageDifHueTrackBar)).BeginInit();
@@ -252,6 +252,7 @@
             // charColor2XTrackBar
             // 
             this.charColor2XTrackBar.Location = new System.Drawing.Point(135, 3);
+            this.charColor2XTrackBar.Maximum = 360;
             this.charColor2XTrackBar.Name = "charColor2XTrackBar";
             this.charColor2XTrackBar.Size = new System.Drawing.Size(127, 33);
             this.charColor2XTrackBar.TabIndex = 0;
@@ -261,6 +262,7 @@
             // charColor2YTrackBar
             // 
             this.charColor2YTrackBar.Location = new System.Drawing.Point(135, 42);
+            this.charColor2YTrackBar.Maximum = 100;
             this.charColor2YTrackBar.Name = "charColor2YTrackBar";
             this.charColor2YTrackBar.Size = new System.Drawing.Size(127, 33);
             this.charColor2YTrackBar.TabIndex = 1;
@@ -270,6 +272,7 @@
             // charColor2ZTrackBar
             // 
             this.charColor2ZTrackBar.Location = new System.Drawing.Point(135, 81);
+            this.charColor2ZTrackBar.Maximum = 100;
             this.charColor2ZTrackBar.Name = "charColor2ZTrackBar";
             this.charColor2ZTrackBar.Size = new System.Drawing.Size(127, 37);
             this.charColor2ZTrackBar.TabIndex = 2;
@@ -370,6 +373,7 @@
             // charColor1XTrackBar
             // 
             this.charColor1XTrackBar.Location = new System.Drawing.Point(135, 3);
+            this.charColor1XTrackBar.Maximum = 360;
             this.charColor1XTrackBar.Name = "charColor1XTrackBar";
             this.charColor1XTrackBar.Size = new System.Drawing.Size(127, 33);
             this.charColor1XTrackBar.TabIndex = 0;
@@ -379,6 +383,7 @@
             // charColor1YTrackBar
             // 
             this.charColor1YTrackBar.Location = new System.Drawing.Point(135, 42);
+            this.charColor1YTrackBar.Maximum = 100;
             this.charColor1YTrackBar.Name = "charColor1YTrackBar";
             this.charColor1YTrackBar.Size = new System.Drawing.Size(127, 33);
             this.charColor1YTrackBar.TabIndex = 1;
@@ -388,6 +393,7 @@
             // charColor1ZTrackBar
             // 
             this.charColor1ZTrackBar.Location = new System.Drawing.Point(135, 81);
+            this.charColor1ZTrackBar.Maximum = 100;
             this.charColor1ZTrackBar.Name = "charColor1ZTrackBar";
             this.charColor1ZTrackBar.Size = new System.Drawing.Size(127, 37);
             this.charColor1ZTrackBar.TabIndex = 2;
@@ -499,10 +505,10 @@
             this.tableLayoutPanel2.ColumnCount = 3;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.41401F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.58599F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 241F));
-            this.tableLayoutPanel2.Controls.Add(this.trackBar4, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.trackBar5, 2, 1);
-            this.tableLayoutPanel2.Controls.Add(this.trackBar6, 2, 2);
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 243F));
+            this.tableLayoutPanel2.Controls.Add(this.stageRotXTrackBar, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.stageRotYTrackBar, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.stageRotZTrackBar, 2, 2);
             this.tableLayoutPanel2.Controls.Add(this.label6, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.label7, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.label8, 0, 2);
@@ -518,35 +524,38 @@
             this.tableLayoutPanel2.Size = new System.Drawing.Size(396, 121);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
-            // trackBar4
+            // stageRotXTrackBar
             // 
-            this.trackBar4.Location = new System.Drawing.Point(157, 3);
-            this.trackBar4.Maximum = 360;
-            this.trackBar4.Name = "trackBar4";
-            this.trackBar4.Size = new System.Drawing.Size(233, 33);
-            this.trackBar4.TabIndex = 0;
-            this.trackBar4.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.trackBar4.Value = 180;
+            this.stageRotXTrackBar.Location = new System.Drawing.Point(155, 3);
+            this.stageRotXTrackBar.Maximum = 360;
+            this.stageRotXTrackBar.Name = "stageRotXTrackBar";
+            this.stageRotXTrackBar.Size = new System.Drawing.Size(233, 33);
+            this.stageRotXTrackBar.TabIndex = 0;
+            this.stageRotXTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.stageRotXTrackBar.Value = 180;
+            this.stageRotXTrackBar.Scroll += new System.EventHandler(this.stageRotXTrackBar_Scroll);
             // 
-            // trackBar5
+            // stageRotYTrackBar
             // 
-            this.trackBar5.Location = new System.Drawing.Point(157, 42);
-            this.trackBar5.Maximum = 360;
-            this.trackBar5.Name = "trackBar5";
-            this.trackBar5.Size = new System.Drawing.Size(233, 33);
-            this.trackBar5.TabIndex = 1;
-            this.trackBar5.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.trackBar5.Value = 180;
+            this.stageRotYTrackBar.Location = new System.Drawing.Point(155, 42);
+            this.stageRotYTrackBar.Maximum = 360;
+            this.stageRotYTrackBar.Name = "stageRotYTrackBar";
+            this.stageRotYTrackBar.Size = new System.Drawing.Size(233, 33);
+            this.stageRotYTrackBar.TabIndex = 1;
+            this.stageRotYTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.stageRotYTrackBar.Value = 180;
+            this.stageRotYTrackBar.Scroll += new System.EventHandler(this.stageRotYTrackBar_Scroll);
             // 
-            // trackBar6
+            // stageRotZTrackBar
             // 
-            this.trackBar6.Location = new System.Drawing.Point(157, 81);
-            this.trackBar6.Maximum = 360;
-            this.trackBar6.Name = "trackBar6";
-            this.trackBar6.Size = new System.Drawing.Size(233, 37);
-            this.trackBar6.TabIndex = 2;
-            this.trackBar6.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.trackBar6.Value = 180;
+            this.stageRotZTrackBar.Location = new System.Drawing.Point(155, 81);
+            this.stageRotZTrackBar.Maximum = 360;
+            this.stageRotZTrackBar.Name = "stageRotZTrackBar";
+            this.stageRotZTrackBar.Size = new System.Drawing.Size(233, 37);
+            this.stageRotZTrackBar.TabIndex = 2;
+            this.stageRotZTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.stageRotZTrackBar.Value = 180;
+            this.stageRotZTrackBar.Scroll += new System.EventHandler(this.stageRotZTrackBar_Scroll);
             // 
             // label6
             // 
@@ -581,27 +590,27 @@
             // stageDifRotXTB
             // 
             this.stageDifRotXTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.stageDifRotXTB.Location = new System.Drawing.Point(88, 9);
+            this.stageDifRotXTB.Location = new System.Drawing.Point(87, 9);
             this.stageDifRotXTB.Name = "stageDifRotXTB";
-            this.stageDifRotXTB.Size = new System.Drawing.Size(63, 20);
+            this.stageDifRotXTB.Size = new System.Drawing.Size(62, 20);
             this.stageDifRotXTB.TabIndex = 6;
             this.stageDifRotXTB.TextChanged += new System.EventHandler(this.stageDifRotXTB_TextChanged);
             // 
             // stageDifRotYTB
             // 
             this.stageDifRotYTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.stageDifRotYTB.Location = new System.Drawing.Point(88, 48);
+            this.stageDifRotYTB.Location = new System.Drawing.Point(87, 48);
             this.stageDifRotYTB.Name = "stageDifRotYTB";
-            this.stageDifRotYTB.Size = new System.Drawing.Size(63, 20);
+            this.stageDifRotYTB.Size = new System.Drawing.Size(62, 20);
             this.stageDifRotYTB.TabIndex = 7;
             this.stageDifRotYTB.TextChanged += new System.EventHandler(this.stageDifRotYTB_TextChanged);
             // 
             // stageDifRotZTB
             // 
             this.stageDifRotZTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.stageDifRotZTB.Location = new System.Drawing.Point(88, 89);
+            this.stageDifRotZTB.Location = new System.Drawing.Point(87, 89);
             this.stageDifRotZTB.Name = "stageDifRotZTB";
-            this.stageDifRotZTB.Size = new System.Drawing.Size(63, 20);
+            this.stageDifRotZTB.Size = new System.Drawing.Size(62, 20);
             this.stageDifRotZTB.TabIndex = 8;
             this.stageDifRotZTB.TextChanged += new System.EventHandler(this.stageDifRotZTB_TextChanged);
             // 
@@ -620,7 +629,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.76923F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.23077F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 242F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 244F));
             this.tableLayoutPanel1.Controls.Add(this.label4, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.stageDifHueTrackBar, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.stageDifSatTrackBar, 2, 2);
@@ -654,7 +663,7 @@
             // 
             // stageDifHueTrackBar
             // 
-            this.stageDifHueTrackBar.Location = new System.Drawing.Point(156, 42);
+            this.stageDifHueTrackBar.Location = new System.Drawing.Point(154, 42);
             this.stageDifHueTrackBar.Maximum = 360;
             this.stageDifHueTrackBar.Name = "stageDifHueTrackBar";
             this.stageDifHueTrackBar.Size = new System.Drawing.Size(234, 33);
@@ -664,7 +673,7 @@
             // 
             // stageDifSatTrackBar
             // 
-            this.stageDifSatTrackBar.Location = new System.Drawing.Point(156, 81);
+            this.stageDifSatTrackBar.Location = new System.Drawing.Point(154, 81);
             this.stageDifSatTrackBar.Maximum = 100;
             this.stageDifSatTrackBar.Name = "stageDifSatTrackBar";
             this.stageDifSatTrackBar.Size = new System.Drawing.Size(234, 34);
@@ -674,7 +683,7 @@
             // 
             // stageDifIntensityTrackBar
             // 
-            this.stageDifIntensityTrackBar.Location = new System.Drawing.Point(156, 121);
+            this.stageDifIntensityTrackBar.Location = new System.Drawing.Point(154, 121);
             this.stageDifIntensityTrackBar.Maximum = 200;
             this.stageDifIntensityTrackBar.Name = "stageDifIntensityTrackBar";
             this.stageDifIntensityTrackBar.Size = new System.Drawing.Size(234, 33);
@@ -715,27 +724,27 @@
             // stageDifHueTB
             // 
             this.stageDifHueTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.stageDifHueTB.Location = new System.Drawing.Point(88, 48);
+            this.stageDifHueTB.Location = new System.Drawing.Point(87, 48);
             this.stageDifHueTB.Name = "stageDifHueTB";
-            this.stageDifHueTB.Size = new System.Drawing.Size(62, 20);
+            this.stageDifHueTB.Size = new System.Drawing.Size(61, 20);
             this.stageDifHueTB.TabIndex = 6;
             this.stageDifHueTB.TextChanged += new System.EventHandler(this.stageDifHueTB_TextChanged);
             // 
             // stageDifSatTB
             // 
             this.stageDifSatTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.stageDifSatTB.Location = new System.Drawing.Point(88, 88);
+            this.stageDifSatTB.Location = new System.Drawing.Point(87, 88);
             this.stageDifSatTB.Name = "stageDifSatTB";
-            this.stageDifSatTB.Size = new System.Drawing.Size(62, 20);
+            this.stageDifSatTB.Size = new System.Drawing.Size(61, 20);
             this.stageDifSatTB.TabIndex = 7;
             this.stageDifSatTB.TextChanged += new System.EventHandler(this.stageDifSatTB_TextChanged);
             // 
             // stageDifIntensityTB
             // 
             this.stageDifIntensityTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.stageDifIntensityTB.Location = new System.Drawing.Point(88, 127);
+            this.stageDifIntensityTB.Location = new System.Drawing.Point(87, 127);
             this.stageDifIntensityTB.Name = "stageDifIntensityTB";
-            this.stageDifIntensityTB.Size = new System.Drawing.Size(62, 20);
+            this.stageDifIntensityTB.Size = new System.Drawing.Size(61, 20);
             this.stageDifIntensityTB.TabIndex = 8;
             this.stageDifIntensityTB.TextChanged += new System.EventHandler(this.stageDifIntensityTB_TextChanged);
             // 
@@ -743,9 +752,9 @@
             // 
             this.stageDifColorButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.stageDifColorButton.Enabled = false;
-            this.stageDifColorButton.Location = new System.Drawing.Point(88, 4);
+            this.stageDifColorButton.Location = new System.Drawing.Point(87, 4);
             this.stageDifColorButton.Name = "stageDifColorButton";
-            this.stageDifColorButton.Size = new System.Drawing.Size(62, 31);
+            this.stageDifColorButton.Size = new System.Drawing.Size(61, 31);
             this.stageDifColorButton.TabIndex = 10;
             this.stageDifColorButton.UseVisualStyleBackColor = true;
             // 
@@ -799,7 +808,7 @@
             this.tableLayoutPanel9.ColumnCount = 3;
             this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.75221F));
             this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.24779F));
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 218F));
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 220F));
             this.tableLayoutPanel9.Controls.Add(this.trackBar25, 2, 0);
             this.tableLayoutPanel9.Controls.Add(this.trackBar26, 2, 1);
             this.tableLayoutPanel9.Controls.Add(this.trackBar27, 2, 2);
@@ -820,30 +829,30 @@
             // 
             // trackBar25
             // 
-            this.trackBar25.Location = new System.Drawing.Point(108, 3);
+            this.trackBar25.Location = new System.Drawing.Point(106, 3);
             this.trackBar25.Maximum = 360;
             this.trackBar25.Name = "trackBar25";
-            this.trackBar25.Size = new System.Drawing.Size(196, 33);
+            this.trackBar25.Size = new System.Drawing.Size(215, 33);
             this.trackBar25.TabIndex = 0;
             this.trackBar25.TickStyle = System.Windows.Forms.TickStyle.None;
             this.trackBar25.Value = 180;
             // 
             // trackBar26
             // 
-            this.trackBar26.Location = new System.Drawing.Point(108, 42);
+            this.trackBar26.Location = new System.Drawing.Point(106, 42);
             this.trackBar26.Maximum = 360;
             this.trackBar26.Name = "trackBar26";
-            this.trackBar26.Size = new System.Drawing.Size(196, 33);
+            this.trackBar26.Size = new System.Drawing.Size(215, 33);
             this.trackBar26.TabIndex = 1;
             this.trackBar26.TickStyle = System.Windows.Forms.TickStyle.None;
             this.trackBar26.Value = 180;
             // 
             // trackBar27
             // 
-            this.trackBar27.Location = new System.Drawing.Point(108, 81);
+            this.trackBar27.Location = new System.Drawing.Point(106, 81);
             this.trackBar27.Maximum = 360;
             this.trackBar27.Name = "trackBar27";
-            this.trackBar27.Size = new System.Drawing.Size(196, 37);
+            this.trackBar27.Size = new System.Drawing.Size(215, 37);
             this.trackBar27.TabIndex = 2;
             this.trackBar27.TickStyle = System.Windows.Forms.TickStyle.None;
             this.trackBar27.Value = 180;
@@ -881,7 +890,7 @@
             // areaRotX
             // 
             this.areaRotX.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaRotX.Location = new System.Drawing.Point(62, 9);
+            this.areaRotX.Location = new System.Drawing.Point(60, 9);
             this.areaRotX.Name = "areaRotX";
             this.areaRotX.Size = new System.Drawing.Size(40, 20);
             this.areaRotX.TabIndex = 6;
@@ -890,7 +899,7 @@
             // areaRotY
             // 
             this.areaRotY.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaRotY.Location = new System.Drawing.Point(62, 48);
+            this.areaRotY.Location = new System.Drawing.Point(60, 48);
             this.areaRotY.Name = "areaRotY";
             this.areaRotY.Size = new System.Drawing.Size(40, 20);
             this.areaRotY.TabIndex = 7;
@@ -899,7 +908,7 @@
             // areaRotZ
             // 
             this.areaRotZ.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaRotZ.Location = new System.Drawing.Point(62, 89);
+            this.areaRotZ.Location = new System.Drawing.Point(60, 89);
             this.areaRotZ.Name = "areaRotZ";
             this.areaRotZ.Size = new System.Drawing.Size(40, 20);
             this.areaRotZ.TabIndex = 8;
@@ -920,7 +929,7 @@
             this.tableLayoutPanel8.ColumnCount = 3;
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 54.86726F));
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45.13274F));
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 218F));
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 220F));
             this.tableLayoutPanel8.Controls.Add(this.areaScaleXTrackBar, 2, 0);
             this.tableLayoutPanel8.Controls.Add(this.areaScaleYTrackBar, 2, 1);
             this.tableLayoutPanel8.Controls.Add(this.areaScaleZTrackBar, 2, 2);
@@ -941,30 +950,30 @@
             // 
             // areaScaleXTrackBar
             // 
-            this.areaScaleXTrackBar.Location = new System.Drawing.Point(108, 3);
+            this.areaScaleXTrackBar.Location = new System.Drawing.Point(106, 3);
             this.areaScaleXTrackBar.Maximum = 360;
             this.areaScaleXTrackBar.Name = "areaScaleXTrackBar";
-            this.areaScaleXTrackBar.Size = new System.Drawing.Size(196, 33);
+            this.areaScaleXTrackBar.Size = new System.Drawing.Size(215, 33);
             this.areaScaleXTrackBar.TabIndex = 0;
             this.areaScaleXTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.areaScaleXTrackBar.Scroll += new System.EventHandler(this.areaScaleXTrackBar_Scroll);
             // 
             // areaScaleYTrackBar
             // 
-            this.areaScaleYTrackBar.Location = new System.Drawing.Point(108, 42);
+            this.areaScaleYTrackBar.Location = new System.Drawing.Point(106, 42);
             this.areaScaleYTrackBar.Maximum = 360;
             this.areaScaleYTrackBar.Name = "areaScaleYTrackBar";
-            this.areaScaleYTrackBar.Size = new System.Drawing.Size(196, 33);
+            this.areaScaleYTrackBar.Size = new System.Drawing.Size(215, 33);
             this.areaScaleYTrackBar.TabIndex = 1;
             this.areaScaleYTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.areaScaleYTrackBar.Scroll += new System.EventHandler(this.areaScaleYTrackBar_Scroll);
             // 
             // areaScaleZTrackBar
             // 
-            this.areaScaleZTrackBar.Location = new System.Drawing.Point(108, 81);
+            this.areaScaleZTrackBar.Location = new System.Drawing.Point(106, 81);
             this.areaScaleZTrackBar.Maximum = 360;
             this.areaScaleZTrackBar.Name = "areaScaleZTrackBar";
-            this.areaScaleZTrackBar.Size = new System.Drawing.Size(196, 37);
+            this.areaScaleZTrackBar.Size = new System.Drawing.Size(215, 37);
             this.areaScaleZTrackBar.TabIndex = 2;
             this.areaScaleZTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.areaScaleZTrackBar.Scroll += new System.EventHandler(this.areaScaleZTrackBar_Scroll);
@@ -1002,27 +1011,27 @@
             // areaScaleXTB
             // 
             this.areaScaleXTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaScaleXTB.Location = new System.Drawing.Point(61, 9);
+            this.areaScaleXTB.Location = new System.Drawing.Point(60, 9);
             this.areaScaleXTB.Name = "areaScaleXTB";
-            this.areaScaleXTB.Size = new System.Drawing.Size(41, 20);
+            this.areaScaleXTB.Size = new System.Drawing.Size(40, 20);
             this.areaScaleXTB.TabIndex = 6;
             this.areaScaleXTB.TextChanged += new System.EventHandler(this.areaScaleXTB_TextChanged);
             // 
             // areaScaleYTB
             // 
             this.areaScaleYTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaScaleYTB.Location = new System.Drawing.Point(61, 48);
+            this.areaScaleYTB.Location = new System.Drawing.Point(60, 48);
             this.areaScaleYTB.Name = "areaScaleYTB";
-            this.areaScaleYTB.Size = new System.Drawing.Size(41, 20);
+            this.areaScaleYTB.Size = new System.Drawing.Size(40, 20);
             this.areaScaleYTB.TabIndex = 7;
             this.areaScaleYTB.TextChanged += new System.EventHandler(this.areaScaleYTB_TextChanged);
             // 
             // areaScaleZTB
             // 
             this.areaScaleZTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaScaleZTB.Location = new System.Drawing.Point(61, 89);
+            this.areaScaleZTB.Location = new System.Drawing.Point(60, 89);
             this.areaScaleZTB.Name = "areaScaleZTB";
-            this.areaScaleZTB.Size = new System.Drawing.Size(41, 20);
+            this.areaScaleZTB.Size = new System.Drawing.Size(40, 20);
             this.areaScaleZTB.TabIndex = 8;
             this.areaScaleZTB.TextChanged += new System.EventHandler(this.areaScaleZTB_TextChanged);
             // 
@@ -1041,7 +1050,7 @@
             this.tableLayoutPanel7.ColumnCount = 3;
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 54.86726F));
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45.13274F));
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 218F));
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 220F));
             this.tableLayoutPanel7.Controls.Add(this.areaPosXTrackBar, 2, 0);
             this.tableLayoutPanel7.Controls.Add(this.areaPosYTrackBar, 2, 1);
             this.tableLayoutPanel7.Controls.Add(this.areaPosZTrackBar, 2, 2);
@@ -1062,10 +1071,10 @@
             // 
             // areaPosXTrackBar
             // 
-            this.areaPosXTrackBar.Location = new System.Drawing.Point(108, 3);
+            this.areaPosXTrackBar.Location = new System.Drawing.Point(106, 3);
             this.areaPosXTrackBar.Maximum = 360;
             this.areaPosXTrackBar.Name = "areaPosXTrackBar";
-            this.areaPosXTrackBar.Size = new System.Drawing.Size(196, 33);
+            this.areaPosXTrackBar.Size = new System.Drawing.Size(215, 33);
             this.areaPosXTrackBar.TabIndex = 0;
             this.areaPosXTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.areaPosXTrackBar.Value = 180;
@@ -1073,10 +1082,10 @@
             // 
             // areaPosYTrackBar
             // 
-            this.areaPosYTrackBar.Location = new System.Drawing.Point(108, 42);
+            this.areaPosYTrackBar.Location = new System.Drawing.Point(106, 42);
             this.areaPosYTrackBar.Maximum = 360;
             this.areaPosYTrackBar.Name = "areaPosYTrackBar";
-            this.areaPosYTrackBar.Size = new System.Drawing.Size(196, 33);
+            this.areaPosYTrackBar.Size = new System.Drawing.Size(215, 33);
             this.areaPosYTrackBar.TabIndex = 1;
             this.areaPosYTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.areaPosYTrackBar.Value = 180;
@@ -1084,10 +1093,10 @@
             // 
             // areaPosZTrackBar
             // 
-            this.areaPosZTrackBar.Location = new System.Drawing.Point(108, 81);
+            this.areaPosZTrackBar.Location = new System.Drawing.Point(106, 81);
             this.areaPosZTrackBar.Maximum = 360;
             this.areaPosZTrackBar.Name = "areaPosZTrackBar";
-            this.areaPosZTrackBar.Size = new System.Drawing.Size(196, 37);
+            this.areaPosZTrackBar.Size = new System.Drawing.Size(215, 37);
             this.areaPosZTrackBar.TabIndex = 2;
             this.areaPosZTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.areaPosZTrackBar.Value = 180;
@@ -1126,27 +1135,27 @@
             // areaPosXTB
             // 
             this.areaPosXTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaPosXTB.Location = new System.Drawing.Point(61, 9);
+            this.areaPosXTB.Location = new System.Drawing.Point(60, 9);
             this.areaPosXTB.Name = "areaPosXTB";
-            this.areaPosXTB.Size = new System.Drawing.Size(41, 20);
+            this.areaPosXTB.Size = new System.Drawing.Size(40, 20);
             this.areaPosXTB.TabIndex = 6;
             this.areaPosXTB.TextChanged += new System.EventHandler(this.areaPosXTB_TextChanged);
             // 
             // areaPosYTB
             // 
             this.areaPosYTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaPosYTB.Location = new System.Drawing.Point(61, 48);
+            this.areaPosYTB.Location = new System.Drawing.Point(60, 48);
             this.areaPosYTB.Name = "areaPosYTB";
-            this.areaPosYTB.Size = new System.Drawing.Size(41, 20);
+            this.areaPosYTB.Size = new System.Drawing.Size(40, 20);
             this.areaPosYTB.TabIndex = 7;
             this.areaPosYTB.TextChanged += new System.EventHandler(this.areaPosYTB_TextChanged);
             // 
             // areaPosZTB
             // 
             this.areaPosZTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaPosZTB.Location = new System.Drawing.Point(61, 89);
+            this.areaPosZTB.Location = new System.Drawing.Point(60, 89);
             this.areaPosZTB.Name = "areaPosZTB";
-            this.areaPosZTB.Size = new System.Drawing.Size(41, 20);
+            this.areaPosZTB.Size = new System.Drawing.Size(40, 20);
             this.areaPosZTB.TabIndex = 8;
             this.areaPosZTB.TextChanged += new System.EventHandler(this.areaPosZTB_TextChanged);
             // 
@@ -1188,7 +1197,7 @@
             // 
             this.areaGroundRedTrackBar.Location = new System.Drawing.Point(103, 3);
             this.areaGroundRedTrackBar.Name = "areaGroundRedTrackBar";
-            this.areaGroundRedTrackBar.Size = new System.Drawing.Size(144, 33);
+            this.areaGroundRedTrackBar.Size = new System.Drawing.Size(158, 33);
             this.areaGroundRedTrackBar.TabIndex = 0;
             this.areaGroundRedTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             // 
@@ -1196,7 +1205,7 @@
             // 
             this.areaGroundGreenTrackBar.Location = new System.Drawing.Point(103, 42);
             this.areaGroundGreenTrackBar.Name = "areaGroundGreenTrackBar";
-            this.areaGroundGreenTrackBar.Size = new System.Drawing.Size(144, 33);
+            this.areaGroundGreenTrackBar.Size = new System.Drawing.Size(158, 33);
             this.areaGroundGreenTrackBar.TabIndex = 1;
             this.areaGroundGreenTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             // 
@@ -1204,7 +1213,7 @@
             // 
             this.areaGroundBlueTrackBar.Location = new System.Drawing.Point(103, 81);
             this.areaGroundBlueTrackBar.Name = "areaGroundBlueTrackBar";
-            this.areaGroundBlueTrackBar.Size = new System.Drawing.Size(144, 37);
+            this.areaGroundBlueTrackBar.Size = new System.Drawing.Size(158, 37);
             this.areaGroundBlueTrackBar.TabIndex = 2;
             this.areaGroundBlueTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             // 
@@ -1304,7 +1313,7 @@
             this.areaCeilRedTrackBar.Location = new System.Drawing.Point(103, 3);
             this.areaCeilRedTrackBar.Maximum = 100;
             this.areaCeilRedTrackBar.Name = "areaCeilRedTrackBar";
-            this.areaCeilRedTrackBar.Size = new System.Drawing.Size(144, 33);
+            this.areaCeilRedTrackBar.Size = new System.Drawing.Size(159, 33);
             this.areaCeilRedTrackBar.TabIndex = 0;
             this.areaCeilRedTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.areaCeilRedTrackBar.Scroll += new System.EventHandler(this.areaCeilRedTrackBar_Scroll);
@@ -1314,7 +1323,7 @@
             this.areaCeilGreenTrackBar.Location = new System.Drawing.Point(103, 42);
             this.areaCeilGreenTrackBar.Maximum = 100;
             this.areaCeilGreenTrackBar.Name = "areaCeilGreenTrackBar";
-            this.areaCeilGreenTrackBar.Size = new System.Drawing.Size(144, 33);
+            this.areaCeilGreenTrackBar.Size = new System.Drawing.Size(159, 33);
             this.areaCeilGreenTrackBar.TabIndex = 1;
             this.areaCeilGreenTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.areaCeilGreenTrackBar.Scroll += new System.EventHandler(this.areaCeilGreenTrackBar_Scroll);
@@ -1324,7 +1333,7 @@
             this.areaCeilBlueTrackBar.Location = new System.Drawing.Point(103, 81);
             this.areaCeilBlueTrackBar.Maximum = 100;
             this.areaCeilBlueTrackBar.Name = "areaCeilBlueTrackBar";
-            this.areaCeilBlueTrackBar.Size = new System.Drawing.Size(144, 37);
+            this.areaCeilBlueTrackBar.Size = new System.Drawing.Size(159, 37);
             this.areaCeilBlueTrackBar.TabIndex = 2;
             this.areaCeilBlueTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.areaCeilBlueTrackBar.Scroll += new System.EventHandler(this.areaCeilBlueTrackBar_Scroll);
@@ -1432,9 +1441,9 @@
             this.groupBox2.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar5)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.stageRotXTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.stageRotYTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.stageRotZTrackBar)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
@@ -1499,9 +1508,9 @@
         private System.Windows.Forms.ListBox charLightsListBox;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TrackBar trackBar4;
-        private System.Windows.Forms.TrackBar trackBar5;
-        private System.Windows.Forms.TrackBar trackBar6;
+        private System.Windows.Forms.TrackBar stageRotXTrackBar;
+        private System.Windows.Forms.TrackBar stageRotYTrackBar;
+        private System.Windows.Forms.TrackBar stageRotZTrackBar;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;

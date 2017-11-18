@@ -283,6 +283,7 @@ namespace Smash_Forge.GUI.Editors
         #endregion
 
         #region stage rotation events
+
         private void stageDifRotXTB_TextChanged(object sender, EventArgs e)
         {
             float i = 0;
@@ -293,6 +294,8 @@ namespace Smash_Forge.GUI.Editors
             }
             else
                 stageDifRotXTB.BackColor = Color.Red;
+
+            stageRotXTrackBar.Value = (int)(i + 180.0f);
         }
 
         private void stageDifRotYTB_TextChanged(object sender, EventArgs e)
@@ -305,6 +308,8 @@ namespace Smash_Forge.GUI.Editors
             }
             else
                 stageDifRotYTB.BackColor = Color.Red;
+
+            stageRotYTrackBar.Value = (int)(i + 180.0f);
         }
 
         private void stageDifRotZTB_TextChanged(object sender, EventArgs e)
@@ -317,15 +322,34 @@ namespace Smash_Forge.GUI.Editors
             }
             else
                 stageDifRotZTB.BackColor = Color.Red;
+
+            stageRotZTrackBar.Value = (int)(i + 180.0f);
         }
+
+        private void stageRotXTrackBar_Scroll(object sender, EventArgs e)
+        {
+            stageDifRotXTB.Text = (float)((stageRotXTrackBar.Value - 180.0f)) + "";
+        }
+
+        private void stageRotYTrackBar_Scroll(object sender, EventArgs e)
+        {
+            stageDifRotYTB.Text = (float)((stageRotYTrackBar.Value - 180.0f)) + "";
+        }
+
+        private void stageRotZTrackBar_Scroll(object sender, EventArgs e)
+        {
+            stageDifRotZTB.Text = (float)((stageRotZTrackBar.Value - 180.0f)) + "";
+        }
+
         #endregion
 
         #region character color events
         private void charColor1XTB_TextChanged(object sender, EventArgs e)
         {
+            float i = 0;
             if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
             {
-                float i = 0;
+                i = 0;
                 if (float.TryParse(charColor1XTB.Text, out i))
                 {
                     charColor1XTB.BackColor = Color.White;
@@ -339,7 +363,7 @@ namespace Smash_Forge.GUI.Editors
             }
             else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
             {
-                float i = 0;
+                i = 0;
                 if (float.TryParse(charColor1XTB.Text, out i))
                 {
                     charColor1XTB.BackColor = Color.White;
@@ -351,13 +375,20 @@ namespace Smash_Forge.GUI.Editors
                 RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
                     new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
             }
+
+            // update trackbar
+            int newSliderValue = (int)(i * (float)charColor1XTrackBar.Maximum / 360.0f);
+            newSliderValue = Math.Min(newSliderValue, charColor1XTrackBar.Maximum);
+            newSliderValue = Math.Max(newSliderValue, 0);
+            charColor1XTrackBar.Value = newSliderValue;
         }
 
         private void charColor1YTB_TextChanged(object sender, EventArgs e)
         {
+            float i = 0;
             if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
             {
-                float i = 0;
+                i = 0;
                 if (float.TryParse(charColor1YTB.Text, out i))
                 {
                     charColor1YTB.BackColor = Color.White;
@@ -371,7 +402,7 @@ namespace Smash_Forge.GUI.Editors
             }
             else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
             {
-                float i = 0;
+                i = 0;
                 if (float.TryParse(charColor1YTB.Text, out i))
                 {
                     charColor1YTB.BackColor = Color.White;
@@ -384,13 +415,20 @@ namespace Smash_Forge.GUI.Editors
                 RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
                     new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
             }
+
+            // update trackbar
+            int newSliderValue = (int)(i * (float)charColor1YTrackBar.Maximum / 1.0f);
+            newSliderValue = Math.Min(newSliderValue, charColor1YTrackBar.Maximum);
+            newSliderValue = Math.Max(newSliderValue, 0);
+            charColor1YTrackBar.Value = newSliderValue;
         }
 
         private void charColor1ZTB_TextChanged(object sender, EventArgs e)
         {
+            float i = 0;
             if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
             {
-                float i = 0;
+                i = 0;
                 if (float.TryParse(charColor1ZTB.Text, out i))
                 {
                     charColor1ZTB.BackColor = Color.White;
@@ -404,7 +442,7 @@ namespace Smash_Forge.GUI.Editors
             }
             else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
             {
-                float i = 0;
+                i = 0;
                 if (float.TryParse(charColor1ZTB.Text, out i))
                 {
                     charColor1ZTB.BackColor = Color.White;
@@ -417,13 +455,20 @@ namespace Smash_Forge.GUI.Editors
                 RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
                     new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
             }
+
+            // update trackbar
+            int newSliderValue = (int)(i * (float)charColor1ZTrackBar.Maximum / 5.0f);
+            newSliderValue = Math.Min(newSliderValue, charColor1ZTrackBar.Maximum);
+            newSliderValue = Math.Max(newSliderValue, 0);
+            charColor1ZTrackBar.Value = newSliderValue;
         }
 
         private void charColor2XTB_TextChanged(object sender, EventArgs e)
         {
+            float i = 0;
             if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
             {
-                float i = 0;
+                i = 0;
                 if (float.TryParse(charColor2XTB.Text, out i))
                 {
                     charColor2XTB.BackColor = Color.White;
@@ -437,7 +482,7 @@ namespace Smash_Forge.GUI.Editors
             }
             else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
             {
-                float i = 0;
+                i = 0;
                 if (float.TryParse(charColor2XTB.Text, out i))
                 {
                     charColor2XTB.BackColor = Color.White;
@@ -450,13 +495,20 @@ namespace Smash_Forge.GUI.Editors
                 RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
                     new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
             }
+
+            // update trackbar
+            int newSliderValue = (int)(i * (float)charColor2XTrackBar.Maximum / 360.0f);
+            newSliderValue = Math.Min(newSliderValue, charColor2XTrackBar.Maximum);
+            newSliderValue = Math.Max(newSliderValue, 0);
+            charColor2XTrackBar.Value = newSliderValue;
         }
 
         private void charColor2YTB_TextChanged(object sender, EventArgs e)
         {
+            float i = 0;
             if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
             {
-                float i = 0;
+                i = 0;
                 if (float.TryParse(charColor2YTB.Text, out i))
                 {
                     charColor2YTB.BackColor = Color.White;
@@ -470,7 +522,7 @@ namespace Smash_Forge.GUI.Editors
             }
             else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
             {
-                float i = 0;
+                i = 0;
                 if (float.TryParse(charColor2YTB.Text, out i))
                 {
                     charColor2YTB.BackColor = Color.White;
@@ -482,13 +534,20 @@ namespace Smash_Forge.GUI.Editors
                 RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
                     new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
             }
+
+            // update trackbar
+            int newSliderValue = (int)(i * (float)charColor2YTrackBar.Maximum / 1.0f);
+            newSliderValue = Math.Min(newSliderValue, charColor2YTrackBar.Maximum);
+            newSliderValue = Math.Max(newSliderValue, 0);
+            charColor2YTrackBar.Value = newSliderValue;
         }
 
         private void charColor2ZTB_TextChanged(object sender, EventArgs e)
         {
+            float i = 0;
             if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
             {
-                float i = 0;
+                i = 0;
                 if (float.TryParse(charColor2ZTB.Text, out i))
                 {
                     charColor2ZTB.BackColor = Color.White;
@@ -502,7 +561,7 @@ namespace Smash_Forge.GUI.Editors
             }
             else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
             {
-                float i = 0;
+                i = 0;
                 if (float.TryParse(charColor2ZTB.Text, out i))
                 {
                     charColor2ZTB.BackColor = Color.White;
@@ -514,36 +573,42 @@ namespace Smash_Forge.GUI.Editors
                 RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
                     new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
             }
+
+            // update trackbar
+            int newSliderValue = (int)(i * (float)charColor2ZTrackBar.Maximum / 5.0f);
+            newSliderValue = Math.Min(newSliderValue, charColor2ZTrackBar.Maximum);
+            newSliderValue = Math.Max(newSliderValue, 0);
+            charColor2ZTrackBar.Value = newSliderValue;
         }
 
         private void charColor1XTrackBar_Scroll(object sender, EventArgs e)
         {
-
+            charColor1XTB.Text = (float)(360 * (charColor1XTrackBar.Value / (float)charColor1XTrackBar.Maximum)) + "";
         }
 
         private void charColor1YTrackBar_Scroll(object sender, EventArgs e)
         {
-
+            charColor1YTB.Text = (float)(1 * (charColor1YTrackBar.Value / (float)charColor1YTrackBar.Maximum)) + "";
         }
 
         private void charColor1ZTrackBar_Scroll(object sender, EventArgs e)
         {
-
+            charColor1ZTB.Text = (float)(5 * (charColor1ZTrackBar.Value / (float)charColor1ZTrackBar.Maximum)) + "";
         }
 
         private void charColor2XTrackBar_Scroll(object sender, EventArgs e)
         {
-
+            charColor2XTB.Text = (float)(360 * (charColor2XTrackBar.Value / (float)charColor2XTrackBar.Maximum)) + "";
         }
 
         private void charColor2YTrackBar_Scroll(object sender, EventArgs e)
         {
-
+            charColor2YTB.Text = (float)(1 * (charColor2YTrackBar.Value / (float)charColor2YTrackBar.Maximum)) + "";
         }
 
         private void charColor2ZTrackBar_Scroll(object sender, EventArgs e)
         {
-
+            charColor2ZTB.Text = (float)(5 * (charColor2ZTrackBar.Value / (float)charColor2ZTrackBar.Maximum)) + "";
         }
 
         #endregion
@@ -814,14 +879,13 @@ namespace Smash_Forge.GUI.Editors
         private void areaScaleYTrackBar_Scroll(object sender, EventArgs e)
         {
             areaScaleYTB.Text = (float)(250 * (areaScaleYTrackBar.Value / (float)areaScaleYTrackBar.Maximum)) + "";
-
         }
 
         private void areaScaleZTrackBar_Scroll(object sender, EventArgs e)
         {
             areaScaleZTB.Text = (float)(250 * (areaScaleZTrackBar.Value / (float)areaScaleZTrackBar.Maximum)) + "";
-
         }
+
 
         #endregion
 
