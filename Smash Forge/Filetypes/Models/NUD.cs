@@ -40,6 +40,14 @@ namespace Smash_Forge
         {
             Read(fname);
             PreRender();
+
+            List<Mesh> unsortedMeshes = new List<Mesh>();
+            foreach (Mesh m in mesh)
+            {
+                unsortedMeshes.Add(m);
+                //List<Order> SortedList = objListOrder.OrderBy(o => o.OrderDate).ToList();
+            }
+            depthSortedList = unsortedMeshes.OrderBy(o => o.boundingBox[2]).ToList();
         }
 
         // gl buffer objects
@@ -54,6 +62,8 @@ namespace Smash_Forge
         public int boneCount = 0;
         public bool hasBones = false;
         public List<Mesh> mesh = new List<Mesh>();
+        public SortedList<float, Mesh> depthSortedMeshes = new SortedList<float, Mesh>();
+        List<Mesh> depthSortedList = new List<Mesh>();
         public float[] param = new float[4];
 
         // xmb stuff
@@ -174,7 +184,7 @@ namespace Smash_Forge
             foreach (NUD.Mesh mesh in mesh)
             {
                 if (mesh.Checked)
-                    RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
+                    RenderTools.drawCubeWireframe(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3]);
             }
         }
 
@@ -246,18 +256,22 @@ namespace Smash_Forge
             List<Polygon> opaque = new List<Polygon>();
             List<Polygon> trans = new List<Polygon>();
 
-            foreach (Mesh m in mesh)
+            foreach (Mesh m in depthSortedList)
             {
+                Debug.WriteLine(m.boundingBox[2]);
                 for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
                 {
                     Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - pol];
 
                     if (p.materials.Count > 0)
+                    {
                         if (p.materials[0].srcFactor != 0 || p.materials[0].dstFactor != 0)
                         {
                             trans.Add(p);
                             continue;
                         }
+                    }
+                   
                     opaque.Add(p);
                 }
             }
@@ -1049,7 +1063,7 @@ namespace Smash_Forge
                 mesh.Add(m);
                 m.boneflag = boneflags[mi];
                 m.singlebind = (short)o.singlebind;
-                m.bbox = unknown[mi++];
+                m.boundingBox = unknown[mi++];
 
                 for (int i = 0; i < o.polyamt; i++)
                 {
@@ -1456,7 +1470,7 @@ namespace Smash_Forge
 
             for (int i = 0; i < mesh.Count; i++)
             {
-                foreach (float f in mesh[i].bbox)
+                foreach (float f in mesh[i].boundingBox)
                     d.writeFloat(f);
 
                 d.writeInt(tempstring.size());
@@ -2413,7 +2427,7 @@ namespace Smash_Forge
             public int boneflag = 4; // 0 not rigged 4 rigged 8 singlebind
             public short singlebind = -1;
             
-            public float[] bbox = new float[8];
+            public float[] boundingBox = new float[8];
 
             public Mesh()
             {
