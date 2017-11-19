@@ -600,7 +600,7 @@ namespace Smash_Forge
             foreach (Mesh m in mesh)
             {
                 NUD.Mesh n_mesh = new NUD.Mesh();
-                nud.mesh.Add(n_mesh);
+                nud.meshes.Add(n_mesh);
                 n_mesh.Text = "Mesh_" + j++;
                 foreach (List<int> i in m.faces)
                 {

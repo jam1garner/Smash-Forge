@@ -42,12 +42,12 @@ namespace Smash_Forge
             PreRender();
 
             List<Mesh> unsortedMeshes = new List<Mesh>();
-            foreach (Mesh m in mesh)
+            foreach (Mesh m in meshes)
             {
                 unsortedMeshes.Add(m);
                 //List<Order> SortedList = objListOrder.OrderBy(o => o.OrderDate).ToList();
             }
-            depthSortedList = unsortedMeshes.OrderBy(o => o.boundingBox[2]).ToList();
+            depthSortedMeshes = unsortedMeshes.OrderBy(o => o.boundingBox[2]).ToList();
         }
 
         // gl buffer objects
@@ -61,9 +61,8 @@ namespace Smash_Forge
         public int type = SMASH;
         public int boneCount = 0;
         public bool hasBones = false;
-        public List<Mesh> mesh = new List<Mesh>();
-        public SortedList<float, Mesh> depthSortedMeshes = new SortedList<float, Mesh>();
-        List<Mesh> depthSortedList = new List<Mesh>();
+        public List<Mesh> meshes = new List<Mesh>();
+        List<Mesh> depthSortedMeshes = new List<Mesh>();
         public float[] param = new float[4];
 
         // xmb stuff
@@ -83,7 +82,7 @@ namespace Smash_Forge
             GL.DeleteBuffer(ubo_bones);
             GL.DeleteBuffer(vbo_select);
 
-            mesh.Clear();
+            meshes.Clear();
         }
 
         public enum TextureFlags
@@ -108,9 +107,9 @@ namespace Smash_Forge
 
         public void PreRender()
         {
-            for (int mes = mesh.Count - 1; mes >= 0; mes--)
+            for (int mes = meshes.Count - 1; mes >= 0; mes--)
             {
-                Mesh m = mesh[mes];
+                Mesh m = meshes[mes];
                 for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
                 {
                     Polygon p = (NUD.Polygon)m.Nodes[pol];
@@ -181,7 +180,7 @@ namespace Smash_Forge
             GL.Color4(Color.GhostWhite);
             RenderTools.drawCubeWireframe(new Vector3(param[0], param[1], param[2]), param[3]);
             GL.Color4(Color.OrangeRed);
-            foreach (NUD.Mesh mesh in mesh)
+            foreach (NUD.Mesh mesh in meshes)
             {
                 if (mesh.Checked)
                     RenderTools.drawCubeWireframe(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3]);
@@ -193,7 +192,7 @@ namespace Smash_Forge
             Vector3 max = new Vector3(-9999);
             Vector3 min = new Vector3(9999);
 
-            foreach (Mesh m in mesh)
+            foreach (Mesh m in meshes)
             {
                 m.generateBoundingBox();
                 max.X = Math.Max(max.X, m.boundingBox[0] + m.boundingBox[3]);
@@ -211,7 +210,7 @@ namespace Smash_Forge
 
             Vector3 maxdix = Vector3.Zero;
             Vector3 cen = new Vector3(param[0], param[1], param[2]);
-            foreach (Mesh m in mesh)
+            foreach (Mesh m in meshes)
                 if ((cen - new Vector3(m.boundingBox[0], m.boundingBox[1], m.boundingBox[2])).Length > maxdix.Length) maxdix = (cen - new Vector3(m.boundingBox[0], m.boundingBox[1], m.boundingBox[2]));
             param[3] = maxdix.Length;
         }
@@ -256,7 +255,7 @@ namespace Smash_Forge
             List<Polygon> opaque = new List<Polygon>();
             List<Polygon> trans = new List<Polygon>();
 
-            foreach (Mesh m in depthSortedList)
+            foreach (Mesh m in meshes)
             {
                 Debug.WriteLine(m.boundingBox[2]);
                 for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
@@ -284,7 +283,7 @@ namespace Smash_Forge
                 if (((Mesh)p.Parent).Checked)
                     DrawPolygon(p, shader);
             
-            foreach (Mesh m in mesh)
+            foreach (Mesh m in meshes)
             {
                 for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
                 {
@@ -623,7 +622,7 @@ namespace Smash_Forge
 
         public void MakeMetal(int newDiffuseID, bool preserveDiffuse, bool useNormalMap, float[] minGain, float[] refColor, float[] fresParams, float[] fresColor)
         {
-            foreach (Mesh mesh in mesh)
+            foreach (Mesh mesh in meshes)
             {
                 foreach (Polygon poly in mesh.Nodes)
                 {
@@ -717,7 +716,7 @@ namespace Smash_Forge
             GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
 
             shader.enableAttrib();
-            foreach(Mesh m in mesh)
+            foreach(Mesh m in meshes)
             {
                 foreach(Polygon p in m.Nodes)
                 {
@@ -767,7 +766,7 @@ namespace Smash_Forge
             }
 
             shader.enableAttrib();
-            foreach (Mesh m in mesh)
+            foreach (Mesh m in meshes)
             {
                 foreach (Polygon p in m.Nodes)
                 {
@@ -881,7 +880,7 @@ namespace Smash_Forge
         #region MTA
         public void clearMTA()
         {
-            foreach (Mesh me in mesh)
+            foreach (Mesh me in meshes)
             {
                 foreach (Polygon p in me.Nodes)
                 {
@@ -897,7 +896,7 @@ namespace Smash_Forge
         {
             foreach (MatEntry mat in m.matEntries)
             {
-                foreach (Mesh me in mesh)
+                foreach (Mesh me in meshes)
                 {
                     foreach(Polygon p in me.Nodes)
                     {
@@ -942,7 +941,7 @@ namespace Smash_Forge
             foreach (VisEntry e in m.visEntries)
             {
                 int state = e.getState(frame);
-                foreach (Mesh me in mesh)
+                foreach (Mesh me in meshes)
                 {
                     if (me.Text.Equals(e.name))
                     {
@@ -1060,7 +1059,7 @@ namespace Smash_Forge
             {
                 Mesh m = new Mesh();
                 m.Text = o.name;
-                mesh.Add(m);
+                meshes.Add(m);
                 m.boneflag = boneflags[mi];
                 m.singlebind = (short)o.singlebind;
                 m.boundingBox = unknown[mi++];
@@ -1416,7 +1415,7 @@ namespace Smash_Forge
             d.writeString("NDP3");
             d.writeInt(0); //FileSize
             d.writeShort(0x200); //  version num
-            d.writeShort(mesh.Count); // polysets
+            d.writeShort(meshes.Count); // polysets
 
             foreach (ModelContainer con in Runtime.ModelContainers)
             {
@@ -1457,76 +1456,76 @@ namespace Smash_Forge
             // obj descriptor
 
             FileOutput tempstring = new FileOutput(); // data
-            for (int i = 0; i < mesh.Count; i++)
+            for (int i = 0; i < meshes.Count; i++)
             {
-                str.writeString(mesh[i].Text);
+                str.writeString(meshes[i].Text);
                 str.writeByte(0);
                 str.align(16);
             }
 
             int polyCount = 0; // counting number of poly
-            foreach (Mesh m in mesh)
+            foreach (Mesh m in meshes)
                 polyCount += m.Nodes.Count;
 
-            for (int i = 0; i < mesh.Count; i++)
+            for (int i = 0; i < meshes.Count; i++)
             {
-                foreach (float f in mesh[i].boundingBox)
+                foreach (float f in meshes[i].boundingBox)
                     d.writeFloat(f);
 
                 d.writeInt(tempstring.size());
 
-                tempstring.writeString(mesh[i].Text);
+                tempstring.writeString(meshes[i].Text);
                 tempstring.writeByte(0);
                 tempstring.align(16);
 
-                d.writeInt(mesh[i].boneflag); // ID
-                d.writeShort(mesh[i].singlebind); // Single Bind 
-                d.writeShort(mesh[i].Nodes.Count); // poly count
-                d.writeInt(obj.size() + 0x30 + mesh.Count * 0x30); // position start for obj
+                d.writeInt(meshes[i].boneflag); // ID
+                d.writeShort(meshes[i].singlebind); // Single Bind 
+                d.writeShort(meshes[i].Nodes.Count); // poly count
+                d.writeInt(obj.size() + 0x30 + meshes.Count * 0x30); // position start for obj
 
                 // write obj info here...
-                for (int k = 0; k < mesh[i].Nodes.Count; k++)
+                for (int k = 0; k < meshes[i].Nodes.Count; k++)
                 {
                     obj.writeInt(poly.size());
                     obj.writeInt(vert.size());
-                    obj.writeInt(((NUD.Polygon)mesh[i].Nodes[k]).vertSize >> 4 > 0 ? vertadd.size() : 0);
-                    obj.writeShort(((NUD.Polygon)mesh[i].Nodes[k]).vertices.Count);
-                    obj.writeByte(((NUD.Polygon)mesh[i].Nodes[k]).vertSize); // type of vert
+                    obj.writeInt(((NUD.Polygon)meshes[i].Nodes[k]).vertSize >> 4 > 0 ? vertadd.size() : 0);
+                    obj.writeShort(((NUD.Polygon)meshes[i].Nodes[k]).vertices.Count);
+                    obj.writeByte(((NUD.Polygon)meshes[i].Nodes[k]).vertSize); // type of vert
 
-                    int maxUV = ((NUD.Polygon)mesh[i].Nodes[k]).vertices[0].tx.Count; // TODO: multi uv stuff  mesh[i].polygons[k].maxUV() + 
+                    int maxUV = ((NUD.Polygon)meshes[i].Nodes[k]).vertices[0].tx.Count; // TODO: multi uv stuff  mesh[i].polygons[k].maxUV() + 
 
-                    obj.writeByte(((NUD.Polygon)mesh[i].Nodes[k]).UVSize); 
+                    obj.writeByte(((NUD.Polygon)meshes[i].Nodes[k]).UVSize); 
 
                     // MATERIAL SECTION 
 
                     FileOutput te = new FileOutput();
                     te.Endian = Endianness.Big;
 
-                    int[] texoff = writeMaterial(tex, ((NUD.Polygon)mesh[i].Nodes[k]).materials, str);
+                    int[] texoff = writeMaterial(tex, ((NUD.Polygon)meshes[i].Nodes[k]).materials, str);
                     //tex.writeOutput(te);
 
                     //obj.writeInt(tex.size() + 0x30 + mesh.Count * 0x30 + polyCount * 0x30); // Tex properties... This is tex offset
-                    obj.writeInt(texoff[0] + 0x30 + mesh.Count * 0x30 + polyCount * 0x30);
-                    obj.writeInt(texoff[1] > 0 ? texoff[1] + 0x30 + mesh.Count * 0x30 + polyCount * 0x30 : 0);
-                    obj.writeInt(texoff[2] > 0 ? texoff[2] + 0x30 + mesh.Count * 0x30 + polyCount * 0x30 : 0);
-                    obj.writeInt(texoff[3] > 0 ? texoff[3] + 0x30 + mesh.Count * 0x30 + polyCount * 0x30 : 0);
+                    obj.writeInt(texoff[0] + 0x30 + meshes.Count * 0x30 + polyCount * 0x30);
+                    obj.writeInt(texoff[1] > 0 ? texoff[1] + 0x30 + meshes.Count * 0x30 + polyCount * 0x30 : 0);
+                    obj.writeInt(texoff[2] > 0 ? texoff[2] + 0x30 + meshes.Count * 0x30 + polyCount * 0x30 : 0);
+                    obj.writeInt(texoff[3] > 0 ? texoff[3] + 0x30 + meshes.Count * 0x30 + polyCount * 0x30 : 0);
 
-                    obj.writeShort(((NUD.Polygon)mesh[i].Nodes[k]).faces.Count); // polyamt
-                    obj.writeByte(((NUD.Polygon)mesh[i].Nodes[k]).strip); // polysize 0x04 is strips and 0x40 is easy
+                    obj.writeShort(((NUD.Polygon)meshes[i].Nodes[k]).faces.Count); // polyamt
+                    obj.writeByte(((NUD.Polygon)meshes[i].Nodes[k]).strip); // polysize 0x04 is strips and 0x40 is easy
                     // :D
-                    obj.writeByte(((NUD.Polygon)mesh[i].Nodes[k]).polflag); // polyflag
+                    obj.writeByte(((NUD.Polygon)meshes[i].Nodes[k]).polflag); // polyflag
 
                     obj.writeInt(0); // idk, nothing padding??
                     obj.writeInt(0);
                     obj.writeInt(0);
 
                     // Write the poly...
-                    foreach (int face in ((NUD.Polygon)mesh[i].Nodes[k]).faces)
+                    foreach (int face in ((NUD.Polygon)meshes[i].Nodes[k]).faces)
                         poly.writeShort(face);
 
                     // Write the vertex....
 
-                    writeVertex(vert, vertadd, ((NUD.Polygon)mesh[i].Nodes[k]));
+                    writeVertex(vert, vertadd, ((NUD.Polygon)meshes[i].Nodes[k]));
                     vertadd.align(4, 0x0);
                 }
             }
@@ -1820,7 +1819,7 @@ namespace Smash_Forge
         public void MergePoly()
         {
             Dictionary<string, Mesh> nmesh = new Dictionary<string, Mesh>();
-            foreach(Mesh m in mesh)
+            foreach(Mesh m in meshes)
             {
                 if (nmesh.ContainsKey(m.Text))
                 {
@@ -1833,10 +1832,10 @@ namespace Smash_Forge
                 }
             }
             // consolidate
-            mesh.Clear();
+            meshes.Clear();
             foreach (string n in nmesh.Keys)
             {
-                mesh.Add(nmesh[n]);
+                meshes.Add(nmesh[n]);
             }
             PreRender();
         }
@@ -2492,7 +2491,7 @@ namespace Smash_Forge
             m.setDefaultDescriptor();
             List<MBN.Vertex> vertBank = new List<MBN.Vertex>();
 
-            foreach (Mesh mesh in mesh)
+            foreach (Mesh mesh in meshes)
             {
                 MBN.Mesh nmesh = new MBN.Mesh();
 
@@ -2550,7 +2549,7 @@ namespace Smash_Forge
 
             bool isSingleBound;
             int sbind;
-            foreach (Mesh m in mesh)
+            foreach (Mesh m in meshes)
             {
                 isSingleBound = true;
                 sbind = -1;
@@ -2615,7 +2614,7 @@ namespace Smash_Forge
 
         public void ComputeTangentBitangent()
         {
-            foreach (Mesh m in mesh)
+            foreach (Mesh m in meshes)
             {
                 foreach (Polygon p in m.Nodes)
                     computeTangentBitangent(p);
@@ -2684,7 +2683,7 @@ namespace Smash_Forge
         public List<int> GetTexIds()
         {
             List<int> texIds = new List<int>();
-            foreach (var m in mesh)
+            foreach (var m in meshes)
                 foreach (Polygon poly in m.Nodes)
                     foreach (var mat in poly.materials)
                         if(!texIds.Contains(mat.displayTexId))

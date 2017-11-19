@@ -179,7 +179,7 @@ namespace Smash_Forge
             {
                 if(mc.nud != null)
                 {
-                    foreach(NUD.Mesh m in mc.nud.mesh)
+                    foreach(NUD.Mesh m in mc.nud.meshes)
                     {
                         foreach(NUD.Polygon p in m.Nodes)
                         {

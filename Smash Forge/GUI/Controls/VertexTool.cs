@@ -26,7 +26,7 @@ namespace Smash_Forge
             vertexListBox.Items.Clear();
 
             ModelContainer con = vp.draw[0];
-            foreach(NUD.Mesh mesh in con.nud.mesh)
+            foreach(NUD.Mesh mesh in con.nud.meshes)
             {
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {
@@ -70,7 +70,7 @@ namespace Smash_Forge
         private void SelectVertex(NUD.Vertex v)
         {
             ModelContainer con = vp.draw[0];
-            foreach (NUD.Mesh mesh in con.nud.mesh)
+            foreach (NUD.Mesh mesh in con.nud.meshes)
             {
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {

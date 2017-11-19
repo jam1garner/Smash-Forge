@@ -28,7 +28,7 @@ namespace Smash_Forge
                 if (mc.nud != null)
                 {
                     TreeNode model = new TreeNode($"Model {modelCount}") { Tag = mc.nud };
-                    foreach (NUD.Mesh m in mc.nud.mesh)
+                    foreach (NUD.Mesh m in mc.nud.meshes)
                     {
                         TreeNode mesh = new TreeNode(m.Text) { Tag = m };
                         foreach (NUD.Polygon p in m.Nodes)

@@ -189,7 +189,7 @@ namespace Smash_Forge
                 }
 
                 geometries.Add("#" + geom.id, nmesh);
-                n.mesh.Add(nmesh);
+                n.meshes.Add(nmesh);
                 nmesh.Text = geom.name;
                 NUD.Polygon npoly = new NUD.Polygon();
                 npoly.setDefaultMaterial();
@@ -354,7 +354,7 @@ namespace Smash_Forge
                             continue;
 
                         NUD.Mesh n_mesh = new NUD.Mesh();
-                        n.mesh.Add(n_mesh);
+                        n.meshes.Add(n_mesh);
                         n_mesh.Text = geom.name;
 
                         Dictionary<string, double[]> sources = new Dictionary<string, double[]>();
@@ -530,7 +530,7 @@ namespace Smash_Forge
                             }
                         }
                         // Dump Items[] for geom
-                        NUD.Mesh m = n.mesh[cid];
+                        NUD.Mesh m = n.meshes[cid];
                         List<NUD.Vertex> v = ((NUD.Polygon)m.Nodes[0]).vertices;
                         string[] vcount = skin.vertex_weights.vcount.Split(' ');
                         string[] vi = skin.vertex_weights.v.Split(' ');
@@ -580,7 +580,7 @@ namespace Smash_Forge
                 }
             }
 
-            foreach (NUD.Mesh mesh in n.mesh)
+            foreach (NUD.Mesh mesh in n.meshes)
             {
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {
@@ -929,7 +929,7 @@ namespace Smash_Forge
             // geometry
 
             int num = 0;
-            foreach (NUD.Mesh mesh in nud.mesh)
+            foreach (NUD.Mesh mesh in nud.meshes)
             {
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {

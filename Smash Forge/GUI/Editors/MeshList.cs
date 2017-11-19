@@ -53,7 +53,7 @@ namespace Smash_Forge
                     model.ImageKey = "model";
                     model.SelectedImageKey = "model";
                     j++; 
-                    foreach (NUD.Mesh mesh in m.nud.mesh)
+                    foreach (NUD.Mesh mesh in m.nud.meshes)
                     {
                         model.Nodes.Add(mesh);
                         int i = 0;
@@ -92,8 +92,8 @@ namespace Smash_Forge
                 //Since we are changing value but we don't want the entire model order to swap,
                 // we are disabling the event for on change value temporarily
                 changingValue = true;
-                numericUpDown1.Maximum = ((NUD)e.Node.Parent.Tag).mesh.Count - 1;
-                numericUpDown1.Value = ((NUD)e.Node.Parent.Tag).mesh.IndexOf((NUD.Mesh)e.Node);
+                numericUpDown1.Maximum = ((NUD)e.Node.Parent.Tag).meshes.Count - 1;
+                numericUpDown1.Value = ((NUD)e.Node.Parent.Tag).meshes.IndexOf((NUD.Mesh)e.Node);
 
                 numericUpDown1.Visible = true;
                 label1.Visible = true;
@@ -113,8 +113,8 @@ namespace Smash_Forge
                 TreeNode parent = node.Parent;
                 NUD.Mesh m = (NUD.Mesh)node;
                 NUD n = (NUD)parent.Tag;
-                n.mesh.Remove(m);
-                n.mesh.Insert(pos, m);
+                n.meshes.Remove(m);
+                n.meshes.Insert(pos, m);
                 parent.Nodes.Remove(node);
                 parent.Nodes.Insert(pos, node);
                 treeView1.SelectedNode = node;
@@ -169,11 +169,11 @@ namespace Smash_Forge
                     TreeNode parent = node.Parent;
                     NUD.Mesh m = (NUD.Mesh)node.Tag;
                     NUD n = (NUD)parent.Tag;
-                    int pos = n.mesh.IndexOf(m) + 1;
-                    if (pos >= n.mesh.Count)
-                        pos = n.mesh.Count - 1;
-                    n.mesh.Remove(m);
-                    n.mesh.Insert(pos, m);
+                    int pos = n.meshes.IndexOf(m) + 1;
+                    if (pos >= n.meshes.Count)
+                        pos = n.meshes.Count - 1;
+                    n.meshes.Remove(m);
+                    n.meshes.Insert(pos, m);
                     parent.Nodes.Remove(node);
                     parent.Nodes.Insert(pos, node);
                     treeView1.SelectedNode = node;
@@ -188,11 +188,11 @@ namespace Smash_Forge
                     TreeNode parent = node.Parent;
                     NUD.Mesh m = (NUD.Mesh)node.Tag;
                     NUD n = (NUD)parent.Tag;
-                    int pos = n.mesh.IndexOf(m) - 1;
+                    int pos = n.meshes.IndexOf(m) - 1;
                     if (pos < 0)
                         pos = 0;
-                    n.mesh.Remove(m);
-                    n.mesh.Insert(pos, m);
+                    n.meshes.Remove(m);
+                    n.meshes.Insert(pos, m);
                     parent.Nodes.Remove(node);
                     parent.Nodes.Insert(pos, node);
                     treeView1.SelectedNode = node;
@@ -212,25 +212,25 @@ namespace Smash_Forge
                     NUD nud = new NUD(filename);
                     NUD unorderedNud = (NUD)treeView1.SelectedNode.Tag;
                     //Gonna reorder some NUDs, NUD-in to it
-                    int meshCount = nud.mesh.Count;
-                    if (unorderedNud.mesh.Count > meshCount)
-                        meshCount = unorderedNud.mesh.Count;
+                    int meshCount = nud.meshes.Count;
+                    if (unorderedNud.meshes.Count > meshCount)
+                        meshCount = unorderedNud.meshes.Count;
                     NUD.Mesh[] meshes = new NUD.Mesh[meshCount];
 
                     //Fill in matching meshes
-                    foreach (NUD.Mesh m in nud.mesh)
+                    foreach (NUD.Mesh m in nud.meshes)
                     {
-                        foreach (NUD.Mesh m2 in unorderedNud.mesh)
+                        foreach (NUD.Mesh m2 in unorderedNud.meshes)
                         {
                             if (m2.Text.Equals(m.Text))
                             {
-                                meshes[nud.mesh.IndexOf((m))] = m2;
+                                meshes[nud.meshes.IndexOf((m))] = m2;
                                 break;
                             }
                         }
                     }
                     //Fill in mismatched meshes
-                    foreach (NUD.Mesh m in unorderedNud.mesh)
+                    foreach (NUD.Mesh m in unorderedNud.meshes)
                     {
                         if (!meshes.Contains(m))
                         {
@@ -292,7 +292,7 @@ namespace Smash_Forge
                 else if (treeView1.SelectedNode is NUD.Mesh)
                 {
                     NUD parent = ((NUD)treeView1.SelectedNode.Parent.Tag);
-                    parent.mesh.Remove((NUD.Mesh)treeView1.SelectedNode);
+                    parent.meshes.Remove((NUD.Mesh)treeView1.SelectedNode);
                     treeView1.SelectedNode.Parent.Nodes.Remove(treeView1.SelectedNode);
                     parent.PreRender();
                 }
@@ -330,8 +330,8 @@ namespace Smash_Forge
                     {
                         string filename = ofd.FileName;
                         NUD nud = new NUD(filename);
-                        foreach (NUD.Mesh mesh in nud.mesh)
-                            ((NUD)treeView1.SelectedNode.Tag).mesh.Add((mesh));
+                        foreach (NUD.Mesh mesh in nud.meshes)
+                            ((NUD)treeView1.SelectedNode.Tag).meshes.Add((mesh));
                         ((NUD)treeView1.SelectedNode.Tag).PreRender();
                         refresh();
                     }
@@ -461,8 +461,8 @@ namespace Smash_Forge
             NUD org = (NUD)treeView1.SelectedNode.Tag;
             NUD nud = (NUD)n.Tag;
 
-            nud.mesh.AddRange(org.mesh);
-            org.mesh.Clear();
+            nud.meshes.AddRange(org.meshes);
+            org.meshes.Clear();
 
             org.Destroy();
             nud.PreRender();
@@ -577,11 +577,11 @@ namespace Smash_Forge
                 NUD.Mesh parent = (NUD.Mesh)p.Parent;
                 p.Parent.Nodes.Remove(p);
                 NUD.Mesh m = new NUD.Mesh();
-                ((NUD)parent.Parent.Tag).mesh.Add(m);
+                ((NUD)parent.Parent.Tag).meshes.Add(m);
                 m.Text = parent.Text + "_" + p.Text;
                 m.Nodes.Add(p);
 
-                if (parent.Nodes.Count == 0) ((NUD)parent.Parent.Tag).mesh.Remove(parent);
+                if (parent.Nodes.Count == 0) ((NUD)parent.Parent.Tag).meshes.Remove(parent);
 
                 refresh();
             }
@@ -595,13 +595,13 @@ namespace Smash_Forge
 
                 NUD nud = (NUD)(m.Parent.Tag);
 
-                int index = nud.mesh.IndexOf(m);
+                int index = nud.meshes.IndexOf(m);
 
                 if(index > 0)
                 {
-                    nud.mesh.Remove(m);
+                    nud.meshes.Remove(m);
 
-                    NUD.Mesh merge = nud.mesh[index-1];
+                    NUD.Mesh merge = nud.meshes[index-1];
 
                     List<TreeNode> polygons = new List<TreeNode>();
                     foreach(NUD.Polygon p in m.Nodes)
@@ -626,13 +626,13 @@ namespace Smash_Forge
 
                 NUD nud = (NUD)(m.Parent.Tag);
 
-                int index = nud.mesh.IndexOf(m);
+                int index = nud.meshes.IndexOf(m);
 
-                if (index+1 < nud.mesh.Count)
+                if (index+1 < nud.meshes.Count)
                 {
-                    nud.mesh.Remove(m);
+                    nud.meshes.Remove(m);
 
-                    NUD.Mesh merge = nud.mesh[index];
+                    NUD.Mesh merge = nud.meshes[index];
 
                     List<TreeNode> polygons = new List<TreeNode>();
                     foreach (NUD.Polygon p in m.Nodes)
@@ -738,12 +738,12 @@ namespace Smash_Forge
                 {
                     m.Text = $"Blank Mesh {i++}";
                     foundName = true;
-                    foreach (NUD.Mesh mesh in nud.mesh)
+                    foreach (NUD.Mesh mesh in nud.meshes)
                         if (mesh.Text.Equals(m.Text))
                             foundName = false;
                 }
 
-                nud.mesh.Add(m);
+                nud.meshes.Add(m);
 
                 refresh();
             }
@@ -753,7 +753,7 @@ namespace Smash_Forge
         {
             if (treeView1.SelectedNode.Tag is NUD)
             {
-                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode.Tag).mesh)
+                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode.Tag).meshes)
                 {
                     foreach (NUD.Polygon poly in mesh.Nodes)
                     {
@@ -778,7 +778,7 @@ namespace Smash_Forge
         {
             if (treeView1.SelectedNode.Tag is NUD)
             {
-                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode.Tag).mesh)
+                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode.Tag).meshes)
                 {
                     foreach (NUD.Polygon poly in mesh.Nodes)
                     {
@@ -792,7 +792,7 @@ namespace Smash_Forge
         {
             if (treeView1.SelectedNode.Tag is NUD)
             {
-                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode.Tag).mesh)
+                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode.Tag).meshes)
                 {
                     foreach (NUD.Polygon poly in mesh.Nodes)
                     {
@@ -806,7 +806,7 @@ namespace Smash_Forge
         {
             if (treeView1.SelectedNode.Tag is NUD)
             {
-                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode.Tag).mesh)
+                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode.Tag).meshes)
                 {
                     foreach (NUD.Polygon poly in mesh.Nodes)
                     {

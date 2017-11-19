@@ -67,11 +67,9 @@ namespace Smash_Forge
                 GL.LoadIdentity();
                 GL.Viewport(glControl1.ClientRectangle);
 
-                Camera.viewportCamera.setRenderHeight(glControl1.Height);
                 Camera.viewportCamera.setRenderWidth(glControl1.Width);
+                Camera.viewportCamera.setRenderHeight(glControl1.Height);
                 Camera.viewportCamera.Update();
-                Camera.viewportCamera.setRenderWidth(glControl1.Width);
-                Camera.viewportCamera.setRenderHeight(glControl1.Height);
             }
 
         }
@@ -1155,7 +1153,7 @@ namespace Smash_Forge
                 if (m.nud != null)
                 {
                     RenderTools.drawCubeWireframe(new Vector3(m.nud.param[0], m.nud.param[1], m.nud.param[2]), m.nud.param[3]);
-                    foreach (NUD.Mesh mesh in m.nud.mesh)
+                    foreach (NUD.Mesh mesh in m.nud.meshes)
                     {
                         if (mesh.Checked)
                             RenderTools.drawCubeWireframe(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3]);
@@ -2280,7 +2278,7 @@ namespace Smash_Forge
                 }
                 if(con.nud != null)
                 {
-                    foreach (NUD.Mesh mesh in con.nud.mesh)
+                    foreach (NUD.Mesh mesh in con.nud.meshes)
                     {
                         Vector3 closest = Vector3.Zero;
                         foreach (NUD.Polygon poly in mesh.Nodes)

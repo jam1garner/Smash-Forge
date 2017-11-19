@@ -150,7 +150,7 @@ namespace Smash_Forge
 
                     foreach (ModelContainer con in draw)
                     {
-                        foreach (NUD.Mesh mesh in con.nud.mesh)
+                        foreach (NUD.Mesh mesh in con.nud.meshes)
                         {
                             foreach (NUD.Polygon poly in mesh.Nodes)
                             {
@@ -175,7 +175,7 @@ namespace Smash_Forge
                     Vector3 close = Vector3.Zero;
                     foreach (ModelContainer con in draw)
                     {
-                        foreach (NUD.Mesh mesh in con.nud.mesh)
+                        foreach (NUD.Mesh mesh in con.nud.meshes)
                         {
                             foreach (NUD.Polygon poly in mesh.Nodes)
                             {

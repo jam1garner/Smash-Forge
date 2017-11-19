@@ -41,7 +41,7 @@ namespace Smash_Forge
 
             int polyCount = 0;
 
-            foreach (NUD.Mesh m in n.mesh)
+            foreach (NUD.Mesh m in n.meshes)
             {
                 XmlNode meshnode = doc.CreateElement("mesh");
                 XmlAttribute name = doc.CreateAttribute("name"); name.Value = m.Text; meshnode.Attributes.Append(name);
@@ -119,7 +119,7 @@ namespace Smash_Forge
         public static void importMaterialAsXML(NUD n, string filename)
         {
             int polyCount = 0;
-            foreach (NUD.Mesh m in n.mesh)
+            foreach (NUD.Mesh m in n.meshes)
             {
                 foreach (NUD.Polygon p in m.Nodes)
                 {
@@ -259,7 +259,7 @@ namespace Smash_Forge
 
             int pid = 0;
             int mid = 0;
-            foreach (NUD.Mesh m in n.mesh)
+            foreach (NUD.Mesh m in n.meshes)
             {
                 foreach (NUD.Polygon p in m.Nodes)
                 {

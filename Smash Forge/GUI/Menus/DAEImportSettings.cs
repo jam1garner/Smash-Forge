@@ -68,7 +68,7 @@ namespace Smash_Forge
 
             bool warning = false;
 
-            foreach (NUD.Mesh mesh in nud.mesh)
+            foreach (NUD.Mesh mesh in nud.meshes)
             {
                 if (BoneTypes[(string)comboBox2.SelectedItem] == BoneTypes["No Bones"])
                     mesh.boneflag = 0;
@@ -161,7 +161,7 @@ namespace Smash_Forge
 
             if (checkBox2.Checked)
             {
-                foreach (NUD.Mesh mesh in nud.mesh)
+                foreach (NUD.Mesh mesh in nud.meshes)
                 {
                     if (mesh.Text.Length > 5)
                         mesh.Text = mesh.Text.Substring(5, mesh.Text.Length - 5);
