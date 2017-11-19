@@ -29,10 +29,12 @@ namespace Smash_Forge
         private float mouseTranslateSpeed = 0.050f;
         private float scrollWheelZoomSpeed = 1.75f;
         private float shiftZoomMultiplier = 2.5f;
-        public float mouseSLast, mouseYLast, mouseXLast;
+        public float mouseSLast = 0;
+        public float mouseYLast = 0;
+        public float mouseXLast = 0;
 
         public Camera()
-        { 
+        {
 
         }
 
@@ -126,9 +128,9 @@ namespace Smash_Forge
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Up))
                 position.Z += 1 * zoomscale;
 
-            TrackMouse();
+            this.mouseXLast = OpenTK.Input.Mouse.GetState().X;
+            this.mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
-            // scrollwheel to zoom in our out
             position.Z += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale * scrollWheelZoomSpeed;
 
             UpdateMatrices();

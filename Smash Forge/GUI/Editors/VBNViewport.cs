@@ -572,7 +572,7 @@ namespace Smash_Forge
                     UpdateMousePosition();
                 UpdateCameraPositionControl();
             }
-            mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
+            Camera.viewportCamera.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
             SetCameraAnimation();
 
             Matrix4 matrix = Camera.viewportCamera.getMVPMatrix();
