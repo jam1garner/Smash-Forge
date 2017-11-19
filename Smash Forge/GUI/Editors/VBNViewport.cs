@@ -67,6 +67,8 @@ namespace Smash_Forge
                 GL.LoadIdentity();
                 GL.Viewport(glControl1.ClientRectangle);
 
+                Camera.viewportCamera.setRenderHeight(glControl1.Height);
+                Camera.viewportCamera.setRenderWidth(glControl1.Width);
                 Camera.viewportCamera.Update();
             }
         }

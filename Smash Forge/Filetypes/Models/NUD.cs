@@ -178,6 +178,34 @@ namespace Smash_Forge
             }
         }
 
+        public void GenerateBoundingBoxes()
+        {
+            Vector3 max = new Vector3(-9999);
+            Vector3 min = new Vector3(9999);
+
+            foreach (Mesh m in mesh)
+            {
+                m.generateBoundingBox();
+                max.X = Math.Max(max.X, m.bbox[0] + m.bbox[3]);
+                max.Y = Math.Max(max.Y, m.bbox[1] + m.bbox[3]);
+                max.Z = Math.Max(max.Z, m.bbox[2] + m.bbox[3]);
+
+                min.X = Math.Min(min.X, m.bbox[0] - m.bbox[3]);
+                min.Y = Math.Min(min.Y, m.bbox[1] - m.bbox[3]);
+                min.Z = Math.Min(min.Z, m.bbox[2] - m.bbox[3]);
+            }
+
+            param[0] = (max.X + min.X) / 2;
+            param[1] = (max.Y + min.Y) / 2;
+            param[2] = (max.Z + min.Z) / 2;
+
+            Vector3 maxdix = Vector3.Zero;
+            Vector3 cen = new Vector3(param[0], param[1], param[2]);
+            foreach (Mesh m in mesh)
+                if ((cen - new Vector3(m.bbox[0], m.bbox[1], m.bbox[2])).Length > maxdix.Length) maxdix = (cen - new Vector3(m.bbox[0], m.bbox[1], m.bbox[2]));
+            param[3] = maxdix.Length;
+        }
+
         public void SetPropertiesFromXMB(XMBFile xmb)
         {
             if (xmb != null)
@@ -1367,6 +1395,8 @@ namespace Smash_Forge
             FileOutput d = new FileOutput(); // data
             d.Endian = Endianness.Big;
 
+            GenerateBoundingBoxes();
+
             // mesh optimize
 
             d.writeString("NDP3");
@@ -2398,6 +2428,42 @@ namespace Smash_Forge
                     Nodes.Add(new Polygon());
 
                 ((Polygon)Nodes[0]).AddVertex(v);
+            }
+
+            public void generateBoundingBox()
+            {
+                Vector3 max = new Vector3(-9999);
+                Vector3 min = new Vector3(9999);
+
+                foreach (Polygon p in Nodes)
+                {
+                    foreach(Vertex v in p.vertices)
+                    {
+                        max.X = Math.Max(max.X, v.pos.X);
+                        max.Y = Math.Max(max.Y, v.pos.Y);
+                        max.Z = Math.Max(max.Z, v.pos.Z);
+
+                        min.X = Math.Min(min.X, v.pos.X);
+                        min.Y = Math.Min(min.Y, v.pos.Y);
+                        min.Z = Math.Min(min.Z, v.pos.Z);
+                    }
+                }
+
+                bbox[0] = (max.X + min.X) / 2;
+                bbox[1] = (max.Y + min.Y) / 2;
+                bbox[2] = (max.Z + min.Z) / 2;
+                bbox[3] = (max - min).Length/2;
+                bbox[4] = bbox[0];
+                bbox[5] = bbox[1];
+                bbox[6] = bbox[2];
+                bbox[7] = 0;
+
+                Vector3 maxdix = Vector3.Zero;
+                Vector3 cen = new Vector3(bbox[0], bbox[1], bbox[2]);
+                foreach (Polygon p in Nodes)
+                    foreach (Vertex v in p.vertices)
+                        if ((cen - v.pos).Length > maxdix.Length) maxdix = (cen - v.pos);
+                bbox[3] = maxdix.Length;
             }
         }
 
