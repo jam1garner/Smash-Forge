@@ -75,25 +75,6 @@ namespace Smash_Forge
                 foreach (TreeNode n in e.Node.Nodes) n.Checked = e.Node.Checked;
                 
             }
-            /*else if (e.Node.Tag is NUD.Polygon) {
-                ((NUD.Polygon)e.Node.Tag).isVisible = e.Node.Checked;
-            }
-            else if (e.Node.Tag is NUD){
-                foreach (NUD.Mesh mesh in ((NUD)e.Node.Tag).mesh)
-                {
-                    //mesh.isVisible = e.Node.Checked;
-                    //foreach(NUD.Polygon poly in mesh.polygons)
-                    //{
-                     //   poly.isVisible = e.Node.Checked;
-                   // }
-                }
-                foreach (TreeNode meshNode in e.Node.Nodes)
-                {
-                    meshNode.Checked = e.Node.Checked;
-                    foreach (TreeNode polyNode in meshNode.Nodes)
-                        polyNode.Checked = e.Node.Checked;
-                }
-            }*/
         }
 
         private void polySelected(NUD.Polygon poly, string name)
@@ -729,6 +710,10 @@ namespace Smash_Forge
                         try
                         {
                             MaterialXML.importMaterialAsXML(nud, filename);
+                        }
+                        catch (MaterialXML.ParamArrayLengthException ex)
+                        {
+                            MessageBox.Show(ex.errorMessage);
                         }
                         catch (Exception ex)
                         {

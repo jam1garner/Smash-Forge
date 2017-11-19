@@ -11,17 +11,25 @@ using System.Diagnostics;
 
 namespace Smash_Forge
 {
-    class MaterialXMLPolycountException : Exception
-    {
 
-    }
-
-    class MaterialXMLParamArrayLengthException : Exception
-    {
-    }
 
     class MaterialXML
     {
+        public class PolycountException : Exception
+        {
+
+        }
+
+        public class ParamArrayLengthException : Exception
+        {
+            public string errorMessage = "";
+
+            public ParamArrayLengthException(int polyID, string property)
+            {
+                errorMessage = String.Format("Polygon{0} does not contain 4 valid values for {1}.", polyID, property);
+            }
+        }
+
         public static void exportMaterialAsXML(NUD n, string filename)
         {
             XmlDocument doc = new XmlDocument();
@@ -203,27 +211,33 @@ namespace Smash_Forge
                                             string[] values = mnode.InnerText.Split(' ');
                                             List<float> v = new List<float>();
                                             float f = 0;
-                                            foreach (string s in values)
+
+                                            foreach (string stringValue in values)
                                             {
-                                                if (name == "NU_materialHash")
+                                                if (v.Count < 4)
                                                 {
-                                                    int hash;
-                                                    if (int.TryParse(s, NumberStyles.HexNumber, null, out hash))
+                                                    if (name == "NU_materialHash")
                                                     {
-                                                        f = BitConverter.ToSingle(BitConverter.GetBytes(hash), 0);
-                                                        v.Add(f);
+                                                        int hash;
+                                                        if (int.TryParse(stringValue, NumberStyles.HexNumber, null, out hash))
+                                                        {
+                                                            f = BitConverter.ToSingle(BitConverter.GetBytes(hash), 0);
+                                                            v.Add(f);
+                                                        }
                                                     }
-                                                }
-                                                else
-                                                    if (float.TryParse(s, out f)) v.Add(f);
-                                                else
-                                                    v.Add(0.0f);
+                                                    else if (float.TryParse(stringValue, out f))
+                                                        v.Add(f);
+                                                    else
+                                                        v.Add(0.0f);
+                                                }        
                                             }
 
                                             // array should always have 4 values                                           
-                                            // should do something more meaningful with this
                                             if (v.Count != 4)
-                                                throw new MaterialXMLParamArrayLengthException();
+                                            {
+                                                Debug.WriteLine(v.Count);
+                                                throw new ParamArrayLengthException(polynode.ChildNodes.Count, name);
+                                            }
 
                                             try
                                             {

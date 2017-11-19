@@ -552,7 +552,16 @@ namespace Smash_Forge
             if (values == null)
                 values = new float[] { default1, default2, default3, default4 };
             string uniformName = propertyName.Substring(3); // remove the NU_ from name
-            GL.Uniform4(shader.getAttribute(uniformName), values[0], values[1], values[2], values[3]);
+
+            try
+            {
+                GL.Uniform4(shader.getAttribute(uniformName), values[0], values[1], values[2], values[3]);
+            }
+            catch (System.IndexOutOfRangeException)
+            {
+                // something went wrong reading mat data somewhere...
+                // some other part of the code will probably also fail
+            }
         }
 
         public void MakeMetal(int newDiffuseID, bool preserveDiffuse, bool useNormalMap, float[] minGain, float[] refColor, float[] fresParams, float[] fresColor)
@@ -1090,14 +1099,28 @@ namespace Smash_Forge
 
                     int pos = d.pos();
                     int c = d.readInt();
+                    Debug.WriteLine(c);
                     d.skip(4);
-                    float[] f = new float[c];
+                    float[] values = new float[c];
                     for (int i = 0; i < c; i++)
                     {
-                        f[i] = d.readFloat();
+                        values[i] = d.readFloat();
                     }
 
-                    m.entries.Add(name, f);
+                    // material properties should always have 4 values
+                    if (values.Length < 4)
+                    {
+                        float[] newValues = { 0, 0, 0, 0 };
+                        for (int i = 0; i < values.Length; i++)
+                        {
+                            // fill in existing values and use 0 for remaining values
+                            newValues[i] = values[i];
+                        }
+
+                        m.entries.Add(name, newValues);
+                    }
+                    else
+                        m.entries.Add(name, values);
 
                     d.seek(pos);
 
