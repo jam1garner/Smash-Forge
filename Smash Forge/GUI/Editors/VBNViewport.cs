@@ -68,7 +68,10 @@ namespace Smash_Forge
                 GL.Viewport(glControl1.ClientRectangle);
 
                 Camera.viewportCamera.Update();
+                Camera.viewportCamera.setRenderWidth(glControl1.Width);
+                Camera.viewportCamera.setRenderHeight(glControl1.Height);
             }
+
         }
 
         #region Members
@@ -1153,7 +1156,7 @@ namespace Smash_Forge
                     foreach (NUD.Mesh mesh in m.nud.mesh)
                     {
                         if (mesh.Checked)
-                            RenderTools.drawCubeWireframe(new Vector3(mesh.bbox[0], mesh.bbox[1], mesh.bbox[2]), mesh.bbox[3]);
+                            RenderTools.drawCubeWireframe(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3]);
                     }
                 }
             }
