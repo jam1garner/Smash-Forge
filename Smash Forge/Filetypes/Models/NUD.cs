@@ -255,7 +255,7 @@ namespace Smash_Forge
             List<Polygon> opaque = new List<Polygon>();
             List<Polygon> trans = new List<Polygon>();
 
-            foreach (Mesh m in meshes)
+            foreach (Mesh m in depthSortedMeshes)
             {
                 Debug.WriteLine(m.boundingBox[2]);
                 for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
