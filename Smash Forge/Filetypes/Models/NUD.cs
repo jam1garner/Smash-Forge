@@ -196,13 +196,13 @@ namespace Smash_Forge
             foreach (Mesh m in mesh)
             {
                 m.generateBoundingBox();
-                max.X = Math.Max(max.X, m.bbox[0] + m.bbox[3]);
-                max.Y = Math.Max(max.Y, m.bbox[1] + m.bbox[3]);
-                max.Z = Math.Max(max.Z, m.bbox[2] + m.bbox[3]);
+                max.X = Math.Max(max.X, m.boundingBox[0] + m.boundingBox[3]);
+                max.Y = Math.Max(max.Y, m.boundingBox[1] + m.boundingBox[3]);
+                max.Z = Math.Max(max.Z, m.boundingBox[2] + m.boundingBox[3]);
 
-                min.X = Math.Min(min.X, m.bbox[0] - m.bbox[3]);
-                min.Y = Math.Min(min.Y, m.bbox[1] - m.bbox[3]);
-                min.Z = Math.Min(min.Z, m.bbox[2] - m.bbox[3]);
+                min.X = Math.Min(min.X, m.boundingBox[0] - m.boundingBox[3]);
+                min.Y = Math.Min(min.Y, m.boundingBox[1] - m.boundingBox[3]);
+                min.Z = Math.Min(min.Z, m.boundingBox[2] - m.boundingBox[3]);
             }
 
             param[0] = (max.X + min.X) / 2;
@@ -212,7 +212,7 @@ namespace Smash_Forge
             Vector3 maxdix = Vector3.Zero;
             Vector3 cen = new Vector3(param[0], param[1], param[2]);
             foreach (Mesh m in mesh)
-                if ((cen - new Vector3(m.bbox[0], m.bbox[1], m.bbox[2])).Length > maxdix.Length) maxdix = (cen - new Vector3(m.bbox[0], m.bbox[1], m.bbox[2]));
+                if ((cen - new Vector3(m.boundingBox[0], m.boundingBox[1], m.boundingBox[2])).Length > maxdix.Length) maxdix = (cen - new Vector3(m.boundingBox[0], m.boundingBox[1], m.boundingBox[2]));
             param[3] = maxdix.Length;
         }
 
@@ -2463,21 +2463,21 @@ namespace Smash_Forge
                     }
                 }
 
-                bbox[0] = (max.X + min.X) / 2;
-                bbox[1] = (max.Y + min.Y) / 2;
-                bbox[2] = (max.Z + min.Z) / 2;
-                bbox[3] = (max - min).Length/2;
-                bbox[4] = bbox[0];
-                bbox[5] = bbox[1];
-                bbox[6] = bbox[2];
-                bbox[7] = 0;
+                boundingBox[0] = (max.X + min.X) / 2;
+                boundingBox[1] = (max.Y + min.Y) / 2;
+                boundingBox[2] = (max.Z + min.Z) / 2;
+                boundingBox[3] = (max - min).Length/2;
+                boundingBox[4] = boundingBox[0];
+                boundingBox[5] = boundingBox[1];
+                boundingBox[6] = boundingBox[2];
+                boundingBox[7] = 0;
 
                 Vector3 maxdix = Vector3.Zero;
-                Vector3 cen = new Vector3(bbox[0], bbox[1], bbox[2]);
+                Vector3 cen = new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]);
                 foreach (Polygon p in Nodes)
                     foreach (Vertex v in p.vertices)
                         if ((cen - v.pos).Length > maxdix.Length) maxdix = (cen - v.pos);
-                bbox[3] = maxdix.Length;
+                boundingBox[3] = maxdix.Length;
             }
         }
 
