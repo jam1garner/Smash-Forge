@@ -67,18 +67,12 @@ namespace Smash_Forge
                 GL.LoadIdentity();
                 GL.Viewport(glControl1.ClientRectangle);
 
-                mvpMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width, -height, zoom) * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 500.0f);
+                Camera.viewportCamera.Update();
             }
         }
 
         #region Members
-        Matrix4 mvpMatrix, vi;
-        public float cameraYRotation = 0;
         public float x = 0;
-        public float cameraXRotation = 0;
-        public float height = 10.0f; // camera y position
-        public float width = 0; // camera x position
-        public float zoom = -80f; // camera z position
         public float nzoom = 0;
         public GUI.Menus.CameraPosition cameraPosForm = null;
         float mouseXLast = 0;
@@ -391,8 +385,7 @@ namespace Smash_Forge
             int w = Width;
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
-            mvpMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width, -height, zoom)
-                * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
+            Camera.viewportCamera.Update();
 
             SetupFrameBuffersRenderBuffers();
 
@@ -533,12 +526,12 @@ namespace Smash_Forge
         public void CalculateLightSource()
         {   
             Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, Runtime.renderDepth, out lightProjection);
-            Matrix4 lightView = Matrix4.LookAt(Vector3.Transform(Vector3.Zero, mvpMatrix).Normalized(),
+            Matrix4 lightView = Matrix4.LookAt(Vector3.Transform(Vector3.Zero, Camera.viewportCamera.getMVPMatrix()).Normalized(),
                 new Vector3(0),
                 new Vector3(0, 1, 0));
             lightMatrix = lightProjection * lightView;
-            lightMatrix = Matrix4.CreateTranslation(width, -height, zoom)
-                * lightProjection * Matrix4.CreateRotationY(Lights.diffuseLight.rotY) * Matrix4.CreateRotationX(Lights.diffuseLight.rotX);
+            //lightMatrix = Matrix4.CreateTranslation(width, -height, zoom)
+              //  * lightProjection * Matrix4.CreateRotationY(Lights.diffuseLight.rotY) * Matrix4.CreateRotationX(Lights.diffuseLight.rotX);
         }
 
         public void Render()
@@ -582,8 +575,9 @@ namespace Smash_Forge
             mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
             SetCameraAnimation();
 
+            Matrix4 matrix = Camera.viewportCamera.getMVPMatrix();
             GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadMatrix(ref mvpMatrix);
+            GL.LoadMatrix(ref matrix);
 
             if (Runtime.renderFloor)
                 RenderTools.drawFloor();
@@ -721,13 +715,14 @@ namespace Smash_Forge
             {
                 if (c.nud != null)
                 {
-                    c.nud.RenderShadow(lightMatrix, mvpMatrix, modelMatrix);
+                    c.nud.RenderShadow(lightMatrix, Camera.viewportCamera.getMVPMatrix(), modelMatrix);
                 }
             }
-            
+
+            Matrix4 matrix = Camera.viewportCamera.getMVPMatrix();
             // reset matrices and viewport for model rendering again
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.LoadMatrix(ref mvpMatrix);
+            GL.LoadMatrix(ref matrix);
             GL.Viewport(glControl1.ClientRectangle); 
         }
 
@@ -803,38 +798,7 @@ namespace Smash_Forge
 
         public void UpdateMousePosition()
         {
-            float zoomMultiplier = Runtime.zoomModifierScale; // convert zoomSpeed to in game stprm zoom speed. still not exact
-            float mouseTranslateSpeed = 0.050f;
-            float scrollWheelZoomSpeed = 1.75f;
-            float shiftZoomMultiplier = 2.5f;
-            float zoomscale = Runtime.zoomspeed * zoomMultiplier;
-
-            if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
-            {
-                height += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                width += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-            }
-            if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
-            {
-                cameraYRotation += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                cameraXRotation += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-            }
-
-            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
-                zoomscale *= shiftZoomMultiplier;
-
-            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Down))
-                zoom -= 1 * zoomscale;
-            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Up))
-                zoom += 1 * zoomscale;
-
-            mouseXLast = OpenTK.Input.Mouse.GetState().X;
-            mouseYLast = OpenTK.Input.Mouse.GetState().Y;
-
-            zoom += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale * scrollWheelZoomSpeed;
-
-            mvpMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(width,-height,zoom) 
-                * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
+            Camera.viewportCamera.Update();
         }
 
         public bool IsMouseOverViewport()
@@ -852,8 +816,7 @@ namespace Smash_Forge
                 if (cf >= Runtime.TargetPath.Frames.Count)
                     cf = 0;
                 pathFrame f = Runtime.TargetPath.Frames[cf];
-                mvpMatrix = (Matrix4.CreateTranslation(f.x, f.y, f.z) * Matrix4.CreateFromQuaternion(new Quaternion(f.qx, f.qy, f.qz, f.qw))).Inverted() 
-                    * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 90000.0f);
+                Camera.viewportCamera.Update();
                 cf++;
             }
             else if (Runtime.TargetCMR0 != null && checkBox1.Checked)
@@ -861,8 +824,7 @@ namespace Smash_Forge
                 if (cf >= Runtime.TargetCMR0.frames.Count)
                     cf = 0;
                 Matrix4 m = Runtime.TargetCMR0.frames[cf].Inverted();
-                mvpMatrix = Matrix4.CreateTranslation(m.M14, m.M24, m.M34) * Matrix4.CreateFromQuaternion(m.ExtractRotation()) 
-                    * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, 90000.0f);
+                Camera.viewportCamera.Update();
                 cf++;
             }
         }
@@ -886,7 +848,7 @@ namespace Smash_Forge
 
             if (Runtime.cameraLight)
             {
-                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(new Vector3(0f, 0f, -1f), mvpMatrix.Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(new Vector3(0f, 0f, -1f), Camera.viewportCamera.getMVPMatrix().Inverted()).Normalized());
             }
             else
             {
@@ -930,21 +892,22 @@ namespace Smash_Forge
                 {
                     if (m.bch.mbn != null && Runtime.shaders["MBN"].shadersCompiledSuccessfully())
                     {
-                        m.bch.mbn.Render(mvpMatrix);                      
+                        m.bch.mbn.Render(Camera.viewportCamera.getMVPMatrix());                      
                     }
                 }
 
                 if (m.dat_melee != null && Runtime.shaders["DAT"].shadersCompiledSuccessfully())
                 {
-                    m.dat_melee.Render(mvpMatrix);
+                    m.dat_melee.Render(Camera.viewportCamera.getMVPMatrix());
                 }
 
                 if (m.nud != null && Runtime.shaders["NUD"].shadersCompiledSuccessfully())
                 {
+                    Matrix4 matrix = Camera.viewportCamera.getMVPMatrix();
                     GL.ActiveTexture(TextureUnit.Texture2);
                     GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
                     GL.Uniform1(shader.getAttribute("cmap"), 2);
-                    GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
+                    GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref matrix);
                    
                     GL.ActiveTexture(TextureUnit.Texture11);
                     GL.BindTexture(TextureTarget.Texture2D, depthmap);
@@ -1043,16 +1006,16 @@ namespace Smash_Forge
 
                     if (Runtime.cameraLight) // camera light should only affects character lighting
                     {
-                        GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
-                        GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
-                        GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, mvpMatrix.Inverted()).Normalized());
-                        GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, mvpMatrix));
+                        GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, Camera.viewportCamera.getMVPMatrix().Inverted()).Normalized());
+                        GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, Camera.viewportCamera.getMVPMatrix().Inverted()).Normalized());
+                        GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, Camera.viewportCamera.getMVPMatrix().Inverted()).Normalized());
+                        GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, Camera.viewportCamera.getMVPMatrix()));
                     }
                     else
                     {
                         GL.Uniform3(shader.getAttribute("specLightDirection"), Lights.specularLight.direction);
                         GL.Uniform3(shader.getAttribute("difLightDirection"), Lights.diffuseLight.direction);
-                        GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, mvpMatrix));
+                        GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, Camera.viewportCamera.getMVPMatrix()));
                         GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
                     }
 
@@ -2139,15 +2102,7 @@ namespace Smash_Forge
 
         private void button1_Click(object sender, EventArgs e)
         {
-            cameraYRotation = 0;
-            cameraXRotation = 0;
-            height = 10;
-            width = 0;
-            zoom = -80;
-            nzoom = 0;
-            mouseXLast = 0;
-            mouseYLast = 0;
-            mouseSLast = 0;
+            Camera.viewportCamera.setPosition(new Vector3(0, 10, -80));
             UpdateMousePosition();
             UpdateCameraPositionControl();
         }
@@ -2295,8 +2250,8 @@ namespace Smash_Forge
 
             float x = (2.0f * mouse_x) / glControl1.Width - 1.0f;
             float y = 1.0f - (2.0f * mouse_y) / glControl1.Height;
-            Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), mvpMatrix.Inverted());
-            Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), mvpMatrix.Inverted());
+            Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), Camera.viewportCamera.getMVPMatrix().Inverted());
+            Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), Camera.viewportCamera.getMVPMatrix().Inverted());
 
             p1 = va.Xyz;
             p2 = p1 - (va - (va + vb)).Xyz * 100;
@@ -2389,8 +2344,8 @@ namespace Smash_Forge
 
                 float x = (2.0f * mouse_x) / glControl1.Width - 1.0f;
                 float y = 1.0f - (2.0f * mouse_y) / glControl1.Height;
-                Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), mvpMatrix.Inverted());
-                Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), mvpMatrix.Inverted());
+                Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), Camera.viewportCamera.getMVPMatrix().Inverted());
+                Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), Camera.viewportCamera.getMVPMatrix().Inverted());
 
                 p1 = va.Xyz;
                 p2 = p1 - (va - (va + vb)).Xyz * 100;
@@ -2411,6 +2366,13 @@ namespace Smash_Forge
 
         public void FPSCamera()
         {
+            float cameraYRotation = 0;
+            float cameraXRotation = 0;
+            float width = 0;
+            float zoom = 0;
+            float height = 0;
+
+
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.A))
                 width += 1.0f;
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.D))
@@ -2426,8 +2388,7 @@ namespace Smash_Forge
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
-            mvpMatrix = Matrix4.CreateTranslation(width,-height,zoom) * Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) 
-                * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, glControl1.Width / (float)glControl1.Height, 1.0f, Runtime.renderDepth);
+            Camera.viewportCamera.Update();
             modelMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
         }
 

@@ -8,21 +8,23 @@ using SALT.PARAMS;
 
 namespace Smash_Forge
 {
-    class Camera
+    public class Camera
     {
-        // should help eliminate some redundant code once this class is more functional
-        private Vector3 position = new Vector3(0, -10, -30);
+        public static Camera viewportCamera = new Camera();
+
+        private Vector3 position = new Vector3(0, 10, -80);
         private float cameraXRotation = 0;
         private float cameraYRotation = 0;
         private int renderWidth = 1;
         private int renderHeight = 1;
         private float farClipPlane = 10000;
+        public float fov = 0.524f;
+
         private Matrix4 modelViewMatrix = Matrix4.Identity;
         private Matrix4 mvpMatrix = Matrix4.Identity;
         private Matrix4 projectionMatrix = Matrix4.Identity;
 
-        // probably shouldn't be hard coded
-        private float zoomMultiplier = Runtime.zoomModifierScale; // convert zoomSpeed to in game stprm zoom speed. still not exact
+        private float zoomMultiplier = Runtime.zoomModifierScale; 
         private float zoomSpeed = Runtime.zoomspeed;
         private float mouseTranslateSpeed = 0.050f;
         private float scrollWheelZoomSpeed = 1.75f;
@@ -30,14 +32,12 @@ namespace Smash_Forge
         public float mouseSLast, mouseYLast, mouseXLast;
 
         public Camera()
-        {
-            TrackMouse();
-            // this breaks everything for some reason
+        { 
+
         }
 
         public Camera(Vector3 position, float rotX, float rotY, int renderWidth, int renderHeight)
         {
-            //TrackMouse();
             this.position = position;
             this.renderHeight = renderHeight;
             this.renderWidth = renderWidth;
@@ -80,6 +80,26 @@ namespace Smash_Forge
             renderHeight = height;
         }
 
+        public float getRotX()
+        {
+            return cameraXRotation;
+        }
+
+        public float getRotY()
+        {
+            return cameraYRotation;
+        }
+
+        public void setRotX(float angle)
+        {
+            cameraXRotation = angle;
+        }
+
+        public void setRotY(float angle)
+        {
+            cameraYRotation = angle;
+        }
+
         public void Update()
         {
             // left click drag to rotate. right click drag to pan
@@ -114,16 +134,24 @@ namespace Smash_Forge
             UpdateMatrices();
         }
 
+        public void setPosition(Vector3 newPosition)
+        {
+            this.position = newPosition;
+        }
+
         private void UpdateMatrices()
         {
+            Matrix4 translation = Matrix4.CreateTranslation(position.X, -position.Y, position.Z);
+            Matrix4 rotation = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation);
+            Matrix4 perspFOV = Matrix4.CreatePerspectiveFieldOfView(fov, renderWidth / (float)renderHeight, 1.0f, farClipPlane);
+
             // need to fix these
-            modelViewMatrix = Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, (float)renderWidth / (float)renderHeight,
+            modelViewMatrix = Matrix4.CreatePerspectiveFieldOfView(fov, renderWidth / (float)renderHeight,
                 1.0f, Runtime.renderDepth) * Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation);
 
-            projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, (float)renderWidth / (float)renderHeight,
+            projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(fov, renderWidth / (float)renderHeight,
                 1.0f, Runtime.renderDepth);
-            mvpMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(position.X, -position.Y, position.Z)
-                * Matrix4.CreatePerspectiveFieldOfView(Runtime.fov, renderWidth / (float)renderHeight, 1.0f, farClipPlane);
+            mvpMatrix = rotation * translation * perspFOV;
         }
 
         public void TrackMouse()

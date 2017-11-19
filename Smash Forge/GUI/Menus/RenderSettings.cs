@@ -60,7 +60,7 @@ namespace Smash_Forge.GUI
             renderFogCB.Checked = Runtime.renderFog;
 
             depthSlider.Value = Math.Min((int)Runtime.renderDepth, depthSlider.Maximum);
-            fovSlider.Value = (int)(Runtime.fov * 180.0f / Math.PI);
+            fovSlider.Value = (int)(Camera.viewportCamera.fov * 180.0f / Math.PI);
             fovLabel.Text = "FOV (Degrees): " + fovSlider.Value;
 
             cameraLightCB.Checked = Runtime.cameraLight;
@@ -256,7 +256,7 @@ namespace Smash_Forge.GUI
 
         private void fovSlider_Scroll(object sender, EventArgs e)
         {
-            Runtime.fov = fovSlider.Value * (float)Math.PI / 180.0f;
+            Camera.viewportCamera.fov = fovSlider.Value * (float)Math.PI / 180.0f;
         
             fovLabel.Text = "FOV (Degrees): " + fovSlider.Value;
         }

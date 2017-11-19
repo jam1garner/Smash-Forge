@@ -36,7 +36,6 @@ namespace Smash_Forge.GUI.Menus
             numericZoom.Minimum = Decimal.MinValue;
 
             this.parentViewport = parentViewport;
-            //this.TopMost = true;
         }
 
         private void CameraPosition_Load(object sender, EventArgs e)
@@ -46,26 +45,34 @@ namespace Smash_Forge.GUI.Menus
 
         private void buttonApply_Click(object sender, EventArgs e)
         {
-            parentViewport.cameraYRotation = Convert.ToSingle(numericHorizontalRadians.Value);
-            parentViewport.cameraXRotation = Convert.ToSingle(numericVerticalRadians.Value);
-            parentViewport.width = Convert.ToSingle(numericPositionX.Value);
-            parentViewport.height = Convert.ToSingle(numericPositionY.Value);
-            parentViewport.zoom = Convert.ToSingle(numericZoom.Value);
+         
+            float yRotation = Convert.ToSingle(numericHorizontalRadians.Value);
+            float xRotation = Convert.ToSingle(numericVerticalRadians.Value);
+            float width = Convert.ToSingle(numericPositionX.Value);
+            float height = Convert.ToSingle(numericPositionY.Value);
+            float zoom = Convert.ToSingle(numericZoom.Value);
+
+            Camera.viewportCamera.setPosition(new OpenTK.Vector3(width, height, zoom));
+            Camera.viewportCamera.setRotX(xRotation);
+            Camera.viewportCamera.setRotY(yRotation);
+            Camera.viewportCamera.Update();
             parentViewport.UpdateMousePosition();
         }
 
         // Updates text controls based on parentViewport's current camera position
         public void updatePosition()
         {
-            numericHorizontalRadians.Value = Convert.ToDecimal(parentViewport.cameraYRotation);
-            numericVerticalRadians.Value = Convert.ToDecimal(parentViewport.cameraXRotation);
-            numericPositionX.Value = Convert.ToDecimal(parentViewport.width);
-            numericPositionY.Value = Convert.ToDecimal(parentViewport.height);
-            numericZoom.Value = Convert.ToDecimal(parentViewport.zoom);
+            OpenTK.Vector3 pos = Camera.viewportCamera.getPosition();
+
+            numericHorizontalRadians.Value = Convert.ToDecimal(Camera.viewportCamera.getRotY());
+            numericVerticalRadians.Value = Convert.ToDecimal(Camera.viewportCamera.getRotX());
+            numericPositionX.Value = Convert.ToDecimal(pos.X);
+            numericPositionY.Value = Convert.ToDecimal(pos.Y);
+            numericZoom.Value = Convert.ToDecimal(pos.Z);
 
             // derived values
-            numericHorizontalDegrees.Value = Convert.ToDecimal(parentViewport.cameraYRotation * (180 / Math.PI));
-            numericVerticalDegrees.Value = Convert.ToDecimal(parentViewport.cameraXRotation * (180 / Math.PI));
+            numericHorizontalDegrees.Value = Convert.ToDecimal(Camera.viewportCamera.getRotY() * (180 / Math.PI));
+            numericVerticalDegrees.Value = Convert.ToDecimal(Camera.viewportCamera.getRotX() * (180 / Math.PI));
         }
 
         private void numericHorizontalDegrees_ValueChanged(object sender, EventArgs e)
