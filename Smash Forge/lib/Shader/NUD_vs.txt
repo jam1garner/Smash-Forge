@@ -32,6 +32,7 @@ uniform vec4 colorSampler3UV;
 uniform vec4 normalSamplerAUV;
 uniform mat4 mvpMatrix;
 uniform uint flags;
+uniform vec3 NSC;
 
 uniform float zScale;
 uniform vec4 zOffset;
@@ -78,12 +79,17 @@ void main()
 {
     vec4 objPos = vec4(vPosition.xyz, 1.0);
 
+
     ivec4 bi = ivec4(vBone);
 
     if(vBone.x != -1.0)
         objPos = skin(vPosition, bi);
     objectPosition = objPos.xyz;
+
+    objPos.xyz += NSC;
+
     objPos.z *= zScale;
+
     objPos = mvpMatrix * vec4(objPos.xyz, 1.0);
 
     gl_Position = objPos;

@@ -142,6 +142,8 @@ uniform sampler2D shadowMap;
 
 uniform int selectedBoneIndex;
 
+uniform vec3 NSC;
+
 uniform float elapsedTime;
 
 // Constants
