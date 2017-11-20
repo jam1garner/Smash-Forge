@@ -45,9 +45,26 @@ namespace Smash_Forge
             foreach (Mesh m in meshes)
             {
                 unsortedMeshes.Add(m);
-                //List<Order> SortedList = objListOrder.OrderBy(o => o.OrderDate).ToList();
+         
+                if(m.Text.Contains("SORTBIAS"))
+                {
+                    String sortBias = "";
+                    for (int i = m.Text.IndexOf("SORTBIAS") + 8; i < m.Text.Length; i++)
+                    {
+                        if (m.Text[i] != '_')
+                        {
+                            sortBias += m.Text[i];
+                        }
+                        else
+                            break;
+                    }
+                    int sortBiasValue = 0;
+                    int.TryParse(sortBias, out sortBiasValue);
+                    m.sortBias = sortBiasValue;
+                    Debug.WriteLine(m.sortBias);
+                }
             }
-            depthSortedMeshes = unsortedMeshes.OrderBy(o => o.boundingBox[2]).ToList();
+            depthSortedMeshes = unsortedMeshes.OrderBy(o => (o.boundingBox[2] - o.boundingBox[3] + o.sortBias)).ToList();
         }
 
         // gl buffer objects
@@ -68,6 +85,8 @@ namespace Smash_Forge
         // xmb stuff
         public int lightSetNumber = 0;
         public int directUVTime = 0;
+        public int drawRange = 0;
+        public int drawingOrder = 0;
         public bool useDirectUVTime = false;
         public string modelType = "";
 
@@ -230,15 +249,23 @@ namespace Smash_Forge
                         {
                             if (xmb.Values.Count >= value.FirstPropertyIndex)
                             {
-                                if (value.Name == "lightset")
+                                switch (value.Name)
                                 {
-                                    int.TryParse(xmb.Values[value.FirstPropertyIndex], out lightSetNumber);
-                                }
-
-                                if (value.Name == "directuvtime")
-                                {
-                                    useDirectUVTime = true;
-                                    int.TryParse(xmb.Values[value.FirstPropertyIndex], out directUVTime);
+                                    default:
+                                        break;
+                                    case "lightset":
+                                        int.TryParse(xmb.Values[value.FirstPropertyIndex], out lightSetNumber);
+                                        break;
+                                    case "directuvtime":
+                                        useDirectUVTime = true;
+                                        int.TryParse(xmb.Values[value.FirstPropertyIndex], out directUVTime);
+                                        break;
+                                    case "draw_range":
+                                        int.TryParse(xmb.Values[value.FirstPropertyIndex], out drawRange);
+                                        break;
+                                    case "drawing_order":
+                                        int.TryParse(xmb.Values[value.FirstPropertyIndex], out drawingOrder);
+                                        break;
                                 }
                             }
                         }
@@ -257,7 +284,6 @@ namespace Smash_Forge
 
             foreach (Mesh m in depthSortedMeshes)
             {
-                Debug.WriteLine(m.boundingBox[2]);
                 for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
                 {
                     Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - pol];
@@ -1155,7 +1181,6 @@ namespace Smash_Forge
 
                     int pos = d.pos();
                     int c = d.readInt();
-                    Debug.WriteLine(c);
                     d.skip(4);
                     float[] values = new float[c];
                     for (int i = 0; i < c; i++)
@@ -2422,9 +2447,9 @@ namespace Smash_Forge
         // but you can just use the mesh class without polygons
         public class Mesh : TreeNode
         {
-            //public List<Polygon> polygons = new List<Polygon>();
             public int boneflag = 4; // 0 not rigged 4 rigged 8 singlebind
             public short singlebind = -1;
+            public int sortBias = 0;
             
             public float[] boundingBox = new float[8];
 
