@@ -346,7 +346,6 @@ namespace Smash_Forge
                 GL.Uniform3(shader.getAttribute("NSC"), Vector3.Zero);
             }
 
-
             GL.Uniform1(shader.getAttribute("flags"), mat.flags);
             GL.Uniform1(shader.getAttribute("isTransparent"), p.isTransparent ? 1 : 0);
             GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
@@ -440,7 +439,9 @@ namespace Smash_Forge
             GL.VertexAttribPointer(shader.getAttribute("vBiTangent"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 36);
             GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 48);
             GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 56);
-            GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 72);
+            //GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 72);
+            GL.VertexAttribIPointer(shader.getAttribute("vBone"), 4, VertexAttribIntegerType.Int, dVertex.Size, new IntPtr(72));
+
             GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 88);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
@@ -2519,7 +2520,7 @@ namespace Smash_Forge
             foreach (Mesh mesh in meshes)
             {
                 MBN.Mesh nmesh = new MBN.Mesh();
-
+                
                 int pi = 0;
                 int fadd = vertBank.Count;
                 nmesh.nodeList = new List<List<int>>();

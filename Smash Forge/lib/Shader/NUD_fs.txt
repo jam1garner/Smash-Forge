@@ -10,8 +10,7 @@ in vec4 vertexColor;
 in vec3 normal;
 in vec3 tangent;
 in vec3 bitangent;
-in vec4 vBoneOut;
-in vec4 vWeightOut;
+in vec3 boneDisplay;
 in vec4 viewNormals;
 
 out vec4 fragColor;
@@ -252,6 +251,11 @@ vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift) // probably not needed
 {
     vec3 shiftedT = tangent + shift * normal;
     return normalize(shiftedT);
+}
+
+vec3 BoneWeightDisplay()
+{
+    return boneDisplay.rgb;
 }
 
 vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, float xComponent, float yComponent)
@@ -541,6 +545,7 @@ vec3 SmashShader(vec4 diffuseMap, float aoMap, vec3 N){
     // undo gamma correction. gamma correction done within render passes
     resultingColor = pow(resultingColor, vec3(1 / gamma));
 
+    resultingColor = BoneWeightDisplay();
     return resultingColor;
 }
 

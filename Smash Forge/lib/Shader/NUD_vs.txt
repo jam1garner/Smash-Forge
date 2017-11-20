@@ -22,9 +22,8 @@ out vec2 normaltexcoord;
 
 out vec3 normal;
 out vec3 fragpos;
-out vec4 vBoneOut;
-out vec4 vWeightOut;
 out vec4 viewNormals;
+out vec3 boneDisplay;
 
 uniform vec4 colorSamplerUV;
 uniform vec4 colorSampler2UV;
@@ -39,6 +38,7 @@ uniform vec4 zOffset;
 
 uniform float elapsedTime;
 uniform int useDirectUVTime;
+uniform int selectedBoneIndex;
 
 
 uniform bones
@@ -50,6 +50,21 @@ uniform int renderType;
 
 vec4 skin(vec3 po, ivec4 index);
 vec3 skinNRM(vec3 po, ivec4 index);
+
+vec3 BoneWeightDisplay()
+{
+    vec3 result = vec3(0);
+    if (selectedBoneIndex == vBone.x)
+        result += vWeight.x;
+    if (selectedBoneIndex == vBone.y)
+        result += vWeight.y;
+    if (selectedBoneIndex == vBone.z)
+        result += vWeight.z;
+    if (selectedBoneIndex == vBone.w)
+        result += vWeight.w;
+
+    return result;
+}
 
 vec4 skin(vec3 po, ivec4 index)
 {
@@ -83,7 +98,7 @@ void main()
     ivec4 bi = ivec4(vBone);
 
     if(vBone.x != -1.0)
-        objPos = skin(vPosition, bi);
+       objPos = skin(vPosition, bi);
     objectPosition = objPos.xyz;
 
     objPos.xyz += NSC;
@@ -116,8 +131,9 @@ void main()
 	viewNormals = matrixThing * viewNormals;
 
 
-	vBoneOut = vBone;
-	vWeightOut = vWeight;
+    boneDisplay = BoneWeightDisplay();
+
+
 
     vertexColor = vColor;
 
@@ -127,6 +143,6 @@ void main()
 	if(vBone.x != -1.0)
 		normal = normalize((skinNRM(vNormal.xyz, bi)).xyz) ; //  * -1 * mat3(mvpMatrix)
 	else
-		normal = vNormal ;
+		normal = vNormal;
 
 }

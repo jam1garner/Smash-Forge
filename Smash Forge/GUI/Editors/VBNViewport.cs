@@ -373,7 +373,6 @@ namespace Smash_Forge
 
         private void SetupViewPort()
         {
-        
             if (shader != null)
                 GL.DeleteShader(shader.programID);
 
