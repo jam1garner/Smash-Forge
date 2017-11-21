@@ -297,14 +297,12 @@ namespace Smash_Forge
                 Matrix4 matrix = Camera.viewportCamera.getMVPMatrix();
                 GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref matrix);
 
-                if (m.billboardY)
+                /*if (m.billboardY)
                 {
                     matrix = Camera.viewportCamera.getBillboardYMatrix();
                     GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref matrix);
-                }
+                }*/
                 
-
-
                 for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
                 {
                     Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - pol];

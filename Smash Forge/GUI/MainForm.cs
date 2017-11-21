@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using WeifenLuo.WinFormsUI.Docking;
+using System.Linq;
 using OpenTK;
 using System.Data;
 using Octokit;
@@ -488,6 +489,9 @@ namespace Smash_Forge
             }
 
             Runtime.ModelContainers.Add(model);
+            List<ModelContainer> sortedModelContainers = Runtime.ModelContainers.OrderBy(o => (o.nud.drawingOrder)).ToList();
+            Runtime.ModelContainers = sortedModelContainers;
+
             meshList.refresh();
             
             ModelNode n = new ModelNode();
