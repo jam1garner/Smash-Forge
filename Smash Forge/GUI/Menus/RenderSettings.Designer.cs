@@ -1330,7 +1330,9 @@
             "UV Test Pattern",
             "Tangents",
             "Bitangents",
-            "Light Set"});
+            "Light Set",
+            "Bone Weights",
+            "Bone Weights Color"});
             this.renderMode.Location = new System.Drawing.Point(87, 134);
             this.renderMode.Name = "renderMode";
             this.renderMode.Size = new System.Drawing.Size(190, 21);

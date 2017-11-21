@@ -296,7 +296,6 @@ namespace Smash_Forge
             }
 
             // then image materials and effects
-
             n.Optimize();
             n.PreRender();
         }

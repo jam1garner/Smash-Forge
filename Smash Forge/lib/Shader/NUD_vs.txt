@@ -8,6 +8,7 @@ in vec3 vBiTangent;
 in vec2 vUV;
 in vec4 vBone;
 in vec4 vWeight;
+in vec4 vBoneHash;
 
 out vec3 viewPosition;
 out vec3 objectPosition;
@@ -23,7 +24,7 @@ out vec2 normaltexcoord;
 out vec3 normal;
 out vec3 fragpos;
 out vec4 viewNormals;
-out vec3 boneDisplay;
+out float boneDisplay;
 
 uniform vec4 colorSamplerUV;
 uniform vec4 colorSampler2UV;
@@ -51,9 +52,9 @@ uniform int renderType;
 vec4 skin(vec3 po, ivec4 index);
 vec3 skinNRM(vec3 po, ivec4 index);
 
-vec3 BoneWeightDisplay()
+float BoneWeightDisplay()
 {
-    vec3 result = vec3(0);
+    float result = 0;
     if (selectedBoneIndex == vBone.x)
         result += vWeight.x;
     if (selectedBoneIndex == vBone.y)
@@ -93,20 +94,16 @@ vec3 skinNRM(vec3 nr, ivec4 index)
 void main()
 {
     vec4 objPos = vec4(vPosition.xyz, 1.0);
-
-
-    ivec4 bi = ivec4(vBone);
-
-    if(vBone.x != -1.0)
-       objPos = skin(vPosition, bi);
     objectPosition = objPos.xyz;
 
-    objPos.xyz += NSC;
+    // vertex skinning
+    if(vBone.x != -1.0)
+       objPos = skin(vPosition, ivec4(vBone));
 
+    objPos.xyz += NSC;
     objPos.z *= zScale;
 
     objPos = mvpMatrix * vec4(objPos.xyz, 1.0);
-
     gl_Position = objPos;
 
     if ((useDirectUVTime == 1) && (flags & 0x00001900u) == 0x00001900u)
@@ -125,24 +122,16 @@ void main()
     bitangent.xyz = vBiTangent.xyz;
     viewPosition = vec3(vPosition * mat3(mvpMatrix));
 
-    // calculate view space normals for sphere map rendering. animations don't change normals?
-    viewNormals = vec4(vNormal.xyz, 0);
-	mat4 matrixThing = transpose(inverse(mvpMatrix));
-	viewNormals = matrixThing * viewNormals;
+    // calculate view space normals for sphere map rendering
+	viewNormals = transpose(inverse(mvpMatrix)) * vec4(vNormal.xyz, 0);
 
-
+    // fragment shader stuff
     boneDisplay = BoneWeightDisplay();
-
-
-
     vertexColor = vColor;
-
-
 	fragpos = objPos.xyz;
 
 	if(vBone.x != -1.0)
-		normal = normalize((skinNRM(vNormal.xyz, bi)).xyz) ; //  * -1 * mat3(mvpMatrix)
+		normal = normalize((skinNRM(vNormal.xyz, ivec4(vBone))).xyz);
 	else
 		normal = vNormal;
-
 }

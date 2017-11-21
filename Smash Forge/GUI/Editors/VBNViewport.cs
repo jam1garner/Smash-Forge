@@ -2105,6 +2105,8 @@ namespace Smash_Forge
         private void button1_Click(object sender, EventArgs e)
         {
             Camera.viewportCamera.setPosition(new Vector3(0, 10, -80));
+            Camera.viewportCamera.setRotX(0);
+            Camera.viewportCamera.setRotY(0);
             UpdateMousePosition();
             UpdateCameraPositionControl();
         }

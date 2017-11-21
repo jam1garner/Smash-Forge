@@ -40,31 +40,6 @@ namespace Smash_Forge
         {
             Read(fname);
             PreRender();
-
-            List<Mesh> unsortedMeshes = new List<Mesh>();
-            foreach (Mesh m in meshes)
-            {
-                unsortedMeshes.Add(m);
-         
-                if(m.Text.Contains("SORTBIAS"))
-                {
-                    String sortBias = "";
-                    for (int i = m.Text.IndexOf("SORTBIAS") + 8; i < m.Text.Length; i++)
-                    {
-                        if (m.Text[i] != '_')
-                        {
-                            sortBias += m.Text[i];
-                        }
-                        else
-                            break;
-                    }
-                    int sortBiasValue = 0;
-                    int.TryParse(sortBias, out sortBiasValue);
-                    m.sortBias = sortBiasValue;
-                    Debug.WriteLine(m.sortBias);
-                }
-            }
-            depthSortedMeshes = unsortedMeshes.OrderBy(o => (o.boundingBox[2] - o.boundingBox[3] + o.sortBias)).ToList();
         }
 
         // gl buffer objects
@@ -123,6 +98,34 @@ namespace Smash_Forge
             DummyRamp =  0x10080000
         }
 
+        private void DepthSortMeshes()
+        {
+            List<Mesh> unsortedMeshes = new List<Mesh>();
+            foreach (Mesh m in meshes)
+            {
+                unsortedMeshes.Add(m);
+
+                if (m.Text.Contains("SORTBIAS"))
+                {
+                    String sortBias = "";
+                    for (int i = m.Text.IndexOf("SORTBIAS") + 8; i < m.Text.Length; i++)
+                    {
+                        if (m.Text[i] != '_')
+                        {
+                            sortBias += m.Text[i];
+                        }
+                        else
+                            break;
+                    }
+                    int sortBiasValue = 0;
+                    int.TryParse(sortBias, out sortBiasValue);
+                    m.sortBias = sortBiasValue;
+                }
+
+            }
+
+            depthSortedMeshes = unsortedMeshes.OrderBy(o => (o.boundingBox[2] - o.boundingBox[3] + o.sortBias)).ToList();
+        }
 
         public void PreRender()
         {
@@ -135,6 +138,8 @@ namespace Smash_Forge
                     p.PreRender();
                 }
             }
+
+            DepthSortMeshes();
         }
 
         public void Render(Matrix4 mvpMatrix, VBN vbn)
@@ -439,9 +444,7 @@ namespace Smash_Forge
             GL.VertexAttribPointer(shader.getAttribute("vBiTangent"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 36);
             GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 48);
             GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 56);
-            //GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 72);
             GL.VertexAttribIPointer(shader.getAttribute("vBone"), 4, VertexAttribIntegerType.Int, dVertex.Size, new IntPtr(72));
-
             GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 88);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
@@ -549,6 +552,9 @@ namespace Smash_Forge
             GL.ActiveTexture(TextureUnit.Texture10);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
             GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
+            GL.ActiveTexture(TextureUnit.Texture11);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient);
+            GL.Uniform1(shader.getAttribute("boneWeight"), 11);
 
             GL.Uniform1(shader.getAttribute("dif"), 0);
             GL.Uniform1(shader.getAttribute("dif2"), 0);

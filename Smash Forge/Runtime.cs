@@ -243,7 +243,8 @@ namespace Smash_Forge
             UVTestPattern = 8,
             Tangents = 9,
             Bitangents = 10,
-            LightSet = 11
+            LightSet = 11,
+            SelectedBoneWeights = 12
         }
 
         public enum FloorStyle
