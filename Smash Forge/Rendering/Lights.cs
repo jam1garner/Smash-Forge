@@ -212,6 +212,7 @@ namespace Smash_Forge
         public Vector3 direction = new Vector3(0f, 0f, 1f);
 
         public string name = "";
+        public bool enabled = true;
 
         public DirectionalLight(float difH, float difS, float difV, float ambH, float ambS, float ambV, float rotX, float rotY, float rotZ, string name)
         {
@@ -363,16 +364,17 @@ namespace Smash_Forge
                 // stage diffuse
                 for (int i = 0; i < stageDiffuseLightSet.Length; i++)
                 {
+                    bool enabled = (uint)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 1) == 1;
                     float hue = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 2);
                     float saturation = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 3);
                     float value = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 4);
 
-                    //Debug.WriteLine(hue + ", " + saturation + ", " + value);
                     float rotX = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 5);
                     float rotY = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 6);
                     float rotZ = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 7);
 
                     DirectionalLight light = new DirectionalLight(hue, saturation, value, 0, 0, 0, rotX, rotY, rotZ, "Stage " + i.ToString());
+                    light.enabled = enabled;
                     stageDiffuseLightSet[i] = light;
                 }
 
@@ -436,7 +438,6 @@ namespace Smash_Forge
                         {
                             AreaLight newAreaLight = CreateAreaLightFromXMBEntry(lightEntry);
                             areaLights.Add(newAreaLight);
-                            Debug.WriteLine("\n");
                         }
                     }
                 }
@@ -465,7 +466,6 @@ namespace Smash_Forge
                 string expression = entry.Expressions[i];
 
                 string[] sections = expression.Split('=');
-                Debug.WriteLine(sections[0]);
                 string name = sections[0];
                 string[] values = sections[1].Split(',');
 
@@ -478,7 +478,6 @@ namespace Smash_Forge
                     float.TryParse(values[0], out posX);
                     float.TryParse(values[1], out posY);
                     float.TryParse(values[2], out posZ);
-                    Debug.WriteLine("position:" + posX + "," + posY + "," + posZ);
 
                 }
                 if (name.Contains("scale"))
@@ -486,7 +485,6 @@ namespace Smash_Forge
                     float.TryParse(values[0], out scaleX);
                     float.TryParse(values[1], out scaleY);
                     float.TryParse(values[2], out scaleZ);
-                    Debug.WriteLine("scale:" + scaleX + "," + scaleY + "," + scaleZ);
                 }
                 if (name.Contains("col_ground"))
                 {

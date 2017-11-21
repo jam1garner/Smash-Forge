@@ -100,11 +100,8 @@ namespace Smash_Forge
 
         private void DepthSortMeshes()
         {
-            List<Mesh> unsortedMeshes = new List<Mesh>();
             foreach (Mesh m in meshes)
             {
-                unsortedMeshes.Add(m);
-
                 if (m.Text.Contains("SORTBIAS"))
                 {
                     String sortBias = "";
@@ -122,9 +119,17 @@ namespace Smash_Forge
                     m.sortBias = sortBiasValue;
                 }
 
+                if (m.Text.Contains("BILLBOARDYAXIS"))
+                {
+                    m.billboardY = true;
+                }
+                else if (m.Text.Contains("BILLBOARD"))
+                {
+                    m.billboard = true;
+                }
             }
 
-            depthSortedMeshes = unsortedMeshes.OrderBy(o => (o.boundingBox[2] - o.boundingBox[3] + o.sortBias)).ToList();
+            depthSortedMeshes = meshes.OrderBy(o => (o.boundingBox[2] - o.boundingBox[3] + o.sortBias)).ToList();
         }
 
         public void PreRender()
@@ -289,6 +294,17 @@ namespace Smash_Forge
 
             foreach (Mesh m in depthSortedMeshes)
             {
+                Matrix4 matrix = Camera.viewportCamera.getMVPMatrix();
+                GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref matrix);
+
+                if (m.billboardY)
+                {
+                    matrix = Camera.viewportCamera.getBillboardYMatrix();
+                    GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref matrix);
+                }
+                
+
+
                 for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
                 {
                     Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - pol];
@@ -2457,7 +2473,9 @@ namespace Smash_Forge
             public int boneflag = 4; // 0 not rigged 4 rigged 8 singlebind
             public short singlebind = -1;
             public int sortBias = 0;
-            
+            public bool billboardY = false;
+            public bool billboard = false;
+
             public float[] boundingBox = new float[8];
 
             public Mesh()

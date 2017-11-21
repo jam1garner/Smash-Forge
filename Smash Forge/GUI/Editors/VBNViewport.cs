@@ -905,11 +905,9 @@ namespace Smash_Forge
 
                 if (m.nud != null && Runtime.shaders["NUD"].shadersCompiledSuccessfully())
                 {
-                    Matrix4 matrix = Camera.viewportCamera.getMVPMatrix();
                     GL.ActiveTexture(TextureUnit.Texture2);
                     GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
                     GL.Uniform1(shader.getAttribute("cmap"), 2);
-                    GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref matrix);
                    
                     GL.ActiveTexture(TextureUnit.Texture11);
                     GL.BindTexture(TextureTarget.Texture2D, depthmap);
@@ -978,25 +976,25 @@ namespace Smash_Forge
                     // stage light 1
                     int index1 = 0 + (4 * m.nud.lightSetNumber);
                     Lights.stageLight1 = Lights.stageDiffuseLightSet[index1];
-                    GL.Uniform1(shader.getAttribute("renderStageLight1"), Runtime.renderStageLight1 ? 1 : 0);
+                    GL.Uniform1(shader.getAttribute("renderStageLight1"), Lights.stageDiffuseLightSet[index1].enabled ? 1 : 0);
                     GL.Uniform3(shader.getAttribute("stageLight1Color"), Lights.stageLight1.difR, Lights.stageLight1.difG, Lights.stageLight1.difB);
 
                     // stage light 2
                     int index2 = 1 + (4 * m.nud.lightSetNumber);
                     Lights.stageLight2 = Lights.stageDiffuseLightSet[index2];
-                    GL.Uniform1(shader.getAttribute("renderStageLight2"), Runtime.renderStageLight2 ? 1 : 0);
+                    GL.Uniform1(shader.getAttribute("renderStageLight2"), Lights.stageDiffuseLightSet[index2].enabled ? 1 : 0);
                     GL.Uniform3(shader.getAttribute("stageLight2Color"), Lights.stageLight2.difR, Lights.stageLight2.difG, Lights.stageLight2.difB);
 
                     // stage light 3
                     int index3 = 2 + (4 * m.nud.lightSetNumber);
                     Lights.stageLight3 = Lights.stageDiffuseLightSet[index3];
-                    GL.Uniform1(shader.getAttribute("renderStageLight3"), Runtime.renderStageLight3 ? 1 : 0);
+                    GL.Uniform1(shader.getAttribute("renderStageLight3"), Lights.stageDiffuseLightSet[index3].enabled ? 1 : 0);
                     GL.Uniform3(shader.getAttribute("stageLight3Color"), Lights.stageLight3.difR, Lights.stageLight3.difG, Lights.stageLight3.difB);
 
                     // stage light 4
                     int index4 = 3 + (4 * m.nud.lightSetNumber);
                     Lights.stageLight4 = Lights.stageDiffuseLightSet[index4];
-                    GL.Uniform1(shader.getAttribute("renderStageLight4"), Runtime.renderStageLight4 ? 1 : 0);
+                    GL.Uniform1(shader.getAttribute("renderStageLight4"), Lights.stageDiffuseLightSet[index4].enabled ? 1 : 0);
                     GL.Uniform3(shader.getAttribute("stageLight4Color"), Lights.stageLight4.difR, Lights.stageLight4.difG, Lights.stageLight4.difB);
 
                     // stage fog
