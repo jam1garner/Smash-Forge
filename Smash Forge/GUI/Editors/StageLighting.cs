@@ -71,6 +71,8 @@ namespace Smash_Forge.GUI.Editors
         private void InitializeCharLightListBox()
         {
             charLightsListBox.Items.Add(Lights.diffuseLight);
+            charLightsListBox.Items.Add(Lights.diffuseLight2);
+            charLightsListBox.Items.Add(Lights.diffuseLight3);
             charLightsListBox.Items.Add(Lights.fresnelLight);
         }
 
@@ -149,6 +151,7 @@ namespace Smash_Forge.GUI.Editors
             stageDifRotXTB.Text = selectedStageLight.rotX + "";
             stageDifRotYTB.Text = selectedStageLight.rotY + "";
             stageDifRotZTB.Text = selectedStageLight.rotZ + "";
+            renderStageLightCB.Checked = selectedStageLight.enabled;
         }
 
         private void lightSetLightListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -206,6 +209,11 @@ namespace Smash_Forge.GUI.Editors
         }
 
         #region stage color events
+
+        private void renderStageLightCB_CheckedChanged(object sender, EventArgs e)
+        {
+            selectedStageLight.enabled = renderStageLightCB.Checked;
+        }
 
         private void stageDifHueTB_TextChanged(object sender, EventArgs e)
         {
@@ -653,6 +661,11 @@ namespace Smash_Forge.GUI.Editors
                 areaCeilRedTB.BackColor = Color.Red;
 
             RenderAreaLightColor();
+
+            int newSliderValue = (int)(selectedAreaLight.skyR * areaCeilRedTrackBar.Maximum / 2.0f);
+            newSliderValue = Math.Min(newSliderValue, areaCeilRedTrackBar.Maximum);
+            newSliderValue = Math.Max(newSliderValue, 0);
+            areaCeilRedTrackBar.Value = newSliderValue;
         }
 
         private void areaCeilGreenTB_TextChanged(object sender, EventArgs e)
@@ -667,6 +680,11 @@ namespace Smash_Forge.GUI.Editors
                 areaCeilGreenTB.BackColor = Color.Red;
 
             RenderAreaLightColor();
+
+            int newSliderValue = (int)(selectedAreaLight.skyG * areaCeilGreenTrackBar.Maximum / 2.0f);
+            newSliderValue = Math.Min(newSliderValue, areaCeilGreenTrackBar.Maximum);
+            newSliderValue = Math.Max(newSliderValue, 0);
+            areaCeilGreenTrackBar.Value = newSliderValue;
         }
 
         private void areaCeilBlueTB_TextChanged(object sender, EventArgs e)
@@ -681,6 +699,11 @@ namespace Smash_Forge.GUI.Editors
                 areaCeilBlueTB.BackColor = Color.Red;
 
             RenderAreaLightColor();
+
+            int newSliderValue = (int)(selectedAreaLight.skyB * areaCeilBlueTrackBar.Maximum / 2.0f);
+            newSliderValue = Math.Min(newSliderValue, areaCeilBlueTrackBar.Maximum);
+            newSliderValue = Math.Max(newSliderValue, 0);
+            areaCeilBlueTrackBar.Value = newSliderValue;
         }
 
         private void areaGroundRedTB_TextChanged(object sender, EventArgs e)
@@ -695,6 +718,11 @@ namespace Smash_Forge.GUI.Editors
                 areaGroundRedTB.BackColor = Color.Red;
 
             RenderAreaLightColor();
+
+            int newSliderValue = (int)(selectedAreaLight.groundR * areaGroundRedTrackBar.Maximum / 2.0f);
+            newSliderValue = Math.Min(newSliderValue, areaGroundRedTrackBar.Maximum);
+            newSliderValue = Math.Max(newSliderValue, 0);
+            areaGroundRedTrackBar.Value = newSliderValue;
         }
 
         private void areaGroundGreenTB_TextChanged(object sender, EventArgs e)
@@ -709,6 +737,11 @@ namespace Smash_Forge.GUI.Editors
                 areaGroundGreenTB.BackColor = Color.Red;
 
             RenderAreaLightColor();
+
+            int newSliderValue = (int)(selectedAreaLight.groundG * areaGroundGreenTrackBar.Maximum / 2.0f);
+            newSliderValue = Math.Min(newSliderValue, areaGroundGreenTrackBar.Maximum);
+            newSliderValue = Math.Max(newSliderValue, 0);
+            areaGroundGreenTrackBar.Value = newSliderValue;
         }
 
         private void areaGroundBlueTB_TextChanged(object sender, EventArgs e)
@@ -723,23 +756,42 @@ namespace Smash_Forge.GUI.Editors
                 areaGroundBlueTB.BackColor = Color.Red;
 
             RenderAreaLightColor();
+
+            int newSliderValue = (int)(selectedAreaLight.groundB * areaGroundBlueTrackBar.Maximum / 2.0f);
+            newSliderValue = Math.Min(newSliderValue, areaGroundBlueTrackBar.Maximum);
+            newSliderValue = Math.Max(newSliderValue, 0);
+            areaGroundBlueTrackBar.Value = newSliderValue;
         }
 
         private void areaCeilRedTrackBar_Scroll(object sender, EventArgs e)
         {
-            areaCeilRedTB.Text = (float)(5 * (areaCeilRedTrackBar.Value / (float)areaCeilRedTrackBar.Maximum)) + "";
+            areaCeilRedTB.Text = (float)(2 * (areaCeilRedTrackBar.Value / (float)areaCeilRedTrackBar.Maximum)) + "";
         }
 
         private void areaCeilGreenTrackBar_Scroll(object sender, EventArgs e)
         {
-            areaCeilGreenTB.Text = (float)(5 * (areaCeilGreenTrackBar.Value / (float)areaCeilGreenTrackBar.Maximum)) + "";
+            areaCeilGreenTB.Text = (float)(2 * (areaCeilGreenTrackBar.Value / (float)areaCeilGreenTrackBar.Maximum)) + "";
 
         }
 
         private void areaCeilBlueTrackBar_Scroll(object sender, EventArgs e)
         {
-            areaCeilBlueTB.Text = (float)(5 * (areaCeilBlueTrackBar.Value / (float)areaCeilBlueTrackBar.Maximum)) + "";
+            areaCeilBlueTB.Text = (float)(2 * (areaCeilBlueTrackBar.Value / (float)areaCeilBlueTrackBar.Maximum)) + "";
+        }
 
+        private void areaGroundRedTrackBar_Scroll(object sender, EventArgs e)
+        {
+            areaGroundRedTB.Text = (float)(2 * (areaGroundRedTrackBar.Value / (float)areaGroundRedTrackBar.Maximum)) + "";
+        }
+
+        private void areaGroundGreenTrackBar_Scroll(object sender, EventArgs e)
+        {
+            areaGroundGreenTB.Text = (float)(2 * (areaGroundGreenTrackBar.Value / (float)areaGroundGreenTrackBar.Maximum)) + "";
+        }
+
+        private void areaGroundBlueTrackBar_Scroll(object sender, EventArgs e)
+        {
+            areaGroundBlueTB.Text = (float)(2 * (areaGroundBlueTrackBar.Value / (float)areaGroundBlueTrackBar.Maximum)) + "";
         }
 
         #endregion
@@ -887,8 +939,7 @@ namespace Smash_Forge.GUI.Editors
         }
 
 
+
         #endregion
-
-
     }
 }

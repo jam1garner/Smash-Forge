@@ -100,6 +100,7 @@ namespace Smash_Forge
 
     public class AreaLight
     {
+        // this class could be an extension of directional lights, assuming the lighting works the same
         public string id = "";
 
         // ambient color
@@ -122,9 +123,8 @@ namespace Smash_Forge
         public float positionY = 0.0f;
         public float positionZ = 0.0f;
 
-        // XYZ angles
         // How should "non directional" area lights work?
-        // in degrees (converted to radians)
+        // XYZ angles in degrees (converted to radians in helper functions)
         public float rotX = 0.0f; 
         public float rotY = 0.0f;
         public float rotZ = 0.0f; 
@@ -344,17 +344,28 @@ namespace Smash_Forge
 
     class Lights
     {
+        // character diffuse from light_set_param.bin
         public static DirectionalLight diffuseLight = new DirectionalLight(0, 0, 1, 0, 0, 0.75f, 0, 0, 0, "Diffuse");
+        public static DirectionalLight diffuseLight2 = new DirectionalLight(0, 0, 1, 0, 0, 0.75f, 0, 0, 0, "Diffuse2");
+        public static DirectionalLight diffuseLight3 = new DirectionalLight(0, 0, 1, 0, 0, 0.75f, 0, 0, 0, "Diffuse3");
+
+        // still not sure what controls this yet
         public static DirectionalLight specularLight = new DirectionalLight();
+
+        // hemisphere fresnel from light_set_param.bin
         public static HemisphereFresnel fresnelLight = new HemisphereFresnel(0, 0, 0, 0, 0, 1, 0, 0, "Fresnel");
+
+        // used for rendering
         public static DirectionalLight stageLight1 = new DirectionalLight();
         public static DirectionalLight stageLight2 = new DirectionalLight();
         public static DirectionalLight stageLight3 = new DirectionalLight();
         public static DirectionalLight stageLight4 = new DirectionalLight();
 
+        // stage diffuse from light_set_param.bin
         public static DirectionalLight[] stageDiffuseLightSet = new DirectionalLight[64];
         public static Vector3[] stageFogSet = new Vector3[16];
 
+        // area_light.xmb
         public static List<AreaLight> areaLights = new List<AreaLight>();
 
         public static void SetLightsFromLightSetParam(ParamFile lightSet)
@@ -364,30 +375,13 @@ namespace Smash_Forge
                 // stage diffuse
                 for (int i = 0; i < stageDiffuseLightSet.Length; i++)
                 {
-                    bool enabled = (uint)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 1) == 1;
-                    float hue = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 2);
-                    float saturation = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 3);
-                    float value = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 4);
-
-                    float rotX = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 5);
-                    float rotY = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 6);
-                    float rotZ = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4 + i, 7);
-
-                    DirectionalLight light = new DirectionalLight(hue, saturation, value, 0, 0, 0, rotX, rotY, rotZ, "Stage " + i.ToString());
-                    light.enabled = enabled;
-                    stageDiffuseLightSet[i] = light;
+                    stageDiffuseLightSet[i] = CreateDirectionalLightFromLightSet(lightSet, 4 + i, "Stage " + i);
                 }
 
                 // stage fog
                 for (int i = 0; i < stageFogSet.Length; i++)
                 {
-                    float hue = (float)RenderTools.GetValueFromParamFile(lightSet, 2, 1 + i, 0);
-                    float saturation = (float)RenderTools.GetValueFromParamFile(lightSet, 2, 1 + i, 1);
-                    float value = (float)RenderTools.GetValueFromParamFile(lightSet, 2, 1 + i, 2);
-                    float fogR = 0.0f, fogB = 0.0f, fogG = 0.0f;
-                    RenderTools.HSV2RGB(hue, saturation, value, out fogR, out fogG, out fogB);
-                    Vector3 color = new Vector3(fogR, fogG, fogB);
-                    stageFogSet[i] = color;
+                    stageFogSet[i] = CreateFogColorFromFogSet(lightSet, i);
                 }
 
                 // character diffuse
@@ -407,6 +401,16 @@ namespace Smash_Forge
                     diffuseLight = new DirectionalLight(difHue, difSaturation, difIntensity, ambHue, ambSaturation, ambIntensity, 0, 0, 0, "Diffuse");
                 }
 
+                // character diffuse 2
+                {
+                    diffuseLight2 = CreateDirectionalLightFromLightSet(lightSet, 0, "Diffuse2");
+                }
+
+                // character diffuse 3
+                {
+                    diffuseLight3 = CreateDirectionalLightFromLightSet(lightSet, 1, "Diffuse3");
+                }
+
                 // fresnel lighting
                 {
                     float hueSky = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 8);
@@ -424,6 +428,33 @@ namespace Smash_Forge
                         skyAngle, groundAngle, "Fresnel");
                 }
             }
+        }
+
+        private static Vector3 CreateFogColorFromFogSet(ParamFile lightSet, int i)
+        {
+            float hue = (float)RenderTools.GetValueFromParamFile(lightSet, 2, 1 + i, 0);
+            float saturation = (float)RenderTools.GetValueFromParamFile(lightSet, 2, 1 + i, 1);
+            float value = (float)RenderTools.GetValueFromParamFile(lightSet, 2, 1 + i, 2);
+            float fogR = 0.0f, fogB = 0.0f, fogG = 0.0f;
+            RenderTools.HSV2RGB(hue, saturation, value, out fogR, out fogG, out fogB);
+            Vector3 color = new Vector3(fogR, fogG, fogB);
+            return color;
+        }
+
+        private static DirectionalLight CreateDirectionalLightFromLightSet(ParamFile lightSet, int lightNumber, string name)
+        {
+            bool enabled = (uint)RenderTools.GetValueFromParamFile(lightSet, 1, lightNumber, 1) == 1;
+            float hue = (float)RenderTools.GetValueFromParamFile(lightSet, 1, lightNumber, 2);
+            float saturation = (float)RenderTools.GetValueFromParamFile(lightSet, 1, lightNumber, 3);
+            float value = (float)RenderTools.GetValueFromParamFile(lightSet, 1, lightNumber, 4);
+
+            float rotX = (float)RenderTools.GetValueFromParamFile(lightSet, 1, lightNumber, 5);
+            float rotY = (float)RenderTools.GetValueFromParamFile(lightSet, 1, lightNumber, 6);
+            float rotZ = (float)RenderTools.GetValueFromParamFile(lightSet, 1, lightNumber, 7);
+
+            DirectionalLight newLight = new DirectionalLight(hue, saturation, value, 0, 0, 0, rotX, rotY, rotZ, name);
+            newLight.enabled = enabled;
+            return newLight;
         }
 
         public static void CreateAreaLightsFromXMB(XMBFile xmb)
@@ -446,7 +477,6 @@ namespace Smash_Forge
 
         private static AreaLight CreateAreaLightFromXMBEntry(XMBEntry entry)
         {
-            // really need to clean this up
             string id = "";
             float posX = 0;
             float posY = 0;
@@ -460,6 +490,9 @@ namespace Smash_Forge
             float skyR = 0;
             float skyG = 0;
             float skyB = 0;
+            float rotX = 0;
+            float rotY = 0;
+            float rotZ = 0;
 
             for (int i = 0; i < entry.Expressions.Count; i++)
             {
@@ -478,7 +511,6 @@ namespace Smash_Forge
                     float.TryParse(values[0], out posX);
                     float.TryParse(values[1], out posY);
                     float.TryParse(values[2], out posZ);
-
                 }
                 if (name.Contains("scale"))
                 {
@@ -498,12 +530,20 @@ namespace Smash_Forge
                     float.TryParse(values[1], out skyG);
                     float.TryParse(values[2], out skyB);
                 }
+                if (name.Contains("rot"))
+                {
+                    float.TryParse(values[0], out rotX);
+                    float.TryParse(values[1], out rotY);
+                    float.TryParse(values[2], out rotZ);
+                }
             }
 
-            AreaLight newAreaLight = new AreaLight(id, new Vector3(groundR, groundG, groundB), new Vector3(skyR, skyG, skyB), 
-                new Vector3(posX, posY, posZ), new Vector3(scaleX, scaleY, scaleZ), 0, 0, 0);
-            return newAreaLight;
-        }
+            Vector3 groundColor = new Vector3(groundR, groundG, groundB);
+            Vector3 skyColor = new Vector3(skyR, skyG, skyB);
+            Vector3 position = new Vector3(posX, posY, posZ);
+            Vector3 scale = new Vector3(scaleX, scaleY, scaleZ);
 
+            return new AreaLight(id, groundColor, skyColor, position, scale, rotX, rotY, rotZ);
+        }
     }
 }

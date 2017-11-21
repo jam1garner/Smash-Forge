@@ -209,9 +209,6 @@ vec3 CalcBumpedNormal(vec3 inputNormal)
     BumpMapNormal = mix(vec3(0.5, 0.5, 1), BumpMapNormal, normalIntensity); // probably a better way to do this
     BumpMapNormal = 2.0 * BumpMapNormal - vec3(1);
 
-    float flipBitangent = (tangent.x < 0.0) ? -1.0 : 1.0f;
-
-
     vec3 NewNormal;
     vec3 Normal = normalize(normal);
     mat3 TBN = mat3(tangent, bitangent, Normal);
