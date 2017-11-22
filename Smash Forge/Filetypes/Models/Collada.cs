@@ -287,7 +287,7 @@ namespace Smash_Forge
                     }
                 }
 
-                while (npoly.materials.Count < npoly.vertices[0].tx.Count)
+                while (npoly.materials.Count < npoly.vertices[0].uv.Count)
                 {
                     NUD.Polygon nd = new NUD.Polygon();
                     nd.setDefaultMaterial();
@@ -318,7 +318,7 @@ namespace Smash_Forge
                     Vector2 tx = new Vector2();
                     tx.X = float.Parse(sources[input.source].data[p * 2 + 0]);
                     tx.Y = float.Parse(sources[input.source].data[p * 2 + 1]);
-                    v.tx.Add(tx);
+                    v.uv.Add(tx);
                     break;
                 case SemanticType.COLOR:
                     v.col.X = float.Parse(sources[input.source].data[p * 4 + 0]) * 255;
@@ -452,7 +452,7 @@ namespace Smash_Forge
                                                                 v.col.W = (float)bank[p * 4 + 3] * 127;
                                                                 break;
                                                             case "TEXCOORD":
-                                                                v.tx.Add(new OpenTK.Vector2((float)bank[p * 2 + 0], (float)bank[p * 2 + 1]));
+                                                                v.uv.Add(new OpenTK.Vector2((float)bank[p * 2 + 0], (float)bank[p * 2 + 1]));
                                                                 break;
                                                         }
                                                     }
@@ -476,7 +476,7 @@ namespace Smash_Forge
                                                 break;
                                             case "TEXCOORD":
                                                 // correct them
-                                                v.tx.Add(new OpenTK.Vector2((float)bank[p * 2 + 0], (float)bank[p * 2 + 1]));
+                                                v.uv.Add(new OpenTK.Vector2((float)bank[p * 2 + 0], (float)bank[p * 2 + 1]));
                                                 break;
                                         }
                                         i++;
@@ -1033,7 +1033,7 @@ namespace Smash_Forge
                         List<string> d = new List<string>();
                         foreach (NUD.Vertex v in poly.vertices)
                         {
-                            d.AddRange(new string[] { v.tx[0].X.ToString(), v.tx[0].Y.ToString()});
+                            d.AddRange(new string[] { v.uv[0].X.ToString(), v.uv[0].Y.ToString()});
                         }
                         src.accessor.Add("S");
                         src.accessor.Add("T");

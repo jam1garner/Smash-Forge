@@ -373,7 +373,7 @@ namespace Smash_Forge
             // shader uniforms
             SetTextureUniforms(shader, mat);
             SetMaterialPropertyUniforms(shader, mat);
-            SetXMBUniforms(shader);
+            SetXMBUniforms(shader, p);
 
             // alpha blending
             GL.Enable(EnableCap.Blend);
@@ -438,13 +438,13 @@ namespace Smash_Forge
                     GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
                 }
             }
-
         }
 
-        private void SetXMBUniforms(Shader shader)
+        private void SetXMBUniforms(Shader shader, Polygon p)
         {
             GL.Uniform1(shader.getAttribute("isStage"), modelType == "stage" ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("useDirectUVTime"), useDirectUVTime ? 1 : 0);
+            bool directUVTimeFlags = (p.materials[0].flags & 0x00001900) == 0x00001900; // should probably move elsewhere
+            GL.Uniform1(shader.getAttribute("useDirectUVTime"), (useDirectUVTime && directUVTimeFlags) ? 1 : 0);
             GL.Uniform1(shader.getAttribute("lightSet"), lightSetNumber);
         }
 
@@ -461,8 +461,7 @@ namespace Smash_Forge
             GL.VertexAttribIPointer(shader.getAttribute("vBone"), 4, VertexAttribIntegerType.Int, dVertex.Size, new IntPtr(72));
             GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 88);
             GL.VertexAttribPointer(shader.getAttribute("vUV2"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 104);
-            GL.VertexAttribPointer(shader.getAttribute("vUV3"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 106);
-
+            GL.VertexAttribPointer(shader.getAttribute("vUV3"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 112);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
@@ -514,39 +513,52 @@ namespace Smash_Forge
 
         private static void SetMaterialPropertyUniforms(Shader shader, Material mat)
         {
-            // "NU_aoMinGain" becomes "aoMinGain"
-            MatPropertyShaderUniform(shader, mat, "NU_aoMinGain", 0, 0, 0, 0);
+            // UV samplers
             MatPropertyShaderUniform(shader, mat, "NU_colorSamplerUV", 1, 1, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_colorSampler2UV", 1, 1, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_colorSampler3UV", 1, 1, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV", 1, 1, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_normalSamplerBUV", 1, 1, 0, 0);
+
+            // color properties
+            MatPropertyShaderUniform(shader, mat, "NU_aoMinGain", 0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_colorGain", 1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_finalColorGain", 1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_colorOffset", 0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_diffuseColor", 1, 1, 1, 0.5f);
+
             MatPropertyShaderUniform(shader, mat, "NU_specularColor", 0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_specularColorGain", 1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_specularParams", 0, 0, 0, 0);
+
             MatPropertyShaderUniform(shader, mat, "NU_fresnelColor", 0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_fresnelParams", 0, 0, 0, 0);
+
             MatPropertyShaderUniform(shader, mat, "NU_reflectionColor", 0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_reflectionParams", 0, 0, 0, 0);
+
             MatPropertyShaderUniform(shader, mat, "NU_fogColor", 0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_fogParams", 0, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_normalParams", 1, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_zOffset", 0, 0, 0, 0);
+
             MatPropertyShaderUniform(shader, mat, "NU_effColorGain", 1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_angleFadeParams", 0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", 0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV", 1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_alphaBlendParams", 0, 0, 0, 0);
+
             MatPropertyShaderUniform(shader, mat, "NU_softLightingParams", 0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_customSoftLightParams", 0, 0, 0, 0);
+
+            // misc properties
+            MatPropertyShaderUniform(shader, mat, "NU_normalParams", 1, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_zOffset", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_angleFadeParams", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_alphaBlendParams", 0, 0, 0, 0);
 
             // create some conditionals rather than using different shaders
             HasMatPropertyShaderUniform(shader, mat, "NU_softLightingParams", "hasSoftLight");
             HasMatPropertyShaderUniform(shader, mat, "NU_customSoftLightParams", "hasCustomSoftLight");
             HasMatPropertyShaderUniform(shader, mat, "NU_specularParams", "hasSpecularParams");
             HasMatPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", "hasDualNormal");
+            HasMatPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV", "hasNrmSamplerAUV");
+            HasMatPropertyShaderUniform(shader, mat, "NU_normalSamplerBUV", "hasNrmSamplerBUV");
         }
 
         private static void SetTextureUniforms(Shader shader, Material mat)
@@ -1281,21 +1293,21 @@ namespace Smash_Forge
                 if (uvType == 0x0)
                 {
                     for (int j = 0; j < uvCount; j++)
-                        v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                        v[i].uv.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
                 }
                 else
                     if (uvType == 0x2)
                     {
                         v[i].col = new Vector4(d.readByte(), d.readByte(), d.readByte(), d.readByte());
                         for (int j = 0; j < uvCount; j++)
-                            v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                            v[i].uv.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
                 }
                 else
                     if (uvType == 0x4)
                 {
                     v[i].col = new Vector4(d.readHalfFloat() * 0xFF, d.readHalfFloat() * 0xFF, d.readHalfFloat() * 0xFF, d.readHalfFloat() * 0xFF);
                     for (int j = 0; j < uvCount; j++)
-                        v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                        v[i].uv.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
                 }
                 else
                         throw new NotImplementedException("UV type not supported " + uvType);
@@ -1401,22 +1413,22 @@ namespace Smash_Forge
 
 
                     if((p.UVSize >> 4) == 1)
-                        v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                        v[i].uv.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
                     else if((p.UVSize >> 4) == 2)
                     {
-                        v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
-                        v[i].tx2.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                        v[i].uv.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                        v[i].uv2.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
                     }
                     else if ((p.UVSize >> 4) == 3)
                     {
-                        v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
-                        v[i].tx2.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
-                        v[i].tx3.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                        v[i].uv.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                        v[i].uv2.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                        v[i].uv3.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
                     }
                     else
                     {
                         for (int j = 0; j < (p.UVSize >> 4); j++)
-                            v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                            v[i].uv.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
                     }
 
 
@@ -1561,7 +1573,7 @@ namespace Smash_Forge
                     obj.writeShort(((NUD.Polygon)meshes[i].Nodes[k]).vertices.Count);
                     obj.writeByte(((NUD.Polygon)meshes[i].Nodes[k]).vertSize); // type of vert
 
-                    int maxUV = ((NUD.Polygon)meshes[i].Nodes[k]).vertices[0].tx.Count; // TODO: multi uv stuff  mesh[i].polygons[k].maxUV() + 
+                    int maxUV = ((NUD.Polygon)meshes[i].Nodes[k]).vertices[0].uv.Count; // TODO: multi uv stuff  mesh[i].polygons[k].maxUV() + 
 
                     obj.writeByte(((NUD.Polygon)meshes[i].Nodes[k]).UVSize); 
 
@@ -1649,8 +1661,8 @@ namespace Smash_Forge
                 {
                     for (int j = 0; j < uvCount; j++)
                     {
-                        d.writeHalfFloat(m.vertices[i].tx[j].X);
-                        d.writeHalfFloat(m.vertices[i].tx[j].Y);
+                        d.writeHalfFloat(m.vertices[i].uv[j].X);
+                        d.writeHalfFloat(m.vertices[i].uv[j].Y);
                     }
                 }else
                 if (uvType == 0x2)
@@ -1661,8 +1673,8 @@ namespace Smash_Forge
                     d.writeByte((int)m.vertices[i].col.W);
                     for (int j = 0; j < uvCount; j++)
                     {
-                        d.writeHalfFloat(m.vertices[i].tx[j].X);
-                        d.writeHalfFloat(m.vertices[i].tx[j].Y);
+                        d.writeHalfFloat(m.vertices[i].uv[j].X);
+                        d.writeHalfFloat(m.vertices[i].uv[j].Y);
                     }
                 }else
                 if (uvType == 0x4)
@@ -1673,8 +1685,8 @@ namespace Smash_Forge
                     d.writeHalfFloat(m.vertices[i].col.W / 0xFF);
                     for (int j = 0; j < uvCount; j++)
                     {
-                        d.writeHalfFloat(m.vertices[i].tx[j].X);
-                        d.writeHalfFloat(m.vertices[i].tx[j].Y);
+                        d.writeHalfFloat(m.vertices[i].uv[j].X);
+                        d.writeHalfFloat(m.vertices[i].uv[j].Y);
                     }
                 }
                 else
@@ -1779,10 +1791,10 @@ namespace Smash_Forge
                         d.writeByte((int)m.vertices[i].col.W);
                     }
 
-                    for (int j = 0; j < m.vertices[i].tx.Count; j++)
+                    for (int j = 0; j < m.vertices[i].uv.Count; j++)
                     {
-                        d.writeHalfFloat(m.vertices[i].tx[j].X);
-                        d.writeHalfFloat(m.vertices[i].tx[j].Y);
+                        d.writeHalfFloat(m.vertices[i].uv[j].X);
+                        d.writeHalfFloat(m.vertices[i].uv[j].Y);
                     }
 
                     // UV layers
@@ -1933,12 +1945,12 @@ namespace Smash_Forge
             public Vector3 nrm;
             public Vector3 tan;
             public Vector3 bit;
-            public Vector2 tx0;
+            public Vector2 uv;
             public Vector4 col;
             public Vector4 node;
             public Vector4 weight;
-            public Vector2 tx2;
-            public Vector2 tx3;
+            public Vector2 uv2;
+            public Vector2 uv3;
 
             public static int Size = 4 * (3 + 3 + 3 + 3 + 2 + 4 + 4 + 4 + 2 + 2);
         }
@@ -1948,9 +1960,9 @@ namespace Smash_Forge
             public Vector3 pos = new Vector3(0, 0, 0), nrm = new Vector3(0, 0, 0);
             public Vector4 bitan = new Vector4(0, 0, 0, 1), tan = new Vector4(0, 0, 0, 1);
             public Vector4 col = new Vector4(127, 127, 127, 127);
-            public List<Vector2> tx = new List<Vector2>();
-            public List<Vector2> tx2 = new List<Vector2>();
-            public List<Vector2> tx3 = new List<Vector2>();
+            public List<Vector2> uv = new List<Vector2>();
+            public List<Vector2> uv2 = new List<Vector2>();
+            public List<Vector2> uv3 = new List<Vector2>();
             public List<int> node = new List<int>();
             public List<float> weight = new List<float>();
 
@@ -1965,7 +1977,7 @@ namespace Smash_Forge
 
             public bool Equals(Vertex p)
             {
-                return pos.Equals(p.pos) && new HashSet<Vector2>(tx).SetEquals(p.tx) && col.Equals(p.col)
+                return pos.Equals(p.pos) && new HashSet<Vector2>(uv).SetEquals(p.uv) && col.Equals(p.col)
                     && new HashSet<int>(node).SetEquals(p.node) && new HashSet<float>(weight).SetEquals(p.weight);
             }
 
@@ -2235,9 +2247,9 @@ namespace Smash_Forge
                         tan = v.tan.Xyz,
                         bit = v.bitan.Xyz,
                         col = v.col / 0x7F, 
-                        tx0 = v.tx.Count > 0 ? v.tx[0] : new Vector2(0, 0),
-                        tx2 = v.tx2.Count > 0 ? v.tx2[0] : new Vector2(0, 0),
-                        tx3 = v.tx3.Count > 0 ? v.tx3[0] : new Vector2(0, 0),
+                        uv = v.uv.Count > 0 ? v.uv[0] : new Vector2(0, 0),
+                        uv2 = v.uv2.Count > 0 ? v.uv2[0] : new Vector2(0, 0),
+                        uv3 = v.uv3.Count > 0 ? v.uv3[0] : new Vector2(0, 0),
                         node = new Vector4(v.node.Count > 0 ? v.node[0] : -1,
                         v.node.Count > 1 ? v.node[1] : -1,
                         v.node.Count > 2 ? v.node[2] : -1,
@@ -2278,11 +2290,11 @@ namespace Smash_Forge
                     float z1 = v2.pos.Z - v1.pos.Z;
                     float z2 = v3.pos.Z - v1.pos.Z;
 
-                    if (v2.tx.Count < 1) break;
-                    float s1 = v2.tx[0].X - v1.tx[0].X;
-                    float s2 = v3.tx[0].X - v1.tx[0].X;
-                    float t1 = v2.tx[0].Y - v1.tx[0].Y;
-                    float t2 = v3.tx[0].Y - v1.tx[0].Y;
+                    if (v2.uv.Count < 1) break;
+                    float s1 = v2.uv[0].X - v1.uv[0].X;
+                    float s2 = v3.uv[0].X - v1.uv[0].X;
+                    float t1 = v2.uv[0].Y - v1.uv[0].Y;
+                    float t2 = v3.uv[0].Y - v1.uv[0].Y;
 
                     float r = 1.0f;
                     // prevent incorrect tangent calculation from division by 0
@@ -2586,7 +2598,7 @@ namespace Smash_Forge
                         mv.pos = v.pos;
                         mv.nrm = v.nrm;
                         List<Vector2> uvs = new List<Vector2>();
-                        uvs.Add(new Vector2(v.tx[0].X, 1 - v.tx[0].Y));
+                        uvs.Add(new Vector2(v.uv[0].X, 1 - v.uv[0].Y));
                         mv.tx = uvs;
                         mv.col = v.col;
                         int n1 = v.node[0];
@@ -2716,11 +2728,11 @@ namespace Smash_Forge
                 float z1 = v2.pos.Z - v1.pos.Z;
                 float z2 = v3.pos.Z - v1.pos.Z;
 
-                if (v2.tx.Count < 1) break;
-                float s1 = v2.tx[0].X - v1.tx[0].X;
-                float s2 = v3.tx[0].X - v1.tx[0].X;
-                float t1 = v2.tx[0].Y - v1.tx[0].Y;
-                float t2 = v3.tx[0].Y - v1.tx[0].Y;
+                if (v2.uv.Count < 1) break;
+                float s1 = v2.uv[0].X - v1.uv[0].X;
+                float s2 = v3.uv[0].X - v1.uv[0].X;
+                float t1 = v2.uv[0].Y - v1.uv[0].Y;
+                float t2 = v3.uv[0].Y - v1.uv[0].Y;
 
                 float r = 1.0f;
                 // prevent incorrect tangent calculation from division by 0

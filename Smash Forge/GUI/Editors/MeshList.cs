@@ -373,8 +373,8 @@ namespace Smash_Forge
 
                 foreach (NUD.Vertex v in p.vertices)
                 {
-                    for(int i = 0; i < v.tx.Count; i++)
-                        v.tx[i] = new OpenTK.Vector2(v.tx[i].X, 1 - v.tx[i].Y);
+                    for(int i = 0; i < v.uv.Count; i++)
+                        v.uv[i] = new OpenTK.Vector2(v.uv[i].X, 1 - v.uv[i].Y);
                 }
 
                 foreach (ModelContainer con in Runtime.ModelContainers)
@@ -657,8 +657,8 @@ namespace Smash_Forge
 
                 foreach (NUD.Vertex v in p.vertices)
                 {
-                    for (int i = 0; i < v.tx.Count; i++)
-                        v.tx[i] = new OpenTK.Vector2(1 - v.tx[i].X, v.tx[i].Y);
+                    for (int i = 0; i < v.uv.Count; i++)
+                        v.uv[i] = new OpenTK.Vector2(1 - v.uv[i].X, v.uv[i].Y);
                 }
 
                 foreach (ModelContainer con in Runtime.ModelContainers)

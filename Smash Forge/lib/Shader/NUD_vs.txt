@@ -12,30 +12,31 @@ in vec4 vBone;
 in vec4 vWeight;
 in vec4 vBoneHash;
 
-out vec3 viewPosition;
-out vec3 objectPosition;
+out vec3 normal;
+out vec4 viewNormals;
 out vec3 tangent;
 out vec3 bitangent;
+out vec3 fragpos;
+out float boneDisplay;
+out vec3 viewPosition;
+out vec3 objectPosition;
+
 out vec4 vertexColor;
 
-out vec2 texcoord;
-out vec2 texcoord2;
-out vec2 texcoord3;
-out vec2 normaltexcoord;
-
-out vec3 normal;
-out vec3 fragpos;
-out vec4 viewNormals;
-out float boneDisplay;
+out vec2 texCoord;
+out vec2 texCoord2;
+out vec2 texCoord3;
+out vec2 normaltexCoord;
 
 uniform vec4 colorSamplerUV;
 uniform vec4 colorSampler2UV;
 uniform vec4 colorSampler3UV;
 uniform vec4 normalSamplerAUV;
+uniform vec4 normalSamplerBUV;
+
 uniform mat4 mvpMatrix;
 uniform uint flags;
 uniform vec3 NSC;
-
 uniform float zScale;
 uniform vec4 zOffset;
 
@@ -43,6 +44,8 @@ uniform float elapsedTime;
 uniform int useDirectUVTime;
 uniform int selectedBoneIndex;
 
+uniform int hasNrmSamplerAUV;
+uniform int hasNrmSamplerBUV;
 
 uniform bones
 {
@@ -50,9 +53,6 @@ uniform bones
 } bones_;
 
 uniform int renderType;
-
-vec4 skin(vec3 po, ivec4 index);
-vec3 skinNRM(vec3 po, ivec4 index);
 
 float BoneWeightDisplay()
 {
@@ -95,10 +95,8 @@ vec3 skinNRM(vec3 nr, ivec4 index)
 
 void main()
 {
-    vec4 objPos = vec4(vPosition.xyz, 1.0);
-    objectPosition = objPos.xyz;
-
     // vertex skinning
+    vec4 objPos = vec4(vPosition.xyz, 1.0);
     if(vBone.x != -1.0)
        objPos = skin(vPosition, ivec4(vBone));
 
@@ -108,22 +106,30 @@ void main()
     objPos = mvpMatrix * vec4(objPos.xyz, 1.0);
     gl_Position = objPos;
 
-    if ((useDirectUVTime == 1) && (flags & 0x00001900u) == 0x00001900u)
+    vec4 sampler1 = colorSamplerUV;
+    vec4 sampler2 = colorSampler2UV;
+    if (hasNrmSamplerBUV == 1)
+        sampler2 = normalSamplerBUV;
+    vec4 sampler3 = colorSampler3UV;
+    vec4 nrmSampler = colorSamplerUV;
+    if (hasNrmSamplerAUV == 1)
+        nrmSampler = normalSamplerAUV;
+
+    if (useDirectUVTime == 1)
     {
-        texcoord = vec2((vUV * colorSamplerUV.xy) + (colorSamplerUV.zw * elapsedTime));
-        texcoord2 = vec2((vUV2 * colorSamplerUV.xy) + (colorSamplerUV.zw * elapsedTime));
-        texcoord3 = vec2((vUV3 * colorSamplerUV.xy) + (colorSamplerUV.zw * elapsedTime));
-        normaltexcoord = vec2((vUV * normalSamplerAUV.xy) + (normalSamplerAUV.zw * elapsedTime));
+        texCoord = vec2((vUV * sampler1.xy) + (sampler1.zw * elapsedTime));
+        texCoord2 = vec2((vUV2 * sampler2.xy) + (sampler2.zw * elapsedTime));
+        texCoord3 = vec2((vUV3 * sampler3.xy) + (sampler3.zw * elapsedTime));
+        normaltexCoord = vec2((vUV * nrmSampler.xy) + (nrmSampler.zw * elapsedTime));
     }
     else
     {
-        texcoord = vec2((vUV * colorSamplerUV.xy) + colorSamplerUV.zw);
-        texcoord2 = vec2((vUV2 * colorSamplerUV.xy) + (colorSamplerUV.zw));
-        texcoord3 = vec2((vUV3 * colorSamplerUV.xy) + (colorSamplerUV.zw));
-        normaltexcoord = vec2((vUV * normalSamplerAUV.xy) + normalSamplerAUV.zw);
+        texCoord = vec2((vUV * sampler1.xy) + sampler1.zw);
+        texCoord2 = vec2((vUV2 * sampler2.xy) + (sampler2.zw));
+        texCoord3 = vec2((vUV3 * sampler3.xy) + (sampler3.zw));
+        normaltexCoord = vec2((vUV * nrmSampler.xy) + nrmSampler.zw);
     }
 
-    normal = vec3(0,0,0);
     tangent.xyz = vTangent.xyz;
     bitangent.xyz = vBiTangent.xyz;
     viewPosition = vec3(vPosition * mat3(mvpMatrix));
@@ -131,13 +137,13 @@ void main()
     // calculate view space normals for sphere map rendering
 	viewNormals = transpose(inverse(mvpMatrix)) * vec4(vNormal.xyz, 0);
 
-    // fragment shader stuff
+    // fragment shader attributes
     boneDisplay = BoneWeightDisplay();
     vertexColor = vColor;
 	fragpos = objPos.xyz;
+    objectPosition = vPosition.xyz;
 
+    normal = vNormal;
 	if(vBone.x != -1.0)
 		normal = normalize((skinNRM(vNormal.xyz, ivec4(vBone))).xyz);
-	else
-		normal = vNormal;
 }

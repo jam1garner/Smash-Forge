@@ -147,7 +147,7 @@ namespace Smash_Forge
                         if (g.vn.Count > i)
                             v.nrm = vn[g.vn[i]] + Vector3.Zero; 
                         if (g.vt.Count > i)
-                            v.tx.Add(vt[g.vt[i]] + Vector2.Zero);
+                            v.uv.Add(vt[g.vt[i]] + Vector2.Zero);
                     }
                 }
                 if(m.Nodes.Count > 0)
