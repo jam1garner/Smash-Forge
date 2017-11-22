@@ -6,6 +6,8 @@ in vec3 vNormal;
 in vec3 vTangent;
 in vec3 vBiTangent;
 in vec2 vUV;
+in vec2 vUV2;
+in vec2 vUV3;
 in vec4 vBone;
 in vec4 vWeight;
 in vec4 vBoneHash;
@@ -109,11 +111,15 @@ void main()
     if ((useDirectUVTime == 1) && (flags & 0x00001900u) == 0x00001900u)
     {
         texcoord = vec2((vUV * colorSamplerUV.xy) + (colorSamplerUV.zw * elapsedTime));
+        texcoord2 = vec2((vUV2 * colorSamplerUV.xy) + (colorSamplerUV.zw * elapsedTime));
+        texcoord3 = vec2((vUV3 * colorSamplerUV.xy) + (colorSamplerUV.zw * elapsedTime));
         normaltexcoord = vec2((vUV * normalSamplerAUV.xy) + (normalSamplerAUV.zw * elapsedTime));
     }
     else
     {
         texcoord = vec2((vUV * colorSamplerUV.xy) + colorSamplerUV.zw);
+        texcoord2 = vec2((vUV2 * colorSamplerUV.xy) + (colorSamplerUV.zw));
+        texcoord3 = vec2((vUV3 * colorSamplerUV.xy) + (colorSamplerUV.zw));
         normaltexcoord = vec2((vUV * normalSamplerAUV.xy) + normalSamplerAUV.zw);
     }
 

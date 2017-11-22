@@ -569,14 +569,14 @@ void main()
     float offsetIntensity = 0;
     if(useNormalMap == 1)
         offsetIntensity = normalParams.z;
-    vec2 textureOffset = 1-texture(normalMap, normaltexcoord).xy;
+    vec2 textureOffset = 1 - texture(normalMap, normaltexcoord).xy;
     textureOffset = (textureOffset * 2) -1; // remap to -1 to 1?
     vec2 offsetTexCoord = texcoord + (textureOffset * offsetIntensity);
 
     // calculate diffuse map blending to use in Shaded and Diffuse Maps render modes
     vec4 diffuse1 = vec4(0);
     vec4 diffuse2 = vec4(0);
-    vec4 diffuse3 = texture(dif3, texcoord);
+    vec4 diffuse3 = texture(dif3, texcoord3);
     vec4 diffuseMapTotal = vec4(0);
     if (hasDif == 1) // 1st diffuse texture
     {
@@ -585,7 +585,7 @@ void main()
 
         if (hasDif2 == 1 && hasDif3 != 1) // 2nd diffuse texture. doesnt work properly with stages
         {
-            diffuse2 = texture(dif2, offsetTexCoord);
+            diffuse2 = texture(dif2, texcoord2);
             diffuseMapTotal = mix(diffuse2, diffuse1, diffuse1.a);
             diffuseMapTotal.a = 1.0;
         }
@@ -643,10 +643,16 @@ void main()
         else
             fragColor = vec4(diffuseColor);
 
-        vec3 diffuse2Texture = texture(ao, offsetTexCoord).rgb;
+        vec3 diffuse2Texture = texture(ao, texcoord2).rgb;
 
-        if (hasAo == 1) // should be named differently. isnt always two diffuse
-            fragColor.rgb = mix(diffuse2Texture, fragColor.rgb, ((normal.y + 1) / 2));
+        if (hasAo == 1)
+        {
+            float normalBlend = normal.y * 0.5 + 0.5;
+            if ((flags & 0x00410000u) == 0x00410000u)
+                fragColor.rgb = mix(diffuse2Texture, fragColor.rgb, normalBlend);
+            else
+                fragColor.rgb *= diffuse2Texture.rgb;
+        }
 
         if (renderVertColor == 1)
             fragColor *= vertexColor;
@@ -676,5 +682,6 @@ void main()
         // alpha override
         if (renderAlpha != 1)
             fragColor.a = 1;
+
 	}
 }

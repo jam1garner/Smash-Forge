@@ -460,6 +460,9 @@ namespace Smash_Forge
             GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 56);
             GL.VertexAttribIPointer(shader.getAttribute("vBone"), 4, VertexAttribIntegerType.Int, dVertex.Size, new IntPtr(72));
             GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 88);
+            GL.VertexAttribPointer(shader.getAttribute("vUV2"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 104);
+            GL.VertexAttribPointer(shader.getAttribute("vUV3"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 106);
+
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
@@ -1396,8 +1399,28 @@ namespace Smash_Forge
                         //v.a = (int) (d.readByte());
                     }
 
-                    for (int j = 0; j < (p.UVSize >> 4); j++)
+
+                    if((p.UVSize >> 4) == 1)
                         v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                    else if((p.UVSize >> 4) == 2)
+                    {
+                        v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                        v[i].tx2.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                    }
+                    else if ((p.UVSize >> 4) == 3)
+                    {
+                        v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                        v[i].tx2.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                        v[i].tx3.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                    }
+                    else
+                    {
+                        for (int j = 0; j < (p.UVSize >> 4); j++)
+                            v[i].tx.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                    }
+
+
+                    //d.skip(4 * ((p.UVSize >> 4) - 1));
 
                     // UV layers
                     //d.skip(4 * ((p.UVSize >> 4) - 1));
@@ -1914,8 +1937,10 @@ namespace Smash_Forge
             public Vector4 col;
             public Vector4 node;
             public Vector4 weight;
+            public Vector2 tx2;
+            public Vector2 tx3;
 
-            public static int Size = 4 * (3 + 3 + 3 + 3 + 2 + 4 + 4 + 4);
+            public static int Size = 4 * (3 + 3 + 3 + 3 + 2 + 4 + 4 + 4 + 2 + 2);
         }
 
         public class Vertex
@@ -1924,6 +1949,8 @@ namespace Smash_Forge
             public Vector4 bitan = new Vector4(0, 0, 0, 1), tan = new Vector4(0, 0, 0, 1);
             public Vector4 col = new Vector4(127, 127, 127, 127);
             public List<Vector2> tx = new List<Vector2>();
+            public List<Vector2> tx2 = new List<Vector2>();
+            public List<Vector2> tx3 = new List<Vector2>();
             public List<int> node = new List<int>();
             public List<float> weight = new List<float>();
 
@@ -2209,6 +2236,8 @@ namespace Smash_Forge
                         bit = v.bitan.Xyz,
                         col = v.col / 0x7F, 
                         tx0 = v.tx.Count > 0 ? v.tx[0] : new Vector2(0, 0),
+                        tx2 = v.tx2.Count > 0 ? v.tx2[0] : new Vector2(0, 0),
+                        tx3 = v.tx3.Count > 0 ? v.tx3[0] : new Vector2(0, 0),
                         node = new Vector4(v.node.Count > 0 ? v.node[0] : -1,
                         v.node.Count > 1 ? v.node[1] : -1,
                         v.node.Count > 2 ? v.node[2] : -1,
