@@ -453,7 +453,7 @@ namespace Smash_Forge
             float rotZ = (float)RenderTools.GetValueFromParamFile(lightSet, 1, lightNumber, 7);
 
             DirectionalLight newLight = new DirectionalLight(hue, saturation, value, 0, 0, 0, rotX, rotY, rotZ, name);
-            newLight.enabled = enabled;
+            newLight.enabled = enabled; // doesn't work properly for some stages
             return newLight;
         }
 

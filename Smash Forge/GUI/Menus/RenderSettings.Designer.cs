@@ -1320,8 +1320,8 @@
             this.renderMode.FormattingEnabled = true;
             this.renderMode.Items.AddRange(new object[] {
             "Shaded",
-            "Normals(Color)",
-            "Normals(BnW)",
+            "Normals",
+            "Lighting",
             "Diffuse Maps",
             "Normal Maps",
             "Vertex Color",

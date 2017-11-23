@@ -14,6 +14,7 @@ namespace Smash_Forge
 		int vsID;
 		int fsID;
 
+        private bool hasCheckedCompilation = false;
         private string errorLog = "";
 
 		Dictionary<string, int> attributes = new Dictionary<string, int>();
@@ -156,27 +157,33 @@ namespace Smash_Forge
                 return true;
         }
 
-        public void shaderCompilationWarningMessage(string shaderName)
+        public void displayCompilationWarning(string shaderName)
         {
-            int compileStatusVS;
-            GL.GetShader(vsID, ShaderParameter.CompileStatus, out compileStatusVS);
-            if (compileStatusVS == 0)
+            if (!hasCheckedCompilation)
             {
-                MessageBox.Show("The " + shaderName
-                      + " vertex shader failed to compile. Check that your system supports OpenGL and GLSL 3.30." +
-                      " Please export a shader error log and " +
-                      "upload it when reporting rendering issues.", "Shader Compilation Error");
+                int compileStatusVS;
+                GL.GetShader(vsID, ShaderParameter.CompileStatus, out compileStatusVS);
+                if (compileStatusVS == 0)
+                {
+                    MessageBox.Show("The " + shaderName
+                          + " vertex shader failed to compile. Check that your system supports OpenGL and GLSL 3.30." +
+                          " Please export a shader error log and " +
+                          "upload it when reporting rendering issues.", "Shader Compilation Error");
+                }
+
+                int compileStatusFS;
+                GL.GetShader(fsID, ShaderParameter.CompileStatus, out compileStatusFS);
+                if (compileStatusFS == 0)
+                {
+                    MessageBox.Show("The " + shaderName
+                  + " fragment shader failed to compile. Check that your system supports OpenGL and GLSL 3.30." +
+                  " Please export a shader error log and " +
+                  "upload it when reporting rendering issues.", "Shader Compilation Error");
+                }
+
+                hasCheckedCompilation = true;
             }
 
-            int compileStatusFS;
-            GL.GetShader(fsID, ShaderParameter.CompileStatus, out compileStatusFS);
-            if (compileStatusFS == 0)
-            {
-                MessageBox.Show("The " + shaderName
-              + " fragment shader failed to compile. Check that your system supports OpenGL and GLSL 3.30." +
-              " Please export a shader error log and " +
-              "upload it when reporting rendering issues.", "Shader Compilation Error");
-            }
           
         }
 	}

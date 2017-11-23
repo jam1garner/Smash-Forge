@@ -24,11 +24,16 @@ namespace Smash_Forge
                 Runtime.shaders.Add("NUD", nud);
             }
 
-            if (!Runtime.hasCheckedNUDShaderCompilation)
+            if (!Runtime.shaders.ContainsKey("NUD_Debug"))
             {
-                Runtime.shaders["NUD"].shaderCompilationWarningMessage("NUD");
-                Runtime.hasCheckedNUDShaderCompilation = true;
+                Shader debug = new Shader();
+                debug.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
+                debug.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_Debug_fs.txt"));
+                Runtime.shaders.Add("NUD_Debug", debug);
             }
+
+            Runtime.shaders["NUD"].displayCompilationWarning("NUD");
+            Runtime.shaders["NUD_Debug"].displayCompilationWarning("NUD_Debug");
 
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out ibo_elements);
@@ -146,6 +151,7 @@ namespace Smash_Forge
 
             DepthSortMeshes();
         }
+
 
         public void Render(Matrix4 mvpMatrix, VBN vbn)
         {
@@ -286,6 +292,8 @@ namespace Smash_Forge
 
         public void Render(Shader shader)
         {
+            SetLightingUniforms(shader);
+
             // create lists...
             // first draw opaque
 
@@ -302,7 +310,7 @@ namespace Smash_Forge
                     matrix = Camera.viewportCamera.getBillboardYMatrix();
                     GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref matrix);
                 }*/
-                
+
                 for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
                 {
                     Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - pol];
@@ -315,7 +323,7 @@ namespace Smash_Forge
                             continue;
                         }
                     }
-                   
+
                     opaque.Add(p);
                 }
             }
@@ -327,7 +335,7 @@ namespace Smash_Forge
             foreach (Polygon p in trans)
                 if (((Mesh)p.Parent).Checked)
                     DrawPolygon(p, shader);
-            
+
             foreach (Mesh m in meshes)
             {
                 for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
@@ -344,53 +352,121 @@ namespace Smash_Forge
             }
         }
 
+        private void SetLightingUniforms(Shader shader)
+        {
+            // fresnel sky/ground color for characters & stages
+            GL.Uniform3(shader.getAttribute("fresGroundColor"), Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB);
+            GL.Uniform3(shader.getAttribute("fresSkyColor"), Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB);
+
+            // reflection color for characters & stages
+            float refR, refG, refB = 1.0f;
+            RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
+            GL.Uniform3(shader.getAttribute("refLightColor"), refR, refG, refB);
+
+            // character diffuse light
+            Lights.diffuseLight.setDirectionFromXYZAngles(Lights.diffuseLight.rotX, Lights.diffuseLight.rotY, Lights.diffuseLight.rotZ);
+            GL.Uniform3(shader.getAttribute("difLightColor"), Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB);
+            GL.Uniform3(shader.getAttribute("ambLightColor"), Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB);
+
+            // character specular light
+            Lights.specularLight.setColorFromHSV(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity);
+            Lights.specularLight.setDirectionFromXYZAngles(Runtime.specular_rotX, Runtime.specular_rotY, Runtime.specular_rotZ);
+            GL.Uniform3(shader.getAttribute("specLightColor"), Lights.specularLight.difR, Lights.specularLight.difG, Lights.specularLight.difB);
+
+            // stage light 1
+            int index1 = 0 + (4 * lightSetNumber);
+            Lights.stageLight1 = Lights.stageDiffuseLightSet[index1];
+            GL.Uniform1(shader.getAttribute("renderStageLight1"), Lights.stageDiffuseLightSet[index1].enabled ? 1 : 0);
+            GL.Uniform3(shader.getAttribute("stageLight1Color"), Lights.stageLight1.difR, Lights.stageLight1.difG, Lights.stageLight1.difB);
+
+            // stage light 2
+            int index2 = 1 + (4 * lightSetNumber);
+            Lights.stageLight2 = Lights.stageDiffuseLightSet[index2];
+            GL.Uniform1(shader.getAttribute("renderStageLight2"), Lights.stageDiffuseLightSet[index2].enabled ? 1 : 0);
+            GL.Uniform3(shader.getAttribute("stageLight2Color"), Lights.stageLight2.difR, Lights.stageLight2.difG, Lights.stageLight2.difB);
+
+            // stage light 3
+            int index3 = 2 + (4 * lightSetNumber);
+            Lights.stageLight3 = Lights.stageDiffuseLightSet[index3];
+            GL.Uniform1(shader.getAttribute("renderStageLight3"), Lights.stageDiffuseLightSet[index3].enabled ? 1 : 0);
+            GL.Uniform3(shader.getAttribute("stageLight3Color"), Lights.stageLight3.difR, Lights.stageLight3.difG, Lights.stageLight3.difB);
+
+            // stage light 4
+            int index4 = 3 + (4 * lightSetNumber);
+            Lights.stageLight4 = Lights.stageDiffuseLightSet[index4];
+            GL.Uniform1(shader.getAttribute("renderStageLight4"), Lights.stageDiffuseLightSet[index4].enabled ? 1 : 0);
+            GL.Uniform3(shader.getAttribute("stageLight4Color"), Lights.stageLight4.difR, Lights.stageLight4.difG, Lights.stageLight4.difB);
+
+            // stage fog
+            GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
+            GL.Uniform3(shader.getAttribute("stageFogColor"), Lights.stageFogSet[lightSetNumber]);
+
+
+            Vector3 lightDirection = new Vector3(0f, 0f, -1f);
+
+            if (Runtime.cameraLight) // camera light should only affects character lighting
+            {
+                GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, Camera.viewportCamera.getMVPMatrix().Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, Camera.viewportCamera.getMVPMatrix().Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, Camera.viewportCamera.getMVPMatrix().Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, Camera.viewportCamera.getMVPMatrix()));
+            }
+            else
+            {
+                GL.Uniform3(shader.getAttribute("specLightDirection"), Lights.specularLight.direction);
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Lights.diffuseLight.direction);
+                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, Camera.viewportCamera.getMVPMatrix()));
+                GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
+            }
+
+            GL.Uniform3(shader.getAttribute("stageLight1Direction"), Lights.stageLight1.direction);
+            GL.Uniform3(shader.getAttribute("stageLight2Direction"), Lights.stageLight2.direction);
+            GL.Uniform3(shader.getAttribute("stageLight3Direction"), Lights.stageLight3.direction);
+            GL.Uniform3(shader.getAttribute("stageLight4Direction"), Lights.stageLight4.direction);
+        }
+
         private void DrawPolygon(Polygon p, Shader shader, bool drawSelection = false)
         {
             if (p.faces.Count <= 3)
                 return;
 
-            Material mat = p.materials[0];
+            Material material = p.materials[0];
 
+            // final smash mats
+            /*
+            if (p.materials.Count > 1)
+                material = p.materials[1];*/
 
-            //NSC
-            GL.Uniform3(shader.getAttribute("NSC"), Vector3.Zero);
-            if (p.Parent != null && p.Parent.Text.Contains("_NSC"))
-            {
-                int index = ((Mesh)p.Parent).singlebind;
-                if (index != -1)
-                    GL.Uniform3(shader.getAttribute("NSC"), Vector3.Transform(Vector3.Zero, Runtime.ModelContainers[0].vbn.bones[index].transform));
-            }
-            else
-            {
-                GL.Uniform3(shader.getAttribute("NSC"), Vector3.Zero);
-            }
-
-            GL.Uniform1(shader.getAttribute("flags"), mat.flags);
+            GL.Uniform1(shader.getAttribute("flags"), material.flags);
             GL.Uniform1(shader.getAttribute("isTransparent"), p.isTransparent ? 1 : 0);
             GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
-            GL.Uniform1(shader.getAttribute("renderStageLighting"), Runtime.renderStageLighting ? 1 : 0);
 
             // shader uniforms
-            SetTextureUniforms(shader, mat);
-            SetMaterialPropertyUniforms(shader, mat);
+            SetTextureUniforms(shader, material);
+            SetMaterialPropertyUniforms(shader, material);
             SetXMBUniforms(shader, p);
+            SetRenderSettingsUniforms(shader);
+            SetNSCUniform(p, shader);
+
+            // vertex shader attributes (UVs, skin weights, etc)
+            SetVertexAttributes(p, shader);
 
             // alpha blending
             GL.Enable(EnableCap.Blend);
 
-            GL.BlendFunc(srcFactor.Keys.Contains(mat.srcFactor) ? srcFactor[mat.srcFactor] : BlendingFactorSrc.SrcAlpha,
-                dstFactor.Keys.Contains(mat.dstFactor) ? dstFactor[mat.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
-            if (mat.srcFactor == 0 && mat.dstFactor == 0) GL.Disable(EnableCap.Blend);
+            GL.BlendFunc(srcFactor.Keys.Contains(material.srcFactor) ? srcFactor[material.srcFactor] : BlendingFactorSrc.SrcAlpha,
+                dstFactor.Keys.Contains(material.dstFactor) ? dstFactor[material.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
+            if (material.srcFactor == 0 && material.dstFactor == 0) GL.Disable(EnableCap.Blend);
 
             // alpha testing
             GL.Enable(EnableCap.AlphaTest);
-            if (mat.AlphaTest == 0) GL.Disable(EnableCap.AlphaTest);
+            if (material.AlphaTest == 0) GL.Disable(EnableCap.AlphaTest);
 
-            float refAlpha = mat.RefAlpha / 255f;
+            float refAlpha = material.RefAlpha / 255f;
 
             // gequal used because fragcolor.a of 0 is refalpha of 1
             GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-            switch (mat.AlphaFunc)
+            switch (material.AlphaFunc)
             {
                 case 0x0:
                     GL.AlphaFunc(AlphaFunction.Never, refAlpha);
@@ -406,7 +482,7 @@ namespace Smash_Forge
             // face culling
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
-            switch (mat.cullMode)
+            switch (material.cullMode)
             {
                 case 0:
                     GL.Disable(EnableCap.CullFace);
@@ -419,7 +495,6 @@ namespace Smash_Forge
                     break;
             }
 
-            SetVertexAttributes(p, shader);
 
             if (p.Checked)
             {
@@ -438,6 +513,44 @@ namespace Smash_Forge
                     GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
                 }
             }
+        }
+
+        private static void SetNSCUniform(Polygon p, Shader shader)
+        {
+            // transform objects using the bone's transforms
+            GL.Uniform3(shader.getAttribute("NSC"), Vector3.Zero);
+            if (p.Parent != null && p.Parent.Text.Contains("_NSC"))
+            {
+                int index = ((Mesh)p.Parent).singlebind;
+                if (index != -1)
+                    GL.Uniform3(shader.getAttribute("NSC"), Vector3.Transform(Vector3.Zero, Runtime.ModelContainers[0].vbn.bones[index].transform));
+            }
+            else
+            {
+                GL.Uniform3(shader.getAttribute("NSC"), Vector3.Zero);
+            }
+        }
+
+        private static void SetRenderSettingsUniforms(Shader shader)
+        {
+            GL.Uniform1(shader.getAttribute("renderStageLighting"), Runtime.renderStageLighting ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderMaterialLighting ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderDiffuse"), Runtime.renderDiffuse ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
+
+            GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.renderNormalMap ? 1 : 0);
+
+            GL.Uniform1(shader.getAttribute("ambientIntensity"), Runtime.amb_inten);
+            GL.Uniform1(shader.getAttribute("diffuseIntensity"), Runtime.dif_inten);
+            GL.Uniform1(shader.getAttribute("specularIntensity"), Runtime.spc_inten);
+            GL.Uniform1(shader.getAttribute("fresnelIntensity"), Runtime.frs_inten);
+            GL.Uniform1(shader.getAttribute("reflectionIntensity"), Runtime.ref_inten);
+
+            GL.Uniform1(shader.getAttribute("zScale"), Runtime.zScale);
         }
 
         private void SetXMBUniforms(Shader shader, Polygon p)

@@ -80,7 +80,7 @@ namespace Smash_Forge
                 Runtime.shaders.Add("DAT", DAT);
             }
 
-            Runtime.shaders["DAT"].shaderCompilationWarningMessage("DAT");
+            Runtime.shaders["DAT"].displayCompilationWarning("DAT");
         }
 
         ~DAT()

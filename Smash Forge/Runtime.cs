@@ -234,7 +234,7 @@ namespace Smash_Forge
         {
             Shaded = 0,
             Normals = 1,
-            NormalsBnW = 2,
+            Lighting = 2,
             DiffuseMap = 3,
             NormalMap = 4,
             VertColor = 5,

@@ -115,6 +115,13 @@ namespace Smash_Forge
 
             Runtime.StartupFromConfig(MainForm.executableDir + "\\config.xml");
 
+            SetupShaders();
+
+            RenderTools.Setup();
+        }
+
+        private static void SetupShaders()
+        {
             // load up the shaders
             Shader cub = new Shader();
             cub.vertexShader(RenderTools.cubevs);
@@ -130,8 +137,8 @@ namespace Smash_Forge
             sha.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Shadow_vs.txt"));
             sha.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Shadow_fs.txt"));
             Runtime.shaders.Add("Shadow", sha);
-    
-            Shader texture = new Shader();           
+
+            Shader texture = new Shader();
             texture.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_vs.txt"));
             texture.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_fs.txt"));
             Runtime.shaders.Add("Texture", texture);
@@ -147,6 +154,14 @@ namespace Smash_Forge
                 nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
                 nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
                 Runtime.shaders.Add("NUD", nud);
+            }
+
+            if (!Runtime.shaders.ContainsKey("NUD_Debug"))
+            {
+                Shader debug = new Shader();
+                debug.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
+                debug.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_Debug_fs.txt"));
+                Runtime.shaders.Add("NUD_Debug", debug);
             }
 
             if (!Runtime.shaders.ContainsKey("MBN"))
@@ -174,8 +189,6 @@ namespace Smash_Forge
                 DAT.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_fs.txt"));
                 Runtime.shaders.Add("DAT", DAT);
             }
-
-            RenderTools.Setup();
         }
 
         public void openFiles()
@@ -2087,12 +2100,10 @@ namespace Smash_Forge
 
         private void exportErrorLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Runtime.shaders["NUD"].SaveErrorLog("NUD");
-            Runtime.shaders["MBN"].SaveErrorLog("MBN");
-            Runtime.shaders["DAT"].SaveErrorLog("DAT");
-            Runtime.shaders["Texture"].SaveErrorLog("Texture");
-            Runtime.shaders["Quad"].SaveErrorLog("Quad");
-            Runtime.shaders["Gradient"].SaveErrorLog("Gradient");
+            foreach (string key in Runtime.shaders.Keys)
+            {
+                Runtime.shaders[key].SaveErrorLog(key);
+            }
 
             MessageBox.Show("Error logs saved to Forge directory");
         }

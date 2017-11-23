@@ -72,7 +72,7 @@ namespace Smash_Forge
                 Runtime.shaders.Add("MBN", mbn);
             }
 
-            Runtime.shaders["MBN"].shaderCompilationWarningMessage("MBN");
+            Runtime.shaders["MBN"].displayCompilationWarning("MBN");
         }
 
         public void Destroy()
