@@ -64,6 +64,8 @@ uniform vec4 specularColorGain;
 uniform vec4 diffuseColor;
 uniform vec4 colorGain;
 uniform vec4 finalColorGain;
+uniform vec4 finalColorGain2;
+uniform vec4 finalColorGain3;
 uniform vec4 reflectionColor;
 uniform vec4 fogColor;
 uniform vec4 effColorGain;
@@ -589,22 +591,22 @@ void main()
     vec4 diffuse2 = vec4(0);
     vec4 diffuse3 = texture(dif3, texCoord3);
     vec4 diffuseMapTotal = vec4(0);
-    
+
     if (hasDif == 1) // 1st diffuse texture
     {
-        diffuse1 = texture(dif, offsetTexCoord);
+        diffuse1 = texture(dif, offsetTexCoord) * finalColorGain.rgba;
         diffuseMapTotal = diffuse1;
 
         if (hasDif2 == 1 && hasDif3 != 1) // 2nd diffuse texture. doesnt work properly with stages
         {
-            diffuse2 = texture(dif2, texCoord2);
+            diffuse2 = texture(dif2, texCoord2) * finalColorGain2.rgba;
             diffuseMapTotal = mix(diffuse2, diffuse1, diffuse1.a);
             diffuseMapTotal.a = 1.0;
 
             if (hasDif3 == 1)
             {
-                diffuse3 = texture(dif3, texCoord3);
-                diffuseMapTotal = mix(diffuse3, diffuseMapTotal, vertexColor.a);
+                diffuse3 = texture(dif3, texCoord3) * finalColorGain3.rgba;
+                diffuseMapTotal = mix(diffuse3, diffuseMapTotal, diffuse3.a);
             }
         }
     }
@@ -635,7 +637,6 @@ void main()
     // Material lighting done in sm4sh shader
     fragColor.rgb = SmashShader(fragColor, texture(normalMap, texCoord).a, bumpMapNormal);
 
-    fragColor.rgb *= finalColorGain.rgb;
     fragColor.rgb *= effColorGain.rgb;
 
     // correct alpha

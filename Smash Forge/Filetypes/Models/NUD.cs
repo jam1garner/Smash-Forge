@@ -637,6 +637,8 @@ namespace Smash_Forge
             MatPropertyShaderUniform(shader, mat, "NU_aoMinGain", 0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_colorGain", 1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_finalColorGain", 1, 1, 1, 1);
+            MatPropertyShaderUniform(shader, mat, "NU_finalColorGain2", 1, 1, 1, 1);
+            MatPropertyShaderUniform(shader, mat, "NU_finalColorGain3", 1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_colorOffset", 0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_diffuseColor", 1, 1, 1, 0.5f);
 
@@ -717,6 +719,12 @@ namespace Smash_Forge
                 mat.diffuse1ID = mat.textures[texid].hash;
                 texid++;
             }
+            if (mat.spheremap && texid < mat.textures.Count)
+            {
+                GL.Uniform1(shader.getAttribute("spheremap"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
+                mat.sphereMapID = mat.textures[texid].hash;
+                texid++;
+            }
             if (mat.diffuse2 && texid < mat.textures.Count)
             {
                 GL.Uniform1(shader.getAttribute("dif2"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
@@ -739,12 +747,6 @@ namespace Smash_Forge
             {
                 GL.Uniform1(shader.getAttribute("cube"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
                 mat.cubeMapID = mat.textures[texid].hash;
-                texid++;
-            }
-            if (mat.spheremap && texid < mat.textures.Count)
-            {
-                GL.Uniform1(shader.getAttribute("spheremap"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
-                mat.sphereMapID = mat.textures[texid].hash;
                 texid++;
             }
             if (mat.aomap && texid < mat.textures.Count)
