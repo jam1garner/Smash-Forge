@@ -641,6 +641,7 @@ namespace Smash_Forge
             MatPropertyShaderUniform(shader, mat, "NU_finalColorGain3", 1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_colorOffset", 0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_diffuseColor", 1, 1, 1, 0.5f);
+            MatPropertyShaderUniform(shader, mat, "NU_characterColor", 1, 1, 1, 1);
 
             MatPropertyShaderUniform(shader, mat, "NU_specularColor", 0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_specularColorGain", 1, 1, 1, 1);
@@ -655,8 +656,6 @@ namespace Smash_Forge
             MatPropertyShaderUniform(shader, mat, "NU_fogColor", 0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_fogParams", 0, 1, 0, 0);
 
-            MatPropertyShaderUniform(shader, mat, "NU_effColorGain", 1, 1, 1, 1);
-
             MatPropertyShaderUniform(shader, mat, "NU_softLightingParams", 0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_customSoftLightParams", 0, 0, 0, 0);
 
@@ -666,6 +665,12 @@ namespace Smash_Forge
             MatPropertyShaderUniform(shader, mat, "NU_angleFadeParams", 0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", 0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_alphaBlendParams", 0, 0, 0, 0);
+
+            // effect materials
+            MatPropertyShaderUniform(shader, mat, "NU_effCombinerColor0", 1, 1, 1, 1);
+            MatPropertyShaderUniform(shader, mat, "NU_effCombinerColor1", 1, 1, 1, 1);
+            MatPropertyShaderUniform(shader, mat, "NU_effColorGain", 1, 1, 1, 1);
+
 
             // create some conditionals rather than using different shaders
             HasMatPropertyShaderUniform(shader, mat, "NU_softLightingParams", "hasSoftLight");

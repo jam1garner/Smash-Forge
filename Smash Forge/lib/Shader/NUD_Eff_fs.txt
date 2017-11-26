@@ -1,4 +1,4 @@
-#version 330
+﻿#version 330
 
 in vec3 viewPosition;
 in vec3 objectPosition;
@@ -62,7 +62,6 @@ uniform vec4 fresnelColor;
 uniform vec4 specularColor;
 uniform vec4 specularColorGain;
 uniform vec4 diffuseColor;
-uniform vec4 characterColor;
 uniform vec4 colorGain;
 uniform vec4 finalColorGain;
 uniform vec4 finalColorGain2;
@@ -611,8 +610,6 @@ void main()
             }
         }
     }
-
-    diffuseMapTotal *= characterColor.rgba;
 
     // use texture alpha
     if (renderAlpha == 1)
