@@ -146,7 +146,7 @@ namespace Smash_Forge
                         NUD.Vertex vert = new NUD.Vertex();
                         vert.pos = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
                         vert.nrm = new Vector3(float.Parse(args[4]), float.Parse(args[5]), float.Parse(args[6]));
-                        vert.tx.Add(new Vector2(float.Parse(args[7]), float.Parse(args[8])));
+                        vert.uv.Add(new Vector2(float.Parse(args[7]), float.Parse(args[8])));
                         int wCount = int.Parse(args[9]);
                         int w = 10;
                         for (int i = 0; i < wCount; i++)

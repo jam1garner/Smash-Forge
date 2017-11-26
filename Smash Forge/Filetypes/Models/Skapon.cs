@@ -116,7 +116,7 @@ namespace Smash_Forge
                         break;
                     case "vt":
                         v = poly.vertices[vi++];
-                        v.tx.Add(new Vector2(float.Parse(args[1]), float.Parse(args[2])));
+                        v.uv.Add(new Vector2(float.Parse(args[1]), float.Parse(args[2])));
                         break;
                     case "f":
                         poly.faces.Add(int.Parse(args[1].Split('/')[0]) - 1);

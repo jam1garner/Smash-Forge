@@ -145,7 +145,7 @@ namespace Smash_Forge
 
             if (!Runtime.hasCheckedTexShaderCompilation)
             {
-                Runtime.shaders["Texture"].shaderCompilationWarningMessage("Texture");
+                Runtime.shaders["Texture"].displayCompilationWarning("Texture");
                 Runtime.hasCheckedTexShaderCompilation = true;
             }
         }

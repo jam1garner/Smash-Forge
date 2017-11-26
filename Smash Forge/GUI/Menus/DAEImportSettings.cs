@@ -119,7 +119,7 @@ namespace Smash_Forge
                     foreach (NUD.Vertex v in poly.vertices)
                     {
 
-                        if (!checkedUVRange && (Math.Abs(v.tx[0].X) > 4 || Math.Abs(v.tx[0].Y) > 4))
+                        if (!checkedUVRange && (Math.Abs(v.uv[0].X) > 4 || Math.Abs(v.uv[0].Y) > 4))
                         {
                             checkedUVRange = true;
 
@@ -130,14 +130,14 @@ namespace Smash_Forge
 
                         if (fixUV)
                         {
-                            for (int h = 0; h < v.tx.Count; h++)
-                                v.tx[h] = new Vector2(v.tx[h].X - (int)v.tx[h].X, v.tx[h].Y - (int)v.tx[h].Y);
+                            for (int h = 0; h < v.uv.Count; h++)
+                                v.uv[h] = new Vector2(v.uv[h].X - (int)v.uv[h].X, v.uv[h].Y - (int)v.uv[h].Y);
                         }
 
 
                         if (flipUVCB.Checked)
-                            for (int i = 0; i < v.tx.Count; i++)
-                                v.tx[i] = new Vector2(v.tx[i].X, 1 - v.tx[i].Y);
+                            for (int i = 0; i < v.uv.Count; i++)
+                                v.uv[i] = new Vector2(v.uv[i].X, 1 - v.uv[i].Y);
 
                         if (vertColorDivCB.Checked)
                             v.col = v.col / 2;

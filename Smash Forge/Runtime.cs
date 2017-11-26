@@ -234,7 +234,7 @@ namespace Smash_Forge
         {
             Shaded = 0,
             Normals = 1,
-            NormalsBnW = 2,
+            Lighting = 2,
             DiffuseMap = 3,
             NormalMap = 4,
             VertColor = 5,
@@ -243,7 +243,8 @@ namespace Smash_Forge
             UVTestPattern = 8,
             Tangents = 9,
             Bitangents = 10,
-            LightSet = 11
+            LightSet = 11,
+            SelectedBoneWeights = 12
         }
 
         public enum FloorStyle

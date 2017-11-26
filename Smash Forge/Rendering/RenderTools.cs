@@ -35,6 +35,7 @@ namespace Smash_Forge
         public static int cubeMapHigh, cubeMapLow;
         public static int defaultRamp;
         public static int UVTestPattern;
+        public static int boneWeightGradient;
 
         public static int cubeVAO, cubeVBO;
 
@@ -44,9 +45,10 @@ namespace Smash_Forge
             cubeMapLow = LoadCubeMap(Smash_Forge.Properties.Resources._10101000, TextureUnit.Texture13);
             defaultRamp = NUT.loadImage(Smash_Forge.Properties.Resources._10080000);
             UVTestPattern = NUT.loadImage(Smash_Forge.Properties.Resources.UVPattern);
+            boneWeightGradient = NUT.loadImage(Smash_Forge.Properties.Resources.boneWeightGradient);
 
 
-            if(defaultTex == -1)
+            if (defaultTex == -1)
                 defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
          
             GL.GenBuffers(1, out cubeVAO);

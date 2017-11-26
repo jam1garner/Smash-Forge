@@ -80,7 +80,7 @@ namespace Smash_Forge
                 Runtime.shaders.Add("DAT", DAT);
             }
 
-            Runtime.shaders["DAT"].shaderCompilationWarningMessage("DAT");
+            Runtime.shaders["DAT"].displayCompilationWarning("DAT");
         }
 
         ~DAT()
@@ -731,7 +731,7 @@ namespace Smash_Forge
                     // convert to nud vert
                     NUD.Vertex nv = new NUD.Vertex();
                     nv.pos = vert.pos;
-                    nv.tx.Add(new Vector2(vert.tx0.X * data.material.texture.scale_w, (vert.tx0.Y * data.material.texture.scale_h)));
+                    nv.uv.Add(new Vector2(vert.tx0.X * data.material.texture.scale_w, (vert.tx0.Y * data.material.texture.scale_h)));
                     nv.nrm = vert.nrm;
                     nv.col = (vert.clr*0xFF)/2;
                     nv.node.AddRange(vert.bones);

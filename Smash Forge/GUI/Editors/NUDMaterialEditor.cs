@@ -270,11 +270,11 @@ namespace Smash_Forge
             rampCB.Checked = mat.ramp;
    
             if (mat.diffuse) texturesListView.Items.Add("Diffuse");
+            if (mat.spheremap) texturesListView.Items.Add("SphereMap");
             if (mat.diffuse2) texturesListView.Items.Add("Diffuse2");
             if (mat.diffuse3) texturesListView.Items.Add("Diffuse3");
             if (mat.stagemap) texturesListView.Items.Add("StageMap");
             if (mat.cubemap) texturesListView.Items.Add("Cubemap");
-            if (mat.spheremap) texturesListView.Items.Add("SphereMap");
             if (mat.aomap) texturesListView.Items.Add("AO Map");
             if (mat.normalmap) texturesListView.Items.Add("NormalMap");
             if (mat.ramp) texturesListView.Items.Add("Ramp");
@@ -959,7 +959,7 @@ namespace Smash_Forge
 
             if (!Runtime.hasCheckedTexShaderCompilation)
             {
-                Runtime.shaders["Texture"].shaderCompilationWarningMessage("Texture");
+                Runtime.shaders["Texture"].displayCompilationWarning("Texture");
                 Runtime.hasCheckedTexShaderCompilation = true;
             }
 

@@ -23,6 +23,8 @@ namespace Smash_Forge
         private Matrix4 modelViewMatrix = Matrix4.Identity;
         private Matrix4 mvpMatrix = Matrix4.Identity;
         private Matrix4 projectionMatrix = Matrix4.Identity;
+        private Matrix4 billboardMatrix = Matrix4.Identity;
+        private Matrix4 billboardYMatrix = Matrix4.Identity;
 
         private float zoomMultiplier = Runtime.zoomModifierScale; 
         private float zoomSpeed = Runtime.zoomspeed;
@@ -102,6 +104,16 @@ namespace Smash_Forge
             cameraYRotation = angle;
         }
 
+        public Matrix4 getBillboardMatrix()
+        {
+            return billboardMatrix;
+        }
+
+        public Matrix4 getBillboardYMatrix()
+        {
+            return billboardYMatrix;
+        }
+
         public void Update()
         {
             // left click drag to rotate. right click drag to pan
@@ -145,7 +157,7 @@ namespace Smash_Forge
         {
             Matrix4 translation = Matrix4.CreateTranslation(position.X, -position.Y, position.Z);
             Matrix4 rotation = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation);
-            Matrix4 perspFOV = Matrix4.CreatePerspectiveFieldOfView(fov, renderWidth / (float)renderHeight, 1.0f, farClipPlane);
+            Matrix4 perspFOV = Matrix4.CreatePerspectiveFieldOfView(fov, renderWidth / (float)renderHeight, 1.0f, Runtime.renderDepth);
 
             // need to fix these
             modelViewMatrix = Matrix4.CreatePerspectiveFieldOfView(fov, renderWidth / (float)renderHeight,
@@ -154,6 +166,8 @@ namespace Smash_Forge
             projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(fov, renderWidth / (float)renderHeight,
                 1.0f, Runtime.renderDepth);
             mvpMatrix = rotation * translation * perspFOV;
+            billboardMatrix = translation * perspFOV;
+            billboardYMatrix = Matrix4.CreateRotationX(cameraXRotation) * translation * perspFOV;
         }
 
         public void TrackMouse()

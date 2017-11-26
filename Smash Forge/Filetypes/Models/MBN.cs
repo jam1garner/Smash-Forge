@@ -72,7 +72,7 @@ namespace Smash_Forge
                 Runtime.shaders.Add("MBN", mbn);
             }
 
-            Runtime.shaders["MBN"].shaderCompilationWarningMessage("MBN");
+            Runtime.shaders["MBN"].displayCompilationWarning("MBN");
         }
 
         public void Destroy()
@@ -623,7 +623,7 @@ namespace Smash_Forge
                             vert.col = v.col;
                             List<Vector2> uvs = new List<Vector2>();
                             uvs.Add(new Vector2(v.tx[0].X, 1 - v.tx[0].Y));
-                            vert.tx = uvs;
+                            vert.uv = uvs;
                             if (vert.weight.Count < 4) {
                                 v.weight.Add(0f);
                                 v.weight.Add(0f);

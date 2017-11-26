@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -373,8 +374,8 @@ namespace Smash_Forge
 
                 foreach (NUD.Vertex v in p.vertices)
                 {
-                    for(int i = 0; i < v.tx.Count; i++)
-                        v.tx[i] = new OpenTK.Vector2(v.tx[i].X, 1 - v.tx[i].Y);
+                    for(int i = 0; i < v.uv.Count; i++)
+                        v.uv[i] = new OpenTK.Vector2(v.uv[i].X, 1 - v.uv[i].Y);
                 }
 
                 foreach (ModelContainer con in Runtime.ModelContainers)
@@ -657,8 +658,8 @@ namespace Smash_Forge
 
                 foreach (NUD.Vertex v in p.vertices)
                 {
-                    for (int i = 0; i < v.tx.Count; i++)
-                        v.tx[i] = new OpenTK.Vector2(1 - v.tx[i].X, v.tx[i].Y);
+                    for (int i = 0; i < v.uv.Count; i++)
+                        v.uv[i] = new OpenTK.Vector2(1 - v.uv[i].X, v.uv[i].Y);
                 }
 
                 foreach (ModelContainer con in Runtime.ModelContainers)
@@ -673,7 +674,7 @@ namespace Smash_Forge
         {
             if (treeView1.SelectedNode.Tag is NUD)
             {
-                NUD nud = (NUD)treeView1.SelectedNode.Tag;
+                /*NUD nud = (NUD)treeView1.SelectedNode.Tag;
 
                 string filename = "";
                 SaveFileDialog save = new SaveFileDialog();
@@ -687,9 +688,109 @@ namespace Smash_Forge
                     {
                         MaterialXML.exportMaterialAsXML(nud, filename);
                     }
+                }*/
+                BatchExportFigureXML();
+            }
+        }
+
+        private static void BatchExportFighterXML()
+        {
+            string output = @"";
+            string path = @"";
+            if (Directory.Exists(path))
+            {
+                foreach (string fighter in Directory.GetDirectories(path))
+                {
+                    foreach (string file in Directory.GetFiles(fighter, "*.*", SearchOption.AllDirectories))
+                    {
+                        if (file.EndsWith(".nud"))
+                        {
+                            string[] parts = file.Split('\\');
+
+                            if (parts.Length > 2)
+                            {
+                                string[] fighters = fighter.Split('\\');
+                                string name = parts[parts.Length - 3] + " " + parts[parts.Length - 2] + " " + parts[parts.Length - 1];
+                                name = name.Replace(".nud", "");
+
+                                string fighterFolder = fighters[fighters.Length - 1];
+
+                                NUD nud = new NUD(file);
+                                Debug.WriteLine(output + "\\" + fighterFolder + "\\" + name + ".xml");
+                                Directory.CreateDirectory(output + "\\" + fighterFolder);
+                                MaterialXML.exportMaterialAsXML(nud, output + "\\" + fighterFolder + "\\" + name + ".xml");
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+
+        private static void BatchExportStageXML()
+        {
+            string output = "";
+            string path = "";
+            if (Directory.Exists(path))
+            {
+                foreach (string stage in Directory.GetDirectories(path))
+                {
+                    if (Directory.Exists(stage + "\\model"))
+                    {
+                        foreach (string folder in Directory.GetDirectories(stage + "\\model"))
+                        {
+                            foreach (string file in Directory.GetFiles(folder))
+                            {
+                                if (file.EndsWith(".nud"))
+                                {
+                                    string[] stageSections = stage.Split('\\');
+                                    string stageName = stageSections[stageSections.Length - 1];
+
+                                    string[] folderSections = folder.Split('\\');
+                                    string folderName = folderSections[folderSections.Length - 1];
+                                    string name = folderName;
+                                    Debug.WriteLine(output + "\\" + stageName);
+
+                                    NUD nud = new NUD(file);
+                                    Directory.CreateDirectory(output + "\\" + stageName);
+                                    MaterialXML.exportMaterialAsXML(nud, output + "\\" + stageName + "\\" + folderName + ".xml");
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
+
+        private static void BatchExportFigureXML()
+        {
+            string output = @"C:\Users\Jonathan\Desktop\Smash 4 Wii U Trophy Materials";
+            string path = @"C:\Users\Jonathan\Documents\Sm4sh Files\model\figure";
+
+            if (Directory.Exists(path))
+            {
+                foreach (string trophy in Directory.GetDirectories(path))
+                {
+                    if (Directory.Exists(trophy + "\\body\\c00"))
+                    {
+                        foreach (string file in Directory.GetFiles(trophy + "\\body\\c00"))
+                        {
+                            if (file.EndsWith(".nud"))
+                            {
+                                string[] trophySections = trophy.Split('\\');
+                                string trophyName = trophySections[trophySections.Length - 1];
+
+                                Debug.WriteLine(output + "\\" + trophyName + ".xml");
+
+                                NUD nud = new NUD(file);
+                                MaterialXML.exportMaterialAsXML(nud, output + "\\" + trophyName + ".xml");
+                            }
+                        }
+                    }             
+                }
+            }
+        }
+
 
         private void importFromXMLToolStripMenuItem_Click(object sender, EventArgs e)
         {
