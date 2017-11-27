@@ -119,7 +119,7 @@ namespace Smash_Forge
                     foreach (NUD.Vertex v in poly.vertices)
                     {
 
-                        if (!checkedUVRange && (Math.Abs(v.uv[0].X) > 4 || Math.Abs(v.uv[0].Y) > 4))
+                        if (!checkedUVRange && v.uv.Count > 0 && (Math.Abs(v.uv[0].X) > 4 || Math.Abs(v.uv[0].Y) > 4))
                         {
                             checkedUVRange = true;
 

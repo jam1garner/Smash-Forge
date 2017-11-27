@@ -1537,13 +1537,13 @@ namespace Smash_Forge
                     else if((p.UVSize >> 4) == 2)
                     {
                         v[i].uv.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
-                        v[i].uv2.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                        v[i].uv.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
                     }
                     else if ((p.UVSize >> 4) == 3)
                     {
                         v[i].uv.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
-                        v[i].uv2.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
-                        v[i].uv3.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                        v[i].uv.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
+                        v[i].uv.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
                     }
                     else
                     {
@@ -1695,7 +1695,7 @@ namespace Smash_Forge
 
                     int maxUV = ((NUD.Polygon)meshes[i].Nodes[k]).vertices[0].uv.Count; // TODO: multi uv stuff  mesh[i].polygons[k].maxUV() + 
 
-                    obj.writeByte(((NUD.Polygon)meshes[i].Nodes[k]).UVSize); 
+                    obj.writeByte((maxUV << 4)|(((NUD.Polygon)meshes[i].Nodes[k]).UVSize & 0xF)); 
 
                     // MATERIAL SECTION 
 
@@ -1779,7 +1779,7 @@ namespace Smash_Forge
 
                 if (uvType == 0x0)
                 {
-                    for (int j = 0; j < uvCount; j++)
+                    for (int j = 0; j < m.vertices[i].uv.Count; j++)
                     {
                         d.writeHalfFloat(m.vertices[i].uv[j].X);
                         d.writeHalfFloat(m.vertices[i].uv[j].Y);
@@ -1791,7 +1791,7 @@ namespace Smash_Forge
                     d.writeByte((int)m.vertices[i].col.Y);
                     d.writeByte((int)m.vertices[i].col.Z);
                     d.writeByte((int)m.vertices[i].col.W);
-                    for (int j = 0; j < uvCount; j++)
+                    for (int j = 0; j < m.vertices[i].uv.Count; j++)
                     {
                         d.writeHalfFloat(m.vertices[i].uv[j].X);
                         d.writeHalfFloat(m.vertices[i].uv[j].Y);
@@ -1803,7 +1803,7 @@ namespace Smash_Forge
                     d.writeHalfFloat(m.vertices[i].col.Y / 0xFF);
                     d.writeHalfFloat(m.vertices[i].col.Z / 0xFF);
                     d.writeHalfFloat(m.vertices[i].col.W / 0xFF);
-                    for (int j = 0; j < uvCount; j++)
+                    for (int j = 0; j < m.vertices[i].uv.Count; j++)
                     {
                         d.writeHalfFloat(m.vertices[i].uv[j].X);
                         d.writeHalfFloat(m.vertices[i].uv[j].Y);
@@ -2081,8 +2081,6 @@ namespace Smash_Forge
             public Vector4 bitan = new Vector4(0, 0, 0, 1), tan = new Vector4(0, 0, 0, 1);
             public Vector4 col = new Vector4(127, 127, 127, 127);
             public List<Vector2> uv = new List<Vector2>();
-            public List<Vector2> uv2 = new List<Vector2>();
-            public List<Vector2> uv3 = new List<Vector2>();
             public List<int> node = new List<int>();
             public List<float> weight = new List<float>();
 
@@ -2368,8 +2366,8 @@ namespace Smash_Forge
                         bit = v.bitan.Xyz,
                         col = v.col / 0x7F, 
                         uv = v.uv.Count > 0 ? v.uv[0] : new Vector2(0, 0),
-                        uv2 = v.uv2.Count > 0 ? v.uv2[0] : new Vector2(0, 0),
-                        uv3 = v.uv3.Count > 0 ? v.uv3[0] : new Vector2(0, 0),
+                        uv2 = v.uv.Count > 1 ? v.uv[1] : new Vector2(0, 0),
+                        uv3 = v.uv.Count > 2 ? v.uv[2] : new Vector2(0, 0),
                         node = new Vector4(v.node.Count > 0 ? v.node[0] : -1,
                         v.node.Count > 1 ? v.node[1] : -1,
                         v.node.Count > 2 ? v.node[2] : -1,
