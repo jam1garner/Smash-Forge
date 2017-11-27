@@ -1735,12 +1735,15 @@ namespace Smash_Forge
                 if (m.exitStatus == DAEImportSettings.Opened)
                 {
                     ModelContainer con = new ModelContainer();
-                    Runtime.ModelContainers.Add(con);
 
                     // load vbn
                     con.vbn = m.getVBN();
 
                     Collada.DAEtoNUD(fileName, con, m.checkBox5.Checked);
+                    Runtime.ModelContainers.Add(con);
+
+                    Runtime.TargetVBN = con.vbn;
+                    resyncTargetVBN();
 
                     // apply settings
                     m.Apply(con.nud);

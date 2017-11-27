@@ -318,13 +318,7 @@ namespace Smash_Forge
                     Vector2 tx = new Vector2();
                     tx.X = float.Parse(sources[input.source].data[p * 2 + 0]);
                     tx.Y = float.Parse(sources[input.source].data[p * 2 + 1]);
-                    if (input.set == 1)
-                        v.uv.Add(tx);
-                    else
-                    if (input.set == 2)
-                        v.uv.Add(tx);
-                    else
-                        v.uv.Add(tx);
+                    v.uv.Add(tx);
                     break;
                 case SemanticType.COLOR:
                     v.col.X = float.Parse(sources[input.source].data[p * 4 + 0]) * 255;
