@@ -17,7 +17,7 @@ out vec4 viewNormals;
 out vec3 tangent;
 out vec3 bitangent;
 out vec3 fragpos;
-out float boneDisplay;
+out vec3 boneDisplay;
 out vec3 viewPosition;
 out vec3 objectPosition;
 
@@ -47,6 +47,9 @@ uniform int selectedBoneIndex;
 uniform int hasNrmSamplerAUV;
 uniform int hasNrmSamplerBUV;
 
+uniform sampler2D boneWeight;
+
+
 uniform bones
 {
     mat4 transforms[200];
@@ -56,17 +59,17 @@ uniform int renderType;
 
 float BoneWeightDisplay()
 {
-    float result = 0;
+    float weight = 0;
     if (selectedBoneIndex == vBone.x)
-        result += vWeight.x;
+        weight += vWeight.x;
     if (selectedBoneIndex == vBone.y)
-        result += vWeight.y;
+        weight += vWeight.y;
     if (selectedBoneIndex == vBone.z)
-        result += vWeight.z;
+        weight += vWeight.z;
     if (selectedBoneIndex == vBone.w)
-        result += vWeight.w;
+        weight += vWeight.w;
 
-    return result;
+    return weight;
 }
 
 vec4 skin(vec3 po, ivec4 index)
@@ -91,6 +94,13 @@ vec3 skinNRM(vec3 nr, ivec4 index)
     if(vWeight.w != 0.0) nrmPos += mat3(bones_.transforms[index.w]) * nr * vWeight.w;
 
     return nrmPos;
+}
+
+vec3 BoneWeightRamp(vec3 weights)
+{
+	float rampInputLuminance = weights.x;
+	rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
+	return texture(boneWeight, vec2(1 - rampInputLuminance, 0.50)).rgb;
 }
 
 void main()
@@ -138,7 +148,11 @@ void main()
 	viewNormals = transpose(inverse(mvpMatrix)) * vec4(vNormal.xyz, 0);
 
     // fragment shader attributes
-    boneDisplay = BoneWeightDisplay();
+    float totalWeight = BoneWeightDisplay();
+    boneDisplay = vec3(totalWeight);
+    if (renderType == 13)
+        boneDisplay = BoneWeightRamp(vec3(boneDisplay)).rgb;
+
     vertexColor = vColor;
 	fragpos = objPos.xyz;
     objectPosition = vPosition.xyz;

@@ -11,7 +11,7 @@ in vec3 normal;
 in vec4 viewNormals;
 in vec3 tangent;
 in vec3 bitangent;
-in float boneDisplay;
+in vec3 boneDisplay;
 
 out vec4 fragColor;
 
@@ -28,7 +28,6 @@ uniform samplerCube stagecube;
 uniform sampler2D spheremap;
 uniform samplerCube cmap;
 uniform sampler2D UVTestPattern;
-uniform sampler2D boneWeight;
 
 // flags tests
 uniform int hasDif;
@@ -54,6 +53,8 @@ uniform int isTransparent;
 uniform int lightSet;
 uniform int isStage;
 uniform int renderStageLighting;
+
+uniform int uvChannel;
 
 // NU_ Material Properties
 uniform vec4 colorOffset;
@@ -89,9 +90,13 @@ uniform int renderReflection;
 uniform int renderType;
 uniform int renderLighting;
 uniform int renderVertColor;
-uniform int renderNormal;
 uniform int useNormalMap;
+
+uniform int renderR;
+uniform int renderG;
+uniform int renderB;
 uniform int renderAlpha;
+uniform int alphaOverride;
 
 uniform float diffuseIntensity;
 uniform float ambientIntensity;
@@ -239,13 +244,6 @@ vec3 DummyRampColor(vec3 color){
 	}
 	else
 		return vec3(1);
-}
-
-vec3 BoneWeightRamp(vec3 weights)
-{
-	float rampInputLuminance = Luminance(weights);
-	rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
-	return texture(boneWeight, vec2(1 - rampInputLuminance, 0.50)).rgb;
 }
 
 vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift) // probably not needed
@@ -398,50 +396,84 @@ void main()
         }
     }
 
+    vec4 resultingColor = vec4(1);
+    vec2 displayTexCoord = texCoord;
+    if (uvChannel == 2)
+        displayTexCoord = texCoord2;
+    else if (uvChannel == 3)
+        displayTexCoord = texCoord3;
+
     // render modes
     if (renderAlpha == 1) // use texture alpha for render modes
-        fragColor.a = texture(dif, texCoord).a;
+        resultingColor.a = texture(dif, texCoord).a;
 
     if (renderType == 1) // normals color
-        fragColor.rgb = displayNormal;
+        resultingColor.rgb = displayNormal;
     else if (renderType == 2) // lighting
     {
-        fragColor.rgb = CalculateLighting(bumpMapNormal, halfLambert);
-        fragColor.rgb = CalculateFog(fragColor.rgb);
+        resultingColor.rgb = CalculateLighting(bumpMapNormal, halfLambert);
+        resultingColor.rgb = CalculateFog(resultingColor.rgb);
     }
     else if (renderType == 3) // diffuse map
-        fragColor.rgb = diffuseMapTotal.rgb;
+        resultingColor.rgb = diffuseMapTotal.rgb;
     else if (renderType == 4) // normal map
-        fragColor.rgb = pow(texture(normalMap, normaltexCoord).rgb, vec3(1));
+        resultingColor.rgb = pow(texture(normalMap, normaltexCoord).rgb, vec3(1));
     else if (renderType == 5) // vertexColor
-        fragColor.rgb = vertexColor.rgb;
+        resultingColor.rgb = vertexColor.rgb;
     else if (renderType == 6) // ambient occlusion
-        fragColor.rgb = pow(texture(normalMap, texCoord).aaa, vec3(1));
+        resultingColor.rgb = pow(texture(normalMap, texCoord).aaa, vec3(1));
     else if (renderType == 7) // uv coords
-		fragColor.rgb = vec3(texCoord, 1);
+		resultingColor.rgb = vec3(displayTexCoord, 1);
     else if (renderType == 8) // uv test pattern
-        fragColor.rgb = texture(UVTestPattern, texCoord).rgb;
+        resultingColor.rgb = texture(UVTestPattern, displayTexCoord).rgb;
     else if (renderType == 9) // tangents
-        fragColor.rgb = displayTangent;
+        resultingColor.rgb = displayTangent;
     else if (renderType == 10) // bitangents
-        fragColor.rgb = displayBitangent;
+        resultingColor.rgb = displayBitangent;
     else if (renderType == 11) // light set #
     {
         if (lightSet == 0)
-            fragColor.rgb = vec3(0,0,0);
+            resultingColor.rgb = vec3(0,0,0);
         else if (lightSet == 1)
-            fragColor.rgb = vec3(0,1,1);
+            resultingColor.rgb = vec3(0,1,1);
         else if (lightSet == 2)
-            fragColor.rgb = vec3(0,0,1);
+            resultingColor.rgb = vec3(0,0,1);
         else if (lightSet == 3)
-            fragColor.rgb = vec3(1,1,0);
+            resultingColor.rgb = vec3(1,1,0);
         else if (lightSet == 4)
-            fragColor.rgb = vec3(1,0,1);
+            resultingColor.rgb = vec3(1,0,1);
+        else if (lightSet == 5)
+            resultingColor.rgb = vec3(0,1,0);
         else
-            fragColor.rgb = vec3(1);
+            resultingColor.rgb = vec3(1);
     }
     else if (renderType == 12)
-        fragColor.rgb = vec3(boneDisplay);
+        resultingColor.rgb = boneDisplay;
     else if (renderType == 13)
-        fragColor.rgb = BoneWeightRamp(vec3(boneDisplay));
+        resultingColor.rgb = boneDisplay;
+
+    if (renderR == 1)
+    {
+        fragColor.r = resultingColor.r;
+        if (renderB == 0 && renderG == 0)
+            fragColor.rgb = resultingColor.rrr;
+    }
+    if (renderG == 1)
+    {
+        fragColor.g = resultingColor.g;
+        if (renderB == 0 && renderR == 0)
+            fragColor.rgb = resultingColor.ggg;
+    }
+    if (renderB == 1)
+    {
+        fragColor.b = resultingColor.b;
+        if (renderG == 0 && renderR == 0)
+            fragColor.rgb = resultingColor.bbb;
+    }
+    if (renderAlpha == 1)
+    {
+        fragColor.a = resultingColor.a;
+    }
+    if (alphaOverride == 1)
+        fragColor = vec4(resultingColor.aaa, 1);
 }

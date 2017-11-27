@@ -59,9 +59,9 @@ namespace Smash_Forge.GUI
             modelSelectCB.Enabled = checkBox1.Checked;
             renderFogCB.Checked = Runtime.renderFog;
 
-            depthSlider.Value = Math.Min((int)Runtime.renderDepth, depthSlider.Maximum);
-            fovSlider.Value = (int)(Camera.viewportCamera.fov * 180.0f / Math.PI);
-            fovLabel.Text = "FOV (Degrees): " + fovSlider.Value;
+            //depthSlider.Value = Math.Min((int)Runtime.renderDepth, depthSlider.Maximum);
+            //fovSlider.Value = (int)(Camera.viewportCamera.fov * 180.0f / Math.PI);
+            //fovLabel.Text = "FOV (Degrees): " + fovSlider.Value;
 
             cameraLightCB.Checked = Runtime.cameraLight;
             diffuseCB.Checked = Runtime.renderDiffuse;
@@ -82,7 +82,7 @@ namespace Smash_Forge.GUI
 
             renderAlphaCB.Checked = Runtime.renderAlpha;
             cb_vertcolor.Checked = Runtime.renderVertColor;
-            renderMode.SelectedIndex = (int)Runtime.renderType;
+            renderModeComboBox.SelectedIndex = (int)Runtime.renderType;
 
             pbHurtboxColor.BackColor = Runtime.hurtboxColor;
             pbHurtboxColorHi.BackColor = Runtime.hurtboxColorHi;
@@ -195,13 +195,13 @@ namespace Smash_Forge.GUI
 
         private void depthSlider_ValueChanged(object sender, EventArgs e)
         {
-            Runtime.renderDepth = depthSlider.Value;
-            renderDepthLabel.Text = "Depth: " + Runtime.renderDepth;
+            //Runtime.renderDepth = depthSlider.Value;
+            //renderDepthLabel.Text = "Depth: " + Runtime.renderDepth;
         }
 
         private void renderMode_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            Runtime.renderType = (Runtime.RenderTypes)renderMode.SelectedIndex;
+            Runtime.renderType = (Runtime.RenderTypes)renderModeComboBox.SelectedIndex;
         }
 
         private void swagViewing_CheckedChanged(object sender, EventArgs e)
@@ -256,9 +256,9 @@ namespace Smash_Forge.GUI
 
         private void fovSlider_Scroll(object sender, EventArgs e)
         {
-            Camera.viewportCamera.fov = fovSlider.Value * (float)Math.PI / 180.0f;
+            //Camera.viewportCamera.fov = fovSlider.Value * (float)Math.PI / 180.0f;
         
-            fovLabel.Text = "FOV (Degrees): " + fovSlider.Value;
+            //fovLabel.Text = "FOV (Degrees): " + fovSlider.Value;
         }
 
         private double fovToDegrees(float fov)
@@ -662,6 +662,85 @@ namespace Smash_Forge.GUI
         private void renderFogCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderFog = renderFogCB.Checked;
+        }
+
+        private void renderChannelR_Click(object sender, EventArgs e)
+        {
+            if (Runtime.renderR)
+            {
+                Runtime.renderR = false;
+                renderChannelR.ForeColor = Color.DarkGray;
+            }
+
+            else
+            {
+                Runtime.renderR = true;
+                renderChannelR.ForeColor = Color.Red;
+            }
+        }
+
+        private void renderChannelG_Click(object sender, EventArgs e)
+        {
+            if (Runtime.renderG)
+            {
+                Runtime.renderG = false;
+                renderChannelG.ForeColor = Color.DarkGray;
+            }
+            else
+            {
+                Runtime.renderG = true;
+                renderChannelG.ForeColor = Color.Green;
+            }
+        }
+
+        private void renderChannelB_Click(object sender, EventArgs e)
+        {
+            if (Runtime.renderB)
+            {
+                Runtime.renderB = false;
+                renderChannelB.ForeColor = Color.DarkGray;
+            }
+
+            else
+            {
+                Runtime.renderB = true;
+                renderChannelB.ForeColor = Color.Blue;
+            }
+        }
+
+        private void renderChannelA_Click(object sender, EventArgs e)
+        {
+            if (Runtime.renderAlpha)
+            {
+                Runtime.renderAlpha = false;
+                renderChannelA.ForeColor = Color.DarkGray;
+            }
+
+            else
+            {
+                Runtime.renderAlpha = true;
+                renderChannelA.ForeColor = Color.Black;
+            }
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.uvChannel = 1;
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.uvChannel = 2;
+        }
+
+        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.uvChannel = 3;
+        }
+
+        private void debugShadingCB_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
     

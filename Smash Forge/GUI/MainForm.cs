@@ -107,7 +107,6 @@ namespace Smash_Forge
             Runtime.renderLedgeGrabboxes = false;
             Runtime.renderTetherLedgeGrabboxes = false;
             Runtime.renderReverseLedgeGrabboxes = false;
-            Runtime.renderType = Runtime.RenderTypes.Shaded;
             Runtime.paramDir = "";
 
             viewportWindowToolStripMenuItem.Checked = true;

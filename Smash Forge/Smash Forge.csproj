@@ -362,6 +362,12 @@
     <Compile Include="GUI\Menus\CameraPosition.Designer.cs">
       <DependentUpon>CameraPosition.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Menus\CameraSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\CameraSettings.Designer.cs">
+      <DependentUpon>CameraSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Menus\LightColorEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -561,6 +567,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\CameraPosition.resx">
       <DependentUpon>CameraPosition.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\CameraSettings.resx">
+      <DependentUpon>CameraSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\LightColorEditor.resx">
       <DependentUpon>LightColorEditor.cs</DependentUpon>

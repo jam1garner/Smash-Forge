@@ -212,7 +212,6 @@ namespace Smash_Forge
         public static bool renderFog = true;
 
         public static float renderDepth = 100000.0f;
-        public static bool renderAlpha = true;
         public static bool renderVertColor = true;
         public static bool renderMaterialLighting = true;
         public static bool renderNormalMap = true;
@@ -220,6 +219,13 @@ namespace Smash_Forge
         public static bool drawAreaLightBoundingBoxes = true;
         public static bool renderStageLighting = true;
         public static RenderTypes renderType;
+
+        public static bool renderR = true;
+        public static bool renderG = true;
+        public static bool renderB = true;
+        public static bool renderAlpha = true;
+
+        public static int uvChannel = 1; // should be an enum
 
         // ETC
         public static string fighterDir = "";
@@ -232,19 +238,18 @@ namespace Smash_Forge
 
         public enum RenderTypes
         {
-            Shaded = 0,
-            Normals = 1,
-            Lighting = 2,
-            DiffuseMap = 3,
-            NormalMap = 4,
-            VertColor = 5,
-            AmbientOcclusion = 6,
-            UVCoords = 7,
-            UVTestPattern = 8,
-            Tangents = 9,
-            Bitangents = 10,
-            LightSet = 11,
-            SelectedBoneWeights = 12
+            Normals = 0,
+            Lighting = 1,
+            DiffuseMap = 2,
+            NormalMap = 3,
+            VertColor = 4,
+            AmbientOcclusion = 5,
+            UVCoords = 6,
+            UVTestPattern = 7,
+            Tangents = 8,
+            Bitangents = 9,
+            LightSet = 10,
+            SelectedBoneWeights = 11
         }
 
         public enum FloorStyle
