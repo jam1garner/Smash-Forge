@@ -230,23 +230,27 @@ namespace Smash_Forge
             foreach (Mesh m in meshes)
             {
                 m.generateBoundingBox();
-                max.X = Math.Max(max.X, m.boundingBox[0] + m.boundingBox[3]);
-                max.Y = Math.Max(max.Y, m.boundingBox[1] + m.boundingBox[3]);
-                max.Z = Math.Max(max.Z, m.boundingBox[2] + m.boundingBox[3]);
+                max.X = Math.Max(max.X, m.maxbb.X);
+                max.Y = Math.Max(max.Y, m.maxbb.Y);
+                max.Z = Math.Max(max.Z, m.maxbb.Z);
 
-                min.X = Math.Min(min.X, m.boundingBox[0] - m.boundingBox[3]);
-                min.Y = Math.Min(min.Y, m.boundingBox[1] - m.boundingBox[3]);
-                min.Z = Math.Min(min.Z, m.boundingBox[2] - m.boundingBox[3]);
+                min.X = Math.Min(min.X, m.minbb.X);
+                min.Y = Math.Min(min.Y, m.minbb.Y);
+                min.Z = Math.Min(min.Z, m.minbb.Z);
             }
+
 
             param[0] = (max.X + min.X) / 2;
             param[1] = (max.Y + min.Y) / 2;
             param[2] = (max.Z + min.Z) / 2;
 
+
             Vector3 maxdix = Vector3.Zero;
             Vector3 cen = new Vector3(param[0], param[1], param[2]);
             foreach (Mesh m in meshes)
-                if ((cen - new Vector3(m.boundingBox[0], m.boundingBox[1], m.boundingBox[2])).Length > maxdix.Length) maxdix = (cen - new Vector3(m.boundingBox[0], m.boundingBox[1], m.boundingBox[2]));
+                foreach (Polygon p in m.Nodes)
+                    foreach (Vertex v in p.vertices)
+                        if ((cen - new Vector3(param[0], param[1], param[2])).Length > maxdix.Length) maxdix = (cen - new Vector3(param[0], param[1], param[2]));
             param[3] = maxdix.Length;
         }
 
@@ -2650,6 +2654,8 @@ namespace Smash_Forge
                 ((Polygon)Nodes[0]).AddVertex(v);
             }
 
+            public Vector3 maxbb = new Vector3(-9999);
+            public Vector3 minbb = new Vector3(9999);
             public void generateBoundingBox()
             {
                 Vector3 max = new Vector3(-9999);
@@ -2669,10 +2675,13 @@ namespace Smash_Forge
                     }
                 }
 
+                /*Console.WriteLine(Text + "-------------------");
+                for(int i = 0;i < 4; i++)
+                    Console.Write (boundingBox[i] + " - ");*/
+
                 boundingBox[0] = (max.X + min.X) / 2;
                 boundingBox[1] = (max.Y + min.Y) / 2;
                 boundingBox[2] = (max.Z + min.Z) / 2;
-                boundingBox[3] = (max - min).Length/2;
                 boundingBox[4] = boundingBox[0];
                 boundingBox[5] = boundingBox[1];
                 boundingBox[6] = boundingBox[2];
@@ -2684,6 +2693,13 @@ namespace Smash_Forge
                     foreach (Vertex v in p.vertices)
                         if ((cen - v.pos).Length > maxdix.Length) maxdix = (cen - v.pos);
                 boundingBox[3] = maxdix.Length;
+
+                /*Console.WriteLine("");
+                for (int i = 0; i < 4; i++)
+                    Console.Write(boundingBox[i] + " - ");*/
+
+                maxbb = max;
+                minbb = min;
             }
         }
 
@@ -2833,7 +2849,7 @@ namespace Smash_Forge
             List<int> f = p.getDisplayFace();
             Vector3[] tan1 = new Vector3[p.vertices.Count];
             Vector3[] tan2 = new Vector3[p.vertices.Count];
-            for (int i = 0; i < p.displayFaceSize; i += 3)
+            for (int i = 0; i < p.displayFaceSize-3; i += 3)
             {
                 Vertex v1 = p.vertices[f[i]];
                 Vertex v2 = p.vertices[f[i + 1]];

@@ -253,6 +253,11 @@ namespace Smash_Forge
                     }
 
                     NUD.Vertex v = new NUD.Vertex();
+                    int maxoffset = 0;
+                    foreach (ColladaInput input in p.inputs)
+                        if (input.offset > maxoffset) maxoffset = input.offset;
+                    maxoffset += 1;
+                    if (i * maxoffset >= p.p.Length) break;
                     foreach (ColladaInput input in p.inputs)
                     {
                         if (input.semantic == SemanticType.VERTEX)
@@ -267,13 +272,13 @@ namespace Smash_Forge
                             npoly.faces.Add(npoly.vertices.IndexOf(v));
                             foreach (ColladaInput vinput in mesh.vertices.inputs)
                             {
-                                ReadSemantic(vinput, v, p.p[i], sources);
+                                ReadSemantic(vinput, v, p.p[maxoffset * i], sources);
                             }
                         }
                         else
-                            ReadSemantic(input, v, p.p[i], sources);
-                        i++;
+                            ReadSemantic(input, v, p.p[(maxoffset * i) + input.offset], sources);
                     }
+                    i++;
 
                     v.pos = Vector3.Transform(v.pos, nodeTrans);
                     if (v.nrm != null)
@@ -1617,7 +1622,7 @@ namespace Smash_Forge
         {
             public SemanticType semantic;
             public string source;
-            public int set = -99, offset =-99;
+            public int set = -99, offset = 0;
 
             public void Read(XmlNode root)
             {
