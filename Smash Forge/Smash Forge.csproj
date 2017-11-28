@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="ACMDScript.cs" />
     <Compile Include="CharacterParamManager.cs" />
+    <Compile Include="Filetypes\Animation\BCHan.cs" />
     <Compile Include="Filetypes\Animation\OMO.cs" />
     <Compile Include="Filetypes\ATKD.cs" />
     <Compile Include="Filetypes\DRP.cs" />

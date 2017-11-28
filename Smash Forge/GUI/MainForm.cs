@@ -530,9 +530,10 @@ namespace Smash_Forge
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd;*.mta;*.pac;*.dat;*.xmb|" +
+                ofd.Filter = "Supported Formats|*.omo;*.anim;*.bch;*.chr0;*.smd;*.mta;*.pac;*.dat;*.xmb|" +
                              "Object Motion|*.omo|" +
                              "Maya Animation|*.anim|" +
+                             "3DS BCH Animation|*.bch|" +
                              "NW4R Animation|*.chr0|" +
                              "Source Animation (SMD)|*.smd|" +
                              "Smash 4 Material Animation (MTA)|*.mta|" +
@@ -1247,6 +1248,11 @@ namespace Smash_Forge
                 Runtime.Animations.Add(filename, ANIM.read(filename, Runtime.TargetVBN));
                 animNode.Nodes.Add(filename);
             }
+            if (filename.EndsWith(".bch"))
+            {
+                Runtime.Animations.Add(filename, BCHan.read(filename));
+                animNode.Nodes.Add(filename);
+            }
         }
 
         private static void writeDatJobjPositions(TreeNode node, FileOutput f)
@@ -1779,6 +1785,8 @@ namespace Smash_Forge
                 b.mbn = m;
                 b.Read(fileName.Replace(".mbn", ".bch"));
                 Runtime.ModelContainers.Add(con);
+                Runtime.TargetVBN = b.bones;
+                resyncTargetVBN();
             }
 
             /*if (filename.EndsWith(".bch"))
