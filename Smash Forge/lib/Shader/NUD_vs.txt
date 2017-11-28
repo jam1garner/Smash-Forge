@@ -17,7 +17,6 @@ out vec4 viewNormals;
 out vec3 tangent;
 out vec3 bitangent;
 out vec3 fragpos;
-out vec3 boneDisplay;
 out vec3 viewPosition;
 out vec3 objectPosition;
 
@@ -27,6 +26,8 @@ out vec2 texCoord;
 out vec2 texCoord2;
 out vec2 texCoord3;
 out vec2 normaltexCoord;
+
+out vec3 boneWeightsColored;
 
 uniform vec4 colorSamplerUV;
 uniform vec4 colorSampler2UV;
@@ -149,9 +150,9 @@ void main()
 
     // fragment shader attributes
     float totalWeight = BoneWeightDisplay();
-    boneDisplay = vec3(totalWeight);
+    boneWeightsColored = vec3(totalWeight);
     if (renderType == 13)
-        boneDisplay = BoneWeightRamp(vec3(boneDisplay)).rgb;
+        boneWeightsColored = BoneWeightRamp(vec3(boneWeightsColored)).rgb;
 
     vertexColor = vColor;
 	fragpos = objPos.xyz;

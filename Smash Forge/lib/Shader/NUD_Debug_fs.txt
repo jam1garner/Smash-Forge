@@ -11,7 +11,7 @@ in vec3 normal;
 in vec4 viewNormals;
 in vec3 tangent;
 in vec3 bitangent;
-in vec3 boneDisplay;
+in vec3 boneWeightsColored;
 
 out vec4 fragColor;
 
@@ -448,9 +448,9 @@ void main()
             resultingColor.rgb = vec3(1);
     }
     else if (renderType == 12)
-        resultingColor.rgb = boneDisplay;
+        resultingColor.rgb = boneWeightsColored;
     else if (renderType == 13)
-        resultingColor.rgb = boneDisplay;
+        resultingColor.rgb = boneWeightsColored;
 
     if (renderR == 1)
     {
