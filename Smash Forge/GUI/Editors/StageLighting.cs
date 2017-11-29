@@ -50,13 +50,16 @@ namespace Smash_Forge.GUI.Editors
                         name += " cyan";
                         break;
                     case 2:
-                        name += " red";
+                        name += " blue";
                         break;
                     case 3:
                         name += " yellow";
                         break;
                     case 4:
                         name += " magenta";
+                        break;
+                    case 5:
+                        name += " green";
                         break;
                     default:
                         name += "";
