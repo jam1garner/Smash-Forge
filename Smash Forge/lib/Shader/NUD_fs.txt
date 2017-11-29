@@ -11,7 +11,6 @@ in vec3 normal;
 in vec4 viewNormals;
 in vec3 tangent;
 in vec3 bitangent;
-in float boneDisplay;
 
 out vec4 fragColor;
 
@@ -28,7 +27,6 @@ uniform samplerCube stagecube;
 uniform sampler2D spheremap;
 uniform samplerCube cmap;
 uniform sampler2D UVTestPattern;
-uniform sampler2D boneWeight;
 
 // flags tests
 uniform int hasDif;
@@ -141,7 +139,6 @@ uniform vec3 lightPosition;
 uniform vec3 lightDirection;
 uniform sampler2D shadowMap;
 
-uniform int selectedBoneIndex;
 uniform vec3 NSC;
 uniform float elapsedTime;
 
@@ -242,13 +239,6 @@ vec3 DummyRampColor(vec3 color){
 	}
 	else
 		return vec3(1);
-}
-
-vec3 BoneWeightRamp(vec3 weights)
-{
-	float rampInputLuminance = Luminance(weights);
-	rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
-	return texture(boneWeight, vec2(1 - rampInputLuminance, 0.50)).rgb;
 }
 
 vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift) // probably not needed

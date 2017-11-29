@@ -903,7 +903,7 @@ namespace Smash_Forge
 
                 if (m.nud != null && Runtime.shaders["NUD"].shadersCompiledSuccessfully() && Runtime.shaders["NUD_Debug"].shadersCompiledSuccessfully())
                 {
-                    if (Runtime.renderType > 0)
+                    if (Runtime.useDebugShading)
                         shader = Runtime.shaders["NUD_Debug"];
                     else
                         shader = Runtime.shaders["NUD"];

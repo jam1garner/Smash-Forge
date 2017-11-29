@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.checkBox23 = new System.Windows.Forms.CheckBox();
             this.checkBox22 = new System.Windows.Forms.CheckBox();
@@ -107,36 +107,44 @@
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.renderFogCB = new System.Windows.Forms.CheckBox();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.radioButton3 = new System.Windows.Forms.RadioButton();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.debug2CB = new System.Windows.Forms.CheckBox();
+            this.debug1CB = new System.Windows.Forms.CheckBox();
+            this.debugShadingCB = new System.Windows.Forms.CheckBox();
+            this.renderChannelR = new System.Windows.Forms.Button();
+            this.renderChannelA = new System.Windows.Forms.Button();
+            this.renderChannelG = new System.Windows.Forms.Button();
+            this.renderChannelB = new System.Windows.Forms.Button();
+            this.renderModeComboBox = new System.Windows.Forms.ComboBox();
+            this.debugModeLabel = new System.Windows.Forms.Label();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.stageLightingCB = new System.Windows.Forms.CheckBox();
-            this.cameraLightCB = new System.Windows.Forms.CheckBox();
+            this.renderFogCB = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.modelscaleTB = new System.Windows.Forms.TextBox();
             this.difTB = new System.Windows.Forms.TextBox();
             this.spcTB = new System.Windows.Forms.TextBox();
             this.frsTB = new System.Windows.Forms.TextBox();
             this.ambTB = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
+            this.specIntensityLabel = new System.Windows.Forms.Label();
+            this.fresIntensityLabel = new System.Windows.Forms.Label();
+            this.ambIntensityLabel = new System.Windows.Forms.Label();
+            this.refIntensityLabel = new System.Windows.Forms.Label();
             this.refTB = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.fovLabel = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.fovSlider = new System.Windows.Forms.TrackBar();
-            this.useNormCB = new System.Windows.Forms.CheckBox();
-            this.reflectionCB = new System.Windows.Forms.CheckBox();
-            this.specularCB = new System.Windows.Forms.CheckBox();
-            this.fresnelCB = new System.Windows.Forms.CheckBox();
-            this.diffuseCB = new System.Windows.Forms.CheckBox();
-            this.lightCheckBox = new System.Windows.Forms.CheckBox();
+            this.difIntensityLabel = new System.Windows.Forms.Label();
+            this.modelScaleLabel = new System.Windows.Forms.Label();
+            this.vertColorCB = new System.Windows.Forms.CheckBox();
             this.renderAlphaCB = new System.Windows.Forms.CheckBox();
-            this.renderMode = new System.Windows.Forms.ComboBox();
-            this.cb_vertcolor = new System.Windows.Forms.CheckBox();
-            this.renderDepthLabel = new System.Windows.Forms.Label();
-            this.depthSlider = new System.Windows.Forms.TrackBar();
+            this.materialLightingCB = new System.Windows.Forms.CheckBox();
+            this.cameraLightCB = new System.Windows.Forms.CheckBox();
+            this.diffuseCB = new System.Windows.Forms.CheckBox();
+            this.fresnelCB = new System.Windows.Forms.CheckBox();
+            this.specularCB = new System.Windows.Forms.CheckBox();
+            this.reflectionCB = new System.Windows.Forms.CheckBox();
+            this.useNormCB = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -158,9 +166,9 @@
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.groupBox6.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.fovSlider)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -617,8 +625,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2});
+            listViewItem3,
+            listViewItem4});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -729,25 +737,25 @@
             this.groupBox4.Controls.Add(this.zScaleTB);
             this.groupBox4.Controls.Add(this.label76);
             this.groupBox4.Controls.Add(this.depthTestCB);
-            this.groupBox4.Location = new System.Drawing.Point(257, 588);
+            this.groupBox4.Location = new System.Drawing.Point(7, 500);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(282, 78);
+            this.groupBox4.Size = new System.Drawing.Size(243, 78);
             this.groupBox4.TabIndex = 18;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "zDepth (Experimental WIP)";
             // 
             // zScaleTB
             // 
-            this.zScaleTB.Location = new System.Drawing.Point(143, 34);
+            this.zScaleTB.Location = new System.Drawing.Point(149, 42);
             this.zScaleTB.Name = "zScaleTB";
-            this.zScaleTB.Size = new System.Drawing.Size(100, 20);
+            this.zScaleTB.Size = new System.Drawing.Size(77, 20);
             this.zScaleTB.TabIndex = 2;
             this.zScaleTB.TextChanged += new System.EventHandler(this.zScaleTB_TextChanged);
             // 
             // label76
             // 
             this.label76.AutoSize = true;
-            this.label76.Location = new System.Drawing.Point(5, 41);
+            this.label76.Location = new System.Drawing.Point(5, 49);
             this.label76.Name = "label76";
             this.label76.Size = new System.Drawing.Size(66, 13);
             this.label76.TabIndex = 1;
@@ -756,7 +764,7 @@
             // depthTestCB
             // 
             this.depthTestCB.AutoSize = true;
-            this.depthTestCB.Location = new System.Drawing.Point(8, 20);
+            this.depthTestCB.Location = new System.Drawing.Point(8, 19);
             this.depthTestCB.Name = "depthTestCB";
             this.depthTestCB.Size = new System.Drawing.Size(129, 17);
             this.depthTestCB.TabIndex = 0;
@@ -768,9 +776,9 @@
             // 
             this.groupBox3.Controls.Add(this.RendererLabel);
             this.groupBox3.Controls.Add(this.OpenGLVersionLabel);
-            this.groupBox3.Location = new System.Drawing.Point(7, 581);
+            this.groupBox3.Location = new System.Drawing.Point(6, 581);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(243, 86);
+            this.groupBox3.Size = new System.Drawing.Size(243, 85);
             this.groupBox3.TabIndex = 17;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "System Information";
@@ -814,7 +822,7 @@
             this.groupBox2.Controls.Add(this.checkBox3);
             this.groupBox2.Location = new System.Drawing.Point(6, 6);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(244, 569);
+            this.groupBox2.Size = new System.Drawing.Size(244, 491);
             this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Display Settings";
@@ -822,6 +830,8 @@
             // areaLightBoundingBoxCB
             // 
             this.areaLightBoundingBoxCB.AutoSize = true;
+            this.areaLightBoundingBoxCB.Checked = true;
+            this.areaLightBoundingBoxCB.CheckState = System.Windows.Forms.CheckState.Checked;
             this.areaLightBoundingBoxCB.Location = new System.Drawing.Point(16, 392);
             this.areaLightBoundingBoxCB.Name = "areaLightBoundingBoxCB";
             this.areaLightBoundingBoxCB.Size = new System.Drawing.Size(192, 17);
@@ -865,7 +875,7 @@
             // checkBox6
             // 
             this.checkBox6.AutoSize = true;
-            this.checkBox6.Location = new System.Drawing.Point(16, 231);
+            this.checkBox6.Location = new System.Drawing.Point(15, 227);
             this.checkBox6.Name = "checkBox6";
             this.checkBox6.Size = new System.Drawing.Size(85, 17);
             this.checkBox6.TabIndex = 5;
@@ -909,7 +919,7 @@
             // checkBox5
             // 
             this.checkBox5.AutoSize = true;
-            this.checkBox5.Location = new System.Drawing.Point(16, 158);
+            this.checkBox5.Location = new System.Drawing.Point(16, 181);
             this.checkBox5.Name = "checkBox5";
             this.checkBox5.Size = new System.Drawing.Size(87, 17);
             this.checkBox5.TabIndex = 4;
@@ -920,7 +930,7 @@
             // boundingCB
             // 
             this.boundingCB.AutoSize = true;
-            this.boundingCB.Location = new System.Drawing.Point(16, 205);
+            this.boundingCB.Location = new System.Drawing.Point(16, 135);
             this.boundingCB.Name = "boundingCB";
             this.boundingCB.Size = new System.Drawing.Size(141, 17);
             this.boundingCB.TabIndex = 20;
@@ -942,7 +952,7 @@
             // backgroundCB
             // 
             this.backgroundCB.AutoSize = true;
-            this.backgroundCB.Location = new System.Drawing.Point(16, 181);
+            this.backgroundCB.Location = new System.Drawing.Point(15, 204);
             this.backgroundCB.Name = "backgroundCB";
             this.backgroundCB.Size = new System.Drawing.Size(122, 17);
             this.backgroundCB.TabIndex = 19;
@@ -997,7 +1007,7 @@
             // checkBox3
             // 
             this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(16, 135);
+            this.checkBox3.Location = new System.Drawing.Point(16, 158);
             this.checkBox3.Name = "checkBox3";
             this.checkBox3.Size = new System.Drawing.Size(125, 17);
             this.checkBox3.TabIndex = 2;
@@ -1007,319 +1017,162 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.renderFogCB);
-            this.groupBox1.Controls.Add(this.stageLightingCB);
-            this.groupBox1.Controls.Add(this.cameraLightCB);
-            this.groupBox1.Controls.Add(this.tableLayoutPanel1);
-            this.groupBox1.Controls.Add(this.fovLabel);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.fovSlider);
-            this.groupBox1.Controls.Add(this.useNormCB);
-            this.groupBox1.Controls.Add(this.reflectionCB);
-            this.groupBox1.Controls.Add(this.specularCB);
-            this.groupBox1.Controls.Add(this.fresnelCB);
-            this.groupBox1.Controls.Add(this.diffuseCB);
-            this.groupBox1.Controls.Add(this.lightCheckBox);
-            this.groupBox1.Controls.Add(this.renderAlphaCB);
-            this.groupBox1.Controls.Add(this.renderMode);
-            this.groupBox1.Controls.Add(this.cb_vertcolor);
-            this.groupBox1.Controls.Add(this.renderDepthLabel);
-            this.groupBox1.Controls.Add(this.depthSlider);
+            this.groupBox1.Controls.Add(this.groupBox6);
+            this.groupBox1.Controls.Add(this.groupBox5);
             this.groupBox1.Location = new System.Drawing.Point(256, 6);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(283, 569);
+            this.groupBox1.Size = new System.Drawing.Size(294, 660);
             this.groupBox1.TabIndex = 15;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model Render Settings";
             // 
-            // renderFogCB
+            // groupBox6
             // 
-            this.renderFogCB.AutoSize = true;
-            this.renderFogCB.Enabled = false;
-            this.renderFogCB.Location = new System.Drawing.Point(183, 208);
-            this.renderFogCB.Name = "renderFogCB";
-            this.renderFogCB.Size = new System.Drawing.Size(44, 17);
-            this.renderFogCB.TabIndex = 34;
-            this.renderFogCB.Text = "Fog";
-            this.renderFogCB.UseVisualStyleBackColor = true;
-            this.renderFogCB.CheckedChanged += new System.EventHandler(this.renderFogCB_CheckedChanged);
+            this.groupBox6.Controls.Add(this.radioButton3);
+            this.groupBox6.Controls.Add(this.radioButton2);
+            this.groupBox6.Controls.Add(this.radioButton1);
+            this.groupBox6.Controls.Add(this.debug2CB);
+            this.groupBox6.Controls.Add(this.debug1CB);
+            this.groupBox6.Controls.Add(this.debugShadingCB);
+            this.groupBox6.Controls.Add(this.renderChannelR);
+            this.groupBox6.Controls.Add(this.renderChannelA);
+            this.groupBox6.Controls.Add(this.renderChannelG);
+            this.groupBox6.Controls.Add(this.renderChannelB);
+            this.groupBox6.Controls.Add(this.renderModeComboBox);
+            this.groupBox6.Controls.Add(this.debugModeLabel);
+            this.groupBox6.Location = new System.Drawing.Point(6, 392);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(282, 262);
+            this.groupBox6.TabIndex = 36;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Debug Shading";
             // 
-            // stageLightingCB
+            // radioButton3
             // 
-            this.stageLightingCB.AutoSize = true;
-            this.stageLightingCB.Checked = true;
-            this.stageLightingCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.stageLightingCB.Location = new System.Drawing.Point(157, 185);
-            this.stageLightingCB.Name = "stageLightingCB";
-            this.stageLightingCB.Size = new System.Drawing.Size(94, 17);
-            this.stageLightingCB.TabIndex = 33;
-            this.stageLightingCB.Text = "Stage Lighting";
-            this.stageLightingCB.UseVisualStyleBackColor = true;
-            this.stageLightingCB.CheckedChanged += new System.EventHandler(this.stageLightingCB_CheckedChanged);
+            this.radioButton3.AutoSize = true;
+            this.radioButton3.Location = new System.Drawing.Point(155, 136);
+            this.radioButton3.Name = "radioButton3";
+            this.radioButton3.Size = new System.Drawing.Size(46, 17);
+            this.radioButton3.TabIndex = 38;
+            this.radioButton3.TabStop = true;
+            this.radioButton3.Text = "UV3";
+            this.radioButton3.UseVisualStyleBackColor = true;
+            this.radioButton3.Visible = false;
+            this.radioButton3.CheckedChanged += new System.EventHandler(this.radioButton3_CheckedChanged);
             // 
-            // cameraLightCB
+            // radioButton2
             // 
-            this.cameraLightCB.AutoSize = true;
-            this.cameraLightCB.Location = new System.Drawing.Point(157, 370);
-            this.cameraLightCB.Name = "cameraLightCB";
-            this.cameraLightCB.Size = new System.Drawing.Size(88, 17);
-            this.cameraLightCB.TabIndex = 32;
-            this.cameraLightCB.Text = "Camera Light";
-            this.cameraLightCB.UseVisualStyleBackColor = true;
-            this.cameraLightCB.CheckedChanged += new System.EventHandler(this.cameraLightCB_CheckedChanged);
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.Location = new System.Drawing.Point(86, 136);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(46, 17);
+            this.radioButton2.TabIndex = 37;
+            this.radioButton2.TabStop = true;
+            this.radioButton2.Text = "UV2";
+            this.radioButton2.UseVisualStyleBackColor = true;
+            this.radioButton2.Visible = false;
+            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
             // 
-            // tableLayoutPanel1
+            // radioButton1
             // 
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.modelscaleTB, 1, 5);
-            this.tableLayoutPanel1.Controls.Add(this.difTB, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.spcTB, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.frsTB, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.ambTB, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.label5, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label6, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.label7, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.label8, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.refTB, 1, 4);
-            this.tableLayoutPanel1.Controls.Add(this.label2, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.label9, 0, 5);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 396);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 6;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(277, 170);
-            this.tableLayoutPanel1.TabIndex = 31;
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Location = new System.Drawing.Point(11, 136);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(46, 17);
+            this.radioButton1.TabIndex = 36;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "UV1";
+            this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButton1.Visible = false;
+            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
             // 
-            // modelscaleTB
+            // debug2CB
             // 
-            this.modelscaleTB.Location = new System.Drawing.Point(141, 133);
-            this.modelscaleTB.Name = "modelscaleTB";
-            this.modelscaleTB.Size = new System.Drawing.Size(100, 20);
-            this.modelscaleTB.TabIndex = 33;
-            this.modelscaleTB.TextChanged += new System.EventHandler(this.modelscaleTB_TextChanged);
+            this.debug2CB.AutoSize = true;
+            this.debug2CB.Location = new System.Drawing.Point(155, 110);
+            this.debug2CB.Name = "debug2CB";
+            this.debug2CB.Size = new System.Drawing.Size(80, 17);
+            this.debug2CB.TabIndex = 35;
+            this.debug2CB.Text = "checkBox2";
+            this.debug2CB.UseVisualStyleBackColor = true;
+            this.debug2CB.Visible = false;
+            this.debug2CB.CheckedChanged += new System.EventHandler(this.debug2CB_CheckedChanged);
             // 
-            // difTB
+            // debug1CB
             // 
-            this.difTB.Location = new System.Drawing.Point(141, 3);
-            this.difTB.Name = "difTB";
-            this.difTB.Size = new System.Drawing.Size(100, 20);
-            this.difTB.TabIndex = 30;
-            this.difTB.TextChanged += new System.EventHandler(this.difTB_TextChanged);
+            this.debug1CB.AutoSize = true;
+            this.debug1CB.Location = new System.Drawing.Point(10, 110);
+            this.debug1CB.Name = "debug1CB";
+            this.debug1CB.Size = new System.Drawing.Size(80, 17);
+            this.debug1CB.TabIndex = 34;
+            this.debug1CB.Text = "checkBox1";
+            this.debug1CB.UseVisualStyleBackColor = true;
+            this.debug1CB.Visible = false;
+            this.debug1CB.CheckedChanged += new System.EventHandler(this.debug1CB_CheckedChanged);
             // 
-            // spcTB
+            // debugShadingCB
             // 
-            this.spcTB.Location = new System.Drawing.Point(141, 29);
-            this.spcTB.Name = "spcTB";
-            this.spcTB.Size = new System.Drawing.Size(100, 20);
-            this.spcTB.TabIndex = 31;
-            this.spcTB.TextChanged += new System.EventHandler(this.spcTB_TextChanged);
+            this.debugShadingCB.AutoSize = true;
+            this.debugShadingCB.Location = new System.Drawing.Point(10, 20);
+            this.debugShadingCB.Name = "debugShadingCB";
+            this.debugShadingCB.Size = new System.Drawing.Size(136, 17);
+            this.debugShadingCB.TabIndex = 33;
+            this.debugShadingCB.Text = "Enable Debug Shading";
+            this.debugShadingCB.UseVisualStyleBackColor = true;
+            this.debugShadingCB.CheckedChanged += new System.EventHandler(this.debugShadingCB_CheckedChanged);
             // 
-            // frsTB
+            // renderChannelR
             // 
-            this.frsTB.Location = new System.Drawing.Point(141, 55);
-            this.frsTB.Name = "frsTB";
-            this.frsTB.Size = new System.Drawing.Size(100, 20);
-            this.frsTB.TabIndex = 32;
-            this.frsTB.TextChanged += new System.EventHandler(this.frsTB_TextChanged);
+            this.renderChannelR.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.renderChannelR.ForeColor = System.Drawing.Color.Red;
+            this.renderChannelR.Location = new System.Drawing.Point(11, 75);
+            this.renderChannelR.Name = "renderChannelR";
+            this.renderChannelR.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelR.TabIndex = 29;
+            this.renderChannelR.Text = "R";
+            this.renderChannelR.UseVisualStyleBackColor = true;
+            this.renderChannelR.Click += new System.EventHandler(this.renderChannelR_Click);
             // 
-            // ambTB
+            // renderChannelA
             // 
-            this.ambTB.Location = new System.Drawing.Point(141, 81);
-            this.ambTB.Name = "ambTB";
-            this.ambTB.Size = new System.Drawing.Size(100, 20);
-            this.ambTB.TabIndex = 33;
-            this.ambTB.TextChanged += new System.EventHandler(this.ambTB_TextChanged);
+            this.renderChannelA.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.renderChannelA.Location = new System.Drawing.Point(89, 75);
+            this.renderChannelA.Name = "renderChannelA";
+            this.renderChannelA.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelA.TabIndex = 32;
+            this.renderChannelA.Text = "A";
+            this.renderChannelA.UseVisualStyleBackColor = true;
+            this.renderChannelA.Click += new System.EventHandler(this.renderChannelA_Click);
             // 
-            // label5
+            // renderChannelG
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 26);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(91, 13);
-            this.label5.TabIndex = 35;
-            this.label5.Text = "Specular Intensity";
+            this.renderChannelG.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.renderChannelG.ForeColor = System.Drawing.Color.Green;
+            this.renderChannelG.Location = new System.Drawing.Point(37, 75);
+            this.renderChannelG.Name = "renderChannelG";
+            this.renderChannelG.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelG.TabIndex = 31;
+            this.renderChannelG.Text = "G";
+            this.renderChannelG.UseVisualStyleBackColor = true;
+            this.renderChannelG.Click += new System.EventHandler(this.renderChannelG_Click);
             // 
-            // label6
+            // renderChannelB
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 52);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(83, 13);
-            this.label6.TabIndex = 36;
-            this.label6.Text = "Fresnel Intensity";
+            this.renderChannelB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.renderChannelB.ForeColor = System.Drawing.Color.Blue;
+            this.renderChannelB.Location = new System.Drawing.Point(63, 75);
+            this.renderChannelB.Name = "renderChannelB";
+            this.renderChannelB.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelB.TabIndex = 30;
+            this.renderChannelB.Text = "B";
+            this.renderChannelB.UseVisualStyleBackColor = true;
+            this.renderChannelB.Click += new System.EventHandler(this.renderChannelB_Click);
             // 
-            // label7
+            // renderModeComboBox
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(3, 78);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(87, 13);
-            this.label7.TabIndex = 37;
-            this.label7.Text = "Ambient Intensity";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(3, 104);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(97, 13);
-            this.label8.TabIndex = 38;
-            this.label8.Text = "Reflection Intensity";
-            // 
-            // refTB
-            // 
-            this.refTB.Location = new System.Drawing.Point(141, 107);
-            this.refTB.Name = "refTB";
-            this.refTB.Size = new System.Drawing.Size(100, 20);
-            this.refTB.TabIndex = 39;
-            this.refTB.TextChanged += new System.EventHandler(this.refTB_TextChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(82, 13);
-            this.label2.TabIndex = 34;
-            this.label2.Text = "Diffuse Intensity";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(3, 130);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(66, 13);
-            this.label9.TabIndex = 40;
-            this.label9.Text = "Model Scale";
-            // 
-            // fovLabel
-            // 
-            this.fovLabel.AutoSize = true;
-            this.fovLabel.Location = new System.Drawing.Point(117, 67);
-            this.fovLabel.Name = "fovLabel";
-            this.fovLabel.Size = new System.Drawing.Size(57, 13);
-            this.fovLabel.TabIndex = 29;
-            this.fovLabel.Text = "FOV Slider";
-            this.fovLabel.Click += new System.EventHandler(this.fovLabel_Click);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 138);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(72, 13);
-            this.label3.TabIndex = 28;
-            this.label3.Text = "Render Mode";
-            // 
-            // fovSlider
-            // 
-            this.fovSlider.Location = new System.Drawing.Point(13, 83);
-            this.fovSlider.Maximum = 180;
-            this.fovSlider.Minimum = 1;
-            this.fovSlider.Name = "fovSlider";
-            this.fovSlider.Size = new System.Drawing.Size(265, 45);
-            this.fovSlider.TabIndex = 27;
-            this.fovSlider.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.fovSlider.Value = 1;
-            this.fovSlider.Scroll += new System.EventHandler(this.fovSlider_Scroll);
-            // 
-            // useNormCB
-            // 
-            this.useNormCB.AutoSize = true;
-            this.useNormCB.Location = new System.Drawing.Point(12, 370);
-            this.useNormCB.Name = "useNormCB";
-            this.useNormCB.Size = new System.Drawing.Size(110, 17);
-            this.useNormCB.TabIndex = 26;
-            this.useNormCB.Text = "Use Normal Maps";
-            this.useNormCB.UseVisualStyleBackColor = true;
-            this.useNormCB.CheckedChanged += new System.EventHandler(this.useNormCB_CheckedChanged);
-            // 
-            // reflectionCB
-            // 
-            this.reflectionCB.AutoSize = true;
-            this.reflectionCB.Enabled = false;
-            this.reflectionCB.Location = new System.Drawing.Point(38, 277);
-            this.reflectionCB.Name = "reflectionCB";
-            this.reflectionCB.Size = new System.Drawing.Size(74, 17);
-            this.reflectionCB.TabIndex = 23;
-            this.reflectionCB.Text = "Reflection";
-            this.reflectionCB.UseVisualStyleBackColor = true;
-            this.reflectionCB.CheckedChanged += new System.EventHandler(this.reflectionCB_CheckedChanged);
-            // 
-            // specularCB
-            // 
-            this.specularCB.AutoSize = true;
-            this.specularCB.Enabled = false;
-            this.specularCB.Location = new System.Drawing.Point(38, 254);
-            this.specularCB.Name = "specularCB";
-            this.specularCB.Size = new System.Drawing.Size(68, 17);
-            this.specularCB.TabIndex = 22;
-            this.specularCB.Text = "Specular";
-            this.specularCB.UseVisualStyleBackColor = true;
-            this.specularCB.CheckedChanged += new System.EventHandler(this.specularCB_CheckedChanged);
-            // 
-            // fresnelCB
-            // 
-            this.fresnelCB.AutoSize = true;
-            this.fresnelCB.Enabled = false;
-            this.fresnelCB.Location = new System.Drawing.Point(38, 231);
-            this.fresnelCB.Name = "fresnelCB";
-            this.fresnelCB.Size = new System.Drawing.Size(60, 17);
-            this.fresnelCB.TabIndex = 21;
-            this.fresnelCB.Text = "Fresnel";
-            this.fresnelCB.UseVisualStyleBackColor = true;
-            this.fresnelCB.CheckedChanged += new System.EventHandler(this.fresnelCB_CheckedChanged);
-            // 
-            // diffuseCB
-            // 
-            this.diffuseCB.AutoSize = true;
-            this.diffuseCB.Enabled = false;
-            this.diffuseCB.Location = new System.Drawing.Point(38, 208);
-            this.diffuseCB.Name = "diffuseCB";
-            this.diffuseCB.Size = new System.Drawing.Size(59, 17);
-            this.diffuseCB.TabIndex = 20;
-            this.diffuseCB.Text = "Diffuse";
-            this.diffuseCB.UseVisualStyleBackColor = true;
-            this.diffuseCB.CheckedChanged += new System.EventHandler(this.diffuseCB_CheckedChanged);
-            // 
-            // lightCheckBox
-            // 
-            this.lightCheckBox.AutoSize = true;
-            this.lightCheckBox.Location = new System.Drawing.Point(12, 185);
-            this.lightCheckBox.Name = "lightCheckBox";
-            this.lightCheckBox.Size = new System.Drawing.Size(103, 17);
-            this.lightCheckBox.TabIndex = 19;
-            this.lightCheckBox.Text = "Material Lighting";
-            this.lightCheckBox.UseVisualStyleBackColor = true;
-            this.lightCheckBox.CheckedChanged += new System.EventHandler(this.lightCheckBox_CheckedChanged);
-            // 
-            // renderAlphaCB
-            // 
-            this.renderAlphaCB.AutoSize = true;
-            this.renderAlphaCB.Checked = true;
-            this.renderAlphaCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.renderAlphaCB.Location = new System.Drawing.Point(157, 162);
-            this.renderAlphaCB.Name = "renderAlphaCB";
-            this.renderAlphaCB.Size = new System.Drawing.Size(91, 17);
-            this.renderAlphaCB.TabIndex = 17;
-            this.renderAlphaCB.Text = "Render Alpha";
-            this.renderAlphaCB.UseVisualStyleBackColor = true;
-            this.renderAlphaCB.CheckedChanged += new System.EventHandler(this.cb_normals_CheckedChanged);
-            // 
-            // renderMode
-            // 
-            this.renderMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.renderMode.FormattingEnabled = true;
-            this.renderMode.Items.AddRange(new object[] {
-            "Shaded",
+            this.renderModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.renderModeComboBox.FormattingEnabled = true;
+            this.renderModeComboBox.Items.AddRange(new object[] {
             "Normals",
             "Lighting",
             "Diffuse Maps",
@@ -1331,49 +1184,305 @@
             "Tangents",
             "Bitangents",
             "Light Set",
-            "Bone Weights",
-            "Bone Weights Color"});
-            this.renderMode.Location = new System.Drawing.Point(87, 134);
-            this.renderMode.Name = "renderMode";
-            this.renderMode.Size = new System.Drawing.Size(190, 21);
-            this.renderMode.TabIndex = 16;
-            this.renderMode.SelectedIndexChanged += new System.EventHandler(this.checkBox6_CheckedChanged);
-            this.renderMode.SelectionChangeCommitted += new System.EventHandler(this.renderMode_SelectionChangeCommitted);
+            "Bone Weights"});
+            this.renderModeComboBox.Location = new System.Drawing.Point(86, 44);
+            this.renderModeComboBox.Name = "renderModeComboBox";
+            this.renderModeComboBox.Size = new System.Drawing.Size(164, 21);
+            this.renderModeComboBox.TabIndex = 16;
+            this.renderModeComboBox.SelectedIndexChanged += new System.EventHandler(this.checkBox6_CheckedChanged);
+            this.renderModeComboBox.SelectionChangeCommitted += new System.EventHandler(this.renderMode_SelectionChangeCommitted);
             // 
-            // cb_vertcolor
+            // debugModeLabel
             // 
-            this.cb_vertcolor.AutoSize = true;
-            this.cb_vertcolor.Checked = true;
-            this.cb_vertcolor.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_vertcolor.Location = new System.Drawing.Point(12, 162);
-            this.cb_vertcolor.Name = "cb_vertcolor";
-            this.cb_vertcolor.Size = new System.Drawing.Size(118, 17);
-            this.cb_vertcolor.TabIndex = 15;
-            this.cb_vertcolor.Text = "Show Vertex Colors";
-            this.cb_vertcolor.UseVisualStyleBackColor = true;
-            this.cb_vertcolor.CheckedChanged += new System.EventHandler(this.cb_vertcolor_CheckedChanged);
+            this.debugModeLabel.AutoSize = true;
+            this.debugModeLabel.Location = new System.Drawing.Point(8, 47);
+            this.debugModeLabel.Name = "debugModeLabel";
+            this.debugModeLabel.Size = new System.Drawing.Size(69, 13);
+            this.debugModeLabel.TabIndex = 28;
+            this.debugModeLabel.Text = "Debug Mode";
             // 
-            // renderDepthLabel
+            // groupBox5
             // 
-            this.renderDepthLabel.AutoSize = true;
-            this.renderDepthLabel.Location = new System.Drawing.Point(127, 16);
-            this.renderDepthLabel.Name = "renderDepthLabel";
-            this.renderDepthLabel.Size = new System.Drawing.Size(36, 13);
-            this.renderDepthLabel.TabIndex = 14;
-            this.renderDepthLabel.Text = "Depth";
+            this.groupBox5.Controls.Add(this.stageLightingCB);
+            this.groupBox5.Controls.Add(this.renderFogCB);
+            this.groupBox5.Controls.Add(this.tableLayoutPanel1);
+            this.groupBox5.Controls.Add(this.vertColorCB);
+            this.groupBox5.Controls.Add(this.renderAlphaCB);
+            this.groupBox5.Controls.Add(this.materialLightingCB);
+            this.groupBox5.Controls.Add(this.cameraLightCB);
+            this.groupBox5.Controls.Add(this.diffuseCB);
+            this.groupBox5.Controls.Add(this.fresnelCB);
+            this.groupBox5.Controls.Add(this.specularCB);
+            this.groupBox5.Controls.Add(this.reflectionCB);
+            this.groupBox5.Controls.Add(this.useNormCB);
+            this.groupBox5.Location = new System.Drawing.Point(6, 19);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(282, 367);
+            this.groupBox5.TabIndex = 35;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Material Lighting";
             // 
-            // depthSlider
+            // stageLightingCB
             // 
-            this.depthSlider.Location = new System.Drawing.Point(13, 32);
-            this.depthSlider.Maximum = 500000;
-            this.depthSlider.Minimum = 10;
-            this.depthSlider.Name = "depthSlider";
-            this.depthSlider.Size = new System.Drawing.Size(265, 45);
-            this.depthSlider.SmallChange = 5;
-            this.depthSlider.TabIndex = 13;
-            this.depthSlider.Value = 10;
-            this.depthSlider.Scroll += new System.EventHandler(this.depthSlider_ValueChanged);
-            this.depthSlider.ValueChanged += new System.EventHandler(this.depthSlider_ValueChanged);
+            this.stageLightingCB.AutoSize = true;
+            this.stageLightingCB.Checked = true;
+            this.stageLightingCB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.stageLightingCB.Location = new System.Drawing.Point(156, 70);
+            this.stageLightingCB.Name = "stageLightingCB";
+            this.stageLightingCB.Size = new System.Drawing.Size(94, 17);
+            this.stageLightingCB.TabIndex = 33;
+            this.stageLightingCB.Text = "Stage Lighting";
+            this.stageLightingCB.UseVisualStyleBackColor = true;
+            this.stageLightingCB.CheckedChanged += new System.EventHandler(this.stageLightingCB_CheckedChanged);
+            // 
+            // renderFogCB
+            // 
+            this.renderFogCB.AutoSize = true;
+            this.renderFogCB.Location = new System.Drawing.Point(182, 93);
+            this.renderFogCB.Name = "renderFogCB";
+            this.renderFogCB.Size = new System.Drawing.Size(44, 17);
+            this.renderFogCB.TabIndex = 34;
+            this.renderFogCB.Text = "Fog";
+            this.renderFogCB.UseVisualStyleBackColor = true;
+            this.renderFogCB.CheckedChanged += new System.EventHandler(this.renderFogCB_CheckedChanged);
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.modelscaleTB, 1, 5);
+            this.tableLayoutPanel1.Controls.Add(this.difTB, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.spcTB, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.frsTB, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.ambTB, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.specIntensityLabel, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.fresIntensityLabel, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.ambIntensityLabel, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.refIntensityLabel, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.refTB, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.difIntensityLabel, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.modelScaleLabel, 0, 5);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 192);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 6;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(264, 160);
+            this.tableLayoutPanel1.TabIndex = 31;
+            // 
+            // modelscaleTB
+            // 
+            this.modelscaleTB.Location = new System.Drawing.Point(135, 133);
+            this.modelscaleTB.Name = "modelscaleTB";
+            this.modelscaleTB.Size = new System.Drawing.Size(100, 20);
+            this.modelscaleTB.TabIndex = 33;
+            this.modelscaleTB.TextChanged += new System.EventHandler(this.modelscaleTB_TextChanged);
+            // 
+            // difTB
+            // 
+            this.difTB.Location = new System.Drawing.Point(135, 3);
+            this.difTB.Name = "difTB";
+            this.difTB.Size = new System.Drawing.Size(100, 20);
+            this.difTB.TabIndex = 30;
+            this.difTB.TextChanged += new System.EventHandler(this.difTB_TextChanged);
+            // 
+            // spcTB
+            // 
+            this.spcTB.Location = new System.Drawing.Point(135, 29);
+            this.spcTB.Name = "spcTB";
+            this.spcTB.Size = new System.Drawing.Size(100, 20);
+            this.spcTB.TabIndex = 31;
+            this.spcTB.TextChanged += new System.EventHandler(this.spcTB_TextChanged);
+            // 
+            // frsTB
+            // 
+            this.frsTB.Location = new System.Drawing.Point(135, 55);
+            this.frsTB.Name = "frsTB";
+            this.frsTB.Size = new System.Drawing.Size(100, 20);
+            this.frsTB.TabIndex = 32;
+            this.frsTB.TextChanged += new System.EventHandler(this.frsTB_TextChanged);
+            // 
+            // ambTB
+            // 
+            this.ambTB.Location = new System.Drawing.Point(135, 81);
+            this.ambTB.Name = "ambTB";
+            this.ambTB.Size = new System.Drawing.Size(100, 20);
+            this.ambTB.TabIndex = 33;
+            this.ambTB.TextChanged += new System.EventHandler(this.ambTB_TextChanged);
+            // 
+            // specIntensityLabel
+            // 
+            this.specIntensityLabel.AutoSize = true;
+            this.specIntensityLabel.Location = new System.Drawing.Point(3, 26);
+            this.specIntensityLabel.Name = "specIntensityLabel";
+            this.specIntensityLabel.Size = new System.Drawing.Size(91, 13);
+            this.specIntensityLabel.TabIndex = 35;
+            this.specIntensityLabel.Text = "Specular Intensity";
+            // 
+            // fresIntensityLabel
+            // 
+            this.fresIntensityLabel.AutoSize = true;
+            this.fresIntensityLabel.Location = new System.Drawing.Point(3, 52);
+            this.fresIntensityLabel.Name = "fresIntensityLabel";
+            this.fresIntensityLabel.Size = new System.Drawing.Size(83, 13);
+            this.fresIntensityLabel.TabIndex = 36;
+            this.fresIntensityLabel.Text = "Fresnel Intensity";
+            // 
+            // ambIntensityLabel
+            // 
+            this.ambIntensityLabel.AutoSize = true;
+            this.ambIntensityLabel.Location = new System.Drawing.Point(3, 78);
+            this.ambIntensityLabel.Name = "ambIntensityLabel";
+            this.ambIntensityLabel.Size = new System.Drawing.Size(87, 13);
+            this.ambIntensityLabel.TabIndex = 37;
+            this.ambIntensityLabel.Text = "Ambient Intensity";
+            // 
+            // refIntensityLabel
+            // 
+            this.refIntensityLabel.AutoSize = true;
+            this.refIntensityLabel.Location = new System.Drawing.Point(3, 104);
+            this.refIntensityLabel.Name = "refIntensityLabel";
+            this.refIntensityLabel.Size = new System.Drawing.Size(97, 13);
+            this.refIntensityLabel.TabIndex = 38;
+            this.refIntensityLabel.Text = "Reflection Intensity";
+            // 
+            // refTB
+            // 
+            this.refTB.Location = new System.Drawing.Point(135, 107);
+            this.refTB.Name = "refTB";
+            this.refTB.Size = new System.Drawing.Size(100, 20);
+            this.refTB.TabIndex = 39;
+            this.refTB.TextChanged += new System.EventHandler(this.refTB_TextChanged);
+            // 
+            // difIntensityLabel
+            // 
+            this.difIntensityLabel.AutoSize = true;
+            this.difIntensityLabel.Location = new System.Drawing.Point(3, 0);
+            this.difIntensityLabel.Name = "difIntensityLabel";
+            this.difIntensityLabel.Size = new System.Drawing.Size(82, 13);
+            this.difIntensityLabel.TabIndex = 34;
+            this.difIntensityLabel.Text = "Diffuse Intensity";
+            // 
+            // modelScaleLabel
+            // 
+            this.modelScaleLabel.AutoSize = true;
+            this.modelScaleLabel.Location = new System.Drawing.Point(3, 130);
+            this.modelScaleLabel.Name = "modelScaleLabel";
+            this.modelScaleLabel.Size = new System.Drawing.Size(66, 13);
+            this.modelScaleLabel.TabIndex = 40;
+            this.modelScaleLabel.Text = "Model Scale";
+            // 
+            // vertColorCB
+            // 
+            this.vertColorCB.AutoSize = true;
+            this.vertColorCB.Checked = true;
+            this.vertColorCB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.vertColorCB.Location = new System.Drawing.Point(11, 23);
+            this.vertColorCB.Name = "vertColorCB";
+            this.vertColorCB.Size = new System.Drawing.Size(118, 17);
+            this.vertColorCB.TabIndex = 15;
+            this.vertColorCB.Text = "Show Vertex Colors";
+            this.vertColorCB.UseVisualStyleBackColor = true;
+            this.vertColorCB.CheckedChanged += new System.EventHandler(this.cb_vertcolor_CheckedChanged);
+            // 
+            // renderAlphaCB
+            // 
+            this.renderAlphaCB.AutoSize = true;
+            this.renderAlphaCB.Checked = true;
+            this.renderAlphaCB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.renderAlphaCB.Location = new System.Drawing.Point(156, 23);
+            this.renderAlphaCB.Name = "renderAlphaCB";
+            this.renderAlphaCB.Size = new System.Drawing.Size(91, 17);
+            this.renderAlphaCB.TabIndex = 17;
+            this.renderAlphaCB.Text = "Render Alpha";
+            this.renderAlphaCB.UseVisualStyleBackColor = true;
+            this.renderAlphaCB.CheckedChanged += new System.EventHandler(this.cb_normals_CheckedChanged);
+            // 
+            // materialLightingCB
+            // 
+            this.materialLightingCB.AutoSize = true;
+            this.materialLightingCB.Location = new System.Drawing.Point(11, 70);
+            this.materialLightingCB.Name = "materialLightingCB";
+            this.materialLightingCB.Size = new System.Drawing.Size(103, 17);
+            this.materialLightingCB.TabIndex = 19;
+            this.materialLightingCB.Text = "Material Lighting";
+            this.materialLightingCB.UseVisualStyleBackColor = true;
+            this.materialLightingCB.CheckedChanged += new System.EventHandler(this.lightCheckBox_CheckedChanged);
+            // 
+            // cameraLightCB
+            // 
+            this.cameraLightCB.AutoSize = true;
+            this.cameraLightCB.Location = new System.Drawing.Point(155, 45);
+            this.cameraLightCB.Name = "cameraLightCB";
+            this.cameraLightCB.Size = new System.Drawing.Size(88, 17);
+            this.cameraLightCB.TabIndex = 32;
+            this.cameraLightCB.Text = "Camera Light";
+            this.cameraLightCB.UseVisualStyleBackColor = true;
+            this.cameraLightCB.CheckedChanged += new System.EventHandler(this.cameraLightCB_CheckedChanged);
+            // 
+            // diffuseCB
+            // 
+            this.diffuseCB.AutoSize = true;
+            this.diffuseCB.Enabled = false;
+            this.diffuseCB.Location = new System.Drawing.Point(37, 93);
+            this.diffuseCB.Name = "diffuseCB";
+            this.diffuseCB.Size = new System.Drawing.Size(59, 17);
+            this.diffuseCB.TabIndex = 20;
+            this.diffuseCB.Text = "Diffuse";
+            this.diffuseCB.UseVisualStyleBackColor = true;
+            this.diffuseCB.CheckedChanged += new System.EventHandler(this.diffuseCB_CheckedChanged);
+            // 
+            // fresnelCB
+            // 
+            this.fresnelCB.AutoSize = true;
+            this.fresnelCB.Enabled = false;
+            this.fresnelCB.Location = new System.Drawing.Point(37, 116);
+            this.fresnelCB.Name = "fresnelCB";
+            this.fresnelCB.Size = new System.Drawing.Size(60, 17);
+            this.fresnelCB.TabIndex = 21;
+            this.fresnelCB.Text = "Fresnel";
+            this.fresnelCB.UseVisualStyleBackColor = true;
+            this.fresnelCB.CheckedChanged += new System.EventHandler(this.fresnelCB_CheckedChanged);
+            // 
+            // specularCB
+            // 
+            this.specularCB.AutoSize = true;
+            this.specularCB.Enabled = false;
+            this.specularCB.Location = new System.Drawing.Point(37, 139);
+            this.specularCB.Name = "specularCB";
+            this.specularCB.Size = new System.Drawing.Size(68, 17);
+            this.specularCB.TabIndex = 22;
+            this.specularCB.Text = "Specular";
+            this.specularCB.UseVisualStyleBackColor = true;
+            this.specularCB.CheckedChanged += new System.EventHandler(this.specularCB_CheckedChanged);
+            // 
+            // reflectionCB
+            // 
+            this.reflectionCB.AutoSize = true;
+            this.reflectionCB.Enabled = false;
+            this.reflectionCB.Location = new System.Drawing.Point(37, 162);
+            this.reflectionCB.Name = "reflectionCB";
+            this.reflectionCB.Size = new System.Drawing.Size(74, 17);
+            this.reflectionCB.TabIndex = 23;
+            this.reflectionCB.Text = "Reflection";
+            this.reflectionCB.UseVisualStyleBackColor = true;
+            this.reflectionCB.CheckedChanged += new System.EventHandler(this.reflectionCB_CheckedChanged);
+            // 
+            // useNormCB
+            // 
+            this.useNormCB.AutoSize = true;
+            this.useNormCB.Location = new System.Drawing.Point(10, 45);
+            this.useNormCB.Name = "useNormCB";
+            this.useNormCB.Size = new System.Drawing.Size(110, 17);
+            this.useNormCB.TabIndex = 26;
+            this.useNormCB.Text = "Use Normal Maps";
+            this.useNormCB.UseVisualStyleBackColor = true;
+            this.useNormCB.CheckedChanged += new System.EventHandler(this.useNormCB_CheckedChanged);
             // 
             // tabControl1
             // 
@@ -1419,11 +1528,12 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.fovSlider)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -1514,30 +1624,38 @@
         private System.Windows.Forms.TextBox spcTB;
         private System.Windows.Forms.TextBox frsTB;
         private System.Windows.Forms.TextBox ambTB;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label specIntensityLabel;
+        private System.Windows.Forms.Label fresIntensityLabel;
+        private System.Windows.Forms.Label ambIntensityLabel;
+        private System.Windows.Forms.Label refIntensityLabel;
         private System.Windows.Forms.TextBox refTB;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label fovLabel;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TrackBar fovSlider;
+        private System.Windows.Forms.Label difIntensityLabel;
+        private System.Windows.Forms.Label modelScaleLabel;
+        private System.Windows.Forms.Label debugModeLabel;
         private System.Windows.Forms.CheckBox useNormCB;
         private System.Windows.Forms.CheckBox reflectionCB;
         private System.Windows.Forms.CheckBox specularCB;
         private System.Windows.Forms.CheckBox fresnelCB;
         private System.Windows.Forms.CheckBox diffuseCB;
-        private System.Windows.Forms.CheckBox lightCheckBox;
+        private System.Windows.Forms.CheckBox materialLightingCB;
         private System.Windows.Forms.CheckBox renderAlphaCB;
-        private System.Windows.Forms.ComboBox renderMode;
-        private System.Windows.Forms.CheckBox cb_vertcolor;
-        private System.Windows.Forms.Label renderDepthLabel;
-        private System.Windows.Forms.TrackBar depthSlider;
+        private System.Windows.Forms.ComboBox renderModeComboBox;
+        private System.Windows.Forms.CheckBox vertColorCB;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.CheckBox areaLightBoundingBoxCB;
         private System.Windows.Forms.CheckBox renderFogCB;
         private System.Windows.Forms.CheckBox stageLightingCB;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Button renderChannelR;
+        private System.Windows.Forms.Button renderChannelA;
+        private System.Windows.Forms.Button renderChannelG;
+        private System.Windows.Forms.Button renderChannelB;
+        private System.Windows.Forms.CheckBox debugShadingCB;
+        private System.Windows.Forms.RadioButton radioButton3;
+        private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.CheckBox debug2CB;
+        private System.Windows.Forms.CheckBox debug1CB;
     }
 }
