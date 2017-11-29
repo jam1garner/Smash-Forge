@@ -49,6 +49,8 @@ uniform int hasNrmSamplerAUV;
 uniform int hasNrmSamplerBUV;
 
 uniform sampler2D boneWeight;
+uniform int debug1;
+uniform int debug2;
 
 
 uniform bones
@@ -151,7 +153,7 @@ void main()
     // fragment shader attributes
     float totalWeight = BoneWeightDisplay();
     boneWeightsColored = vec3(totalWeight);
-    if (renderType == 13)
+    if (debug1 == 1)
         boneWeightsColored = BoneWeightRamp(vec3(boneWeightsColored)).rgb;
 
     vertexColor = vColor;

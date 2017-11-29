@@ -50,7 +50,7 @@ namespace Smash_Forge.GUI
             checkBox22.Checked = Runtime.renderTetherLedgeGrabboxes;
             checkBox23.Checked = Runtime.renderReverseLedgeGrabboxes;
             swagViewing.Checked = Runtime.renderSwag;
-            lightCheckBox.Checked = Runtime.renderMaterialLighting;
+            materialLightingCB.Checked = Runtime.renderMaterialLighting;
             useNormCB.Checked = Runtime.renderNormalMap;
             boundingCB.Checked = Runtime.renderBoundingBox;
             wireframeCB.Checked = Runtime.renderModelWireframe;
@@ -98,7 +98,7 @@ namespace Smash_Forge.GUI
             zScaleTB.Text = Runtime.zScale + "";
 
             renderAlphaCB.Checked = Runtime.renderAlpha;
-            cb_vertcolor.Checked = Runtime.renderVertColor;
+            vertColorCB.Checked = Runtime.renderVertColor;
             renderModeComboBox.SelectedIndex = (int)Runtime.renderType;
 
             pbHurtboxColor.BackColor = Runtime.hurtboxColor;
@@ -228,26 +228,50 @@ namespace Smash_Forge.GUI
         {
             if (Runtime.renderType == Runtime.RenderTypes.UVCoords || Runtime.renderType == Runtime.RenderTypes.UVTestPattern)
             {
+                debug1CB.Visible = false;
+                debug2CB.Visible = false;
+
                 radioButton1.Visible = true;
                 radioButton2.Visible = true;
                 radioButton3.Visible = true;
             }
-            else
+            else if (Runtime.renderType == Runtime.RenderTypes.AmbientOcclusion)
             {
+                debug1CB.Text = "aoMinGain";
+                debug1CB.Visible = true;
+                debug2CB.Visible = false;
+
                 radioButton1.Visible = false;
                 radioButton2.Visible = false;
                 radioButton3.Visible = false;
             }
-
-            if (Runtime.renderType == Runtime.RenderTypes.AmbientOcclusion)
+            else if (Runtime.renderType == Runtime.RenderTypes.SelectedBoneWeights)
             {
-                debug1CB.Text = "aoMinGain";
+                debug1CB.Text = "Color Ramp";
+                debug1CB.Visible = true;
                 debug2CB.Visible = false;
+
+                radioButton1.Visible = false;
+                radioButton2.Visible = false;
+                radioButton3.Visible = false;
+            }
+            else if (Runtime.renderType == Runtime.RenderTypes.Normals)
+            {
+                debug1CB.Visible = false;
+                debug2CB.Visible = false;
+
+                radioButton1.Visible = false;
+                radioButton2.Visible = false;
+                radioButton3.Visible = false;
             }
             else
             {
                 debug1CB.Visible = false;
                 debug2CB.Visible = false;
+
+                radioButton1.Visible = false;
+                radioButton2.Visible = false;
+                radioButton3.Visible = false;
             }
 
 
@@ -260,12 +284,12 @@ namespace Smash_Forge.GUI
 
         private void lightCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.renderMaterialLighting = lightCheckBox.Checked;
+            Runtime.renderMaterialLighting = materialLightingCB.Checked;
             
-            diffuseCB.Enabled = lightCheckBox.Checked;
-            fresnelCB.Enabled = lightCheckBox.Checked;
-            specularCB.Enabled = lightCheckBox.Checked;
-            reflectionCB.Enabled = lightCheckBox.Checked;
+            diffuseCB.Enabled = materialLightingCB.Checked;
+            fresnelCB.Enabled = materialLightingCB.Checked;
+            specularCB.Enabled = materialLightingCB.Checked;
+            reflectionCB.Enabled = materialLightingCB.Checked;
         }
 
         private void cb_normals_CheckedChanged(object sender, EventArgs e)
@@ -275,7 +299,7 @@ namespace Smash_Forge.GUI
 
         private void cb_vertcolor_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.renderVertColor = cb_vertcolor.Checked;
+            Runtime.renderVertColor = vertColorCB.Checked;
         }
 
         private void diffuseCB_CheckedChanged(object sender, EventArgs e)
