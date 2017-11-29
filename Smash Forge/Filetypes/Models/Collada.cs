@@ -1188,7 +1188,9 @@ namespace Smash_Forge
         private void Write(string fname)
         {
             XmlDocument doc = new XmlDocument();
-            
+
+            doc.AppendChild(doc.CreateXmlDeclaration("1.0", "utf-8", null));
+
             XmlNode colladaNode = doc.CreateElement("COLLADA");
             colladaNode.Attributes.Append(createAttribute(doc, "xmlns", "http://www.collada.org/2005/11/COLLADASchema"));
             colladaNode.Attributes.Append(createAttribute(doc, "version", "1.4.1"));
