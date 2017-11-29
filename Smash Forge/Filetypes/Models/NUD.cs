@@ -508,8 +508,6 @@ namespace Smash_Forge
                     GL.CullFace(CullFaceMode.Back);
                     break;
             }
-
-
             if (p.Checked)
             {
                 if ((p.IsSelected || p.Parent.IsSelected) && drawSelection)
@@ -566,18 +564,22 @@ namespace Smash_Forge
 
             GL.Uniform1(shader.getAttribute("zScale"), Runtime.zScale);
 
-
             GL.Uniform1(shader.getAttribute("renderR"), Runtime.renderR ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderG"), Runtime.renderG ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderB"), Runtime.renderB ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
 
-            GL.Uniform1(shader.getAttribute("uvChannel"), Runtime.uvChannel);
+            GL.Uniform1(shader.getAttribute("uvChannel"), (int)Runtime.uvChannel);
 
             bool alphaOverride = Runtime.renderAlpha && !Runtime.renderR && !Runtime.renderG && !Runtime.renderB;
             GL.Uniform1(shader.getAttribute("alphaOverride"), alphaOverride ? 1 : 0);
 
             GL.Uniform3(shader.getAttribute("lightSetColor"), 0, 0, 0);
+
+
+            GL.Uniform1(shader.getAttribute("debug1"), Runtime.debug1 ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("debug2"), Runtime.debug2 ? 1 : 0);
+
         }
 
         private void SetXMBUniforms(Shader shader, Polygon p)

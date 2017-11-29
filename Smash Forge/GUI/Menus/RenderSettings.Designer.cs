@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem21 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem22 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.checkBox23 = new System.Windows.Forms.CheckBox();
             this.checkBox22 = new System.Windows.Forms.CheckBox();
@@ -111,15 +111,15 @@
             this.radioButton3 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.checkBox24 = new System.Windows.Forms.CheckBox();
-            this.checkBox20 = new System.Windows.Forms.CheckBox();
+            this.debug2CB = new System.Windows.Forms.CheckBox();
+            this.debug1CB = new System.Windows.Forms.CheckBox();
             this.debugShadingCB = new System.Windows.Forms.CheckBox();
             this.renderChannelR = new System.Windows.Forms.Button();
             this.renderChannelA = new System.Windows.Forms.Button();
             this.renderChannelG = new System.Windows.Forms.Button();
             this.renderChannelB = new System.Windows.Forms.Button();
             this.renderModeComboBox = new System.Windows.Forms.ComboBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.debugModeLabel = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.stageLightingCB = new System.Windows.Forms.CheckBox();
             this.renderFogCB = new System.Windows.Forms.CheckBox();
@@ -625,8 +625,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem21,
-            listViewItem22});
+            listViewItem1,
+            listViewItem2});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -1021,7 +1021,7 @@
             this.groupBox1.Controls.Add(this.groupBox5);
             this.groupBox1.Location = new System.Drawing.Point(256, 6);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(283, 660);
+            this.groupBox1.Size = new System.Drawing.Size(294, 660);
             this.groupBox1.TabIndex = 15;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model Render Settings";
@@ -1031,18 +1031,18 @@
             this.groupBox6.Controls.Add(this.radioButton3);
             this.groupBox6.Controls.Add(this.radioButton2);
             this.groupBox6.Controls.Add(this.radioButton1);
-            this.groupBox6.Controls.Add(this.checkBox24);
-            this.groupBox6.Controls.Add(this.checkBox20);
+            this.groupBox6.Controls.Add(this.debug2CB);
+            this.groupBox6.Controls.Add(this.debug1CB);
             this.groupBox6.Controls.Add(this.debugShadingCB);
             this.groupBox6.Controls.Add(this.renderChannelR);
             this.groupBox6.Controls.Add(this.renderChannelA);
             this.groupBox6.Controls.Add(this.renderChannelG);
             this.groupBox6.Controls.Add(this.renderChannelB);
             this.groupBox6.Controls.Add(this.renderModeComboBox);
-            this.groupBox6.Controls.Add(this.label3);
+            this.groupBox6.Controls.Add(this.debugModeLabel);
             this.groupBox6.Location = new System.Drawing.Point(6, 392);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(271, 262);
+            this.groupBox6.Size = new System.Drawing.Size(282, 262);
             this.groupBox6.TabIndex = 36;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Debug Shading";
@@ -1083,25 +1083,27 @@
             this.radioButton1.UseVisualStyleBackColor = true;
             this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
             // 
-            // checkBox24
+            // debug2CB
             // 
-            this.checkBox24.AutoSize = true;
-            this.checkBox24.Location = new System.Drawing.Point(155, 110);
-            this.checkBox24.Name = "checkBox24";
-            this.checkBox24.Size = new System.Drawing.Size(86, 17);
-            this.checkBox24.TabIndex = 35;
-            this.checkBox24.Text = "checkBox24";
-            this.checkBox24.UseVisualStyleBackColor = true;
+            this.debug2CB.AutoSize = true;
+            this.debug2CB.Location = new System.Drawing.Point(155, 110);
+            this.debug2CB.Name = "debug2CB";
+            this.debug2CB.Size = new System.Drawing.Size(80, 17);
+            this.debug2CB.TabIndex = 35;
+            this.debug2CB.Text = "checkBox2";
+            this.debug2CB.UseVisualStyleBackColor = true;
+            this.debug2CB.CheckedChanged += new System.EventHandler(this.debug2CB_CheckedChanged);
             // 
-            // checkBox20
+            // debug1CB
             // 
-            this.checkBox20.AutoSize = true;
-            this.checkBox20.Location = new System.Drawing.Point(10, 110);
-            this.checkBox20.Name = "checkBox20";
-            this.checkBox20.Size = new System.Drawing.Size(46, 17);
-            this.checkBox20.TabIndex = 34;
-            this.checkBox20.Text = "stuff";
-            this.checkBox20.UseVisualStyleBackColor = true;
+            this.debug1CB.AutoSize = true;
+            this.debug1CB.Location = new System.Drawing.Point(10, 110);
+            this.debug1CB.Name = "debug1CB";
+            this.debug1CB.Size = new System.Drawing.Size(80, 17);
+            this.debug1CB.TabIndex = 34;
+            this.debug1CB.Text = "checkBox1";
+            this.debug1CB.UseVisualStyleBackColor = true;
+            this.debug1CB.CheckedChanged += new System.EventHandler(this.debug1CB_CheckedChanged);
             // 
             // debugShadingCB
             // 
@@ -1166,7 +1168,6 @@
             this.renderModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.renderModeComboBox.FormattingEnabled = true;
             this.renderModeComboBox.Items.AddRange(new object[] {
-            "Shaded",
             "Normals",
             "Lighting",
             "Diffuse Maps",
@@ -1178,8 +1179,7 @@
             "Tangents",
             "Bitangents",
             "Light Set",
-            "Bone Weights",
-            "Bone Weights Color"});
+            "Bone Weights"});
             this.renderModeComboBox.Location = new System.Drawing.Point(86, 44);
             this.renderModeComboBox.Name = "renderModeComboBox";
             this.renderModeComboBox.Size = new System.Drawing.Size(164, 21);
@@ -1187,14 +1187,14 @@
             this.renderModeComboBox.SelectedIndexChanged += new System.EventHandler(this.checkBox6_CheckedChanged);
             this.renderModeComboBox.SelectionChangeCommitted += new System.EventHandler(this.renderMode_SelectionChangeCommitted);
             // 
-            // label3
+            // debugModeLabel
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(8, 47);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(69, 13);
-            this.label3.TabIndex = 28;
-            this.label3.Text = "Debug Mode";
+            this.debugModeLabel.AutoSize = true;
+            this.debugModeLabel.Location = new System.Drawing.Point(8, 47);
+            this.debugModeLabel.Name = "debugModeLabel";
+            this.debugModeLabel.Size = new System.Drawing.Size(69, 13);
+            this.debugModeLabel.TabIndex = 28;
+            this.debugModeLabel.Text = "Debug Mode";
             // 
             // groupBox5
             // 
@@ -1212,7 +1212,7 @@
             this.groupBox5.Controls.Add(this.useNormCB);
             this.groupBox5.Location = new System.Drawing.Point(6, 19);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(271, 367);
+            this.groupBox5.Size = new System.Drawing.Size(282, 367);
             this.groupBox5.TabIndex = 35;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Material Lighting";
@@ -1627,7 +1627,7 @@
         private System.Windows.Forms.TextBox refTB;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label debugModeLabel;
         private System.Windows.Forms.CheckBox useNormCB;
         private System.Windows.Forms.CheckBox reflectionCB;
         private System.Windows.Forms.CheckBox specularCB;
@@ -1651,7 +1651,7 @@
         private System.Windows.Forms.RadioButton radioButton3;
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.CheckBox checkBox24;
-        private System.Windows.Forms.CheckBox checkBox20;
+        private System.Windows.Forms.CheckBox debug2CB;
+        private System.Windows.Forms.CheckBox debug1CB;
     }
 }

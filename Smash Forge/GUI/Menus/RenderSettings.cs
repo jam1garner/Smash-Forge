@@ -63,6 +63,23 @@ namespace Smash_Forge.GUI
             //fovSlider.Value = (int)(Camera.viewportCamera.fov * 180.0f / Math.PI);
             //fovLabel.Text = "FOV (Degrees): " + fovSlider.Value;
 
+            debugShadingCB.Checked = Runtime.useDebugShading;
+            debugModeLabel.Enabled = debugShadingCB.Checked;
+            renderChannelR.Enabled = debugShadingCB.Checked;
+            renderChannelG.Enabled = debugShadingCB.Checked;
+            renderChannelB.Enabled = debugShadingCB.Checked;
+            renderChannelA.Enabled = debugShadingCB.Checked;
+            renderModeComboBox.Enabled = debugShadingCB.Checked;
+            debug1CB.Enabled = debugShadingCB.Checked;
+            debug2CB.Enabled = debugShadingCB.Checked;
+            radioButton1.Enabled = debugShadingCB.Checked;
+            radioButton2.Enabled = debugShadingCB.Checked;
+            radioButton3.Enabled = debugShadingCB.Checked;
+            radioButton1.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel1;
+            radioButton2.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel2;
+            radioButton3.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel3;
+
+
             cameraLightCB.Checked = Runtime.cameraLight;
             diffuseCB.Checked = Runtime.renderDiffuse;
             specularCB.Checked = Runtime.renderSpecular;
@@ -202,6 +219,38 @@ namespace Smash_Forge.GUI
         private void renderMode_SelectionChangeCommitted(object sender, EventArgs e)
         {
             Runtime.renderType = (Runtime.RenderTypes)renderModeComboBox.SelectedIndex;
+
+            UpdateDebugButtonsFromRenderType();
+
+        }
+
+        private void UpdateDebugButtonsFromRenderType()
+        {
+            if (Runtime.renderType == Runtime.RenderTypes.UVCoords || Runtime.renderType == Runtime.RenderTypes.UVTestPattern)
+            {
+                radioButton1.Visible = true;
+                radioButton2.Visible = true;
+                radioButton3.Visible = true;
+            }
+            else
+            {
+                radioButton1.Visible = false;
+                radioButton2.Visible = false;
+                radioButton3.Visible = false;
+            }
+
+            if (Runtime.renderType == Runtime.RenderTypes.AmbientOcclusion)
+            {
+                debug1CB.Text = "aoMinGain";
+                debug2CB.Visible = false;
+            }
+            else
+            {
+                debug1CB.Visible = false;
+                debug2CB.Visible = false;
+            }
+
+
         }
 
         private void swagViewing_CheckedChanged(object sender, EventArgs e)
@@ -725,22 +774,44 @@ namespace Smash_Forge.GUI
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.uvChannel = 1;
+            Runtime.uvChannel = Runtime.UVChannel.Channel1;
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.uvChannel = 2;
+            Runtime.uvChannel = Runtime.UVChannel.Channel2;
         }
 
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.uvChannel = 3;
+            Runtime.uvChannel = Runtime.UVChannel.Channel3;
         }
 
         private void debugShadingCB_CheckedChanged(object sender, EventArgs e)
         {
+            Runtime.useDebugShading = debugShadingCB.Checked;
 
+            debugModeLabel.Enabled = debugShadingCB.Checked;
+            renderChannelR.Enabled = debugShadingCB.Checked;
+            renderChannelG.Enabled = debugShadingCB.Checked;
+            renderChannelB.Enabled = debugShadingCB.Checked;
+            renderChannelA.Enabled = debugShadingCB.Checked;
+            renderModeComboBox.Enabled = debugShadingCB.Checked;
+            debug1CB.Enabled = debugShadingCB.Checked;
+            debug2CB.Enabled = debugShadingCB.Checked;
+            radioButton1.Enabled = debugShadingCB.Checked;
+            radioButton2.Enabled = debugShadingCB.Checked;
+            radioButton3.Enabled = debugShadingCB.Checked;
+        }
+
+        private void debug1CB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.debug1 = debug1CB.Checked;
+        }
+
+        private void debug2CB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.debug2 = debug2CB.Checked;
         }
     }
     

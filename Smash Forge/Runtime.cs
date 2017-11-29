@@ -225,7 +225,11 @@ namespace Smash_Forge
         public static bool renderB = true;
         public static bool renderAlpha = true;
 
-        public static int uvChannel = 1; // should be an enum
+        public static UVChannel uvChannel = UVChannel.Channel1;
+
+        public static bool useDebugShading = false;
+        public static bool debug1 = false;
+        public static bool debug2 = false;
 
         // ETC
         public static string fighterDir = "";
@@ -250,6 +254,13 @@ namespace Smash_Forge
             Bitangents = 9,
             LightSet = 10,
             SelectedBoneWeights = 11
+        }
+
+        public enum UVChannel
+        {
+            Channel1 = 1,
+            Channel2 = 2,
+            Channel3 = 3
         }
 
         public enum FloorStyle

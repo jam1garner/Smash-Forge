@@ -55,6 +55,8 @@ uniform int isStage;
 uniform int renderStageLighting;
 
 uniform int uvChannel;
+uniform int debug1;
+uniform int debug2;
 
 // NU_ Material Properties
 uniform vec4 colorOffset;
@@ -396,6 +398,15 @@ void main()
         }
     }
 
+    vec3 aoBlend = vec3(1);
+    float aoMap = texture(normalMap, texCoord).a;
+    float maxAOBlendValue = 1.2;
+    aoBlend = min((vec3(aoMap) + aoMinGain.rgb), vec3(maxAOBlendValue));
+    vec3 aoGain = min((aoMap * (1 + aoMinGain.rgb)), vec3(1.0));
+	vec3 c1 = RGB2HSV(aoBlend);
+    vec3 c2 = RGB2HSV(aoGain);
+	aoBlend.rgb = HSV2RGB(vec3(c1.x, c2.y, c1.z));
+
     vec4 resultingColor = vec4(1);
     vec2 displayTexCoord = texCoord;
     if (uvChannel == 2)
@@ -404,33 +415,35 @@ void main()
         displayTexCoord = texCoord3;
 
     // render modes
-    if (renderAlpha == 1) // use texture alpha for render modes
-        resultingColor.a = texture(dif, texCoord).a;
-
-    if (renderType == 1) // normals color
+    if (renderType == 0) // normals color
         resultingColor.rgb = displayNormal;
-    else if (renderType == 2) // lighting
+    else if (renderType == 1) // lighting
     {
         resultingColor.rgb = CalculateLighting(bumpMapNormal, halfLambert);
         resultingColor.rgb = CalculateFog(resultingColor.rgb);
     }
-    else if (renderType == 3) // diffuse map
-        resultingColor.rgb = diffuseMapTotal.rgb;
-    else if (renderType == 4) // normal map
-        resultingColor.rgb = pow(texture(normalMap, normaltexCoord).rgb, vec3(1));
-    else if (renderType == 5) // vertexColor
+    else if (renderType == 2) // diffuse map
+        resultingColor.rgba = diffuseMapTotal.rgba;
+    else if (renderType == 3) // normal map
+        resultingColor.rgb = texture(normalMap, normaltexCoord).rgb;
+    else if (renderType == 4) // vertexColor
         resultingColor.rgb = vertexColor.rgb;
-    else if (renderType == 6) // ambient occlusion
-        resultingColor.rgb = pow(texture(normalMap, texCoord).aaa, vec3(1));
-    else if (renderType == 7) // uv coords
+    else if (renderType == 5) // ambient occlusion
+    {
+        resultingColor.rgb = texture(normalMap, texCoord).aaa;
+        if (debug1 == 1)
+            resultingColor.rgb = aoBlend.rgb;
+    }
+
+    else if (renderType == 6) // uv coords
 		resultingColor.rgb = vec3(displayTexCoord, 1);
-    else if (renderType == 8) // uv test pattern
+    else if (renderType == 7) // uv test pattern
         resultingColor.rgb = texture(UVTestPattern, displayTexCoord).rgb;
-    else if (renderType == 9) // tangents
+    else if (renderType == 8) // tangents
         resultingColor.rgb = displayTangent;
-    else if (renderType == 10) // bitangents
+    else if (renderType == 9) // bitangents
         resultingColor.rgb = displayBitangent;
-    else if (renderType == 11) // light set #
+    else if (renderType == 10) // light set #
     {
         if (lightSet == 0)
             resultingColor.rgb = vec3(0,0,0);
@@ -447,11 +460,10 @@ void main()
         else
             resultingColor.rgb = vec3(1);
     }
-    else if (renderType == 12)
-        resultingColor.rgb = boneWeightsColored;
-    else if (renderType == 13)
+    else if (renderType == 11)
         resultingColor.rgb = boneWeightsColored;
 
+    // toggle rendering of individual color channels
     if (renderR == 1)
     {
         fragColor.r = resultingColor.r;
