@@ -8,7 +8,6 @@ in vec2 texCoord3;
 in vec2 normaltexCoord;
 in vec4 vertexColor;
 in vec3 normal;
-in vec4 viewNormals;
 in vec3 tangent;
 in vec3 bitangent;
 
@@ -241,6 +240,17 @@ vec3 DummyRampColor(vec3 color){
 		return vec3(1);
 }
 
+vec3 SphereMapColor(vec3 N)
+{
+    // calculate UVs based on view space normals
+    vec4 viewNormals = transpose(inverse(mvpMatrix)) * vec4(N.xyz, 0);
+    float uCoord = viewNormals.x * PI / 2 + 0.5;
+    float vCoord = viewNormals.y * PI / 2 + 0.5;
+
+    vec2 sphereTexcoord = vec2(uCoord + 0.01, (1 - vCoord) + 0.01); // 0.05?
+    return texture(spheremap, sphereTexcoord).xyz;
+}
+
 vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift) // probably not needed
 {
     vec3 shiftedT = tangent + shift * normal;
@@ -328,23 +338,10 @@ vec3 ReflectionPass(vec3 I, vec3 N, vec3 tintColor, vec4 diffuseMap, float aoMap
 	if (hasCube == 1) // cubemaps from model.nut. currently just uses miiverse cubemap
 		reflectionPass += diffuseMap.aaa * stageCubeColor * tintColor * reflectionParams.x;
 
-    // view-based sphere mapping (rosas stars, sonic eyes, etc). replace with proper variable
+    // view-based sphere mapping (rosas stars, sonic eyes, etc) replace with proper variable
 	if ((flags & 0x00000010u) == 0x00000010u)
 	{
-		// calculate UVs based on view space normals (UV scale is currently not right)
-		//float PI = 3.14159;
-		float uCoord = asin(viewNormals.x) / PI + 0.5;
-		float vCoord = asin(viewNormals.y) / PI + 0.5;
-
-        // transform UVs to fix scaling. values were chosen just to look correct
-        float sphereTexcoordOffset = -0.7;
-        float sphereTexcoordScale = 2.4;
-        uCoord = uCoord * sphereTexcoordScale + sphereTexcoordOffset;
-        vCoord = vCoord * sphereTexcoordScale + sphereTexcoordOffset;
-
-		vec2 sphereTexcoord = vec2(uCoord + 0.05, (1 - vCoord) + 0.05); // 0.05?
-		vec3 sphereMapColor = texture(spheremap, sphereTexcoord).xyz;
-		reflectionPass += sphereMapColor * reflectionColor.xyz * tintColor;
+		reflectionPass += SphereMapColor(N) * reflectionColor.xyz * tintColor;
 	}
 	else // stage cubemaps
 		reflectionPass += reflectionColor.rgb * stageCubeColor * tintColor * diffuseMap.aaa;
@@ -544,7 +541,6 @@ vec3 SmashShader(vec4 diffuseMap, float aoMap, vec3 N){
 
     // undo gamma correction. gamma correction done within render passes
     resultingColor = pow(resultingColor, vec3(1 / gamma));
-
     return resultingColor;
 }
 

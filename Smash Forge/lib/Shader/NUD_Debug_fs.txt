@@ -8,7 +8,6 @@ in vec2 texCoord3;
 in vec2 normaltexCoord;
 in vec4 vertexColor;
 in vec3 normal;
-in vec4 viewNormals;
 in vec3 tangent;
 in vec3 bitangent;
 in vec3 boneWeightsColored;
@@ -246,60 +245,6 @@ vec3 DummyRampColor(vec3 color){
 	}
 	else
 		return vec3(1);
-}
-
-vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift) // probably not needed
-{
-    vec3 shiftedT = tangent + shift * normal;
-    return normalize(shiftedT);
-}
-
-vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, float xComponent, float yComponent)
-{
-    float shiftTex = diffuseMap.g; // vertical component of ramp?
-    shiftTex = 0;
-
-    float primaryShift = 0;
-    float secondaryShift = 0;
-
-    vec3 t1 = ShiftTangent(tangent.xyz, normal.xyz, primaryShift + shiftTex);
-    //vec3 t2 = ShiftTangent(tangent.xyz, normal.xyz, secondaryShift + shiftTex);
-    vec3 t2 = ShiftTangent(bitangent.xyz, normal.xyz, secondaryShift + shiftTex);
-
-    float specExp1 = reflectionParams.z;
-    float specExp2 = reflectionParams.w;
-
-    vec3 hairSpecular =  vec3(1);// * StrandSpecular(t1, I, lightDirection, specExp1);
-    float specMask = diffuseMap.b; // what channel should this be?
-    //hairSpecular += vec3(.75,.75,1) * specMask * StrandSpecular(t2, I, specLightDirection, specExp2);
-
-    vec3 halfAngle = normalize(I + specLightDirection);
-    float test = dot(t2, halfAngle)/reflectionParams.w;
-    test = (test + 1) / 2;
-    float test2 = diffuseMap.g;
-
-    hairSpecular = texture(dummyRamp, vec2(test, test2)).rgb * diffuseMap.b * alphaBlendParams.z * 0.1; // find proper constants
-    return (hairSpecular) * diffuseMap.r * 20; // find proper constants
-}
-
-vec3 SoftLighting(vec3 diffuseColorFinal, vec3 ambientIntensityLightColor, vec3 diffuseLightColor, float smoothAmount, float darkenAmount, float saturationAmount, float darkenMultiplier, float saturationMultiplier, float lambert)
-{
-    // blend between a certain distance from dot(L,N) = 0.5
-    float edgeL = 0.5 - (smoothAmount / 2);
-    float edgeR = 0.5 + (smoothAmount / 2);
-    float softLight = smoothstep(edgeL, edgeR, lambert);
-
-    // darken ambientIntensity color to counteract flat stage lighting
-    float softLightDarken = max(((-darkenMultiplier * darkenAmount) + 1), 0);
-    vec3 softLightAmbient = diffuseColorFinal * softLightDarken * ambientIntensityLightColor;
-
-    // more saturated ambientIntensity color
-    softLightAmbient = RGB2HSV(softLightAmbient);
-    softLightAmbient = HSV2RGB(vec3(softLightAmbient.x, (softLightAmbient.y + (saturationMultiplier * saturationAmount)), softLightAmbient.z));
-
-    vec3 softLightDiffuse = diffuseColorFinal * diffuseLightColor;
-
-    return mix(softLightAmbient, softLightDiffuse, softLight); // custom diffuse gradient
 }
 
 vec3 CalculateLighting(vec3 N, float halfLambert)

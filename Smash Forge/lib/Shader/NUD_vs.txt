@@ -13,7 +13,6 @@ in vec4 vWeight;
 in vec4 vBoneHash;
 
 out vec3 normal;
-out vec4 viewNormals;
 out vec3 tangent;
 out vec3 bitangent;
 out vec3 fragpos;
@@ -146,9 +145,6 @@ void main()
     tangent.xyz = vTangent.xyz;
     bitangent.xyz = vBiTangent.xyz;
     viewPosition = vec3(vPosition * mat3(mvpMatrix));
-
-    // calculate view space normals for sphere map rendering
-	viewNormals = transpose(inverse(mvpMatrix)) * vec4(vNormal.xyz, 0);
 
     // fragment shader attributes
     float totalWeight = BoneWeightDisplay();
