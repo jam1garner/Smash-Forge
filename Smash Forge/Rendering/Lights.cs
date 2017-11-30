@@ -7,6 +7,8 @@ using OpenTK;
 using SALT.PARAMS;
 using SALT.Graphics;
 using System.Diagnostics;
+using System.Globalization;
+
 
 namespace Smash_Forge
 {
@@ -98,96 +100,6 @@ namespace Smash_Forge
         }
     }
 
-    public class AreaLight
-    {
-        // this class could be an extension of directional lights, assuming the lighting works the same
-        public string id = "";
-
-        // ambient color
-        public float groundR = 1.0f;
-        public float groundG = 1.0f;
-        public float groundB = 1.0f;
-
-        // diffuse color
-        public float skyR = 1.0f;
-        public float skyG = 1.0f;
-        public float skyB = 1.0f;
-
-        // size
-        public float scaleX = 1.0f;
-        public float scaleY = 1.0f;
-        public float scaleZ = 1.0f;
-
-        // position of the center of the region
-        public float positionX = 0.0f;
-        public float positionY = 0.0f;
-        public float positionZ = 0.0f;
-
-        // How should "non directional" area lights work?
-        // XYZ angles in degrees (converted to radians in helper functions)
-        public float rotX = 0.0f; 
-        public float rotY = 0.0f;
-        public float rotZ = 0.0f; 
-        public Vector3 direction = new Vector3(0f, 0f, 1f);
-
-        public bool noDirectional = false;
-        public bool isSelected = false;
-
-        public AreaLight(string areaLightID)
-        {
-            id = areaLightID;
-        }
-
-        public AreaLight(string areaLightID, Vector3 groundColor, Vector3 skyColor, Vector3 position, Vector3 scale, Vector3 direction)
-        {
-            id = areaLightID;
-            groundR = groundColor.X;
-            groundG = groundColor.Y;
-            groundB = groundColor.Z;
-
-            skyR = skyColor.X;
-            skyG = skyColor.Y;
-            skyB = skyColor.Z;
-        }
-
-        public AreaLight(string areaLightID, Vector3 groundColor, Vector3 skyColor, Vector3 position, Vector3 scale, float rotX, float rotY, float rotZ)
-        {
-            id = areaLightID;
-
-            positionX = position.X;
-            positionY = position.Y;
-            positionZ = position.Z;
-
-            scaleX = scale.X;
-            scaleY = scale.Y;
-            scaleZ = scale.Z;
-
-            skyR = skyColor.X;
-            skyG = skyColor.Y;
-            skyB = skyColor.Z;
-
-            groundR = groundColor.X;
-            groundB = groundColor.Y;
-            groundG = groundColor.Z;
-
-        }
-
-        public void setDirectionFromXYZAngles(float rotX, float rotY, float rotZ)
-        {
-            // calculate light vector from 3 rotation angles
-            Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, rotX * ((float)Math.PI / 180f))
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, rotY * ((float)Math.PI / 180f))
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, rotZ * ((float)Math.PI / 180f));
-
-            direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
-        }
-
-        public override string ToString()
-        {
-            return id;
-        }
-    }
-
     public class DirectionalLight
     {
         public float difR = 1.0f;
@@ -211,7 +123,7 @@ namespace Smash_Forge
 
         public Vector3 direction = new Vector3(0f, 0f, 1f);
 
-        public string name = "";
+        public string id = "";
         public bool enabled = true;
 
         public DirectionalLight(float difH, float difS, float difV, float ambH, float ambS, float ambV, float rotX, float rotY, float rotZ, string name)
@@ -236,7 +148,7 @@ namespace Smash_Forge
 
             direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
 
-            this.name = name;
+            this.id = name;
         }
 
         public DirectionalLight(float H, float S, float V, Vector3 lightDirection, string name)
@@ -249,7 +161,7 @@ namespace Smash_Forge
 
             direction = lightDirection;
 
-            this.name = name;
+            this.id = name;
         }
 
         public DirectionalLight()
@@ -337,10 +249,104 @@ namespace Smash_Forge
 
         public override string ToString()
         {
-            return name;
+            return id;
+        }
+    }
+
+    public class AreaLight : DirectionalLight
+    {
+        // ambient color
+        public float groundR = 1.0f;
+        public float groundG = 1.0f;
+        public float groundB = 1.0f;
+
+        // diffuse color
+        public float skyR = 1.0f;
+        public float skyG = 1.0f;
+        public float skyB = 1.0f;
+
+        // size
+        public float scaleX = 1.0f;
+        public float scaleY = 1.0f;
+        public float scaleZ = 1.0f;
+
+        // position of the center of the region
+        public float positionX = 0.0f;
+        public float positionY = 0.0f;
+        public float positionZ = 0.0f;
+
+        // How should "non directional" area lights work?
+        public bool nonDirectional = false;
+
+        public AreaLight(string areaLightID)
+        {
+            id = areaLightID;
         }
 
+        public AreaLight(string areaLightID, Vector3 groundColor, Vector3 skyColor, Vector3 position, Vector3 scale, Vector3 direction)
+        {
+            id = areaLightID;
+            groundR = groundColor.X;
+            groundG = groundColor.Y;
+            groundB = groundColor.Z;
+
+            skyR = skyColor.X;
+            skyG = skyColor.Y;
+            skyB = skyColor.Z;
+        }
+
+        public AreaLight(string areaLightID, Vector3 groundColor, Vector3 skyColor, Vector3 position, Vector3 scale, float rotX, float rotY, float rotZ)
+        {
+            id = areaLightID;
+
+            positionX = position.X;
+            positionY = position.Y;
+            positionZ = position.Z;
+
+            scaleX = scale.X;
+            scaleY = scale.Y;
+            scaleZ = scale.Z;
+
+            skyR = skyColor.X;
+            skyG = skyColor.Y;
+            skyB = skyColor.Z;
+
+            groundR = groundColor.X;
+            groundB = groundColor.Y;
+            groundG = groundColor.Z;
+        }
     }
+
+    public class LightMap
+    {
+        private float scaleX = 1;
+        private float scaleY = 1;
+        private float scaleZ = 1;
+
+        private int texture_index = 0x10080000;
+        private int texture_addr = 0;
+
+        private float posX = 0;
+        private float posY = 0;
+        private float posZ = 0;
+
+        private float rotX = 0;
+        private float rotY = 0;
+        private float rotZ = 0;
+
+        private string id = "";
+
+        public LightMap()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return id;
+        }
+    }
+
 
     class Lights
     {
@@ -367,6 +373,9 @@ namespace Smash_Forge
 
         // area_light.xmb
         public static List<AreaLight> areaLights = new List<AreaLight>();
+
+        // light_map.xmb
+        public static List<LightMap> lightMaps = new List<LightMap>();
 
         public static void SetLightsFromLightSetParam(ParamFile lightSet)
         {
@@ -474,6 +483,107 @@ namespace Smash_Forge
                 }
             }
         }
+
+        public static void CreateLightMapsFromXMB(XMBFile xmb)
+        {
+            if (xmb != null)
+            {
+                foreach (XMBEntry entry in xmb.Entries)
+                {
+                    if (entry.Children.Count > 0)
+                    {
+                        foreach (XMBEntry lightMapEntry in entry.Children)
+                        {
+                            LightMap newLightMap = CreateLightMapFromXMBEntry(lightMapEntry);
+                            lightMaps.Add(newLightMap);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static LightMap CreateLightMapFromXMBEntry(XMBEntry entry)
+        {
+            float scaleX = 1;
+            float scaleY = 1;
+            float scaleZ = 1;
+
+            int texture_index = 0x10080000;
+            int texture_addr = 0;
+
+            float posX = 0;
+            float posY = 0;
+            float posZ = 0;
+
+            float rotX = 0;
+            float rotY = 0;
+            float rotZ = 0;
+
+            string id = "";
+
+            for (int i = 0; i < entry.Expressions.Count; i++)
+            {
+                string expression = entry.Expressions[i];
+
+                string[] sections = expression.Split('=');
+                string name = sections[0];
+                string[] values = sections[1].Split(',');
+
+                if (name.Contains("id"))
+                {
+                    id = values[0];
+                }
+                if (name.Contains("texture_index"))
+                {
+                    // remove 0x from the beginning
+                    string index = values[0].Trim();
+                    if (index.StartsWith("0x"))
+                        index = index.Substring(2);
+
+                    int.TryParse(index, NumberStyles.HexNumber, null, out texture_index);
+                }
+                if (name.Contains("texture_addr"))
+                {
+                    int.TryParse(values[0], out texture_addr);
+                }
+                if (name.Contains("pos"))
+                {
+                    float.TryParse(values[0], out posX);
+                    float.TryParse(values[1], out posY);
+                    float.TryParse(values[2], out posZ);
+                }
+                if (name.Contains("scale"))
+                {
+                    float.TryParse(values[0], out scaleX);
+                    float.TryParse(values[1], out scaleY);
+                    float.TryParse(values[2], out scaleZ);
+                }
+                if (name.Contains("rot"))
+                {
+                    float.TryParse(values[0], out rotX);
+                    float.TryParse(values[1], out rotY);
+                    float.TryParse(values[2], out rotZ);
+                }
+            }
+
+            Debug.WriteLine(id);
+            Debug.WriteLine(texture_index);
+            Debug.WriteLine(rotX);
+            Debug.WriteLine(rotY);
+            Debug.WriteLine(rotZ);
+            Debug.WriteLine(scaleX);
+            Debug.WriteLine(scaleY);
+            Debug.WriteLine(scaleZ);
+            Debug.WriteLine(posX);
+            Debug.WriteLine(posY);
+            Debug.WriteLine(posZ);
+
+            Vector3 position = new Vector3(posX, posY, posZ);
+            Vector3 scale = new Vector3(scaleX, scaleY, scaleZ);
+
+            return new LightMap();
+        }
+
 
         private static AreaLight CreateAreaLightFromXMBEntry(XMBEntry entry)
         {

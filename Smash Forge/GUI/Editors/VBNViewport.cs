@@ -397,7 +397,7 @@ namespace Smash_Forge
             {
                 // should properly initialize these eventually
                 Lights.stageDiffuseLightSet[i] = new DirectionalLight();
-                Lights.stageDiffuseLightSet[i].name = "Stage " + i;
+                Lights.stageDiffuseLightSet[i].id = "Stage " + i;
             }
 
             for (int i = 0; i < Lights.stageFogSet.Length; i++)

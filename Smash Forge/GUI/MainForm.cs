@@ -776,6 +776,7 @@ namespace Smash_Forge
             Runtime.Animnames.Clear();
             Runtime.clearMoveset();
             Lights.areaLights.Clear();
+            Lights.lightMaps.Clear();
         }
 
         private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1088,6 +1089,11 @@ namespace Smash_Forge
                             if (fileName.EndsWith("area_light.xmb"))
                             {
                                 Lights.CreateAreaLightsFromXMB(new XMBFile(fileName));
+                            }
+
+                            if (fileName.EndsWith("lightmap.xmb"))
+                            {
+                                Lights.CreateLightMapsFromXMB(new XMBFile(fileName));
                             }
                         }
                     }
@@ -1526,7 +1532,6 @@ namespace Smash_Forge
             }
         }
 
-
         ///<summary>
         ///Open a file based on the filename
         ///</summary>
@@ -1761,6 +1766,11 @@ namespace Smash_Forge
             if (fileName.EndsWith("area_light.xmb"))
             {
                 Lights.CreateAreaLightsFromXMB(new XMBFile(fileName));
+            }
+
+            if (fileName.EndsWith("lightmap.xmb"))
+            {
+                Lights.CreateLightMapsFromXMB(new XMBFile(fileName));
             }
 
             if (fileName.ToLower().EndsWith(".obj"))
