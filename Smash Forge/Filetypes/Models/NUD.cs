@@ -580,6 +580,7 @@ namespace Smash_Forge
 
             GL.Uniform3(shader.getAttribute("lightSetColor"), 0, 0, 0);
 
+            GL.Uniform1(shader.getAttribute("colorOverride"), 0);
 
             GL.Uniform1(shader.getAttribute("debug1"), Runtime.debug1 ? 1 : 0);
             GL.Uniform1(shader.getAttribute("debug2"), Runtime.debug2 ? 1 : 0);
@@ -617,12 +618,13 @@ namespace Smash_Forge
         private static void DrawModelWireframe(Polygon p, Shader shader)
         {
             // use vertex color for wireframe color
-            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.RenderTypes.VertColor);
+            GL.Uniform1(shader.getAttribute("colorOverride"), 1);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
+            GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(2.0f);
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
+            GL.Uniform1(shader.getAttribute("colorOverride"), 0);
         }
 
         private static void DrawModelSelection(Polygon p, Shader shader)
@@ -645,12 +647,11 @@ namespace Smash_Forge
             GL.StencilMask(0x00);
 
             // use vertex color for model selection color
-            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.RenderTypes.VertColor);
+            GL.Uniform1(shader.getAttribute("colorOverride"), 1);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
-            GL.LineWidth(2);
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
+            GL.Uniform1(shader.getAttribute("colorOverride"), 0);
 
             GL.StencilMask(0xFF);
             GL.Clear(ClearBufferMask.StencilBufferBit);

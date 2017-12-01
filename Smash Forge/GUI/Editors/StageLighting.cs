@@ -98,6 +98,11 @@ namespace Smash_Forge.GUI.Editors
 
         private void charLightsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            RenderCharacterLightColors();
+        }
+
+        private void RenderCharacterLightColors()
+        {
             if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
             {
                 charColor1GroupBox.Text = "Fresnel Sky Color";
@@ -106,7 +111,7 @@ namespace Smash_Forge.GUI.Editors
                     new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
                 UpdateCharFresnelValues();
             }
-            else if(charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
+            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
             {
                 charColor1GroupBox.Text = "Diffuse Color";
                 charColor2GroupBox.Text = "Ambient Color";
@@ -205,7 +210,6 @@ namespace Smash_Forge.GUI.Editors
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 
-            Debug.WriteLine(selectedAreaLight.skyR);
             RenderTools.DrawQuadGradient(selectedAreaLight.skyR, selectedAreaLight.skyG, selectedAreaLight.skyB, selectedAreaLight.groundR, selectedAreaLight.groundG, selectedAreaLight.groundB);
 
             areaColorGLControl.SwapBuffers();
@@ -944,5 +948,11 @@ namespace Smash_Forge.GUI.Editors
 
 
         #endregion
+
+        private void stageLightingTabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // render solid white to avoid displaying the stage light text
+            RenderCharacterLightColor(new Vector3(1), new Vector3(1));
+        }
     }
 }

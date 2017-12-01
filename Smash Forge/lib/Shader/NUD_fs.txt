@@ -133,6 +133,8 @@ uniform vec3 stageLight4Direction;
 uniform int renderFog;
 uniform vec3 stageFogColor;
 
+uniform int colorOverride;
+
 uniform mat4 mvpMatrix;
 uniform vec3 lightPosition;
 uniform vec3 lightDirection;
@@ -341,7 +343,7 @@ vec3 ReflectionPass(vec3 I, vec3 N, vec3 tintColor, vec4 diffuseMap, float aoMap
     // view-based sphere mapping (rosas stars, sonic eyes, etc) replace with proper variable
 	if ((flags & 0x00000010u) == 0x00000010u)
 	{
-		reflectionPass += SphereMapColor(N) * reflectionColor.xyz * tintColor;
+		reflectionPass += SphereMapColor(normal.xyz) * reflectionColor.xyz * tintColor;
 	}
 	else // stage cubemaps
 		reflectionPass += reflectionColor.rgb * stageCubeColor * tintColor * diffuseMap.aaa;
@@ -541,6 +543,11 @@ vec3 SmashShader(vec4 diffuseMap, float aoMap, vec3 N){
 
     // undo gamma correction. gamma correction done within render passes
     resultingColor = pow(resultingColor, vec3(1 / gamma));
+
+    // used for wireframe rendering
+    if (colorOverride == 1)
+        return vec3(1);
+
     return resultingColor;
 }
 

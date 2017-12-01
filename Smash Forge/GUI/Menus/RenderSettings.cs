@@ -567,10 +567,6 @@ namespace Smash_Forge.GUI
             }
         }
 
-
-
-  
-
         private void label35_Click(object sender, EventArgs e)
         {
 
