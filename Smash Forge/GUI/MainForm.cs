@@ -559,11 +559,12 @@ namespace Smash_Forge
 
             using (var sfd = new SaveFileDialog())
             {
-                sfd.Filter = "Supported Files (.omo, .anim, .pac, .mta)|*.omo;*.anim;*.pac;*.mta|" +
-                             "Object Motion (.omo)|*.omo|" +
-                             "Material Animation (.mta)|*.mta|" +
+                sfd.Filter = "Supported Files (.omo, .anim, .pac, .mta .smd)|*.omo;*.anim;*.pac;*.mta;*.smd|" +
                              "Maya Anim (.anim)|*.anim|" +
+                             "Material Animation (.mta)|*.mta|" +
+                             "Object Motion (.omo)|*.omo|" +
                              "OMO Pack (.pac)|*.pac|" +
+                             "Source Animation (.smd)|*.smd|" +
                              "All Files (*.*)|*.*";
 
                 if (sfd.ShowDialog() == DialogResult.OK)
@@ -596,6 +597,12 @@ namespace Smash_Forge
                         }
                         else
                             OMOOld.createOMO(Runtime.TargetAnim, Runtime.TargetVBN, sfd.FileName);
+                    }
+
+
+                    if (sfd.FileName.EndsWith(".smd"))
+                    {
+                        SMD.Save(Runtime.TargetAnim, Runtime.TargetVBN, sfd.FileName);
                     }
 
                     if (sfd.FileName.EndsWith(".pac"))
@@ -1098,8 +1105,10 @@ namespace Smash_Forge
                             {
                                 if (f.EndsWith(".omo"))
                                 {
-                                    Runtime.Animations.Add(f, OMOOld.read(new FileData(f)));
-                                    animNode.Nodes.Add(f);
+                                    //Runtime.Animations.Add(f, );
+                                    Animation a = OMOOld.read(new FileData(f));
+                                    a.Text = f;
+                                    animNode.Nodes.Add(a);
                                 }
                                 else if (f.EndsWith("path.bin"))
                                 {
@@ -1236,7 +1245,9 @@ namespace Smash_Forge
             if (filename.EndsWith(".omo"))
             {
                 //Runtime.Animations.Add(filename, );
-                animNode.Nodes.Add(OMOOld.read(new FileData(filename)));
+                Animation a = OMOOld.read(new FileData(filename));
+                a.Text = filename;
+                animNode.Nodes.Add(a);
             }
             if (filename.EndsWith(".chr0"))
             {

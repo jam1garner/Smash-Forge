@@ -97,8 +97,8 @@ namespace Smash_Forge
                         b.pos = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
                         b.rot = VBN.FromEulerAngles(float.Parse(args[6]), float.Parse(args[5]), float.Parse(args[4]));
 
-                        //if(b.parentIndex!=-1)
-                        //	vbn.bones [b.parentIndex].children.Add (int.Parse(args[0]));
+                        if(b.parentIndex!=-1)
+                        	vbn.bones [b.parentIndex].Nodes.Add (b);
                     }
                     Animation.KeyNode bone = a.GetBone(vbn.bones[int.Parse(args[0])].Text);
                     bone.RotType = Animation.RotationType.EULER;
@@ -139,7 +139,6 @@ namespace Smash_Forge
 
             v.boneCountPerType[0] = (uint)vbn.bones.Count;
             v.update();
-            //a.bakeFramesLinear();
         }
 
         public static NUD toNUD(string fname)
@@ -229,6 +228,41 @@ namespace Smash_Forge
             return nud;
         }
 
+        public static void Save(Animation anim, VBN Skeleton, String Fname)
+        {
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@Fname))
+            {
+                file.WriteLine("version 1");
+
+                file.WriteLine("nodes");
+                foreach(Bone b in Skeleton.bones)
+                {
+                    file.WriteLine(Skeleton.bones.IndexOf(b) + " \"" + b.Text + "\" " + b.parentIndex);
+                }
+                file.WriteLine("end");
+                
+                file.WriteLine("skeleton");
+                anim.SetFrame(0);
+                for(int i = 0; i <= anim.FrameCount; i++)
+                {
+                    anim.NextFrame(Skeleton);
+                    
+                    file.WriteLine("time " + i);
+
+                    foreach (Animation.KeyNode sb in anim.Bones)
+                    {
+                        Bone b = Skeleton.getBone(sb.Text);
+                        if (b == null) continue;
+                        Vector3 eul = ANIM.quattoeul(b.rot);
+                        file.WriteLine(Skeleton.bones.IndexOf(b) + " " + b.pos.X + " " + b.pos.Y + " " + b.pos.Z + " " + eul.X + " " + eul.Y + " " + eul.Z);
+                    }
+
+                }
+                file.WriteLine("end");
+
+                file.Close();
+            }
+        }
     }
 }
 
