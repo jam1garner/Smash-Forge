@@ -198,8 +198,8 @@ namespace Smash_Forge
                 int boneTableEntries = f.readInt();
                 int metaDataPointerOffset = f.readInt();
                 
-                Runtime.Animations.Add(skeletalAnimationName, a);
-                MainForm.animNode.Nodes.Add(skeletalAnimationName);
+                //Runtime.Animations.Add(skeletalAnimationName, a);
+                //MainForm.animNode.Nodes.Add(skeletalAnimationName);
                 
                 Debug.WriteLine("Animation Name: " + skeletalAnimationName);
 

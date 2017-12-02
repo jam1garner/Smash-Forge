@@ -1250,8 +1250,8 @@ namespace Smash_Forge
             }
             if (filename.EndsWith(".bch"))
             {
-                Runtime.Animations.Add(filename, BCHan.read(filename));
-                animNode.Nodes.Add(filename);
+                //Runtime.Animations.Add(filename, BCHan.read(filename));
+                //animNode.Nodes.Add(filename);
             }
 
             animList.treeView1.EndUpdate();
