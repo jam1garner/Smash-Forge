@@ -65,6 +65,22 @@ namespace Smash_Forge
                         }
                     }
                 }
+                if (m.bch != null)
+                {
+                    TreeNode model;
+                    if (string.IsNullOrWhiteSpace(m.name))
+                        model = new TreeNode($"Model {j}") { Tag = m.bch };
+                    else
+                        model = new TreeNode(m.name) { Tag = m.bch};
+                    treeView1.Nodes.Add(model);
+                    model.ImageKey = "model";
+                    model.SelectedImageKey = "model";
+                    j++;
+                    foreach (MBN.Mesh mesh in m.bch.mbn.mesh)
+                    {
+                        model.Nodes.Add(mesh);
+                    }
+                }
             }
             //treeView1.ExpandAll();
         }

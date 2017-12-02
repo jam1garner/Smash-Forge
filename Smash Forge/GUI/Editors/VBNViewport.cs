@@ -893,7 +893,28 @@ namespace Smash_Forge
                 {
                     if (m.bch.mbn != null && Runtime.shaders["MBN"].shadersCompiledSuccessfully())
                     {
-                        m.bch.mbn.Render(Camera.viewportCamera.getMVPMatrix());                      
+                        if (m.bch.bones != null)
+                        {
+                            Matrix4[] f = m.bch.bones.getShaderMatrix();
+
+                            int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
+                            int boneCount = m.bch.bones.bones.Count;
+                            int dataSize = boneCount * Vector4.SizeInBytes * 4;
+
+                            GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
+                            GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
+                            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+
+                            var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
+                            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
+
+                            if (f.Length > 0)
+                            {
+                                GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
+                                GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
+                            }
+                        }
+                        m.bch.mbn.Render(Camera.viewportCamera.getMVPMatrix());
                     }
                 }
 

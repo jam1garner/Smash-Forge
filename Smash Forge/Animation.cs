@@ -66,7 +66,13 @@ namespace Smash_Forge
             public KeyNode(String bname)
             {
                 Text = bname;
-                /*Nodes.Add(XPOS);
+                ImageKey = "bone";
+                SelectedImageKey = "bone";
+            }
+
+            public void ExpandNodes()
+            {
+                Nodes.Add(XPOS);
                 Nodes.Add(YPOS);
                 Nodes.Add(ZPOS);
                 Nodes.Add(XROT);
@@ -75,9 +81,7 @@ namespace Smash_Forge
                 Nodes.Add(WROT);
                 Nodes.Add(XSCA);
                 Nodes.Add(YSCA);
-                Nodes.Add(ZSCA);*/
-                ImageKey = "bone";
-                SelectedImageKey = "bone";
+                Nodes.Add(ZSCA);
             }
         }
 
@@ -276,7 +280,7 @@ namespace Smash_Forge
             return null;
         }
 
-        //Interpolation
+        #region  Interpolation
 
 
         public static float Hermite(float frame, float frame1, float frame2, float outslope, float inslope, float val1, float val2)
@@ -344,6 +348,8 @@ namespace Smash_Forge
                 return q;
             }
         }
+
+        #endregion
 
     }
 }

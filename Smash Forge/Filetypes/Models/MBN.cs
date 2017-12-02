@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {
@@ -19,6 +20,7 @@ namespace Smash_Forge
         ushort unkown = 0xFFFF;
         int flags = 0;
         int mode = 1;
+        //public TreeNode MeshNodes = new TreeNode() { Text = "Mesh" };
         public List<Mesh> mesh = new List<Mesh>();
         public List<Vertex> vertices = new List<Vertex>();
         public List<string> nameTable = new List<string>();
@@ -201,7 +203,7 @@ namespace Smash_Forge
    
             foreach (Mesh m in mesh)
             {
-                
+                if (!m.Checked) continue;
                 GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1, 1, 0, 0));
 
                 GL.ActiveTexture(TextureUnit.Texture0);
@@ -655,9 +657,8 @@ namespace Smash_Forge
             public List<float> weight = new List<float>();
         }
 
-        public class Mesh
+        public class Mesh : TreeNode
         {
-            public string name = "";
             public List<List<int>> faces = new List<List<int>>();
             public List<List<int>> nodeList = new List<List<int>>();
             public int renderPriority = 0;
@@ -665,6 +666,13 @@ namespace Smash_Forge
             // display
             public bool isVisible = true;
             public int texId = 0;
+
+            public Mesh()
+            {
+                Checked = true;
+                ImageKey = "mesh";
+                SelectedImageKey = "mesh";
+            }
         }
 
         public void setDefaultDescriptor()

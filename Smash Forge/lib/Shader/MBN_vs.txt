@@ -16,7 +16,7 @@ uniform mat4 modelview;
 
 uniform bones
 {
-    mat4 transforms[1];
+    mat4 transforms[100];
 } bones_;
 
 
@@ -33,11 +33,9 @@ main()
     normal.xyz = vNormal.xyz;
 
     if (vBone.x != -1.0)
-    {/*
+    {
         objPos = bones_.transforms[index.x] * vec4(vPosition, 1.0) * vWeight.x;
         objPos += bones_.transforms[index.y] * vec4(vPosition, 1.0) * vWeight.y;
-        objPos += bones_.transforms[index.z] * vec4(vPosition, 1.0) * vWeight.z;
-        objPos += bones_.transforms[index.w] * vec4(vPosition, 1.0) * vWeight.w;*/
     }
 
     gl_Position = modelview * vec4(objPos.xyz, 1.0);

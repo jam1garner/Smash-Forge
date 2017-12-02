@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using OpenTK;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {
@@ -16,9 +17,8 @@ namespace Smash_Forge
 
         #region Reading
 
-        public static SkelAnimation read(string filename)
+        public static void Read(string filename)
         {
-            SkelAnimation a = new SkelAnimation();
             bchHeader header = new bchHeader();
             FileData f = new FileData(filename);
             f.Endian = System.IO.Endianness.Little;
@@ -183,7 +183,10 @@ namespace Smash_Forge
 
 
             //Skeletal animation
-            for (int index1 = 0; index1 < content.skeletalAnimationsPointerTableEntries; index1++)
+            TreeNode ThisAnimation = new TreeNode() { Text = filename};
+            MainForm.animNode.Nodes.Add(ThisAnimation);
+
+            for (int index1 = 0; index1 < content.skeletalAnimationsPointerTableEntries; index1++)//
             {
                 f.seek(content.skeletalAnimationsPointerTableOffset + (index1 * 4));
                 int dataOffset = f.readInt();
@@ -202,16 +205,18 @@ namespace Smash_Forge
                 //MainForm.animNode.Nodes.Add(skeletalAnimationName);
                 
                 Debug.WriteLine("Animation Name: " + skeletalAnimationName);
+                Animation a = new Animation(skeletalAnimationName);
+                ThisAnimation.Nodes.Add(a);
 
                 for (int i = 0; i < boneTableEntries; i++)
                 {
                     f.seek(boneTableOffset + (i * 4));
                     int offset = f.readInt();
-
-                    OSkeletalAnimationBone bone = new OSkeletalAnimationBone();
-
+                    
+                    Animation.KeyNode bone = new Animation.KeyNode("");
+                    a.Bones.Add(bone);
                     f.seek(offset);
-                    bone.name = f.readString(f.readInt(), -1);
+                    bone.Text = f.readString(f.readInt(), -1);
                     //Console.WriteLine("Bone Name: " + bone.name);
                     int animationTypeFlags = f.readInt();
                     int flags = f.readInt();
@@ -231,44 +236,50 @@ namespace Smash_Forge
                                 {
                                     bool notExist = (flags & notExistMask) > 0;
                                     bool constant = (flags & constantMask) > 0;
-
-                                    OAnimationKeyFrameGroup frame = new OAnimationKeyFrameGroup();
-                                    frame.exists = !notExist;
-                                    if (frame.exists)
+                                    
+                                    Animation.KeyGroup group = new Animation.KeyGroup();
+                                    //frame.exists = !notExist;
+                                    if (!notExist)
                                     {
                                         if (constant)
                                         {
-                                            frame.interpolation = OInterpolationMode.linear;
-                                            frame.keyFrames.Add(new OAnimationKeyFrame(f.readFloat(), 0));
+                                            Animation.KeyFrame frame = new Animation.KeyFrame();
+                                            frame.InterType = Animation.InterpolationType.LINEAR;
+                                            frame.Value = f.readFloat();
+                                            frame.Frame = 0;
+                                            group.Nodes.Add(frame);
                                         }
                                         else
                                         {
                                             int frameOffset = f.readInt();
                                             int position = f.pos();
                                             f.seek(frameOffset);
-                                            //getAnimationKeyFrame(input, frame);
+                                            float c = 0;
+                                            getAnimationKeyFrame(f, group, out c);
+                                            if (c > a.FrameCount)
+                                                a.FrameCount = (int)c;
                                             f.seek(position);
                                         }
                                     }
                                     else
                                         f.seek(f.pos() + 0x04);
-
+                                    bone.RotType = Animation.RotationType.EULER;
                                     if (j == 0)
                                     {
                                         switch (axis)
                                         {
-                                            case 0: bone.rotationX = frame; break;
-                                            case 1: bone.rotationY = frame; break;
-                                            case 2: bone.rotationZ = frame; break;
+                                            case 0: bone.XROT = group; break;
+                                            case 1: bone.YROT = group; break;
+                                            case 2: bone.ZROT = group; break;
                                         }
                                     }
                                     else
                                     {
                                         switch (axis)
                                         {
-                                            case 0: bone.translationX = frame; break;
-                                            case 1: bone.translationY = frame; break;
-                                            case 2: bone.translationZ = frame; break;
+                                            case 0: bone.XPOS = group; break;
+                                            case 1: bone.YPOS = group; break;
+                                            case 2: bone.ZPOS = group; break;
                                         }
                                     }
 
@@ -280,7 +291,7 @@ namespace Smash_Forge
                             }
 
                             break;
-                        case OSegmentType.transformQuaternion:
+                        /*case OSegmentType.transformQuaternion:
                             bone.isFrameFormat = true;
 
                             int scaleOffset = f.readInt();
@@ -401,7 +412,7 @@ namespace Smash_Forge
                             f.seek(matrixOffset);
                             for (int j = 0; j < entries; j++)
                             {
-                                /*OMatrix transform = new OMatrix();
+                                OMatrix transform = new OMatrix();
                                 transform.M11 = f.readFloat();
                                 transform.M21 = f.readFloat();
                                 transform.M31 = f.readFloat();
@@ -417,17 +428,103 @@ namespace Smash_Forge
                                 transform.M33 = f.readFloat();
                                 transform.M43 = f.readFloat();
 
-                                bone.transform.Add(transform);*/
+                                bone.transform.Add(transform);
                             }
 
-                            break;
-                        default: throw new Exception(string.Format("BCH: Unknow Segment Type {0} on Skeletal Animation bone {1}! STOP!", segmentType, bone.name));
+                            break;*/
+                        default: throw new Exception(string.Format("BCH: Unknow Segment Type {0} on Skeletal Animation bone {1}! STOP!", segmentType, bone.Text));
                     }
 
                     //skeletalAnimation.bone.Add(bone);
                 }
             }
-            return a;
+            //return a;
+        }
+        
+        private static void getAnimationKeyFrame(FileData input, Animation.KeyGroup group, out float endFrame)
+        {
+            float startFrame = input.readFloat();
+            endFrame = input.readFloat();
+
+            uint frameFlags = (uint)input.readInt();
+            //int preRepeat = (RenderBase.ORepeatMethod)(frameFlags & 0xf);
+            //int postRepeat = (RenderBase.ORepeatMethod)((frameFlags >> 8) & 0xf);
+
+            uint segmentFlags = (uint)input.readInt();
+            int interpolation = ((int)segmentFlags & 0xf);
+            uint quantization = ((segmentFlags >> 8) & 0xff);
+            uint entries = segmentFlags >> 16;
+            float valueScale = input.readFloat();
+            float valueOffset = input.readFloat();
+            float frameScale = input.readFloat();
+            float frameOffset = input.readFloat();
+
+            uint offset = (uint)input.readInt();
+            if (offset < input.size()) input.seek((int)offset);
+            for (int key = 0; key < entries; key++)
+            {
+                Animation.KeyFrame keyFrame = new Animation.KeyFrame();
+                //Console.WriteLine(quantization);
+                switch (quantization)
+                {
+                    /*case RenderBase.OSegmentQuantization.hermite128:
+                        keyFrame.frame = input.ReadSingle();
+                        keyFrame.value = input.ReadSingle();
+                        keyFrame.inSlope = input.ReadSingle();
+                        keyFrame.outSlope = input.ReadSingle();
+                        break;
+                    case RenderBase.OSegmentQuantization.hermite64:
+                        uint h64Value = input.ReadUInt32();
+                        keyFrame.frame = h64Value & 0xfff;
+                        keyFrame.value = h64Value >> 12;
+                        keyFrame.inSlope = input.ReadInt16() / 256f;
+                        keyFrame.outSlope = input.ReadInt16() / 256f;
+                        break;
+                    case RenderBase.OSegmentQuantization.hermite48:
+                        keyFrame.frame = input.ReadByte();
+                        keyFrame.value = input.ReadUInt16();
+                        byte slope0 = input.ReadByte();
+                        byte slope1 = input.ReadByte();
+                        byte slope2 = input.ReadByte();
+                        keyFrame.inSlope = IOUtils.signExtend(slope0 | ((slope1 & 0xf) << 8), 12) / 32f;
+                        keyFrame.outSlope = IOUtils.signExtend((slope1 >> 4) | (slope2 << 4), 12) / 32f;
+                        break;
+                    case RenderBase.OSegmentQuantization.unifiedHermite96:
+                        keyFrame.frame = input.ReadSingle();
+                        keyFrame.value = input.ReadSingle();
+                        keyFrame.inSlope = input.ReadSingle();
+                        keyFrame.outSlope = keyFrame.inSlope;
+                        break;
+                    case RenderBase.OSegmentQuantization.unifiedHermite48:
+                        keyFrame.frame = input.ReadUInt16() / 32f;
+                        keyFrame.value = input.ReadUInt16();
+                        keyFrame.inSlope = input.ReadInt16() / 256f;
+                        keyFrame.outSlope = keyFrame.inSlope;
+                        break;
+                    case RenderBase.OSegmentQuantization.unifiedHermite32:
+                        keyFrame.frame = input.ReadByte();
+                        ushort uH32Value = input.ReadUInt16();
+                        keyFrame.value = uH32Value & 0xfff;
+                        keyFrame.inSlope = IOUtils.signExtend((uH32Value >> 12) | (input.ReadByte() << 4), 12) / 32f;
+                        keyFrame.outSlope = keyFrame.inSlope;
+                        break;
+                    case RenderBase.OSegmentQuantization.stepLinear64:
+                        keyFrame.frame = input.ReadSingle();
+                        keyFrame.value = input.ReadSingle();
+                        break;*/
+                    case 7:// RenderBase.OSegmentQuantization.stepLinear32:
+                        uint sL32Value = (uint)input.readInt();
+                        keyFrame.Frame = sL32Value & 0xfff;
+                        keyFrame.Value = sL32Value >> 12;
+                        break;
+                    default: Console.WriteLine("Unknown type " + quantization); break;
+                }
+
+                keyFrame.Frame = (keyFrame.Frame * frameScale) + frameOffset;
+                keyFrame.Value = (keyFrame.Value * valueScale) + valueOffset;
+
+                group.Nodes.Add(keyFrame);
+            }
         }
 
         #endregion

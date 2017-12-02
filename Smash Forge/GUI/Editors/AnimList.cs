@@ -35,49 +35,46 @@ namespace Smash_Forge
 
         private void selectItem(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if(e.Node.Level == 1)
+            if (e.Node is Animation)
             {
-                if (e.Node.Parent.Text == "Bone Animations")
+                Runtime.TargetAnimString = e.Node.Text;
+                Runtime.TargetAnim = (Animation)e.Node;// Runtime.Animations[e.Node.Text];
+
+                //reset mtas
+                foreach (ModelContainer con in Runtime.ModelContainers)
                 {
-                    Runtime.TargetAnimString = e.Node.Text;
-                    Runtime.TargetAnim = (Animation)e.Node;// Runtime.Animations[e.Node.Text];
-                    
-                    //reset mtas
-                    foreach(ModelContainer con in Runtime.ModelContainers)
+                    if (con.nud != null && con.mta != null)
                     {
-                        if(con.nud != null && con.mta != null)
+                        con.nud.applyMTA(con.mta, 0);
+                        foreach (KeyValuePair<string, MTA> v in Runtime.MaterialAnimations)
                         {
-                            con.nud.applyMTA(con.mta, 0);
-                            foreach (KeyValuePair<string, MTA> v in Runtime.MaterialAnimations)
+                            if (v.Key.Contains("display"))
                             {
-                                if (v.Key.Contains("display"))
-                                {
-                                    con.nud.applyMTA(v.Value, 0);
-                                    break;
-                                }
+                                con.nud.applyMTA(v.Value, 0);
+                                break;
                             }
                         }
                     }
-
-                    Runtime.TargetMTA.Clear();
-                    foreach (KeyValuePair<string, MTA> v in Runtime.MaterialAnimations)
-                    {
-                        if(v.Key.Contains(e.Node.Text.Replace(".omo", "")))
-                        {
-                            Runtime.TargetMTA.Add(v.Value);
-                        }
-                    }
-
-                    //MainForm.Instance.viewports[0].loadMTA(Runtime.MaterialAnimations[e.Node.Text]);
-
-                    //Console.WriteLine("Selected Anim " + e.Node.Text);
                 }
-                else if(e.Node.Parent.Text == "Material Animations")
+
+                Runtime.TargetMTA.Clear();
+                foreach (KeyValuePair<string, MTA> v in Runtime.MaterialAnimations)
                 {
-                    MainForm.Instance.viewports[0].loadMTA(Runtime.MaterialAnimations[e.Node.Text]);
-                    //Runtime.TargetMTA = ;
-                    Runtime.TargetMTAString = e.Node.Text;
+                    if (v.Key.Contains(e.Node.Text.Replace(".omo", "")))
+                    {
+                        Runtime.TargetMTA.Add(v.Value);
+                    }
                 }
+
+                //MainForm.Instance.viewports[0].loadMTA(Runtime.MaterialAnimations[e.Node.Text]);
+
+                //Console.WriteLine("Selected Anim " + e.Node.Text);
+            }
+            if (e.Node.Parent != null && e.Node.Parent.Text == "Material Animations")
+            {
+                MainForm.Instance.viewports[0].loadMTA(Runtime.MaterialAnimations[e.Node.Text]);
+                //Runtime.TargetMTA = ;
+                Runtime.TargetMTAString = e.Node.Text;
             }
         }
 
@@ -86,6 +83,10 @@ namespace Smash_Forge
             if (treeView1.SelectedNode is Animation)
             {
                 ((Animation)treeView1.SelectedNode).ExpandBones();
+            }
+            if (treeView1.SelectedNode is Animation.KeyNode)
+            {
+                ((Animation.KeyNode)treeView1.SelectedNode).ExpandNodes();
             }
         }
     }

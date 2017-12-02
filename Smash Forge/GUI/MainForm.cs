@@ -1250,8 +1250,9 @@ namespace Smash_Forge
             }
             if (filename.EndsWith(".bch"))
             {
-                //Runtime.Animations.Add(filename, BCHan.read(filename));
-                //animNode.Nodes.Add(filename);
+                //Runtime.Animations.Add(filename, );
+                //animNode.Nodes.Add();
+                BCHan.Read(filename);
             }
 
             animList.treeView1.EndUpdate();
@@ -1793,6 +1794,7 @@ namespace Smash_Forge
                 Runtime.ModelContainers.Add(con);
                 Runtime.TargetVBN = b.bones;
                 resyncTargetVBN();
+                meshList.refresh();
             }
 
             /*if (filename.EndsWith(".bch"))

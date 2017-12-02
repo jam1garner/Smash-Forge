@@ -582,7 +582,7 @@ namespace Smash_Forge
                     Console.WriteLine("Tex index" + mbn.mesh[index].texId);
                     f.skip(2); // flags
                     int nameId = f.readShort();
-                    mbn.mesh[index].name = objectName[nameId];
+                    mbn.mesh[index].Text = objectName[nameId];
 
                     // node visibility TODO: finish...
                     //mbn.mesh[index].isVisible = ((nodeVisibility & (1 << nameId)) > 0);
