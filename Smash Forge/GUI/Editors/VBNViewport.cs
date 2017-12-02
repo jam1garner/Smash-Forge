@@ -925,7 +925,7 @@ namespace Smash_Forge
 
                 if (m.nud != null && Runtime.shaders["NUD"].shadersCompiledSuccessfully() && Runtime.shaders["NUD_Debug"].shadersCompiledSuccessfully())
                 {
-                    if (Runtime.useDebugShading)
+                    if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                         shader = Runtime.shaders["NUD_Debug"];
                     else
                         shader = Runtime.shaders["NUD"];
@@ -2188,6 +2188,7 @@ namespace Smash_Forge
         private void cbRenderMode_SelectionChangeCommitted(object sender, EventArgs e)
         {
             Runtime.renderType = (Runtime.RenderTypes)renderMode.SelectedIndex;
+            Runtime.useDebugShading = renderMode.SelectedIndex > 0;
         }
 
         private void glControl1_DoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
