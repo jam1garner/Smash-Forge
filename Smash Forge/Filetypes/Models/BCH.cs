@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 using OpenTK;
+using System.Drawing;
 
 namespace Smash_Forge
 {
@@ -480,8 +481,8 @@ namespace Smash_Forge
                 tex.type = f.readInt();
                 tex.data = f.getSection(doffset, f.size() - doffset);
 
-                if (tex.type == 12)
-                    tex.display = NUT.loadImage(Pixel.decodeETC(tex.data, tex.width, tex.height));
+                tex.texture = Pixel.decodeETC(tex.data, tex.width, tex.height);
+                tex.display = NUT.loadImage(tex.texture);
             }
 
             // Model data
@@ -585,7 +586,7 @@ namespace Smash_Forge
                     mbn.mesh[index].Text = objectName[nameId];
 
                     // node visibility TODO: finish...
-                    //mbn.mesh[index].isVisible = ((nodeVisibility & (1 << nameId)) > 0);
+                    mbn.mesh[index].Checked = ((nodeVisibility & (1 << nameId)) > 0);
 
                     mbn.mesh[index].renderPriority = f.readShort();
 
@@ -763,6 +764,7 @@ namespace Smash_Forge
         {
             public int width, height, type;
             public byte[] data;
+            public Bitmap texture;
             // for display only
             public int display = 0;
         }

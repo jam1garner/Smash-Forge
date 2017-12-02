@@ -7,7 +7,7 @@ namespace Smash_Forge
 	public class CHR0
 	{
 
-		public static SkelAnimation read(FileData d, VBN m){
+		public static Animation read(FileData d, VBN m){
 			d.Endian = Endianness.Big;
 			d.seek(0x8);
 
@@ -21,7 +21,7 @@ namespace Smash_Forge
 			return null;
 		}
 
-		public static SkelAnimation readAnim(FileData d , VBN m){
+		public static Animation readAnim(FileData d , VBN m){
 
 			int offset = d.readInt();
 			int nameoff = d.readInt();
@@ -31,7 +31,7 @@ namespace Smash_Forge
 			int animDataCount =d.readShort();
 			d.skip(8);
 
-			SkelAnimation anim = new SkelAnimation();
+			Animation anim = new Animation("CHR0 Import");
             
 			//anim.setModel(m);
 
@@ -87,100 +87,64 @@ namespace Smash_Forge
 				int Riso = (flags>>0x5)&0x1;
 				int Siso = (flags>>0x4)&0x1;
 
+                Animation.KeyNode node = new Animation.KeyNode(d.readString(nameOff, -1));
+                anim.Bones.Add(node);
+                node.RotType = Animation.RotationType.EULER;
 
-				if(hasS == 1){
+                if (hasS == 1){
 					if(Siso == 1){
-						//System.out.println("S is ISO");
-
-						int nid = anim.getNodeIndex(d.readString(nameOff, -1), m);
-						KeyNode node = anim.getNode(0, nid);
-						node.s_type = 1;
 						float iss = d.readFloat();
-						node.s = new OpenTK.Vector3(iss, iss, iss);
-					}
+                        node.XSCA.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss});
+                        node.YSCA.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
+                        node.ZSCA.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
+                    }
 					else{
-						int nid = anim.getNodeIndex(d.readString(nameOff, -1), m);
-						KeyNode node = anim.getNode(0, nid);
-						node.s_type = 1;
-
-						//					System.out.println("Scale: " + SXfixed + " " + SYfixed + " " + SZfixed + " " + s_type);
-						node.s = new OpenTK.Vector3(-99,-99,-99);
-						if(SXfixed == 1) node.s.X = d.readFloat(); else process(d, s_type, pos, anim, "SX", nid,false, m);
-						if(SYfixed == 1) node.s.Y = d.readFloat(); else process(d, s_type, pos, anim, "SY", nid,false, m);
-						if(SZfixed == 1) node.s.Z = d.readFloat(); else process(d, s_type, pos, anim, "SZ", nid,false, m);
+                        
+						if(SXfixed == 1) node.XSCA.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, s_type, pos, node, "SX", false, anim);
+						if(SYfixed == 1) node.YSCA.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, s_type, pos, node, "SY", false, anim);
+						if(SZfixed == 1) node.ZSCA.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, s_type, pos, node, "SZ", false, anim);
 					}
 				}
 
 				if(hasR == 1){
 					if(Riso == 1){
-						//System.out.println("R is ISO");
-
-						int nid = anim.getNodeIndex(d.readString(nameOff, -1), m);
-                        Console.WriteLine(nid.ToString("x"));
-                        KeyNode node = anim.getNode(0, nid);
-						node.r_type = 1;
 						float iss = (float)((d.readFloat ()) * Math.PI / 180f);
-						node.r = VBN.FromEulerAngles(iss, iss, iss);
-					}
+                        node.XROT.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
+                        node.YROT.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
+                        node.ZROT.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
+                    }
 					else{
-
-						int nid = anim.getNodeIndex(d.readString(nameOff, -1), m);
-						KeyNode node = anim.getNode(0, nid);
-
-						//				System.out.println("Rot: " + RXfixed + " " + RYfixed + " " + RZfixed);
-
-						node.r = new OpenTK.Quaternion(-99,-99,-99,0);
-
-						if(RXfixed == 1) node.r.X = (float) (Math.PI / 180f) * (d.readFloat()); else process(d, r_type, pos, anim, "RX", nid, false, m);
-						if(RYfixed == 1) node.r.Y = (float) (Math.PI / 180f) * (d.readFloat()); else process(d, r_type, pos, anim, "RY", nid, false, m);
-						if(RZfixed == 1) node.r.Z = (float) (Math.PI / 180f) * (d.readFloat()); else process(d, r_type, pos, anim, "RZ", nid, false, m);
-					}
+                        if (RXfixed == 1) node.XROT.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = (float)(Math.PI / 180f) * (d.readFloat()) }); else process(d, r_type, pos, node, "RX", false, anim);
+                        if (RYfixed == 1) node.YROT.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = (float)(Math.PI / 180f) * (d.readFloat()) }); else process(d, r_type, pos, node, "RY", false, anim);
+                        if (RZfixed == 1) node.ZROT.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = (float)(Math.PI / 180f) * (d.readFloat()) }); else process(d, r_type, pos, node, "RZ", false, anim);
+                    }
 				}
 
 				if(hasT == 1){
 					if(Tiso == 1){
-						//System.out.println("T is ISO");
-
-						int nid = anim.getNodeIndex(d.readString(nameOff, -1), m);
-						KeyNode node = anim.getNode(0, nid);
-						node.t_type = 1;
-						float iss = d.readFloat();
-						node.t = new OpenTK.Vector3(iss, iss, iss);
-					}
+                        float iss = d.readFloat();
+                        node.XPOS.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
+                        node.YPOS.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
+                        node.ZPOS.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
+                    }
 					else{
-						int nid = anim.getNodeIndex(d.readString(nameOff, -1), m);
-						KeyNode node = anim.getNode(0, nid);
-						node.t_type = 1;
-
-						//					System.out.println("Trans: " + Xfixed + " " + Yfixed + " " + Zfixed);
-
-						node.t = new OpenTK.Vector3(-99,-99,-99);
-						if(Xfixed == 1) node.t.X = d.readFloat(); else process(d, t_type, pos, anim, "X", nid,false, m);
-						if(Yfixed == 1) node.t.Y = d.readFloat(); else process(d, t_type, pos, anim, "Y", nid,false, m);
-						if(Zfixed == 1) node.t.Z = d.readFloat(); else process(d, t_type, pos, anim, "Z", nid,false, m);
-					}
+                        if (Xfixed == 1) node.XPOS.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, t_type, pos, node, "X", false, anim);
+                        if (Yfixed == 1) node.YPOS.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, t_type, pos, node, "Y", false, anim);
+                        if (Zfixed == 1) node.ZPOS.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, t_type, pos, node, "Z", false, anim);
+                    }
 				}
 
 				d.seek(temp);
 			}
 
-			// keynode rotations need caluclation
-			foreach(KeyFrame f in anim.frames){
-				foreach (KeyNode n in f.nodes) {
-					n.r = VBN.FromEulerAngles (n.r.Z, n.r.Y, n.r.X);
-				}
-			}
-			//anim.calcMax();
-
 			return anim;
 		}
 
-		public static void process(FileData d, int type, int secOff, SkelAnimation anim, String part, int nid, bool debug, VBN vbn){
+		public static void process(FileData d, int type, int secOff, Animation.KeyNode node, String part, bool debug, Animation a){
 
 			int offset = d.readInt() + secOff;
 			int temp = d.pos();
 			d.seek(offset);
-			//		System.out.println(d.pos());
 
 			int max = 0;
 			int fCount = -1;
@@ -188,7 +152,6 @@ namespace Smash_Forge
 			float[] frame = null, step = null, tan = null;
 
 			if(type == 0x1){
-
 				fCount = d.readShort();
 				d.skip(2);
 				scale = d.readFloat();
@@ -212,9 +175,6 @@ namespace Smash_Forge
 			}
 
 			if(type == 0x2){
-				//if(debug)
-					//System.out.println(part + "\tInterpolated 6\t" + Integer.toHexString(offset));
-
 				fCount = d.readShort();
 				d.skip(2);
 				scale = d.readFloat();
@@ -259,111 +219,145 @@ namespace Smash_Forge
 				}
 			}
 
-			if(frame != null){
-				generateInter(anim, max, nid, part, frame, tan, step, vbn);
-			}
+            a.FrameCount = max;
+
+            float degrad = (float)(Math.PI / 180f);
+            if (frame != null)
+            {
+                for(int i = 0; i < frame.Length; i++)
+                {
+                    Animation.KeyFrame f = new Animation.KeyFrame();
+                    f.InterType = Animation.InterpolationType.HERMITE;
+                    f.Value = step[i];
+                    f.Frame = frame[i]-1;
+                    f.In = tan[i];
+                    switch (part)
+                    {
+                        case "RX":
+                            f.Value = step[i] * degrad;
+                            node.XROT.Nodes.Add(f);
+                            break;
+                        case "RY":
+                            f.Value = step[i] * degrad;
+                            node.YROT.Nodes.Add(f);
+                            break;
+                        case "RZ":
+                            f.Value = step[i] * degrad;
+                            node.ZROT.Nodes.Add(f);
+                            break;
+                        case "X":
+                            node.XPOS.Nodes.Add(f);
+                            break;
+                        case "Y":
+                            node.YPOS.Nodes.Add(f);
+                            break;
+                        case "Z":
+                            node.ZPOS.Nodes.Add(f);
+                            break;
+                        case "SX":
+                            node.XSCA.Nodes.Add(f);
+                            break;
+                        case "SY":
+                            node.YSCA.Nodes.Add(f);
+                            break;
+                        case "SZ":
+                            node.ZSCA.Nodes.Add(f);
+                            break;
+                    }
+                }
+            }
 
 			if(type == 0x4){
-
-				//if(debug)
-					//System.out.println(part + "\tLkin 1 " + Integer.toHexString(offset) + " " + anim.size());
 				float stepb = d.readFloat();
 				float base2 = d.readFloat();
-				for(int i = 0; i < anim.size() ; i++){
-					KeyNode n = anim.getNode(i, nid);
-
-					if(part.Contains("R"))
-						n.r_type = 1;
-					else
-						if(part.Contains("S"))
-							n.s_type = 1;
-						else
-							n.t_type = 1;
+				for(int i = 0; i < a.FrameCount ; i++){
 
 					float v = base2 + stepb * (d.readByte());
-					//				float f = d.readFloat();
-					//				System.out.println(stepb + " " + base + " " + (byte)d.readByte());
 
-					switch(part){
-					case "RX":
-						n.r.X = (float)(Math.PI/180f) * (v);
-						break;
-					case "RY":
-						n.r.Y = (float)(Math.PI/180f) * (v);
-						break;
-					case "RZ":
-						n.r.Z = (float) (Math.PI/180f) * (v);
-						break;
-					case "X":
-						n.t.X = v;
-						break;
-					case "Y":
-						n.t.Y = v;
-						break;
-					case "Z":
-						n.t.Z = v;
-						break;
-					case "SX":
-						n.s.X = v;
-						break;
-					case "SY":
-						n.s.Y = v;
-						break;
-					case "SZ":
-						n.s.Z = v;
-						break;
-					}
-				}
+                    Animation.KeyFrame f = new Animation.KeyFrame();
+                    f.InterType = Animation.InterpolationType.LINEAR;
+                    f.Value = v;
+                    f.Frame = i;
 
-				//			System.out.println(d.pos());
+                    switch (part)
+                    {
+                        case "RX":
+                            f.Value = step[i] * degrad;
+                            node.XROT.Nodes.Add(f);
+                            break;
+                        case "RY":
+                            f.Value = step[i] * degrad;
+                            node.YROT.Nodes.Add(f);
+                            break;
+                        case "RZ":
+                            f.Value = step[i] * degrad;
+                            node.ZROT.Nodes.Add(f);
+                            break;
+                        case "X":
+                            node.XPOS.Nodes.Add(f);
+                            break;
+                        case "Y":
+                            node.YPOS.Nodes.Add(f);
+                            break;
+                        case "Z":
+                            node.ZPOS.Nodes.Add(f);
+                            break;
+                        case "SX":
+                            node.XSCA.Nodes.Add(f);
+                            break;
+                        case "SY":
+                            node.YSCA.Nodes.Add(f);
+                            break;
+                        case "SZ":
+                            node.ZSCA.Nodes.Add(f);
+                            break;
+                    }
+                }
 			}
 
 			if(type == 0x6){
-				//if(debug)
-					//System.out.println(part + "\tLin 4");
-				for(int i = 0; i < anim.size() ; i++){
-					KeyNode n = anim.getNode(i, nid);
-
-					if(part.Contains("R"))
-						n.r_type = 1;
-					else
-						if(part.Contains("S"))
-							n.s_type = 1;
-						else
-							n.t_type = 1;
+				for(int i = 0; i < a.FrameCount ; i++){
 
 					float v = d.readFloat();
 
-					switch(part){
-					case "RX":
-						n.r.X = (float) (Math.PI / 180) * (v);
-						break;
-					case "RY":
-						n.r.Y = (float) (Math.PI / 180) * (v);
-						break;
-					case "RZ":
-						n.r.Z = (float) (Math.PI / 180) * (v);
-						break;
-					case "X":
-						n.t.X = v;
-						break;
-					case "Y":
-						n.t.Y = v;
-						break;
-					case "Z":
-						n.t.Z = v;
-						break;
-					case "SX":
-						n.s.X = v;
-						break;
-					case "SY":
-						n.s.Y = v;
-						break;
-					case "SZ":
-						n.s.Z = v;
-						break;
-					}
-				}
+                    Animation.KeyFrame f = new Animation.KeyFrame();
+                    f.InterType = Animation.InterpolationType.LINEAR;
+                    f.Value = v;
+                    f.Frame = i;
+                    switch (part)
+                    {
+                        case "RX":
+                            f.Value = step[i] * degrad;
+                            node.XROT.Nodes.Add(f);
+                            break;
+                        case "RY":
+                            f.Value = step[i] * degrad;
+                            node.YROT.Nodes.Add(f);
+                            break;
+                        case "RZ":
+                            f.Value = step[i] * degrad;
+                            node.ZROT.Nodes.Add(f);
+                            break;
+                        case "X":
+                            node.XPOS.Nodes.Add(f);
+                            break;
+                        case "Y":
+                            node.YPOS.Nodes.Add(f);
+                            break;
+                        case "Z":
+                            node.ZPOS.Nodes.Add(f);
+                            break;
+                        case "SX":
+                            node.XSCA.Nodes.Add(f);
+                            break;
+                        case "SY":
+                            node.YSCA.Nodes.Add(f);
+                            break;
+                        case "SZ":
+                            node.ZSCA.Nodes.Add(f);
+                            break;
+                    }
+                }
 			}
 
 			d.seek(temp);

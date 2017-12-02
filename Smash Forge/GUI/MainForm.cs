@@ -1241,7 +1241,7 @@ namespace Smash_Forge
             if (filename.EndsWith(".chr0"))
             {
                 //Runtime.Animations.Add(filename, CHR0.read(new FileData(filename), Runtime.TargetVBN));
-                //animNode.Nodes.Add(filename);
+                animNode.Nodes.Add(CHR0.read(new FileData(filename), Runtime.TargetVBN));
             }
             if (filename.EndsWith(".anim"))
             {

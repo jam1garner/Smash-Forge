@@ -203,7 +203,6 @@ namespace Smash_Forge
    
             foreach (Mesh m in mesh)
             {
-                if (!m.Checked) continue;
                 GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1, 1, 0, 0));
 
                 GL.ActiveTexture(TextureUnit.Texture0);
@@ -218,7 +217,7 @@ namespace Smash_Forge
 
                     if (m.isVisible)
                     {
-                        GL.DrawElements(PrimitiveType.Triangles, l.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
+                        if (m.Checked) GL.DrawElements(PrimitiveType.Triangles, l.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
                     }
 
                     indiceat += l.Count;

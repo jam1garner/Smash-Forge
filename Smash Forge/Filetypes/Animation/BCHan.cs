@@ -264,6 +264,16 @@ namespace Smash_Forge
                                     else
                                         f.seek(f.pos() + 0x04);
                                     bone.RotType = Animation.RotationType.EULER;
+
+                                    /*if (j == 0)
+                                    {
+                                        switch (axis)
+                                        {
+                                            case 0: bone.XSCA = group; break;
+                                            case 1: bone.YSCA = group; break;
+                                            case 2: bone.ZSCA = group; break;
+                                        }
+                                    }else*/
                                     if (j == 0)
                                     {
                                         switch (axis)
@@ -274,6 +284,7 @@ namespace Smash_Forge
                                         }
                                     }
                                     else
+                                    if (j == 1)
                                     {
                                         switch (axis)
                                         {
