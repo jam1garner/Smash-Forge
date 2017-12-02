@@ -348,7 +348,7 @@ namespace Smash_Forge
         public NUTEditor nutEditor = null;
         public NUS3BANKEditor nusEditor = null;
         public _3DSTexEditor texEditor = null;
-        public CameraPosition cameraPosForm = null;
+        public CameraSettings cameraForm = null;
 
         #endregion
 
@@ -2184,12 +2184,12 @@ namespace Smash_Forge
 
         private void cameraToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (cameraPosForm == null || cameraPosForm.IsDisposed)
+            if (cameraForm == null || cameraForm.IsDisposed)
             {
-                cameraPosForm = new CameraPosition(viewports[0]);
-                viewports[0].cameraPosForm = cameraPosForm;
+                cameraForm = new CameraSettings();
+                viewports[0].cameraPosForm = cameraForm;
             }
-            cameraPosForm.Show();
+            cameraForm.Show();
         }
 
         private void AddAnimName(string AnimName)
