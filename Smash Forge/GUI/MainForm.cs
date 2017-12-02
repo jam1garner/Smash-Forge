@@ -109,7 +109,6 @@ namespace Smash_Forge
             Runtime.renderLedgeGrabboxes = false;
             Runtime.renderTetherLedgeGrabboxes = false;
             Runtime.renderReverseLedgeGrabboxes = false;
-            Runtime.renderType = Runtime.RenderTypes.Shaded;
             Runtime.paramDir = "";
 
             viewportWindowToolStripMenuItem.Checked = true;
@@ -532,9 +531,10 @@ namespace Smash_Forge
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd;*.mta;*.pac;*.dat;*.xmb|" +
+                ofd.Filter = "Supported Formats|*.omo;*.anim;*.bch;*.chr0;*.smd;*.mta;*.pac;*.dat;*.xmb|" +
                              "Object Motion|*.omo|" +
                              "Maya Animation|*.anim|" +
+                             "3DS BCH Animation|*.bch|" +
                              "NW4R Animation|*.chr0|" +
                              "Source Animation (SMD)|*.smd|" +
                              "Smash 4 Material Animation (MTA)|*.mta|" +
@@ -768,6 +768,7 @@ namespace Smash_Forge
             Runtime.Animnames.Clear();
             Runtime.clearMoveset();
             Lights.areaLights.Clear();
+            Lights.lightMaps.Clear();
         }
 
         private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1081,6 +1082,11 @@ namespace Smash_Forge
                             {
                                 Lights.CreateAreaLightsFromXMB(new XMBFile(fileName));
                             }
+
+                            if (fileName.EndsWith("lightmap.xmb"))
+                            {
+                                Lights.CreateLightMapsFromXMB(new XMBFile(fileName));
+                            }
                         }
                     }
 
@@ -1241,6 +1247,11 @@ namespace Smash_Forge
             {
                 //Runtime.Animations.Add(filename, ANIM.read(filename, Runtime.TargetVBN));
                 animNode.Nodes.Add(ANIM.read(filename, Runtime.TargetVBN));
+            }
+            if (filename.EndsWith(".bch"))
+            {
+                Runtime.Animations.Add(filename, BCHan.read(filename));
+                animNode.Nodes.Add(filename);
             }
 
             animList.treeView1.EndUpdate();
@@ -1518,7 +1529,6 @@ namespace Smash_Forge
             }
         }
 
-
         ///<summary>
         ///Open a file based on the filename
         ///</summary>
@@ -1755,6 +1765,11 @@ namespace Smash_Forge
                 Lights.CreateAreaLightsFromXMB(new XMBFile(fileName));
             }
 
+            if (fileName.EndsWith("lightmap.xmb"))
+            {
+                Lights.CreateLightMapsFromXMB(new XMBFile(fileName));
+            }
+
             if (fileName.ToLower().EndsWith(".obj"))
             {
                 ModelViewport vp = new ModelViewport();
@@ -1776,6 +1791,8 @@ namespace Smash_Forge
                 b.mbn = m;
                 b.Read(fileName.Replace(".mbn", ".bch"));
                 Runtime.ModelContainers.Add(con);
+                Runtime.TargetVBN = b.bones;
+                resyncTargetVBN();
             }
 
             /*if (filename.EndsWith(".bch"))

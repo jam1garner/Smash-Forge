@@ -74,6 +74,7 @@
     <Compile Include="ACMDScript.cs" />
     <Compile Include="Animation.cs" />
     <Compile Include="CharacterParamManager.cs" />
+    <Compile Include="Filetypes\Animation\BCHan.cs" />
     <Compile Include="Filetypes\Animation\OMO.cs" />
     <Compile Include="Filetypes\ATKD.cs" />
     <Compile Include="Filetypes\DRP.cs" />
@@ -363,6 +364,12 @@
     <Compile Include="GUI\Menus\CameraPosition.Designer.cs">
       <DependentUpon>CameraPosition.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Menus\CameraSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\CameraSettings.Designer.cs">
+      <DependentUpon>CameraSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Menus\LightColorEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -563,6 +570,9 @@
     <EmbeddedResource Include="GUI\Menus\CameraPosition.resx">
       <DependentUpon>CameraPosition.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\CameraSettings.resx">
+      <DependentUpon>CameraSettings.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\LightColorEditor.resx">
       <DependentUpon>LightColorEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -652,49 +662,70 @@
     <None Include="materials\Character Mats\Mat12 [Bayo Hair Spec Ramp].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Mat01 [Regular].nmt">
+    <None Include="materials\Stage Mats\Mat01 [Diffuse].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Mat02 [Glow].nmt">
+    <None Include="materials\Stage Mats\Mat02 [Diff+Color-Light].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Mat03 [Diffuse+Light map].nmt">
+    <None Include="materials\Stage Mats\Mat03 [Diff+LightMap].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Mat04 [DiffuseSpec+Reflection].nmt">
+    <None Include="materials\Stage Mats\Mat04 [DiffSpec+Reflection].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Mat05 [Water+Norm].nmt">
+    <None Include="materials\Stage Mats\Mat05 [Diff+Norm].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Mat06 [Water+Cubemap].nmt">
+    <None Include="materials\Stage Mats\Mat06 [Diff+Cube].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Mat07 [Diffuse+Norm].nmt">
+    <None Include="materials\Stage Mats\Mat07 [Diff+Cube+Light].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Mat08 [Diffuse+Cubemap].nmt">
+    <None Include="materials\Stage Mats\Mat08 [Diff+Cube+Norm+CharReflection].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Mat09 [Diffuse+Cubemap+Norm].nmt">
+    <None Include="materials\Stage Mats\Mat09 [Diffuse+DiffuseBlend].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Mat10 [Diffuse+Diffuse].nmt">
+    <None Include="materials\Stage Mats\Mat10 [3-UV Diffuse].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Mat11 [Regular+Colors].nmt">
+    <None Include="materials\Stage Mats\Mat11 [Diff+Cube+Color+Light].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Mat12 [Magma+3 UV].nmt">
+    <None Include="materials\Stage Mats\Mat12 [Diff+Cube+Norm+CharShadow].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Mat13 [Diffuse+Refl+finalColor].nmt">
+    <None Include="materials\Stage Mats\Mat13 [Nothing but CharShadow].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Mat14 [Clouds+Norm].nmt">
+    <None Include="materials\Stage Mats\Mat14 [Diff+Cube+Fresnel+Light].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\Stage Mats\Mat15 [Cubemap+Norm+Char Reflection].nmt">
+    <None Include="materials\Stage Mats\Mat15 [Diff+Fresnel].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Stage Mats\Mat16 [DiffSpec+Reflection+Masking].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Stage Mats\Mat17 [3-UV Diffuse+Cubemap].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Stage Mats\Mat18 [Diff+Color+Light].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Stage Mats\Mat19 [Diff+Cube+Fresnel].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Stage Mats\Mat20 [DiffSpec+Cube+Fresnel].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Stage Mats\Mat21 [DiffSpec+Cube+SpecColor].nmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="materials\Stage Mats\Mat22 [Diff+Ramp].nmt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\allstar_param_cafe.ini">

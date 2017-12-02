@@ -75,7 +75,7 @@ namespace Smash_Forge
             tbl.Rows.Add("Z Scale", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).scale[2]);
             Runtime.TargetVBN.reset();
 
-            Runtime.selectedBoneIndex = Runtime.TargetVBN.getJTBIndex(treeView1.SelectedNode.Text);
+            Runtime.selectedBoneIndex = Runtime.TargetVBN.bones.IndexOf((Bone)treeView1.SelectedNode);
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

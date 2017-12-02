@@ -398,7 +398,7 @@ namespace Smash_Forge
             {
                 // should properly initialize these eventually
                 Lights.stageDiffuseLightSet[i] = new DirectionalLight();
-                Lights.stageDiffuseLightSet[i].name = "Stage " + i;
+                Lights.stageDiffuseLightSet[i].id = "Stage " + i;
             }
 
             for (int i = 0; i < Lights.stageFogSet.Length; i++)
@@ -904,7 +904,7 @@ namespace Smash_Forge
 
                 if (m.nud != null && Runtime.shaders["NUD"].shadersCompiledSuccessfully() && Runtime.shaders["NUD_Debug"].shadersCompiledSuccessfully())
                 {
-                    if (Runtime.renderType > 0)
+                    if (Runtime.useDebugShading)
                         shader = Runtime.shaders["NUD_Debug"];
                     else
                         shader = Runtime.shaders["NUD"];
