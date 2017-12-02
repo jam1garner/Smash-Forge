@@ -15,7 +15,7 @@ namespace Smash_Forge
     {
         static Runtime()
         {
-            Animations = new Dictionary<string, SkelAnimation>();
+            Animations = new Dictionary<string, Animation>();
             OpenedFiles = new SortedList<string, FileBase>();
             MaterialAnimations = new Dictionary<string, MTA>();
             ParamManager = new CharacterParamManager();
@@ -41,8 +41,8 @@ namespace Smash_Forge
         public static CMR0 TargetCMR0 { get; set; }
         public static List<MTA> TargetMTA = new List<MTA>();
         public static Object LVDSelection { get; set; }
-        public static SkelAnimation TargetAnim { get { return _targetAnim; } set { _targetAnim = value; OnAnimationChanged(); } }
-        private static SkelAnimation _targetAnim;
+        public static Animation TargetAnim { get { return _targetAnim; } set { _targetAnim = value; OnAnimationChanged(); } }
+        private static Animation _targetAnim;
         public static GUI.Editors.HitboxList hitboxList { get; set; }
         public static GUI.Editors.VariableList variableViewer { get; set; }
 
@@ -258,7 +258,7 @@ namespace Smash_Forge
         public static string TargetAnimString { get; set; }
         public static string TargetMTAString { get; set; }
 
-        public static Dictionary<string, SkelAnimation> Animations { get; set; }
+        public static Dictionary<string, Animation> Animations { get; set; }
         public static Dictionary<string, MTA> MaterialAnimations { get; set; }
         public static MovesetManager Moveset { get; set; }
         public static CharacterParamManager ParamManager { get; set; }

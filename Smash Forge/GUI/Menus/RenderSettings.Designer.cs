@@ -1218,6 +1218,7 @@
             this.label3.Size = new System.Drawing.Size(72, 13);
             this.label3.TabIndex = 28;
             this.label3.Text = "Render Mode";
+            this.label3.Visible = false;
             // 
             // fovSlider
             // 
@@ -1337,6 +1338,7 @@
             this.renderMode.Name = "renderMode";
             this.renderMode.Size = new System.Drawing.Size(190, 21);
             this.renderMode.TabIndex = 16;
+            this.renderMode.Visible = false;
             this.renderMode.SelectedIndexChanged += new System.EventHandler(this.checkBox6_CheckedChanged);
             this.renderMode.SelectionChangeCommitted += new System.EventHandler(this.renderMode_SelectionChangeCommitted);
             // 

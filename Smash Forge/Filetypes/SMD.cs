@@ -9,7 +9,7 @@ namespace Smash_Forge
     public class SMD
     {
 
-        public static void read(string fname, SkelAnimation a, VBN v)
+        public static void read(string fname, Animation a, VBN v)
         {
             StreamReader reader = File.OpenText(fname);
             string line;
@@ -46,7 +46,7 @@ namespace Smash_Forge
 
                         k = new KeyFrame();
                         k.frame = frame;
-                        a.addKeyframe(k);
+                        //a.addKeyframe(k);
                     }
                     continue;
                 }
@@ -59,26 +59,28 @@ namespace Smash_Forge
                     //b.children = new System.Collections.Generic.List<int> ();
                     vbn.totalBoneCount++;
                     vbn.bones.Add(b);
+                    Animation.KeyNode node = new Animation.KeyNode(b.Text);
+                    a.Bones.Add(node);
                 }
 
                 if (current.Equals("time"))
                 {
-                    KeyNode n = new KeyNode();
-                    n.id = v.boneIndex(vbn.bones[int.Parse(args[0])].Text);
+                    //Animation.KeyFrame n = new Animation.KeyFrame();
+                    /*n.id = v.boneIndex(vbn.bones[int.Parse(args[0])].Text);
                     if (n.id == -1)
                     {
                         continue;
                     }
                     else
-                        n.hash = v.bones[n.id].boneId;
+                        n.hash = v.bones[n.id].boneId;*/
 
                     // only if it finds the node
-                    k.addNode(n);
+                    //k.addNode(n);
 
                     // reading the skeleton if this isn't an animation
                     if (readBones && frame == 0)
                     {
-                        Bone b = vbn.bones[n.id];
+                        Bone b = vbn.bones[int.Parse(args[0])];
                         b.position = new float[3];
                         b.rotation = new float[3];
                         b.scale = new float[3];
@@ -98,17 +100,46 @@ namespace Smash_Forge
                         //if(b.parentIndex!=-1)
                         //	vbn.bones [b.parentIndex].children.Add (int.Parse(args[0]));
                     }
+                    Animation.KeyNode bone = a.GetBone(vbn.bones[int.Parse(args[0])].Text);
+                    bone.RotType = Animation.RotationType.EULER;
 
-                    n.t_type = KeyNode.INTERPOLATED;
-                    n.t = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
-                    n.r_type = KeyNode.INTERPOLATED;
-                    n.r = VBN.FromEulerAngles(float.Parse(args[6]), float.Parse(args[5]), float.Parse(args[4]));
+                    Animation.KeyFrame n = new Animation.KeyFrame();
+                    n.Value = float.Parse(args[1]);
+                    n.Frame = frame;
+                    bone.XPOS.Nodes.Add(n);
+
+                    n = new Animation.KeyFrame();
+                    n.Value = float.Parse(args[2]);
+                    n.Frame = frame;
+                    bone.YPOS.Nodes.Add(n);
+
+                    n = new Animation.KeyFrame();
+                    n.Value = float.Parse(args[3]);
+                    n.Frame = frame;
+                    bone.ZPOS.Nodes.Add(n);
+
+                    n = new Animation.KeyFrame();
+                    n.Value = float.Parse(args[4]);
+                    n.Frame = frame;
+                    bone.XROT.Nodes.Add(n);
+
+                    n = new Animation.KeyFrame();
+                    n.Value = float.Parse(args[5]);
+                    n.Frame = frame;
+                    bone.YROT.Nodes.Add(n);
+
+                    n = new Animation.KeyFrame();
+                    n.Value = float.Parse(args[6]);
+                    n.Frame = frame;
+                    bone.ZROT.Nodes.Add(n);
                 }
             }
 
+            a.FrameCount = frame;
+
             v.boneCountPerType[0] = (uint)vbn.bones.Count;
             v.update();
-            a.bakeFramesLinear();
+            //a.bakeFramesLinear();
         }
 
         public static NUD toNUD(string fname)

@@ -45,7 +45,10 @@
             this.btnLastFrame = new System.Windows.Forms.Button();
             this.btnPrevFrame = new System.Windows.Forms.Button();
             this.btnFirstFrame = new System.Windows.Forms.Button();
-            this.glControl1 = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(8, 8, 8, 8), 24, 8, 16));
+            this.glControl1 = new OpenTK.GLControl();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.renderMode = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nupdFrameRate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nupdFrame)).BeginInit();
@@ -273,7 +276,7 @@
             this.glControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.glControl1.Location = new System.Drawing.Point(0, 0);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(624, 407);
+            this.glControl1.Size = new System.Drawing.Size(624, 385);
             this.glControl1.TabIndex = 9;
             this.glControl1.VSync = false;
             this.glControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseClick);
@@ -281,9 +284,53 @@
             this.glControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseDown);
             this.glControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseMove);
             // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(624, 25);
+            this.toolStrip1.TabIndex = 10;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // renderMode
+            // 
+            this.renderMode.FormattingEnabled = true;
+            this.renderMode.Items.AddRange(new object[] {
+            "Shaded",
+            "Normals",
+            "Lighting",
+            "Diffuse Maps",
+            "Normal Maps",
+            "Vertex Color",
+            "Ambient Occlusion",
+            "UV Coords",
+            "UV Test Pattern",
+            "Tangents",
+            "Bitangents",
+            "Light Set",
+            "Bone Weights",
+            "Bone Weights Color"});
+            this.renderMode.Location = new System.Drawing.Point(90, 0);
+            this.renderMode.Name = "renderMode";
+            this.renderMode.Size = new System.Drawing.Size(136, 21);
+            this.renderMode.TabIndex = 11;
+            this.renderMode.SelectionChangeCommitted += new System.EventHandler(this.cbRenderMode_SelectionChangeCommitted);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(9, 3);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(75, 13);
+            this.label4.TabIndex = 12;
+            this.label4.Text = "Render Mode:";
+            // 
             // VBNViewport
             // 
             this.ClientSize = new System.Drawing.Size(624, 498);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.renderMode);
+            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.glControl1);
             this.Controls.Add(this.groupBox2);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -296,6 +343,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nupdFrame)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nupdMaxFrame)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -318,5 +366,8 @@
         public System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox cbUseFrameSpeed;
         private System.Windows.Forms.CheckBox cbFAFanimation;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ComboBox renderMode;
+        private System.Windows.Forms.Label label4;
     }
 }

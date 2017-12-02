@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using OpenTK;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {
@@ -46,7 +47,7 @@ namespace Smash_Forge
 			public List<AnimData> atts = new List<AnimData>();
 		}
 
-		public static SkelAnimation read(string filename, VBN vbn){
+		public static Animation read(string filename, VBN vbn){
 			StreamReader reader = File.OpenText(filename);
 			string line;
 
@@ -56,11 +57,14 @@ namespace Smash_Forge
 			int startTime = 0;
 			int endTime = 0;
 			List<AnimBone> bones = new List<AnimBone>();
-			AnimBone current;
-			AnimData att = new AnimData();
+			Animation.KeyNode current = null;
+			Animation.KeyFrame att = new Animation.KeyFrame();
 			bool inKeys = false;
+            string type = "";
+            
+            Animation a = new Animation(filename);
 
-			while ((line = reader.ReadLine()) != null) {
+            while ((line = reader.ReadLine()) != null) {
 				string[] args = line.Replace (";", "").TrimStart().Split (' ');
 
 				if (isHeader) {
@@ -81,16 +85,38 @@ namespace Smash_Forge
 							inKeys = false;
 							continue;
 						}
-						AnimKey k = new AnimKey ();
-						att.keys.Add (k);
-						k.input = float.Parse (args [0]);
-						k.output = float.Parse (args [1]);
-						k.intan = (args [2]);
-						k.outtan = (args [3]);
-                        if (args.Length > 7 && att.weighted)
+						Animation.KeyFrame k = new Animation.KeyFrame ();
+                        //att.keys.Add (k);
+                        if (type.Contains("translate"))
                         {
-                            k.t1 = float.Parse(args[7]) * (float)(Math.PI / 180f);
-                            k.w1 = float.Parse(args[8]);
+                            if (type.Contains("X")) current.XPOS.Nodes.Add(k);
+                            if (type.Contains("Y")) current.YPOS.Nodes.Add(k);
+                            if (type.Contains("Z")) current.ZPOS.Nodes.Add(k);
+                        }
+                        if (type.Contains("rotate"))
+                        {
+                            if (type.Contains("X")) current.XROT.Nodes.Add(k);
+                            if (type.Contains("Y")) current.YROT.Nodes.Add(k);
+                            if (type.Contains("Z")) current.ZROT.Nodes.Add(k);
+                        }
+                        if (type.Contains("scale"))
+                        {
+                            if (type.Contains("X")) current.XSCA.Nodes.Add(k);
+                            if (type.Contains("Y")) current.YSCA.Nodes.Add(k);
+                            if (type.Contains("Z")) current.ZSCA.Nodes.Add(k);
+                        }
+                        k.Frame = float.Parse (args [0])-1;
+						k.Value = float.Parse (args [1]);
+                        if (type.Contains("rotate"))
+                        {
+                            k.Value *= (float)(Math.PI / 180f);
+                        }
+                            //k.intan = (args [2]);
+                            //k.outtan = (args [3]);
+                        if (args.Length > 7 && att.Weighted)
+                        {
+                            k.In = float.Parse(args[7]) * (float)(Math.PI / 180f);
+                            k.Out = float.Parse(args[8]);
                         }
                     }
 
@@ -103,214 +129,211 @@ namespace Smash_Forge
 						if (args.Length == 7) {
 							// see of the bone of this attribute exists
 							current = null;
-							foreach (AnimBone b in bones)
-								if (b.name.Equals (args [3])) {
+							foreach (Animation.KeyNode b in a.Bones)
+								if (b.Text.Equals (args [3])) {
 									current = b;
 									break;
 								}
 							if (current == null) {
-								current = new AnimBone ();
-								bones.Add (current);
+								current = new Animation.KeyNode (args[3]);
+                                current.RotType = Animation.RotationType.EULER;
+								a.Bones.Add (current);
 							}
-							current.name = args [3];
+							current.Text = args [3];
 
-							att = new AnimData ();
-							att.type = args [2];
-							current.atts.Add (att);
+							att = new Animation.KeyFrame();
+                            att.InterType = Animation.InterpolationType.HERMITE;
+							type = args [2];
+							current.Nodes.Add (att);
 
 							// row child attribute aren't needed here
 						}
 					}
 
-					if (args [0].Equals ("input"))
+                    /*if (args [0].Equals ("input"))
 						att.input = args [1];
 					if (args [0].Equals ("output"))
 						att.output = args [1];
-					if (args [0].Equals ("weighted"))
-						att.weighted = args [1].Equals("1");
 					if (args [0].Equals ("preInfinity"))
 						att.preInfinity = args [1];
 					if (args [0].Equals ("postInfinity"))
-						att.postInfinity = args [1];
+						att.postInfinity = args [1];*/
+                    if (args[0].Equals("weighted"))
+                        att.Weighted = args[1].Equals("1");
 
-					// begining keys section
-					if (args [0].Contains ("keys")) {
+
+                    // begining keys section
+                    if (args [0].Contains ("keys")) {
 						inKeys = true;
 					}
 				}
 			}
 
-			SkelAnimation a = new SkelAnimation ();
-
-			for (int i = 0; i < endTime - startTime+1; i++) {
-				KeyFrame key = new KeyFrame ();
-				a.addKeyframe (key);
-
-				foreach (AnimBone b in bones) {
-					KeyNode n = new KeyNode ();
-					n.id = vbn.boneIndex (b.name);
-					if (n.id == -1)
-						continue;
-                    else
-                        n.hash = vbn.bones[n.id].boneId;
-					foreach (AnimData d in b.atts) {
-						if (d.type.Contains ("translate")) {
-							n.t_type = KeyNode.INTERPOLATED;
-							if (d.type.Contains ("X"))
-								n.t.X = d.getValue (i);
-							if (d.type.Contains ("Y")) 
-								n.t.Y = d.getValue (i);
-							if (d.type.Contains ("Z"))
-								n.t.Z = d.getValue (i);
-						}
-						if (d.type.Contains ("rotate")) {
-							n.r_type = KeyNode.INTERPOLATED;
-							if (d.type.Contains ("X"))
-								n.r.X = d.getValue (i) * (float)(Math.PI / 180f);
-							if (d.type.Contains ("Y"))
-								n.r.Y = d.getValue (i) * (float)(Math.PI / 180f);
-							if (d.type.Contains ("Z"))
-								n.r.Z = d.getValue (i) * (float)(Math.PI / 180f);
-						}
-						if (d.type.Contains ("scale")) {
-							n.s_type = KeyNode.INTERPOLATED;
-							if (d.type.Contains ("X"))
-								n.s.X = d.getValue (i);
-							if (d.type.Contains ("Y")) 
-								n.s.Y = d.getValue (i);
-							if (d.type.Contains ("Z"))
-								n.s.Z = d.getValue (i);
-						}
-					}
-					key.addNode (n);
-				}
-			}
-
-			// keynode rotations need caluclation
-			foreach(KeyFrame f in a.frames){
-				foreach (KeyNode n in f.nodes) {
-					n.r = VBN.FromEulerAngles (n.r.Z, n.r.Y, n.r.X);
-				}
-			}
+            a.FrameCount = endTime-1;
 
             reader.Close();
 			return a;
 		}
 
-		public static void createANIM(string fname, SkelAnimation a, VBN vbn){
-			using (System.IO.StreamWriter file = new System.IO.StreamWriter(@fname))
-			{
-				file.WriteLine ("animVersion 1.1;");
-				file.WriteLine ("mayaVersion 2014 x64;\ntimeUnit ntscf;\nlinearUnit cm;\nangularUnit deg;\nstartTime 1;\nendTime "+(a.size())+";");
+        public static void CreateANIM(string fname, Animation a, VBN vbn)
+        {
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@fname))
+            {
+                file.WriteLine("animVersion 1.1;");
+                file.WriteLine("mayaVersion 2014 x64;\ntimeUnit ntscf;\nlinearUnit cm;\nangularUnit deg;\nstartTime 1;\nendTime " + (a.FrameCount+1) + ";");
 
-                a.setFrame(a.size() - 1); //from last frame
-                for (int li = 0; li < a.size(); ++li) //go through each frame with nextFrame
-                    a.nextFrame(vbn);
-                a.nextFrame(vbn);  //go on first frame
+                a.SetFrame(a.FrameCount - 1); //from last frame
+                for (int li = 0; li < a.FrameCount; ++li) //go through each frame with nextFrame
+                    a.NextFrame(vbn);
+                a.NextFrame(vbn);  //go on first frame
 
-                List<int> nodes = a.getNodes(true, vbn); //getting node indexes
-                
-				int i = 0;
+                int i = 0;
 
-				// writing node attributes
-				foreach (Bone b in vbn.getBoneTreeOrder()) {
-					i = vbn.boneIndex (b.Text);
-						
-					if (nodes.Contains (i)) {
-						// write the bone attributes
-						// count the attributes
-						KeyNode n = a.getNode (0, i);
-						int ac = 0;
-						if (n.t_type != -1) {
-							file.WriteLine ("anim translate.translateX translateX " + b.Text + " 0 0 " + (ac++) + ";");
-							writeKey(file, a, i, "translateX", n.t_type);
-							file.WriteLine ("}");
-							file.WriteLine ("anim translate.translateY translateY " + b.Text + " 0 0 " + (ac++) + ";");
-							writeKey(file, a, i, "translateY", n.t_type);
-							file.WriteLine ("}");
-							file.WriteLine ("anim translate.translateZ translateZ " + b.Text + " 0 0 " + (ac++) + ";");
-							writeKey(file, a, i, "translateZ", n.t_type);
-							file.WriteLine ("}");
-						}
-						if (n.r_type != -1) {
-							file.WriteLine ("anim rotate.rotateX rotateX " + b.Text + " 0 0 " + (ac++) + ";");
-							writeKey(file, a, i, "rotateX", n.r_type);
-							file.WriteLine ("}");
-							file.WriteLine ("anim rotate.rotateY rotateY " + b.Text + " 0 0 " + (ac++) + ";");
-							writeKey(file, a, i, "rotateY", n.r_type);
-							file.WriteLine ("}");
-							file.WriteLine ("anim rotate.rotateZ rotateZ " + b.Text + " 0 0 " + (ac++) + ";");
-							writeKey(file, a, i, "rotateZ", n.r_type);
-							file.WriteLine ("}");
-						}
-						if (n.s_type != -1) {
-							file.WriteLine ("anim scale.scaleX scaleX " + b.Text + " 0 0 " + (ac++) + ";");
-							writeKey(file, a, i, "scaleX", n.s_type);
-							file.WriteLine ("}");
-							file.WriteLine ("anim scale.scaleY scaleY " + b.Text + " 0 0 " + (ac++) + ";");
-							writeKey(file, a, i, "scaleY", n.s_type);
-							file.WriteLine ("}");
-							file.WriteLine ("anim scale.scaleZ scaleZ " + b.Text + " 0 0 " + (ac++) + ";");
-							writeKey(file, a, i, "scaleZ", n.s_type);
-							file.WriteLine ("}");
-						}
-					} else {
-						file.WriteLine ("anim " + b.Text + " 0 0 0;");
-					}
-				}
-			}
-		}
+                // writing node attributes
+                foreach (Bone b in vbn.getBoneTreeOrder())
+                {
+                    i = vbn.boneIndex(b.Text);
 
-		private static void writeKey(StreamWriter file, SkelAnimation a, int i, string type, int tt){
+                    if (a.HasBone(b.Text))
+                    {
+                        // write the bone attributes
+                        // count the attributes
+                        Animation.KeyNode n = a.GetBone(b.Text);
+                        int ac = 0;
 
-			file.WriteLine ("animData {\n input time;\n output linear;\n weighted 1;\n preInfinity constant;\n postInfinity constant;\n keys {");
 
-			int size = a.size ();
-			if (tt == KeyNode.CONSTANT) 
-				size = 1;
+                        if (n.XPOS.HasAnimation())
+                        {
+                            file.WriteLine("anim translate.translateX translateX " + b.Text + " 0 0 " + (ac++) + ";");
+                            writeKey(file, n.XPOS, n, a.Size(), "translateX");
+                            file.WriteLine("}");
+                        }
+                        if (n.YPOS.HasAnimation())
+                        {
+                            file.WriteLine("anim translate.translateY translateY " + b.Text + " 0 0 " + (ac++) + ";");
+                            writeKey(file, n.YPOS, n, a.Size(), "translateY");
+                            file.WriteLine("}");
+                        }
+                        if (n.ZPOS.HasAnimation())
+                        {
+                            file.WriteLine("anim translate.translateZ translateZ " + b.Text + " 0 0 " + (ac++) + ";");
+                            writeKey(file, n.ZPOS, n, a.Size(), "translateZ");
+                            file.WriteLine("}");
+                        }
+                        if (n.XROT.HasAnimation())
+                        {
+                            file.WriteLine("anim rotate.rotateX rotateX " + b.Text + " 0 0 " + (ac++) + ";");
+                            writeKey(file, n.XROT, n, a.Size(), "rotateX");
+                            file.WriteLine("}");
+                        }
+                        if (n.YROT.HasAnimation())
+                        {
+                            file.WriteLine("anim rotate.rotateY rotateY " + b.Text + " 0 0 " + (ac++) + ";");
+                            writeKey(file, n.YROT, n, a.Size(), "rotateY");
+                            file.WriteLine("}");
+                        }
+                        if (n.ZROT.HasAnimation())
+                        {
+                            file.WriteLine("anim rotate.rotateZ rotateZ " + b.Text + " 0 0 " + (ac++) + ";");
+                            writeKey(file, n.ZROT, n, a.Size(), "rotateZ");
+                            file.WriteLine("}");
+                        }
 
-			for (int f = 0; f < size; f++) {
-				KeyNode node = a.getNode (f, i);
+                        if (n.XSCA.HasAnimation())
+                        {
+                            file.WriteLine("anim scale.scaleX scaleX " + b.Text + " 0 0 " + (ac++) + ";");
+                            writeKey(file, n.XSCA, n, a.Size(), "scaleX");
+                            file.WriteLine("}");
+                        }
+                        if (n.YSCA.HasAnimation())
+                        {
+                            file.WriteLine("anim scale.scaleY scaleY " + b.Text + " 0 0 " + (ac++) + ";");
+                            writeKey(file, n.YSCA, n, a.Size(), "scaleY");
+                            file.WriteLine("}");
+                        }
+                        if (n.ZSCA.HasAnimation())
+                        {
+                            file.WriteLine("anim scale.scaleZ scaleZ " + b.Text + " 0 0 " + (ac++) + ";");
+                            writeKey(file, n.ZSCA, n, a.Size(), "scaleZ");
+                            file.WriteLine("}");
+                        }
+                    }
+                    else
+                    {
+                        file.WriteLine("anim " + b.Text + " 0 0 0;");
+                    }
+                }
+            }
+        }
 
-				float v = 0;
+        private static void writeKey(StreamWriter file, Animation.KeyGroup keys, Animation.KeyNode rt, int size, string type)
+        {
 
-				switch (type) {
-				case "translateX":
-					v = node.t.X;
-					break;
-				case "translateY":
-					v = node.t.Y;
-					break;
-				case "translateZ":
-					v = node.t.Z;
-					break;	
-				case "rotateX":
-					v = quattoeul(node.r).X * (float)(180f /  Math.PI);
-					break;	
-				case "rotateY":
-					v = quattoeul(node.r).Y * (float)(180f /  Math.PI);
-					break;	
-				case "rotateZ":
-					v = quattoeul(node.r).Z * (float)(180f /  Math.PI);
-					break;	
-				case "scaleX":
-					v = node.s.X;
-					break;
-				case "scaleY":
-					v = node.s.Y;
-					break;
-				case "scaleZ":
-					v = node.s.Z;
-					break;
-				}
+            file.WriteLine("animData {\n input time;\n output linear;\n weighted 1;\n preInfinity constant;\n postInfinity constant;\n keys {");
 
-				file.WriteLine (" " + (f+1) + " {0:N6} fixed fixed 1 1 0 0 1 0 1;", v);
-			}
+            if (((Animation.KeyFrame)keys.Nodes[0]).InterType == Animation.InterpolationType.COSTANT)
+                size = 1;
 
-			file.WriteLine (" }");
-		}
+            int f = 1;
+            foreach (Animation.KeyFrame key in keys.Nodes)
+            {
+                float v = 0;
 
-		public static Vector3 quattoeul(Quaternion q){
+                switch (type)
+                {
+                    case "translateX":
+                        v = key.Value;
+                        break;
+                    case "translateY":
+                        v = key.Value;
+                        break;
+                    case "translateZ":
+                        v = key.Value;
+                        break;
+                    case "rotateX":
+                        if (rt.RotType == Animation.RotationType.EULER)
+                            v = key.Value * (float)(180f / Math.PI);
+                        if (rt.RotType == Animation.RotationType.QUATERNION)
+                        {
+                            Quaternion q = new Quaternion(rt.XROT.GetValue(key.Frame), rt.YROT.GetValue(key.Frame), rt.ZROT.GetValue(key.Frame), rt.WROT.GetValue(key.Frame));
+                            v = quattoeul(q).X * (float)(180f / Math.PI);
+                        }
+                            break;
+                    case "rotateY":
+                        if (rt.RotType == Animation.RotationType.EULER)
+                            v = key.Value * (float)(180f / Math.PI);
+                        if (rt.RotType == Animation.RotationType.QUATERNION)
+                        {
+                            Quaternion q = new Quaternion(rt.XROT.GetValue(key.Frame), rt.YROT.GetValue(key.Frame), rt.ZROT.GetValue(key.Frame), rt.WROT.GetValue(key.Frame));
+                            v = quattoeul(q).Y * (float)(180f / Math.PI);
+                        }
+                        break;
+                    case "rotateZ":
+                        if (rt.RotType == Animation.RotationType.EULER)
+                            v = key.Value * (float)(180f / Math.PI);
+                        if (rt.RotType == Animation.RotationType.QUATERNION)
+                        {
+                            Quaternion q = new Quaternion(rt.XROT.GetValue(key.Frame), rt.YROT.GetValue(key.Frame), rt.ZROT.GetValue(key.Frame), rt.WROT.GetValue(key.Frame));
+                            v = quattoeul(q).Z * (float)(180f / Math.PI);
+                        }
+                        break;
+                    case "scaleX":
+                        v = key.Value;
+                        break;
+                    case "scaleY":
+                        v = key.Value;
+                        break;
+                    case "scaleZ":
+                        v = key.Value;
+                        break;
+                }
+
+                file.WriteLine(" " + (key.Frame + 1) + " {0:N6} fixed fixed 1 1 0 " + key.In + " 1 " + key.In + " 1;", v);
+            }
+
+            file.WriteLine(" }");
+        }
+        public static Vector3 quattoeul(Quaternion q){
 			float sqw = q.W * q.W;
 			float sqx = q.X * q.X;
 			float sqy = q.Y * q.Y;

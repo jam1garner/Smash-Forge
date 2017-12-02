@@ -51,8 +51,8 @@ namespace Smash_Forge
         public double currentFrame { get; set; }     // Script frame, can be fractional due to frameSpeed values
         public double currentAnimationFrame { get; set; }     // Script frame, can be fractional due to frameSpeed values
         public double frameSpeed { get; set; }       // Set by Set_Frame_Duration. How many in-game frames maps to an animation frame right now.
-        public List<int> animationFrames;           // Used to track historical animationFrames so that the right one can be returned
-        public int animationFrame                   // The current animation frame to display in-game
+        public List<float> animationFrames;           // Used to track historical animationFrames so that the right one can be returned
+        public float animationFrame                   // The current animation frame to display in-game
         { 
             // This getter exists solely to match up what animation frame the ACMD
             // results should be seen on as it would appear in-game.
@@ -130,7 +130,7 @@ namespace Smash_Forge
             currentFrame       = 0;
             currentAnimationFrame = 0;
             frameSpeed         = 1;
-            animationFrames    = new List<int>();
+            animationFrames    = new List<float>();
             incrementFrameValue = false;  // First frame has weird stuff going on with this
 
             scriptCommandIndex = 0;
@@ -244,7 +244,7 @@ namespace Smash_Forge
                 }
                 int roundedAnimFrame = roundAnimationFrame(currentAnimationFrame);
                 roundedAnimFrame -= 1;
-                animationFrames.Add(roundedAnimFrame);
+                animationFrames.Add((float)currentAnimationFrame);
                 currentGameFrame += 1;
                 //Console.WriteLine($"END GAME FRAME: gameFrame={currentGameFrame} animationFrame={animationFrame} currentFrame={currentFrame} currentAnimationFrame={currentAnimationFrame}");
             }

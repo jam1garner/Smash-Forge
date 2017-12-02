@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ACMDScript.cs" />
+    <Compile Include="Animation.cs" />
     <Compile Include="CharacterParamManager.cs" />
     <Compile Include="Filetypes\Animation\OMO.cs" />
     <Compile Include="Filetypes\ATKD.cs" />
@@ -997,6 +998,8 @@
     <None Include="Resources\icon_model.png" />
     <None Include="Resources\icon_mesh.png" />
     <None Include="Resources\icon_polygon.png" />
+    <None Include="Resources\icon_anim.png" />
+    <None Include="Resources\icon_bone.png" />
     <Content Include="Resources\sexy_green_down_arrow.png" />
     <Content Include="Resources\forge2.ico" />
     <None Include="Resources\DefaultTexture.png" />

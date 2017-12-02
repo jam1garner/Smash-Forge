@@ -39,6 +39,7 @@
             this.treeView1.Size = new System.Drawing.Size(140, 125);
             this.treeView1.TabIndex = 0;
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.selectItem);
+            this.treeView1.DoubleClick += new System.EventHandler(this.treeView1_DoubleClick);
             // 
             // AnimListPanel
             // 

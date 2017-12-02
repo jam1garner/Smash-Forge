@@ -35,6 +35,7 @@ namespace Smash_Forge
 
         public String[] filesToOpen = null;
         public static string executableDir = null;
+        public static csvHashes Hashes;
 
         public MainForm()
         {
@@ -59,6 +60,7 @@ namespace Smash_Forge
 
             allViewsPreset(new Object(), new EventArgs());
 
+            Hashes = new csvHashes(Path.Combine(executableDir, "hashTable.csv"));
             animList.treeView1.Nodes.Add(animNode);
             animList.treeView1.Nodes.Add(mtaNode);
             Runtime.renderBones = true;
@@ -576,10 +578,10 @@ namespace Smash_Forge
                             if (sfd.FileName.Contains("ALL.anim"))
                                 foreach (string animName in Runtime.Animations.Keys)
                                 {
-                                    ANIM.createANIM(sfd.FileName.Replace("ALL.anim",animName + ".anim"), Runtime.Animations[animName], Runtime.TargetVBN);
+                                    ANIM.CreateANIM(sfd.FileName.Replace("ALL.anim",animName + ".anim"), Runtime.Animations[animName], Runtime.TargetVBN);
                                 }
                             else
-                                ANIM.createANIM(sfd.FileName, Runtime.TargetAnim, Runtime.TargetVBN);
+                                ANIM.CreateANIM(sfd.FileName, Runtime.TargetAnim, Runtime.TargetVBN);
                         
                     }
 
@@ -601,7 +603,7 @@ namespace Smash_Forge
                         var pac = new PAC();
                         foreach (var anim in Runtime.Animations)
                         {
-                            var bytes = OMOOld.createOMO(anim.Value, Runtime.TargetVBN);
+                            var bytes = OMOOld.CreateOMOFromAnimation(anim.Value, Runtime.TargetVBN);
                             if (Runtime.TargetAnim.Tag is FileData)
                                 bytes = ((FileData)Runtime.TargetAnim.Tag).getSection(0,
                                     ((FileData)Runtime.TargetAnim.Tag).size());
@@ -629,20 +631,15 @@ namespace Smash_Forge
 
         public static void HashMatch()
         {
-            csvHashes csv = new csvHashes(Path.Combine(executableDir, "hashTable.csv"));
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
                 if (m.vbn != null)
                 {
                     foreach (Bone bone in m.vbn.bones)
                     {
-                        for (int i = 0; i < csv.names.Count; i++)
-                        {
-                            if (csv.names[i] == bone.Text)
-                            {
-                                bone.boneId = csv.ids[i];
-                            }
-                        }
+                        uint bi = 0;
+                        Hashes.names.TryGetValue(bone.Text, out bi);
+                        bone.boneId = bi;
                         if (bone.boneId == 0)
                             bone.boneId = Crc32.Compute(bone.Text);
                     }
@@ -652,13 +649,9 @@ namespace Smash_Forge
                 {
                     foreach (Bone bone in m.dat_melee.bones.bones)
                     {
-                        for (int i = 0; i < csv.names.Count; i++)
-                        {
-                            if (csv.names[i] == bone.Text)
-                            {
-                                bone.boneId = csv.ids[i];
-                            }
-                        }
+                        uint bi = 0;
+                        Hashes.names.TryGetValue(bone.Text, out bi);
+                        bone.boneId = bi;
                         if (bone.boneId == 0)
                             bone.boneId = Crc32.Compute(bone.Text);
                     }
@@ -669,12 +662,11 @@ namespace Smash_Forge
                     {
                         foreach (Bone bone in mod.skeleton.bones)
                         {
-                            for (int i = 0; i < csv.names.Count; i++)
+                            for (int i = 0; i < Hashes.names.Count; i++)
                             {
-                                if (csv.names[i] == bone.Text)
-                                {
-                                    bone.boneId = csv.ids[i];
-                                }
+                                uint bi = 0;
+                                Hashes.names.TryGetValue(bone.Text, out bi);
+                                bone.boneId = bi;
                             }
                         }
                     }
@@ -1123,6 +1115,7 @@ namespace Smash_Forge
         {
 
             //Runtime.Animations.Clear();
+            animList.treeView1.BeginUpdate();
             if (filename.EndsWith(".mta"))
             {
                 MTA mta = new MTA();
@@ -1141,13 +1134,13 @@ namespace Smash_Forge
             }
             else if (filename.EndsWith(".smd"))
             {
-                var anim = new SkelAnimation();
+                var anim = new Animation(filename);
                 if (Runtime.TargetVBN == null)
                     Runtime.TargetVBN = new VBN();
                 SMD.read(filename, anim, Runtime.TargetVBN);
                 boneTreePanel.treeRefresh();
-                Runtime.Animations.Add(filename, anim);
-                animNode.Nodes.Add(filename);
+                //Runtime.Animations.Add(filename, anim);
+                animNode.Nodes.Add(anim);
             }
             else if (filename.EndsWith(".pac"))
             {
@@ -1165,11 +1158,13 @@ namespace Smash_Forge
                         //AnimName = AnimName.Insert(3, "_");
                         if (!string.IsNullOrEmpty(AnimName))
                         {
+                            Console.WriteLine("Adding " + AnimName);
+                            anim.Text = AnimName;
                             if (Runtime.Animations.ContainsKey(AnimName))
-                                Runtime.Animations[AnimName].children.Add(anim);
+                                Runtime.Animations[AnimName].Children.Add(anim);
                             else
                             {
-                                animNode.Nodes.Add(AnimName);
+                                animNode.Nodes.Add(anim);
                                 Runtime.Animations.Add(AnimName, anim);
                             }
 
@@ -1178,7 +1173,7 @@ namespace Smash_Forge
                         else
                         {
                             if (Runtime.Animations.ContainsKey(pair.Key))
-                                Runtime.Animations[pair.Key].children.Add(anim);
+                                Runtime.Animations[pair.Key].Children.Add(anim);
                             else
                             {
                                 animNode.Nodes.Add(pair.Key);
@@ -1205,7 +1200,7 @@ namespace Smash_Forge
                                     .Replace(".mta", ".omo");
                             if (Runtime.Animations.ContainsKey(AnimName))
                             {
-                                Runtime.Animations[AnimName].children.Add(mta);
+                                Runtime.Animations[AnimName].Children.Add(mta);
                             }
 
                         }
@@ -1234,19 +1229,21 @@ namespace Smash_Forge
             //{
             if (filename.EndsWith(".omo"))
             {
-                Runtime.Animations.Add(filename, OMOOld.read(new FileData(filename)));
-                animNode.Nodes.Add(filename);
+                //Runtime.Animations.Add(filename, );
+                animNode.Nodes.Add(OMOOld.read(new FileData(filename)));
             }
             if (filename.EndsWith(".chr0"))
             {
-                Runtime.Animations.Add(filename, CHR0.read(new FileData(filename), Runtime.TargetVBN));
-                animNode.Nodes.Add(filename);
+                //Runtime.Animations.Add(filename, CHR0.read(new FileData(filename), Runtime.TargetVBN));
+                //animNode.Nodes.Add(filename);
             }
             if (filename.EndsWith(".anim"))
             {
-                Runtime.Animations.Add(filename, ANIM.read(filename, Runtime.TargetVBN));
-                animNode.Nodes.Add(filename);
+                //Runtime.Animations.Add(filename, ANIM.read(filename, Runtime.TargetVBN));
+                animNode.Nodes.Add(ANIM.read(filename, Runtime.TargetVBN));
             }
+
+            animList.treeView1.EndUpdate();
         }
 
         private static void writeDatJobjPositions(TreeNode node, FileOutput f)
@@ -1718,7 +1715,7 @@ namespace Smash_Forge
             if (fileName.EndsWith(".smd"))
             {
                 Runtime.TargetVBN = new VBN();
-                SMD.read(fileName, new SkelAnimation(), Runtime.TargetVBN);
+                SMD.read(fileName, new Animation(fileName), Runtime.TargetVBN);
 
                 ModelContainer m = resyncTargetVBN();
                 if (m != null)

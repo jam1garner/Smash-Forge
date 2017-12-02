@@ -13,9 +13,18 @@ namespace Smash_Forge
 {
     public partial class AnimListPanel : DockContent
     {
+        
+        public static ImageList iconList = new ImageList();
+
         public AnimListPanel()
         {
             InitializeComponent();
+            iconList.ImageSize = new Size(24, 24);
+            iconList.Images.Add("thesex", Properties.Resources.sexy_green_down_arrow);
+            iconList.Images.Add("anim", Properties.Resources.icon_anim);
+            iconList.Images.Add("bone", Properties.Resources.icon_bone);
+            iconList.Images.Add("frame", Properties.Resources.icon_model);
+            treeView1.ImageList = iconList;
         }
 
         private void lstAnims_SelectedIndexChanged(object sender, EventArgs e)
@@ -31,7 +40,7 @@ namespace Smash_Forge
                 if (e.Node.Parent.Text == "Bone Animations")
                 {
                     Runtime.TargetAnimString = e.Node.Text;
-                    Runtime.TargetAnim = Runtime.Animations[e.Node.Text];
+                    Runtime.TargetAnim = (Animation)e.Node;// Runtime.Animations[e.Node.Text];
                     
                     //reset mtas
                     foreach(ModelContainer con in Runtime.ModelContainers)
@@ -69,6 +78,14 @@ namespace Smash_Forge
                     //Runtime.TargetMTA = ;
                     Runtime.TargetMTAString = e.Node.Text;
                 }
+            }
+        }
+
+        private void treeView1_DoubleClick(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is Animation)
+            {
+                ((Animation)treeView1.SelectedNode).ExpandBones();
             }
         }
     }

@@ -56,6 +56,7 @@ namespace Smash_Forge
             render = true;
             _controlLoaded = true;
             defaulttex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
+            renderMode.SelectedIndex = (int)Runtime.renderType;
         }
 
         protected override void OnResize(EventArgs e)
@@ -114,7 +115,7 @@ namespace Smash_Forge
                 Runtime.TargetCMR0 = null;
                 Runtime.TargetNUD = null;
                 Runtime.killWorkspace = false;
-                Runtime.Animations = new Dictionary<string, SkelAnimation>();
+                Runtime.Animations = new Dictionary<string, Animation>();
                 MainForm.Instance.lvdList.fillList();
                 MainForm.animNode.Nodes.Clear();
                 MainForm.Instance.mtaNode.Nodes.Clear();
@@ -209,7 +210,7 @@ namespace Smash_Forge
                 }
             }
 
-            loadAnimation(Runtime.TargetAnim);
+            LoadAnimation(Runtime.TargetAnim);
         }
 
         private void btnFirstFrame_Click(object sender, EventArgs e)
@@ -276,32 +277,32 @@ namespace Smash_Forge
                 Runtime.gameAcmdScript.processToFrame(frameNum);
             }
 
-            int animFrameNum = frameNum;
+            float animFrameNum = frameNum;
             if (Runtime.gameAcmdScript != null && Runtime.useFrameDuration)
                 animFrameNum = Runtime.gameAcmdScript.animationFrame;// - 1;
 
-            Runtime.TargetAnim.setFrame(animFrameNum);
+            Runtime.TargetAnim.SetFrame(animFrameNum);
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
                 if (m.vbn != null)
-                    Runtime.TargetAnim.nextFrame(m.vbn);
+                    Runtime.TargetAnim.NextFrame(m.vbn);
 
                 // Deliberately do not ever use ACMD/animFrame to modify these other types of model
                 if (m.dat_melee != null)
                 {
-                    Runtime.TargetAnim.nextFrame(m.dat_melee.bones);
+                    Runtime.TargetAnim.NextFrame(m.dat_melee.bones);
                 }
                 if (m.bch != null)
                 {
                     foreach (BCH.BCH_Model mod in m.bch.models)
                     {
                         if (mod.skeleton != null)
-                            Runtime.TargetAnim.nextFrame(mod.skeleton);                       
+                            Runtime.TargetAnim.NextFrame(mod.skeleton);                       
                     }
                 }
             }
 
-            Frame = animFrameNum;
+            Frame = (int)animFrameNum;
         }
 
         private void nupdSpeed_ValueChanged(object sender, EventArgs e)
@@ -1984,18 +1985,18 @@ namespace Smash_Forge
 
         #endregion
 
-        public void loadAnimation(SkelAnimation a)
+        public void LoadAnimation(Animation a)
         {
-            a.setFrame(0);
+            a.SetFrame(0);
             setAnimMaxFrames(a);
 
             // Will trigger a nupdFrame_ValueChanged event which will execute the vbn next frame
             nupdFrame.Value = 1;
         }
 
-        public void setAnimMaxFrames(SkelAnimation a)
+        public void setAnimMaxFrames(Animation a)
         {
-            int totalAnimFrames = a.size() > 1 ? a.size() : 1;
+            int totalAnimFrames = a.Size() > 1 ? a.Size() : 1;
             if (Runtime.ParamManager.MovesData.Count > 0 && Runtime.scriptId >= 0)
                 if (Runtime.useFAFasAnimationLength)
                     totalAnimFrames = Runtime.ParamManager.MovesData[Runtime.scriptId].FAF > 0 ? Runtime.ParamManager.MovesData[Runtime.scriptId].FAF : totalAnimFrames;
@@ -2162,6 +2163,12 @@ namespace Smash_Forge
         Vector3 p1 = Vector3.Zero, p2 = Vector3.Zero;
         public int dbdistance = 0;
         bool freezeCamera = false;
+
+        private void cbRenderMode_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            Runtime.renderType = (Runtime.RenderTypes)renderMode.SelectedIndex;
+        }
+
         private void glControl1_DoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             float mouse_x = this.PointToClient(Cursor.Position).X;

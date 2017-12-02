@@ -15,9 +15,9 @@ namespace Smash_Forge
         public UInt32 boneType;
 
         public UInt32 boneId;
-        public float[] position;
-        public float[] rotation;
-        public float[] scale;
+        public float[] position = new float[] { 0, 0, 0 };
+        public float[] rotation = new float[] { 0, 0, 0 };
+        public float[] scale = new float[] { 1,1,1};
         
         public Vector3 pos = Vector3.Zero, sca = new Vector3(1f, 1f, 1f);
         public Quaternion rot = Quaternion.FromMatrix(Matrix3.Zero);
@@ -131,7 +131,7 @@ namespace Smash_Forge
             csvHashes csv = new csvHashes(Path.Combine(MainForm.executableDir, "hashTable.csv"));
             List<string> bonename = new List<string>();
 
-            for (int i = 0; i < hashCount; i++)
+            /*for (int i = 0; i < hashCount; i++)
             {
                 uint hash = (uint)f.readInt();
                 for (int j = 0; j < csv.ids.Count; j++)
@@ -141,7 +141,7 @@ namespace Smash_Forge
                         bonename.Add(csv.names[j]);
                         break;
                     }
-            }
+            }*/
 
             f.seek(pos);
             Console.WriteLine("Count " + count);
@@ -195,6 +195,21 @@ namespace Smash_Forge
 
         public List<List<int>> jointTable = new List<List<int>>();
         public SB swingBones = new SB();
+
+        public Bone getBone(String name)
+        {
+            foreach (Bone bo in bones)
+                if (bo.Text.Equals(name))
+                    return bo;
+            return null;
+        }
+        public Bone getBone(uint hash)
+        {
+            foreach (Bone bo in bones)
+                if (bo.boneId == hash)
+                    return bo;
+            return null;
+        }
 
         public List<Bone> getBoneTreeOrderol()
         {
@@ -580,10 +595,10 @@ namespace Smash_Forge
                         if (b.boneId == boneHash)
                             return b.Text;
 
-            csvHashes csv = new csvHashes(Path.Combine(MainForm.executableDir, "hashTable.csv"));
+            /*csvHashes csv = new csvHashes(Path.Combine(MainForm.executableDir, "hashTable.csv"));
             for (int i = 0; i < csv.ids.Count; i++)
                 if (csv.ids[i] == boneHash)
-                    return csv.names[i]+" (From hashTable.csv)";
+                    return csv.names[i]+" (From hashTable.csv)";*/
 
             return $"[Bonehash {boneHash.ToString("X")}]";
         }
@@ -764,10 +779,10 @@ namespace Smash_Forge
 
 namespace Smash_Forge
 {
-    class csvHashes
+    public class csvHashes
     {
-        public List<string> names = new List<string>();
-        public List<uint> ids = new List<uint>();
+        public Dictionary<string, uint> names = new Dictionary<string, uint>();
+        public Dictionary<uint, string> ids = new Dictionary<uint, string>();
 
         public csvHashes(string filename)
         {
@@ -778,8 +793,8 @@ namespace Smash_Forge
                 var line = reader.ReadLine();
                 var values = line.Split(',');
 
-                names.Add(values[0]);
-                ids.Add(Convert.ToUInt32(values[1]));
+                names.Add(values[0], Convert.ToUInt32(values[1]));
+                ids.Add(Convert.ToUInt32(values[1]), values[0]);
             }
         }
     }

@@ -674,8 +674,6 @@ namespace Smash_Forge
                 DOBJ data = (DOBJ)da.Tag;
                 NUD.Mesh mesh = new NUD.Mesh();
                 mesh.Text = "Mesh_" + displayList.IndexOf(da);
-                NUD.Polygon polygon = new NUD.Polygon();
-                polygon.setDefaultMaterial();
 
 
                 texid = 0;
@@ -686,6 +684,8 @@ namespace Smash_Forge
 
                     texid++;
                 }
+                NUD.Polygon polygon = new NUD.Polygon();
+                polygon.setDefaultMaterial();
                 polygon.materials[0].textures[0].hash = 0x401B1000 + texid;
                 switch (data.material.texture.wrap_s)
                 {

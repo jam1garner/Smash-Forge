@@ -12,22 +12,35 @@ namespace Smash_Forge
         {
             List<int> newFace = new List<int>();
 
+            int t1 = 0, t2 = 0, t3 = 0;
             for (int i = 0; i < input.Count - 2; i++)
             {
                 if (i % 2 == 1)
                 {
-                    newFace.Add(input[i + 0]);
-                    newFace.Add(input[i + 1]);
-                    newFace.Add(input[i + 2]);
+                    t1=(input[i + 0]);
+                    t2=(input[i + 1]);
+                    t3=(input[i + 2]);
                 }
                 else
                 {
-                    newFace.Add(input[i]);
-                    newFace.Add(input[i + 2]);
-                    newFace.Add(input[i + 1]);
+                    t1=(input[i]);
+                    t2=(input[i + 2]);
+                    t3=(input[i + 1]);
                 }
+                if (t1 == t2)
+                    continue;
+                if (t2 == t3)
+                    continue;
+                if (t3 == t1)
+                    continue;
+                newFace.Add(t1);
+                newFace.Add(t2);
+                newFace.Add(t3);
             }
-            Console.WriteLine(input.Count + " " + (input.Count / 3f));
+            //Console.WriteLine(input.Count + " " + (input.Count / 3f));
+            //foreach (int i in input)
+            //    Console.Write(i + " ");
+            //Console.WriteLine();
 
             return newFace;
         }

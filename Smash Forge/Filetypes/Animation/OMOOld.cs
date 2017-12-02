@@ -41,7 +41,7 @@ namespace Smash_Forge
             return (toConvert * scale2) - scale1;
         }
 
-        public static SkelAnimation read(FileData d)
+        public static Animation read(FileData d)
         {
 
             d.Endian = Endianness.Big;
@@ -331,7 +331,84 @@ namespace Smash_Forge
                 anim.addKeyframe(key);
             }
 
-            return anim;
+            Animation a = new Animation("Anim");
+            a.FrameCount = anim.size();
+            Dictionary<uint, Animation.KeyNode> nodes = new Dictionary<uint, Animation.KeyNode>();
+            
+            foreach(KeyFrame frame in anim.frames)
+            {
+                foreach (KeyNode node in frame.nodes)
+                {
+                    Animation.KeyNode n;
+                    if (nodes.ContainsKey(node.hash))
+                    {
+                        n = nodes[node.hash];
+                    }else
+                    {
+                        string bid = "Unk";// MainForm.Hashes.ids.IndexOf(node.hash);
+                        if(!MainForm.Hashes.ids.TryGetValue(node.hash, out bid))
+                        foreach (ModelContainer con in Runtime.ModelContainers)
+                            if (con.vbn != null)
+                                bid = con.vbn.getBone(node.hash) == null ? "" : con.vbn.getBone(node.hash).Text;
+                        n = new Animation.KeyNode(bid);
+                        n.Type = Animation.BoneType.NORMAL;
+                        nodes.Add(node.hash, n);
+                    }
+                    if (node.s_type != -1)
+                    {
+                        Animation.KeyFrame fr = new Animation.KeyFrame();
+                        fr.Value = node.s.X;
+                        fr.Frame = frame.frame;
+                        n.XSCA.Nodes.Add(fr);
+                        fr = new Animation.KeyFrame();
+                        fr.Value = node.s.Y;
+                        fr.Frame = frame.frame;
+                        n.YSCA.Nodes.Add(fr);
+                        fr = new Animation.KeyFrame();
+                        fr.Value = node.s.Z;
+                        fr.Frame = frame.frame;
+                        n.ZSCA.Nodes.Add(fr);
+                    }
+                    if (node.t_type != -1)
+                    {
+                        Animation.KeyFrame fr = new Animation.KeyFrame();
+                        fr.Value = node.t.X;
+                        fr.Frame = frame.frame;
+                        n.XPOS.Nodes.Add(fr);
+                        fr = new Animation.KeyFrame();
+                        fr.Value = node.t.Y;
+                        fr.Frame = frame.frame;
+                        n.YPOS.Nodes.Add(fr);
+                        fr = new Animation.KeyFrame();
+                        fr.Value = node.t.Z;
+                        fr.Frame = frame.frame;
+                        n.ZPOS.Nodes.Add(fr);
+                    }
+                    if (node.r_type != -1)
+                    {
+                        Animation.KeyFrame fr = new Animation.KeyFrame();
+                        fr.Value = node.r.X;
+                        fr.Frame = frame.frame;
+                        n.XROT.Nodes.Add(fr);
+                        fr = new Animation.KeyFrame();
+                        fr.Value = node.r.Y;
+                        fr.Frame = frame.frame;
+                        n.YROT.Nodes.Add(fr);
+                        fr = new Animation.KeyFrame();
+                        fr.Value = node.r.Z;
+                        fr.Frame = frame.frame;
+                        n.ZROT.Nodes.Add(fr);
+                        fr = new Animation.KeyFrame();
+                        fr.Value = node.r.W;
+                        fr.Frame = frame.frame;
+                        n.WROT.Nodes.Add(fr);
+                    }
+                }
+                }
+            foreach (uint i in nodes.Keys)
+                a.Bones.Add(nodes[i]);
+
+            return a;
         }
 
         public static Bone getNodeId(VBN vbn, int node)
@@ -641,9 +718,311 @@ namespace Smash_Forge
             o.writeOutput(t2);
             return o.getBytes();
         }
-        public static void createOMO(SkelAnimation a, VBN vbn, String fname)
+
+        public static void createOMO(Animation a, VBN vbn, String fname)
         {
-            File.WriteAllBytes(fname, createOMO(a, vbn));
+            File.WriteAllBytes(fname, CreateOMOFromAnimation(a, vbn));
+        }
+
+        public static byte[] CreateOMOFromAnimation(Animation a, VBN vbn)
+        {
+            FileOutput o = new FileOutput();
+            o.Endian = Endianness.Big;
+
+            FileOutput t1 = new FileOutput();
+            t1.Endian = Endianness.Big;
+
+            FileOutput t2 = new FileOutput();
+            t2.Endian = Endianness.Big;
+
+            o.writeString("OMO ");
+            o.writeShort(1); //idk
+            o.writeShort(3);//idk
+
+            o.writeInt(0x091E100C); //flags??
+
+
+            o.writeShort(0); //padding
+            o.writeShort(a.Bones.Count); // numOfNodes
+
+            o.writeShort(a.FrameCount); // frame size
+            o.writeShort(0); // frame start ??
+
+            o.writeInt(0);
+            o.writeInt(0);
+            o.writeInt(0);
+
+            o.writeIntAt(o.size(), 0x14);
+            
+            // ASSESSMENT
+            Vector3[] maxT = new Vector3[a.Bones.Count], minT = new Vector3[a.Bones.Count];
+            Vector4[] maxR = new Vector4[a.Bones.Count], minR = new Vector4[a.Bones.Count];
+            Vector3[] maxS = new Vector3[a.Bones.Count], minS = new Vector3[a.Bones.Count];
+            bool[] hasScale = new bool[a.Bones.Count];
+            bool[] hasTrans = new bool[a.Bones.Count];
+            bool[] hasRot = new bool[a.Bones.Count];
+
+            bool[] conScale = new bool[a.Bones.Count];
+            bool[] conTrans = new bool[a.Bones.Count];
+            bool[] conRot = new bool[a.Bones.Count];
+            
+            a.SetFrame(0);
+
+            //for (int i = 0; i < a.FrameCount; i++)
+            {
+                //a.NextFrame(vbn);
+
+                for (int j = 0; j < a.Bones.Count; j++)
+                {
+                    Animation.KeyNode keynode = ((Animation.KeyNode)a.Bones[j]);
+                    if (keynode.XPOS.HasAnimation() || keynode.YPOS.HasAnimation() || keynode.ZPOS.HasAnimation())
+                        hasTrans[j] = true;
+                    if (keynode.XROT.HasAnimation())
+                        hasRot[j] = true;
+                    if (keynode.XSCA.HasAnimation() || keynode.YSCA.HasAnimation() || keynode.ZSCA.HasAnimation())
+                        hasScale[j] = true;
+
+                    maxT[j] = new Vector3(-999f, -999f, -999f);
+                    minT[j] = new Vector3(999f, 999f, 999f);
+                    maxS[j] = new Vector3(-999f, -999f, -999f);
+                    minS[j] = new Vector3(999f, 999f, 999f);
+                    maxR[j] = new Vector4(-999f, -999f, -999f, -999f);
+                    minR[j] = new Vector4(999f, 999f, 999f, 999f);
+
+                    foreach(Animation.KeyFrame key in keynode.XPOS.Nodes)
+                    {
+                        maxT[j].X = Math.Max(maxT[j].X, key.Value);
+                        minT[j].X = Math.Min(minT[j].X, key.Value);
+                    }
+                    foreach (Animation.KeyFrame key in keynode.YPOS.Nodes)
+                    {
+                        maxT[j].Y = Math.Max(maxT[j].Y, key.Value);
+                        minT[j].Y = Math.Min(minT[j].Y, key.Value);
+                    }
+                    foreach (Animation.KeyFrame key in keynode.ZPOS.Nodes)
+                    {
+                        maxT[j].Z = Math.Max(maxT[j].Z, key.Value);
+                        minT[j].Z = Math.Min(minT[j].Z, key.Value);
+                    }
+                    foreach (Animation.KeyFrame key in keynode.XSCA.Nodes)
+                    {
+                        maxS[j].X = Math.Max(maxS[j].X, key.Value);
+                        minS[j].X = Math.Min(minS[j].X, key.Value);
+                    }
+                    foreach (Animation.KeyFrame key in keynode.YSCA.Nodes)
+                    {
+                        maxS[j].Y = Math.Max(maxS[j].Y, key.Value);
+                        minS[j].Y = Math.Min(minS[j].Y, key.Value);
+                    }
+                    foreach (Animation.KeyFrame key in keynode.ZSCA.Nodes)
+                    {
+                        maxS[j].Z = Math.Max(maxS[j].Z, key.Value);
+                        minS[j].Z = Math.Min(minS[j].Z, key.Value);
+                    }
+                    //TODO: Euler Rotation Values
+                    a.SetFrame(0);
+                    Bone b = vbn.getBone(keynode.Text);
+                    for (int i = 0; i < a.FrameCount; i++)
+                    {
+                        maxR[j].X = Math.Max(maxR[j].X, b.rot.X);
+                        minR[j].X = Math.Min(minR[j].X, b.rot.X);
+                        maxR[j].Y = Math.Max(maxR[j].Y, b.rot.Y);
+                        minR[j].Y = Math.Min(minR[j].Y, b.rot.Y);
+                        maxR[j].Z = Math.Max(maxR[j].Z, b.rot.Z);
+                        minR[j].Z = Math.Min(minR[j].Z, b.rot.Z);
+                        a.NextFrame(vbn);
+                    }
+
+                    if (b != null)
+                    {
+                        if (maxT[j].X == -999) maxT[j].X = b.position[0];
+                        if (maxT[j].Y == -999) maxT[j].Y = b.position[1];
+                        if (maxT[j].Z == -999) maxT[j].Z = b.position[2];
+                        if (minT[j].X == -999) minT[j].X = b.position[0];
+                        if (minT[j].Y == -999) minT[j].Y = b.position[1];
+                        if (minT[j].Z == -999) minT[j].Z = b.position[2];
+
+                        if (maxS[j].X == -999) maxS[j].X = b.scale[0];
+                        if (maxS[j].Y == -999) maxS[j].Y = b.scale[1];
+                        if (maxS[j].Z == -999) maxS[j].Z = b.scale[2];
+                        if (minS[j].X == -999) minS[j].X = b.scale[0];
+                        if (minS[j].Y == -999) minS[j].Y = b.scale[1];
+                        if (minS[j].Z == -999) minS[j].Z = b.scale[2];
+                    }
+                }
+            }
+
+            // NODE INFO
+
+            int t2Size = 0;
+            for (int i = 0; i < a.Bones.Count; i++)
+            {
+                int flag = 0;
+
+                conRot[i] = false;
+                conScale[i] = false;
+                conTrans[i] = false;
+
+                // check for constant
+                if (maxT[i].Equals(minT[i]))
+                    conTrans[i] = true;
+                if (maxR[i].Equals(minR[i]))
+                    conRot[i] = true;
+                if (maxS[i].Equals(minS[i]))
+                    conScale[i] = true;
+
+                if (hasTrans[i])
+                    flag |= 0x01000000;
+                if (hasRot[i])
+                    flag |= 0x02000000;
+                if (hasScale[i])
+                    flag |= 0x04000000;
+
+                if (conTrans[i] && hasTrans[i])
+                    flag |= 0x00200000;
+                else
+                    flag |= 0x00080000;
+
+                if (conRot[i] && hasRot[i])
+                    flag |= 0x00007000;
+                else
+                    flag |= 0x00005000;
+
+                if (conScale[i] && hasScale[i])
+                    flag |= 0x00000200;
+                else
+                    flag |= 0x00000080;
+
+                flag |= 0x00000001;
+
+                //uint id = 999;
+                Bone b = vbn.getBone(a.Bones[i].Text);
+                int hash = -1;
+                if (b != null)
+                    hash = (int)b.boneId;
+                else
+                    continue;
+                //if(hash == -1)
+                //hash = (int)FileData.crc32(getNodeId(nodeid.get(i)).name);
+                o.writeInt(flag); // flags...
+                o.writeInt(hash); //hash
+                o.writeInt(t1.size()); // Offset in 1 table
+                o.writeInt(t2Size); // Offset in 2 table
+
+                // calculate size needed
+                if (hasTrans[i])
+                {
+                    t1.writeFloat(minT[i].X);
+                    t1.writeFloat(minT[i].Y);
+                    t1.writeFloat(minT[i].Z);
+
+                    if (!conTrans[i])
+                    {
+                        maxT[i].X -= minT[i].X;
+                        maxT[i].Y -= minT[i].Y;
+                        maxT[i].Z -= minT[i].Z;
+
+                        t1.writeFloat(maxT[i].X);
+                        t1.writeFloat(maxT[i].Y);
+                        t1.writeFloat(maxT[i].Z);
+
+                        t2Size += 6;
+                    }
+                }
+
+                if (hasRot[i])
+                {
+                    t1.writeFloat(minR[i].X);
+                    t1.writeFloat(minR[i].Y);
+                    t1.writeFloat(minR[i].Z);
+
+                    if (!conRot[i])
+                    {
+                        maxR[i].X -= minR[i].X;
+                        maxR[i].Y -= minR[i].Y;
+                        maxR[i].Z -= minR[i].Z;
+
+                        t1.writeFloat(maxR[i].X);
+                        t1.writeFloat(maxR[i].Y);
+                        t1.writeFloat(maxR[i].Z);
+
+                        t2Size += 6;
+                    }
+                }
+
+                if (hasScale[i])
+                {
+                    t1.writeFloat(minS[i].X);
+                    t1.writeFloat(minS[i].Y);
+                    t1.writeFloat(minS[i].Z);
+
+                    if (!conScale[i])
+                    {
+                        maxS[i].X -= minS[i].X;
+                        maxS[i].Y -= minS[i].Y;
+                        maxS[i].Z -= minS[i].Z;
+
+                        t1.writeFloat(maxS[i].X);
+                        t1.writeFloat(maxS[i].Y);
+                        t1.writeFloat(maxS[i].Z);
+
+                        t2Size += 6;
+                    }
+                }
+            }
+
+            o.writeIntAt(o.size(), 0x18);
+
+            o.writeOutput(t1);
+
+            o.writeIntAt(o.size(), 0x1C);
+
+            // INTERPOLATION
+
+            a.SetFrame(0);
+
+            for (int i = 0; i < a.FrameCount; i++)
+            {
+                //Console.WriteLine("Workin on" + i);
+                a.NextFrame(vbn);
+                for (int j = 0; j < a.Bones.Count; j++)
+                {
+                    Bone node = vbn.getBone(a.Bones[j].Text);
+                    if (node == null) continue;
+
+                    if (hasTrans[j] && !conTrans[j])
+                    {
+                        t2.writeShort((int)(((node.pos.X - minT[j].X) / maxT[j].X) * 0xFFFF));
+                        t2.writeShort((int)(((node.pos.Y - minT[j].Y) / maxT[j].Y) * 0xFFFF));
+                        t2.writeShort((int)(((node.pos.Z - minT[j].Z) / maxT[j].Z) * 0xFFFF));
+                    }
+
+                    if (hasRot[j] && !conRot[j])
+                    {
+                        Quaternion r = node.rot;
+
+                        t2.writeShort((int)(((r.X - minR[j].X) / maxR[j].X) * 0xFFFF));
+                        t2.writeShort((int)(((r.Y - minR[j].Y) / maxR[j].Y) * 0xFFFF));
+                        t2.writeShort((int)(((r.Z - minR[j].Z) / maxR[j].Z) * 0xFFFF));
+                    }
+
+                    if (hasScale[j] && !conScale[j])
+                    {
+                        t2.writeShort((int)(((node.sca.X - minS[j].X) / maxS[j].X) * 0xFFFF));
+                        t2.writeShort((int)(((node.sca.Y - minS[j].Y) / maxS[j].Y) * 0xFFFF));
+                        t2.writeShort((int)(((node.sca.Z - minS[j].Z) / maxS[j].Z) * 0xFFFF));
+                    }
+                }
+
+                if (i == 0)
+                {
+                    o.writeShortAt(t2.size(), 0x12);
+                }
+            }
+
+            //Console.WriteLine("Saving");
+            o.writeOutput(t2);
+            return o.getBytes();
         }
     }
 }
