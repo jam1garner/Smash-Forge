@@ -169,26 +169,26 @@ namespace Smash_Forge
 
             // Interpolated type below here is always a set translation/rotation/scale
             // from the coords specified with the bone node above
+
+            Animation a = new Animation("Anim");
+            a.FrameCount = frameCount;
+
             d.seek(offset3);
-            for (int i = 0; i < frameCount; i++)
+
+            for (int j = 0; j < boneCount; j++)
             {
-                KeyFrame key = new KeyFrame();
-                key.frame = i;
+                string bid = "Unk";// MainForm.Hashes.ids.IndexOf(node.hash);
+                if (!MainForm.Hashes.ids.TryGetValue(baseNode[j].hash, out bid))
+                    foreach (ModelContainer con in Runtime.ModelContainers)
+                        if (con.vbn != null)
+                            bid = con.vbn.getBone(baseNode[j].hash) == null ? "" : con.vbn.getBone(baseNode[j].hash).Text;
+                Animation.KeyNode n = new Animation.KeyNode(bid);
+                a.Bones.Add(n);
+                n.Type = Animation.BoneType.NORMAL;
 
-                int off = d.pos();
-
-                for (int j = 0; j < boneCount; j++)
+                for (int i = 0; i < a.FrameCount; i++)
                 {
-                    KeyNode node = new KeyNode();
-
-                    node.t_type = baseNode[j].t_type;
-                    node.r_type = baseNode[j].r_type;
-                    node.s_type = baseNode[j].s_type;
-
-                    node.id = baseNode[j].id;
-                    node.hash = baseNode[j].hash;
-
-                    d.seek(off + framekey[j]);
+                    d.seek(offset3 + frameSize * i + framekey[j]);
 
                     if (baseNode[j].t_type == KeyNode.INTERPOLATED)
                     {
@@ -200,11 +200,17 @@ namespace Smash_Forge
                         float y = baseNode[j].t.Y + (baseNode[j].t2.Y * (i2));
                         float z = baseNode[j].t.Z + (baseNode[j].t2.Z * (i3));
 
-                        node.t = new Vector3(x, y, z);  // Translation
+                        //node.t = new Vector3(x, y, z);  // Translation
+                        n.XPOS.Nodes.Add(new Animation.KeyFrame(x, i));
+                        n.YPOS.Nodes.Add(new Animation.KeyFrame(y, i));
+                        n.ZPOS.Nodes.Add(new Animation.KeyFrame(z, i));
                     }
                     else if (baseNode[j].t_type == KeyNode.CONSTANT)
                     {
-                        node.t = baseNode[j].t;
+                        //node.t = baseNode[j].t;
+                        n.XPOS.Nodes.Add(new Animation.KeyFrame(baseNode[j].t.X, i));
+                        n.YPOS.Nodes.Add(new Animation.KeyFrame(baseNode[j].t.Y, i));
+                        n.ZPOS.Nodes.Add(new Animation.KeyFrame(baseNode[j].t.Z, i));
                     }
                     else if (baseNode[j].t_type == 2)
                     {
@@ -212,7 +218,10 @@ namespace Smash_Forge
                         float y = d.readFloat();
                         float z = d.readFloat();
 
-                        node.t = new Vector3(x, y, z);
+                        //node.t = new Vector3(x, y, z);
+                        n.XPOS.Nodes.Add(new Animation.KeyFrame(x, i));
+                        n.YPOS.Nodes.Add(new Animation.KeyFrame(y, i));
+                        n.ZPOS.Nodes.Add(new Animation.KeyFrame(z, i));
                     }
 
                     if (baseNode[j].r_type == KeyNode.COMPRESSED)
@@ -235,41 +244,46 @@ namespace Smash_Forge
                         int f3 = (b6 << 12) | (b7 << 4) | ((b8 & 0xF0) >> 4);
                         int flags = b8 & 0xF;
 
-                        node.r = new Quaternion();
+                        Quaternion r = new Quaternion();
                         switch (flags)
                         {
                             case 0:  // y, z, w provided
-                                node.r.Y = encodedRot10ToQuaternionComponent(f1);
-                                node.r.Z = encodedRot10ToQuaternionComponent(f2);
-                                node.r.W = encodedRot10ToQuaternionComponent(f3);
+                                r.Y = encodedRot10ToQuaternionComponent(f1);
+                                r.Z = encodedRot10ToQuaternionComponent(f2);
+                                r.W = encodedRot10ToQuaternionComponent(f3);
 
-                                node.r.X = (float)Math.Sqrt(Math.Abs(1 - (node.r.Y * node.r.Y + node.r.Z * node.r.Z + node.r.W * node.r.W)));
+                                r.X = (float)Math.Sqrt(Math.Abs(1 - (r.Y * r.Y + r.Z * r.Z + r.W * r.W)));
                                 break;
                             case 1:  // x, z, w provided
-                                node.r.X = encodedRot10ToQuaternionComponent(f1);
-                                node.r.Z = encodedRot10ToQuaternionComponent(f2);
-                                node.r.W = encodedRot10ToQuaternionComponent(f3);
+                                r.X = encodedRot10ToQuaternionComponent(f1);
+                                r.Z = encodedRot10ToQuaternionComponent(f2);
+                                r.W = encodedRot10ToQuaternionComponent(f3);
 
-                                node.r.Y = (float)Math.Sqrt(Math.Abs(1 - (node.r.X * node.r.X + node.r.Z * node.r.Z + node.r.W * node.r.W)));
+                                r.Y = (float)Math.Sqrt(Math.Abs(1 - (r.X * r.X + r.Z * r.Z + r.W * r.W)));
                                 break;
                             case 2:  // x, y, w provided
-                                node.r.X = encodedRot10ToQuaternionComponent(f1);
-                                node.r.Y = encodedRot10ToQuaternionComponent(f2);
-                                node.r.W = encodedRot10ToQuaternionComponent(f3);
+                                r.X = encodedRot10ToQuaternionComponent(f1);
+                                r.Y = encodedRot10ToQuaternionComponent(f2);
+                                r.W = encodedRot10ToQuaternionComponent(f3);
 
-                                node.r.Z = (float)Math.Sqrt(Math.Abs(1 - (node.r.X * node.r.X + node.r.Y * node.r.Y + node.r.W * node.r.W)));
+                                r.Z = (float)Math.Sqrt(Math.Abs(1 - (r.X * r.X + r.Y * r.Y + r.W * r.W)));
                                 break;
                             case 3:  // x, y, z, provided
-                                node.r.X = encodedRot10ToQuaternionComponent(f1);
-                                node.r.Y = encodedRot10ToQuaternionComponent(f2);
-                                node.r.Z = encodedRot10ToQuaternionComponent(f3);
+                                r.X = encodedRot10ToQuaternionComponent(f1);
+                                r.Y = encodedRot10ToQuaternionComponent(f2);
+                                r.Z = encodedRot10ToQuaternionComponent(f3);
 
-                                node.r.W = (float)Math.Sqrt(Math.Abs(1 - (node.r.X * node.r.X + node.r.Y * node.r.Y + node.r.Z * node.r.Z)));
+                                r.W = (float)Math.Sqrt(Math.Abs(1 - (r.X * r.X + r.Y * r.Y + r.Z * r.Z)));
                                 break;
                             default:
                                 Console.WriteLine("Unknown rotation type3 flags: " + flags);
                                 break;
                         }
+                        n.RotType = Animation.RotationType.QUATERNION;
+                        n.XROT.Nodes.Add(new Animation.KeyFrame(r.X, i));
+                        n.YROT.Nodes.Add(new Animation.KeyFrame(r.Y, i));
+                        n.ZROT.Nodes.Add(new Animation.KeyFrame(r.Z, i));
+                        n.WROT.Nodes.Add(new Animation.KeyFrame(r.W, i));
                     }
                     else if (baseNode[j].r_type == KeyNode.INTERPOLATED)
                     {
@@ -283,8 +297,14 @@ namespace Smash_Forge
 
                         float w = (float)Math.Sqrt(Math.Abs(1 - (x * x + y * y + z * z)));
 
-                        node.r = new Quaternion(new Vector3(x, y, z), w);
-                        node.r.Normalize();
+                        Quaternion r = new Quaternion(new Vector3(x, y, z), w);
+                        r.Normalize();
+
+                        n.RotType = Animation.RotationType.QUATERNION;
+                        n.XROT.Nodes.Add(new Animation.KeyFrame(r.X, i));
+                        n.YROT.Nodes.Add(new Animation.KeyFrame(r.Y, i));
+                        n.ZROT.Nodes.Add(new Animation.KeyFrame(r.Z, i));
+                        n.WROT.Nodes.Add(new Animation.KeyFrame(r.W, i));
                     }
                     else if (baseNode[j].r_type == KeyNode.KEYFRAME)
                     {
@@ -294,7 +314,12 @@ namespace Smash_Forge
                         float z = baseNode[j].rv.Z + scale;
                         float w = rot6CalculateW(x, y, z);
 
-                        node.r = new Quaternion(x, y, z, w);
+                        Quaternion r = new Quaternion(x, y, z, w);
+                        n.RotType = Animation.RotationType.QUATERNION;
+                        n.XROT.Nodes.Add(new Animation.KeyFrame(r.X, i));
+                        n.YROT.Nodes.Add(new Animation.KeyFrame(r.Y, i));
+                        n.ZROT.Nodes.Add(new Animation.KeyFrame(r.Z, i));
+                        n.WROT.Nodes.Add(new Animation.KeyFrame(r.W, i));
                     }
                     else
                     {
@@ -303,8 +328,13 @@ namespace Smash_Forge
                         float z = baseNode[j].rv.Z;
                         float w = (float)Math.Sqrt(Math.Abs(1 - (x * x + y * y + z * z)));
 
-                        node.r = new Quaternion(baseNode[j].rv, w);
-                        node.r.Normalize();
+                        Quaternion r = new Quaternion(baseNode[j].rv, w);
+                        r.Normalize();
+                        n.RotType = Animation.RotationType.QUATERNION;
+                        n.XROT.Nodes.Add(new Animation.KeyFrame(r.X, i));
+                        n.YROT.Nodes.Add(new Animation.KeyFrame(r.Y, i));
+                        n.ZROT.Nodes.Add(new Animation.KeyFrame(r.Z, i));
+                        n.WROT.Nodes.Add(new Animation.KeyFrame(r.W, i));
                     }
 
                     if (baseNode[j].s_type == KeyNode.INTERPOLATED)
@@ -317,96 +347,20 @@ namespace Smash_Forge
                         float y = baseNode[j].s.Y + (baseNode[j].s2.Y * (i2));
                         float z = baseNode[j].s.Z + (baseNode[j].s2.Z * (i3));
 
-                        node.s = new Vector3(x, y, z);
+                        //node.s = new Vector3(x, y, z);
+                        n.XSCA.Nodes.Add(new Animation.KeyFrame(x, i));
+                        n.YSCA.Nodes.Add(new Animation.KeyFrame(y, i));
+                        n.ZSCA.Nodes.Add(new Animation.KeyFrame(z, i));
                     }
                     else
                     {
-                        node.s = baseNode[j].s;
+                        //node.s = baseNode[j].s;
+                        n.XSCA.Nodes.Add(new Animation.KeyFrame(baseNode[j].s.X, i));
+                        n.YSCA.Nodes.Add(new Animation.KeyFrame(baseNode[j].s.Y, i));
+                        n.ZSCA.Nodes.Add(new Animation.KeyFrame(baseNode[j].s.Z, i));
                     }
-
-                    key.addNode(node);
                 }
-                d.seek(off + frameSize);
-                
-                anim.addKeyframe(key);
             }
-
-            Animation a = new Animation("Anim");
-            a.FrameCount = anim.size();
-            Dictionary<uint, Animation.KeyNode> nodes = new Dictionary<uint, Animation.KeyNode>();
-            
-            foreach(KeyFrame frame in anim.frames)
-            {
-                foreach (KeyNode node in frame.nodes)
-                {
-                    Animation.KeyNode n;
-                    if (nodes.ContainsKey(node.hash))
-                    {
-                        n = nodes[node.hash];
-                    }else
-                    {
-                        string bid = "Unk";// MainForm.Hashes.ids.IndexOf(node.hash);
-                        if(!MainForm.Hashes.ids.TryGetValue(node.hash, out bid))
-                        foreach (ModelContainer con in Runtime.ModelContainers)
-                            if (con.vbn != null)
-                                bid = con.vbn.getBone(node.hash) == null ? "" : con.vbn.getBone(node.hash).Text;
-                        n = new Animation.KeyNode(bid);
-                        n.Type = Animation.BoneType.NORMAL;
-                        nodes.Add(node.hash, n);
-                    }
-                    if (node.s_type != -1)
-                    {
-                        Animation.KeyFrame fr = new Animation.KeyFrame();
-                        fr.Value = node.s.X;
-                        fr.Frame = frame.frame;
-                        n.XSCA.Nodes.Add(fr);
-                        fr = new Animation.KeyFrame();
-                        fr.Value = node.s.Y;
-                        fr.Frame = frame.frame;
-                        n.YSCA.Nodes.Add(fr);
-                        fr = new Animation.KeyFrame();
-                        fr.Value = node.s.Z;
-                        fr.Frame = frame.frame;
-                        n.ZSCA.Nodes.Add(fr);
-                    }
-                    if (node.t_type != -1)
-                    {
-                        Animation.KeyFrame fr = new Animation.KeyFrame();
-                        fr.Value = node.t.X;
-                        fr.Frame = frame.frame;
-                        n.XPOS.Nodes.Add(fr);
-                        fr = new Animation.KeyFrame();
-                        fr.Value = node.t.Y;
-                        fr.Frame = frame.frame;
-                        n.YPOS.Nodes.Add(fr);
-                        fr = new Animation.KeyFrame();
-                        fr.Value = node.t.Z;
-                        fr.Frame = frame.frame;
-                        n.ZPOS.Nodes.Add(fr);
-                    }
-                    if (node.r_type != -1)
-                    {
-                        Animation.KeyFrame fr = new Animation.KeyFrame();
-                        fr.Value = node.r.X;
-                        fr.Frame = frame.frame;
-                        n.XROT.Nodes.Add(fr);
-                        fr = new Animation.KeyFrame();
-                        fr.Value = node.r.Y;
-                        fr.Frame = frame.frame;
-                        n.YROT.Nodes.Add(fr);
-                        fr = new Animation.KeyFrame();
-                        fr.Value = node.r.Z;
-                        fr.Frame = frame.frame;
-                        n.ZROT.Nodes.Add(fr);
-                        fr = new Animation.KeyFrame();
-                        fr.Value = node.r.W;
-                        fr.Frame = frame.frame;
-                        n.WROT.Nodes.Add(fr);
-                    }
-                }
-                }
-            foreach (uint i in nodes.Keys)
-                a.Bones.Add(nodes[i]);
 
             return a;
         }

@@ -92,6 +92,8 @@ namespace Smash_Forge
                 return Nodes.Count > 0;
             }
 
+            public new List<KeyFrame> Nodes = new List<KeyFrame>();
+
             public float GetValue(float frame)
             {
                 KeyFrame k1 = (KeyFrame)Nodes[0], k2 = (KeyFrame)Nodes[0];
@@ -137,25 +139,38 @@ namespace Smash_Forge
 
                 return new KeyFrame[] { k1, k2};
             }
+            
         }
 
-        public class KeyFrame : TreeNode
+        public class KeyFrame 
         {
             public float Value
             {
                 get { return _value; }
-                set { _value = value; Text = _frame + " : " + _value; }
+                set { _value = value; }//Text = _frame + " : " + _value; }
             }
             public float _value;
             public float Frame
             {
                 get { return _frame; }
-                set { _frame= value; Text = _frame + " : " + _value; }
+                set { _frame= value; }//Text = _frame + " : " + _value; }
             }
+            public String Text;
             public float _frame;
             public float In, Out;
             public bool Weighted = false;
             public InterpolationType InterType = InterpolationType.LINEAR;
+
+            public KeyFrame(float value, float frame)
+            {
+                Value = value;
+                Frame = frame;
+            }
+
+            public KeyFrame()
+            {
+
+            }
 
             public override string ToString()
             {

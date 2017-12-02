@@ -144,7 +144,7 @@ namespace Smash_Forge
 							att = new Animation.KeyFrame();
                             att.InterType = Animation.InterpolationType.HERMITE;
 							type = args [2];
-							current.Nodes.Add (att);
+							//current.Nodes.Add (att);
 
 							// row child attribute aren't needed here
 						}
