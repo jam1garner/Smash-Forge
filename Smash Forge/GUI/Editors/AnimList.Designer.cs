@@ -28,7 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.treeView1 = new System.Windows.Forms.TreeView();
+            this.AnimationCM = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.exportAllAsOMOToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.AnimationCM.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeView1
@@ -39,7 +43,23 @@
             this.treeView1.Size = new System.Drawing.Size(140, 125);
             this.treeView1.TabIndex = 0;
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.selectItem);
+            this.treeView1.Click += new System.EventHandler(this.treeView1_Click);
             this.treeView1.DoubleClick += new System.EventHandler(this.treeView1_DoubleClick);
+            this.treeView1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeView1_MouseDown);
+            // 
+            // AnimationCM
+            // 
+            this.AnimationCM.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportAllAsOMOToolStripMenuItem});
+            this.AnimationCM.Name = "AnimationCM";
+            this.AnimationCM.Size = new System.Drawing.Size(171, 48);
+            // 
+            // exportAllAsOMOToolStripMenuItem
+            // 
+            this.exportAllAsOMOToolStripMenuItem.Name = "exportAllAsOMOToolStripMenuItem";
+            this.exportAllAsOMOToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.exportAllAsOMOToolStripMenuItem.Text = "Export All as OMO";
+            this.exportAllAsOMOToolStripMenuItem.Click += new System.EventHandler(this.exportAllAsOMOToolStripMenuItem_Click);
             // 
             // AnimListPanel
             // 
@@ -52,6 +72,7 @@
             this.Name = "AnimListPanel";
             this.ShowIcon = false;
             this.Text = "Animations";
+            this.AnimationCM.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -59,5 +80,7 @@
         #endregion
 
         public System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.ContextMenuStrip AnimationCM;
+        private System.Windows.Forms.ToolStripMenuItem exportAllAsOMOToolStripMenuItem;
     }
 }

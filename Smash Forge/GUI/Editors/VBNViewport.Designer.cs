@@ -45,7 +45,7 @@
             this.btnLastFrame = new System.Windows.Forms.Button();
             this.btnPrevFrame = new System.Windows.Forms.Button();
             this.btnFirstFrame = new System.Windows.Forms.Button();
-            this.glControl1 = new OpenTK.GLControl();
+            this.glControl1 = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(8, 8, 8, 8), 24, 8, 16));
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.renderMode = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();

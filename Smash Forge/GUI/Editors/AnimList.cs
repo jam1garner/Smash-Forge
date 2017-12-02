@@ -13,7 +13,7 @@ namespace Smash_Forge
 {
     public partial class AnimListPanel : DockContent
     {
-        
+
         public static ImageList iconList = new ImageList();
 
         public AnimListPanel()
@@ -87,6 +87,41 @@ namespace Smash_Forge
             if (treeView1.SelectedNode is Animation.KeyNode)
             {
                 ((Animation.KeyNode)treeView1.SelectedNode).ExpandNodes();
+            }
+        }
+
+        private void treeView1_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void treeView1_MouseDown(object sender, MouseEventArgs e)
+        {
+
+            if (e.Button == MouseButtons.Right)
+            {
+                treeView1.SelectedNode = treeView1.GetNodeAt(e.Location);
+                if (treeView1.SelectedNode.Level == 0)
+                {
+                    AnimationCM.Show(this, e.X, e.Y);
+                }
+            }
+        }
+
+        private void exportAllAsOMOToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new FolderSelectDialog())
+            {
+                ofd.Title = "Character Folder";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string path = ofd.SelectedPath;
+
+                    foreach(TreeNode v in MainForm.animNode.Nodes)
+                    {
+                        if (v is Animation)
+                            OMOOld.createOMO(((Animation)v), Runtime.TargetVBN, path + "\\" + v.Text + ".omo");
+                    }
+                }
             }
         }
     }

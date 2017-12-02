@@ -776,6 +776,7 @@ namespace Smash_Forge
                     //TODO: Euler Rotation Values
                     a.SetFrame(0);
                     Bone b = vbn.getBone(keynode.Text);
+                    if (b == null) continue;
                     for (int i = 0; i < a.FrameCount; i++)
                     {
                         maxR[j].X = Math.Max(maxR[j].X, b.rot.X);
