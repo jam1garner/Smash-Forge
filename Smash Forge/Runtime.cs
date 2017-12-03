@@ -242,18 +242,19 @@ namespace Smash_Forge
 
         public enum RenderTypes
         {
-            Normals = 0,
-            Lighting = 1,
-            DiffuseMap = 2,
-            NormalMap = 3,
-            VertColor = 4,
-            AmbientOcclusion = 5,
-            UVCoords = 6,
-            UVTestPattern = 7,
-            Tangents = 8,
-            Bitangents = 9,
-            LightSet = 10,
-            SelectedBoneWeights = 11
+            Shaded = 0,
+            Normals = 1,
+            Lighting = 2,
+            DiffuseMap = 3,
+            NormalMap = 4,
+            VertColor = 5,
+            AmbientOcclusion = 6,
+            UVCoords = 7,
+            UVTestPattern = 8,
+            Tangents = 9,
+            Bitangents = 10,
+            LightSet = 11,
+            SelectedBoneWeights = 12
         }
 
         public enum UVChannel

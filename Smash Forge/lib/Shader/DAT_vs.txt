@@ -10,12 +10,30 @@ in vec4 vWeight;
 out vec2 texcoord;
 out vec4 vertexColor;
 out vec3 normal;
+out vec3 boneWeightsColored;
 
 uniform mat4 modelview;
+uniform int selectedBoneIndex;
+
 uniform bones
 {
     mat4 transforms[1];
 } bones_;
+
+float BoneWeightDisplay()
+{
+    float weight = 0;
+    if (selectedBoneIndex == vBone.x)
+        weight += vWeight.x;
+    if (selectedBoneIndex == vBone.y)
+        weight += vWeight.y;
+    if (selectedBoneIndex == vBone.z)
+        weight += vWeight.z;
+    if (selectedBoneIndex == vBone.w)
+        weight += vWeight.w;
+
+    return weight;
+}
 
 void
 main()
@@ -30,6 +48,11 @@ main()
         objPos += bones_.transforms[index.z] * vec4(vPosition, 1.0) * vWeight.z;
         objPos += bones_.transforms[index.w] * vec4(vPosition, 1.0) * vWeight.w;
     }
+
+    float totalWeight = BoneWeightDisplay();
+    boneWeightsColored = vec3(totalWeight);
+    // if (debug1 == 1)
+    //     boneWeightsColored = BoneWeightRamp(vec3(boneWeightsColored)).rgb;
 
     gl_Position = modelview * vec4(objPos.xyz, 1.0);
     texcoord = vUV;

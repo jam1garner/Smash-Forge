@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.checkBox23 = new System.Windows.Forms.CheckBox();
             this.checkBox22 = new System.Windows.Forms.CheckBox();
@@ -113,7 +113,6 @@
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.debug2CB = new System.Windows.Forms.CheckBox();
             this.debug1CB = new System.Windows.Forms.CheckBox();
-            this.debugShadingCB = new System.Windows.Forms.CheckBox();
             this.renderChannelR = new System.Windows.Forms.Button();
             this.renderChannelA = new System.Windows.Forms.Button();
             this.renderChannelG = new System.Windows.Forms.Button();
@@ -625,8 +624,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem3,
-            listViewItem4});
+            listViewItem7,
+            listViewItem8});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -1033,7 +1032,6 @@
             this.groupBox6.Controls.Add(this.radioButton1);
             this.groupBox6.Controls.Add(this.debug2CB);
             this.groupBox6.Controls.Add(this.debug1CB);
-            this.groupBox6.Controls.Add(this.debugShadingCB);
             this.groupBox6.Controls.Add(this.renderChannelR);
             this.groupBox6.Controls.Add(this.renderChannelA);
             this.groupBox6.Controls.Add(this.renderChannelG);
@@ -1050,7 +1048,7 @@
             // radioButton3
             // 
             this.radioButton3.AutoSize = true;
-            this.radioButton3.Location = new System.Drawing.Point(155, 136);
+            this.radioButton3.Location = new System.Drawing.Point(155, 111);
             this.radioButton3.Name = "radioButton3";
             this.radioButton3.Size = new System.Drawing.Size(46, 17);
             this.radioButton3.TabIndex = 38;
@@ -1063,7 +1061,7 @@
             // radioButton2
             // 
             this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(86, 136);
+            this.radioButton2.Location = new System.Drawing.Point(86, 111);
             this.radioButton2.Name = "radioButton2";
             this.radioButton2.Size = new System.Drawing.Size(46, 17);
             this.radioButton2.TabIndex = 37;
@@ -1076,7 +1074,7 @@
             // radioButton1
             // 
             this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(11, 136);
+            this.radioButton1.Location = new System.Drawing.Point(11, 111);
             this.radioButton1.Name = "radioButton1";
             this.radioButton1.Size = new System.Drawing.Size(46, 17);
             this.radioButton1.TabIndex = 36;
@@ -1089,7 +1087,7 @@
             // debug2CB
             // 
             this.debug2CB.AutoSize = true;
-            this.debug2CB.Location = new System.Drawing.Point(155, 110);
+            this.debug2CB.Location = new System.Drawing.Point(155, 85);
             this.debug2CB.Name = "debug2CB";
             this.debug2CB.Size = new System.Drawing.Size(80, 17);
             this.debug2CB.TabIndex = 35;
@@ -1101,7 +1099,7 @@
             // debug1CB
             // 
             this.debug1CB.AutoSize = true;
-            this.debug1CB.Location = new System.Drawing.Point(10, 110);
+            this.debug1CB.Location = new System.Drawing.Point(10, 85);
             this.debug1CB.Name = "debug1CB";
             this.debug1CB.Size = new System.Drawing.Size(80, 17);
             this.debug1CB.TabIndex = 34;
@@ -1110,22 +1108,11 @@
             this.debug1CB.Visible = false;
             this.debug1CB.CheckedChanged += new System.EventHandler(this.debug1CB_CheckedChanged);
             // 
-            // debugShadingCB
-            // 
-            this.debugShadingCB.AutoSize = true;
-            this.debugShadingCB.Location = new System.Drawing.Point(10, 20);
-            this.debugShadingCB.Name = "debugShadingCB";
-            this.debugShadingCB.Size = new System.Drawing.Size(136, 17);
-            this.debugShadingCB.TabIndex = 33;
-            this.debugShadingCB.Text = "Enable Debug Shading";
-            this.debugShadingCB.UseVisualStyleBackColor = true;
-            this.debugShadingCB.CheckedChanged += new System.EventHandler(this.debugShadingCB_CheckedChanged);
-            // 
             // renderChannelR
             // 
             this.renderChannelR.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.renderChannelR.ForeColor = System.Drawing.Color.Red;
-            this.renderChannelR.Location = new System.Drawing.Point(11, 75);
+            this.renderChannelR.Location = new System.Drawing.Point(11, 50);
             this.renderChannelR.Name = "renderChannelR";
             this.renderChannelR.Size = new System.Drawing.Size(24, 24);
             this.renderChannelR.TabIndex = 29;
@@ -1136,7 +1123,7 @@
             // renderChannelA
             // 
             this.renderChannelA.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderChannelA.Location = new System.Drawing.Point(89, 75);
+            this.renderChannelA.Location = new System.Drawing.Point(89, 50);
             this.renderChannelA.Name = "renderChannelA";
             this.renderChannelA.Size = new System.Drawing.Size(24, 24);
             this.renderChannelA.TabIndex = 32;
@@ -1148,7 +1135,7 @@
             // 
             this.renderChannelG.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.renderChannelG.ForeColor = System.Drawing.Color.Green;
-            this.renderChannelG.Location = new System.Drawing.Point(37, 75);
+            this.renderChannelG.Location = new System.Drawing.Point(37, 50);
             this.renderChannelG.Name = "renderChannelG";
             this.renderChannelG.Size = new System.Drawing.Size(24, 24);
             this.renderChannelG.TabIndex = 31;
@@ -1160,7 +1147,7 @@
             // 
             this.renderChannelB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.renderChannelB.ForeColor = System.Drawing.Color.Blue;
-            this.renderChannelB.Location = new System.Drawing.Point(63, 75);
+            this.renderChannelB.Location = new System.Drawing.Point(63, 50);
             this.renderChannelB.Name = "renderChannelB";
             this.renderChannelB.Size = new System.Drawing.Size(24, 24);
             this.renderChannelB.TabIndex = 30;
@@ -1173,6 +1160,7 @@
             this.renderModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.renderModeComboBox.FormattingEnabled = true;
             this.renderModeComboBox.Items.AddRange(new object[] {
+            "Shaded",
             "Normals",
             "Lighting",
             "Diffuse Maps",
@@ -1185,7 +1173,7 @@
             "Bitangents",
             "Light Set",
             "Bone Weights"});
-            this.renderModeComboBox.Location = new System.Drawing.Point(86, 44);
+            this.renderModeComboBox.Location = new System.Drawing.Point(86, 19);
             this.renderModeComboBox.Name = "renderModeComboBox";
             this.renderModeComboBox.Size = new System.Drawing.Size(164, 21);
             this.renderModeComboBox.TabIndex = 16;
@@ -1195,7 +1183,7 @@
             // debugModeLabel
             // 
             this.debugModeLabel.AutoSize = true;
-            this.debugModeLabel.Location = new System.Drawing.Point(8, 47);
+            this.debugModeLabel.Location = new System.Drawing.Point(8, 22);
             this.debugModeLabel.Name = "debugModeLabel";
             this.debugModeLabel.Size = new System.Drawing.Size(69, 13);
             this.debugModeLabel.TabIndex = 28;
@@ -1651,7 +1639,6 @@
         private System.Windows.Forms.Button renderChannelA;
         private System.Windows.Forms.Button renderChannelG;
         private System.Windows.Forms.Button renderChannelB;
-        private System.Windows.Forms.CheckBox debugShadingCB;
         private System.Windows.Forms.RadioButton radioButton3;
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.RadioButton radioButton1;

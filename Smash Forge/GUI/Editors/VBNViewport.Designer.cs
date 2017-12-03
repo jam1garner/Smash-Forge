@@ -308,8 +308,7 @@
             "Tangents",
             "Bitangents",
             "Light Set",
-            "Bone Weights",
-            "Bone Weights Color"});
+            "Bone Weights"});
             this.renderMode.Location = new System.Drawing.Point(90, 0);
             this.renderMode.Name = "renderMode";
             this.renderMode.Size = new System.Drawing.Size(136, 21);
