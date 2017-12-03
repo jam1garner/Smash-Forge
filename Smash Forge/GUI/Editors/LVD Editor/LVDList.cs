@@ -59,12 +59,12 @@ namespace Smash_Forge
                     collisionNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
                 }
 
-                foreach (Point c in Runtime.TargetLVD.spawns)
+                foreach (Spawn c in Runtime.TargetLVD.spawns)
                 {
                     spawnNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
                 }
 
-                foreach (Point c in Runtime.TargetLVD.respawns)
+                foreach (Spawn c in Runtime.TargetLVD.respawns)
                 {
                     respawnNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
                 }
@@ -84,7 +84,7 @@ namespace Smash_Forge
                     itemNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
                 }
 
-                foreach (Point c in Runtime.TargetLVD.generalPoints)
+                foreach (GeneralPoint c in Runtime.TargetLVD.generalPoints)
                 {
                     pointNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
                 }
@@ -131,11 +131,10 @@ namespace Smash_Forge
                     Runtime.TargetLVD.blastzones.Remove((Bounds)entry);
                     Runtime.TargetLVD.cameraBounds.Remove((Bounds)entry);
                 }
-                if (entry is Point)
+                if (entry is Spawn)
                 {
-                    Runtime.TargetLVD.generalPoints.Remove((Point)entry);
-                    Runtime.TargetLVD.respawns.Remove((Point)entry);
-                    Runtime.TargetLVD.spawns.Remove((Point)entry);
+                    Runtime.TargetLVD.respawns.Remove((Spawn)entry);
+                    Runtime.TargetLVD.spawns.Remove((Spawn)entry);
                 }
                 if (entry is Collision)
                     Runtime.TargetLVD.collisions.Remove((Collision)entry);
@@ -149,8 +148,8 @@ namespace Smash_Forge
                     Runtime.TargetLVD.generalShapes.Remove((LVDGeneralShape)entry);
                 if (entry is ItemSpawner)
                     Runtime.TargetLVD.items.Remove((ItemSpawner)entry);
-                if (entry is LVDGeneralShape)
-                    Runtime.TargetLVD.generalShapes.Remove((LVDGeneralShape)entry);
+                if (entry is GeneralPoint)
+                    Runtime.TargetLVD.generalPoints.Remove((GeneralPoint)entry);
 
                 treeView1.Nodes.Remove(treeView1.SelectedNode);
             }

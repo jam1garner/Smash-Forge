@@ -29,7 +29,7 @@ namespace Smash_Forge
         private Vector2D currentNormal;
         private CollisionMat currentMat;
         private TreeNode currentTreeNode;
-        private Point currentPoint;
+        private Spawn currentPoint;
         private Bounds currentBounds;
         private Section currentItemSection;
         private GeneralPoint currentGeneralPoint;
@@ -81,27 +81,30 @@ namespace Smash_Forge
                 LVDEntry entry = (LVDEntry)obj;
                 currentTreeNode = entryTree;
                 currentEntry = entry;
+                
+                //These need implementation in the ui for all objects, not just collisions
                 name.Text = currentEntry.name;
                 subname.Text = currentEntry.subname;
+                xStart.Value = (decimal)currentEntry.startPos[0];
+                yStart.Value = (decimal)currentEntry.startPos[1];
+                zStart.Value = (decimal)currentEntry.startPos[2];
+                flag1.Checked = currentEntry.useStartPos;
+                string boneNameRigging = "";
+                foreach (char b in currentEntry.boneName)
+                    if (b != (char)0)
+                        boneNameRigging += b;
+                if (boneNameRigging.Length == 0)
+                    boneNameRigging = "None";
+                button3.Text = boneNameRigging;
+                
                 if (entry is Collision)
                 {
                     Collision col = (Collision)entry;
                     collisionGroup.Visible = true;
-                    xStart.Value = (decimal)col.startPos[0];
-                    yStart.Value = (decimal)col.startPos[1];
-                    zStart.Value = (decimal)col.startPos[2];
-                    flag1.Checked = col.useStartPos;
                     flag2.Checked = col.flag2;
                     flag3.Checked = col.flag3;
                     flag4.Checked = col.flag4;
                     vertices.Nodes.Clear();
-                    string boneNameRigging = "";
-                    foreach (char b in col.unk4)
-                        if (b != (char)0)
-                            boneNameRigging += b;
-                    if (boneNameRigging.Length == 0)
-                        boneNameRigging = "None";
-                    button3.Text = boneNameRigging;
                     for (int i = 0; i < col.verts.Count; i++)
                         vertices.Nodes.Add(new TreeNode($"Vertex {i + 1} ({col.verts[i].x},{col.verts[i].y})") { Tag = col.verts[i] });
                     lines.Nodes.Clear();
@@ -111,12 +114,12 @@ namespace Smash_Forge
                         lines.Nodes.Add(new TreeNode($"Line {i + 1}") { Tag = temp });
                     }
                 }
-                else if (entry is Point)
+                else if (entry is Spawn)
                 {
                     pointGroup.Visible = true;
-                    currentPoint = (Point)entry;
-                    xPoint.Value = (decimal)((Point)entry).x;
-                    yPoint.Value = (decimal)((Point)entry).y;
+                    currentPoint = (Spawn)entry;
+                    xPoint.Value = (decimal)((Spawn)entry).x;
+                    yPoint.Value = (decimal)((Spawn)entry).y;
                 }
                 else if (entry is Bounds)
                 {
@@ -143,7 +146,7 @@ namespace Smash_Forge
                     GeneralPoint p = (GeneralPoint)entry;
                     currentGeneralPoint = p;
                     pointShapeX.Value = (Decimal)p.x;
-                    pointShapeX.Value = (Decimal)p.y;
+                    pointShapeY.Value = (Decimal)p.y;
                 }
                 else if (entry is GeneralRect)
                 {
@@ -217,7 +220,7 @@ namespace Smash_Forge
         private void flagChange(object sender, EventArgs e)
         {
             if(sender == flag1)
-                ((Collision)currentEntry).useStartPos = flag1.Checked;
+                currentEntry.useStartPos = flag1.Checked;
             if (sender == flag2)
                 ((Collision)currentEntry).flag2 = flag2.Checked;
             if (sender == flag3)
@@ -264,11 +267,11 @@ namespace Smash_Forge
         private void changeStart(object sender, EventArgs e)
         {
             if (sender == xStart)
-                ((Collision)currentEntry).startPos[0] = (float)xStart.Value;
+                currentEntry.startPos[0] = (float)xStart.Value;
             if (sender == yStart)
-                ((Collision)currentEntry).startPos[1] = (float)yStart.Value;
+                currentEntry.startPos[1] = (float)yStart.Value;
             if (sender == zStart)
-                ((Collision)currentEntry).startPos[2] = (float)zStart.Value;
+                currentEntry.startPos[2] = (float)zStart.Value;
         }
 
         private void lineFlagChange(object sender, EventArgs e)
@@ -388,12 +391,12 @@ namespace Smash_Forge
         private void button3_Click(object sender, EventArgs e)
         {
             //Open bone selector for collision rigging
-            StringWrapper str = new StringWrapper() { data = ((Collision) currentEntry).unk4 };
+            StringWrapper str = new StringWrapper() { data = currentEntry.boneName };
             BoneRiggingSelector bs = new BoneRiggingSelector(str);
             bs.ShowDialog();
-            ((Collision)currentEntry).unk4 = str.data;
+            currentEntry.boneName = str.data;
             string boneNameRigging = "";
-            foreach (char b in ((Collision)currentEntry).unk4)
+            foreach (char b in currentEntry.boneName)
                 if (b != (char)0)
                     boneNameRigging += b;
             if (boneNameRigging.Length == 0)
