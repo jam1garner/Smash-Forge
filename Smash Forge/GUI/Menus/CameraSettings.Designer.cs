@@ -39,19 +39,19 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.groupPosition = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.numericZoom = new System.Windows.Forms.NumericUpDown();
             this.numericPositionY = new System.Windows.Forms.NumericUpDown();
             this.numericPositionX = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.numericZoom = new System.Windows.Forms.NumericUpDown();
             this.buttonApply = new System.Windows.Forms.Button();
             this.fovSlider = new System.Windows.Forms.TrackBar();
             this.depthSlider = new System.Windows.Forms.TrackBar();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.renderDepthTB = new System.Windows.Forms.TextBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.fovTB = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
             this.groupHorizontalRotation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericHorizontalRadians)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericHorizontalDegrees)).BeginInit();
@@ -59,9 +59,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericVerticalRadians)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericVerticalDegrees)).BeginInit();
             this.groupPosition.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericZoom)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericPositionY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericPositionX)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericZoom)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fovSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -76,7 +76,7 @@
             this.groupHorizontalRotation.Controls.Add(this.label1);
             this.groupHorizontalRotation.Location = new System.Drawing.Point(12, 164);
             this.groupHorizontalRotation.Name = "groupHorizontalRotation";
-            this.groupHorizontalRotation.Size = new System.Drawing.Size(379, 58);
+            this.groupHorizontalRotation.Size = new System.Drawing.Size(297, 58);
             this.groupHorizontalRotation.TabIndex = 0;
             this.groupHorizontalRotation.TabStop = false;
             this.groupHorizontalRotation.Text = "Horizontal Rotation";
@@ -130,7 +130,7 @@
             this.groupVerticalRotation.Controls.Add(this.label4);
             this.groupVerticalRotation.Location = new System.Drawing.Point(12, 228);
             this.groupVerticalRotation.Name = "groupVerticalRotation";
-            this.groupVerticalRotation.Size = new System.Drawing.Size(379, 58);
+            this.groupVerticalRotation.Size = new System.Drawing.Size(297, 58);
             this.groupVerticalRotation.TabIndex = 1;
             this.groupVerticalRotation.TabStop = false;
             this.groupVerticalRotation.Text = "Vertical Rotation";
@@ -186,10 +186,27 @@
             this.groupPosition.Controls.Add(this.label6);
             this.groupPosition.Location = new System.Drawing.Point(12, 292);
             this.groupPosition.Name = "groupPosition";
-            this.groupPosition.Size = new System.Drawing.Size(379, 58);
+            this.groupPosition.Size = new System.Drawing.Size(297, 58);
             this.groupPosition.TabIndex = 2;
             this.groupPosition.TabStop = false;
             this.groupPosition.Text = "Position";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(190, 16);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(14, 13);
+            this.label7.TabIndex = 4;
+            this.label7.Text = "Z";
+            // 
+            // numericZoom
+            // 
+            this.numericZoom.DecimalPlaces = 1;
+            this.numericZoom.Location = new System.Drawing.Point(193, 32);
+            this.numericZoom.Name = "numericZoom";
+            this.numericZoom.Size = new System.Drawing.Size(69, 20);
+            this.numericZoom.TabIndex = 2;
             // 
             // numericPositionY
             // 
@@ -225,17 +242,9 @@
             this.label6.TabIndex = 0;
             this.label6.Text = "X";
             // 
-            // numericZoom
-            // 
-            this.numericZoom.DecimalPlaces = 1;
-            this.numericZoom.Location = new System.Drawing.Point(191, 32);
-            this.numericZoom.Name = "numericZoom";
-            this.numericZoom.Size = new System.Drawing.Size(69, 20);
-            this.numericZoom.TabIndex = 2;
-            // 
             // buttonApply
             // 
-            this.buttonApply.Location = new System.Drawing.Point(152, 366);
+            this.buttonApply.Location = new System.Drawing.Point(114, 357);
             this.buttonApply.Name = "buttonApply";
             this.buttonApply.Size = new System.Drawing.Size(100, 40);
             this.buttonApply.TabIndex = 4;
@@ -245,11 +254,11 @@
             // 
             // fovSlider
             // 
-            this.fovSlider.Location = new System.Drawing.Point(140, 19);
+            this.fovSlider.Location = new System.Drawing.Point(102, 19);
             this.fovSlider.Maximum = 180;
             this.fovSlider.Minimum = 1;
             this.fovSlider.Name = "fovSlider";
-            this.fovSlider.Size = new System.Drawing.Size(233, 45);
+            this.fovSlider.Size = new System.Drawing.Size(189, 45);
             this.fovSlider.TabIndex = 36;
             this.fovSlider.TickStyle = System.Windows.Forms.TickStyle.None;
             this.fovSlider.Value = 1;
@@ -257,11 +266,11 @@
             // 
             // depthSlider
             // 
-            this.depthSlider.Location = new System.Drawing.Point(137, 19);
+            this.depthSlider.Location = new System.Drawing.Point(102, 19);
             this.depthSlider.Maximum = 500000;
-            this.depthSlider.Minimum = 10;
+            this.depthSlider.Minimum = 1;
             this.depthSlider.Name = "depthSlider";
-            this.depthSlider.Size = new System.Drawing.Size(236, 45);
+            this.depthSlider.Size = new System.Drawing.Size(189, 45);
             this.depthSlider.SmallChange = 5;
             this.depthSlider.TabIndex = 34;
             this.depthSlider.TickStyle = System.Windows.Forms.TickStyle.None;
@@ -274,10 +283,18 @@
             this.groupBox1.Controls.Add(this.depthSlider);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(379, 70);
+            this.groupBox1.Size = new System.Drawing.Size(297, 70);
             this.groupBox1.TabIndex = 38;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Render Depth";
+            // 
+            // renderDepthTB
+            // 
+            this.renderDepthTB.Location = new System.Drawing.Point(6, 19);
+            this.renderDepthTB.Name = "renderDepthTB";
+            this.renderDepthTB.Size = new System.Drawing.Size(72, 20);
+            this.renderDepthTB.TabIndex = 35;
+            this.renderDepthTB.TextChanged += new System.EventHandler(this.renderDepthTB_TextChanged);
             // 
             // groupBox2
             // 
@@ -285,40 +302,25 @@
             this.groupBox2.Controls.Add(this.fovSlider);
             this.groupBox2.Location = new System.Drawing.Point(12, 88);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(379, 70);
+            this.groupBox2.Size = new System.Drawing.Size(297, 70);
             this.groupBox2.TabIndex = 39;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Camera FOV";
-            // 
-            // renderDepthTB
-            // 
-            this.renderDepthTB.Location = new System.Drawing.Point(6, 19);
-            this.renderDepthTB.Name = "renderDepthTB";
-            this.renderDepthTB.Size = new System.Drawing.Size(100, 20);
-            this.renderDepthTB.TabIndex = 35;
             // 
             // fovTB
             // 
             this.fovTB.Location = new System.Drawing.Point(6, 19);
             this.fovTB.Name = "fovTB";
-            this.fovTB.Size = new System.Drawing.Size(100, 20);
+            this.fovTB.Size = new System.Drawing.Size(72, 20);
             this.fovTB.TabIndex = 37;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(188, 16);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(14, 13);
-            this.label7.TabIndex = 4;
-            this.label7.Text = "Z";
+            this.fovTB.TextChanged += new System.EventHandler(this.fovTB_TextChanged);
             // 
             // CameraSettings
             // 
             this.AcceptButton = this.buttonApply;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(403, 423);
+            this.ClientSize = new System.Drawing.Size(318, 409);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.buttonApply);
@@ -340,9 +342,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericVerticalDegrees)).EndInit();
             this.groupPosition.ResumeLayout(false);
             this.groupPosition.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericZoom)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericPositionY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericPositionX)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericZoom)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.fovSlider)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).EndInit();
             this.groupBox1.ResumeLayout(false);

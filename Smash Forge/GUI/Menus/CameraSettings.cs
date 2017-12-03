@@ -35,6 +35,8 @@ namespace Smash_Forge.GUI.Menus
 
             depthSlider.Value = Math.Min((int)Runtime.renderDepth, depthSlider.Maximum);
             fovSlider.Value = (int)(Camera.viewportCamera.fov * 180.0f / Math.PI);
+            fovTB.Text = (int)(Camera.viewportCamera.fov * 180.0f / Math.PI) + "";
+            renderDepthTB.Text = Runtime.renderDepth + "";
         }
 
         private void CameraPosition_Load(object sender, EventArgs e)
@@ -95,14 +97,48 @@ namespace Smash_Forge.GUI.Menus
 
         private void fovSlider_Scroll(object sender, EventArgs e)
         {
-            Camera.viewportCamera.fov = fovSlider.Value * (float)Math.PI / 180.0f;
             fovTB.Text = fovSlider.Value + "";
         }
 
         private void depthSlider_Scroll(object sender, EventArgs e)
         {
-            Runtime.renderDepth = depthSlider.Value;
-            renderDepthTB.Text = Runtime.renderDepth + "";
+            renderDepthTB.Text = depthSlider.Value + "";
+        }
+
+        private void renderDepthTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(renderDepthTB.Text, out i))
+            {
+                renderDepthTB.BackColor = Color.White;
+                Runtime.renderDepth = i;
+            }
+            else
+                renderDepthTB.BackColor = Color.Red;
+
+            // update trackbar
+            int newSliderValue = (int)(i);
+            newSliderValue = Math.Min(newSliderValue, depthSlider.Maximum);
+            newSliderValue = Math.Max(newSliderValue, depthSlider.Minimum);
+            depthSlider.Value = newSliderValue;
+        }
+
+        private void fovTB_TextChanged(object sender, EventArgs e)
+        {
+            float i = 0;
+            if (float.TryParse(fovTB.Text, out i))
+            {
+                fovTB.BackColor = Color.White;
+                Camera.viewportCamera.fov = i * (float)Math.PI / 180.0f;
+            }
+            else
+                fovTB.BackColor = Color.Red;
+
+            // update trackbar
+            int newSliderValue = (int)(i);
+            newSliderValue = Math.Min(newSliderValue, fovSlider.Maximum);
+            newSliderValue = Math.Max(newSliderValue, 0);
+            fovSlider.Value = newSliderValue;
         }
     }
 }
