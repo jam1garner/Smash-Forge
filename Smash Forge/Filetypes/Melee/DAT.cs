@@ -957,7 +957,7 @@ namespace Smash_Forge
                         int temp = d.pos();
                         if (!dat.jobjOffsetLinker.ContainsKey(jPointer))
                         {
-							d.seek(jPointer);
+                            d.seek(jPointer);
                             JOBJ j = new JOBJ();
                             j.Read(d, dat, node);
                         }
