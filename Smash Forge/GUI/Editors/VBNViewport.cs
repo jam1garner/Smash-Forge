@@ -1212,11 +1212,17 @@ namespace Smash_Forge
 
                 if (m.dat_melee != null && m.dat_melee.respawns != null)
                     foreach (Point r in m.dat_melee.respawns)
-                        LVD.DrawSpawn(r, true);
+                    {
+                        Spawn temp = new Spawn() { x = r.x, y = r.y };
+                        LVD.DrawSpawn(temp, true);
+                    }
 
                 if (m.dat_melee != null && m.dat_melee.spawns != null)
                     foreach (Point r in m.dat_melee.spawns)
-                        LVD.DrawSpawn(r, false);
+                    {
+                        Spawn temp = new Spawn() { x = r.x, y = r.y };
+                        LVD.DrawSpawn(temp, false);
+                    }
 
                 GL.Color4(Color.FromArgb(200, Color.Fuchsia));
                 if (m.dat_melee != null && m.dat_melee.itemSpawns != null)
@@ -1238,7 +1244,7 @@ namespace Smash_Forge
 
                 if (Runtime.renderSpawns)
                 {
-                    foreach (Point s in Runtime.TargetLVD.spawns)
+                    foreach (Spawn s in Runtime.TargetLVD.spawns)
                     {
                         LVD.DrawSpawn(s, false);
                     }
@@ -1246,7 +1252,7 @@ namespace Smash_Forge
 
                 if (Runtime.renderRespawns)
                 {
-                    foreach (Point s in Runtime.TargetLVD.respawns)
+                    foreach (Spawn s in Runtime.TargetLVD.respawns)
                     {
                         LVD.DrawSpawn(s,true);
                     }
@@ -1254,7 +1260,7 @@ namespace Smash_Forge
 
                 if (Runtime.renderGeneralPoints)
                 {
-                    foreach (Point g in Runtime.TargetLVD.generalPoints)
+                    foreach (GeneralPoint g in Runtime.TargetLVD.generalPoints)
                     {
                         GL.Color4(Color.FromArgb(200, Color.Fuchsia));
                         RenderTools.drawCubeWireframe(new Vector3(g.x, g.y, 0), 3);

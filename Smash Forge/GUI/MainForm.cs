@@ -924,7 +924,7 @@ namespace Smash_Forge
         {
             if (Runtime.TargetLVD == null)
                 Runtime.TargetLVD = new LVD();
-            Runtime.TargetLVD.spawns.Add(new Point() { name = "START_00_NEW", subname = "00_NEW" });
+            Runtime.TargetLVD.spawns.Add(new Spawn() { name = "START_00_NEW", subname = "00_NEW" });
             lvdList.fillList();
 
         }
@@ -933,7 +933,7 @@ namespace Smash_Forge
         {
             if (Runtime.TargetLVD == null)
                 Runtime.TargetLVD = new LVD();
-            Runtime.TargetLVD.respawns.Add(new Point() { name = "RESTART_00_NEW", subname = "00_NEW" });
+            Runtime.TargetLVD.respawns.Add(new Spawn() { name = "RESTART_00_NEW", subname = "00_NEW" });
             lvdList.fillList();
         }
 
@@ -966,7 +966,7 @@ namespace Smash_Forge
         {
             if (Runtime.TargetLVD == null)
                 Runtime.TargetLVD = new LVD();
-            Runtime.TargetLVD.generalPoints.Add(new Point() { name = "POINT_00_NEW", subname = "00_NEW" });
+            Runtime.TargetLVD.generalPoints.Add(new GeneralPoint() { name = "POINT_00_NEW", subname = "00_NEW" });
             lvdList.fillList();
         }
 
