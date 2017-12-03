@@ -244,7 +244,7 @@ namespace Smash_Forge
                 }
                 int roundedAnimFrame = roundAnimationFrame(currentAnimationFrame);
                 roundedAnimFrame -= 1;
-                animationFrames.Add((float)currentAnimationFrame);
+                animationFrames.Add((float)currentAnimationFrame - 1);
                 currentGameFrame += 1;
                 //Console.WriteLine($"END GAME FRAME: gameFrame={currentGameFrame} animationFrame={animationFrame} currentFrame={currentFrame} currentAnimationFrame={currentAnimationFrame}");
             }
