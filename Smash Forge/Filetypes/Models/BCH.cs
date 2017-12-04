@@ -481,7 +481,7 @@ namespace Smash_Forge
                 tex.type = f.readInt();
                 tex.data = f.getSection(doffset, f.size() - doffset);
 
-                tex.texture = Pixel.decodeETC(tex.data, tex.width, tex.height);
+                tex.texture = _3DS.DecodeImage(tex.data, tex.width, tex.height, (_3DS.Tex_Formats)tex.type);
                 tex.display = NUT.loadImage(tex.texture);
             }
 

@@ -2181,7 +2181,7 @@ namespace Smash_Forge
         }
 
         System.Drawing.Point mouseDownPos = new System.Drawing.Point();
-        Vector3 p1 = Vector3.Zero, p2 = Vector3.Zero;
+        public static Vector3 p1 = Vector3.Zero, p2 = Vector3.Zero;
         public int dbdistance = 0;
         bool freezeCamera = false;
 
@@ -2242,11 +2242,14 @@ namespace Smash_Forge
                     }
                 }
             }
-
+            //TransformTool.b = null;
             if (selected.Count > dbdistance)
             {
-                if(Runtime.TargetVBN.bones.Contains(selected.Values.ElementAt(dbdistance)));
+                if (Runtime.TargetVBN.bones.Contains(selected.Values.ElementAt(dbdistance)))
+                {
                     MainForm.Instance.boneTreePanel.treeView1.SelectedNode = selected.Values.ElementAt(dbdistance);
+                    //TransformTool.b = (Bone)MainForm.Instance.boneTreePanel.treeView1.SelectedNode;
+                }
             }
 
             dbdistance += 1;

@@ -201,16 +201,16 @@ namespace Smash_Forge
                         float z = baseNode[j].t.Z + (baseNode[j].t2.Z * (i3));
 
                         //node.t = new Vector3(x, y, z);  // Translation
-                        n.XPOS.Nodes.Add(new Animation.KeyFrame(x, i));
-                        n.YPOS.Nodes.Add(new Animation.KeyFrame(y, i));
-                        n.ZPOS.Nodes.Add(new Animation.KeyFrame(z, i));
+                        n.XPOS.Keys.Add(new Animation.KeyFrame(x, i));
+                        n.YPOS.Keys.Add(new Animation.KeyFrame(y, i));
+                        n.ZPOS.Keys.Add(new Animation.KeyFrame(z, i));
                     }
                     else if (baseNode[j].t_type == KeyNode.CONSTANT)
                     {
                         //node.t = baseNode[j].t;
-                        n.XPOS.Nodes.Add(new Animation.KeyFrame(baseNode[j].t.X, i));
-                        n.YPOS.Nodes.Add(new Animation.KeyFrame(baseNode[j].t.Y, i));
-                        n.ZPOS.Nodes.Add(new Animation.KeyFrame(baseNode[j].t.Z, i));
+                        n.XPOS.Keys.Add(new Animation.KeyFrame(baseNode[j].t.X, i));
+                        n.YPOS.Keys.Add(new Animation.KeyFrame(baseNode[j].t.Y, i));
+                        n.ZPOS.Keys.Add(new Animation.KeyFrame(baseNode[j].t.Z, i));
                     }
                     else if (baseNode[j].t_type == 2)
                     {
@@ -219,9 +219,9 @@ namespace Smash_Forge
                         float z = d.readFloat();
 
                         //node.t = new Vector3(x, y, z);
-                        n.XPOS.Nodes.Add(new Animation.KeyFrame(x, i));
-                        n.YPOS.Nodes.Add(new Animation.KeyFrame(y, i));
-                        n.ZPOS.Nodes.Add(new Animation.KeyFrame(z, i));
+                        n.XPOS.Keys.Add(new Animation.KeyFrame(x, i));
+                        n.YPOS.Keys.Add(new Animation.KeyFrame(y, i));
+                        n.ZPOS.Keys.Add(new Animation.KeyFrame(z, i));
                     }
 
                     if (baseNode[j].r_type == KeyNode.COMPRESSED)
@@ -280,10 +280,10 @@ namespace Smash_Forge
                                 break;
                         }
                         n.RotType = Animation.RotationType.QUATERNION;
-                        n.XROT.Nodes.Add(new Animation.KeyFrame(r.X, i));
-                        n.YROT.Nodes.Add(new Animation.KeyFrame(r.Y, i));
-                        n.ZROT.Nodes.Add(new Animation.KeyFrame(r.Z, i));
-                        n.WROT.Nodes.Add(new Animation.KeyFrame(r.W, i));
+                        n.XROT.Keys.Add(new Animation.KeyFrame(r.X, i));
+                        n.YROT.Keys.Add(new Animation.KeyFrame(r.Y, i));
+                        n.ZROT.Keys.Add(new Animation.KeyFrame(r.Z, i));
+                        n.WROT.Keys.Add(new Animation.KeyFrame(r.W, i));
                     }
                     else if (baseNode[j].r_type == KeyNode.INTERPOLATED)
                     {
@@ -301,10 +301,10 @@ namespace Smash_Forge
                         r.Normalize();
 
                         n.RotType = Animation.RotationType.QUATERNION;
-                        n.XROT.Nodes.Add(new Animation.KeyFrame(r.X, i));
-                        n.YROT.Nodes.Add(new Animation.KeyFrame(r.Y, i));
-                        n.ZROT.Nodes.Add(new Animation.KeyFrame(r.Z, i));
-                        n.WROT.Nodes.Add(new Animation.KeyFrame(r.W, i));
+                        n.XROT.Keys.Add(new Animation.KeyFrame(r.X, i));
+                        n.YROT.Keys.Add(new Animation.KeyFrame(r.Y, i));
+                        n.ZROT.Keys.Add(new Animation.KeyFrame(r.Z, i));
+                        n.WROT.Keys.Add(new Animation.KeyFrame(r.W, i));
                     }
                     else if (baseNode[j].r_type == KeyNode.KEYFRAME)
                     {
@@ -316,10 +316,10 @@ namespace Smash_Forge
 
                         Quaternion r = new Quaternion(x, y, z, w);
                         n.RotType = Animation.RotationType.QUATERNION;
-                        n.XROT.Nodes.Add(new Animation.KeyFrame(r.X, i));
-                        n.YROT.Nodes.Add(new Animation.KeyFrame(r.Y, i));
-                        n.ZROT.Nodes.Add(new Animation.KeyFrame(r.Z, i));
-                        n.WROT.Nodes.Add(new Animation.KeyFrame(r.W, i));
+                        n.XROT.Keys.Add(new Animation.KeyFrame(r.X, i));
+                        n.YROT.Keys.Add(new Animation.KeyFrame(r.Y, i));
+                        n.ZROT.Keys.Add(new Animation.KeyFrame(r.Z, i));
+                        n.WROT.Keys.Add(new Animation.KeyFrame(r.W, i));
                     }
                     else
                     {
@@ -331,10 +331,10 @@ namespace Smash_Forge
                         Quaternion r = new Quaternion(baseNode[j].rv, w);
                         r.Normalize();
                         n.RotType = Animation.RotationType.QUATERNION;
-                        n.XROT.Nodes.Add(new Animation.KeyFrame(r.X, i));
-                        n.YROT.Nodes.Add(new Animation.KeyFrame(r.Y, i));
-                        n.ZROT.Nodes.Add(new Animation.KeyFrame(r.Z, i));
-                        n.WROT.Nodes.Add(new Animation.KeyFrame(r.W, i));
+                        n.XROT.Keys.Add(new Animation.KeyFrame(r.X, i));
+                        n.YROT.Keys.Add(new Animation.KeyFrame(r.Y, i));
+                        n.ZROT.Keys.Add(new Animation.KeyFrame(r.Z, i));
+                        n.WROT.Keys.Add(new Animation.KeyFrame(r.W, i));
                     }
 
                     if (baseNode[j].s_type == KeyNode.INTERPOLATED)
@@ -348,16 +348,16 @@ namespace Smash_Forge
                         float z = baseNode[j].s.Z + (baseNode[j].s2.Z * (i3));
 
                         //node.s = new Vector3(x, y, z);
-                        n.XSCA.Nodes.Add(new Animation.KeyFrame(x, i));
-                        n.YSCA.Nodes.Add(new Animation.KeyFrame(y, i));
-                        n.ZSCA.Nodes.Add(new Animation.KeyFrame(z, i));
+                        n.XSCA.Keys.Add(new Animation.KeyFrame(x, i));
+                        n.YSCA.Keys.Add(new Animation.KeyFrame(y, i));
+                        n.ZSCA.Keys.Add(new Animation.KeyFrame(z, i));
                     }
                     else
                     {
                         //node.s = baseNode[j].s;
-                        n.XSCA.Nodes.Add(new Animation.KeyFrame(baseNode[j].s.X, i));
-                        n.YSCA.Nodes.Add(new Animation.KeyFrame(baseNode[j].s.Y, i));
-                        n.ZSCA.Nodes.Add(new Animation.KeyFrame(baseNode[j].s.Z, i));
+                        n.XSCA.Keys.Add(new Animation.KeyFrame(baseNode[j].s.X, i));
+                        n.YSCA.Keys.Add(new Animation.KeyFrame(baseNode[j].s.Y, i));
+                        n.ZSCA.Keys.Add(new Animation.KeyFrame(baseNode[j].s.Z, i));
                     }
                 }
             }
@@ -743,32 +743,32 @@ namespace Smash_Forge
                     maxR[j] = new Vector4(-999f, -999f, -999f, -999f);
                     minR[j] = new Vector4(999f, 999f, 999f, 999f);
 
-                    foreach(Animation.KeyFrame key in keynode.XPOS.Nodes)
+                    foreach(Animation.KeyFrame key in keynode.XPOS.Keys)
                     {
                         maxT[j].X = Math.Max(maxT[j].X, key.Value);
                         minT[j].X = Math.Min(minT[j].X, key.Value);
                     }
-                    foreach (Animation.KeyFrame key in keynode.YPOS.Nodes)
+                    foreach (Animation.KeyFrame key in keynode.YPOS.Keys)
                     {
                         maxT[j].Y = Math.Max(maxT[j].Y, key.Value);
                         minT[j].Y = Math.Min(minT[j].Y, key.Value);
                     }
-                    foreach (Animation.KeyFrame key in keynode.ZPOS.Nodes)
+                    foreach (Animation.KeyFrame key in keynode.ZPOS.Keys)
                     {
                         maxT[j].Z = Math.Max(maxT[j].Z, key.Value);
                         minT[j].Z = Math.Min(minT[j].Z, key.Value);
                     }
-                    foreach (Animation.KeyFrame key in keynode.XSCA.Nodes)
+                    foreach (Animation.KeyFrame key in keynode.XSCA.Keys)
                     {
                         maxS[j].X = Math.Max(maxS[j].X, key.Value);
                         minS[j].X = Math.Min(minS[j].X, key.Value);
                     }
-                    foreach (Animation.KeyFrame key in keynode.YSCA.Nodes)
+                    foreach (Animation.KeyFrame key in keynode.YSCA.Keys)
                     {
                         maxS[j].Y = Math.Max(maxS[j].Y, key.Value);
                         minS[j].Y = Math.Min(minS[j].Y, key.Value);
                     }
-                    foreach (Animation.KeyFrame key in keynode.ZSCA.Nodes)
+                    foreach (Animation.KeyFrame key in keynode.ZSCA.Keys)
                     {
                         maxS[j].Z = Math.Max(maxS[j].Z, key.Value);
                         minS[j].Z = Math.Min(minS[j].Z, key.Value);

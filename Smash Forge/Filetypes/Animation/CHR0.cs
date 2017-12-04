@@ -94,43 +94,43 @@ namespace Smash_Forge
                 if (hasS == 1){
 					if(Siso == 1){
 						float iss = d.readFloat();
-                        node.XSCA.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss});
-                        node.YSCA.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
-                        node.ZSCA.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
+                        node.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = iss});
+                        node.YSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
+                        node.ZSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
                     }
 					else{
                         
-						if(SXfixed == 1) node.XSCA.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, s_type, pos, node, "SX", false, anim);
-						if(SYfixed == 1) node.YSCA.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, s_type, pos, node, "SY", false, anim);
-						if(SZfixed == 1) node.ZSCA.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, s_type, pos, node, "SZ", false, anim);
+						if(SXfixed == 1) node.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, s_type, pos, node, "SX", false, anim);
+						if(SYfixed == 1) node.YSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, s_type, pos, node, "SY", false, anim);
+						if(SZfixed == 1) node.ZSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, s_type, pos, node, "SZ", false, anim);
 					}
 				}
 
 				if(hasR == 1){
 					if(Riso == 1){
 						float iss = (float)((d.readFloat ()) * Math.PI / 180f);
-                        node.XROT.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
-                        node.YROT.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
-                        node.ZROT.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
+                        node.XROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
+                        node.YROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
+                        node.ZROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
                     }
 					else{
-                        if (RXfixed == 1) node.XROT.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = (float)(Math.PI / 180f) * (d.readFloat()) }); else process(d, r_type, pos, node, "RX", false, anim);
-                        if (RYfixed == 1) node.YROT.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = (float)(Math.PI / 180f) * (d.readFloat()) }); else process(d, r_type, pos, node, "RY", false, anim);
-                        if (RZfixed == 1) node.ZROT.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = (float)(Math.PI / 180f) * (d.readFloat()) }); else process(d, r_type, pos, node, "RZ", false, anim);
+                        if (RXfixed == 1) node.XROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = (float)(Math.PI / 180f) * (d.readFloat()) }); else process(d, r_type, pos, node, "RX", false, anim);
+                        if (RYfixed == 1) node.YROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = (float)(Math.PI / 180f) * (d.readFloat()) }); else process(d, r_type, pos, node, "RY", false, anim);
+                        if (RZfixed == 1) node.ZROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = (float)(Math.PI / 180f) * (d.readFloat()) }); else process(d, r_type, pos, node, "RZ", false, anim);
                     }
 				}
 
 				if(hasT == 1){
 					if(Tiso == 1){
                         float iss = d.readFloat();
-                        node.XPOS.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
-                        node.YPOS.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
-                        node.ZPOS.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
+                        node.XPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
+                        node.YPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
+                        node.ZPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = iss });
                     }
 					else{
-                        if (Xfixed == 1) node.XPOS.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, t_type, pos, node, "X", false, anim);
-                        if (Yfixed == 1) node.YPOS.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, t_type, pos, node, "Y", false, anim);
-                        if (Zfixed == 1) node.ZPOS.Nodes.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, t_type, pos, node, "Z", false, anim);
+                        if (Xfixed == 1) node.XPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, t_type, pos, node, "X", false, anim);
+                        if (Yfixed == 1) node.YPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, t_type, pos, node, "Y", false, anim);
+                        if (Zfixed == 1) node.ZPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = d.readFloat() }); else process(d, t_type, pos, node, "Z", false, anim);
                     }
 				}
 
@@ -235,33 +235,33 @@ namespace Smash_Forge
                     {
                         case "RX":
                             f.Value = step[i] * degrad;
-                            node.XROT.Nodes.Add(f);
+                            node.XROT.Keys.Add(f);
                             break;
                         case "RY":
                             f.Value = step[i] * degrad;
-                            node.YROT.Nodes.Add(f);
+                            node.YROT.Keys.Add(f);
                             break;
                         case "RZ":
                             f.Value = step[i] * degrad;
-                            node.ZROT.Nodes.Add(f);
+                            node.ZROT.Keys.Add(f);
                             break;
                         case "X":
-                            node.XPOS.Nodes.Add(f);
+                            node.XPOS.Keys.Add(f);
                             break;
                         case "Y":
-                            node.YPOS.Nodes.Add(f);
+                            node.YPOS.Keys.Add(f);
                             break;
                         case "Z":
-                            node.ZPOS.Nodes.Add(f);
+                            node.ZPOS.Keys.Add(f);
                             break;
                         case "SX":
-                            node.XSCA.Nodes.Add(f);
+                            node.XSCA.Keys.Add(f);
                             break;
                         case "SY":
-                            node.YSCA.Nodes.Add(f);
+                            node.YSCA.Keys.Add(f);
                             break;
                         case "SZ":
-                            node.ZSCA.Nodes.Add(f);
+                            node.ZSCA.Keys.Add(f);
                             break;
                     }
                 }
@@ -283,33 +283,33 @@ namespace Smash_Forge
                     {
                         case "RX":
                             f.Value = step[i] * degrad;
-                            node.XROT.Nodes.Add(f);
+                            node.XROT.Keys.Add(f);
                             break;
                         case "RY":
                             f.Value = step[i] * degrad;
-                            node.YROT.Nodes.Add(f);
+                            node.YROT.Keys.Add(f);
                             break;
                         case "RZ":
                             f.Value = step[i] * degrad;
-                            node.ZROT.Nodes.Add(f);
+                            node.ZROT.Keys.Add(f);
                             break;
                         case "X":
-                            node.XPOS.Nodes.Add(f);
+                            node.XPOS.Keys.Add(f);
                             break;
                         case "Y":
-                            node.YPOS.Nodes.Add(f);
+                            node.YPOS.Keys.Add(f);
                             break;
                         case "Z":
-                            node.ZPOS.Nodes.Add(f);
+                            node.ZPOS.Keys.Add(f);
                             break;
                         case "SX":
-                            node.XSCA.Nodes.Add(f);
+                            node.XSCA.Keys.Add(f);
                             break;
                         case "SY":
-                            node.YSCA.Nodes.Add(f);
+                            node.YSCA.Keys.Add(f);
                             break;
                         case "SZ":
-                            node.ZSCA.Nodes.Add(f);
+                            node.ZSCA.Keys.Add(f);
                             break;
                     }
                 }
@@ -328,33 +328,33 @@ namespace Smash_Forge
                     {
                         case "RX":
                             f.Value = step[i] * degrad;
-                            node.XROT.Nodes.Add(f);
+                            node.XROT.Keys.Add(f);
                             break;
                         case "RY":
                             f.Value = step[i] * degrad;
-                            node.YROT.Nodes.Add(f);
+                            node.YROT.Keys.Add(f);
                             break;
                         case "RZ":
                             f.Value = step[i] * degrad;
-                            node.ZROT.Nodes.Add(f);
+                            node.ZROT.Keys.Add(f);
                             break;
                         case "X":
-                            node.XPOS.Nodes.Add(f);
+                            node.XPOS.Keys.Add(f);
                             break;
                         case "Y":
-                            node.YPOS.Nodes.Add(f);
+                            node.YPOS.Keys.Add(f);
                             break;
                         case "Z":
-                            node.ZPOS.Nodes.Add(f);
+                            node.ZPOS.Keys.Add(f);
                             break;
                         case "SX":
-                            node.XSCA.Nodes.Add(f);
+                            node.XSCA.Keys.Add(f);
                             break;
                         case "SY":
-                            node.YSCA.Nodes.Add(f);
+                            node.YSCA.Keys.Add(f);
                             break;
                         case "SZ":
-                            node.ZSCA.Nodes.Add(f);
+                            node.ZSCA.Keys.Add(f);
                             break;
                     }
                 }

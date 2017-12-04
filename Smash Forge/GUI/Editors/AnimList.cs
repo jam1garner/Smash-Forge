@@ -88,6 +88,10 @@ namespace Smash_Forge
             {
                 ((Animation.KeyNode)treeView1.SelectedNode).ExpandNodes();
             }
+            if (treeView1.SelectedNode is Animation.KeyGroup)
+            {
+                ((Animation.KeyGroup)treeView1.SelectedNode).ExpandNodes();
+            }
         }
 
         private void treeView1_Click(object sender, EventArgs e)
@@ -100,7 +104,7 @@ namespace Smash_Forge
             if (e.Button == MouseButtons.Right)
             {
                 treeView1.SelectedNode = treeView1.GetNodeAt(e.Location);
-                if (treeView1.SelectedNode.Level == 0)
+                if (treeView1.SelectedNode.Level == 0 && treeView1.SelectedNode.Text.Equals("Bone Animations"))
                 {
                     AnimationCM.Show(this, e.X, e.Y);
                 }

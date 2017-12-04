@@ -72,6 +72,16 @@ namespace Smash_Forge
 
             public void ExpandNodes()
             {
+                XPOS.Text = "XPOS";
+                YPOS.Text = "YPOS";
+                ZPOS.Text = "ZPOS";
+                XROT.Text = "XROT";
+                YROT.Text = "YROT";
+                ZROT.Text = "ZROT";
+                WROT.Text = "WROT";
+                XSCA.Text = "XSCA";
+                YSCA.Text = "YSCA";
+                ZSCA.Text = "ZSCA";
                 Nodes.Add(XPOS);
                 Nodes.Add(YPOS);
                 Nodes.Add(ZPOS);
@@ -89,15 +99,15 @@ namespace Smash_Forge
         {
             public bool HasAnimation()
             {
-                return Nodes.Count > 0;
+                return Keys.Count > 0;
             }
 
-            public new List<KeyFrame> Nodes = new List<KeyFrame>();
+            public List<KeyFrame> Keys = new List<KeyFrame>();
 
             public float GetValue(float frame)
             {
-                KeyFrame k1 = (KeyFrame)Nodes[0], k2 = (KeyFrame)Nodes[0];
-                foreach(KeyFrame k in Nodes)
+                KeyFrame k1 = (KeyFrame)Keys[0], k2 = (KeyFrame)Keys[0];
+                foreach(KeyFrame k in Keys)
                 {
                     if(k.Frame < frame)
                     {
@@ -122,9 +132,9 @@ namespace Smash_Forge
 
             public KeyFrame[] GetFrame(float frame)
             {
-                if (Nodes.Count == 0) return null;
-                KeyFrame k1 = (KeyFrame)Nodes[0], k2 = (KeyFrame)Nodes[0];
-                foreach (KeyFrame k in Nodes)
+                if (Keys.Count == 0) return null;
+                KeyFrame k1 = (KeyFrame)Keys[0], k2 = (KeyFrame)Keys[0];
+                foreach (KeyFrame k in Keys)
                 {
                     if (k.Frame < frame)
                     {
@@ -140,9 +150,16 @@ namespace Smash_Forge
                 return new KeyFrame[] { k1, k2};
             }
             
+            public void ExpandNodes()
+            {
+                foreach (KeyFrame v in Keys)
+                {
+                    Nodes.Add(v.GetNode());
+                }
+            }
         }
 
-        public class KeyFrame 
+        public class KeyFrame
         {
             public float Value
             {
@@ -170,6 +187,14 @@ namespace Smash_Forge
             public KeyFrame()
             {
 
+            }
+
+            public TreeNode GetNode()
+            {
+                TreeNode t = new TreeNode();
+                t.Text = Frame + " : " + Value;
+                t.Tag = this;
+                return t;
             }
 
             public override string ToString()

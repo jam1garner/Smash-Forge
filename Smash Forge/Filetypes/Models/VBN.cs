@@ -131,17 +131,12 @@ namespace Smash_Forge
             csvHashes csv = new csvHashes(Path.Combine(MainForm.executableDir, "hashTable.csv"));
             List<string> bonename = new List<string>();
 
-            /*for (int i = 0; i < hashCount; i++)
+            for (int i = 0; i < hashCount; i++)
             {
                 uint hash = (uint)f.readInt();
-                for (int j = 0; j < csv.ids.Count; j++)
-                    if (csv.ids[j] == hash)
-                    {
-                        Console.WriteLine(csv.names[j]);
-                        bonename.Add(csv.names[j]);
-                        break;
-                    }
-            }*/
+                Console.WriteLine(csv.ids[hash]);
+                bonename.Add(csv.ids[hash]);
+            }
 
             f.seek(pos);
             Console.WriteLine("Count " + count);
@@ -160,7 +155,22 @@ namespace Smash_Forge
                     Console.WriteLine(id + ":\t" + size.ToString("x"));
                     for (int j = 0; j < ((size - 1) / 4) - 1; j++)
                     {
-                        Console.Write("\t" + f.readShort() + " " + f.readShort() + "\t");
+
+                        if(id == 4)
+                        {
+                            int b1 = (short)f.readShort();
+                            int b2 = (short)f.readShort();
+                            Console.Write("\t" + (b1==-1?b1 + "" : bonename[b1]) + " " + b2 + "\t");
+                        }
+                        else
+                        if (id == 5)
+                        {
+                            int b1 = (short)f.readShort();
+                            int b2 = (short)f.readShort();
+                            Console.Write("\t" + (b1 == -1 ? b1 + "" : bonename[b1]) + " " + (b2 == -1 ? b2 + "" : bonename[b2]) + "\t");
+                        }
+                        else
+                            Console.Write("\t" + (f.readShort() / (id==7?(float)0xffff:1)) + " " + (f.readShort() / (id == 7 ? (float)0xffff : 1)) + "\t");
                     }
                     Console.WriteLine();
                 }

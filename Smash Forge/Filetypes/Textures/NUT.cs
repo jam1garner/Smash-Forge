@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System.Runtime.InteropServices;
 
 namespace Smash_Forge
 {
@@ -463,6 +464,7 @@ namespace Smash_Forge
                 d.skip(0x18);
                 tex.id = d.readInt();
 
+                Console.WriteLine(gtxHeaderOffset.ToString("x"));
                 d.seek(gtxHeaderOffset);
                 d.skip(0x04); // dim
                 d.skip(0x04); // width
@@ -474,43 +476,55 @@ namespace Smash_Forge
                 d.skip(0x04); // use
                 int imageSize = d.readInt();
                 d.skip(0x04); // imagePtr
-                d.skip(0x04); // mipSize
+                int maxSize = d.readInt(); // mipSize
                 d.skip(0x04); // mipPtr
                 int tileMode = d.readInt();
                 int swizzle = d.readInt();
                 d.skip(0x04); // alignment
                 int pitch = d.readInt();
 
+                int ds = dataOffset;
+                int s1 = 0;
+                int size = 0;
+                Console.WriteLine(totalSize.ToString("x"));
                 for (int mipLevel = 0; mipLevel < numMips; mipLevel++)
                 {
                     // Maybe this is the problem?
                     int mipSize = imageSize >> (mipLevel * 2);
                     int p = pitch >> mipLevel;
+                    
+                    size = d.readInt();
+                    //Console.WriteLine("\tMIP: " + size.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + (size == 0 ? ds + totalSize - dataOffset : size));
 
                     //Console.WriteLine(tex.id.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + swizzle);
                     //Console.WriteLine((tex.width >> mipLevel) + " " + (tex.height >> mipLevel));
-                    
+
                     //if (cmap) tex.height *= 2;
 
                     int w = (tex.width >> mipLevel);
                     int h = (tex.height >> mipLevel);
-
-                    //if (mipSize % 0x10 != 0) mipSize += mipSize % 0x10;
-                    //if (cmap) mipSize /= 6;
-
-                    //if (p <= 16) p = 64;
+                    
                     {
-                        tex.mipmaps.Add(GTX.swizzleBC(
-                            d.getSection(dataOffset, mipSize),
+                        byte[] deswiz = GTX.swizzleBC(
+                            d.getSection(dataOffset, d.size() - dataOffset),
                             w,
                             h,
                             format,
                             tileMode,
                             p,
                             swizzle
-                        ));
+                        );
+                        tex.mipmaps.Add(new FileData(deswiz).getSection(0, mipSize));
                     }
-                    dataOffset += mipSize;
+                    if (mipLevel == 0)
+                    {
+                        s1 = size;
+                        dataOffset = ds + size;
+                    }else
+                    {
+                        dataOffset = ds + s1 +size;
+                    }
+                    //dataOffset += mipSize;
                     
                     /*if (cmap)
                     {
@@ -535,25 +549,6 @@ namespace Smash_Forge
                     //if (mipSize == 0x4000) dataOffset += 0x400;
                 }
 
-                // fix mipmap swizzle for rgba types
-                if(tex.getNutFormat() == 14 || tex.getNutFormat() == 17)
-                {
-                    Console.WriteLine("Endian swap");
-                    // swap 
-                    foreach(byte[] mip in tex.mipmaps)
-                    {
-                        for(int t = 0; t < mip.Length; t+=4)
-                        {
-                            /*byte t1 = mip[t];
-                            byte t2 = mip[t+1];
-                            mip[t] = mip[t + 3];
-                            mip[t + 1] = mip[t + 2];
-                            mip[t + 2] = t2;
-                            mip[t + 3] = t1;*/
-                        }
-                    }
-                }
-
                 textures.Add(tex);
             }
 
@@ -561,9 +556,50 @@ namespace Smash_Forge
             {
                 if (!draw.ContainsKey(tex.id))
                 {
-                    draw.Add(tex.id, loadImage(tex));
+                    draw.Add(tex.id, loadImage(tex, false));
                 }
+
+                // redo mipmaps
+                /*GL.BindTexture(TextureTarget.Texture2D, draw[tex.id]);
+                for (int k = 1; k < tex.mipmaps.Count; k++)
+                {
+                    tex.mipmaps[k] = new byte[tex.mipmaps[k].Length];
+                    GCHandle pinnedArray = GCHandle.Alloc(tex.mipmaps[k], GCHandleType.Pinned);
+                    IntPtr pointer = pinnedArray.AddrOfPinnedObject();
+                    GL.GetCompressedTexImage(TextureTarget.Texture2D, 0, pointer);
+                    pinnedArray.Free();
+                }*/
             }
+
+            
+            //File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\duckhunt\\model\\body\\mip1.bin", bytearray);
+
+            //Console.WriteLine(GL.GetError());
+            /*int j = 0;
+            foreach(byte[] b in textures[0].mipmaps)
+            {
+                if (j == 3)
+                {
+                    for(int w = 3; w < 8; w++)
+                    {
+                        for (int p = 3; p < 6; p++)
+                        {
+                            byte[] deswiz = GTX.swizzleBC(
+                                b,
+                                (int)Math.Pow(2, w),
+                                64,
+                                51,
+                                4,
+                                 (int)Math.Pow(2, p),
+                                197632
+                            );
+                            File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\duckhunt\\model\\body\\chunk_" + (int)Math.Pow(2, p) + "_" + (int)Math.Pow(2, w), deswiz);
+                        }
+                    }
+                    
+                }
+                j++;
+            }*/
         }
 
         public static bool texIdUsed(int texId)
@@ -630,7 +666,7 @@ namespace Smash_Forge
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.mipmaps.Count);
                     GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-                    for(int i = 0; i <t.mipmaps.Count; i++)
+                    for (int i = 0; i <t.mipmaps.Count; i++)
                         GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, i, t.type,
                         t.width / (int)Math.Pow(2,i), t.height / (int)Math.Pow(2, i), 0, t.mipmaps[i].Length, t.mipmaps[i]);
                 }

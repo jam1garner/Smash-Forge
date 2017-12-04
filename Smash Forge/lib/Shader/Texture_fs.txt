@@ -41,7 +41,7 @@ void main()
         }
     }
 
-    textureColor = texture(image, vec2(xCoord, yCoord)).rgba;
+    textureColor = texture2D(image, vec2(xCoord, yCoord)).rgba;
 
     // Control what channels are displayed. Single channels are greyscale.
     if (renderR == 1)

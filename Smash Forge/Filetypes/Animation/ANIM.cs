@@ -89,21 +89,21 @@ namespace Smash_Forge
                         //att.keys.Add (k);
                         if (type.Contains("translate"))
                         {
-                            if (type.Contains("X")) current.XPOS.Nodes.Add(k);
-                            if (type.Contains("Y")) current.YPOS.Nodes.Add(k);
-                            if (type.Contains("Z")) current.ZPOS.Nodes.Add(k);
+                            if (type.Contains("X")) current.XPOS.Keys.Add(k);
+                            if (type.Contains("Y")) current.YPOS.Keys.Add(k);
+                            if (type.Contains("Z")) current.ZPOS.Keys.Add(k);
                         }
                         if (type.Contains("rotate"))
                         {
-                            if (type.Contains("X")) current.XROT.Nodes.Add(k);
-                            if (type.Contains("Y")) current.YROT.Nodes.Add(k);
-                            if (type.Contains("Z")) current.ZROT.Nodes.Add(k);
+                            if (type.Contains("X")) current.XROT.Keys.Add(k);
+                            if (type.Contains("Y")) current.YROT.Keys.Add(k);
+                            if (type.Contains("Z")) current.ZROT.Keys.Add(k);
                         }
                         if (type.Contains("scale"))
                         {
-                            if (type.Contains("X")) current.XSCA.Nodes.Add(k);
-                            if (type.Contains("Y")) current.YSCA.Nodes.Add(k);
-                            if (type.Contains("Z")) current.ZSCA.Nodes.Add(k);
+                            if (type.Contains("X")) current.XSCA.Keys.Add(k);
+                            if (type.Contains("Y")) current.YSCA.Keys.Add(k);
+                            if (type.Contains("Z")) current.ZSCA.Keys.Add(k);
                         }
                         k.Frame = float.Parse (args [0])-1;
 						k.Value = float.Parse (args [1]);
@@ -271,11 +271,11 @@ namespace Smash_Forge
 
             file.WriteLine("animData {\n input time;\n output linear;\n weighted 1;\n preInfinity constant;\n postInfinity constant;\n keys {");
 
-            if (((Animation.KeyFrame)keys.Nodes[0]).InterType == Animation.InterpolationType.COSTANT)
+            if (((Animation.KeyFrame)keys.Keys[0]).InterType == Animation.InterpolationType.COSTANT)
                 size = 1;
 
             int f = 1;
-            foreach (Animation.KeyFrame key in keys.Nodes)
+            foreach (Animation.KeyFrame key in keys.Keys)
             {
                 float v = 0;
 

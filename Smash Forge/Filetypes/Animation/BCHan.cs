@@ -219,24 +219,26 @@ namespace Smash_Forge
                     bone.Text = f.readString(f.readInt(), -1);
                     //Console.WriteLine("Bone Name: " + bone.name);
                     int animationTypeFlags = f.readInt();
-                    int flags = f.readInt();
+                    uint flags = (uint)f.readInt();
 
                     OSegmentType segmentType = (OSegmentType)((animationTypeFlags >> 16) & 0xf);
                     switch (segmentType)
                     {
                         case OSegmentType.transform:
-                            f.seek(offset + 0x18);
+                            f.seek(offset + 0xC);
+                            //Console.WriteLine(f.pos().ToString("x") + " " + flags.ToString("x"));
 
-                            int notExistMask = 0x80000;
-                            int constantMask = 0x200;
+                            uint notExistMask = 0x10000;
+                            uint constantMask = 0x40;
 
-                            for (int j = 0; j < 2; j++)
+                            for (int j = 0; j < 3; j++)
                             {
                                 for (int axis = 0; axis < 3; axis++)
                                 {
                                     bool notExist = (flags & notExistMask) > 0;
                                     bool constant = (flags & constantMask) > 0;
-                                    
+                                    //Console.WriteLine(notExist + " " + constant);
+
                                     Animation.KeyGroup group = new Animation.KeyGroup();
                                     //frame.exists = !notExist;
                                     if (!notExist)
@@ -247,7 +249,7 @@ namespace Smash_Forge
                                             frame.InterType = Animation.InterpolationType.LINEAR;
                                             frame.Value = f.readFloat();
                                             frame.Frame = 0;
-                                            group.Nodes.Add(frame);
+                                            group.Keys.Add(frame);
                                         }
                                         else
                                         {
@@ -265,7 +267,7 @@ namespace Smash_Forge
                                         f.seek(f.pos() + 0x04);
                                     bone.RotType = Animation.RotationType.EULER;
 
-                                    /*if (j == 0)
+                                    if (j == 0)
                                     {
                                         switch (axis)
                                         {
@@ -273,8 +275,8 @@ namespace Smash_Forge
                                             case 1: bone.YSCA = group; break;
                                             case 2: bone.ZSCA = group; break;
                                         }
-                                    }else*/
-                                    if (j == 0)
+                                    }else
+                                    if (j == 1)
                                     {
                                         switch (axis)
                                         {
@@ -284,7 +286,7 @@ namespace Smash_Forge
                                         }
                                     }
                                     else
-                                    if (j == 1)
+                                    if (j == 2)
                                     {
                                         switch (axis)
                                         {
@@ -297,7 +299,7 @@ namespace Smash_Forge
                                     notExistMask <<= 1;
                                     constantMask <<= 1;
                                 }
-
+                                if(j == 1)
                                 constantMask <<= 1;
                             }
 
@@ -534,7 +536,7 @@ namespace Smash_Forge
                 keyFrame.Frame = (keyFrame.Frame * frameScale) + frameOffset;
                 keyFrame.Value = (keyFrame.Value * valueScale) + valueOffset;
 
-                group.Nodes.Add(keyFrame);
+                group.Keys.Add(keyFrame);
             }
         }
 

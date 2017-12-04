@@ -106,32 +106,32 @@ namespace Smash_Forge
                     Animation.KeyFrame n = new Animation.KeyFrame();
                     n.Value = float.Parse(args[1]);
                     n.Frame = frame;
-                    bone.XPOS.Nodes.Add(n);
+                    bone.XPOS.Keys.Add(n);
 
                     n = new Animation.KeyFrame();
                     n.Value = float.Parse(args[2]);
                     n.Frame = frame;
-                    bone.YPOS.Nodes.Add(n);
+                    bone.YPOS.Keys.Add(n);
 
                     n = new Animation.KeyFrame();
                     n.Value = float.Parse(args[3]);
                     n.Frame = frame;
-                    bone.ZPOS.Nodes.Add(n);
+                    bone.ZPOS.Keys.Add(n);
 
                     n = new Animation.KeyFrame();
                     n.Value = float.Parse(args[4]);
                     n.Frame = frame;
-                    bone.XROT.Nodes.Add(n);
+                    bone.XROT.Keys.Add(n);
 
                     n = new Animation.KeyFrame();
                     n.Value = float.Parse(args[5]);
                     n.Frame = frame;
-                    bone.YROT.Nodes.Add(n);
+                    bone.YROT.Keys.Add(n);
 
                     n = new Animation.KeyFrame();
                     n.Value = float.Parse(args[6]);
                     n.Frame = frame;
-                    bone.ZROT.Nodes.Add(n);
+                    bone.ZROT.Keys.Add(n);
                 }
             }
 
