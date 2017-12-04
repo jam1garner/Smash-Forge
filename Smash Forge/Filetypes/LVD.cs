@@ -22,7 +22,7 @@ namespace Smash_Forge
         public bool useStartPos = false;
         public int unk1 = 0;
         public float[] unk2 = new float[3];
-        public int unk3 = 0;
+        public int unk3 = unchecked((int)0xFFFFFFFF);
         public char[] boneName = new char[0x40];
         
         public void read(FileData f)
@@ -417,28 +417,28 @@ namespace Smash_Forge
         
     }
 
-    public enum shape //I don't think these are accurate
+    public enum shape
     {
         point = 1,
         rectangle = 3,
         path = 4
     }
 
-    public class LVDGeneralShape : LVDEntry
+    public class LVDShape : LVDEntry
     {
         public override string magic { get { return "010401017735BB7500000002"; } }
         
-        public int type;
-
+        public int type; 
+    }
+    
+    public class LVDGeneralShape : LVDShape
+    {
         public void read(FileData f)
         {
             base.read(f);
             
             f.skip(1);
             f.readInt(); //unknown
-            
-            f.skip(1);
-            type = f.readInt();
         }
         public void save(FileOutput f)
         {
@@ -446,85 +446,30 @@ namespace Smash_Forge
             
             f.writeByte(1);
             f.writeInt(0);
-            
-            f.writeByte(1);
-            f.writeInt(type);
         }
     }
-
-    public class GeneralPoint : LVDGeneralShape
-    {
-        public float x, y;
-
-        public GeneralPoint()
-        {
-            type = 1;
-        }
-
-        public void read(FileData f)
-        {
-            base.read(f);
-            
-            x = f.readFloat();
-            y = f.readFloat();
-            f.skip(0x14);
-        }
-        public void save(FileOutput f)
-        {
-            base.save(f);
-            
-            f.writeFloat(x);
-            f.writeFloat(y);
-            f.writeHex("0000000000000000000000000000000000000000");
-        }
-    }
-
-    public class GeneralRect : LVDGeneralShape
+    
+    public class GeneralShape : LVDGeneralShape //GeneralRects and GeneralPaths are both the same object type (this one), their difference is how they are used
     {
         public float x1, y1, x2, y2;
-
-        public GeneralRect()
-        {
-            type = 3;
-        }
-
+        public List<Vector2D> points = new List<Vector2D>();
+        
         public void read(FileData f)
         {
             base.read(f);
-        
+            
+            f.readByte();
+            type = f.readInt(); //3 = rect, 4 = path
+            if ((type != 3) && (type != 4))
+                throw new NotImplementedException($"Unknown general shape type {type} at offset {f.pos()-4}");
+            
             x1 = f.readFloat();
             y1 = f.readFloat();
             x2 = f.readFloat();
             y2 = f.readFloat();
-            f.skip(0x6);
-        }
-
-        public void save(FileOutput f)
-        {
-            base.save(f);
             
-            f.writeFloat(x1);
-            f.writeFloat(y1);
-            f.writeFloat(x2);
-            f.writeFloat(y2);
-            f.writeHex("010100000000");
-        }
-    }
-
-    public class GeneralPath : LVDGeneralShape
-    {
-        public List<Vector2D> points = new List<Vector2D>();
-
-        public GeneralPath()
-        {
-            type = 4;
-        }
-
-        public void read(FileData f)
-        {
-            base.read(f);
-            
-            f.skip(0x12);
+            f.skip(1);
+            f.skip(1);
             int pointCount = f.readInt();
             for(int i = 0; i < pointCount; i++)
             {
@@ -532,14 +477,22 @@ namespace Smash_Forge
                 points.Add(new Vector2D() { x = f.readFloat(), y = f.readFloat() });
             }
         }
-
         public void save(FileOutput f)
         {
             base.save(f);
             
-            f.writeHex("000000000000000000000000000000000101");
+            f.writeByte(0x3);
+            f.writeInt(type);
+            
+            f.writeFloat(x1);
+            f.writeFloat(y1);
+            f.writeFloat(x2);
+            f.writeFloat(y2);
+            
+            f.writeByte(1);
+            f.writeByte(1);
             f.writeInt(points.Count);
-            foreach (Vector2D point in points)
+            foreach(Vector2D point in points)
             {
                 f.writeByte(1);
                 f.writeFloat(point.x);
@@ -548,26 +501,108 @@ namespace Smash_Forge
         }
     }
     
-    public class Sphere : LVDEntry
+    public class GeneralPoint : LVDGeneralShape
     {
-        public override string magic { get { return "030401017735BB7500000002"; } }
-        public float x;
-        public float y;
-        public float z;
-        public float radius;
-    }
+        public float x, y, z;
 
-    public class Capsule : LVDEntry
+        public GeneralPoint()
+        {
+            type = 4;
+        }
+
+        public void read(FileData f)
+        {
+            base.read(f);
+            
+            f.skip(1);
+            type = f.readInt(); //always 4?
+            
+            x = f.readFloat();
+            y = f.readFloat();
+            z = f.readFloat();
+            f.skip(0x10);
+        }
+        public void save(FileOutput f)
+        {
+            base.save(f);
+            
+            f.writeByte(1);
+            f.writeInt(type);
+            
+            f.writeFloat(x);
+            f.writeFloat(y);
+            f.writeFloat(z);
+            f.writeHex("00000000000000000000000000000000");
+        }
+    }
+    
+    public class DamageShape : LVDShape
     {
-        public override string magic { get { return "030401017735BB7500000002"; } }
         public float x;
         public float y;
         public float z;
-        public float r;
         public float dx;
         public float dy;
         public float dz;
+        public float radius;
         public float unk;
+
+        public void read(FileData f)
+        {
+            base.read(f);
+            
+            f.skip(1);
+            type = f.readInt(); //2 = sphere, 3 = capsule
+            if ((type != 2) && (type != 3))
+                throw new NotImplementedException($"Unknown damage shape type {type} at offset {f.pos()-4}");
+            
+            x = f.readFloat();
+            y = f.readFloat();
+            z = f.readFloat();
+            if (type == 2)
+            {
+                radius = f.readFloat();
+                dx = f.readFloat();
+                dy = f.readFloat();
+                dz = f.readFloat();
+            }
+            else if (type == 3)
+            {
+                dx = f.readFloat();
+                dy = f.readFloat();
+                dz = f.readFloat();
+                radius = f.readFloat();
+            }
+            unk = f.readFloat();
+            f.skip(0x1);
+        }
+        public void save(FileOutput f)
+        {
+            base.save(f);
+            
+            f.writeByte(1);
+            f.writeInt(type);
+            
+            f.writeFloat(x);
+            f.writeFloat(y);
+            f.writeFloat(z);
+            if (type == 2)
+            {
+                f.writeFloat(radius);
+                f.writeFloat(dx);
+                f.writeFloat(dy);
+                f.writeFloat(dz);
+            }
+            else if (type == 3)
+            {
+                f.writeFloat(dx);
+                f.writeFloat(dy);
+                f.writeFloat(dz);
+                f.writeFloat(radius);
+            }
+            f.writeFloat(unk);
+            f.writeHex("00");
+        }
     }
 
     public class LVD : FileBase
@@ -579,12 +614,11 @@ namespace Smash_Forge
             respawns = new List<Spawn>();
             cameraBounds = new List<Bounds>();
             blastzones = new List<Bounds>();
-            generalShapes = new List<LVDGeneralShape>();
-            generalPoints = new List<GeneralPoint>();
-            damageSpheres = new List<Sphere>();
-            items = new List<ItemSpawner>();
-            damageCapsules = new List<Capsule>();
             enemySpawns = new List<EnemyGenerator>();
+            damageShapes = new List<DamageShape>();
+            items = new List<ItemSpawner>();
+            generalShapes = new List<GeneralShape>();
+            generalPoints = new List<GeneralPoint>();
         }
         public LVD(string filename) : this()
         {
@@ -595,12 +629,11 @@ namespace Smash_Forge
         public List<Spawn> respawns { get; set; }
         public List<Bounds> cameraBounds { get; set; }
         public List<Bounds> blastzones { get; set; }
-        public List<LVDGeneralShape> generalShapes { get; set; }
-        public List<GeneralPoint> generalPoints { get; set; }
-        public List<Sphere> damageSpheres { get; set; }
-        public List<ItemSpawner> items { get; set; }
-        public List<Capsule> damageCapsules { get; set; }
         public List<EnemyGenerator> enemySpawns { get; set; }
+        public List<DamageShape> damageShapes { get; set; }
+        public List<ItemSpawner> items { get; set; }
+        public List<GeneralShape> generalShapes { get; set; }
+        public List<GeneralPoint> generalPoints { get; set; }
 
         public override Endianness Endian { get; set; }
 
@@ -684,7 +717,7 @@ namespace Smash_Forge
             
             f.skip(1);
             int enemyGeneratorCount = f.readInt();
-            if (enemyGeneratorCount != 0) //Are these just item spawners?
+            if (enemyGeneratorCount != 0) //Can these be read in the same way as item spawners?
                 return;
             
             f.skip(1);
@@ -705,45 +738,9 @@ namespace Smash_Forge
             int damageShapeCount = f.readInt();
             for(int i=0; i < damageShapeCount; i++)
             {
-                f.skip(0xD);
-
-                string tempName = f.readString(f.pos(), 0x38);
-                f.skip(0x38);
-                f.skip(1);
-                string tempSubname = f.readString(f.pos(), 0x40);
-                f.skip(0xA6);
-                int shapeType = f.readInt();
-                if (shapeType == 2) {
-                    Sphere temp = new Sphere();
-                    temp.name = tempName;
-                    temp.subname = tempSubname;
-                    temp.x = f.readFloat();
-                    temp.y = f.readFloat();
-                    temp.z = f.readFloat();
-                    temp.radius = f.readFloat();
-                    f.skip(0x11);
-                    damageSpheres.Add(temp);
-                }
-                else if(shapeType == 3)
-                {
-                    Capsule temp = new Capsule();
-                    temp.name = tempName;
-                    temp.subname = tempSubname;
-                    temp.x = f.readFloat();
-                    temp.y = f.readFloat();
-                    temp.z = f.readFloat();
-                    temp.dx = f.readFloat();
-                    temp.dy = f.readFloat();
-                    temp.dz = f.readFloat();
-                    temp.r = f.readFloat();
-                    temp.unk = f.readFloat();
-                    f.skip(1);
-                    damageCapsules.Add(temp);
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
+                DamageShape temp = new DamageShape();
+                temp.read(f);
+                damageShapes.Add(temp);
             }
             
             f.skip(1);
@@ -759,19 +756,9 @@ namespace Smash_Forge
             int generalShapeCount = f.readInt();
             for (int i = 0; i < generalShapeCount; i++)
             {
-                int tempOff = f.pos();
-                LVDGeneralShape p = new LVDGeneralShape();
-                f.seek(tempOff);
-                if (p.type == 1)
-                    p = new GeneralPoint();
-                else if (p.type == 3)
-                    p = new GeneralRect();
-                else if (p.type == 4)
-                    p = new GeneralPath();
-                else
-                    throw new Exception($"Unknown shape type {p.type} at offset {tempOff}");
-                p.read(f);
-                generalShapes.Add(p);
+                GeneralShape temp = new GeneralShape();
+                temp.read(f);
+                generalShapes.Add(temp);
             }
             
             f.skip(1);
@@ -834,12 +821,17 @@ namespace Smash_Forge
             foreach (Bounds b in blastzones)
                 b.save(f);
 
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 6; i++)
             {
                 f.writeByte(1);
                 f.writeInt(0);
             }
 
+            f.writeByte(1);
+            f.writeInt(damageShapes.Count);
+            foreach (DamageShape shape in damageShapes)
+                shape.save(f);
+            
             f.writeByte(1);
             f.writeInt(items.Count);
             foreach (ItemSpawner item in items)
@@ -847,10 +839,9 @@ namespace Smash_Forge
 
             f.writeByte(1);
             f.writeInt(generalShapes.Count);
-            foreach (LVDGeneralShape shape in generalShapes)
+            foreach (GeneralShape shape in generalShapes)
                 shape.save(f);
             
-
             f.writeByte(1);
             f.writeInt(generalPoints.Count);
             foreach (GeneralPoint p in generalPoints)
@@ -948,7 +939,7 @@ namespace Smash_Forge
             GL.End();
         }
 
-        public static void DrawCameraBounds(Bounds b, Color color)
+        public static void DrawBounds(Bounds b, Color color)
         {
             GL.Color4(Color.FromArgb(128, color));
             GL.Begin(PrimitiveType.LineLoop);
@@ -1188,17 +1179,6 @@ namespace Smash_Forge
                 GL.Vertex3(vi.x * scale, vi.y * scale, -5);
                 GL.End();
             }
-        }
-
-        public static void DrawBlastZones(Bounds b, Color color)
-        {
-            GL.Color4(Color.FromArgb(128, color));
-            GL.Begin(PrimitiveType.LineLoop);
-            GL.Vertex3(b.left, b.top, 0);
-            GL.Vertex3(b.right, b.top, 0);
-            GL.Vertex3(b.right, b.bottom, 0);
-            GL.Vertex3(b.left, b.bottom, 0);
-            GL.End();
         }
 
     }

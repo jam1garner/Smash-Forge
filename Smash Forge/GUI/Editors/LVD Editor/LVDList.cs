@@ -89,19 +89,14 @@ namespace Smash_Forge
                     pointNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
                 }
 
-                foreach (LVDGeneralShape s in Runtime.TargetLVD.generalShapes)
+                foreach (GeneralShape s in Runtime.TargetLVD.generalShapes)
                 {
                     shapeNode.Nodes.Add(new TreeNode(s.name) { Tag = s });
                 }
 
-                foreach (Sphere c in Runtime.TargetLVD.damageSpheres)
+                foreach (DamageShape s in Runtime.TargetLVD.damageShapes)
                 {
-                    hurtNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
-                }
-
-                foreach (Capsule c in Runtime.TargetLVD.damageCapsules)
-                {
-                    hurtNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
+                    hurtNode.Nodes.Add(new TreeNode(s.name) { Tag = s });
                 }
 
                 foreach (EnemyGenerator c in Runtime.TargetLVD.enemySpawns)
@@ -138,14 +133,12 @@ namespace Smash_Forge
                 }
                 if (entry is Collision)
                     Runtime.TargetLVD.collisions.Remove((Collision)entry);
-                if (entry is Capsule)
-                    Runtime.TargetLVD.damageCapsules.Remove((Capsule) entry);
-                if (entry is Sphere)
-                    Runtime.TargetLVD.damageSpheres.Remove((Sphere)entry);
+                if (entry is DamageShape)
+                    Runtime.TargetLVD.damageShapes.Remove((DamageShape)entry);
                 if (entry is EnemyGenerator)
                     Runtime.TargetLVD.enemySpawns.Remove((EnemyGenerator)entry);
-                if (entry is LVDGeneralShape)
-                    Runtime.TargetLVD.generalShapes.Remove((LVDGeneralShape)entry);
+                if (entry is GeneralShape)
+                    Runtime.TargetLVD.generalShapes.Remove((GeneralShape)entry);
                 if (entry is ItemSpawner)
                     Runtime.TargetLVD.items.Remove((ItemSpawner)entry);
                 if (entry is GeneralPoint)

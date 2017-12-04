@@ -33,8 +33,8 @@ namespace Smash_Forge
         private Bounds currentBounds;
         private Section currentItemSection;
         private GeneralPoint currentGeneralPoint;
-        private GeneralRect currentGeneralRect;
-        private GeneralPath currentGeneralPath;
+        private GeneralShape currentGeneralRect;
+        private GeneralShape currentGeneralPath;
         private DAT.JOBJ currentJobj;
         public DAT datToPrerender = null;
 
@@ -82,7 +82,7 @@ namespace Smash_Forge
                 currentTreeNode = entryTree;
                 currentEntry = entry;
                 
-                //These need implementation in the ui for all objects, not just collisions
+                //These need implementation in the gui for all objects, not just collisions
                 name.Text = currentEntry.name;
                 subname.Text = currentEntry.subname;
                 xStart.Value = (decimal)currentEntry.startPos[0];
@@ -148,25 +148,27 @@ namespace Smash_Forge
                     pointShapeX.Value = (Decimal)p.x;
                     pointShapeY.Value = (Decimal)p.y;
                 }
-                else if (entry is GeneralRect)
+                else if (entry is GeneralShape)
                 {
-                    rectangleGroup.Visible = true;
-                    GeneralRect r = (GeneralRect)entry;
-                    currentGeneralRect = r;
-                    rectUpperX.Value = (Decimal)r.x2;
-                    rectUpperY.Value = (Decimal)r.y2;
-                    rectLowerX.Value = (Decimal)r.x1;
-                    rectLowerY.Value = (Decimal)r.y1;
-                }
-                else if (entry is GeneralPath)
-                {
-                    pathGroup.Visible = true;
-                    GeneralPath p = (GeneralPath)entry;
-                    currentGeneralPath = p;
-                    treeViewPath.Nodes.Clear();
-                    int j = 0;
-                    foreach (Vector2D v in p.points)
-                        treeViewPath.Nodes.Add(new TreeNode($"Point {++j} ({v.x},{v.y})") { Tag = v });
+                    GeneralShape s = (GeneralShape)entry;
+                    if (s.type == 3)
+                    {
+                        rectangleGroup.Visible = true;
+                        currentGeneralRect = s;
+                        rectUpperX.Value = (Decimal)s.x2;
+                        rectUpperY.Value = (Decimal)s.y2;
+                        rectLowerX.Value = (Decimal)s.x1;
+                        rectLowerY.Value = (Decimal)s.y1;
+                    }
+                    else if (s.type == 4)
+                    {
+                        pathGroup.Visible = true;
+                        currentGeneralPath = s;
+                        treeViewPath.Nodes.Clear();
+                        int j = 0;
+                        foreach (Vector2D v in s.points)
+                            treeViewPath.Nodes.Add(new TreeNode($"Point {++j} ({v.x},{v.y})") { Tag = v });
+                    }
                 }
                 else if (entry is DAT.COLL_DATA)
                 {
@@ -499,7 +501,7 @@ namespace Smash_Forge
 
         private void rectValueChanged(object sender, EventArgs e)
         {
-            GeneralRect r = currentGeneralRect;
+            GeneralShape r = currentGeneralRect;
             if(sender == rectUpperX)
                 r.x2 = (float)rectUpperX.Value;
             if (sender == rectUpperY)

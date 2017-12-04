@@ -972,21 +972,23 @@ namespace Smash_Forge
 
         private void pointToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            GeneralPoint g = new GeneralPoint() { name = "POINT_00_NEW", subname = "00_NEW" };
+            return;
+            //Disabled this because I'm implementing general points as separate from general shapes
+            /*GeneralPoint g = new GeneralPoint() { name = "POINT_00_NEW", subname = "00_NEW" };
             Runtime.TargetLVD.generalShapes.Add(g);
-            lvdList.fillList();
+            lvdList.fillList();*/
         }
 
         private void rectangleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            GeneralRect g = new GeneralRect() { name = "RECT_00_NEW", subname = "00_NEW" };
+            GeneralShape g = new GeneralShape() { name = "RECT_00_NEW", subname = "00_NEW", type = 3 };
             Runtime.TargetLVD.generalShapes.Add(g);
             lvdList.fillList();
         }
 
         private void pathToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            GeneralPath g = new GeneralPath() { name = "PATH_00_NEW", subname = "00_NEW" };
+            GeneralShape g = new GeneralShape() { name = "PATH_00_NEW", subname = "00_NEW", type = 4 };
             Runtime.TargetLVD.generalShapes.Add(g);
             lvdList.fillList();
         }
