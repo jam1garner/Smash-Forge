@@ -348,7 +348,7 @@ namespace Smash_Forge
         public NUTEditor nutEditor = null;
         public NUS3BANKEditor nusEditor = null;
         public _3DSTexEditor texEditor = null;
-        public CameraPosition cameraPosForm = null;
+        public CameraSettings cameraForm = null;
 
         #endregion
 
@@ -924,7 +924,7 @@ namespace Smash_Forge
         {
             if (Runtime.TargetLVD == null)
                 Runtime.TargetLVD = new LVD();
-            Runtime.TargetLVD.spawns.Add(new Point() { name = "START_00_NEW", subname = "00_NEW" });
+            Runtime.TargetLVD.spawns.Add(new Spawn() { name = "START_00_NEW", subname = "00_NEW" });
             lvdList.fillList();
 
         }
@@ -933,7 +933,7 @@ namespace Smash_Forge
         {
             if (Runtime.TargetLVD == null)
                 Runtime.TargetLVD = new LVD();
-            Runtime.TargetLVD.respawns.Add(new Point() { name = "RESTART_00_NEW", subname = "00_NEW" });
+            Runtime.TargetLVD.respawns.Add(new Spawn() { name = "RESTART_00_NEW", subname = "00_NEW" });
             lvdList.fillList();
         }
 
@@ -966,7 +966,7 @@ namespace Smash_Forge
         {
             if (Runtime.TargetLVD == null)
                 Runtime.TargetLVD = new LVD();
-            Runtime.TargetLVD.generalPoints.Add(new Point() { name = "POINT_00_NEW", subname = "00_NEW" });
+            Runtime.TargetLVD.generalPoints.Add(new GeneralPoint() { name = "POINT_00_NEW", subname = "00_NEW" });
             lvdList.fillList();
         }
 
@@ -2184,12 +2184,12 @@ namespace Smash_Forge
 
         private void cameraToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (cameraPosForm == null || cameraPosForm.IsDisposed)
+            if (cameraForm == null || cameraForm.IsDisposed)
             {
-                cameraPosForm = new CameraPosition(viewports[0]);
-                viewports[0].cameraPosForm = cameraPosForm;
+                cameraForm = new CameraSettings();
+                viewports[0].cameraPosForm = cameraForm;
             }
-            cameraPosForm.Show();
+            cameraForm.Show();
         }
 
         private void AddAnimName(string AnimName)

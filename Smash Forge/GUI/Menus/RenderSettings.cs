@@ -59,26 +59,7 @@ namespace Smash_Forge.GUI
             modelSelectCB.Enabled = checkBox1.Checked;
             renderFogCB.Checked = Runtime.renderFog;
 
-            //depthSlider.Value = Math.Min((int)Runtime.renderDepth, depthSlider.Maximum);
-            //fovSlider.Value = (int)(Camera.viewportCamera.fov * 180.0f / Math.PI);
-            //fovLabel.Text = "FOV (Degrees): " + fovSlider.Value;
-
-            debugShadingCB.Checked = Runtime.useDebugShading;
-            debugModeLabel.Enabled = debugShadingCB.Checked;
-            renderChannelR.Enabled = debugShadingCB.Checked;
-            renderChannelG.Enabled = debugShadingCB.Checked;
-            renderChannelB.Enabled = debugShadingCB.Checked;
-            renderChannelA.Enabled = debugShadingCB.Checked;
-            renderModeComboBox.Enabled = debugShadingCB.Checked;
-            debug1CB.Enabled = debugShadingCB.Checked;
-            debug2CB.Enabled = debugShadingCB.Checked;
-            radioButton1.Enabled = debugShadingCB.Checked;
-            radioButton2.Enabled = debugShadingCB.Checked;
-            radioButton3.Enabled = debugShadingCB.Checked;
-            radioButton1.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel1;
-            radioButton2.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel2;
-            radioButton3.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel3;
-
+            UpdateDebugButtonsFromRenderType();
 
             cameraLightCB.Checked = Runtime.cameraLight;
             diffuseCB.Checked = Runtime.renderDiffuse;
@@ -210,12 +191,6 @@ namespace Smash_Forge.GUI
             populateColorsFromRuntime();
         }
 
-        private void depthSlider_ValueChanged(object sender, EventArgs e)
-        {
-            //Runtime.renderDepth = depthSlider.Value;
-            //renderDepthLabel.Text = "Depth: " + Runtime.renderDepth;
-        }
-
         private void renderMode_SelectionChangeCommitted(object sender, EventArgs e)
         {
             Runtime.renderType = (Runtime.RenderTypes)renderModeComboBox.SelectedIndex;
@@ -226,6 +201,8 @@ namespace Smash_Forge.GUI
 
         private void UpdateDebugButtonsFromRenderType()
         {
+            ShowHideDebugButtonsFromRenderType();
+
             if (Runtime.renderType == Runtime.RenderTypes.UVCoords || Runtime.renderType == Runtime.RenderTypes.UVTestPattern)
             {
                 debug1CB.Visible = false;
@@ -277,6 +254,22 @@ namespace Smash_Forge.GUI
 
         }
 
+        private void ShowHideDebugButtonsFromRenderType()
+        {
+            renderChannelR.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            renderChannelG.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            renderChannelB.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            renderChannelA.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            debug1CB.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            debug2CB.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            radioButton1.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            radioButton2.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            radioButton3.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            radioButton1.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel1 && Runtime.renderType != Runtime.RenderTypes.Shaded;
+            radioButton2.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel2 && Runtime.renderType != Runtime.RenderTypes.Shaded;
+            radioButton3.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel3 && Runtime.renderType != Runtime.RenderTypes.Shaded;
+        }
+
         private void swagViewing_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderSwag = swagViewing.Checked;
@@ -326,23 +319,6 @@ namespace Smash_Forge.GUI
         {
             Runtime.renderNormalMap = useNormCB.Checked;
         }
-
-        private void fovSlider_Scroll(object sender, EventArgs e)
-        {
-            //Camera.viewportCamera.fov = fovSlider.Value * (float)Math.PI / 180.0f;
-        
-            //fovLabel.Text = "FOV (Degrees): " + fovSlider.Value;
-        }
-
-        private double fovToDegrees(float fov)
-        {
-            // convert fov to an easier to display value in degrees
-            double FOV = fov * 180.0 / Math.PI;
-            FOV = Math.Round(FOV, 2);
-
-            return FOV;
-        }
-
 
         private void backgroundCB_CheckedChanged(object sender, EventArgs e)
         {
@@ -809,19 +785,24 @@ namespace Smash_Forge.GUI
 
         private void debugShadingCB_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.useDebugShading = debugShadingCB.Checked;
+            Runtime.useDebugShading = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            if (Runtime.renderType == Runtime.RenderTypes.Shaded)
+            {
+                Runtime.renderType = Runtime.RenderTypes.Normals;
+                renderModeComboBox.SelectedIndex = (int)Runtime.RenderTypes.Normals;
+            }
 
-            debugModeLabel.Enabled = debugShadingCB.Checked;
-            renderChannelR.Enabled = debugShadingCB.Checked;
-            renderChannelG.Enabled = debugShadingCB.Checked;
-            renderChannelB.Enabled = debugShadingCB.Checked;
-            renderChannelA.Enabled = debugShadingCB.Checked;
-            renderModeComboBox.Enabled = debugShadingCB.Checked;
-            debug1CB.Enabled = debugShadingCB.Checked;
-            debug2CB.Enabled = debugShadingCB.Checked;
-            radioButton1.Enabled = debugShadingCB.Checked;
-            radioButton2.Enabled = debugShadingCB.Checked;
-            radioButton3.Enabled = debugShadingCB.Checked;
+            debugModeLabel.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            renderChannelR.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            renderChannelG.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            renderChannelB.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            renderChannelA.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            renderModeComboBox.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            debug1CB.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            debug2CB.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            radioButton1.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            radioButton2.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            radioButton3.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
         }
 
         private void debug1CB_CheckedChanged(object sender, EventArgs e)

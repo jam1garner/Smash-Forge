@@ -400,6 +400,13 @@ namespace Smash_Forge
             GL.UseProgram(shader.programID);
 
             GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref modelview);
+            GL.ActiveTexture(TextureUnit.Texture10);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
+            GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
+
+            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
+            GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
 
 
             if (bones != null)
@@ -618,13 +625,13 @@ namespace Smash_Forge
             lvd.cameraBounds.Add(cameraBounds);
             j = 0;
             foreach (Point s in spawns)
-                lvd.spawns.Add(new Point() { x = s.x, y = s.y, name = $"Spawn_{j}", subname = $"{j++}" });
+                lvd.spawns.Add(new Spawn() { x = s.x, y = s.y, name = $"Spawn_{j}", subname = $"{j++}" });
             j = 0;
             foreach (Point s in respawns)
-                lvd.respawns.Add(new Point() { x = s.x, y = s.y, name = $"Respawn_{j}", subname = $"{j++}" });
+                lvd.respawns.Add(new Spawn() { x = s.x, y = s.y, name = $"Respawn_{j}", subname = $"{j++}" });
             j = 0;
             foreach (Point p in itemSpawns)
-                lvd.generalPoints.Add(new Point() { x = p.x, y = p.y, name = $"Item_{j}", subname = $"{j++}" });
+                lvd.generalPoints.Add(new GeneralPoint() { x = p.x, y = p.y, name = $"Item_{j}", subname = $"{j++}" });
 
             /*//This is basically for DSX8 for him quickly converting items in the "dumb" way
             foreach (Vector3 p in itemSpawns)
@@ -785,6 +792,7 @@ namespace Smash_Forge
 
         public class COLL_DATA : LVDEntry
         {
+            public override string magic { get { return "030401017735BB7500000002"; } }
             public class Link
             {
                 public int[] vertexIndices;
@@ -956,7 +964,7 @@ namespace Smash_Forge
                         int temp = d.pos();
                         if (!dat.jobjOffsetLinker.ContainsKey(jPointer))
                         {
-							d.seek(jPointer);
+                            d.seek(jPointer);
                             JOBJ j = new JOBJ();
                             j.Read(d, dat, node);
                         }

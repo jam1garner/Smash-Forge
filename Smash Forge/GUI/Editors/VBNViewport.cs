@@ -78,7 +78,7 @@ namespace Smash_Forge
         #region Members
         public float x = 0;
         public float nzoom = 0;
-        public GUI.Menus.CameraPosition cameraPosForm = null;
+        public GUI.Menus.CameraSettings cameraPosForm = null;
         float mouseXLast = 0;
         float mouseYLast = 0;
         float mouseSLast = 0;
@@ -858,15 +858,7 @@ namespace Smash_Forge
                 GL.Uniform3(shader.getAttribute("difLightDirection"), Lights.diffuseLight.direction);
             }
 
-            GL.Uniform3(shader.getAttribute("difLightColor"), Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB);
-            GL.Uniform3(shader.getAttribute("ambLightColor"), Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB);
 
-            GL.ActiveTexture(TextureUnit.Texture10);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
-            GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
-
-            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderType"), renderType);
 
             #endregion
 
@@ -877,12 +869,7 @@ namespace Smash_Forge
             GL.Uniform3(shader.getAttribute("difLightColor"), Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB);
             GL.Uniform3(shader.getAttribute("ambLightColor"), Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB);
 
-            GL.ActiveTexture(TextureUnit.Texture10);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
-            GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
 
-            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderType"), renderType);
             #endregion
 
 
@@ -925,7 +912,7 @@ namespace Smash_Forge
 
                 if (m.nud != null && Runtime.shaders["NUD"].shadersCompiledSuccessfully() && Runtime.shaders["NUD_Debug"].shadersCompiledSuccessfully())
                 {
-                    if (Runtime.useDebugShading)
+                    if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                         shader = Runtime.shaders["NUD_Debug"];
                     else
                         shader = Runtime.shaders["NUD"];
@@ -1212,11 +1199,17 @@ namespace Smash_Forge
 
                 if (m.dat_melee != null && m.dat_melee.respawns != null)
                     foreach (Point r in m.dat_melee.respawns)
-                        LVD.DrawSpawn(r, true);
+                    {
+                        Spawn temp = new Spawn() { x = r.x, y = r.y };
+                        LVD.DrawSpawn(temp, true);
+                    }
 
                 if (m.dat_melee != null && m.dat_melee.spawns != null)
                     foreach (Point r in m.dat_melee.spawns)
-                        LVD.DrawSpawn(r, false);
+                    {
+                        Spawn temp = new Spawn() { x = r.x, y = r.y };
+                        LVD.DrawSpawn(temp, false);
+                    }
 
                 GL.Color4(Color.FromArgb(200, Color.Fuchsia));
                 if (m.dat_melee != null && m.dat_melee.itemSpawns != null)
@@ -1238,7 +1231,7 @@ namespace Smash_Forge
 
                 if (Runtime.renderSpawns)
                 {
-                    foreach (Point s in Runtime.TargetLVD.spawns)
+                    foreach (Spawn s in Runtime.TargetLVD.spawns)
                     {
                         LVD.DrawSpawn(s, false);
                     }
@@ -1246,7 +1239,7 @@ namespace Smash_Forge
 
                 if (Runtime.renderRespawns)
                 {
-                    foreach (Point s in Runtime.TargetLVD.respawns)
+                    foreach (Spawn s in Runtime.TargetLVD.respawns)
                     {
                         LVD.DrawSpawn(s,true);
                     }
@@ -1254,7 +1247,7 @@ namespace Smash_Forge
 
                 if (Runtime.renderGeneralPoints)
                 {
-                    foreach (Point g in Runtime.TargetLVD.generalPoints)
+                    foreach (GeneralPoint g in Runtime.TargetLVD.generalPoints)
                     {
                         GL.Color4(Color.FromArgb(200, Color.Fuchsia));
                         RenderTools.drawCubeWireframe(new Vector3(g.x, g.y, 0), 3);
@@ -2188,6 +2181,7 @@ namespace Smash_Forge
         private void cbRenderMode_SelectionChangeCommitted(object sender, EventArgs e)
         {
             Runtime.renderType = (Runtime.RenderTypes)renderMode.SelectedIndex;
+            Runtime.useDebugShading = renderMode.SelectedIndex > 0;
         }
 
         private void glControl1_DoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
