@@ -1180,12 +1180,12 @@ namespace Smash_Forge
 
                 if (m.dat_melee != null && m.dat_melee.blastzones != null)
                 {
-                    LVD.DrawBlastZones(m.dat_melee.blastzones, Color.Red);
+                    LVD.DrawBounds(m.dat_melee.blastzones, Color.Red);
                 }
 
                 if (m.dat_melee != null && m.dat_melee.cameraBounds != null)
                 {
-                    LVD.DrawCameraBounds(m.dat_melee.cameraBounds, Color.Blue);
+                    LVD.DrawBounds(m.dat_melee.cameraBounds, Color.Blue);
                 }
 
                 if (m.dat_melee != null && m.dat_melee.targets != null)
@@ -1253,17 +1253,17 @@ namespace Smash_Forge
                         RenderTools.drawCubeWireframe(new Vector3(g.x, g.y, 0), 3);
                     }
                     
-                    foreach (LVDGeneralShape shape in Runtime.TargetLVD.generalShapes)
+                    foreach (GeneralShape shape in Runtime.TargetLVD.generalShapes)
                     {
-                        if(shape is GeneralPoint)
+                        /*if(shape is GeneralPoint)
                         {
                             GeneralPoint g = (GeneralPoint)shape;
                             GL.Color4(Color.FromArgb(200, Color.Fuchsia));
                             RenderTools.drawCubeWireframe(new Vector3(g.x, g.y, 0), 3);
-                        }
-                        if(shape is GeneralRect)
+                        }*/
+                        if(shape.type == 3)
                         {
-                            GeneralRect b = (GeneralRect)shape;
+                            GeneralShape b = (GeneralShape)shape;
                             GL.Color4(Color.FromArgb(200, Color.Fuchsia));
                             GL.Begin(PrimitiveType.LineLoop);
                             GL.Vertex3(b.x1, b.y1, 0);
@@ -1272,9 +1272,9 @@ namespace Smash_Forge
                             GL.Vertex3(b.x1, b.y2, 0);
                             GL.End();
                         }
-                        if(shape is GeneralPath)
+                        if(shape.type == 4)
                         {
-                            List<Vector2D> p = ((GeneralPath)shape).points;
+                            List<Vector2D> p = ((GeneralShape)shape).points;
                             GL.Color4(Color.FromArgb(200, Color.Fuchsia));
                             GL.Begin(PrimitiveType.LineStrip);
                             foreach(Vector2D point in p)
@@ -1287,25 +1287,23 @@ namespace Smash_Forge
                 if (Runtime.renderOtherLVDEntries)
                 {
                     GL.Color4(Color.FromArgb(128, Color.Yellow));
-                    foreach (Sphere s in Runtime.TargetLVD.damageSpheres)
+                    foreach (DamageShape s in Runtime.TargetLVD.damageShapes)
                     {
-                        RenderTools.drawSphere(new Vector3(s.x, s.y, s.z), s.radius, 24);
+                        if (s.type == 2)
+                            RenderTools.drawSphere(new Vector3(s.x, s.y, s.z), s.radius, 24);
+                        if (s.type == 3)
+                            RenderTools.drawCylinder(new Vector3(s.x, s.y, s.z), new Vector3(s.x + s.dx, s.y + s.dy, s.z + s.dz), s.radius);
                     }
 
-                    foreach (Capsule c in Runtime.TargetLVD.damageCapsules)
-                    {
-                        RenderTools.drawCylinder(new Vector3(c.x, c.y, c.z), new Vector3(c.x + c.dx, c.y + c.dy, c.z + c.dz), c.r);
-                    }
 
-                  
                     foreach (Bounds b in Runtime.TargetLVD.blastzones)
                     {
-                        LVD.DrawBlastZones(b, Color.Red);
+                        LVD.DrawBounds(b, Color.Red);
                     }
 
                     foreach (Bounds b in Runtime.TargetLVD.cameraBounds)
                     {
-                        LVD.DrawCameraBounds(b, Color.Blue);
+                        LVD.DrawBounds(b, Color.Blue);
                     }
                 }
             }
