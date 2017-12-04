@@ -1633,7 +1633,10 @@ namespace Smash_Forge
 
             if (fileName.EndsWith(".lvd"))
             {
-                Runtime.TargetLVD = new LVD(fileName);
+                if (Runtime.TargetLVD == null)
+                    Runtime.TargetLVD = new LVD(fileName);
+                else
+                    Runtime.TargetLVD.Read(fileName);
                 LVD test = Runtime.TargetLVD;
                 lvdList.fillList();
             }

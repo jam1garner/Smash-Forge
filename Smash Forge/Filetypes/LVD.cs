@@ -820,7 +820,7 @@ namespace Smash_Forge
                 s.save(f);
             
             f.writeByte(1);
-            f.writeInt(spawns.Count);
+            f.writeInt(respawns.Count);
             foreach (Spawn s in respawns)
                 s.save(f);
             
