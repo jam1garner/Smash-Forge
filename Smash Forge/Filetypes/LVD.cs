@@ -1127,6 +1127,19 @@ namespace Smash_Forge
                     }
                     GL.End();
                 }
+                for (int i = 0; i < c.cliffs.Count; i++)
+                {
+                    GL.Begin(PrimitiveType.Lines);
+                    GL.Color4(Color.White);
+                    
+                    Vector3 v1Pos = Vector3.Transform(new Vector3(c.cliffs[i].pos.x + addX, c.cliffs[i].pos.y + addY, addZ + 10), transform);
+                    Vector3 v1Neg = Vector3.Transform(new Vector3(c.cliffs[i].pos.x + addX, c.cliffs[i].pos.y + addY, addZ - 10), transform);
+                    
+                    GL.Vertex3(v1Pos);
+                    GL.Vertex3(v1Neg);
+                    
+                    GL.End();
+                }
             }
         }
 
