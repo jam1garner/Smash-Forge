@@ -140,7 +140,11 @@ namespace Smash_Forge
                                 v.uv[i] = new Vector2(v.uv[i].X, 1 - v.uv[i].Y);
 
                         if (vertColorDivCB.Checked)
-                            v.col = v.col / 2;
+                            //v.col = v.col / 2;
+                        {
+                            for (int i = 0; i < 3; i++)
+                                v.col[i] = v.col[i] / 2;
+                        }
 
                         if (vertcolorCB.Checked)
                             v.col = new Vector4(0x7F, 0x7F, 0x7F, 0x7F);
