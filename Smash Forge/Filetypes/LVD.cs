@@ -1129,15 +1129,30 @@ namespace Smash_Forge
                 }
                 for (int i = 0; i < c.cliffs.Count; i++)
                 {
+                    float add2X = 0, add2Y = 0, add2Z = 0;
+                    if (c.cliffs[i].useStartPos)
+                    {
+                        add2X = c.startPos[0];
+                        add2Y = c.startPos[1];
+                        add2Z = c.startPos[2];
+                    }
+                    
+                    Vector3 v1Pos = Vector3.Transform(new Vector3(c.cliffs[i].pos.x + add2X, c.cliffs[i].pos.y + add2Y, add2Z + 10), transform);
+                    Vector3 v1Neg = Vector3.Transform(new Vector3(c.cliffs[i].pos.x + add2X, c.cliffs[i].pos.y + add2Y, add2Z - 10), transform);
+                    Vector3 v1Zer = Vector3.Transform(new Vector3(c.cliffs[i].pos.x + add2X, c.cliffs[i].pos.y + add2Y, add2Z), transform);
+                    
                     GL.Begin(PrimitiveType.Lines);
                     GL.Color4(Color.White);
                     
-                    Vector3 v1Pos = Vector3.Transform(new Vector3(c.cliffs[i].pos.x + addX, c.cliffs[i].pos.y + addY, addZ + 10), transform);
-                    Vector3 v1Neg = Vector3.Transform(new Vector3(c.cliffs[i].pos.x + addX, c.cliffs[i].pos.y + addY, addZ - 10), transform);
-                    
                     GL.Vertex3(v1Pos);
                     GL.Vertex3(v1Neg);
+                    GL.End();
                     
+                    GL.Begin(PrimitiveType.Lines);
+                    GL.Color3(Color.Blue);
+                    
+                    GL.Vertex3(v1Zer);
+                    GL.Vertex3(v1Zer.X + (c.cliffs[i].angle.x * 10), v1Zer.Y + (c.cliffs[i].angle.y * 10), v1Zer.Z);
                     GL.End();
                 }
             }

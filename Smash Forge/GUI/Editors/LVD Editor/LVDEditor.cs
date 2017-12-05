@@ -563,6 +563,18 @@ namespace Smash_Forge
         private void button10_Click(object sender, EventArgs e)
         {
             //This was code to attempt to guess passthroughs for a collision if you are reading this DO NOT USE THIS
+            // //How about this code?
+            Collision c = (Collision)currentEntry;
+            for (int i = 0; i < c.verts.Count - 1; i++)
+            {
+                decimal lineAngle = (decimal)(Math.Atan2(c.verts[i].x-c.verts[i+1].x, c.verts[i].y-c.verts[i+1].y) * 180/Math.PI);
+                double theta = (double)(lineAngle+90);
+                c.normals[i].x = (float)Math.Cos(theta * Math.PI / 180.0f);
+                c.normals[i].y = (float)Math.Sin(theta * Math.PI / 180.0f);
+            }
+            
+            // //Original code
+            /*
             Collision c = (Collision)currentEntry;
             Bounds collisionBounds = new Bounds() { top = -1000000, bottom = 1000000, left = 1000000, right = -1000000 };
             foreach (Vector2D v in c.verts)
@@ -591,6 +603,7 @@ namespace Smash_Forge
                     c.normals[i].x = (float)normal.Y;
                 }
             }
+            */
         }
 
         public void Clear()
