@@ -138,7 +138,7 @@ namespace Smash_Forge
         public override string magic { get { return "030401017735BB7500000002"; } }
         
         public Vector2D pos;
-        public Vector2D angle; //Someone figure out what these angles are
+        public Vector2D angle; //Someone figure out what these angles do
         
         public void read(FileData f)
         {
@@ -858,16 +858,56 @@ namespace Smash_Forge
 
         #region rendering
 
+        public static void DrawPoint(GeneralPoint p)
+        {
+            GL.LineWidth(2);
+            
+            GL.Color4(Color.FromArgb(200, Color.Fuchsia));
+            RenderTools.drawCubeWireframe(new Vector3(p.x, p.y, p.z), 3);
+        }
+        
+        public static void DrawShape(GeneralShape s)
+        {
+            GL.LineWidth(2);
+            GL.Color4(Color.FromArgb(200, Color.Fuchsia));
+
+            if(s.type == 3)
+            {
+                GL.Begin(PrimitiveType.LineLoop);
+                GL.Vertex3(s.x1, s.y1, 0);
+                GL.Vertex3(s.x2, s.y1, 0);
+                GL.Vertex3(s.x2, s.y2, 0);
+                GL.Vertex3(s.x1, s.y2, 0);
+            }
+            if(s.type == 4)
+            {
+                GL.Begin(PrimitiveType.LineStrip);
+                foreach(Vector2D point in s.points)
+                    GL.Vertex3(point.x, point.y, 0);
+            }
+
+            GL.End();
+        }
+
+        public static void DrawShape(DamageShape s)
+        {
+            GL.LineWidth(2);
+            GL.Color4(Color.FromArgb(128, Color.Yellow));
+
+            if (s.type == 2)
+                RenderTools.drawSphere(new Vector3(s.x, s.y, s.z), s.radius, 24);
+            if (s.type == 3)
+                RenderTools.drawCylinder(new Vector3(s.x, s.y, s.z), new Vector3(s.x + s.dx, s.y + s.dy, s.z + s.dz), s.radius);
+        }
+
         public static void DrawSpawn(Spawn s, bool isRespawn)
         {
+            GL.LineWidth(2);
             DrawRespawnQuad(s, Color.Blue);
 
             //Draw respawn platform
             if (isRespawn)
-            {
                 DrawRespawnArrow(s, Color.Gray, Color.Black);
-            }
-
         }
 
         private static void DrawRespawnQuad(Spawn s, Color color)
@@ -941,6 +981,8 @@ namespace Smash_Forge
 
         public static void DrawBounds(Bounds b, Color color)
         {
+            GL.LineWidth(2);
+            
             GL.Color4(Color.FromArgb(128, color));
             GL.Begin(PrimitiveType.LineLoop);
             GL.Vertex3(b.left, b.top, 0);
@@ -950,7 +992,7 @@ namespace Smash_Forge
             GL.End();
         }
 
-        public static void RenderItemSpawners()
+        public static void DrawItemSpawners()
         {
             foreach (ItemSpawner c in Runtime.TargetLVD.items)
             {
@@ -1132,9 +1174,9 @@ namespace Smash_Forge
                     float add2X = 0, add2Y = 0, add2Z = 0;
                     if (c.cliffs[i].useStartPos)
                     {
-                        add2X = c.startPos[0];
-                        add2Y = c.startPos[1];
-                        add2Z = c.startPos[2];
+                        add2X = c.cliffs[i].startPos[0];
+                        add2Y = c.cliffs[i].startPos[1];
+                        add2Z = c.cliffs[i].startPos[2];
                     }
                     
                     Vector3 v1Pos = Vector3.Transform(new Vector3(c.cliffs[i].pos.x + add2X, c.cliffs[i].pos.y + add2Y, add2Z + 10), transform);
@@ -1143,14 +1185,12 @@ namespace Smash_Forge
                     
                     GL.Begin(PrimitiveType.Lines);
                     GL.Color4(Color.White);
-                    
                     GL.Vertex3(v1Pos);
                     GL.Vertex3(v1Neg);
                     GL.End();
                     
                     GL.Begin(PrimitiveType.Lines);
                     GL.Color3(Color.Blue);
-                    
                     GL.Vertex3(v1Zer);
                     GL.Vertex3(v1Zer.X + (c.cliffs[i].angle.x * 10), v1Zer.Y + (c.cliffs[i].angle.y * 10), v1Zer.Z);
                     GL.End();
