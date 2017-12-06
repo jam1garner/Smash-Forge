@@ -499,17 +499,20 @@ namespace Smash_Forge
 
             // face culling
             GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Front);
+            GL.CullFace(CullFaceMode.Back);
             switch (material.cullMode)
             {
-                case 0:
+                case 0x0000:
                     GL.Disable(EnableCap.CullFace);
                     break;
-                case 0x0205:
+                case 0x0404:
                     GL.CullFace(CullFaceMode.Front);
                     break;
                 case 0x0405:
                     GL.CullFace(CullFaceMode.Back);
+                    break;
+                default:
+                    GL.Disable(EnableCap.CullFace);
                     break;
             }
             if (p.Checked)
