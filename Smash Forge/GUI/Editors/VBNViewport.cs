@@ -1226,85 +1226,40 @@ namespace Smash_Forge
 
                 if (Runtime.renderItemSpawners)
                 {
-                    LVD.RenderItemSpawners();
+                    LVD.DrawItemSpawners();
                 }
 
                 if (Runtime.renderSpawns)
                 {
                     foreach (Spawn s in Runtime.TargetLVD.spawns)
-                    {
                         LVD.DrawSpawn(s, false);
-                    }
                 }
 
                 if (Runtime.renderRespawns)
                 {
                     foreach (Spawn s in Runtime.TargetLVD.respawns)
-                    {
                         LVD.DrawSpawn(s,true);
-                    }
                 }
 
                 if (Runtime.renderGeneralPoints)
                 {
-                    foreach (GeneralPoint g in Runtime.TargetLVD.generalPoints)
-                    {
-                        GL.Color4(Color.FromArgb(200, Color.Fuchsia));
-                        RenderTools.drawCubeWireframe(new Vector3(g.x, g.y, 0), 3);
-                    }
+                    foreach (GeneralPoint p in Runtime.TargetLVD.generalPoints)
+                        LVD.DrawPoint(p);
                     
-                    foreach (GeneralShape shape in Runtime.TargetLVD.generalShapes)
-                    {
-                        /*if(shape is GeneralPoint)
-                        {
-                            GeneralPoint g = (GeneralPoint)shape;
-                            GL.Color4(Color.FromArgb(200, Color.Fuchsia));
-                            RenderTools.drawCubeWireframe(new Vector3(g.x, g.y, 0), 3);
-                        }*/
-                        if(shape.type == 3)
-                        {
-                            GeneralShape b = (GeneralShape)shape;
-                            GL.Color4(Color.FromArgb(200, Color.Fuchsia));
-                            GL.Begin(PrimitiveType.LineLoop);
-                            GL.Vertex3(b.x1, b.y1, 0);
-                            GL.Vertex3(b.x2, b.y1, 0);
-                            GL.Vertex3(b.x2, b.y2, 0);
-                            GL.Vertex3(b.x1, b.y2, 0);
-                            GL.End();
-                        }
-                        if(shape.type == 4)
-                        {
-                            List<Vector2D> p = ((GeneralShape)shape).points;
-                            GL.Color4(Color.FromArgb(200, Color.Fuchsia));
-                            GL.Begin(PrimitiveType.LineStrip);
-                            foreach(Vector2D point in p)
-                                GL.Vertex3(point.x, point.y, 0);
-                            GL.End();
-                        }
-                    }
+                    foreach (GeneralShape s in Runtime.TargetLVD.generalShapes)
+                        LVD.DrawShape(s);
                 }
 
                 if (Runtime.renderOtherLVDEntries)
                 {
-                    GL.Color4(Color.FromArgb(128, Color.Yellow));
                     foreach (DamageShape s in Runtime.TargetLVD.damageShapes)
-                    {
-                        if (s.type == 2)
-                            RenderTools.drawSphere(new Vector3(s.x, s.y, s.z), s.radius, 24);
-                        if (s.type == 3)
-                            RenderTools.drawCylinder(new Vector3(s.x, s.y, s.z), new Vector3(s.x + s.dx, s.y + s.dy, s.z + s.dz), s.radius);
-                    }
-
-
-                    foreach (Bounds b in Runtime.TargetLVD.blastzones)
-                    {
-                        LVD.DrawBounds(b, Color.Red);
-                    }
+                        LVD.DrawShape(s);
 
                     foreach (Bounds b in Runtime.TargetLVD.cameraBounds)
-                    {
                         LVD.DrawBounds(b, Color.Blue);
-                    }
+
+                    foreach (Bounds b in Runtime.TargetLVD.blastzones)
+                        LVD.DrawBounds(b, Color.Red);
                 }
             }
 
