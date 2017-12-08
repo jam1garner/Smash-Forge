@@ -26,75 +26,49 @@ namespace Smash_Forge
 
         NUT chr_00, chr_11, chr_13, stock_90;
 
-        private void loadImage(NUT selected)
+        private void chr_00_renderer_Paint(object sender, PaintEventArgs e)
         {
-            NUT.NUD_Texture tex = selected.textures[0];
-            selected.draw.Add(tex.id, NUT.loadImage(tex));
+            RenderTexture(chr_00_renderer, chr_00);
+        }
+
+        private void chr_11_renderer_Paint(object sender, PaintEventArgs e)
+        {
+            RenderTexture(chr_11_renderer, chr_11);
+        }
+
+        private void chr_13_renderer_Paint(object sender, PaintEventArgs e)
+        {
+            RenderTexture(chr_13_renderer, chr_13);
         }
 
         private void UIPreview_Load(object sender, EventArgs e)
         {
-            //loadImage(chr_00);
-            //loadImage(chr_11);
-            //loadImage(chr_13);
-            //loadImage(stock_90);
-            RenderTexture(chr_00_renderer, chr_00);
-            RenderTexture(chr_11_renderer, chr_11);
-            RenderTexture(chr_13_renderer, chr_13);
-            RenderTexture(stock_90_renderer, stock_90);
         }
-        private void chr00Load(object sender, EventArgs e)
-        {
-            RenderTexture(chr_00_renderer, chr_00);
-        }
-        private void chr11Load(object sender, EventArgs e)
-        {
-            RenderTexture(chr_11_renderer, chr_11);
-        }
-        private void chr13Load(object sender, EventArgs e)
-        {
-            RenderTexture(chr_13_renderer, chr_13);
 
-        }
-        private void stk90Load(object sender, EventArgs e)
+        private void stock_90_renderer_Paint(object sender, PaintEventArgs e)
         {
             RenderTexture(stock_90_renderer, stock_90);
         }
-
-        //TODO fix?
+        
         private void RenderTexture(GLControl glControl1, NUT nut)
         {
+            if (nut == null) return;
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
-            GL.ClearColor(Color.Red);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.ClearColor(Color.White);
+            GL.Enable(EnableCap.Texture2D);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.MatrixMode(MatrixMode.Projection);
 
-            GL.Enable(EnableCap.Texture2D);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcColor, BlendingFactorDest.OneMinusSrcAlpha);
-
-            NUT.NUD_Texture tex = nut.textures[0];
-
-            if (tex == null)
-                return;
-
-            int rt = nut.draw[tex.id];
-            GL.Begin(PrimitiveType.Quads);
-            GL.BindTexture(TextureTarget.Texture2D, rt);
-            
-            GL.TexCoord2(1, 1);
-            GL.Vertex2(1, -1);
-            GL.TexCoord2(0, 1);
-            GL.Vertex2(-1, -1);
-            GL.TexCoord2(0, 0);
-            GL.Vertex2(-1, 1);
-            GL.TexCoord2(1, 0);
-            GL.Vertex2(1, 1);
-            GL.End();
+            foreach(NUT.NUD_Texture tex in nut.textures)
+            {
+                RenderTools.DrawTexturedQuad(nut.draw[tex.id], tex.width, tex.height, true, true, true, true, false, true);
+            }
 
             glControl1.SwapBuffers();
         }

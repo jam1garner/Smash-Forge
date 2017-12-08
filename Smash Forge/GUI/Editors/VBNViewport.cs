@@ -88,6 +88,8 @@ namespace Smash_Forge
         public Stopwatch timeSinceSelected = new Stopwatch();
         public Stopwatch directUVTimeStopWatch = new Stopwatch();
 
+        public TransformTool transformTool = new TransformTool();
+
         Shader shader;
         #endregion
 
@@ -294,7 +296,7 @@ namespace Smash_Forge
                 }
                 if (m.bch != null)
                 {
-                    foreach (BCH.BCH_Model mod in m.bch.models)
+                    foreach (BCH_Model mod in m.bch.Models.Nodes)
                     {
                         if (mod.skeleton != null)
                             Runtime.TargetAnim.NextFrame(mod.skeleton);                       
@@ -554,6 +556,16 @@ namespace Smash_Forge
             // use fixed function pipeline for drawing background and floor grid
             GL.UseProgram(0);
 
+            if (MainForm.Instance.meshList.treeView1.SelectedNode != null && MainForm.Instance.meshList.treeView1.SelectedNode is BCH_Texture)
+            {
+                GL.PopAttrib();
+                BCH_Texture tex = ((BCH_Texture)MainForm.Instance.meshList.treeView1.SelectedNode);
+                RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, true, true, true, false, true);
+                glControl1.SwapBuffers();
+                return;
+            }
+
+
             if (Runtime.renderBackGround)
             {
                 // background uses different matrices
@@ -567,7 +579,7 @@ namespace Smash_Forge
 
             // set up the matrices for drawing models and floor
             GL.MatrixMode(MatrixMode.Projection);
-            if (IsMouseOverViewport() && glControl1.Focused && !freezeCamera)
+            if (IsMouseOverViewport() && glControl1.Focused && !freezeCamera && !transformTool.hit)
             {
                 if (fpsView)
                     FPSCamera();
@@ -642,7 +654,51 @@ namespace Smash_Forge
 
             // Clean up
             GL.PopAttrib();
+
             glControl1.SwapBuffers();
+        }
+
+        public Vector3 UnProject(float x, float y, float z)
+        {
+            return Vector4.Transform(new Vector4(
+                2.0f * (x / glControl1.Width) - 1.0f,
+                2.0f * ((glControl1.Height - y) / glControl1.Height) - 1.0f,
+                2.0f * z - 1.0f,
+                1.0f), Camera.viewportCamera.getMVPMatrix().Inverted()).Xyz;
+        }
+
+        public static bool LineSphereIntersect(Vector3 start, Vector3 end, Vector3 center, float radius, out Vector3 result)
+        {
+            Vector3 diff = end - start;
+            float a = Vector3.Dot(diff, diff);
+            //center.Normalize();
+
+            if (a > 0.0f)
+            {
+                float b = 2 * Vector3.Dot(diff, start - center);
+                float c = (Vector3.Dot(center, center) + Vector3.Dot(start, start)) - (2 * Vector3.Dot(center,start)) - (radius * radius);
+
+                float magnitude = (b * b) - (4 * a * c);
+                magnitude *= -1;
+
+                if (magnitude >= 0.0f)
+                {
+                    magnitude = (float)Math.Sqrt(magnitude);
+                    a *= 2;
+
+                    float scale = (-b + magnitude) / a;
+                    float dist2 = (-b - magnitude) / a;
+
+                    if (dist2 < scale)
+                        scale = dist2;
+
+                    result = start + (diff * scale);
+                    return true;
+                }
+            }
+
+            result = new Vector3();
+            return false;
         }
 
         private static void DrawLightArrows(float rotX, float rotY, float rotZ, Vector3 center, float R, float G, float B)
@@ -878,7 +934,11 @@ namespace Smash_Forge
             {
                 if (m.bch != null)
                 {
-                    if (m.bch.mbn != null && Runtime.shaders["MBN"].shadersCompiledSuccessfully())
+                    foreach(BCH_Model mo in m.bch.Models.Nodes)
+                    {
+                        mo.Render(Camera.viewportCamera.getMVPMatrix());
+                    }
+                    /*if (m.bch.mbn != null && Runtime.shaders["MBN"].shadersCompiledSuccessfully())
                     {
                         if (m.bch.bones != null)
                         {
@@ -902,7 +962,7 @@ namespace Smash_Forge
                             }
                         }
                         m.bch.mbn.Render(Camera.viewportCamera.getMVPMatrix());
-                    }
+                    }*/
                 }
 
                 if (m.dat_melee != null && Runtime.shaders["DAT"].shadersCompiledSuccessfully())
@@ -1094,7 +1154,8 @@ namespace Smash_Forge
                     RenderTools.DrawVBN(m.vbn);
                     if (m.bch != null)
                     {
-                        RenderTools.DrawVBN(m.bch.models[0].skeleton);
+                        foreach(BCH_Model mo in m.bch.Models.Nodes)
+                            RenderTools.DrawVBN(mo.skeleton);
                     }
 
                     if (m.dat_melee != null)
@@ -2242,7 +2303,7 @@ namespace Smash_Forge
                 if (Runtime.TargetVBN.bones.Contains(selected.Values.ElementAt(dbdistance)))
                 {
                     MainForm.Instance.boneTreePanel.treeView1.SelectedNode = selected.Values.ElementAt(dbdistance);
-                    //TransformTool.b = (Bone)MainForm.Instance.boneTreePanel.treeView1.SelectedNode;
+                    transformTool.b = (Bone)MainForm.Instance.boneTreePanel.treeView1.SelectedNode;
                 }
             }
 
@@ -2281,6 +2342,8 @@ namespace Smash_Forge
 
         private void glControl1_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
+            freezeCamera = false;
+            if (transformTool.hit) freezeCamera = true;
             if(mouseDownPos == this.PointToClient(Cursor.Position) && 1==2)
             {
                 float mouse_x = this.PointToClient(Cursor.Position).X;

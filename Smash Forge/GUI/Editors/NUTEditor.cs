@@ -119,11 +119,11 @@ namespace Smash_Forge
         {
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
-            GL.ClearColor(Color.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.MatrixMode(MatrixMode.Projection);
+            GL.ClearColor(Color.White);
 
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);

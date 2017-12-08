@@ -13,7 +13,7 @@ namespace Smash_Forge
      * This version will ONLY support Smash-style BCHs
      * Really WIP
      */
-    public class BCH : FileBase
+    public class BCH_Old : FileBase
     {
 
         public override Endianness Endian { get; set; }
@@ -472,8 +472,8 @@ namespace Smash_Forge
                 BCH_Texture tex = new BCH_Texture();
                 textures.Add(textureName, tex);
 
-                tex.height = f.readShort();
-                tex.width = f.readShort();
+                tex.Height = f.readShort();
+                tex.Width = f.readShort();
                 f.skip(12);
                 int doffset = f.readInt();
                 //Debug.WriteLine("doffset: " + doffset.ToString("X"));
@@ -481,7 +481,7 @@ namespace Smash_Forge
                 tex.type = f.readInt();
                 tex.data = f.getSection(doffset, f.size() - doffset);
 
-                tex.texture = _3DS.DecodeImage(tex.data, tex.width, tex.height, (_3DS.Tex_Formats)tex.type);
+                tex.texture = _3DS.DecodeImage(tex.data, tex.Width, tex.Height, (_3DS.Tex_Formats)tex.type);
                 tex.display = NUT.loadImage(tex.texture);
             }
 
@@ -506,35 +506,35 @@ namespace Smash_Forge
                     , f.readFloat(), f.readFloat(), f.readFloat(), f.readFloat()
                     , 0, 0, 0, 1);
 
-                model.materialsTableOffset = f.readInt();
-                model.materialsTableEntries = f.readInt();
-                model.materialsNameOffset = f.readInt();
-                model.verticesTableOffset = f.readInt();
+                int materialsTableOffset = f.readInt();
+                int materialsTableEntries = f.readInt();
+                int materialsNameOffset = f.readInt();
+                int verticesTableOffset = f.readInt();
                 //Debug.WriteLine("Mesh Count: " + f.pos().ToString("X"));
-                model.verticesTableEntries = f.readInt();
+                int verticesTableEntries = f.readInt();
                 f.skip(0x28);
-                model.skeletonOffset = f.readInt();
-                model.skeletonEntries = f.readInt();
-                model.skeletonNameOffset = f.readInt();
-                model.objectsNodeVisibilityOffset = f.readInt();
-                model.objectsNodeCount = f.readInt();
-                model.name = f.readString(f.readInt(), -1);
-                model.objectsNodeNameEntries = f.readInt();
-                model.objectsNodeNameOffset = f.readInt();
+                int skeletonOffset = f.readInt();
+                int skeletonEntries = f.readInt();
+                int skeletonNameOffset = f.readInt();
+                int objectsNodeVisibilityOffset = f.readInt();
+                int objectsNodeCount = f.readInt();
+                String name = f.readString(f.readInt(), -1);
+                int objectsNodeNameEntries = f.readInt();
+                int objectsNodeNameOffset = f.readInt();
                 f.readInt(); //0x0
-                model.metaDataPointerOffset = f.readInt();
+                int metaDataPointerOffset = f.readInt();
 
-                f.seek(model.objectsNodeVisibilityOffset);
+                f.seek(objectsNodeVisibilityOffset);
                 int nodeVisibility = f.readInt();
 
-                string[] objectName = new string[model.objectsNodeNameEntries];
-                f.seek(model.objectsNodeNameOffset);
+                string[] objectName = new string[objectsNodeNameEntries];
+                f.seek(objectsNodeNameOffset);
                 int rootReferenceBit = f.readInt(); //Radix tree
                 int rootLeftNode = f.readShort();
                 int rootRightNode = f.readShort();
                 int rootNameOffset = f.readInt();
 
-                for (int i = 0; i < model.objectsNodeNameEntries; i++)
+                for (int i = 0; i < objectsNodeNameEntries; i++)
                 {
                     int referenceBit = f.readInt();
                     short leftNode = (short)f.readShort();
@@ -543,13 +543,13 @@ namespace Smash_Forge
                     //Debug.WriteLine(objectName[i]);
                 }
 
-                // Materials
-                // NOTE: MATERIALS AND OBJECT SECTIONS ARE REALLY MESSY ATM
+            // Materials
+            // NOTE: MATERIALS AND OBJECT SECTIONS ARE REALLY MESSY ATM
 
-                String[] materialNames = new String[model.materialsTableEntries];
-                for (int index = 0; index < model.materialsTableEntries; index++)
+            String[] materialNames = new String[materialsTableEntries];
+                for (int index = 0; index < materialsTableEntries; index++)
                 {
-                    f.seek(model.materialsTableOffset + (index * 0x2c));
+                    f.seek(materialsTableOffset + (index * 0x2c));
 
                     int materialParametersOffset = f.readInt();
                     f.readInt();
@@ -564,13 +564,12 @@ namespace Smash_Forge
 
                 // Object Descriptions...
                 // Assumes MBN is already loaded for now
-                f.seek(model.verticesTableOffset);
+                f.seek(verticesTableOffset);
                 List<objDes> objDescriptors = new List<objDes>();
-                Debug.WriteLine(model.name);
                 if (mbn == null)
                 {
                     mbn = new Smash_Forge.MBN();
-                    for (int index = 0; index < model.verticesTableEntries; index++)
+                    for (int index = 0; index < verticesTableEntries; index++)
                         mbn.mesh.Add(new MBN.Mesh());
                     mbn.PreRender();
                 }
@@ -608,8 +607,8 @@ namespace Smash_Forge
                 }
 
                 //Skeleton
-                f.seek(model.skeletonOffset);
-                for (int index = 0; index < model.skeletonEntries; index++)
+                f.seek(skeletonOffset);
+                for (int index = 0; index < skeletonEntries; index++)
                 {
                     Bone bone = new Smash_Forge.Bone(model.skeleton);
                     //Bone bone = new Bone(bones);
@@ -758,41 +757,6 @@ namespace Smash_Forge
             public int scenePointerTableOffset;
             public int scenePointerTableEntries;
             public int sceneNameOffset;
-        }
-
-        public class BCH_Texture
-        {
-            public int width, height, type;
-            public byte[] data;
-            public Bitmap texture;
-            // for display only
-            public int display = 0;
-        }
-
-        public class BCH_Model
-        {
-            public int flags;
-            public int skeletonScaleType;
-            public int silhouetteMaterialEntries;
-
-            public VBN skeleton = new VBN();
-
-            public Matrix4 worldTransform;
-
-            public int materialsTableOffset;
-            public int materialsTableEntries;
-            public int materialsNameOffset;
-            public int verticesTableOffset;
-            public int verticesTableEntries;
-            public int skeletonOffset;
-            public int skeletonEntries;
-            public int skeletonNameOffset;
-            public int objectsNodeVisibilityOffset;
-            public int objectsNodeCount;
-            public string name; //model name
-            public int objectsNodeNameEntries;
-            public int objectsNodeNameOffset;
-            public int metaDataPointerOffset;
         }
 
         public class OSkeletalAnimationBone

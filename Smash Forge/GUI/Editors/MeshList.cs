@@ -32,6 +32,7 @@ namespace Smash_Forge
             iconList.Images.Add("polygon", Properties.Resources.icon_polygon);
             iconList.Images.Add("mesh", Properties.Resources.icon_mesh);
             iconList.Images.Add("model", Properties.Resources.icon_model);
+            iconList.Images.Add("texture", Properties.Resources.icon_image);
             treeView1.ImageList = iconList;
         }
 
@@ -67,19 +68,8 @@ namespace Smash_Forge
                 }
                 if (m.bch != null)
                 {
-                    TreeNode model;
-                    if (string.IsNullOrWhiteSpace(m.name))
-                        model = new TreeNode($"Model {j}") { Tag = m.bch };
-                    else
-                        model = new TreeNode(m.name) { Tag = m.bch};
-                    treeView1.Nodes.Add(model);
-                    model.ImageKey = "model";
-                    model.SelectedImageKey = "model";
+                    treeView1.Nodes.Add(m.bch);
                     j++;
-                    foreach (MBN.Mesh mesh in m.bch.mbn.mesh)
-                    {
-                        model.Nodes.Add(mesh);
-                    }
                 }
             }
             //treeView1.ExpandAll();

@@ -41,8 +41,8 @@
             this.chr_00_renderer.Name = "chr_00_renderer";
             this.chr_00_renderer.Size = new System.Drawing.Size(128, 128);
             this.chr_00_renderer.TabIndex = 0;
-            this.chr_00_renderer.Load += new System.EventHandler(this.chr00Load);
             this.chr_00_renderer.VSync = false;
+            this.chr_00_renderer.Paint += new System.Windows.Forms.PaintEventHandler(this.chr_00_renderer_Paint);
             // 
             // chr_11_renderer
             // 
@@ -51,8 +51,8 @@
             this.chr_11_renderer.Name = "chr_11_renderer";
             this.chr_11_renderer.Size = new System.Drawing.Size(192, 192);
             this.chr_11_renderer.TabIndex = 1;
-            this.chr_11_renderer.Load += new System.EventHandler(this.chr11Load);
             this.chr_11_renderer.VSync = false;
+            this.chr_11_renderer.Paint += new System.Windows.Forms.PaintEventHandler(this.chr_11_renderer_Paint);
             // 
             // chr_13_renderer
             // 
@@ -61,8 +61,8 @@
             this.chr_13_renderer.Name = "chr_13_renderer";
             this.chr_13_renderer.Size = new System.Drawing.Size(224, 224);
             this.chr_13_renderer.TabIndex = 2;
-            this.chr_13_renderer.Load += new System.EventHandler(this.chr13Load);
             this.chr_13_renderer.VSync = false;
+            this.chr_13_renderer.Paint += new System.Windows.Forms.PaintEventHandler(this.chr_13_renderer_Paint);
             // 
             // stock_90_renderer
             // 
@@ -71,8 +71,8 @@
             this.stock_90_renderer.Name = "stock_90_renderer";
             this.stock_90_renderer.Size = new System.Drawing.Size(64, 64);
             this.stock_90_renderer.TabIndex = 3;
-            this.stock_90_renderer.Load += new System.EventHandler(this.stk90Load);
             this.stock_90_renderer.VSync = false;
+            this.stock_90_renderer.Paint += new System.Windows.Forms.PaintEventHandler(this.stock_90_renderer_Paint);
             // 
             // UIPreview
             // 
@@ -86,8 +86,8 @@
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "UIPreview";
             this.Text = "UIPreview";
-            //this.Load += new System.EventHandler(this.UIPreview_Load);
             this.ResumeLayout(false);
+
         }
 
         #endregion

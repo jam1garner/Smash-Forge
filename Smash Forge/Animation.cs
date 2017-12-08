@@ -82,6 +82,7 @@ namespace Smash_Forge
                 XSCA.Text = "XSCA";
                 YSCA.Text = "YSCA";
                 ZSCA.Text = "ZSCA";
+                Nodes.Clear();
                 Nodes.Add(XPOS);
                 Nodes.Add(YPOS);
                 Nodes.Add(ZPOS);

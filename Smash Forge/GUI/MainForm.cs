@@ -54,10 +54,6 @@ namespace Smash_Forge
             animationsWindowToolStripMenuItem.Checked =
                 boneTreeToolStripMenuItem.Checked = true;
 
-            Runtime.acmdEditor = new ACMDPreviewEditor() { ShowHint = DockState.DockRight };
-            Runtime.hitboxList = new HitboxList() { ShowHint = DockState.DockLeft };
-            Runtime.variableViewer = new VariableList() { ShowHint = DockState.DockLeft };
-
             allViewsPreset(new Object(), new EventArgs());
 
             Hashes = new csvHashes(Path.Combine(executableDir, "hashTable.csv"));
@@ -209,31 +205,48 @@ namespace Smash_Forge
                 }
                 else if (file.Equals("--preview"))
                 {
-                    string chr_00 = filesToOpen[i + 1];
-                    string chr_11 = filesToOpen[i + 2];
-                    string chr_13 = filesToOpen[i + 3];
-                    string stock_90 = filesToOpen[i + 4];
+                    Text = "Meteor Preview";
+                    superCleanPreset(new object(), new EventArgs());
+                    meshList.Show();
                     NUT chr_00_nut = null, chr_11_nut = null, chr_13_nut = null, stock_90_nut = null;
-                    if (!chr_00.Equals("blank"))
+                    String nud = null, nut, vbn;
+                    for(int j = i+1; j < filesToOpen.Length; j++)
                     {
-                        chr_00_nut = new NUT(chr_00);
-                        Runtime.TextureContainers.Add(chr_00_nut);
+                        switch (filesToOpen[j])
+                        {
+                            case "-nud":
+                                nud = filesToOpen[j + 1];
+                                break;
+                            case "-nut":
+                                nut = filesToOpen[j + 1];
+                                break;
+                            case "-vbn":
+                                vbn = filesToOpen[j + 1];
+                                break;
+                            case "-chr_00":
+                                chr_00_nut = new NUT(filesToOpen[j + 1]);
+                                Runtime.TextureContainers.Add(chr_00_nut);
+                                break;
+                            case "-chr_11":
+                                chr_11_nut = new NUT(filesToOpen[j + 1]);
+                                Runtime.TextureContainers.Add(chr_11_nut);
+                                break;
+                            case "-chr_13":
+                                chr_13_nut = new NUT(filesToOpen[j + 1]);
+                                Runtime.TextureContainers.Add(chr_13_nut);
+                                break;
+                            case "-stock_90":
+                                stock_90_nut = new NUT(filesToOpen[j + 1]);
+                                Runtime.TextureContainers.Add(stock_90_nut);
+                                break;
+                        }
+                        i++;
                     }
-                    if (!chr_11.Equals("blank"))
+                    if (nud != null)
                     {
-                        chr_11_nut = new NUT(chr_11);
-                        Runtime.TextureContainers.Add(chr_11_nut);
+                        openNud(nud);
                     }
-                    if (!chr_13.Equals("blank"))
-                    {
-                        chr_13_nut = new NUT(chr_13);
-                        Runtime.TextureContainers.Add(chr_13_nut);
-                    }
-                    if (!stock_90.Equals("blank"))
-                    {
-                        stock_90_nut = new NUT(stock_90);
-                        Runtime.TextureContainers.Add(stock_90_nut);
-                    }
+
                     UIPreview uiPreview = new UIPreview(chr_00_nut, chr_11_nut, chr_13_nut, stock_90_nut);
                     uiPreview.ShowHint = DockState.DockRight;
                     dockPanel1.DockRightPortion = 270;
@@ -270,7 +283,7 @@ namespace Smash_Forge
                 content.MdiParent = this;
                 content.Show();
             }
-            else
+            else if(content != null && dockPanel1 != null)
                 content.Show(dockPanel1);
         }
 
@@ -665,7 +678,7 @@ namespace Smash_Forge
                 }
                 if (m.bch != null)
                 {
-                    foreach (BCH.BCH_Model mod in m.bch.models)
+                    foreach (BCH_Model mod in m.bch.Models.Nodes)
                     {
                         foreach (Bone bone in mod.skeleton.bones)
                         {
@@ -1527,8 +1540,8 @@ namespace Smash_Forge
                 }
                 if (Runtime.ModelContainers[0].bch != null)
                 {
-                    Runtime.ModelContainers[0].bch.mbn.toNUD().Save(filename);
-                    Runtime.ModelContainers[0].bch.models[0].skeleton.Save(filename.Replace(".nud", ".vbn"));
+                    //Runtime.ModelContainers[0].bch.mbn.toNUD().Save(filename);
+                    //Runtime.ModelContainers[0].bch.models[0].skeleton.Save(filename.Replace(".nud", ".vbn"));
                 }
             }
             if (filename.EndsWith(".mbn"))
@@ -1795,7 +1808,7 @@ namespace Smash_Forge
 
             if (fileName.EndsWith(".mbn"))
             {
-                MBN m = new MBN();
+                /*MBN m = new MBN();
                 m.Read(fileName);
                 ModelContainer con = new ModelContainer();
                 BCH b = new BCH();
@@ -1805,17 +1818,20 @@ namespace Smash_Forge
                 Runtime.ModelContainers.Add(con);
                 Runtime.TargetVBN = b.bones;
                 resyncTargetVBN();
+                meshList.refresh();*/
+
+                ModelContainer con = new ModelContainer();
+                BCH b = new BCH();
+                b.Read(fileName.Replace(".mbn", ".bch"));
+                ((BCH_Model)b.Models.Nodes[0]).OpenMBN(new FileData(fileName));
+                con.bch = b;
+                Runtime.ModelContainers.Add(con);
                 meshList.refresh();
             }
 
-            /*if (filename.EndsWith(".bch"))
+            if (fileName.EndsWith(".bch"))
             {
-                ModelContainer con = new ModelContainer();
-                BCH b = new BCH();
-                b.Read(filename);
-                con.bch = b;
-                Runtime.ModelContainers.Add(con);
-            }*/
+            }
 
             if (fileName.EndsWith(".nud"))
             {
@@ -2010,6 +2026,9 @@ namespace Smash_Forge
 
         private void allViewsPreset(object sender, EventArgs e)
         {
+            Runtime.acmdEditor = new ACMDPreviewEditor() { ShowHint = DockState.DockRight };
+            Runtime.hitboxList = new HitboxList() { ShowHint = DockState.DockLeft };
+            Runtime.variableViewer = new VariableList() { ShowHint = DockState.DockLeft };
             animList.ShowHint = DockState.DockRight;
             boneTreePanel.ShowHint = DockState.DockLeft;
             project.ShowHint = DockState.DockLeft;
@@ -2019,7 +2038,9 @@ namespace Smash_Forge
             meshList.ShowHint = DockState.DockRight;
             Runtime.hitboxList.ShowHint = DockState.DockLeft;
             Runtime.variableViewer.ShowHint = DockState.DockLeft;
+
             
+
             AddDockedControl(Runtime.acmdEditor);
             AddDockedControl(boneTreePanel);
             AddDockedControl(animList);
@@ -2096,8 +2117,12 @@ namespace Smash_Forge
             lvdList.Hide();
             lvdEditor.Hide();
             Runtime.acmdEditor.Hide();
-            meshList.Close();
+            meshList.Hide();
             //RegenPanels();
+            Runtime.acmdEditor.Hide();
+            Runtime.hitboxList.Hide();
+            hurtboxList.Hide();
+            Runtime.variableViewer.Hide();
             viewports[0].groupBox2.Visible = false;
         }
 

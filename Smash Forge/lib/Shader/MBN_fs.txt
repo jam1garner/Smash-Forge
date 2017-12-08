@@ -12,7 +12,6 @@ uniform vec3 ambLightColor;
 uniform sampler2D tex;
 uniform sampler2D UVTestPattern;
 
-uniform vec2 uvscale;
 uniform int renderType;
 uniform int renderVertColor;
 uniform mat4 modelview;

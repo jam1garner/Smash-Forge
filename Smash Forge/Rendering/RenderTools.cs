@@ -1424,7 +1424,7 @@ namespace Smash_Forge
                     DrawVBN(m.vbn);
                     if (m.bch != null)
                     {
-                        DrawVBN(m.bch.models[0].skeleton);
+                        //DrawVBN(m.bch.Models.Nodes[0].skeleton);
                     }
 
                     if (m.dat_melee != null)
