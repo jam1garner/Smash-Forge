@@ -60,7 +60,7 @@ namespace Smash_Forge
         public bool hasBones = false;
         public List<Mesh> meshes = new List<Mesh>();
         List<Mesh> depthSortedMeshes = new List<Mesh>();
-        public float[] param = new float[4];
+        public float[] boundingBox = new float[4];
 
         // xmb stuff
         public int lightSetNumber = 0;
@@ -227,7 +227,7 @@ namespace Smash_Forge
         {
             GL.UseProgram(0);
             GL.Color4(Color.GhostWhite);
-            RenderTools.drawCubeWireframe(new Vector3(param[0], param[1], param[2]), param[3]);
+            RenderTools.drawCubeWireframe(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             GL.Color4(Color.OrangeRed);
             foreach (NUD.Mesh mesh in meshes)
             {
@@ -238,34 +238,99 @@ namespace Smash_Forge
 
         public void GenerateBoundingBoxes()
         {
-            Vector3 max = new Vector3(-9999);
-            Vector3 min = new Vector3(9999);
+            foreach (Mesh m in meshes)
+                m.generateBoundingBox();
 
+            Vector3 cen1 = new Vector3(0,0,0), cen2 = new Vector3(0,0,0);
+            double rad1 = 0, rad2 = 0;
+
+            //Get first vert
+            int vertCount = 0;
+            Vector3 vert0 = new Vector3();
             foreach (Mesh m in meshes)
             {
-                m.generateBoundingBox();
-                max.X = Math.Max(max.X, m.maxbb.X);
-                max.Y = Math.Max(max.Y, m.maxbb.Y);
-                max.Z = Math.Max(max.Z, m.maxbb.Z);
-
-                min.X = Math.Min(min.X, m.minbb.X);
-                min.Y = Math.Min(min.Y, m.minbb.Y);
-                min.Z = Math.Min(min.Z, m.minbb.Z);
+                foreach (Polygon p in m.Nodes)
+                {
+                    foreach (Vertex v in p.vertices)
+                    {
+                        vert0 = v.pos;
+                        vertCount++;
+                        break;
+                    }
+                    break;
+                }
+                break;
             }
 
+            if (vertCount == 0) //No vertices
+                return;
 
-            param[0] = (max.X + min.X) / 2;
-            param[1] = (max.Y + min.Y) / 2;
-            param[2] = (max.Z + min.Z) / 2;
-
-
-            Vector3 maxdix = Vector3.Zero;
-            Vector3 cen = new Vector3(param[0], param[1], param[2]);
+            //Calculate average and min/max
+            Vector3 min = new Vector3(vert0);
+            Vector3 max = new Vector3(vert0);
+            
+            vertCount = 0;
             foreach (Mesh m in meshes)
+            {
                 foreach (Polygon p in m.Nodes)
+                {
                     foreach (Vertex v in p.vertices)
-                        if ((cen - new Vector3(param[0], param[1], param[2])).Length > maxdix.Length) maxdix = (cen - new Vector3(param[0], param[1], param[2]));
-            param[3] = maxdix.Length;
+                    {
+                        for (int i = 0; i < 3; i++)
+                        {
+                            min[i] = Math.Min(min[i], v.pos[i]);
+                            max[i] = Math.Max(max[i], v.pos[i]);
+                        }
+
+                        cen1 += v.pos;
+                        vertCount++;
+                    }
+                }
+            }
+
+            cen1 /= vertCount;
+            for (int i = 0; i < 3; i++)
+                cen2[i] = (min[i]+max[i])/2;
+
+            //Calculate the radius of each
+            double dist1, dist2;
+            foreach (Mesh m in meshes)
+            {
+                foreach (Polygon p in m.Nodes)
+                {
+                    foreach (Vertex v in p.vertices)
+                    {
+                        dist1 = ((Vector3)(v.pos - cen1)).Length;
+                        if (dist1 > rad1)
+                            rad1 = dist1;
+
+                        dist2 = ((Vector3)(v.pos - cen2)).Length;
+                        if (dist2 > rad2)
+                            rad2 = dist2;
+                    }
+                }
+            }
+
+            //Use the one with the lowest radius
+            Vector3 temp;
+            double radius;
+            if (rad1 < rad2)
+            {
+                temp = cen1;
+                radius = rad1;
+            }
+            else
+            {
+                temp = cen2;
+                radius = rad2;
+            }
+
+            //Set
+            for (int i = 0; i < 3; i++)
+            {
+                boundingBox[i] = temp[i];
+            }
+            boundingBox[3] = (float)radius;
         }
 
         public void SetPropertiesFromXMB(XMBFile xmb)
@@ -502,17 +567,20 @@ namespace Smash_Forge
 
             // face culling
             GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Front);
+            GL.CullFace(CullFaceMode.Back);
             switch (material.cullMode)
             {
-                case 0:
+                case 0x0000:
                     GL.Disable(EnableCap.CullFace);
                     break;
-                case 0x0205:
+                case 0x0404:
                     GL.CullFace(CullFaceMode.Front);
                     break;
                 case 0x0405:
                     GL.CullFace(CullFaceMode.Back);
+                    break;
+                default:
+                    GL.Disable(EnableCap.CullFace);
                     break;
             }
             if (p.Checked)
@@ -1239,10 +1307,10 @@ namespace Smash_Forge
             int vertaddClumpStart = vertClumpStart + vertClumpSize;
             int vertaddClumpSize = d.readInt();
             int nameStart = vertaddClumpStart + vertaddClumpSize;
-            param[0] = d.readFloat();
-            param[1] = d.readFloat();
-            param[2] = d.readFloat();
-            param[3] = d.readFloat();
+            boundingBox[0] = d.readFloat();
+            boundingBox[1] = d.readFloat();
+            boundingBox[2] = d.readFloat();
+            boundingBox[3] = d.readFloat();
 
             // object descriptors
 
@@ -1667,12 +1735,12 @@ namespace Smash_Forge
             d.writeInt(0); // polyClump start
             d.writeInt(0); // polyClump size
             d.writeInt(0); // vertexClumpsize
-            d.writeInt(0); // vertexaddcump size
+            d.writeInt(0); // vertexaddclump size
             
-            d.writeFloat(param[0]);
-            d.writeFloat(param[1]);
-            d.writeFloat(param[2]);
-            d.writeFloat(param[3]);
+            d.writeFloat(boundingBox[0]);
+            d.writeFloat(boundingBox[1]);
+            d.writeFloat(boundingBox[2]);
+            d.writeFloat(boundingBox[3]);
 
             // other sections....
             FileOutput obj = new FileOutput(); // data
@@ -2687,52 +2755,90 @@ namespace Smash_Forge
                 ((Polygon)Nodes[0]).AddVertex(v);
             }
 
-            public Vector3 maxbb = new Vector3(-9999);
-            public Vector3 minbb = new Vector3(9999);
             public void generateBoundingBox()
             {
-                Vector3 max = new Vector3(-9999);
-                Vector3 min = new Vector3(9999);
+                Vector3 cen1 = new Vector3(0,0,0), cen2 = new Vector3(0,0,0);
+                double rad1 = 0, rad2 = 0;
 
+                //Get first vert
+                int vertCount = 0;
+                Vector3 vert0 = new Vector3();
+                foreach (Polygon p in Nodes)
+                {
+                    foreach (Vertex v in p.vertices)
+                    {
+                        vert0 = v.pos;
+                        vertCount++;
+                        break;
+                    }
+                    break;
+                }
+
+                if (vertCount == 0) //No vertices
+                    return;
+
+                //Calculate average and min/max
+                Vector3 min = new Vector3(vert0);
+                Vector3 max = new Vector3(vert0);
+                
+                vertCount = 0;
                 foreach (Polygon p in Nodes)
                 {
                     foreach(Vertex v in p.vertices)
                     {
-                        max.X = Math.Max(max.X, v.pos.X);
-                        max.Y = Math.Max(max.Y, v.pos.Y);
-                        max.Z = Math.Max(max.Z, v.pos.Z);
+                        for (int i = 0; i < 3; i++)
+                        {
+                            min[i] = Math.Min(min[i], v.pos[i]);
+                            max[i] = Math.Max(max[i], v.pos[i]);
+                        }
 
-                        min.X = Math.Min(min.X, v.pos.X);
-                        min.Y = Math.Min(min.Y, v.pos.Y);
-                        min.Z = Math.Min(min.Z, v.pos.Z);
+                        cen1 += v.pos;
+                        vertCount++;
                     }
                 }
 
-                /*Console.WriteLine(Text + "-------------------");
-                for(int i = 0;i < 4; i++)
-                    Console.Write (boundingBox[i] + " - ");*/
+                cen1 /= vertCount;
+                for (int i = 0; i < 3; i++)
+                    cen2[i] = (min[i]+max[i])/2;
 
-                boundingBox[0] = (max.X + min.X) / 2;
-                boundingBox[1] = (max.Y + min.Y) / 2;
-                boundingBox[2] = (max.Z + min.Z) / 2;
-                boundingBox[4] = boundingBox[0];
-                boundingBox[5] = boundingBox[1];
-                boundingBox[6] = boundingBox[2];
-                boundingBox[7] = 0;
-
-                Vector3 maxdix = Vector3.Zero;
-                Vector3 cen = new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]);
+                //Calculate the radius of each
+                double dist1, dist2;
                 foreach (Polygon p in Nodes)
+                {
                     foreach (Vertex v in p.vertices)
-                        if ((cen - v.pos).Length > maxdix.Length) maxdix = (cen - v.pos);
-                boundingBox[3] = maxdix.Length;
+                    {
+                        dist1 = ((Vector3)(v.pos - cen1)).Length;
+                        if (dist1 > rad1)
+                            rad1 = dist1;
 
-                /*Console.WriteLine("");
-                for (int i = 0; i < 4; i++)
-                    Console.Write(boundingBox[i] + " - ");*/
+                        dist2 = ((Vector3)(v.pos - cen2)).Length;
+                        if (dist2 > rad2)
+                            rad2 = dist2;
+                    }
+                }
 
-                maxbb = max;
-                minbb = min;
+                //Use the one with the lowest radius
+                Vector3 temp;
+                double radius;
+                if (rad1 < rad2)
+                {
+                    temp = cen1;
+                    radius = rad1;
+                }
+                else
+                {
+                    temp = cen2;
+                    radius = rad2;
+                }
+
+                //Set
+                for (int i = 0; i < 3; i++)
+                {
+                    boundingBox[i] = temp[i];
+                    boundingBox[i+4] = temp[i];
+                }
+                boundingBox[3] = (float)radius;
+                boundingBox[7] = 0;
             }
         }
 

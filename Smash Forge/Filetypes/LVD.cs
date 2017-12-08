@@ -18,7 +18,7 @@ namespace Smash_Forge
         public abstract string magic { get; }
         public string name;
         public string subname;
-        public float[] startPos = new float[3];
+        public Vector3 startPos = new Vector3();
         public bool useStartPos = false;
         public int unk1 = 0;
         public float[] unk2 = new float[3];
@@ -67,8 +67,8 @@ namespace Smash_Forge
             f.writeString(subname.PadRight(0x40, (char)0));
             
             f.writeByte(1);
-            foreach (float i in startPos)
-                f.writeFloat(i);
+            for (int i = 0; i < 3; i++)
+                f.writeFloat(startPos[i]);
             f.writeFlag(useStartPos);
             
             f.writeByte(1);
@@ -138,7 +138,7 @@ namespace Smash_Forge
         public override string magic { get { return "030401017735BB7500000002"; } }
         
         public Vector2D pos;
-        public Vector2D angle; //Someone figure out what these angles are
+        public Vector2D angle; //Someone figure out what these angles do
         
         public void read(FileData f)
         {
@@ -858,102 +858,161 @@ namespace Smash_Forge
 
         #region rendering
 
-        public static void DrawSpawn(Spawn s, bool isRespawn)
+        public static void DrawPoint(GeneralPoint p)
         {
-            DrawRespawnQuad(s, Color.Blue);
+            GL.LineWidth(2);
 
-            //Draw respawn platform
-            if (isRespawn)
+            Vector3 pos = p.useStartPos ? p.startPos : new Vector3(p.x,p.y,p.z);
+
+            RenderTools.drawCubeWireframe(pos, 3);
+        }
+
+        public static void DrawShape(GeneralShape s)
+        {
+            GL.LineWidth(2);
+            GL.Color4(Color.FromArgb(200, Color.Fuchsia));
+
+            Vector3 sPos = s.useStartPos ? s.startPos : new Vector3(0,0,0);
+
+            if(s.type == 3)
             {
-                DrawRespawnArrow(s, Color.Gray, Color.Black);
+                GL.Begin(PrimitiveType.LineLoop);
+                GL.Vertex3(s.x1+sPos[0], s.y1+sPos[1], 0+sPos[2]);
+                GL.Vertex3(s.x2+sPos[0], s.y1+sPos[1], 0+sPos[2]);
+                GL.Vertex3(s.x2+sPos[0], s.y2+sPos[1], 0+sPos[2]);
+                GL.Vertex3(s.x1+sPos[0], s.y2+sPos[1], 0+sPos[2]);
+            }
+            if(s.type == 4)
+            {
+                GL.Begin(PrimitiveType.LineStrip);
+                foreach(Vector2D point in s.points)
+                    GL.Vertex3(point.x+sPos[0], point.y+sPos[1], 0+sPos[2]);
             }
 
+            GL.End();
         }
 
-        private static void DrawRespawnQuad(Spawn s, Color color)
+        public static void DrawShape(DamageShape s)
         {
+            GL.LineWidth(2);
+            GL.Color4(Color.FromArgb(128, Color.Yellow));
+
+            Vector3 sPos = s.useStartPos ? s.startPos : new Vector3(0,0,0);
+            Vector3 pos = new Vector3(s.x, s.y, s.z);
+            Vector3 posd = new Vector3(s.dx, s.dy, s.dz);
+
+            if (s.type == 2)
+                RenderTools.drawSphere(sPos+pos, s.radius, 24);
+            if (s.type == 3)
+                RenderTools.drawCylinder(sPos+pos, sPos+pos+posd, s.radius);
+        }
+
+        public static void DrawSpawn(Spawn s, bool isRespawn)
+        {
+            GL.LineWidth(2);
+
+            Vector3 pos = s.useStartPos ? s.startPos : new Vector3(s.x,s.y,0);
+            float x = pos[0], y = pos[1], z = pos[2];
+
+            //Draw quad
             float width = 3.0f;
             float height = 10.0f;
-            GL.Color4(Color.FromArgb(100, color));
+
+            GL.Color4(Color.FromArgb(100, Color.Blue));
             GL.Begin(PrimitiveType.QuadStrip);
-            GL.Vertex3(s.x - width, s.y, 0f);
-            GL.Vertex3(s.x + width, s.y, 0f);
-            GL.Vertex3(s.x - width, s.y + height, 0f);
-            GL.Vertex3(s.x + width, s.y + height, 0f);
-            GL.End();
-        }
 
-        private static void DrawRespawnArrow(Spawn s, Color arrowColor, Color wireframeColor)
-        {
-            float scale = 5.0f;
-            GL.Color4(Color.FromArgb(200, arrowColor));
-            GL.Begin(PrimitiveType.Triangles);
-            GL.Vertex3(s.x - scale, s.y, 0);
-            GL.Vertex3(s.x + scale, s.y, 0);
-            GL.Vertex3(s.x, s.y, scale);
-
-            GL.Vertex3(s.x - scale, s.y, 0);
-            GL.Vertex3(s.x + scale, s.y, 0);
-            GL.Vertex3(s.x, s.y, -scale);
-
-            GL.Vertex3(s.x - scale, s.y, 0);
-            GL.Vertex3(s.x, s.y - scale, 0);
-            GL.Vertex3(s.x, s.y, scale);
-
-            GL.Vertex3(s.x + scale, s.y, 0);
-            GL.Vertex3(s.x, s.y - scale, 0);
-            GL.Vertex3(s.x, s.y, -scale);
-
-            GL.Vertex3(s.x + scale, s.y, 0);
-            GL.Vertex3(s.x, s.y - scale, 0);
-            GL.Vertex3(s.x, s.y, scale);
-
-            GL.Vertex3(s.x - scale, s.y, 0);
-            GL.Vertex3(s.x, s.y - scale, 0);
-            GL.Vertex3(s.x, s.y, -scale);
-            GL.End();
-
-            // wireframe
-            GL.Color4(Color.FromArgb(200, wireframeColor));
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex3(s.x - scale, s.y, 0);
-            GL.Vertex3(s.x, s.y - scale, 0);
-            GL.Vertex3(s.x + scale, s.y, 0);
-            GL.Vertex3(s.x, s.y - scale, 0);
-
-            GL.Vertex3(s.x, s.y, -scale);
-            GL.Vertex3(s.x, s.y - scale, 0);
-            GL.Vertex3(s.x, s.y, scale);
-            GL.Vertex3(s.x, s.y - scale, 0);
-
-            GL.Vertex3(s.x, s.y, -scale);
-            GL.Vertex3(s.x + scale, s.y, 0);
-            GL.Vertex3(s.x, s.y, -scale);
-            GL.Vertex3(s.x - scale, s.y, 0);
-
-            GL.Vertex3(s.x, s.y, scale);
-            GL.Vertex3(s.x + scale, s.y, 0);
-            GL.Vertex3(s.x, s.y, scale);
-            GL.Vertex3(s.x - scale, s.y, 0);
+            GL.Vertex3(x - width, y, z);
+            GL.Vertex3(x + width, y, z);
+            GL.Vertex3(x - width, y + height, z);
+            GL.Vertex3(x + width, y + height, z);
 
             GL.End();
+
+            //Respawn platform
+            if (isRespawn)
+            {
+                float scale = 5.0f;
+
+                //Draw arrow
+                GL.Color4(Color.FromArgb(200, Color.Gray));
+                GL.Begin(PrimitiveType.Triangles);
+
+                GL.Vertex3(x - scale, y, z);
+                GL.Vertex3(x + scale, y, z);
+                GL.Vertex3(x, y, z + scale);
+
+                GL.Vertex3(x - scale, y, z);
+                GL.Vertex3(x + scale, y, z);
+                GL.Vertex3(x, y, z - scale);
+
+                GL.Vertex3(x - scale, y, z);
+                GL.Vertex3(x, y - scale, z);
+                GL.Vertex3(x, y, z + scale);
+
+                GL.Vertex3(x + scale, y, z);
+                GL.Vertex3(x, y - scale, z);
+                GL.Vertex3(x, y, z - scale);
+
+                GL.Vertex3(x + scale, y, z);
+                GL.Vertex3(x, y - scale, z);
+                GL.Vertex3(x, y, z + scale);
+
+                GL.Vertex3(x - scale, y, z);
+                GL.Vertex3(x, y - scale, z);
+                GL.Vertex3(x, y, z - scale);
+
+                GL.End();
+
+                //Draw wireframe
+                GL.Color4(Color.FromArgb(200, Color.Black));
+                GL.Begin(PrimitiveType.Lines);
+
+                GL.Vertex3(x - scale, y, z);
+                GL.Vertex3(x, y - scale, z);
+                GL.Vertex3(x + scale, y, z);
+                GL.Vertex3(x, y - scale, z);
+
+                GL.Vertex3(x, y, z - scale);
+                GL.Vertex3(x, y - scale, z);
+                GL.Vertex3(x, y, z + scale);
+                GL.Vertex3(x, y - scale, z);
+
+                GL.Vertex3(x, y, z - scale);
+                GL.Vertex3(x + scale, y, z);
+                GL.Vertex3(x, y, z - scale);
+                GL.Vertex3(x - scale, y, z);
+
+                GL.Vertex3(x, y, z + scale);
+                GL.Vertex3(x + scale, y, z);
+                GL.Vertex3(x, y, z + scale);
+                GL.Vertex3(x - scale, y, z);
+
+                GL.End();
+            }
         }
 
         public static void DrawBounds(Bounds b, Color color)
         {
+            GL.LineWidth(2);
+
+            Vector3 sPos = b.useStartPos ? b.startPos : new Vector3(0,0,0);
+            
             GL.Color4(Color.FromArgb(128, color));
             GL.Begin(PrimitiveType.LineLoop);
-            GL.Vertex3(b.left, b.top, 0);
-            GL.Vertex3(b.right, b.top, 0);
-            GL.Vertex3(b.right, b.bottom, 0);
-            GL.Vertex3(b.left, b.bottom, 0);
+
+            GL.Vertex3(b.left+sPos[0], b.top+sPos[1], 0+sPos[2]);
+            GL.Vertex3(b.right+sPos[0], b.top+sPos[1], 0+sPos[2]);
+            GL.Vertex3(b.right+sPos[0], b.bottom+sPos[1], 0+sPos[2]);
+            GL.Vertex3(b.left+sPos[0], b.bottom+sPos[1], 0+sPos[2]);
+
             GL.End();
         }
 
-        public static void RenderItemSpawners()
+        public static void DrawItemSpawners()
         {
             foreach (ItemSpawner c in Runtime.TargetLVD.items)
             {
+                Vector3 sPos = c.useStartPos ? c.startPos : new Vector3(0,0,0);
                 foreach (Section s in c.sections)
                 {
                     // draw the item spawn quads
@@ -961,17 +1020,15 @@ namespace Smash_Forge
 
                     // draw outside borders
                     GL.Color3(Color.Black);
+
                     GL.Begin(PrimitiveType.LineStrip);
                     foreach (Vector2D vi in s.points)
-                    {
-                        GL.Vertex3(vi.x, vi.y, 5);
-                    }
+                        GL.Vertex3(vi.x+sPos[0], vi.y+sPos[1], 5+sPos[2]);
                     GL.End();
+
                     GL.Begin(PrimitiveType.LineStrip);
                     foreach (Vector2D vi in s.points)
-                    {
-                        GL.Vertex3(vi.x, vi.y, -5);
-                    }
+                        GL.Vertex3(vi.x+sPos[0], vi.y+sPos[1], -5+sPos[2]);
                     GL.End();
 
 
@@ -980,8 +1037,8 @@ namespace Smash_Forge
                     GL.Begin(PrimitiveType.Lines);
                     foreach (Vector2D vi in s.points)
                     {
-                        GL.Vertex3(vi.x, vi.y, 5);
-                        GL.Vertex3(vi.x, vi.y, -5);
+                        GL.Vertex3(vi.x+sPos[0], vi.y+sPos[1], 5+sPos[2]);
+                        GL.Vertex3(vi.x+sPos[0], vi.y+sPos[1], -5+sPos[2]);
                     }
                     GL.End();
                 }
@@ -1129,31 +1186,22 @@ namespace Smash_Forge
                 }
                 for (int i = 0; i < c.cliffs.Count; i++)
                 {
-                    float add2X = 0, add2Y = 0, add2Z = 0;
-                    if (c.cliffs[i].useStartPos)
-                    {
-                        add2X = c.startPos[0];
-                        add2Y = c.startPos[1];
-                        add2Z = c.startPos[2];
-                    }
-                    
-                    Vector3 v1Pos = Vector3.Transform(new Vector3(c.cliffs[i].pos.x + add2X, c.cliffs[i].pos.y + add2Y, add2Z + 10), transform);
-                    Vector3 v1Neg = Vector3.Transform(new Vector3(c.cliffs[i].pos.x + add2X, c.cliffs[i].pos.y + add2Y, add2Z - 10), transform);
-                    Vector3 v1Zer = Vector3.Transform(new Vector3(c.cliffs[i].pos.x + add2X, c.cliffs[i].pos.y + add2Y, add2Z), transform);
-                    
+                    Vector3 pos = c.cliffs[i].useStartPos ? c.cliffs[i].startPos : new Vector3(c.cliffs[i].pos.x,c.cliffs[i].pos.y,0);
+
+                    GL.Color3(Color.White);
                     GL.Begin(PrimitiveType.Lines);
-                    GL.Color4(Color.White);
-                    
-                    GL.Vertex3(v1Pos);
-                    GL.Vertex3(v1Neg);
+                    GL.Vertex3(pos[0], pos[1], pos[2] + 10);
+                    GL.Vertex3(pos[0], pos[1], pos[2] - 10);
                     GL.End();
-                    
-                    GL.Begin(PrimitiveType.Lines);
+
+                    GL.LineWidth(2);
                     GL.Color3(Color.Blue);
-                    
-                    GL.Vertex3(v1Zer);
-                    GL.Vertex3(v1Zer.X + (c.cliffs[i].angle.x * 10), v1Zer.Y + (c.cliffs[i].angle.y * 10), v1Zer.Z);
+                    GL.Begin(PrimitiveType.Lines);
+                    GL.Vertex3(pos);
+                    GL.Vertex3(pos[0] + (c.cliffs[i].angle.x * 10), pos[1] + (c.cliffs[i].angle.y * 10), pos[2]);
                     GL.End();
+
+                    GL.LineWidth(4);
                 }
             }
         }
