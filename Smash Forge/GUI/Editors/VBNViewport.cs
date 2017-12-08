@@ -1075,7 +1075,7 @@ namespace Smash_Forge
             {
                 if (m.nud != null)
                 {
-                    RenderTools.drawCubeWireframe(new Vector3(m.nud.param[0], m.nud.param[1], m.nud.param[2]), m.nud.param[3]);
+                    RenderTools.drawCubeWireframe(new Vector3(m.nud.boundingBox[0], m.nud.boundingBox[1], m.nud.boundingBox[2]), m.nud.boundingBox[3]);
                     foreach (NUD.Mesh mesh in m.nud.meshes)
                     {
                         if (mesh.Checked)
