@@ -846,8 +846,9 @@
             this.checkBox11.Name = "checkBox11";
             this.checkBox11.Size = new System.Drawing.Size(133, 17);
             this.checkBox11.TabIndex = 26;
-            this.checkBox11.Text = "Render General Points";
+            this.checkBox11.Text = "Render General Shapes and Points";
             this.checkBox11.UseVisualStyleBackColor = true;
+            this.checkBox11.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // checkBox1
             // 

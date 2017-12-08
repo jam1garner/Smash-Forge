@@ -363,7 +363,7 @@ namespace Smash_Forge
                 case 0xB2E91D0C: // Used in bayo scripts to set the Frame_Speed to a specific value
                     {
                         if (Runtime.useFrameDuration)
-                            frameSpeed = (float)cmd.Parameters[0];
+                            frameSpeed = 1 / (float)cmd.Parameters[0];
                         break;
                     }
                 case 0xA546845C: // Frame_Speed_Multiplier, sets Frame_Speed = Arg0

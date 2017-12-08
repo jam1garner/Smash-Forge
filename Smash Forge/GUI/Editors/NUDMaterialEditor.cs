@@ -79,7 +79,7 @@ namespace Smash_Forge
 
         public static Dictionary<int, string> cullmode = new Dictionary<int, string>(){
                     { 0x0000, "Cull None"},
-                    { 0x0205, "Cull Front"},
+                    { 0x0404, "Cull Outside"},
                     { 0x0405, "Cull Inside"}
                 };
 
