@@ -320,8 +320,11 @@ namespace Smash_Forge
 
             foreach (Mesh m in depthSortedMeshes)
             {
-                Matrix4 matrix = Camera.viewportCamera.getMVPMatrix();
-                GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref matrix);
+                Matrix4 mvpMatrix = Camera.viewportCamera.getMVPMatrix();
+                GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
+
+                Matrix4 modelView = Camera.viewportCamera.getModelViewMatrix();
+                GL.UniformMatrix4(shader.getAttribute("modelViewMatrix"), false, ref modelView);
 
                 /*if (m.billboardY)
                 {

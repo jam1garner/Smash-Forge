@@ -136,6 +136,8 @@ uniform vec3 stageFogColor;
 uniform int colorOverride;
 
 uniform mat4 mvpMatrix;
+uniform mat4 modelViewMatrix;
+
 uniform vec3 lightPosition;
 uniform vec3 lightDirection;
 uniform sampler2D shadowMap;
@@ -245,11 +247,11 @@ vec3 DummyRampColor(vec3 color){
 vec3 SphereMapColor(vec3 N)
 {
     // calculate UVs based on view space normals
-    vec4 viewNormals = transpose(inverse(mvpMatrix)) * vec4(N.xyz, 0);
-    float uCoord = viewNormals.x * PI / 2 + 0.5;
-    float vCoord = viewNormals.y * PI / 2 + 0.5;
+    vec4 viewNormals = transpose(inverse(modelViewMatrix)) * vec4(N.xyz, 0);
+    float uCoord = viewNormals.x * 0.5 + 0.5;
+    float vCoord = viewNormals.y * 0.5 + 0.5;
 
-    vec2 sphereTexcoord = vec2(uCoord + 0.01, (1 - vCoord) + 0.01); // 0.05?
+    vec2 sphereTexcoord = vec2(uCoord, (1 - vCoord));
     return texture(spheremap, sphereTexcoord).xyz;
 }
 

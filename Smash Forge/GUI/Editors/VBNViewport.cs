@@ -64,7 +64,6 @@ namespace Smash_Forge
             base.OnResize(e);
             if (!DesignMode && _controlLoaded)
             {
-             
                 GL.LoadIdentity();
                 GL.Viewport(glControl1.ClientRectangle);
 
@@ -86,6 +85,9 @@ namespace Smash_Forge
         bool isPlaying = false;
         bool fpsView = false;
         public Stopwatch timeSinceSelected = new Stopwatch();
+        public static FrameTimer frameTimer = new FrameTimer();
+        public long renderedFrameCount = 0;
+        public long totalRenderTime = 0;
         public Stopwatch directUVTimeStopWatch = new Stopwatch();
 
         Shader shader;
@@ -596,20 +598,23 @@ namespace Smash_Forge
                 GL.Enable(EnableCap.DepthTest);
                 GL.DepthFunc(DepthFunction.Lequal);
             }
-      
+
             else
                 GL.Disable(EnableCap.DepthTest);
 
             GL.Enable(EnableCap.DepthTest);
-           // GL.DepthFunc(DepthFunction.Lequal);
+            // GL.DepthFunc(DepthFunction.Lequal);
 
             if (Runtime.renderModel)
                 DrawModels();
+
             //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
             // render gaussian blur stuff
             if (Runtime.drawQuadBlur)
                 DrawQuadBlur();
+
+
 
             // render full screen quad for post processing
             if (Runtime.drawQuadFinalOutput)
@@ -635,10 +640,8 @@ namespace Smash_Forge
             if (Runtime.renderBones)
                 DrawBones();
 
-            DrawHitboxesHurtboxes();
 
-            // draw last to avoid messing up transformations and colors
-            //DrawLightArrows(Runtime.dif_rotX, Runtime.dif_rotY, Runtime.dif_rotZ, new Vector3(0.0f), Lights.diffuseLight.R, Lights.diffuseLight.G, Lights.diffuseLight.B);
+            DrawHitboxesHurtboxes();
 
             // Clean up
             GL.PopAttrib();
@@ -981,11 +984,16 @@ namespace Smash_Forge
                         foreach(MTA mta in Runtime.TargetMTA)
                         m.nud.applyMTA(mta, (int)nupdFrame.Value - 1);//Apply additional mta (can override base)
 
+
                     m.nud.Render(shader);
+
+
+
                     shader.disableAttrib();
                 }
             }
         }
+
         private void DrawScreenQuad() 
         {
             // draw a full screen quad for fbo debugging and post processing

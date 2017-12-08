@@ -160,9 +160,7 @@ namespace Smash_Forge
             Matrix4 perspFOV = Matrix4.CreatePerspectiveFieldOfView(fov, renderWidth / (float)renderHeight, 1.0f, Runtime.renderDepth);
 
             // need to fix these
-            modelViewMatrix = Matrix4.CreatePerspectiveFieldOfView(fov, renderWidth / (float)renderHeight,
-                1.0f, Runtime.renderDepth) * Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation);
-
+            modelViewMatrix = rotation * translation;
             projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(fov, renderWidth / (float)renderHeight,
                 1.0f, Runtime.renderDepth);
             mvpMatrix = rotation * translation * perspFOV;
