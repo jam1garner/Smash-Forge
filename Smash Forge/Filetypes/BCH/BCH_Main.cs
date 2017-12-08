@@ -293,7 +293,7 @@ namespace Smash_Forge
                     Mesh.MaterialIndex = f.readShort();
                     int mflags = f.readShort();
                     int nameId = f.readShort();
-                    Mesh.Text = objectName[i];
+                    Mesh.Text = objectName[nameId];
 
                     // node visibility TODO: finish...
                     Mesh.Checked = ((nodeVisibility & (1 << nameId)) > 0);

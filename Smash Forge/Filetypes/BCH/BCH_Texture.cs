@@ -49,9 +49,11 @@ namespace Smash_Forge
                     data = f.getSection(p.Value, f.size() - p.Value);
                 }
             }
-            
-            texture = _3DS.DecodeImage(data, Width, Height, (_3DS.Tex_Formats)type);
-            display = NUT.loadImage(texture);
+            if(Width > 0 && Height > 0)
+            {
+                texture = _3DS.DecodeImage(data, Width, Height, (_3DS.Tex_Formats)type);
+                display = NUT.loadImage(texture);
+            }
         }
     }
 
@@ -70,11 +72,11 @@ namespace Smash_Forge
 
         public int GetHalf1()
         {
-            return (Value >> 16) & 0xFF;
+            return (Value >> 16) & 0xFFFF;
         }
         public int GetHalf2()
         {
-            return (Value) & 0xFF;
+            return (Value) & 0xFFFF;
         }
 
         public void ParseParameter(int p)
