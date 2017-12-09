@@ -723,11 +723,11 @@ namespace Smash_Forge
 
             // set color to light color
             int r = (int)(Lights.diffuseLight.difR * 255);
-            r = RenderTools.ClampInt(r);
+            r = ColorTools.ClampInt(r);
             int g = (int)(Lights.diffuseLight.difG * 255);
-            g = RenderTools.ClampInt(g);
+            g = ColorTools.ClampInt(g);
             int b = (int)(Lights.diffuseLight.difG * 255);
-            b = RenderTools.ClampInt(b);
+            b = ColorTools.ClampInt(b);
             GL.Color4(Color.FromArgb(255, r, g, b));
 
             RenderTools.drawPyramidWireframe(p1, 5.0f, 3.0f);
@@ -2081,11 +2081,7 @@ namespace Smash_Forge
         {
             if (e.KeyChar == 'i')
             {
-                // the shaders will always be present in the lib/Shader folder, so this is safe to do
-                reloadShaderFromFile("NUD", MainForm.executableDir + "/lib/Shader/NUD_vs.txt", MainForm.executableDir + "/lib/Shader/NUD_fs.txt");
-                reloadShaderFromFile("Texture", MainForm.executableDir + "/lib/Shader/Texture_vs.txt", MainForm.executableDir + "/lib/Shader/Texture_fs.txt");
-                reloadShaderFromFile("MBN", MainForm.executableDir + "/lib/Shader/MBN_vs.txt", MainForm.executableDir + "/lib/Shader/MBN_fs.txt");
-                reloadShaderFromFile("DAT", MainForm.executableDir + "/lib/Shader/DAT_vs.txt", MainForm.executableDir + "/lib/Shader/DAT_fs.txt");
+                ReloadShadersFromFiles();
             }
             if (e.KeyChar == 'r')
             {
@@ -2186,7 +2182,16 @@ namespace Smash_Forge
             }
         }
 
-        private void reloadShaderFromFile(string shaderName, string vertexFilePath, string fragmentFilePath)
+        private void ReloadShadersFromFiles()
+        {
+            // the shaders will always be present in the lib/Shader folder, so this is safe to do
+            reloadVertFragShaderFromFile("NUD", MainForm.executableDir + "/lib/Shader/NUD_vs.txt", MainForm.executableDir + "/lib/Shader/NUD_fs.txt");
+            reloadVertFragShaderFromFile("Texture", MainForm.executableDir + "/lib/Shader/Texture_vs.txt", MainForm.executableDir + "/lib/Shader/Texture_fs.txt");
+            reloadVertFragShaderFromFile("MBN", MainForm.executableDir + "/lib/Shader/MBN_vs.txt", MainForm.executableDir + "/lib/Shader/MBN_fs.txt");
+            reloadVertFragShaderFromFile("DAT", MainForm.executableDir + "/lib/Shader/DAT_vs.txt", MainForm.executableDir + "/lib/Shader/DAT_fs.txt");
+        }
+
+        private void reloadVertFragShaderFromFile(string shaderName, string vertexFilePath, string fragmentFilePath)
         {
             GL.DeleteProgram(Runtime.shaders[shaderName].programID);
             shader = new Shader();

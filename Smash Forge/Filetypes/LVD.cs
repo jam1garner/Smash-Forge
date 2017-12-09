@@ -1129,7 +1129,7 @@ namespace Smash_Forge
                             color = Color.FromArgb(128, Color.Cyan);
 
                         if ((colSelected || Runtime.LVDSelection == c.normals[i]) && ((int)((timeSinceSelected.ElapsedMilliseconds % 1000) / 500) == 0))
-                            color = RenderTools.invertColor(color);
+                            color = ColorTools.invertColor(color);
 
                         GL.Color4(color);
                     }
@@ -1152,7 +1152,7 @@ namespace Smash_Forge
                             color = Color.Orange;
 
                         if ((colSelected || Runtime.LVDSelection == c.verts[i]) && ((int)((timeSinceSelected.ElapsedMilliseconds % 1000) / 500) == 0))
-                            color = RenderTools.invertColor(color);
+                            color = ColorTools.invertColor(color);
                         GL.Color4(color);
                     }
                     else
@@ -1172,7 +1172,7 @@ namespace Smash_Forge
                                 color = Color.Orange;
 
                             if (Runtime.LVDSelection == c.verts[i + 1] && ((int)((timeSinceSelected.ElapsedMilliseconds % 1000) / 500) == 0))
-                                color = RenderTools.invertColor(color);
+                                color = ColorTools.invertColor(color);
                             GL.Color4(color);
                         }
                         else

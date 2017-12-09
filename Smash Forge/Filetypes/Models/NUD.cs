@@ -446,7 +446,7 @@ namespace Smash_Forge
 
             // reflection color for characters & stages
             float refR, refG, refB = 1.0f;
-            RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
+            ColorTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
             GL.Uniform3(shader.getAttribute("refLightColor"), refR, refG, refB);
 
             // character diffuse light
