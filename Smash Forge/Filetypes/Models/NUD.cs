@@ -226,8 +226,10 @@ namespace Smash_Forge
         private void DrawBoundingBoxes()
         {
             GL.UseProgram(0);
+
             GL.Color4(Color.GhostWhite);
             RenderTools.drawCubeWireframe(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+
             GL.Color4(Color.OrangeRed);
             foreach (NUD.Mesh mesh in meshes)
             {

@@ -1143,7 +1143,10 @@ namespace Smash_Forge
             {
                 if (m.nud != null)
                 {
+                    GL.Color4(Color.GhostWhite);
                     RenderTools.drawCubeWireframe(new Vector3(m.nud.boundingBox[0], m.nud.boundingBox[1], m.nud.boundingBox[2]), m.nud.boundingBox[3]);
+
+                    GL.Color4(Color.OrangeRed);
                     foreach (NUD.Mesh mesh in m.nud.meshes)
                     {
                         if (mesh.Checked)

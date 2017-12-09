@@ -864,6 +864,7 @@ namespace Smash_Forge
 
             Vector3 pos = p.useStartPos ? p.startPos : new Vector3(p.x,p.y,p.z);
 
+            GL.Color3(Color.Red);
             RenderTools.drawCubeWireframe(pos, 3);
         }
 
