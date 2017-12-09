@@ -1057,7 +1057,7 @@ namespace Smash_Forge
         {
             if ((e.KeyChar == 'd') && propertiesListView.SelectedIndices.Count > 0)
             {
-                if (materials[current].textures.Count > 1)
+                if (materials[current].entries.Count > 1)
                 {
                     materials[current].entries.Remove(propertiesListView.SelectedItems[0].Text);
                     FillForm();
