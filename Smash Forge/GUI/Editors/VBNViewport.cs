@@ -2149,8 +2149,6 @@ namespace Smash_Forge
                 this.Enabled = true;
 
                 this.nupdFrame.Value = cFrame;
-
-
             }
             if (e.KeyChar == ']')
             {
@@ -2345,7 +2343,6 @@ namespace Smash_Forge
             float zoom = 0;
             float height = 0;
 
-
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.A))
                 width += 1.0f;
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.D))
@@ -2365,7 +2362,7 @@ namespace Smash_Forge
             modelMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
         }
 
-        public Bitmap CaptureScreen(bool saveAlpha = false)
+        public Bitmap CaptureScreen(bool saveAlpha)
         {
             int width = glControl1.Width;
             int height = glControl1.Height;
@@ -2375,41 +2372,18 @@ namespace Smash_Forge
             // Flip data because glReadPixels reads it in from bottom row to top row
             byte[] fixedPixels = new byte[width * height * 4];
             for (int h = 0; h < height; h++)
+            {
                 for (int w = 0; w < width; w++)
                 {
+                    // Remove alpha blending from the end image - we just want the post-render colors
                     if (!saveAlpha)
-                        // Remove alpha blending from the end image - we just want the post-render colors
                         pixels[((w + h * width) * 4) + 3] = 255;
 
                     // Copy a 4 byte pixel one at a time
                     Array.Copy(pixels, (w + h * width) * 4, fixedPixels, ((height - h - 1) * width + w) * 4, 4);
                 }
-            // Format and save the data
-            Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bmp.PixelFormat);
-            Marshal.Copy(fixedPixels, 0, bmpData.Scan0, fixedPixels.Length);
-            bmp.UnlockBits(bmpData);
-            return bmp;
-        }
-
-        public Bitmap CaptureScreen()
-        {
-            int width = glControl1.Width;
-            int height = glControl1.Height;
-
-            byte[] pixels = new byte[width * height * 4];
-            GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
-            // Flip data becausee glReadPixels reads it in from bottom row to top row
-            byte[] fixedPixels = new byte[width * height * 4];
-            for (int h = 0; h < height; h++)
-                for (int w = 0; w < width; w++)
-                {
-                    // Remove alpha blending from the end image - we just want the post-render colors
-                    pixels[((w + h * width) * 4) + 3] = 255;
-
-                    // Copy a 4 byte pixel one at a time
-                    Array.Copy(pixels, (w + h * width) * 4, fixedPixels, ((height - h - 1) * width + w) * 4, 4);
-                }
+            }
+    
             // Format and save the data
             Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bmp.PixelFormat);

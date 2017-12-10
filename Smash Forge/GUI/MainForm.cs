@@ -125,11 +125,6 @@ namespace Smash_Forge
             cub.fragmentShader(RenderTools.cubefs);
             Runtime.shaders.Add("SkyBox", cub);
 
-            Shader poi = new Shader();
-            poi.vertexShader(RenderTools.vs_Point);
-            poi.fragmentShader(RenderTools.fs_Point);
-            Runtime.shaders.Add("Point", poi);
-
             Shader sha = new Shader();
             sha.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Shadow_vs.txt"));
             sha.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Shadow_fs.txt"));
