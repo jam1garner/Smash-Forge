@@ -348,11 +348,13 @@ vec3 ReflectionPass(vec3 I, vec3 N, vec3 tintColor, vec4 diffuseMap, float aoMap
 		reflectionPass += SphereMapColor(normal.xyz) * reflectionColor.xyz * tintColor;
 	}
 	else // stage cubemaps
-		reflectionPass += reflectionColor.rgb * stageCubeColor * tintColor * diffuseMap.aaa;
+		reflectionPass += reflectionColor.rgb * stageCubeColor * tintColor;
 
     reflectionPass *= mix(aoMap, 1, aoMixIntensity);
     reflectionPass *= refLightColor;
     reflectionPass *= reflectionIntensity;
+    if ((flags & 0xFFFFFF00u) == 0xF8820000u)
+        reflectionPass *= diffuseMap.a;
 
 	reflectionPass = pow(reflectionPass, vec3(gamma));
     return reflectionPass;
@@ -488,6 +490,7 @@ vec3 SmashShader(vec4 diffuseMap, float aoMap, vec3 N){
         if ((flags & 0x00420000u) == 0x00420000u) // bayo hair diffuse is weird
         {
         	diffuseColorFinal = colorOffset.rgb + (diffuseMap.rrr * colorGain.rgb);
+            diffuseColorFinal *= alphaBlendParams.w; // #justbayothings
             aoMap = 1; // dont know bayo ao yet (if it exists)
         }
     }
