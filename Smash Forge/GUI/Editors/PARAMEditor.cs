@@ -56,7 +56,23 @@ namespace Smash_Forge
             tbl.Clear();
             if (p.Groups.Count > groupNum)
             {
-                if (!(p.Groups[groupNum] is ParamGroup))
+                int entrySize = -1;
+                if (p.Groups[groupNum] is ParamGroup)
+                {
+                    entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
+                }
+                else
+                {
+                    foreach (IniLabels.Label label in labels.labels)
+                    {
+                        if (label.Type == IniLabels.Label.type.Group && label.group == groupNum && label.entries != -1)
+                        {
+                            entrySize = (int)((p.Groups[groupNum].Values.ToArray().Length / label.entries) + 0.5);
+                        }
+                    }
+                }
+                
+                if (entrySize == -1)
                 {
                     int i = 0;
                     foreach (ParamEntry val in p.Groups[groupNum].Values)
@@ -73,7 +89,6 @@ namespace Smash_Forge
                 }
                 else
                 {
-                    int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
                     for (int j = 0; j < entrySize; j++)
                     {
                         DataRow tempRow = tbl.NewRow();
@@ -121,9 +136,10 @@ namespace Smash_Forge
         private void openParam(string f)
         {
             p = new ParamFile(f);
-            for(int i = 0; i < p.Groups.Count; i++)
+            for (int i = 0; i < p.Groups.Count; i++)
             {
-                if (p.Groups[i] is ParamGroup) {
+                if (p.Groups[i] is ParamGroup)
+                {
                     TreeNode[] children = new TreeNode[((ParamGroup)p.Groups[i]).EntryCount];
                     for (int j = 0; j < ((ParamGroup)p.Groups[i]).EntryCount; j++)
                     {
@@ -135,7 +151,29 @@ namespace Smash_Forge
                 }
                 else
                 {
-                    treeView1.Nodes.Add(new TreeNode(getGroupName(i)));
+                    int entryCount = -1;
+                    foreach (IniLabels.Label label in labels.labels)
+                    {
+                        if (label.Type == IniLabels.Label.type.Group && label.group == i && label.entries != -1)
+                        {
+                            entryCount = label.entries;
+                        }
+                    }
+                    if(entryCount == -1)
+                    {
+                        treeView1.Nodes.Add(new TreeNode(getGroupName(i)));
+                    }
+                    else
+                    {
+                        TreeNode[] children = new TreeNode[entryCount];
+                        for (int j = 0; j < entryCount; j++)
+                        {
+                            TreeNode child = new TreeNode(getEntryName(i, j));
+                            children[j] = child;
+                        }
+                        TreeNode parent = new TreeNode(getGroupName(i), children);
+                        treeView1.Nodes.Add(parent);
+                    }
                 }
             }
             fillTable(0,0);
@@ -152,34 +190,49 @@ namespace Smash_Forge
         private void edit(object sender, DataGridViewCellEventArgs e)
         {
             IParamCollection i = p.Groups[currentEntry[0]];
+            int entrySize = -1;
             if (i is ParamGroup)
             {
-                ParamGroup pg = (ParamGroup)i;
-                switch(pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Type)
+                entrySize = ((ParamGroup)i).EntrySize;
+            }
+            else
+            {
+                foreach (IniLabels.Label label in labels.labels)
+                {
+                    if (label.Type == IniLabels.Label.type.Group && label.group == currentEntry[0] && label.entries != -1)
+                    {
+                        entrySize = (int)((p.Groups[currentEntry[0]].Values.ToArray().Length / label.entries) + 0.5);
+                    }
+                }
+            }
+            if (entrySize != -1)
+            {
+                IParamCollection pg = i;
+                switch(pg.Values[entrySize * currentEntry[1] + e.RowIndex].Type)
                 {
                     case ParamType.str:
-                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
+                        pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
                         break;
                     case ParamType.s8:
-                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
+                        pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
                         break;
                     case ParamType.u8:
-                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
+                        pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
                         break;
                     case ParamType.s16:
-                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToInt16(tbl.Rows[e.RowIndex][1]);
+                        pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToInt16(tbl.Rows[e.RowIndex][1]);
                         break;
                     case ParamType.u16:
-                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToUInt16(tbl.Rows[e.RowIndex][1]);
+                        pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToUInt16(tbl.Rows[e.RowIndex][1]);
                         break;
                     case ParamType.s32:
-                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToInt32(tbl.Rows[e.RowIndex][1]);
+                        pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToInt32(tbl.Rows[e.RowIndex][1]);
                         break;
                     case ParamType.u32:
-                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToUInt32(tbl.Rows[e.RowIndex][1]);
+                        pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToUInt32(tbl.Rows[e.RowIndex][1]);
                         break;
                     case ParamType.f32:
-                        pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToSingle(tbl.Rows[e.RowIndex][1]);
+                        pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToSingle(tbl.Rows[e.RowIndex][1]);
                         break;
                 }
                 //pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
@@ -264,6 +317,7 @@ namespace Smash_Forge
                 public int group = -1;
                 public int entry = -1;
                 public int value = -1;
+                public int entries = -1;
                 public string description = null;
             }
 
@@ -315,9 +369,10 @@ namespace Smash_Forge
                                         label.entry = int.Parse(ini[i + j].Split('=')[1].Trim());
                                     if (ini[i + j].StartsWith("value"))
                                         label.value = int.Parse(ini[i + j].Split('=')[1].Trim());
+                                    if (ini[i + j].StartsWith("entries"))
+                                        label.entries = int.Parse(ini[i + j].Split('=')[1].Trim());
                                     if (ini[i + j].StartsWith("desc"))
                                         label.description = ini[i + j].Split('=')[1].Trim();
-
                                 }
                                 labels.Add(label);
                             }
