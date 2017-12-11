@@ -414,31 +414,34 @@ namespace Smash_Forge
     
     public class EnmSection
     {
+        public int type;
         public float x,y,z,unk;
 
         public void read(FileData f)
         {
-            f.skip(0x5); //x01 03 00 00 00
+            f.skip(0x2); //x01 03
 
-            f.skip(1);
+            type = f.readInt(); //First set of sections = type 1, second set = type 3. No difference in structure but type 3 seems to have non-zero for z and unk
             x = f.readFloat();
             y = f.readFloat();
-            z = f.readFloat();
-            unk = f.readFloat();
+            z = f.readFloat(); //0 unless type 3
+            unk = f.readFloat(); //0 unless type 3
 
-            f.skip(0x6); //x01 01 00 00 00 00
+            f.skip(0x2); //x01 01
+            f.readInt(); //Only seen this as 0, probably a count
         }
         public void save(FileOutput f)
         {
-            f.writeHex("0103000000");
+            f.writeHex("0103");
 
-            f.writeByte(1);
+            f.writeInt(type);
             f.writeFloat(x);
             f.writeFloat(y);
             f.writeFloat(z);
             f.writeFloat(unk);
 
-            f.writeHex("010100000000");
+            f.writeHex("0101");
+            f.writeInt(0);
         }
     }
 
@@ -450,6 +453,7 @@ namespace Smash_Forge
         public List<EnmSection> sections = new List<EnmSection>();
         public List<EnmSection> sections2 = new List<EnmSection>();
         public List<int> ids = new List<int>();
+        public int padCount = 0;
 
         public void read(FileData f)
         {
@@ -477,13 +481,13 @@ namespace Smash_Forge
             int unkCount = f.readInt();
             for (int i = 0; i < unkCount; i++)
             {
-                //Don't know what these contain
+                //Only seen this count as 0
             }
 
-            f.skip(1);
+            f.skip(1); //x01
             id = f.readInt();
 
-            f.skip(1);
+            f.skip(1); //x01
             int idCount = f.readInt();
             for (int i = 0; i < idCount; i++)
             {
@@ -491,30 +495,28 @@ namespace Smash_Forge
                 ids.Add(f.readInt());
             }
 
-            f.skip(0x5);
-            f.skip(1);
-            int unkCount3 = f.readInt();
-            for (int i = 0; i < unkCount3; i++)
-                f.skip(0x5);
+            f.skip(1); //x01
+            f.readInt(); //Only seen as 0
+            f.skip(1); //x01
+            padCount = f.readInt(); //Don't know the purpose of this, it just seems to be 1 if there's the extra 5 bytes thrown on the end
+            for (int i = 0; i < padCount; i++)
+                f.skip(0x5); //x01 00 00 00 00
         }
         public void save(FileOutput f)
         {
             base.save(f);
 
-            f.writeByte(1);
-            f.writeByte(1);
+            f.writeHex("0101");
             f.writeInt(sections.Count);
             foreach (EnmSection temp in sections)
                 temp.save(f);
 
-            f.writeByte(1);
-            f.writeByte(1);
+            f.writeHex("0101");
             f.writeInt(sections2.Count);
             foreach (EnmSection temp in sections2)
                 temp.save(f);
 
-            f.writeByte(1);
-            f.writeByte(1);
+            f.writeHex("0101");
             f.writeInt(0);
 
             f.writeByte(1);
@@ -531,7 +533,9 @@ namespace Smash_Forge
             f.writeByte(1);
             f.writeInt(0);
             f.writeByte(1);
-            f.writeInt(0);
+            f.writeInt(padCount);
+            for (int i = 0; i < padCount; i++)
+                f.writeHex("0100000000");
         }
     }
 
@@ -1134,6 +1138,21 @@ namespace Smash_Forge
             GL.Vertex3(b.left+sPos[0], b.bottom+sPos[1], 0+sPos[2]);
 
             GL.End();
+        }
+
+        public static void DrawEnemySpawners()
+        {
+            GL.LineWidth(2);
+
+            foreach (EnemyGenerator c in Runtime.TargetLVD.enemySpawns)
+            {
+                GL.Color4(Color.FromArgb(200, Color.Fuchsia));
+                foreach (EnmSection s in c.sections)
+                    RenderTools.drawCubeWireframe(new Vector3(s.x,s.y,s.z), 3);
+                GL.Color4(Color.FromArgb(200, Color.Yellow));
+                foreach (EnmSection s in c.sections2)
+                    RenderTools.drawCubeWireframe(new Vector3(s.x,s.y,s.z), 3);
+            }
         }
 
         public static void DrawItemSpawners()

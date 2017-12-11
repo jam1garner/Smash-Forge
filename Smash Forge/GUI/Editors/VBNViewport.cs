@@ -1324,6 +1324,8 @@ namespace Smash_Forge
 
                 if (Runtime.renderOtherLVDEntries)
                 {
+                    LVD.DrawEnemySpawners();
+
                     foreach (DamageShape s in Runtime.TargetLVD.damageShapes)
                         LVD.DrawShape(s);
 
