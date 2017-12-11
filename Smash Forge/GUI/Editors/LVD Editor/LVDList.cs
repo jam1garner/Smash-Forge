@@ -79,7 +79,7 @@ namespace Smash_Forge
                     deathNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
                 }
 
-                foreach (ItemSpawner c in Runtime.TargetLVD.items)
+                foreach (ItemSpawner c in Runtime.TargetLVD.itemSpawns)
                 {
                     itemNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
                 }
@@ -140,7 +140,7 @@ namespace Smash_Forge
                 if (entry is GeneralShape)
                     Runtime.TargetLVD.generalShapes.Remove((GeneralShape)entry);
                 if (entry is ItemSpawner)
-                    Runtime.TargetLVD.items.Remove((ItemSpawner)entry);
+                    Runtime.TargetLVD.itemSpawns.Remove((ItemSpawner)entry);
                 if (entry is GeneralPoint)
                     Runtime.TargetLVD.generalPoints.Remove((GeneralPoint)entry);
 
