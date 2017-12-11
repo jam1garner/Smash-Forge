@@ -326,10 +326,11 @@ namespace Smash_Forge
                     v.uv.Add(tx);
                     break;
                 case SemanticType.COLOR:
-                    v.col.X = float.Parse(sources[input.source].data[p * 4 + 0]) * 255;
-                    v.col.Y = float.Parse(sources[input.source].data[p * 4 + 1]) * 255;
-                    v.col.Z = float.Parse(sources[input.source].data[p * 4 + 2]) * 255;
-                    v.col.W = float.Parse(sources[input.source].data[p * 4 + 3]) * 127;
+                    v.col.X = float.Parse(sources[input.source].data[p * sources[input.source].stride + 0]) * 255;
+                    v.col.Y = float.Parse(sources[input.source].data[p * sources[input.source].stride + 1]) * 255;
+                    v.col.Z = float.Parse(sources[input.source].data[p * sources[input.source].stride + 2]) * 255;
+                    if(sources[input.source].stride > 3)
+                        v.col.W = float.Parse(sources[input.source].data[p * sources[input.source].stride + 3]) * 127;
                     break;
             }
         }
@@ -1432,6 +1433,13 @@ namespace Smash_Forge
                         source.Read(node);
                         polygons.Add(source);
                     }
+                    if (node.Name.Equals("polylist"))
+                    {
+                        ColladaPolygons source = new ColladaPolygons();
+                        source.type = ColladaPrimitiveType.polylist;
+                        source.Read(node);
+                        polygons.Add(source);
+                    }
                 }
             }
 
@@ -1465,6 +1473,7 @@ namespace Smash_Forge
 
             public string[] data;
             public int count;
+            public int stride;
             public ArrayType type;
             public List<string> accessor = new List<string>();
 
@@ -1482,6 +1491,10 @@ namespace Smash_Forge
                     {
                         count = int.Parse((string)node.Attributes["count"].Value);
                         data = node.InnerText.Trim().Replace("\n", " ").Split(' ');
+                    }
+                    if (node.Name.Equals("technique_common"))
+                    {
+                        stride = int.Parse((string)node.ChildNodes[0].Attributes["stride"].Value);
                     }
                 }
             }
