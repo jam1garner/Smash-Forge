@@ -1199,12 +1199,13 @@ namespace Smash_Forge
 
         public static void drawCubeWireframe(Vector3 center, float size)
         {
-            GL.Color3(Color.Red);
+            //GL.Color3(Color.Red);
             GL.Begin(PrimitiveType.LineLoop);
             GL.Vertex3(center.X + size, center.Y + size, center.Z - size);
             GL.Vertex3(center.X - size, center.Y + size, center.Z - size);
             GL.Vertex3(center.X - size, center.Y + size, center.Z + size);
             GL.Vertex3(center.X + size, center.Y + size, center.Z + size);
+            GL.End();
 
             GL.Begin(PrimitiveType.LineLoop);
             GL.Vertex3(center.X + size, center.Y - size, center.Z + size);
