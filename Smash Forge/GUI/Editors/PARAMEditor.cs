@@ -67,7 +67,7 @@ namespace Smash_Forge
                     {
                         if (label.Type == IniLabels.Label.type.Group && label.group == groupNum && label.entries != -1)
                         {
-                            entrySize = label.entries;
+                            entrySize = (int)((p.Groups[groupNum].Values.ToArray().Length / label.entries) + 0.5);
                         }
                     }
                 }
@@ -201,7 +201,7 @@ namespace Smash_Forge
                 {
                     if (label.Type == IniLabels.Label.type.Group && label.group == currentEntry[0] && label.entries != -1)
                     {
-                        entrySize = label.entries;
+                        entrySize = (int)((p.Groups[currentEntry[0]].Values.ToArray().Length / label.entries) + 0.5);
                     }
                 }
             }
