@@ -730,11 +730,11 @@ namespace Smash_Forge
 
             // set color to light color
             int r = (int)(Lights.diffuseLight.difR * 255);
-            r = RenderTools.ClampInt(r);
+            r = ColorTools.ClampInt(r);
             int g = (int)(Lights.diffuseLight.difG * 255);
-            g = RenderTools.ClampInt(g);
+            g = ColorTools.ClampInt(g);
             int b = (int)(Lights.diffuseLight.difG * 255);
-            b = RenderTools.ClampInt(b);
+            b = ColorTools.ClampInt(b);
             GL.Color4(Color.FromArgb(255, r, g, b));
 
             RenderTools.drawPyramidWireframe(p1, 5.0f, 3.0f);
@@ -1150,7 +1150,10 @@ namespace Smash_Forge
             {
                 if (m.nud != null)
                 {
+                    GL.Color4(Color.GhostWhite);
                     RenderTools.drawCubeWireframe(new Vector3(m.nud.boundingBox[0], m.nud.boundingBox[1], m.nud.boundingBox[2]), m.nud.boundingBox[3]);
+
+                    GL.Color4(Color.OrangeRed);
                     foreach (NUD.Mesh mesh in m.nud.meshes)
                     {
                         if (mesh.Checked)
@@ -1269,6 +1272,8 @@ namespace Smash_Forge
 
                 if (Runtime.renderOtherLVDEntries)
                 {
+                    LVD.DrawEnemySpawners();
+
                     foreach (DamageShape s in Runtime.TargetLVD.damageShapes)
                         LVD.DrawShape(s);
 
@@ -2029,11 +2034,7 @@ namespace Smash_Forge
         {
             if (e.KeyChar == 'i')
             {
-                // the shaders will always be present in the lib/Shader folder, so this is safe to do
-                reloadShaderFromFile("NUD", MainForm.executableDir + "/lib/Shader/NUD_vs.txt", MainForm.executableDir + "/lib/Shader/NUD_fs.txt");
-                reloadShaderFromFile("Texture", MainForm.executableDir + "/lib/Shader/Texture_vs.txt", MainForm.executableDir + "/lib/Shader/Texture_fs.txt");
-                reloadShaderFromFile("MBN", MainForm.executableDir + "/lib/Shader/MBN_vs.txt", MainForm.executableDir + "/lib/Shader/MBN_fs.txt");
-                reloadShaderFromFile("DAT", MainForm.executableDir + "/lib/Shader/DAT_vs.txt", MainForm.executableDir + "/lib/Shader/DAT_fs.txt");
+                ReloadShadersFromFiles();
             }
             if (e.KeyChar == 'r')
             {
@@ -2101,8 +2102,6 @@ namespace Smash_Forge
                 this.Enabled = true;
 
                 this.nupdFrame.Value = cFrame;
-
-
             }
             if (e.KeyChar == ']')
             {
@@ -2134,7 +2133,16 @@ namespace Smash_Forge
             }
         }
 
-        private void reloadShaderFromFile(string shaderName, string vertexFilePath, string fragmentFilePath)
+        private void ReloadShadersFromFiles()
+        {
+            // the shaders will always be present in the lib/Shader folder, so this is safe to do
+            reloadVertFragShaderFromFile("NUD", MainForm.executableDir + "/lib/Shader/NUD_vs.txt", MainForm.executableDir + "/lib/Shader/NUD_fs.txt");
+            reloadVertFragShaderFromFile("Texture", MainForm.executableDir + "/lib/Shader/Texture_vs.txt", MainForm.executableDir + "/lib/Shader/Texture_fs.txt");
+            reloadVertFragShaderFromFile("MBN", MainForm.executableDir + "/lib/Shader/MBN_vs.txt", MainForm.executableDir + "/lib/Shader/MBN_fs.txt");
+            reloadVertFragShaderFromFile("DAT", MainForm.executableDir + "/lib/Shader/DAT_vs.txt", MainForm.executableDir + "/lib/Shader/DAT_fs.txt");
+        }
+
+        private void reloadVertFragShaderFromFile(string shaderName, string vertexFilePath, string fragmentFilePath)
         {
             GL.DeleteProgram(Runtime.shaders[shaderName].programID);
             shader = new Shader();
@@ -2293,7 +2301,6 @@ namespace Smash_Forge
             float zoom = 0;
             float height = 0;
 
-
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.A))
                 width += 1.0f;
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.D))
@@ -2313,7 +2320,7 @@ namespace Smash_Forge
             modelMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
         }
 
-        public Bitmap CaptureScreen(bool saveAlpha = false)
+        public Bitmap CaptureScreen(bool saveAlpha)
         {
             int width = glControl1.Width;
             int height = glControl1.Height;
@@ -2323,41 +2330,18 @@ namespace Smash_Forge
             // Flip data because glReadPixels reads it in from bottom row to top row
             byte[] fixedPixels = new byte[width * height * 4];
             for (int h = 0; h < height; h++)
+            {
                 for (int w = 0; w < width; w++)
                 {
+                    // Remove alpha blending from the end image - we just want the post-render colors
                     if (!saveAlpha)
-                        // Remove alpha blending from the end image - we just want the post-render colors
                         pixels[((w + h * width) * 4) + 3] = 255;
 
                     // Copy a 4 byte pixel one at a time
                     Array.Copy(pixels, (w + h * width) * 4, fixedPixels, ((height - h - 1) * width + w) * 4, 4);
                 }
-            // Format and save the data
-            Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bmp.PixelFormat);
-            Marshal.Copy(fixedPixels, 0, bmpData.Scan0, fixedPixels.Length);
-            bmp.UnlockBits(bmpData);
-            return bmp;
-        }
-
-        public Bitmap CaptureScreen()
-        {
-            int width = glControl1.Width;
-            int height = glControl1.Height;
-
-            byte[] pixels = new byte[width * height * 4];
-            GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
-            // Flip data becausee glReadPixels reads it in from bottom row to top row
-            byte[] fixedPixels = new byte[width * height * 4];
-            for (int h = 0; h < height; h++)
-                for (int w = 0; w < width; w++)
-                {
-                    // Remove alpha blending from the end image - we just want the post-render colors
-                    pixels[((w + h * width) * 4) + 3] = 255;
-
-                    // Copy a 4 byte pixel one at a time
-                    Array.Copy(pixels, (w + h * width) * 4, fixedPixels, ((height - h - 1) * width + w) * 4, 4);
-                }
+            }
+    
             // Format and save the data
             Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bmp.PixelFormat);

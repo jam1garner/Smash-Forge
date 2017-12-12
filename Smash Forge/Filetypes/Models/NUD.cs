@@ -178,17 +178,6 @@ namespace Smash_Forge
             Shader shader = Runtime.shaders["NUD"];
             GL.UseProgram(shader.programID);
 
-            int renderType = (int)Runtime.renderType;
-            GL.Uniform1(shader.getAttribute("renderType"), renderType);
-
-            GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderMaterialLighting ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderDiffuse"), Runtime.renderDiffuse ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.renderNormalMap ? 1 : 0);
-
             {
                 GL.ActiveTexture(TextureUnit.Texture10);
                 GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
@@ -226,8 +215,10 @@ namespace Smash_Forge
         private void DrawBoundingBoxes()
         {
             GL.UseProgram(0);
+
             GL.Color4(Color.GhostWhite);
             RenderTools.drawCubeWireframe(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+
             GL.Color4(Color.OrangeRed);
             foreach (NUD.Mesh mesh in meshes)
             {
@@ -446,7 +437,7 @@ namespace Smash_Forge
 
             // reflection color for characters & stages
             float refR, refG, refB = 1.0f;
-            RenderTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
+            ColorTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
             GL.Uniform3(shader.getAttribute("refLightColor"), refR, refG, refB);
 
             // character diffuse light
@@ -531,7 +522,7 @@ namespace Smash_Forge
             SetTextureUniforms(shader, material);
             SetMaterialPropertyUniforms(shader, material);
             SetXMBUniforms(shader, p);
-            SetRenderSettingsUniforms(shader);
+            SetRenderSettingsUniforms(shader, material);
             SetNSCUniform(p, shader);
 
             // vertex shader attributes (UVs, skin weights, etc)
@@ -618,11 +609,11 @@ namespace Smash_Forge
             }
         }
 
-        private static void SetRenderSettingsUniforms(Shader shader)
+        private static void SetRenderSettingsUniforms(Shader shader, Material material)
         {
             GL.Uniform1(shader.getAttribute("renderStageLighting"), Runtime.renderStageLighting ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderMaterialLighting ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor && (material.useVertexColor) ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderDiffuse"), Runtime.renderDiffuse ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
@@ -2378,9 +2369,10 @@ namespace Smash_Forge
 
                 useDiffuseBlend = (flag & 0xD0090000) == 0xD0090000 || (flag & 0x90005000) == 0x90005000;
 
-                // characters, stages with certain flags
-                useVertexColor = (flag & 0x0F000000) == 0x02000000 || (flag & 0x0F000000) == 0x04000000 
-                    || (flag & 0x0F000000) == 0x06000000 || (flag & 0xF0000000) == 0x90000000; 
+                // characters and stages use different values for enabling vertex color
+                useVertexColor = ((flag & 0xFF000000) == 0x94000000) || ((flag & 0xFF000000) == 0x9A000000)
+                    || ((flag & 0xFF000000) == 0x9C000000) 
+                    || ((flag & 0xFF000000) == 0xA2000000) || ((flag & 0xFF000000) == 0xA4000000);
 
             }
 

@@ -50,7 +50,7 @@ namespace Smash_Forge
             this.skyHue = skyH;
             this.skySaturation = skyS;
             this.skyIntensity = skyV;
-            RenderTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
+            ColorTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
 
             this.skyAngle = skyAngle;
             this.groundAngle = groundAngle;
@@ -61,37 +61,37 @@ namespace Smash_Forge
         public void setSkyHue(float skyHue)
         {
             this.skyHue = skyHue;
-            RenderTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
+            ColorTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
         }
 
         public void setSkySaturation(float skySaturation)
         {
             this.skySaturation = skySaturation;
-            RenderTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
+            ColorTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
         }
 
         public void setSkyIntensity(float skyIntensity)
         {
             this.skyIntensity = skyIntensity;
-            RenderTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
+            ColorTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
         }
 
         public void setGroundHue(float groundHue)
         {
             this.groundHue = groundHue;
-            RenderTools.HSV2RGB(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
+            ColorTools.HSV2RGB(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
         }
 
         public void setGroundSaturation(float groundSaturation)
         {
             this.groundSaturation = groundSaturation;
-            RenderTools.HSV2RGB(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
+            ColorTools.HSV2RGB(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
         }
 
         public void setGroundIntensity(float groundIntensity)
         {
             this.groundIntensity = groundIntensity;
-            RenderTools.HSV2RGB(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
+            ColorTools.HSV2RGB(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
         }
 
         public override string ToString()
@@ -135,8 +135,8 @@ namespace Smash_Forge
             ambHue = ambH;
             ambSaturation = ambS;
             ambIntensity = ambV;
-            RenderTools.HSV2RGB(difHue, difSaturation, difIntensity, out difR, out difG, out difB);
-            RenderTools.HSV2RGB(ambHue, ambSaturation, ambIntensity, out ambR, out ambG, out ambB);
+            ColorTools.HSV2RGB(difHue, difSaturation, difIntensity, out difR, out difG, out difB);
+            ColorTools.HSV2RGB(ambHue, ambSaturation, ambIntensity, out ambR, out ambG, out ambB);
 
             // calculate light vector
             this.rotX = rotX;
@@ -157,7 +157,7 @@ namespace Smash_Forge
             difHue = H;
             difSaturation = S;
             difIntensity = V;
-            RenderTools.HSV2RGB(difHue, difSaturation, difIntensity, out difR, out difG, out difB);
+            ColorTools.HSV2RGB(difHue, difSaturation, difIntensity, out difR, out difG, out difB);
 
             direction = lightDirection;
 
@@ -172,37 +172,37 @@ namespace Smash_Forge
         public void setDifHue(float hue)
         {
             this.difHue = hue;
-            RenderTools.HSV2RGB(hue, difSaturation, difIntensity, out difR, out difG, out difB);
+            ColorTools.HSV2RGB(hue, difSaturation, difIntensity, out difR, out difG, out difB);
         }
 
         public void setDifSaturation(float saturation)
         {
             this.difSaturation = saturation;
-            RenderTools.HSV2RGB(difHue, saturation, difIntensity, out difR, out difG, out difB);
+            ColorTools.HSV2RGB(difHue, saturation, difIntensity, out difR, out difG, out difB);
         }
 
         public void setDifIntensity(float intensity)
         {
             this.difIntensity = intensity;
-            RenderTools.HSV2RGB(difHue, difSaturation, difIntensity, out difR, out difG, out difB);
+            ColorTools.HSV2RGB(difHue, difSaturation, difIntensity, out difR, out difG, out difB);
         }
 
         public void setAmbHue(float hue)
         {
             this.ambHue = hue;
-            RenderTools.HSV2RGB(ambHue, ambSaturation, ambIntensity, out ambR, out ambG, out ambB);
+            ColorTools.HSV2RGB(ambHue, ambSaturation, ambIntensity, out ambR, out ambG, out ambB);
         }
 
         public void setAmbSaturation(float saturation)
         {
             this.ambSaturation = saturation;
-            RenderTools.HSV2RGB(ambHue, ambSaturation, ambIntensity, out ambR, out ambG, out ambB);
+            ColorTools.HSV2RGB(ambHue, ambSaturation, ambIntensity, out ambR, out ambG, out ambB);
         }
 
         public void setAmbIntensity(float intensity)
         {
             this.ambIntensity = intensity;
-            RenderTools.HSV2RGB(ambHue, ambSaturation, ambIntensity, out ambR, out ambG, out ambB);
+            ColorTools.HSV2RGB(ambHue, ambSaturation, ambIntensity, out ambR, out ambG, out ambB);
         }
 
         public void setRotX(float rotX)
@@ -244,7 +244,7 @@ namespace Smash_Forge
             difHue = H;
             difSaturation = S;
             difIntensity = V;
-            RenderTools.HSV2RGB(difHue, difSaturation, difIntensity, out difR, out difG, out difB);
+            ColorTools.HSV2RGB(difHue, difSaturation, difIntensity, out difR, out difG, out difB);
         }
 
         public override string ToString()
@@ -445,7 +445,7 @@ namespace Smash_Forge
             float saturation = (float)RenderTools.GetValueFromParamFile(lightSet, 2, 1 + i, 1);
             float value = (float)RenderTools.GetValueFromParamFile(lightSet, 2, 1 + i, 2);
             float fogR = 0.0f, fogB = 0.0f, fogG = 0.0f;
-            RenderTools.HSV2RGB(hue, saturation, value, out fogR, out fogG, out fogB);
+            ColorTools.HSV2RGB(hue, saturation, value, out fogR, out fogG, out fogB);
             Vector3 color = new Vector3(fogR, fogG, fogB);
             return color;
         }

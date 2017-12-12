@@ -445,6 +445,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Camera.cs" />
+    <Compile Include="Rendering\ColorTools.cs" />
     <Compile Include="Rendering\FrameTimer.cs" />
     <Compile Include="Rendering\Lights.cs" />
     <Compile Include="Updates.cs" />
@@ -801,6 +802,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\stdat_Kalos.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\stdat_PeachCastle64_f.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\stdat_PikminU.ini">

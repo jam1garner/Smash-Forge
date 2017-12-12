@@ -28,7 +28,7 @@ namespace Smash_Forge.GUI.Menus
             R = light.difR;
             G = light.difG;
             B = light.difB;
-            RenderTools.RGB2HSV(R, G, B, out hue, out saturation, out value);
+            ColorTools.RGB2HSV(R, G, B, out hue, out saturation, out value);
 
             colorTempTB.Text = colorTemp + "";
             redTB.Text = R + "";
@@ -72,7 +72,7 @@ namespace Smash_Forge.GUI.Menus
             if (useColorTempCB.Checked)
             {
                 // override the color with RGB calculated from color temperature and disable other color controls
-                RenderTools.ColorTemp2RGB(colorTemp, out R, out G, out B);
+                ColorTools.ColorTemp2RGB(colorTemp, out R, out G, out B);
 
 
 
@@ -179,7 +179,7 @@ namespace Smash_Forge.GUI.Menus
 
         public void updateColorFromRGB() // update HSV values and button color
         {
-            RenderTools.RGB2HSV(R, G, B, out hue, out saturation, out value);
+            ColorTools.RGB2HSV(R, G, B, out hue, out saturation, out value);
             redTB.Text = R.ToString();
             greenTB.Text = G.ToString();
             blueTB.Text = B.ToString();
@@ -192,12 +192,12 @@ namespace Smash_Forge.GUI.Menus
             blueTrackBar.Value = (int)(B * blueTrackBar.Maximum);
             hueTrackBar.Value = (int)(hue);
 
-            colorButton.BackColor = Color.FromArgb(255, RenderTools.Float2RGBClamp(R), RenderTools.Float2RGBClamp(G), RenderTools.Float2RGBClamp(B));
+            colorButton.BackColor = Color.FromArgb(255, ColorTools.Float2RGBClamp(R), ColorTools.Float2RGBClamp(G), ColorTools.Float2RGBClamp(B));
         }
 
         public void updateColorFromHSV() // update values and button color
         {
-            RenderTools.HSV2RGB(hue, saturation, value, out R, out G, out B);
+            ColorTools.HSV2RGB(hue, saturation, value, out R, out G, out B);
             redTB.Text = R.ToString();
             greenTB.Text = G.ToString();
             blueTB.Text = B.ToString();
@@ -210,13 +210,13 @@ namespace Smash_Forge.GUI.Menus
             blueTrackBar.Value = (int)(B * blueTrackBar.Maximum);
             hueTrackBar.Value = (int)(hue);
 
-            colorButton.BackColor = Color.FromArgb(255, RenderTools.Float2RGBClamp(R), RenderTools.Float2RGBClamp(G), RenderTools.Float2RGBClamp(B));
+            colorButton.BackColor = Color.FromArgb(255, ColorTools.Float2RGBClamp(R), ColorTools.Float2RGBClamp(G), ColorTools.Float2RGBClamp(B));
         }
 
 
         public void updateColorFromTemp() // update values and button color
         {
-            RenderTools.ColorTemp2RGB(colorTemp, out R, out G, out B);
+            ColorTools.ColorTemp2RGB(colorTemp, out R, out G, out B);
             redTB.Text = R.ToString();
             greenTB.Text = G.ToString();
             blueTB.Text = B.ToString();
@@ -230,7 +230,7 @@ namespace Smash_Forge.GUI.Menus
             blueTrackBar.Value = (int)(B * blueTrackBar.Maximum);
             hueTrackBar.Value = (int)(hue);
 
-            colorButton.BackColor = Color.FromArgb(255, RenderTools.Float2RGBClamp(R), RenderTools.Float2RGBClamp(G), RenderTools.Float2RGBClamp(B));
+            colorButton.BackColor = Color.FromArgb(255, ColorTools.Float2RGBClamp(R), ColorTools.Float2RGBClamp(G), ColorTools.Float2RGBClamp(B));
         }
 
         private void hueTrackBar_Scroll(object sender, EventArgs e)

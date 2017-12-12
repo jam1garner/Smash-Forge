@@ -170,9 +170,9 @@ namespace Smash_Forge.GUI.Editors
 
         private void UpdateStageButtonColor()
         {
-            int red = RenderTools.ClampInt((int)(selectedStageLight.difR * 255));
-            int green = RenderTools.ClampInt((int)(selectedStageLight.difG * 255));
-            int blue = RenderTools.ClampInt((int)(selectedStageLight.difB * 255));
+            int red = ColorTools.ClampInt((int)(selectedStageLight.difR * 255));
+            int green = ColorTools.ClampInt((int)(selectedStageLight.difG * 255));
+            int blue = ColorTools.ClampInt((int)(selectedStageLight.difB * 255));
             Color stageColor = Color.FromArgb(255, red, green, blue);
             stageDifColorButton.BackColor = stageColor;
         }
