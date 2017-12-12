@@ -966,7 +966,7 @@ namespace Smash_Forge
         {
             if (Runtime.TargetLVD == null)
                 Runtime.TargetLVD = new LVD();
-            Runtime.TargetLVD.items.Add(new ItemSpawner() { name = "ITEM_00_NEW", subname = "00_NEW" });
+            Runtime.TargetLVD.itemSpawns.Add(new ItemSpawner() { name = "ITEM_00_NEW", subname = "00_NEW" });
             lvdList.fillList();
         }
 

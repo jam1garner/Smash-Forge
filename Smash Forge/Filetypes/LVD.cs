@@ -411,10 +411,132 @@ namespace Smash_Forge
             }
         }
     }
-
-    public class EnemyGenerator : ItemSpawner
+    
+    public class EnmSection
     {
-        
+        public int type;
+        public float x,y,z,unk;
+
+        public void read(FileData f)
+        {
+            f.skip(0x2); //x01 03
+
+            type = f.readInt(); //First set of sections = type 1, second set = type 3. No difference in structure but type 3 seems to have non-zero for z and unk
+            x = f.readFloat();
+            y = f.readFloat();
+            z = f.readFloat(); //0 unless type 3
+            unk = f.readFloat(); //0 unless type 3
+
+            f.skip(0x2); //x01 01
+            f.readInt(); //Only seen this as 0, probably a count
+        }
+        public void save(FileOutput f)
+        {
+            f.writeHex("0103");
+
+            f.writeInt(type);
+            f.writeFloat(x);
+            f.writeFloat(y);
+            f.writeFloat(z);
+            f.writeFloat(unk);
+
+            f.writeHex("0101");
+            f.writeInt(0);
+        }
+    }
+
+    public class EnemyGenerator : LVDEntry
+    {
+        public override string magic { get { return "030401017735BB7500000002"; } }
+
+        public int id;
+        public List<EnmSection> sections = new List<EnmSection>();
+        public List<EnmSection> sections2 = new List<EnmSection>();
+        public List<int> ids = new List<int>();
+        public int padCount = 0;
+
+        public void read(FileData f)
+        {
+            base.read(f);
+
+            f.skip(0x2); //x01 01
+            int sectionCount = f.readInt();
+            for (int i = 0; i < sectionCount; i++)
+            {
+                EnmSection temp = new EnmSection();
+                temp.read(f);
+                sections.Add(temp);
+            }
+
+            f.skip(0x2); //x01 01
+            int sectionCount2 = f.readInt();
+            for (int i = 0; i < sectionCount2; i++)
+            {
+                EnmSection temp = new EnmSection();
+                temp.read(f);
+                sections2.Add(temp);
+            }
+
+            f.skip(0x2); //x01 01
+            int unkCount = f.readInt();
+            for (int i = 0; i < unkCount; i++)
+            {
+                //Only seen this count as 0
+            }
+
+            f.skip(1); //x01
+            id = f.readInt();
+
+            f.skip(1); //x01
+            int idCount = f.readInt();
+            for (int i = 0; i < idCount; i++)
+            {
+                f.skip(1);
+                ids.Add(f.readInt());
+            }
+
+            f.skip(1); //x01
+            f.readInt(); //Only seen as 0
+            f.skip(1); //x01
+            padCount = f.readInt(); //Don't know the purpose of this, it just seems to be 1 if there's the extra 5 bytes thrown on the end
+            for (int i = 0; i < padCount; i++)
+                f.skip(0x5); //x01 00 00 00 00
+        }
+        public void save(FileOutput f)
+        {
+            base.save(f);
+
+            f.writeHex("0101");
+            f.writeInt(sections.Count);
+            foreach (EnmSection temp in sections)
+                temp.save(f);
+
+            f.writeHex("0101");
+            f.writeInt(sections2.Count);
+            foreach (EnmSection temp in sections2)
+                temp.save(f);
+
+            f.writeHex("0101");
+            f.writeInt(0);
+
+            f.writeByte(1);
+            f.writeInt(id);
+
+            f.writeByte(1);
+            f.writeInt(ids.Count);
+            foreach (int temp in ids)
+            {
+                f.writeByte(1);
+                f.writeInt(temp);
+            }
+
+            f.writeByte(1);
+            f.writeInt(0);
+            f.writeByte(1);
+            f.writeInt(padCount);
+            for (int i = 0; i < padCount; i++)
+                f.writeHex("0100000000");
+        }
     }
 
     public enum shape
@@ -616,7 +738,7 @@ namespace Smash_Forge
             blastzones = new List<Bounds>();
             enemySpawns = new List<EnemyGenerator>();
             damageShapes = new List<DamageShape>();
-            items = new List<ItemSpawner>();
+            itemSpawns = new List<ItemSpawner>();
             generalShapes = new List<GeneralShape>();
             generalPoints = new List<GeneralPoint>();
         }
@@ -631,7 +753,7 @@ namespace Smash_Forge
         public List<Bounds> blastzones { get; set; }
         public List<EnemyGenerator> enemySpawns { get; set; }
         public List<DamageShape> damageShapes { get; set; }
-        public List<ItemSpawner> items { get; set; }
+        public List<ItemSpawner> itemSpawns { get; set; }
         public List<GeneralShape> generalShapes { get; set; }
         public List<GeneralPoint> generalPoints { get; set; }
 
@@ -642,9 +764,9 @@ namespace Smash_Forge
           type 3  - respawns
           type 4  - camera bounds
           type 5  - death boundaries
-          type 6  - ???
+          type 6  - enemy generator
           type 7  - ITEMPT_transform
-          type 8  - enemyGenerator
+          type 8  - ???
           type 9  - ITEMPT
           type 10 - fsAreaCam (and other fsArea's ? )
           type 11 - fsCamLimit
@@ -661,7 +783,7 @@ namespace Smash_Forge
         {
             FileData f = new FileData(filename);
             f.skip(0xA);//It's magic
-            
+
             f.skip(1);
             int collisionCount = f.readInt();
             for (int i = 0; i < collisionCount; i++)
@@ -670,7 +792,7 @@ namespace Smash_Forge
                 temp.read(f);
                 collisions.Add(temp);
             }
-            
+
             f.skip(1);
             int spawnCount = f.readInt();
             for (int i = 0; i < spawnCount; i++)
@@ -679,7 +801,7 @@ namespace Smash_Forge
                 temp.read(f);
                 spawns.Add(temp);
             }
-            
+
             f.skip(1);
             int respawnCount = f.readInt();
             for (int i = 0; i < respawnCount; i++)
@@ -688,7 +810,7 @@ namespace Smash_Forge
                 temp.read(f);
                 respawns.Add(temp);
             }
-            
+
             f.skip(1);
             int cameraCount = f.readInt();
             for (int i = 0; i < cameraCount; i++)
@@ -697,7 +819,7 @@ namespace Smash_Forge
                 temp.read(f);
                 cameraBounds.Add(temp);
             }
-            
+
             f.skip(1);
             int blastzoneCount = f.readInt();
             for (int i = 0; i < blastzoneCount; i++)
@@ -706,20 +828,24 @@ namespace Smash_Forge
                 temp.read(f);
                 blastzones.Add(temp);
             }
-            
+
             f.skip(1);
-            if (f.readInt() != 0) //6
-                return;
-                
+            int enemyGeneratorCount = f.readInt();
+            for (int i = 0; i < enemyGeneratorCount; i++)
+            {
+                EnemyGenerator temp = new EnemyGenerator();
+                temp.read(f);
+                enemySpawns.Add(temp);
+            }
+
             f.skip(1);
             if (f.readInt() != 0) //7
                 return;
-            
+
             f.skip(1);
-            int enemyGeneratorCount = f.readInt();
-            if (enemyGeneratorCount != 0) //Can these be read in the same way as item spawners?
+            if (f.readInt() != 0) //8
                 return;
-            
+
             f.skip(1);
             if (f.readInt() != 0) //9
                 return;
@@ -749,7 +875,7 @@ namespace Smash_Forge
             {
                 ItemSpawner temp = new ItemSpawner();
                 temp.read(f);
-                items.Add(temp);
+                itemSpawns.Add(temp);
             }
             
             f.skip(1);
@@ -795,33 +921,38 @@ namespace Smash_Forge
             f.Endian = Endianness.Big;
 
             f.writeHex("000000010A014C564431");
-            
+
             f.writeByte(1);
             f.writeInt(collisions.Count);
             foreach (Collision c in collisions)
                 c.save(f);
-            
+
             f.writeByte(1);
             f.writeInt(spawns.Count);
             foreach (Spawn s in spawns)
                 s.save(f);
-            
+
             f.writeByte(1);
             f.writeInt(respawns.Count);
             foreach (Spawn s in respawns)
                 s.save(f);
-            
+
             f.writeByte(1);
             f.writeInt(cameraBounds.Count);
             foreach (Bounds b in cameraBounds)
                 b.save(f);
-            
+
             f.writeByte(1);
             f.writeInt(blastzones.Count);
             foreach (Bounds b in blastzones)
                 b.save(f);
 
-            for (int i = 0; i < 6; i++)
+            f.writeByte(1);
+            f.writeInt(enemySpawns.Count);
+            foreach (EnemyGenerator e in enemySpawns)
+                e.save(f);
+
+            for (int i = 0; i < 5; i++)
             {
                 f.writeByte(1);
                 f.writeInt(0);
@@ -833,8 +964,8 @@ namespace Smash_Forge
                 shape.save(f);
             
             f.writeByte(1);
-            f.writeInt(items.Count);
-            foreach (ItemSpawner item in items)
+            f.writeInt(itemSpawns.Count);
+            foreach (ItemSpawner item in itemSpawns)
                 item.save(f);
 
             f.writeByte(1);
@@ -1009,9 +1140,24 @@ namespace Smash_Forge
             GL.End();
         }
 
+        public static void DrawEnemySpawners()
+        {
+            GL.LineWidth(2);
+
+            foreach (EnemyGenerator c in Runtime.TargetLVD.enemySpawns)
+            {
+                GL.Color4(Color.FromArgb(200, Color.Fuchsia));
+                foreach (EnmSection s in c.sections)
+                    RenderTools.drawCubeWireframe(new Vector3(s.x,s.y,s.z), 3);
+                GL.Color4(Color.FromArgb(200, Color.Yellow));
+                foreach (EnmSection s in c.sections2)
+                    RenderTools.drawCubeWireframe(new Vector3(s.x,s.y,s.z), 3);
+            }
+        }
+
         public static void DrawItemSpawners()
         {
-            foreach (ItemSpawner c in Runtime.TargetLVD.items)
+            foreach (ItemSpawner c in Runtime.TargetLVD.itemSpawns)
             {
                 Vector3 sPos = c.useStartPos ? c.startPos : new Vector3(0,0,0);
                 foreach (Section s in c.sections)
