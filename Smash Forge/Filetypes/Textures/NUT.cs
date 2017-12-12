@@ -42,6 +42,8 @@ namespace Smash_Forge
                             return (width * height);
                         case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
                             return (width * height);
+                        case PixelInternalFormat.Rgba16:
+                            return mipmaps[0].Length/2;
                         case PixelInternalFormat.Rgba:
                             return mipmaps[0].Length;
                         default:
@@ -89,6 +91,10 @@ namespace Smash_Forge
                         break;
                     case 0x2:
                         type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                        break;
+                    case 12:
+                        type = PixelInternalFormat.Rgba16;
+                        utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                         break;
                     case 14:
                         type = PixelInternalFormat.Rgba;
@@ -640,8 +646,11 @@ namespace Smash_Forge
 
             image.UnlockBits(data);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 2);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 1);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
 
             return texID;
         }

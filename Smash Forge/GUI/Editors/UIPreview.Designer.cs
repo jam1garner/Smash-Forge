@@ -42,6 +42,7 @@
             this.chr_00_renderer.Size = new System.Drawing.Size(128, 128);
             this.chr_00_renderer.TabIndex = 0;
             this.chr_00_renderer.VSync = false;
+            this.chr_00_renderer.DragEnter += new System.Windows.Forms.DragEventHandler(this.Drag_Enter);
             this.chr_00_renderer.Paint += new System.Windows.Forms.PaintEventHandler(this.chr_00_renderer_Paint);
             // 
             // chr_11_renderer
@@ -52,6 +53,7 @@
             this.chr_11_renderer.Size = new System.Drawing.Size(192, 192);
             this.chr_11_renderer.TabIndex = 1;
             this.chr_11_renderer.VSync = false;
+            this.chr_11_renderer.DragEnter += new System.Windows.Forms.DragEventHandler(this.Drag_Enter);
             this.chr_11_renderer.Paint += new System.Windows.Forms.PaintEventHandler(this.chr_11_renderer_Paint);
             // 
             // chr_13_renderer
@@ -62,6 +64,8 @@
             this.chr_13_renderer.Size = new System.Drawing.Size(224, 224);
             this.chr_13_renderer.TabIndex = 2;
             this.chr_13_renderer.VSync = false;
+            this.chr_13_renderer.DragDrop += new System.Windows.Forms.DragEventHandler(this.chr_13_renderer_DragDrop);
+            this.chr_13_renderer.DragEnter += new System.Windows.Forms.DragEventHandler(this.Drag_Enter);
             this.chr_13_renderer.Paint += new System.Windows.Forms.PaintEventHandler(this.chr_13_renderer_Paint);
             // 
             // stock_90_renderer
@@ -72,6 +76,7 @@
             this.stock_90_renderer.Size = new System.Drawing.Size(64, 64);
             this.stock_90_renderer.TabIndex = 3;
             this.stock_90_renderer.VSync = false;
+            this.stock_90_renderer.DragEnter += new System.Windows.Forms.DragEventHandler(this.Drag_Enter);
             this.stock_90_renderer.Paint += new System.Windows.Forms.PaintEventHandler(this.stock_90_renderer_Paint);
             // 
             // UIPreview

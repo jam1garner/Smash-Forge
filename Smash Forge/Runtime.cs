@@ -161,6 +161,7 @@ namespace Smash_Forge
             Color.FromArgb(0xFF, 0x59, 0x33, 0x15), // Deep yellowish brown
         };
 
+        public static string FloorURL = "";
         public static TextureWrapMode floorWrap = TextureWrapMode.MirroredRepeat;
         public static float floorSize = 30f;
         public static Color floorColor = Color.Gray;
@@ -329,6 +330,7 @@ namespace Smash_Forge
                                     case "floor":
                                         if (File.Exists(node.InnerText) && node.InnerText.ToLower().EndsWith(".png"))
                                         {
+                                            FloorURL = node.InnerText;
                                             RenderTools.floorTexture = NUT.loadImage(new Bitmap(node.InnerText));
                                             floorStyle = FloorStyle.UserTexture;
                                         }
@@ -516,6 +518,8 @@ for changing default texure
                 node.AppendChild(createNode(doc, "style", floorStyle.ToString()));
                 node.AppendChild(createNode(doc, "color", ColorTranslator.ToHtml(floorColor)));
                 node.AppendChild(createNode(doc, "size", floorSize.ToString()));
+                if(floorStyle == FloorStyle.UserTexture)
+                    node.AppendChild(createNode(doc, "texture", FloorURL));
             }
             
             viewportNode.AppendChild(createNode(doc, "zoom_speed", zoomspeed.ToString()));

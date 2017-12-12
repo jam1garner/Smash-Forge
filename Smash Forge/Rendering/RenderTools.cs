@@ -8,6 +8,7 @@ using System.Drawing.Imaging;
 using System.Diagnostics;
 using System.Reflection;
 using SALT.PARAMS;
+using System.Runtime.InteropServices;
 
 namespace Smash_Forge
 {
@@ -1325,6 +1326,66 @@ namespace Smash_Forge
         #endregion
 
 
+        public void DrawVBNDiamond(VBN vbn)
+        {
+            if (vbn != null && Runtime.renderBones)
+            {
+                foreach (Bone bone in vbn.bones)
+                {
+                    float offset = 0.1f;
+                    // first calcuate the point and draw a point
+                    GL.Color3(Color.DarkGray);
+                    GL.PointSize(1f);
+
+                    Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform);
+
+                    GL.Begin(PrimitiveType.LineLoop);
+                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z - offset));
+                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z - offset));
+                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z + offset));
+                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z + offset));
+                    GL.End();
+
+                    Vector3 pos_p = pos_c;
+                    if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex != -1)
+                    {
+                        int i = bone.parentIndex;
+                        pos_p = Vector3.Transform(Vector3.Zero, vbn.bones[i].transform);
+                    }
+
+                    GL.Color3(Color.Gray);
+                    GL.Begin(PrimitiveType.Lines);
+                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z - offset));
+                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
+                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z - offset));
+                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
+                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z + offset));
+                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
+                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z + offset));
+                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
+                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z - offset));
+                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
+                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z - offset));
+                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
+                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z + offset));
+                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
+                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z + offset));
+                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
+
+                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z - offset));
+                    GL.Vertex3(pos_p);
+                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z - offset));
+                    GL.Vertex3(pos_p);
+                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z + offset));
+                    GL.Vertex3(pos_p);
+                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z + offset));
+                    GL.Vertex3(pos_p);
+
+                    GL.End();
+                }
+            }
+        }
+
         public static void drawCircle(Vector3 pos, float r, int smooth)
         {
             float t = 2 * (float)Math.PI / smooth;
@@ -1767,6 +1828,73 @@ namespace Smash_Forge
         #endregion
 
         #region Other
+
+        public static byte[] DXT5ScreenShot(GLControl gc, int x, int y, int width, int height)
+        {
+            int newtex;
+            //x = gc.Width - x - width;
+            y = gc.Height - y - height;
+            GL.GenTextures(1, out newtex);
+            GL.BindTexture(TextureTarget.Texture2D, newtex);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.CompressedRgba, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+
+            GL.CopyTexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.CompressedRgba, x, y, width, height, 0);
+
+            int size;
+            GL.GetTexLevelParameter(TextureTarget.Texture2D, 0, GetTextureParameter.TextureCompressedImageSize, out size);
+
+            byte[] data = new byte[size];
+            GCHandle pinnedArray = GCHandle.Alloc(data, GCHandleType.Pinned);
+            IntPtr pointer = pinnedArray.AddrOfPinnedObject();
+            GL.GetCompressedTexImage(TextureTarget.Texture2D, 0, pointer);
+            pinnedArray.Free();
+
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+            GL.DeleteTexture(newtex);
+
+            return data;
+        }
+
+        public static void DrawPhotoshoot(GLControl glControl1, float shootX, float shootY, float shootWidth, float shootHeight)
+        {
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+            GL.Ortho(0, glControl1.Width, glControl1.Height, 0, -1, 1);
+
+            GL.Disable(EnableCap.DepthTest);
+
+            GL.Color4(1f, 1f, 1f, 0.5f);
+            GL.Begin(PrimitiveType.Quads);
+
+            // top
+            GL.Vertex2(0, 0);
+            GL.Vertex2(glControl1.Width, 0);
+            GL.Vertex2(glControl1.Width, shootY);
+            GL.Vertex2(0, shootY);
+
+            //bottom
+            GL.Vertex2(0, shootY + shootHeight);
+            GL.Vertex2(glControl1.Width, shootY + shootHeight);
+            GL.Vertex2(glControl1.Width, glControl1.Height);
+            GL.Vertex2(0, glControl1.Height);
+
+            // left
+            GL.Vertex2(0, 0);
+            GL.Vertex2(shootX, 0);
+            GL.Vertex2(shootX, glControl1.Height);
+            GL.Vertex2(0, glControl1.Height);
+
+            // right
+            GL.Vertex2(shootX + shootWidth, 0);
+            GL.Vertex2(glControl1.Width, 0);
+            GL.Vertex2(glControl1.Width, glControl1.Height);
+            GL.Vertex2(shootX + shootWidth, glControl1.Height);
+
+            GL.End();
+        }
+
         public static int LoadCubeMap(Bitmap b, TextureUnit textureUnit)
         {
             int id;

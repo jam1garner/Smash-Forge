@@ -27,6 +27,15 @@ namespace Smash_Forge
     {
         public static int defaulttex = 0;
 
+        public Mode CurrentMode = Mode.Normal;
+
+        public enum Mode
+        {
+            Normal = 0,
+            Photoshoot,
+            Selection
+        }
+
         public VBNViewport()
         {
             InitializeComponent();
@@ -90,7 +99,12 @@ namespace Smash_Forge
         public long totalRenderTime = 0;
         public Stopwatch directUVTimeStopWatch = new Stopwatch();
 
+        // Selection
         public TransformTool transformTool = new TransformTool();
+
+        // PhotoShoot
+        public int shootX = 0, shootY = 0, shootWidth = 512, shootHeight = 512;
+
 
         Shader shader;
         #endregion
@@ -166,6 +180,8 @@ namespace Smash_Forge
                     }
                 }
 
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
                 if (isPlaying)
                 {
                     if (nupdFrame.Value < nupdMaxFrame.Value)
@@ -185,10 +201,23 @@ namespace Smash_Forge
                         }
                     }
                 }
-                Stopwatch stopWatch = new Stopwatch();
-                stopWatch.Start();
                 Render();
                 stopWatch.Stop();
+
+                Overlay.Visible = fpsCheckbox.Checked;
+                if (fpsCheckbox.Checked)
+                {
+                    Overlay.Text = "FPS: " + (AnimationSpeed - stopWatch.ElapsedMilliseconds / 1000f) + "\n";
+                    if (MainForm.Instance.boneTreePanel.treeView1.SelectedNode != null)
+                    {
+                        Bone bone = (Bone)MainForm.Instance.boneTreePanel.treeView1.SelectedNode;
+                        Overlay.Text += bone.Text + "\n";
+                        Overlay.Text += bone.pos.ToString() + "\n";
+                        Overlay.Text += bone.rot.ToString() + "\n";
+                        Overlay.Text += ANIM.quattoeul(bone.rot).ToString() + "\n";
+                        Overlay.Text += bone.sca.ToString() + "\n";
+                    }
+                }
 
                 if (((1000 / AnimationSpeed) - stopWatch.ElapsedMilliseconds > 0))
                     System.Threading.Thread.Sleep((int)((1000 / AnimationSpeed) - stopWatch.ElapsedMilliseconds));
@@ -332,11 +361,11 @@ namespace Smash_Forge
             {
                 dbdistance = 0;
             }
-            if(Runtime.TargetVBN != null && freezeCamera)
+            /*if(Runtime.TargetVBN != null && freezeCamera && CurrentMode == Mode.Selection)
             {
                 ((Bone)MainForm.Instance.boneTreePanel.treeView1.SelectedNode).rot += Quaternion.FromAxisAngle(Vector3.UnitX, 2);
                 Runtime.TargetVBN.update();
-            }
+            }*/
         }
 
         public event EventHandler FrameChanged;
@@ -538,7 +567,7 @@ namespace Smash_Forge
                 new Vector3(0, 1, 0));
             lightMatrix = lightProjection * lightView;
             //lightMatrix = Matrix4.CreateTranslation(width, -height, zoom)
-              //  * lightProjection * Matrix4.CreateRotationY(Lights.diffuseLight.rotY) * Matrix4.CreateRotationX(Lights.diffuseLight.rotX);
+            // * lightProjection * Matrix4.CreateRotationY(Lights.diffuseLight.rotY) * Matrix4.CreateRotationX(Lights.diffuseLight.rotX);
         }
 
         public void Render()
@@ -652,8 +681,20 @@ namespace Smash_Forge
             if (Runtime.renderBones)
                 DrawBones();
 
-
             DrawHitboxesHurtboxes();
+
+            if(CurrentMode == Mode.Photoshoot)
+            {
+                freezeCamera = false;
+                if (Keyboard.GetState().IsKeyDown(Key.W) && Mouse.GetState().IsButtonDown(MouseButton.Left))
+                {
+                    shootX = this.PointToClient(Cursor.Position).X;
+                    shootY = this.PointToClient(Cursor.Position).Y;
+                    freezeCamera = true;
+                }
+                // Hold on to your pants, boys
+                RenderTools.DrawPhotoshoot(glControl1, shootX, shootY, shootWidth, shootHeight);
+            }
 
             // Clean up
             GL.PopAttrib();
@@ -668,40 +709,6 @@ namespace Smash_Forge
                 2.0f * ((glControl1.Height - y) / glControl1.Height) - 1.0f,
                 2.0f * z - 1.0f,
                 1.0f), Camera.viewportCamera.getMVPMatrix().Inverted()).Xyz;
-        }
-
-        public static bool LineSphereIntersect(Vector3 start, Vector3 end, Vector3 center, float radius, out Vector3 result)
-        {
-            Vector3 diff = end - start;
-            float a = Vector3.Dot(diff, diff);
-            //center.Normalize();
-
-            if (a > 0.0f)
-            {
-                float b = 2 * Vector3.Dot(diff, start - center);
-                float c = (Vector3.Dot(center, center) + Vector3.Dot(start, start)) - (2 * Vector3.Dot(center,start)) - (radius * radius);
-
-                float magnitude = (b * b) - (4 * a * c);
-                magnitude *= -1;
-
-                if (magnitude >= 0.0f)
-                {
-                    magnitude = (float)Math.Sqrt(magnitude);
-                    a *= 2;
-
-                    float scale = (-b + magnitude) / a;
-                    float dist2 = (-b - magnitude) / a;
-
-                    if (dist2 < scale)
-                        scale = dist2;
-
-                    result = start + (diff * scale);
-                    return true;
-                }
-            }
-
-            result = new Vector3();
-            return false;
         }
 
         private static void DrawLightArrows(float rotX, float rotY, float rotZ, Vector3 center, float R, float G, float B)
@@ -1173,66 +1180,7 @@ namespace Smash_Forge
                 }           
             }
         }
-
-        public void DrawVBNDiamond(VBN vbn)
-        {
-            if (vbn != null && Runtime.renderBones)
-            {
-                foreach (Bone bone in vbn.bones)
-                {
-                    float offset = 0.1f;
-                    // first calcuate the point and draw a point
-                    GL.Color3(Color.DarkGray);
-                    GL.PointSize(1f);
-
-                    Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform);
-
-                    GL.Begin(PrimitiveType.LineLoop);
-                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z - offset));
-                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z - offset));
-                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z + offset));
-                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z + offset));
-                    GL.End();
-
-                    Vector3 pos_p = pos_c;
-                    if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex != -1)
-                    {
-                        int i = bone.parentIndex;
-                        pos_p = Vector3.Transform(Vector3.Zero, vbn.bones[i].transform);
-                    }
-
-                    GL.Color3(Color.Gray);
-                    GL.Begin(PrimitiveType.Lines);
-                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z - offset));
-                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z - offset));
-                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z + offset));
-                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z + offset));
-                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z - offset));
-                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z - offset));
-                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z + offset));
-                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z + offset));
-                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
-
-                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z - offset));
-                    GL.Vertex3(pos_p);
-                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z - offset));
-                    GL.Vertex3(pos_p);
-                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z + offset));
-                    GL.Vertex3(pos_p);
-                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z + offset));
-                    GL.Vertex3(pos_p);
-
-                    GL.End();
-                }
-            }
-        }
+        
         
         public void DrawLVD()
         {
@@ -2204,6 +2152,11 @@ namespace Smash_Forge
         {
             Runtime.renderType = (Runtime.RenderTypes)renderMode.SelectedIndex;
             Runtime.useDebugShading = renderMode.SelectedIndex > 0;
+        }
+
+        private void fpsCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
 
         private void glControl1_DoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)

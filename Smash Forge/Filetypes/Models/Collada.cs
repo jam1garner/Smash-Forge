@@ -265,8 +265,15 @@ namespace Smash_Forge
                             v = new NUD.Vertex();
                             if (dae.library_controllers.Count > 0)
                             {
-                                v.node.AddRange(vertices["#" + geom.id][p.p[i]].node);
-                                v.weight.AddRange(vertices["#" + geom.id][p.p[i]].weight);
+                                if (vertices.ContainsKey("#" + geom.id))
+                                {
+                                    v.node.AddRange(vertices["#" + geom.id][p.p[i]].node);
+                                    v.weight.AddRange(vertices["#" + geom.id][p.p[i]].weight);
+                                }
+                            }else
+                            {
+                                v.node.Add(-1);
+                                v.weight.Add(1);
                             }
                             npoly.vertices.Add(v);
                             npoly.faces.Add(npoly.vertices.IndexOf(v));
@@ -286,6 +293,7 @@ namespace Smash_Forge
 
                     if (dae.library_controllers.Count > 0)
                     {
+                        if (!bindMatrix.ContainsKey("#" + geom.id)) continue;
                         v.pos = Vector3.Transform(v.pos, bindMatrix["#" + geom.id]);
                         if (v.nrm != null)
                             v.nrm = Vector3.TransformNormal(v.nrm, bindMatrix["#" + geom.id]);

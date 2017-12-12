@@ -41,7 +41,7 @@ namespace Smash_Forge
 			public int reserve = 0;
 		}
 
-		Header header;
+		public Header header;
 		public byte[] data;
 
 		public DDS (FileData d)

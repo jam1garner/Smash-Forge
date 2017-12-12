@@ -18,30 +18,39 @@ namespace Smash_Forge
         {
         }
 
-        public float Distance(Vector3 v1, Vector3 v2)
-        {
-            return (float)Math.Sqrt(Math.Pow(v1.X-v2.X, 2) + Math.Pow(v1.Y - v2.Y, 2)+ Math.Pow(v1.Z - v2.Z, 2));
-        }
-
         public void Render(Matrix4 view)
         {
             if (b == null) return;
 
             Matrix4 mat = b.transform;
             Vector3 center = Vector3.Transform(Vector3.Zero, mat);
+            Vector3 camPoint = Vector3.Transform(Vector3.Zero, view);
+
+            Matrix4 rot = mat;
+            float Radius = CamDistance(center, camPoint);// / 1 * (Runtime.fov / 45.0f) * 1.0f;
+
+
+
+            Vector3 lineStart = VBNViewport.p1;
+            Vector3 lineEnd = VBNViewport.p2;
+            Vector3 normal = new Vector3(0);
+            Matrix4 invTrasnform = mat.Inverted();
+
             Vector3 point;
+            Console.WriteLine(LineSphereIntersect(VBNViewport.p1, VBNViewport.p2, center, Radius, out point));
+            float Distance = CamDistance(point, center);
 
             hit = false;
             bool _hiX = false;
             bool _hiY = false;
             bool _hiZ = false;
-            if (RenderTools.CheckSphereHit(center, 2, VBNViewport.p1, VBNViewport.p2, out point))
+            Console.WriteLine(Distance + " " + Radius);
+            if (Math.Abs(Distance - Radius) < (Radius * 3))
             {
                 hit = true;
 
-                VBNViewport.LineSphereIntersect(VBNViewport.p1, VBNViewport.p2, center, 2, out point);
-
-                Vector3 angle = Angles(Vector3.Transform(point, b.invert)) * new Vector3(180f / (float)Math.PI);
+                
+                Vector3 angle = Angles(Vector3.Transform(point, invTrasnform)) * new Vector3(180f / (float)Math.PI);
                 angle.X = Math.Abs(angle.X);
                 angle.Y = Math.Abs(angle.Y);
                 angle.Z = Math.Abs(angle.Z);
@@ -75,6 +84,51 @@ namespace Smash_Forge
             
             GL.PopMatrix();
         }
+
+        public static bool LineSphereIntersect(Vector3 start, Vector3 end, Vector3 center, float radius, out Vector3 result)
+        {
+            Vector3 diff = end - start;
+            float a = Vector3.Dot(diff, diff);
+            //center.Normalize();
+
+            if (a > 0.0f)
+            {
+                float b = 2 * Vector3.Dot(diff, start - center);
+                float c = (Vector3.Dot(center, center) + Vector3.Dot(start, start)) - (2 * Vector3.Dot(center, start)) - (radius * radius);
+
+                float magnitude = (b * b) - (4 * a * c);
+                magnitude *= -1;
+
+                if (magnitude >= 0.0f)
+                {
+                    magnitude = (float)Math.Sqrt(magnitude);
+                    a *= 2;
+
+                    float scale = (-b + magnitude) / a;
+                    float dist2 = (-b - magnitude) / a;
+
+                    if (dist2 < scale)
+                        scale = dist2;
+
+                    result = start + (diff * scale);
+                    return true;
+                }
+            }
+
+            result = new Vector3();
+            return false;
+        }
+
+        public float CamDistance(Vector3 va, Vector3 vb)
+        {
+            return (float)Math.Sqrt(Vector3.Dot(vb - va, vb - va));
+        }
+
+        public float TrueDistance(Vector3 va, Vector3 vb)
+        {
+            return Vector3.Dot(vb, va);
+        }
+
 
         public Vector3 Angles(Vector3 i)
         {

@@ -15,16 +15,169 @@ namespace Smash_Forge
 {
     public partial class UIPreview : DockContent
     {
+        public string chr_00_loc, chr_11_loc, chr_13_loc, stock_90_loc;
+
         public UIPreview(NUT chr_00, NUT chr_11, NUT chr_13, NUT stock_90)
         {
             InitializeComponent();
+            if (chr_00 == null) chr_00 = new NUT();
+            if (chr_11 == null) chr_11 = new NUT();
+            if (chr_13 == null) chr_13 = new NUT();
+            if (stock_90 == null) stock_90 = new NUT();
             this.chr_00 = chr_00;
             this.chr_11 = chr_11;
             this.chr_13 = chr_13;
             this.stock_90 = stock_90;
+
+            ContextMenu cm = new ContextMenu();
+            MenuItem snapShot = new MenuItem("Begin Snapshot");
+            snapShot.Click += SnapShotMode;
+            cm.MenuItems.Add(snapShot);
+            MenuItem snapShot2 = new MenuItem("Snapshot");
+            snapShot2.Click += LetsDance;
+            cm.MenuItems.Add(snapShot2);
+            chr_00_renderer.ContextMenu = cm;
+            chr_11_renderer.ContextMenu = cm;
+            chr_13_renderer.ContextMenu = cm;
+
+            stock_90_renderer.AllowDrop = true;
+            chr_00_renderer.AllowDrop = true;
+            chr_11_renderer.AllowDrop = true;
+            chr_13_renderer.AllowDrop = true;
+            //stock_90_renderer.ContextMenu = cm;
         }
 
         NUT chr_00, chr_11, chr_13, stock_90;
+
+        private void LetsDance(object sender, EventArgs e)
+        {
+            VBNViewport view = MainForm.Instance.viewports[0];
+            view.CurrentMode = VBNViewport.Mode.Normal;
+
+            NUT n = null;
+            if (((MenuItem)sender).GetContextMenu().SourceControl == stock_90_renderer)
+                n = stock_90;
+            if (((MenuItem)sender).GetContextMenu().SourceControl == chr_00_renderer)
+                n = chr_00;
+            if (((MenuItem)sender).GetContextMenu().SourceControl == chr_11_renderer)
+                n = chr_11;
+            if (((MenuItem)sender).GetContextMenu().SourceControl == chr_13_renderer)
+                n = chr_13;
+            if (n == null) return;
+
+            byte[] data = RenderTools.DXT5ScreenShot(view.glControl1, view.shootX, view.shootY, view.shootWidth, view.shootHeight);
+            int id = n.textures.Count > 0 ? n.textures[0].id : 0x280052B7;
+            n.Destroy();
+            n.textures.Clear();
+            n.draw.Clear();
+
+            NUT.NUD_Texture tex = new NUT.NUD_Texture();
+            tex.width = view.shootWidth;
+            tex.height = view.shootHeight;
+            tex.mipmaps.Add(FlipDXT5(data, tex.width, tex.height));
+            tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+            tex.id = id;
+            n.textures.Add(tex);
+            n.draw.Add(tex.id, NUT.loadImage(tex));
+            ((MenuItem)sender).GetContextMenu().SourceControl.Invalidate();
+
+            if (((MenuItem)sender).GetContextMenu().SourceControl == stock_90_renderer)
+            {
+                if (stock_90_loc != null)
+                    stock_90.Save(stock_90_loc);
+            }
+            if (((MenuItem)sender).GetContextMenu().SourceControl == chr_00_renderer)
+            {
+                if (chr_00_loc != null)
+                    chr_00.Save(chr_00_loc);
+            }
+            if (((MenuItem)sender).GetContextMenu().SourceControl == chr_11_renderer)
+            {
+                if (chr_11_loc != null)
+                    chr_11.Save(chr_13_loc);
+            }
+            if (((MenuItem)sender).GetContextMenu().SourceControl == chr_13_renderer)
+            {
+                if (chr_13_loc != null)
+                    chr_13.Save(chr_13_loc);
+            }
+        }
+
+        public byte[] FlipDXT5(byte[] i, int width, int height)
+        {
+            // oh dear lord why god flipping dxt5 alpha channel
+
+            byte[] o = new byte[i.Length];
+
+            for (int h = 0; h < height / 4; h++)
+                for (int w = 0; w < width / 4; w++)
+                {
+                    for (int b = 0; b < 16; b++)
+                    {
+                        o[(w + (height / 4 - h - 1) * (width / 4)) * 16 + b] = i[(w + h * (width / 4)) * 16 + b];
+                    }
+                    o[(w + (height / 4 - h - 1) * (width / 4)) * 16 + 12] = (i[(w + h * (width / 4)) * 16 + 15]);
+                    o[(w + (height / 4 - h - 1) * (width / 4)) * 16 + 13] = (i[(w + h * (width / 4)) * 16 + 14]);
+                    o[(w + (height / 4 - h - 1) * (width / 4)) * 16 + 14] = (i[(w + h * (width / 4)) * 16 + 13]);
+                    o[(w + (height / 4 - h - 1) * (width / 4)) * 16 + 15] = (i[(w + h * (width / 4)) * 16 + 12]);
+
+                    long block = (((long)i[(w + h * (width / 4)) * 16 + 2]) << 40) |
+                        (((long)i[(w + h * (width / 4)) * 16 + 3] & 0xFF) << 32) |
+/*I'm not bored, I'm hungry*/(((long)i[(w + h * (width / 4)) * 16 + 4] & 0xFF) << 24) |
+                        (((long)i[(w + h * (width / 4)) * 16 + 5] & 0xFF) << 16) |
+                        (((long)i[(w + h * (width / 4)) * 16 + 6] & 0xFF) << 8) |
+                        (((long)i[(w + h * (width / 4)) * 16 + 7] & 0xFF));
+
+
+                    int row12 = ((i[(w + h * (width / 4)) * 16 + 7] << 16) & 0x00ff0000) |
+((i[(w + h * (width / 4)) * 16 + 6] << 8) & 0x0000ff00) |
+((i[(w + h * (width / 4)) * 16 + /*just get the rows 3 bits per pixel*/ 5]) & 0x000000ff);
+                    int row34 = ((i[(w + h * (width / 4)) * 16 + 4] << 16) & 0x00ff0000) |
+((i[(w + h * (width / 4)) * 16 + 3] << 8) & 0x0000ff00) |
+((i[(w + h * (width / 4)) * 16 + 2]) & 0x000000ff);
+
+                    row12 = ((row12 & 0x00000fff) << 12) | ((row12 & 0x00fff000) >> 12);
+                    row34 = (/*reorder da nibbles*/(row34 & 0x00000fff) << 12) | ((row34 & 0x00fff000) >> 12);
+
+                    o[(w + (height / 4 - h - 1) * (width / 4)) * 16 + 7] = (byte)((row34 & 0x00ff0000) >> 16);
+                    o[(w + (height / 4 - h - 1) * (width / 4)) * 16 + 6] = (byte)((row34 & 0x0000ff00) >> 8);
+                    o[(w + (height / 4 - h - 1) * (width / 4)) * 16 + 5] = (byte)((row34 & 0x000000ff));
+                    o[(w + (height / 4 - h - 1) * (width / 4)) * 16 + 4] = (byte)((row12 & 0x00ff0000) >> 16);
+                    o[(w + (height / 4 - h - 1) * (width / 4)) * 16 + 3] = (byte)((row12 & 0x0000ff00) >> 8);
+                    o[(w + (height / 4 - h - 1) * (width / 4)) * 16 + 2] = (byte)((row12 & 0x000000ff));
+                }
+
+            return o;
+        }
+
+        private void SnapShotMode(object sender, EventArgs e)
+        {
+            MainForm.Instance.viewports[0].CurrentMode = VBNViewport.Mode.Photoshoot;
+            Console.WriteLine();
+            if (((MenuItem)sender).GetContextMenu().SourceControl == stock_90_renderer)
+            {
+                MainForm.Instance.viewports[0].shootWidth = 64;
+                MainForm.Instance.viewports[0].shootHeight = 64;
+            }
+            if (((MenuItem)sender).GetContextMenu().SourceControl == chr_00_renderer)
+            {
+                MainForm.Instance.viewports[0].shootWidth = 128;
+                MainForm.Instance.viewports[0].shootHeight = 128;
+            }
+            if (((MenuItem)sender).GetContextMenu().SourceControl == chr_11_renderer)
+            {
+                MainForm.Instance.viewports[0].shootWidth = 384;
+                MainForm.Instance.viewports[0].shootHeight = 384;
+            }
+            if (((MenuItem)sender).GetContextMenu().SourceControl == chr_13_renderer)
+            {
+                MainForm.Instance.viewports[0].shootWidth = 416;
+                MainForm.Instance.viewports[0].shootHeight = 416;
+            }
+            Runtime.renderFloor = false;
+            Runtime.renderBackGround = false;
+            Runtime.renderBones = false;
+        }
 
         private void chr_00_renderer_Paint(object sender, PaintEventArgs e)
         {
@@ -38,7 +191,91 @@ namespace Smash_Forge
 
         private void chr_13_renderer_Paint(object sender, PaintEventArgs e)
         {
-            RenderTexture(chr_13_renderer, chr_13);
+            RenderTexture(chr_13_renderer, chr_13);                                                           /*Grady, look!*/
+        }
+
+        private void PSButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void chr_13_renderer_DragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                foreach (string filePath in files)
+                {
+                    if (filePath.ToLower().EndsWith(".dds"))
+                    {
+                        DDS dds = new DDS(new FileData(filePath));
+                        if(sender == chr_13_renderer)
+                        {
+                            chr_13 = ReplaceTexture(dds.toNUT_Texture(), 416, 416, chr_13);
+                            if (chr_13_loc != null)
+                                chr_13.Save(chr_13_loc);
+                        }
+                        if (sender == chr_00_renderer)
+                        {
+                            chr_00 = ReplaceTexture(dds.toNUT_Texture(), 128, 128, chr_00);
+                            if (chr_00_loc != null)
+                                chr_00.Save(chr_00_loc);
+                        }
+                        if (sender == chr_11_renderer)
+                        {
+                            chr_11 = ReplaceTexture(dds.toNUT_Texture(), 384, 384, chr_13);
+                            if (chr_11_loc != null)
+                                chr_11.Save(chr_11_loc);
+                        }
+                    }
+                    if (filePath.ToLower().EndsWith(".png"))
+                    {
+                        if (sender == stock_90_renderer)
+                        {
+                            stock_90 = ReplaceTexture(NUTEditor.fromPNG(filePath, 0), 64, 64, chr_13);
+                            if (stock_90_loc != null)
+                                stock_90.Save(stock_90_loc);
+                        }
+                    }
+                }
+                ((GLControl)sender).Invalidate();
+            }
+        }
+
+        private NUT ReplaceTexture(NUT.NUD_Texture tex, int width, int height, NUT nut)
+        {
+            if (tex.width == width && tex.height == height)
+            {
+                tex.id = 0x280052B7;
+                if (nut != null && nut.textures.Count > 0)
+                {
+                    tex.id = nut.textures[0].id;
+                    nut.Destroy();
+                }
+                if(nut == null)
+                    nut = new NUT();
+                nut.textures.Clear();
+                nut.draw.Clear();
+                nut.textures.Add(tex);
+                nut.draw.Add(tex.id, NUT.loadImage(tex));
+            }
+            else
+            {
+                MessageBox.Show("Dimensions must be "+width+"x"+height);
+            }
+            return nut;
+        }
+
+        private void Drag_Enter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
         }
 
         private void UIPreview_Load(object sender, EventArgs e)
@@ -56,7 +293,7 @@ namespace Smash_Forge
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.ClearColor(Color.White);
+            GL.ClearColor(Color.Black);
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);

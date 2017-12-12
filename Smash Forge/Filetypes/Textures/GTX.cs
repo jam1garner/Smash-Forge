@@ -384,6 +384,8 @@ namespace Smash_Forge
         switch((GX2SurfaceFormat)i){
             case GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM:
                 return 0x20;
+            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_TC_R5_G5_B5_A1_UNORM:
+                return 0x10;
             case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_UNORM:
                 return 0x40;
             case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC2_UNORM:
@@ -410,6 +412,7 @@ namespace Smash_Forge
         int height = surface.height;
 
         int format = getBPP(surface.format);
+            Console.WriteLine(((GX2SurfaceFormat)surface.format).ToString());
 
         if (isCompressed) {
             width  /= 4;
@@ -422,6 +425,11 @@ namespace Smash_Forge
                 blockSize = 16;
             }
         } else {
+                /*if ((GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_TC_R5_G5_B5_A1_UNORM)
+                {
+                    blockSize = format / 4;
+                }
+                else*/
             blockSize = format / 8;
         }
 
@@ -432,7 +440,7 @@ namespace Smash_Forge
 
                 for (int k = 0; k < blockSize; k++)
                 {
-                        if (pos + k >= original.Length)
+                        if (pos + k >= original.Length || pos_ + k >= surface.data.Length)
                         {
                             Console.WriteLine("Break Point " + pos_ + " " + pos);
                             break;

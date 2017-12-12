@@ -209,8 +209,9 @@ namespace Smash_Forge
                     superCleanPreset(new object(), new EventArgs());
                     meshList.Show();
                     NUT chr_00_nut = null, chr_11_nut = null, chr_13_nut = null, stock_90_nut = null;
+                    string chr_00_loc = null, chr_11_loc = null, chr_13_loc = null, stock_90_loc = null;
                     String nud = null, nut, vbn;
-                    for(int j = i+1; j < filesToOpen.Length; j++)
+                    for (int j = i + 1; j < filesToOpen.Length; j++)
                     {
                         switch (filesToOpen[j])
                         {
@@ -224,18 +225,26 @@ namespace Smash_Forge
                                 vbn = filesToOpen[j + 1];
                                 break;
                             case "-chr_00":
+                                chr_00_loc = filesToOpen[j + 1];
+                                if (!File.Exists(filesToOpen[j + 1])) break;
                                 chr_00_nut = new NUT(filesToOpen[j + 1]);
                                 Runtime.TextureContainers.Add(chr_00_nut);
                                 break;
                             case "-chr_11":
+                                chr_11_loc = filesToOpen[j + 1];
+                                if (!File.Exists(filesToOpen[j + 1])) break;
                                 chr_11_nut = new NUT(filesToOpen[j + 1]);
                                 Runtime.TextureContainers.Add(chr_11_nut);
                                 break;
                             case "-chr_13":
+                                chr_13_loc = filesToOpen[j + 1];
+                                if (!File.Exists(filesToOpen[j + 1])) break;
                                 chr_13_nut = new NUT(filesToOpen[j + 1]);
                                 Runtime.TextureContainers.Add(chr_13_nut);
                                 break;
                             case "-stock_90":
+                                stock_90_loc = filesToOpen[j + 1];
+                                if (!File.Exists(filesToOpen[j + 1])) break;
                                 stock_90_nut = new NUT(filesToOpen[j + 1]);
                                 Runtime.TextureContainers.Add(stock_90_nut);
                                 break;
@@ -248,6 +257,10 @@ namespace Smash_Forge
                     }
 
                     UIPreview uiPreview = new UIPreview(chr_00_nut, chr_11_nut, chr_13_nut, stock_90_nut);
+                    uiPreview.chr_00_loc = chr_00_loc;
+                    uiPreview.chr_11_loc = chr_11_loc;
+                    uiPreview.chr_13_loc = chr_13_loc;
+                    uiPreview.stock_90_loc = stock_90_loc;
                     uiPreview.ShowHint = DockState.DockRight;
                     dockPanel1.DockRightPortion = 270;
                     AddDockedControl(uiPreview);
@@ -1941,7 +1954,7 @@ namespace Smash_Forge
 
         private void MainForm_DragDrop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            if (e.Data.GetDataPresent(DataFormats.FileDrop) && !Text.Equals("Meteor Preview"))
             {
                 string[] files = (string[]) e.Data.GetData(DataFormats.FileDrop);
                 foreach (string filePath in files)
@@ -1953,7 +1966,7 @@ namespace Smash_Forge
 
         private void MainForm_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            if (e.Data.GetDataPresent(DataFormats.FileDrop) && !Text.Equals("Meteor Preview"))
             {
                 e.Effect = DragDropEffects.Copy;
             }
