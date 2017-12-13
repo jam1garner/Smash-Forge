@@ -341,6 +341,22 @@ namespace Smash_Forge
 
         }
 
+        public LightMap(Vector3 scale, int texture_index, int texture_addr, Vector3 pos, float rotX, float rotY, float rotZ, string id)
+        {
+            this.scaleX = scale.X;
+            this.scaleY = scale.Y;
+            this.scaleZ = scale.Z;
+            this.texture_addr = texture_addr;
+            this.texture_index = texture_index;
+            this.posX = pos.X;
+            this.posY = pos.Y;
+            this.posZ = pos.Z;
+            this.rotX = rotX;
+            this.rotY = rotY;
+            this.rotZ = rotZ;
+            this.id = id;
+        }
+
         public override string ToString()
         {
             return id;
@@ -581,7 +597,7 @@ namespace Smash_Forge
             Vector3 position = new Vector3(posX, posY, posZ);
             Vector3 scale = new Vector3(scaleX, scaleY, scaleZ);
 
-            return new LightMap();
+            return new LightMap(new Vector3(scaleX, scaleY, scaleZ), texture_index, texture_addr, new Vector3(posX, posY, posZ), rotX, rotY, rotZ, id);
         }
 
 

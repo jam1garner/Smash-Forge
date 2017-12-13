@@ -2374,27 +2374,24 @@ namespace Smash_Forge
                     || ((flag & 0xFF000000) == 0x9C000000) 
                     || ((flag & 0xFF000000) == 0xA2000000) || ((flag & 0xFF000000) == 0xA4000000);
 
+                // always use vertex color for effect materials for now
+                useVertexColor = useVertexColor || ((flag & 0xF0000000) == 0xB0000000);
             }
 
             public void TestTextures()
             {
-                // really need to clean this up
-                // texture flags
-
+                normalmap = (flag & (int)TextureFlags.NormalMap) > 0;
                 spheremap = (flag & (int)TextureFlags.SphereMap) > 0;
-
                 aomap = (flag & (int)TextureFlags.StageAOMap) > 0 && !dummyramp;
                 stagemap = (flag & (int)TextureFlags.StageAOMap) > 0 && dummyramp;
-
                 cubemap = (flag & (int)TextureFlags.RampCubeMap) > 0 && (!dummyramp) && (!spheremap);
                 ramp = (flag & (int) TextureFlags.RampCubeMap) > 0 && dummyramp; 
 
-                diffuse = (flag & (int)TextureFlags.DiffuseMap) > 0;
+                // effect materials use 4th byte 00 but still have diffuse
+                diffuse = (flag & (int)TextureFlags.DiffuseMap) > 0 || (flag & 0xF0000000) == 0xB0000000;
                 diffuse3 = (flag & 0x00009100) == 0x00009100 || (flag & 0x00009600) == 0x00009600 || (flag & 0x00009900) == 0x00009900; 
                 diffuse2 = (flag & (int)TextureFlags.RampCubeMap) > 0 && (flag & (int)TextureFlags.NormalMap) == 0 
                     && dummyramp || diffuse3;
-
-                normalmap = (flag & (int) TextureFlags.NormalMap) > 0;
             }
         }
 
@@ -2433,8 +2430,7 @@ namespace Smash_Forge
 
             public void AOSpecRefBlend()
             {
-                // change aomingain to only affect specular and reflection
-                // ignore 2nd material
+                // change aomingain to only affect specular and reflection. ignore 2nd material
                 if (materials[0].entries.ContainsKey("NU_aoMinGain"))
                 {
                     materials[0].entries["NU_aoMinGain"][0] = 15.0f;

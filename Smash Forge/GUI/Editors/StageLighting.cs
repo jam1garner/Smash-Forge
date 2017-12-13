@@ -23,12 +23,22 @@ namespace Smash_Forge.GUI.Editors
         public StageLighting()
         {
             InitializeComponent();
-            InitializeStageLightSetListBox();
-            InitializeCharLightListBox();
-            InitializeAreaLightListBox();
+
+            InitStageLightSetListBox();
+            InitCharLightListBox();
+            InitAreaLightListBox();
+            InitLightMapListBox();
         }
 
-        private void InitializeAreaLightListBox()
+        private void InitLightMapListBox()
+        {
+            foreach (LightMap lightMap in Lights.lightMaps)
+            {
+                lightmapListBox.Items.Add(lightMap);
+            }
+        }
+
+        private void InitAreaLightListBox()
         {
             foreach (AreaLight light in Lights.areaLights)
             {
@@ -36,7 +46,7 @@ namespace Smash_Forge.GUI.Editors
             }
         }
 
-        private void InitializeStageLightSetListBox()
+        private void InitStageLightSetListBox()
         {
             for (int i = 0; i < 16; i++)
             {
@@ -71,7 +81,7 @@ namespace Smash_Forge.GUI.Editors
 
         }
 
-        private void InitializeCharLightListBox()
+        private void InitCharLightListBox()
         {
             charLightsListBox.Items.Add(Lights.diffuseLight);
             charLightsListBox.Items.Add(Lights.diffuseLight2);
@@ -146,7 +156,9 @@ namespace Smash_Forge.GUI.Editors
             lightSetLightListBox.Items.Clear();
             for (int i = 0; i < 4; i++)
             {
-                lightSetLightListBox.Items.Add(Lights.stageDiffuseLightSet[(lightSetGroupListBox.SelectedIndex * 4) + i]);
+                DirectionalLight currentLight = Lights.stageDiffuseLightSet[(lightSetGroupListBox.SelectedIndex * 4) + i];
+                lightSetLightListBox.Items.Add(currentLight, currentLight.enabled);
+                lightSetLightListBox.SetItemChecked(i, currentLight.enabled);
             }
         }
 
@@ -159,7 +171,8 @@ namespace Smash_Forge.GUI.Editors
             stageDifRotXTB.Text = selectedStageLight.rotX + "";
             stageDifRotYTB.Text = selectedStageLight.rotY + "";
             stageDifRotZTB.Text = selectedStageLight.rotZ + "";
-            renderStageLightCB.Checked = selectedStageLight.enabled;
+            lightSetLightListBox.SetItemChecked(lightSetLightListBox.SelectedIndex, selectedStageLight.enabled);
+            //renderStageLightCB.Checked = selectedStageLight.enabled;
         }
 
         private void lightSetLightListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -219,7 +232,7 @@ namespace Smash_Forge.GUI.Editors
 
         private void renderStageLightCB_CheckedChanged(object sender, EventArgs e)
         {
-            selectedStageLight.enabled = renderStageLightCB.Checked;
+            //selectedStageLight.enabled = renderStageLightCB.Checked;
         }
 
         private void stageDifHueTB_TextChanged(object sender, EventArgs e)
@@ -944,15 +957,23 @@ namespace Smash_Forge.GUI.Editors
         {
             areaScaleZTB.Text = (float)(250 * (areaScaleZTrackBar.Value / (float)areaScaleZTrackBar.Maximum)) + "";
         }
-
-
-
         #endregion
 
         private void stageLightingTabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             // render solid white to avoid displaying the stage light text
             RenderCharacterLightColor(new Vector3(1), new Vector3(1));
+        }
+
+        private void lightmapListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lightSetLightListBox_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            //lightSetLightListBox.SetItemChecked()
+            selectedStageLight.enabled = e.NewValue == CheckState.Checked;
         }
     }
 }
