@@ -94,6 +94,20 @@ namespace Smash_Forge
             ColorTools.HSV2RGB(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
         }
 
+        public Vector3 getSkyDirection()
+        {
+            Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, skyAngle * ((float)Math.PI / 180f));
+            Vector3 direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
+            return direction;
+        }
+
+        public Vector3 getGroundDirection()
+        {
+            Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, groundAngle * ((float)Math.PI / 180f));
+            Vector3 direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
+            return direction;
+        }
+
         public override string ToString()
         {
             return name;

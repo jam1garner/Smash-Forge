@@ -103,9 +103,13 @@ uniform float reflectionIntensity;
 uniform vec3 difLightColor;
 uniform vec3 ambLightColor;
 uniform vec3 difLightDirection;
+
 uniform vec3 fresGroundColor;
 uniform vec3 fresSkyColor;
 uniform vec3 specLightColor;
+uniform vec3 fresSkyDirection;
+uniform vec3 fresGroundDirection;
+
 uniform vec3 specLightDirection;
 uniform vec3 refLightColor;
 
@@ -314,12 +318,14 @@ vec3 FresnelPass(vec3 N, vec3 I, vec3 tintColor, vec4 diffuseMap, float aoMap, f
     vec3 fresnelPass = vec3(0);
 
     // hemisphere fresnel with fresnelParams exponent
-    vec3 upVector = vec3(0, 1, 0);
-    float hemiBlend = dot(N, upVector);
-    hemiBlend = (hemiBlend * 0.5) + 0.5; // remap [-1, 1] to [0, 1]
-    vec3 hemiColor = mix(fresGroundColor, fresSkyColor, hemiBlend);
+    float hemiBlendSky = dot(N, fresSkyDirection) * 0.5 + 0.5;
+    vec3 hemiColorSky = mix(vec3(0), fresSkyColor, hemiBlendSky);
+
+    float hemiBlendGround = dot(N, fresGroundDirection) * 0.5 + 0.5;
+    vec3 hemiColorGround = mix(vec3(0), fresGroundColor, hemiBlendGround);
+
     float exponentOffset = 2.75; // could be more accurate
-    vec3 fresnel = clamp((hemiColor * pow(1.0 - dot(I, N), exponentOffset + fresnelParams.x)), 0, 1);
+    vec3 fresnel = clamp(((hemiColorSky + hemiColorGround) * pow(1.0 - dot(I, N), exponentOffset + fresnelParams.x)), 0, 1);
     fresnelPass += fresnelColor.rgb * fresnel * fresnelIntensity * tintColor;
 
     if ((flags & 0x0000FF00u) == 0x00003000u)

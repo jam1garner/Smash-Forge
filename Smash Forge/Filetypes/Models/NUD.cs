@@ -147,6 +147,10 @@ namespace Smash_Forge
                 {
                     m.billboard = true;
                 }
+                else if (m.Text.Contains("NSC"))
+                {
+                    m.nsc = true;
+                }
             }
 
             depthSortedMeshes = meshes.OrderBy(o => (o.boundingBox[2] - o.boundingBox[3] + o.sortBias)).ToList();
@@ -376,8 +380,11 @@ namespace Smash_Forge
 
             foreach (Mesh m in depthSortedMeshes)
             {
-                Matrix4 mvpMatrix = Camera.viewportCamera.getMVPMatrix();
-                GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
+                if (!m.nsc)
+                {
+                    Matrix4 mvpMatrix = Camera.viewportCamera.getMVPMatrix();
+                    GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
+                }
 
                 Matrix4 modelView = Camera.viewportCamera.getModelViewMatrix();
                 GL.UniformMatrix4(shader.getAttribute("modelViewMatrix"), false, ref modelView);
@@ -434,6 +441,8 @@ namespace Smash_Forge
             // fresnel sky/ground color for characters & stages
             GL.Uniform3(shader.getAttribute("fresGroundColor"), Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB);
             GL.Uniform3(shader.getAttribute("fresSkyColor"), Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB);
+            GL.Uniform3(shader.getAttribute("fresSkyDirection"), Lights.fresnelLight.getSkyDirection());
+            GL.Uniform3(shader.getAttribute("fresGroundDirection"), Lights.fresnelLight.getGroundDirection());
 
             // reflection color for characters & stages
             float refR, refG, refB = 1.0f;
@@ -600,8 +609,19 @@ namespace Smash_Forge
             if (p.Parent != null && p.Parent.Text.Contains("_NSC"))
             {
                 int index = ((Mesh)p.Parent).singlebind;
+                Debug.WriteLine(index);
                 if (index != -1)
+                {
                     GL.Uniform3(shader.getAttribute("NSC"), Vector3.Transform(Vector3.Zero, Runtime.ModelContainers[0].vbn.bones[index].transform));
+                    Matrix4 matrix = Runtime.ModelContainers[0].vbn.bones[index].transform;
+                    Vector3 pos = Runtime.ModelContainers[0].vbn.bones[index].pos;
+                    Camera.viewportCamera.setNscTransforms(pos, Runtime.ModelContainers[0].vbn.bones[index].rotation[0], 
+                        Runtime.ModelContainers[0].vbn.bones[index].rotation[1], Runtime.ModelContainers[0].vbn.bones[index].rotation[2]);
+                    matrix = Camera.viewportCamera.getNSCMatrix();
+
+
+                    GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref matrix);
+                }
             }
             else
             {
@@ -2726,6 +2746,7 @@ namespace Smash_Forge
             public int sortBias = 0;
             public bool billboardY = false;
             public bool billboard = false;
+            public bool nsc = false;
 
             public float[] boundingBox = new float[8];
 

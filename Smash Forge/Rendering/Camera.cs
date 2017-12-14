@@ -26,6 +26,9 @@ namespace Smash_Forge
         private Matrix4 billboardMatrix = Matrix4.Identity;
         private Matrix4 billboardYMatrix = Matrix4.Identity;
 
+        private Matrix4 nscMatrix = Matrix4.Identity;
+        private Matrix4 nscModelMatrix = Matrix4.Identity;
+
         private float zoomMultiplier = Runtime.zoomModifierScale; 
         private float zoomSpeed = Runtime.zoomspeed;
         private float mouseTranslateSpeed = 0.050f;
@@ -34,6 +37,12 @@ namespace Smash_Forge
         public float mouseSLast = 0;
         public float mouseYLast = 0;
         public float mouseXLast = 0;
+
+        private Vector3 nscPos = new Vector3(0);
+        private float nscRotX = 0;
+        private float nscRotY = 0;
+        private float nscRotZ = 0;
+
 
         public Camera()
         {
@@ -57,6 +66,19 @@ namespace Smash_Forge
         public Matrix4 getMVPMatrix()
         {
             return mvpMatrix;
+        }
+
+        public Matrix4 getNSCMatrix()
+        {
+            return nscMatrix;
+        }
+
+        public void setNscTransforms(Vector3 pos, float rotX, float rotY, float rotZ)
+        {
+            nscPos = pos;
+            nscRotX = rotX;
+            nscRotY = rotY;
+            nscRotZ = rotZ;
         }
 
         public Vector3 getPosition()
@@ -166,6 +188,11 @@ namespace Smash_Forge
             mvpMatrix = rotation * translation * perspFOV;
             billboardMatrix = translation * perspFOV;
             billboardYMatrix = Matrix4.CreateRotationX(cameraXRotation) * translation * perspFOV;
+
+
+            Matrix4 nscRotation = Matrix4.CreateRotationX(nscRotX) * Matrix4.CreateRotationY(nscRotY) * Matrix4.CreateRotationZ(nscRotZ);
+            Matrix4 nscTranslation = Matrix4.CreateTranslation(position.X + nscPos.X, -position.Y + nscPos.Y, position.Z + nscPos.Z);
+            nscMatrix = rotation * nscTranslation * perspFOV;
         }
 
         public void TrackMouse()
