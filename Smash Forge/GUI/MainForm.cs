@@ -1839,6 +1839,11 @@ namespace Smash_Forge
                 ((BCH_Model)b.Models.Nodes[0]).OpenMBN(new FileData(fileName));
                 con.bch = b;
                 Runtime.ModelContainers.Add(con);
+                if(b.Models.Nodes.Count > 0)
+                {
+                    Runtime.TargetVBN = ((BCH_Model)b.Models.Nodes[0]).skeleton;
+                    resyncTargetVBN();
+                }
                 meshList.refresh();
             }
 
