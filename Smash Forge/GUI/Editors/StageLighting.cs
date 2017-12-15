@@ -18,6 +18,7 @@ namespace Smash_Forge.GUI.Editors
     public partial class StageLighting : Form
     {
         private DirectionalLight selectedStageLight = new DirectionalLight();
+        private DirectionalLight selectedCharDiffuseLight = new DirectionalLight();
         private AreaLight selectedAreaLight = new AreaLight("");
 
         public StageLighting()
@@ -108,6 +109,13 @@ namespace Smash_Forge.GUI.Editors
 
         private void charLightsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
+                selectedCharDiffuseLight = Lights.diffuseLight;
+            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse2")
+                selectedCharDiffuseLight = Lights.diffuseLight2;
+            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse3")
+                selectedCharDiffuseLight = Lights.diffuseLight3;
+
             RenderCharacterLightColors();
         }
 
@@ -121,12 +129,13 @@ namespace Smash_Forge.GUI.Editors
                     new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
                 UpdateCharFresnelValues();
             }
-            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
+            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString().Contains("Diffuse"))
             {
                 charColor1GroupBox.Text = "Diffuse Color";
                 charColor2GroupBox.Text = "Ambient Color";
-                RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
-                      new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
+
+                RenderCharacterLightColor(new Vector3(selectedCharDiffuseLight.difR, selectedCharDiffuseLight.difG, selectedCharDiffuseLight.difB),
+                      new Vector3(selectedCharDiffuseLight.ambR, selectedCharDiffuseLight.ambG, selectedCharDiffuseLight.ambB));
                 UpdateCharDiffuseValues();
             }
         }
@@ -143,12 +152,13 @@ namespace Smash_Forge.GUI.Editors
 
         private void UpdateCharDiffuseValues()
         {
-            charColor1XTB.Text = Lights.diffuseLight.difHue + "";
-            charColor1YTB.Text = Lights.diffuseLight.difSaturation + "";
-            charColor1ZTB.Text = Lights.diffuseLight.difIntensity + "";
-            charColor2XTB.Text = Lights.diffuseLight.ambHue + "";
-            charColor2YTB.Text = Lights.diffuseLight.ambSaturation + "";
-            charColor2ZTB.Text = Lights.diffuseLight.ambIntensity + "";
+
+            charColor1XTB.Text = selectedCharDiffuseLight.difHue + "";
+            charColor1YTB.Text = selectedCharDiffuseLight.difSaturation + "";
+            charColor1ZTB.Text = selectedCharDiffuseLight.difIntensity + "";
+            charColor2XTB.Text = selectedCharDiffuseLight.ambHue + "";
+            charColor2YTB.Text = selectedCharDiffuseLight.ambSaturation + "";
+            charColor2ZTB.Text = selectedCharDiffuseLight.ambIntensity + "";
         }
 
         private void lightSetGroupListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -389,19 +399,19 @@ namespace Smash_Forge.GUI.Editors
                 RenderCharacterLightColor(new Vector3(Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB),
                     new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
             }
-            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
+            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString().Contains("Diffuse"))
             {
                 i = 0;
                 if (float.TryParse(charColor1XTB.Text, out i))
                 {
                     charColor1XTB.BackColor = Color.White;
-                    Lights.diffuseLight.setDifHue(i);
+                    selectedCharDiffuseLight.setDifHue(i);
                 }
                 else
                     charColor1XTB.BackColor = Color.Red;
 
-                RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
-                    new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
+                RenderCharacterLightColor(new Vector3(selectedCharDiffuseLight.difR, selectedCharDiffuseLight.difG, selectedCharDiffuseLight.difB),
+                    new Vector3(selectedCharDiffuseLight.ambR, selectedCharDiffuseLight.ambG, selectedCharDiffuseLight.ambB));
             }
 
             // update trackbar
@@ -428,20 +438,20 @@ namespace Smash_Forge.GUI.Editors
                 RenderCharacterLightColor(new Vector3(Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB),
                     new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
             }
-            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
+            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString().Contains("Diffuse"))
             {
                 i = 0;
                 if (float.TryParse(charColor1YTB.Text, out i))
                 {
                     charColor1YTB.BackColor = Color.White;
-                    Lights.diffuseLight.setDifSaturation(i);
+                    selectedCharDiffuseLight.setDifSaturation(i);
                 }
                 else
                     charColor1YTB.BackColor = Color.Red;
 
 
-                RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
-                    new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
+                RenderCharacterLightColor(new Vector3(selectedCharDiffuseLight.difR, selectedCharDiffuseLight.difG, selectedCharDiffuseLight.difB),
+                    new Vector3(selectedCharDiffuseLight.ambR, selectedCharDiffuseLight.ambG, selectedCharDiffuseLight.ambB));
             }
 
             // update trackbar
@@ -468,20 +478,20 @@ namespace Smash_Forge.GUI.Editors
                 RenderCharacterLightColor(new Vector3(Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB),
                     new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
             }
-            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
+            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString().Contains("Diffuse"))
             {
                 i = 0;
                 if (float.TryParse(charColor1ZTB.Text, out i))
                 {
                     charColor1ZTB.BackColor = Color.White;
-                    Lights.diffuseLight.setDifIntensity(i);
+                    selectedCharDiffuseLight.setDifIntensity(i);
                 }
                 else
                     charColor1ZTB.BackColor = Color.Red;
 
 
-                RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
-                    new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
+                RenderCharacterLightColor(new Vector3(selectedCharDiffuseLight.difR, selectedCharDiffuseLight.difG, selectedCharDiffuseLight.difB),
+                    new Vector3(selectedCharDiffuseLight.ambR, selectedCharDiffuseLight.ambG, selectedCharDiffuseLight.ambB));
             }
 
             // update trackbar

@@ -156,11 +156,7 @@ namespace Smash_Forge
             this.rotX = rotX;
             this.rotY = rotY;
             this.rotZ = rotZ;
-            Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, rotX * ((float)Math.PI / 180f))
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, rotY * ((float)Math.PI / 180f))
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, rotZ * ((float)Math.PI / 180f));
-
-            direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
+            UpdateDirection(rotX, rotY, rotZ);
 
             this.id = name;
         }
@@ -492,7 +488,7 @@ namespace Smash_Forge
             float rotZ = (float)RenderTools.GetValueFromParamFile(lightSet, 1, lightNumber, 7);
 
             DirectionalLight newLight = new DirectionalLight(hue, saturation, value, 0, 0, 0, rotX, rotY, rotZ, name);
-            newLight.enabled = enabled; // doesn't work properly for some stages
+            //newLight.enabled = enabled; // doesn't work properly for some stages
             return newLight;
         }
 

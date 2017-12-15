@@ -104,6 +104,14 @@ uniform vec3 difLightColor;
 uniform vec3 ambLightColor;
 uniform vec3 difLightDirection;
 
+uniform vec3 difLight2Color;
+uniform vec3 ambLight2Color;
+uniform vec3 difLight2Direction;
+
+uniform vec3 difLight3Color;
+uniform vec3 ambLight3Color;
+uniform vec3 difLight3Direction;
+
 uniform vec3 fresGroundColor;
 uniform vec3 fresSkyColor;
 uniform vec3 specLightColor;
@@ -428,7 +436,7 @@ vec3 CalculateFog(vec3 inputColor)
         return inputColor;
 }
 
-vec3 CalculateLighting(vec3 N, float halfLambert)
+vec3 CalculateLighting(vec3 N, float halfLambert, float halfLambert2, float halfLambert3)
 {
     vec3 lighting = vec3(1);
 
@@ -448,7 +456,10 @@ vec3 CalculateLighting(vec3 N, float halfLambert)
     }
     else // gradient based character lighting
     {
-        lighting = mix(ambLightColor * ambientIntensity, difLightColor * diffuseIntensity, halfLambert);
+        lighting = vec3(0);
+        lighting += mix(ambLightColor * ambientIntensity, difLightColor * diffuseIntensity, halfLambert);
+        lighting += mix(ambLight2Color * ambientIntensity, difLight2Color * diffuseIntensity, halfLambert2);
+        lighting += mix(ambLight3Color * ambientIntensity, difLight3Color * diffuseIntensity, halfLambert3);
     }
 
     if (((flags & 0x0F000000u) < 0x04000000u) || renderStageLighting != 1)
@@ -462,8 +473,9 @@ vec3 DiffusePass(vec3 N, float aoMap, vec4 diffuseMap)
     vec3 diffusePass = vec3(0);
 
     // lambertian shading
-    float lambert = clamp((dot(difLightDirection, N)), 0, 1);
     float halfLambert = dot(difLightDirection, N) * 0.5 + 0.5;
+    float halfLambert2 = dot(difLight2Direction, N) * 0.5 + 0.5;
+    float halfLambert3 = dot(difLight3Direction, N) * 0.5 + 0.5;
     vec3 diffuseColorFinal = vec3(0); // result of diffuse map, aoBlend, and some NU_values
     float diffuseLuminance = Luminance(diffuseMap.rgb); // used for colorGain and colorOffset
 
@@ -501,7 +513,7 @@ vec3 DiffusePass(vec3 N, float aoMap, vec4 diffuseMap)
     }
 
     // stage lighting
-    vec3 lighting = CalculateLighting(N, halfLambert);
+    vec3 lighting = CalculateLighting(N, halfLambert, halfLambert2, halfLambert3);
     diffusePass = diffuseColorFinal * lighting;
 
     if (hasSoftLight == 1)

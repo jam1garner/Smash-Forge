@@ -449,10 +449,15 @@ namespace Smash_Forge
             ColorTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
             GL.Uniform3(shader.getAttribute("refLightColor"), refR, refG, refB);
 
-            // character diffuse light
-            Lights.diffuseLight.setDirectionFromXYZAngles(Lights.diffuseLight.rotX, Lights.diffuseLight.rotY, Lights.diffuseLight.rotZ);
+            // character diffuse lights
             GL.Uniform3(shader.getAttribute("difLightColor"), Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB);
             GL.Uniform3(shader.getAttribute("ambLightColor"), Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB);
+
+            GL.Uniform3(shader.getAttribute("difLightColor2"), Lights.diffuseLight2.difR, Lights.diffuseLight2.difG, Lights.diffuseLight2.difB);
+            GL.Uniform3(shader.getAttribute("ambLightColor2"), Lights.diffuseLight2.ambR, Lights.diffuseLight2.ambG, Lights.diffuseLight2.ambB);
+
+            GL.Uniform3(shader.getAttribute("difLightColor3"), Lights.diffuseLight3.difR, Lights.diffuseLight3.difG, Lights.diffuseLight3.difB);
+            GL.Uniform3(shader.getAttribute("ambLightColor3"), Lights.diffuseLight3.ambR, Lights.diffuseLight3.ambG, Lights.diffuseLight3.ambB);
 
             // character specular light
             Lights.specularLight.setColorFromHSV(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity);
@@ -504,6 +509,9 @@ namespace Smash_Forge
                 GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, Camera.viewportCamera.getMVPMatrix()));
                 GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
             }
+
+            GL.Uniform3(shader.getAttribute("difLight2Direction"), Lights.diffuseLight2.direction);
+            GL.Uniform3(shader.getAttribute("difLight3Direction"), Lights.diffuseLight2.direction);
 
             GL.Uniform3(shader.getAttribute("stageLight1Direction"), Lights.stageLight1.direction);
             GL.Uniform3(shader.getAttribute("stageLight2Direction"), Lights.stageLight2.direction);
