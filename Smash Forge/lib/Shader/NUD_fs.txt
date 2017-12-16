@@ -150,8 +150,6 @@ uniform int colorOverride;
 uniform mat4 mvpMatrix;
 uniform mat4 modelViewMatrix;
 
-uniform vec3 lightPosition;
-uniform vec3 lightDirection;
 uniform sampler2D shadowMap;
 
 uniform vec3 NSC;
@@ -253,7 +251,7 @@ vec3 DummyRampColor(vec3 color){
 		return texture(dummyRamp, vec2(1-rampInputLuminance, 0.50)).rgb;
 	}
 	else
-		return vec3(1);
+		return vec3(0);
 }
 
 vec3 SphereMapColor(vec3 N)
@@ -370,7 +368,7 @@ vec3 ReflectionPass(vec3 I, vec3 N, vec3 tintColor, vec4 diffuseMap, float aoMap
     if ((flags & 0xFFFFFF00u) == 0xF8820000u)
         reflectionPass *= diffuseMap.a;
 
-	reflectionPass = pow(reflectionPass, vec3(gamma));
+    reflectionPass = pow(reflectionPass, vec3(gamma));
     return reflectionPass;
 }
 
@@ -481,13 +479,16 @@ vec3 DiffusePass(vec3 N, float aoMap, vec4 diffuseMap)
 
     // ambient occlusion calculations
     vec3 aoBlend = vec3(1);
-    float maxAOBlendValue = 1.2;
-    aoBlend = min((vec3(aoMap) + aoMinGain.rgb), vec3(maxAOBlendValue));
+    float maxAOBlendValue = 1.25;
+    vec3 test = vec3(aoMap);
+    test = pow(test, vec3(1));
+    aoBlend = min((test + aoMinGain.rgb), vec3(maxAOBlendValue));
     vec3 aoGain = min((aoMap * (1 + aoMinGain.rgb)), vec3(1.0));
     vec3 c1 = RGB2HSV(aoBlend);
     vec3 c2 = RGB2HSV(aoGain);
     aoBlend.rgb = HSV2RGB(vec3(c1.x, c2.y, c1.z));
     float aoMixIntensity = aoMinGain.a;
+
 
     if (useDiffuseBlend == 1) // aomingain but no ao map (mainly for trophies)
     {
@@ -529,7 +530,7 @@ vec3 DiffusePass(vec3 N, float aoMap, vec4 diffuseMap)
         diffusePass *= 1.5;
 
     // result of ramp calculations isnt saturated enough
-    vec3 rampContribution = 0.5 * pow((RampColor(vec3(halfLambert)) * DummyRampColor(vec3(halfLambert)) * diffuseColorFinal), vec3(gamma));
+    vec3 rampContribution = 0.25 * (RampColor(vec3(halfLambert)) + DummyRampColor(vec3(halfLambert))) * diffuseColorFinal;
     diffusePass = ScreenBlend(diffusePass, rampContribution) * diffuseIntensity;
 
     diffusePass = pow(diffusePass, vec3(gamma));
@@ -571,7 +572,6 @@ vec3 SmashShader(vec4 diffuseMap, float aoMap, vec3 N){
 	else
 		resultingColor = diffusePass;
 
-    // undo gamma correction for final display color
     resultingColor = pow(resultingColor, vec3(1 / gamma));
     return resultingColor;
 }
@@ -636,10 +636,8 @@ void main()
     if (renderAlpha == 1)
         fragColor.a = texture(dif, texCoord).a;
 
-    if (hasDif == 1)
-        fragColor = diffuseMapTotal;
-    else
-        fragColor = vec4(diffuseColor);
+    if (hasDif != 1)
+        diffuseMapTotal = vec4(diffuseColor);
 
     vec3 difAO = texture(ao, texCoord2).rgb;
 
@@ -647,16 +645,17 @@ void main()
     {
         float normalBlend = normal.y * 0.5 + 0.5;
         if ((flags & 0x00410000u) == 0x00410000u)
-            fragColor.rgb = mix(difAO, fragColor.rgb, normalBlend);
+            diffuseMapTotal.rgb = mix(difAO, diffuseMapTotal.rgb, normalBlend);
         else
-            fragColor.rgb *= difAO.rgb;
+            diffuseMapTotal.rgb *= difAO.rgb;
     }
 
-    if (renderVertColor == 1)
-        fragColor *= vertexColor;
-
     // Material lighting done in sm4sh shader
-    fragColor.rgb = SmashShader(fragColor, texture(normalMap, texCoord).a, bumpMapNormal);
+    fragColor.rgb = SmashShader(diffuseMapTotal, texture(normalMap, texCoord).a, bumpMapNormal);
+
+    // not sure why vertex color values are greater than 1
+    if (renderVertColor == 1)
+        fragColor *= min(vertexColor, vec4(1));
 
     fragColor.rgb *= effColorGain.rgb;
 

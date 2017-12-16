@@ -492,22 +492,17 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
             GL.Uniform3(shader.getAttribute("stageFogColor"), Lights.stageFogSet[lightSetNumber]);
 
-
-            Vector3 lightDirection = new Vector3(0f, 0f, -1f);
-
             if (Runtime.cameraLight) // camera light should only affects character lighting
             {
+                Vector3 lightDirection = new Vector3(0f, 0f, -1f);
                 GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, Camera.viewportCamera.getMVPMatrix().Inverted()).Normalized());
                 GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, Camera.viewportCamera.getMVPMatrix().Inverted()).Normalized());
                 GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, Camera.viewportCamera.getMVPMatrix().Inverted()).Normalized());
-                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, Camera.viewportCamera.getMVPMatrix()));
             }
             else
             {
                 GL.Uniform3(shader.getAttribute("specLightDirection"), Lights.specularLight.direction);
                 GL.Uniform3(shader.getAttribute("difLightDirection"), Lights.diffuseLight.direction);
-                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, Camera.viewportCamera.getMVPMatrix()));
-                GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
             }
 
             GL.Uniform3(shader.getAttribute("difLight2Direction"), Lights.diffuseLight2.direction);
@@ -628,7 +623,7 @@ namespace Smash_Forge
                     matrix = Camera.viewportCamera.getNSCMatrix();
 
 
-                    GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref matrix);
+                    //GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref matrix);
                 }
             }
             else
