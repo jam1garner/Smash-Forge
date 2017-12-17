@@ -25,9 +25,6 @@ namespace Smash_Forge
         public VBN skeleton = new VBN();
         public Matrix4 worldTransform;
 
-        public byte[] vdata;
-        public byte[] idata;
-
         List<VertexAttribute> Attributes = new List<VertexAttribute>();
         public Vertex[] Vertices;
         
@@ -48,6 +45,15 @@ namespace Smash_Forge
             GL.GenBuffers(1, out vbo_bone);
             GL.GenBuffers(1, out ibo_faces);
 
+            ContextMenu cm = new ContextMenu();
+            MenuItem im = new MenuItem("Import DAE");
+            im.Click += Import;
+            cm.MenuItems.Add(im);
+            MenuItem save = new MenuItem("Save as MBN");
+            save.Click += Click;
+            cm.MenuItems.Add(save);
+            ContextMenu = cm;
+
             if (!Runtime.shaders.ContainsKey("MBN"))
             {
                 Shader mbn = new Shader();
@@ -62,6 +68,48 @@ namespace Smash_Forge
             {
                 shader = new Shader();
                 shader = Runtime.shaders["MBN"];
+            }
+        }
+
+        public void Click(object o, EventArgs a)
+        {
+            using (SaveFileDialog sfd = new SaveFileDialog())
+            {
+                sfd.ShowDialog();
+                if(sfd.FileNames.Length > 0)
+                {
+                    SaveAsMBN(sfd.FileName);
+                }
+            }
+        }
+
+        public void Import(object o, EventArgs a)
+        {
+            using (OpenFileDialog sfd = new OpenFileDialog())
+            {
+                sfd.ShowDialog();
+                foreach(string f in sfd.FileNames)
+                {
+                    if (f.ToLower().EndsWith(".dae"))
+                    {
+                        DAEImportSettings m = new DAEImportSettings();
+                        m.ShowDialog();
+                        if (m.exitStatus == DAEImportSettings.Opened)
+                        {
+                            ModelContainer con = new ModelContainer();
+
+                            // load vbn
+                            con.vbn = skeleton;
+
+                            Collada.DAEtoNUD(f, con, m.checkBox5.Checked);
+                            
+                            // apply settings
+                            m.Apply(con.nud);
+                            con.nud.MergePoly();
+                            CreateFromNUD(con.nud);
+                        }
+                    }
+                }
             }
         }
 
@@ -81,7 +129,7 @@ namespace Smash_Forge
                 type = f.readInt();
                 format = f.readInt();
                 scale = f.readFloat();
-                Text = ((_3DSGPU.VertexAttribute)type).ToString();
+                Text = ((_3DSGPU.VertexAttribute)type).ToString() + "_" + format;
             }
 
             public void ReadVertex(FileData f, ref Vertex v)
@@ -110,6 +158,45 @@ namespace Smash_Forge
                 }
             }
 
+            public void WriteVertex(FileOutput f, ref Vertex v)
+            {
+                switch (type)
+                {
+                    case (int)_3DSGPU.VertexAttribute.pos:
+                        WriteType(f, v.pos.X);
+                        WriteType(f, v.pos.Y);
+                        WriteType(f, v.pos.Z);
+                        break;
+                    case (int)_3DSGPU.VertexAttribute.nrm:
+                        WriteType(f, v.nrm.X);
+                        WriteType(f, v.nrm.Y);
+                        WriteType(f, v.nrm.Z);
+                        WriteType(f, 1f);
+                        break;
+                    case (int)_3DSGPU.VertexAttribute.tx0:
+                        WriteType(f, v.tx.X);
+                        WriteType(f, v.tx.Y);
+                        break;
+                    case (int)_3DSGPU.VertexAttribute.col:
+                        WriteType(f, v.col.X);
+                        WriteType(f, v.col.Y);
+                        WriteType(f, v.col.Z);
+                        WriteType(f, v.col.W);
+                        break;
+                    case (int)_3DSGPU.VertexAttribute.bone:
+                        f.writeByte((int)v.bone.X);
+                        f.writeByte((int)v.bone.Y);
+                        break;
+                    case (int)_3DSGPU.VertexAttribute.weight:
+                        WriteType(f, v.weight.X);
+                        WriteType(f, v.weight.Y);
+                        break;
+                    default:
+                        Console.WriteLine("Error");
+                        break;
+                }
+            }
+
             private float ReadType(FileData d)
             {
                 switch (format)
@@ -125,6 +212,96 @@ namespace Smash_Forge
                 }
                 return 0;
             }
+
+            private void WriteType(FileOutput d, float data)
+            {
+                switch (format)
+                {
+                    case 0:
+                        d.writeFloat(data / scale);
+                        break;
+                    case 1:
+                        d.writeByte((byte)(data / scale));
+                        break;
+                    case 2:
+                        d.writeByte((sbyte)(data / scale));
+                        break;
+                    case 3:
+                        d.writeShort((int)(data / scale));
+                        break;
+                }
+            }
+        }
+
+        public void SaveAsMBN(string fname)
+        {
+            int format = 6;
+            FileOutput o = new FileOutput();
+            o.Endian = Endianness.Little;
+            
+            o.writeShort(format);
+            o.writeShort(0xFFFF);
+            o.writeInt(0); //flags
+            o.writeInt(1); //mode
+            o.writeInt(Nodes.Count);
+
+            // Write Vertex Attributes
+            {
+                o.writeInt(Attributes.Count);
+                foreach(VertexAttribute va in Attributes)
+                {
+                    o.writeInt(va.type);
+                    o.writeInt(va.format);
+                    o.writeFloat(va.scale);
+                }
+            }
+
+
+            //Vertex Buffer
+            FileOutput vertexBuffer = new FileOutput();
+            vertexBuffer.Endian = Endianness.Little;
+
+            for(int i = 0; i < Vertices.Length; i++)
+            {
+                foreach (VertexAttribute va in Attributes)
+                {
+                    //Write Data
+                    va.WriteVertex(vertexBuffer, ref Vertices[i]);
+                }
+            }
+
+            o.writeInt(vertexBuffer.size()); // Vertex Buffer Size
+
+            //Mesh Information
+            FileOutput indexBuffer = new FileOutput();
+            indexBuffer.Endian = Endianness.Little;
+            foreach (BCH_Mesh mesh in Nodes)
+            {
+                o.writeInt(mesh.Nodes.Count);
+                foreach(BCH_PolyGroup pg in mesh.Nodes)
+                {
+                    // Node List
+                    o.writeInt(pg.BoneList.Length);
+                    foreach (int b in pg.BoneList)
+                        o.writeInt(b);
+
+                    // Triangle Count
+                    o.writeInt(pg.Faces.Length);
+                    // o.writeInt(0); something if format == 4
+
+                    // Index Buffer
+                    foreach (int i in pg.Faces)
+                        indexBuffer.writeShort(i);
+                    indexBuffer.align(0x20, 0xFF);
+                }
+            }
+
+            if (format != 4) o.align(0x20, 0xFF);
+
+            o.writeOutput(vertexBuffer);
+            o.align(0x20, 0xFF);
+            o.writeOutput(indexBuffer);
+            o.save(fname);
         }
 
         public void OpenMBN(FileData f)
@@ -151,6 +328,15 @@ namespace Smash_Forge
                 }
                 length = f.readInt();
             }
+
+            // Get Mesh Nodes
+            /*List<BCH_Mesh> meshes = new List<BCH_Mesh>();
+            foreach(BCH_Mesh m in Nodes)
+            {
+                meshes.Add(m);
+                foreach (BCH_Mesh m2 in m.Nodes)
+                    meshes.Add(m);
+            }*/
 
             for (int i = 0; i < meshCount; i++)
             {
@@ -291,6 +477,80 @@ namespace Smash_Forge
                 }
             }
             shader.disableAttrib();
+        }
+
+
+        // Create from NUD
+        public void CreateFromNUD(NUD n)
+        {
+            //Alrighty.............................
+            int meshcount = Nodes.Count;
+
+            // First transfer over the mesh polygons?
+            int i = 0;
+            List<BCH_Mesh> Meshes = new List<BCH_Mesh>();
+            List<Vertex> Verts = new List<Vertex>();
+            Console.WriteLine(n.Nodes.Count + " " + n.meshes.Count);
+            foreach (NUD.Mesh nudmesh in n.meshes)
+            {
+                BCH_Mesh mesh = new BCH_Mesh();
+                mesh.Text = Nodes[i].Text; //nudmesh.Text;//
+                Console.WriteLine(nudmesh.Text);
+                mesh.MaterialIndex = ((BCH_Mesh)Nodes[i]).MaterialIndex;
+                i++;
+                Meshes.Add(mesh);
+                foreach(NUD.Polygon nudpoly in nudmesh.Nodes)
+                {
+                    BCH_PolyGroup pg = new BCH_PolyGroup();
+                    pg.Text = "Polygroup";
+                    mesh.Nodes.Add(pg);
+
+                    pg.Faces = new int[nudpoly.display.Length];
+                    for(int k = 0; k < nudpoly.display.Length; k++)
+                    {
+                        pg.Faces[k] = nudpoly.display[k] + Verts.Count;
+                    }
+
+                    List<int> boneList = new List<int>();
+                    foreach(NUD.dVertex v in nudpoly.vertdata)
+                    {
+                        Vertex vn = new Vertex();
+                        vn.pos = v.pos;
+                        vn.nrm = v.nrm;
+                        vn.tx = v.uv;
+                        vn.col = v.col;
+                        vn.weight = v.weight.Xy;
+                        if (!boneList.Contains((int)v.node.X)) boneList.Add((int)v.node.X);
+                        if (!boneList.Contains((int)v.node.Y)) boneList.Add((int)v.node.Y);
+
+                        vn.bone = new Vector2(boneList.IndexOf((int)v.node.X), boneList.IndexOf((int)v.node.Y));
+                        vn.bone = v.node.Xy;
+                        Verts.Add(vn);
+                    }
+
+                    pg.BoneList = boneList.ToArray();
+                }
+            }
+
+            //Fill out blank meshes
+            while(Meshes.Count < meshcount)
+            {
+                BCH_Mesh mesh = new BCH_Mesh();
+                mesh.Text = Nodes[i].Text;
+                mesh.MaterialIndex = ((BCH_Mesh)Nodes[i]).MaterialIndex;
+                mesh.Nodes.Add(new BCH_PolyGroup()
+                {
+                    Faces = new int[] { 0, 0, 0 },
+                    BoneList = new int[] { 0}
+                });
+                Verts.Add(new Vertex());
+                Meshes.Add(mesh);
+                i++;
+            }
+
+            Nodes.Clear();
+            Nodes.AddRange(Meshes.ToArray());
+            Vertices = Verts.ToArray();
         }
     }
 

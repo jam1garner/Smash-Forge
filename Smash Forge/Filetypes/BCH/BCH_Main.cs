@@ -137,7 +137,7 @@ namespace Smash_Forge
                 }
             }
 
-            File.WriteAllBytes(filename + "_offset", f.getSection(0, f.size()));
+            //File.WriteAllBytes(filename + "_offset", f.getSection(0, f.size()));
 
             f.seek(mainHeaderOffset);
             int modelsPointerTableOffset = f.readInt();
@@ -273,30 +273,42 @@ namespace Smash_Forge
                 int rootRightNode = f.readShort();
                 int rootNameOffset = f.readInt();
 
-                Console.WriteLine(f.readString(rootNameOffset, -1) + " " + rootLeftNode + " " + rootRightNode);
-                // Object name tree
+                //Console.WriteLine(rootReferenceBit.ToString("x") + " " + f.readString(rootNameOffset, -1) + " " + rootLeftNode + " " + rootRightNode);
+                // Object name tree Radix Tree
                 for (int i = 0; i < objectsNodeNameEntries; i++)
                 {
                     int referenceBit = f.readInt();
                     short leftNode = (short)f.readShort();
                     short rightNode = (short)f.readShort();
                     objectName[i] = f.readString(f.readInt(), -1);
-                    Console.WriteLine(i + " " + objectName[i] + " " + leftNode + " " + rightNode);
+                    Console.WriteLine((referenceBit>>3) + " " + (referenceBit&0x7) + " " + objectName[i] + " " + leftNode + " " + rightNode);
                 }
 
                 //TODO: Metadata, boundingbox, normal mesh, materials
                 f.seek(verticesTableOffset);
+                Dictionary<int, BCH_Mesh> MeshIndex = new Dictionary<int, BCH_Mesh>();
+                int nim = 0;
                 for (int i = 0; i < verticesTableEntries; i++)
                 {
                     BCH_Mesh Mesh = new BCH_Mesh();
-                    model.Nodes.Add(Mesh);
                     Mesh.MaterialIndex = f.readShort();
                     int mflags = f.readShort();
-                    int nameId = f.readShort();
-                    Mesh.Text = objectName[nameId];
+                    int meshId = f.readShort();
+                    if (!MeshIndex.ContainsKey(meshId))
+                    {
+                        MeshIndex.Add(meshId, Mesh);
+                        Mesh.Text = nim < objectName.Length ? objectName[nim++] : i + "";
+                        model.Nodes.Add(Mesh);
+                    }
+                    else
+                    {
+                        BCH_Mesh m = MeshIndex[meshId];
+                        Mesh.Text = m.Text;
+                        model.Nodes.Insert(model.Nodes.IndexOf(m)-1, Mesh);
+                    }
 
                     // node visibility TODO: finish...
-                    Mesh.Checked = ((nodeVisibility & (1 << nameId)) > 0);
+                    Mesh.Checked = ((nodeVisibility & (1 << i)) > 0);
 
                     Mesh.renderPriority = f.readShort();
                     

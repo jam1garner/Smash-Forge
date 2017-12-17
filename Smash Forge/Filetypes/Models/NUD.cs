@@ -2192,7 +2192,7 @@ namespace Smash_Forge
 
             public bool Equals(Vertex p)
             {
-                return pos.Equals(p.pos) && new HashSet<Vector2>(uv).SetEquals(p.uv) && col.Equals(p.col)
+                return pos.Equals(p.pos) && nrm.Equals(p.nrm) && new HashSet<Vector2>(uv).SetEquals(p.uv) && col.Equals(p.col)
                     && new HashSet<int>(node).SetEquals(p.node) && new HashSet<float>(weight).SetEquals(p.weight);
             }
 
