@@ -25,34 +25,14 @@ namespace Smash_Forge.GUI.Editors
         {
             InitializeComponent();
 
-            InitStageLightSetListBox();
             InitCharLightListBox();
             InitAreaLightListBox();
             InitLightMapListBox();
-        }
 
-        private void InitLightMapListBox()
-        {
-            foreach (LightMap lightMap in Lights.lightMaps)
+            for (int groupIndex = 0; groupIndex < 16; groupIndex++)
             {
-                lightmapListBox.Items.Add(lightMap);
-            }
-        }
-
-        private void InitAreaLightListBox()
-        {
-            foreach (AreaLight light in Lights.areaLights)
-            {
-                areaLightListBox.Items.Add(light);
-            }
-        }
-
-        private void InitStageLightSetListBox()
-        {
-            for (int i = 0; i < 16; i++)
-            {
-                string name = i.ToString();
-                switch (i)
+                string name = groupIndex.ToString();
+                switch (groupIndex)
                 {
                     case 0:
                         name += " black";
@@ -76,10 +56,37 @@ namespace Smash_Forge.GUI.Editors
                         name += "";
                         break;
                 }
-        
-                lightSetGroupListBox.Items.Add(name);
+
+                TreeNode[] children = new TreeNode[4];
+                for (int lightIndex = 0; lightIndex < 4; lightIndex++)
+                {
+                    DirectionalLight currentLight = Lights.stageDiffuseLightSet[(groupIndex * 4) + lightIndex];
+                    string number = lightIndex.ToString();
+                    children[lightIndex] = new TreeNode(number) { Tag = currentLight };
+                    children[lightIndex].Checked = currentLight.enabled;
+                }
+                TreeNode parent = new TreeNode(name, children);
+
+                stageLightSetTreeView.Nodes.Add(parent);
             }
 
+
+        }
+
+        private void InitLightMapListBox()
+        {
+            foreach (LightMap lightMap in Lights.lightMaps)
+            {
+                lightmapListBox.Items.Add(lightMap);
+            }
+        }
+
+        private void InitAreaLightListBox()
+        {
+            foreach (AreaLight light in Lights.areaLights)
+            {
+                areaLightListBox.Items.Add(light);
+            }
         }
 
         private void InitCharLightListBox()
@@ -161,28 +168,14 @@ namespace Smash_Forge.GUI.Editors
             charColor2ZTB.Text = selectedCharDiffuseLight.ambIntensity + "";
         }
 
-        private void lightSetGroupListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            lightSetLightListBox.Items.Clear();
-            for (int i = 0; i < 4; i++)
-            {
-                DirectionalLight currentLight = Lights.stageDiffuseLightSet[(lightSetGroupListBox.SelectedIndex * 4) + i];
-                lightSetLightListBox.Items.Add(currentLight, currentLight.enabled);
-                lightSetLightListBox.SetItemChecked(i, currentLight.enabled);
-            }
-        }
-
         private void UpdateCurrentStageLightValues()
         {
-            selectedStageLight = Lights.stageDiffuseLightSet[(lightSetGroupListBox.SelectedIndex * 4) + lightSetLightListBox.SelectedIndex];
             stageDifHueTB.Text = selectedStageLight.difHue + "";
             stageDifSatTB.Text = selectedStageLight.difSaturation + "";
             stageDifIntensityTB.Text = selectedStageLight.difIntensity + "";
             stageDifRotXTB.Text = selectedStageLight.rotX + "";
             stageDifRotYTB.Text = selectedStageLight.rotY + "";
             stageDifRotZTB.Text = selectedStageLight.rotZ + "";
-            lightSetLightListBox.SetItemChecked(lightSetLightListBox.SelectedIndex, selectedStageLight.enabled);
-            //renderStageLightCB.Checked = selectedStageLight.enabled;
         }
 
         private void lightSetLightListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -204,15 +197,7 @@ namespace Smash_Forge.GUI.Editors
         {
             charDifColorGLControl.MakeCurrent();
             GL.Viewport(charDifColorGLControl.ClientRectangle);
-            GL.ClearColor(Color.White);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            GL.MatrixMode(MatrixMode.Projection);
-
-            GL.Enable(EnableCap.Texture2D);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            SetOpenGLSettings();
 
             RenderTools.DrawQuadGradient(topColor.X, topColor.Y, topColor.Z, bottomColor.X, bottomColor.Y, bottomColor.Z);
 
@@ -223,6 +208,15 @@ namespace Smash_Forge.GUI.Editors
         {
             areaColorGLControl.MakeCurrent();
             GL.Viewport(areaColorGLControl.ClientRectangle);
+            SetOpenGLSettings();
+
+            RenderTools.DrawQuadGradient(selectedAreaLight.skyR, selectedAreaLight.skyG, selectedAreaLight.skyB, selectedAreaLight.groundR, selectedAreaLight.groundG, selectedAreaLight.groundB);
+
+            areaColorGLControl.SwapBuffers();
+        }
+
+        private static void SetOpenGLSettings()
+        {
             GL.ClearColor(Color.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.MatrixMode(MatrixMode.Modelview);
@@ -232,10 +226,6 @@ namespace Smash_Forge.GUI.Editors
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-
-            RenderTools.DrawQuadGradient(selectedAreaLight.skyR, selectedAreaLight.skyG, selectedAreaLight.skyB, selectedAreaLight.groundR, selectedAreaLight.groundG, selectedAreaLight.groundB);
-
-            areaColorGLControl.SwapBuffers();
         }
 
         #region stage color events
@@ -257,11 +247,7 @@ namespace Smash_Forge.GUI.Editors
                 stageDifHueTB.BackColor = Color.Red;
 
             UpdateStageButtonColor();
-
-            int newSliderValue = (int) (selectedStageLight.difHue * (float)stageDifHueTrackBar.Maximum / 360.0f);
-            newSliderValue = Math.Min(newSliderValue, stageDifHueTrackBar.Maximum);
-            newSliderValue = Math.Max(newSliderValue, 0);
-            stageDifHueTrackBar.Value = newSliderValue;
+            UpdateSliderFromValue(i, stageDifHueTrackBar, 360.0f);
         }
 
         private void stageDifSatTB_TextChanged(object sender, EventArgs e)
@@ -276,11 +262,7 @@ namespace Smash_Forge.GUI.Editors
                 stageDifSatTB.BackColor = Color.Red;
 
             UpdateStageButtonColor();
-
-            int newSliderValue = (int)(selectedStageLight.difSaturation * (float)stageDifSatTrackBar.Maximum / 1.0f);
-            newSliderValue = Math.Min(newSliderValue, stageDifSatTrackBar.Maximum);
-            newSliderValue = Math.Max(newSliderValue, 0);
-            stageDifSatTrackBar.Value = newSliderValue;
+            UpdateSliderFromValue(i, stageDifSatTrackBar, 1.0f);
         }
 
         private void stageDifIntensityTB_TextChanged(object sender, EventArgs e)
@@ -295,11 +277,7 @@ namespace Smash_Forge.GUI.Editors
                 stageDifIntensityTB.BackColor = Color.Red;
 
             UpdateStageButtonColor();
-
-            int newSliderValue = (int)(selectedStageLight.difIntensity * (float)stageDifIntensityTrackBar.Maximum / 5.0f);
-            newSliderValue = Math.Min(newSliderValue, stageDifIntensityTrackBar.Maximum);
-            newSliderValue = Math.Max(newSliderValue, 0);
-            stageDifIntensityTrackBar.Value = newSliderValue;
+            UpdateSliderFromValue(i, stageDifIntensityTrackBar, 5.0f);
         }
 
         private void stageDifHueTrackBar_Scroll(object sender, EventArgs e)
@@ -414,11 +392,7 @@ namespace Smash_Forge.GUI.Editors
                     new Vector3(selectedCharDiffuseLight.ambR, selectedCharDiffuseLight.ambG, selectedCharDiffuseLight.ambB));
             }
 
-            // update trackbar
-            int newSliderValue = (int)(i * (float)charColor1XTrackBar.Maximum / 360.0f);
-            newSliderValue = Math.Min(newSliderValue, charColor1XTrackBar.Maximum);
-            newSliderValue = Math.Max(newSliderValue, 0);
-            charColor1XTrackBar.Value = newSliderValue;
+            UpdateSliderFromValue(i, charColor1XTrackBar, 360.0f);
         }
 
         private void charColor1YTB_TextChanged(object sender, EventArgs e)
@@ -454,11 +428,7 @@ namespace Smash_Forge.GUI.Editors
                     new Vector3(selectedCharDiffuseLight.ambR, selectedCharDiffuseLight.ambG, selectedCharDiffuseLight.ambB));
             }
 
-            // update trackbar
-            int newSliderValue = (int)(i * (float)charColor1YTrackBar.Maximum / 1.0f);
-            newSliderValue = Math.Min(newSliderValue, charColor1YTrackBar.Maximum);
-            newSliderValue = Math.Max(newSliderValue, 0);
-            charColor1YTrackBar.Value = newSliderValue;
+            UpdateSliderFromValue(i, charColor1YTrackBar, 1.0f);
         }
 
         private void charColor1ZTB_TextChanged(object sender, EventArgs e)
@@ -494,11 +464,7 @@ namespace Smash_Forge.GUI.Editors
                     new Vector3(selectedCharDiffuseLight.ambR, selectedCharDiffuseLight.ambG, selectedCharDiffuseLight.ambB));
             }
 
-            // update trackbar
-            int newSliderValue = (int)(i * (float)charColor1ZTrackBar.Maximum / 5.0f);
-            newSliderValue = Math.Min(newSliderValue, charColor1ZTrackBar.Maximum);
-            newSliderValue = Math.Max(newSliderValue, 0);
-            charColor1ZTrackBar.Value = newSliderValue;
+            UpdateSliderFromValue(i, charColor1ZTrackBar, 5.0f);
         }
 
         private void charColor2XTB_TextChanged(object sender, EventArgs e)
@@ -534,11 +500,7 @@ namespace Smash_Forge.GUI.Editors
                     new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
             }
 
-            // update trackbar
-            int newSliderValue = (int)(i * (float)charColor2XTrackBar.Maximum / 360.0f);
-            newSliderValue = Math.Min(newSliderValue, charColor2XTrackBar.Maximum);
-            newSliderValue = Math.Max(newSliderValue, 0);
-            charColor2XTrackBar.Value = newSliderValue;
+            UpdateSliderFromValue(i, charColor2XTrackBar, 360.0f);
         }
 
         private void charColor2YTB_TextChanged(object sender, EventArgs e)
@@ -573,11 +535,7 @@ namespace Smash_Forge.GUI.Editors
                     new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
             }
 
-            // update trackbar
-            int newSliderValue = (int)(i * (float)charColor2YTrackBar.Maximum / 1.0f);
-            newSliderValue = Math.Min(newSliderValue, charColor2YTrackBar.Maximum);
-            newSliderValue = Math.Max(newSliderValue, 0);
-            charColor2YTrackBar.Value = newSliderValue;
+            UpdateSliderFromValue(i, charColor2YTrackBar, 1.0f);
         }
 
         private void charColor2ZTB_TextChanged(object sender, EventArgs e)
@@ -612,11 +570,8 @@ namespace Smash_Forge.GUI.Editors
                     new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
             }
 
-            // update trackbar
-            int newSliderValue = (int)(i * (float)charColor2ZTrackBar.Maximum / 5.0f);
-            newSliderValue = Math.Min(newSliderValue, charColor2ZTrackBar.Maximum);
-            newSliderValue = Math.Max(newSliderValue, 0);
-            charColor2ZTrackBar.Value = newSliderValue;
+            UpdateSliderFromValue(i, charColor2ZTrackBar, 5.0f);
+
         }
 
         private void charColor1XTrackBar_Scroll(object sender, EventArgs e)
@@ -692,10 +647,8 @@ namespace Smash_Forge.GUI.Editors
 
             RenderAreaLightColor();
 
-            int newSliderValue = (int)(selectedAreaLight.skyR * areaCeilRedTrackBar.Maximum / 2.0f);
-            newSliderValue = Math.Min(newSliderValue, areaCeilRedTrackBar.Maximum);
-            newSliderValue = Math.Max(newSliderValue, 0);
-            areaCeilRedTrackBar.Value = newSliderValue;
+            UpdateSliderFromValue(selectedAreaLight.skyR, areaCeilRedTrackBar, 2.0f);
+
         }
 
         private void areaCeilGreenTB_TextChanged(object sender, EventArgs e)
@@ -711,10 +664,8 @@ namespace Smash_Forge.GUI.Editors
 
             RenderAreaLightColor();
 
-            int newSliderValue = (int)(selectedAreaLight.skyG * areaCeilGreenTrackBar.Maximum / 2.0f);
-            newSliderValue = Math.Min(newSliderValue, areaCeilGreenTrackBar.Maximum);
-            newSliderValue = Math.Max(newSliderValue, 0);
-            areaCeilGreenTrackBar.Value = newSliderValue;
+            UpdateSliderFromValue(selectedAreaLight.skyG, areaCeilGreenTrackBar, 2.0f);
+
         }
 
         private void areaCeilBlueTB_TextChanged(object sender, EventArgs e)
@@ -730,10 +681,8 @@ namespace Smash_Forge.GUI.Editors
 
             RenderAreaLightColor();
 
-            int newSliderValue = (int)(selectedAreaLight.skyB * areaCeilBlueTrackBar.Maximum / 2.0f);
-            newSliderValue = Math.Min(newSliderValue, areaCeilBlueTrackBar.Maximum);
-            newSliderValue = Math.Max(newSliderValue, 0);
-            areaCeilBlueTrackBar.Value = newSliderValue;
+            UpdateSliderFromValue(selectedAreaLight.skyB, areaCeilBlueTrackBar, 2.0f);
+
         }
 
         private void areaGroundRedTB_TextChanged(object sender, EventArgs e)
@@ -749,10 +698,7 @@ namespace Smash_Forge.GUI.Editors
 
             RenderAreaLightColor();
 
-            int newSliderValue = (int)(selectedAreaLight.groundR * areaGroundRedTrackBar.Maximum / 2.0f);
-            newSliderValue = Math.Min(newSliderValue, areaGroundRedTrackBar.Maximum);
-            newSliderValue = Math.Max(newSliderValue, 0);
-            areaGroundRedTrackBar.Value = newSliderValue;
+            UpdateSliderFromValue(selectedAreaLight.groundR, areaGroundRedTrackBar, 2.0f);
         }
 
         private void areaGroundGreenTB_TextChanged(object sender, EventArgs e)
@@ -768,10 +714,8 @@ namespace Smash_Forge.GUI.Editors
 
             RenderAreaLightColor();
 
-            int newSliderValue = (int)(selectedAreaLight.groundG * areaGroundGreenTrackBar.Maximum / 2.0f);
-            newSliderValue = Math.Min(newSliderValue, areaGroundGreenTrackBar.Maximum);
-            newSliderValue = Math.Max(newSliderValue, 0);
-            areaGroundGreenTrackBar.Value = newSliderValue;
+            UpdateSliderFromValue(selectedAreaLight.groundG, areaGroundGreenTrackBar, 2.0f);
+
         }
 
         private void areaGroundBlueTB_TextChanged(object sender, EventArgs e)
@@ -787,10 +731,7 @@ namespace Smash_Forge.GUI.Editors
 
             RenderAreaLightColor();
 
-            int newSliderValue = (int)(selectedAreaLight.groundB * areaGroundBlueTrackBar.Maximum / 2.0f);
-            newSliderValue = Math.Min(newSliderValue, areaGroundBlueTrackBar.Maximum);
-            newSliderValue = Math.Max(newSliderValue, 0);
-            areaGroundBlueTrackBar.Value = newSliderValue;
+            UpdateSliderFromValue(selectedAreaLight.groundB, areaGroundBlueTrackBar, 2.0f);
         }
 
         private void areaCeilRedTrackBar_Scroll(object sender, EventArgs e)
@@ -944,7 +885,6 @@ namespace Smash_Forge.GUI.Editors
         private void areaPosYTrackBar_Scroll(object sender, EventArgs e)
         {
             areaPosYTB.Text = (float)(500.0f * (areaPosYTrackBar.Value - ((float)areaPosYTrackBar.Maximum / 2.0f)) / (float)areaPosYTrackBar.Maximum) + "";
-
         }
 
         private void areaPosZTrackBar_Scroll(object sender, EventArgs e)
@@ -984,6 +924,35 @@ namespace Smash_Forge.GUI.Editors
         {
             //lightSetLightListBox.SetItemChecked()
             selectedStageLight.enabled = e.NewValue == CheckState.Checked;
+        }
+
+        private void stageLightSetTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (stageLightSetTreeView.SelectedNode.Tag is DirectionalLight)
+            {
+                selectedStageLight = (DirectionalLight)stageLightSetTreeView.SelectedNode.Tag;
+                UpdateCurrentStageLightValues();
+                UpdateStageButtonColor();
+            }
+        }
+
+        private void stageLightSetTreeView_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            /*if (e.Node.Tag is DirectionalLight)
+            {
+                foreach (TreeNode node in stageLightSetTreeView.SelectedNode.Nodes)
+                {
+                    node.Checked = stageLightSetTreeView.SelectedNode.Checked;
+                }
+            }*/
+        }
+
+        private void UpdateSliderFromValue(float value, TrackBar trackBar, float maxValue)
+        {
+            int newSliderValue = (int)(value * trackBar.Maximum / maxValue);
+            newSliderValue = Math.Min(newSliderValue, trackBar.Maximum);
+            newSliderValue = Math.Max(newSliderValue, 0);
+            trackBar.Value = newSliderValue;
         }
     }
 }
