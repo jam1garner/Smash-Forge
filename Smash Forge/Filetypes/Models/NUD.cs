@@ -147,6 +147,10 @@ namespace Smash_Forge
                 {
                     m.billboard = true;
                 }
+                else if (m.Text.Contains("NSC"))
+                {
+                    m.nsc = true;
+                }
             }
 
             depthSortedMeshes = meshes.OrderBy(o => (o.boundingBox[2] - o.boundingBox[3] + o.sortBias)).ToList();
@@ -376,8 +380,11 @@ namespace Smash_Forge
 
             foreach (Mesh m in depthSortedMeshes)
             {
-                Matrix4 mvpMatrix = Camera.viewportCamera.getMVPMatrix();
-                GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
+                if (!m.nsc)
+                {
+                    Matrix4 mvpMatrix = Camera.viewportCamera.getMVPMatrix();
+                    GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
+                }
 
                 Matrix4 modelView = Camera.viewportCamera.getModelViewMatrix();
                 GL.UniformMatrix4(shader.getAttribute("modelViewMatrix"), false, ref modelView);
@@ -434,16 +441,23 @@ namespace Smash_Forge
             // fresnel sky/ground color for characters & stages
             GL.Uniform3(shader.getAttribute("fresGroundColor"), Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB);
             GL.Uniform3(shader.getAttribute("fresSkyColor"), Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB);
+            GL.Uniform3(shader.getAttribute("fresSkyDirection"), Lights.fresnelLight.getSkyDirection());
+            GL.Uniform3(shader.getAttribute("fresGroundDirection"), Lights.fresnelLight.getGroundDirection());
 
             // reflection color for characters & stages
             float refR, refG, refB = 1.0f;
             ColorTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
             GL.Uniform3(shader.getAttribute("refLightColor"), refR, refG, refB);
 
-            // character diffuse light
-            Lights.diffuseLight.setDirectionFromXYZAngles(Lights.diffuseLight.rotX, Lights.diffuseLight.rotY, Lights.diffuseLight.rotZ);
+            // character diffuse lights
             GL.Uniform3(shader.getAttribute("difLightColor"), Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB);
             GL.Uniform3(shader.getAttribute("ambLightColor"), Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB);
+
+            GL.Uniform3(shader.getAttribute("difLightColor2"), Lights.diffuseLight2.difR, Lights.diffuseLight2.difG, Lights.diffuseLight2.difB);
+            GL.Uniform3(shader.getAttribute("ambLightColor2"), Lights.diffuseLight2.ambR, Lights.diffuseLight2.ambG, Lights.diffuseLight2.ambB);
+
+            GL.Uniform3(shader.getAttribute("difLightColor3"), Lights.diffuseLight3.difR, Lights.diffuseLight3.difG, Lights.diffuseLight3.difB);
+            GL.Uniform3(shader.getAttribute("ambLightColor3"), Lights.diffuseLight3.ambR, Lights.diffuseLight3.ambG, Lights.diffuseLight3.ambB);
 
             // character specular light
             Lights.specularLight.setColorFromHSV(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity);
@@ -478,23 +492,21 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
             GL.Uniform3(shader.getAttribute("stageFogColor"), Lights.stageFogSet[lightSetNumber]);
 
-
-            Vector3 lightDirection = new Vector3(0f, 0f, -1f);
-
             if (Runtime.cameraLight) // camera light should only affects character lighting
             {
+                Vector3 lightDirection = new Vector3(0f, 0f, -1f);
                 GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, Camera.viewportCamera.getMVPMatrix().Inverted()).Normalized());
                 GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, Camera.viewportCamera.getMVPMatrix().Inverted()).Normalized());
                 GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, Camera.viewportCamera.getMVPMatrix().Inverted()).Normalized());
-                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, Camera.viewportCamera.getMVPMatrix()));
             }
             else
             {
                 GL.Uniform3(shader.getAttribute("specLightDirection"), Lights.specularLight.direction);
                 GL.Uniform3(shader.getAttribute("difLightDirection"), Lights.diffuseLight.direction);
-                GL.Uniform3(shader.getAttribute("lightPosition"), Vector3.Transform(Vector3.Zero, Camera.viewportCamera.getMVPMatrix()));
-                GL.Uniform3(shader.getAttribute("lightDirection"), new Vector3(-0.5f, 0.4f, 1f).Normalized());
             }
+
+            GL.Uniform3(shader.getAttribute("difLight2Direction"), Lights.diffuseLight2.direction);
+            GL.Uniform3(shader.getAttribute("difLight3Direction"), Lights.diffuseLight2.direction);
 
             GL.Uniform3(shader.getAttribute("stageLight1Direction"), Lights.stageLight1.direction);
             GL.Uniform3(shader.getAttribute("stageLight2Direction"), Lights.stageLight2.direction);
@@ -600,8 +612,19 @@ namespace Smash_Forge
             if (p.Parent != null && p.Parent.Text.Contains("_NSC"))
             {
                 int index = ((Mesh)p.Parent).singlebind;
+                Debug.WriteLine(index);
                 if (index != -1)
+                {
                     GL.Uniform3(shader.getAttribute("NSC"), Vector3.Transform(Vector3.Zero, Runtime.ModelContainers[0].vbn.bones[index].transform));
+                    Matrix4 matrix = Runtime.ModelContainers[0].vbn.bones[index].transform;
+                    Vector3 pos = Runtime.ModelContainers[0].vbn.bones[index].pos;
+                    Camera.viewportCamera.setNscTransforms(pos, Runtime.ModelContainers[0].vbn.bones[index].rotation[0], 
+                        Runtime.ModelContainers[0].vbn.bones[index].rotation[1], Runtime.ModelContainers[0].vbn.bones[index].rotation[2]);
+                    matrix = Camera.viewportCamera.getNSCMatrix();
+
+
+                    //GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref matrix);
+                }
             }
             else
             {
@@ -2374,27 +2397,24 @@ namespace Smash_Forge
                     || ((flag & 0xFF000000) == 0x9C000000) 
                     || ((flag & 0xFF000000) == 0xA2000000) || ((flag & 0xFF000000) == 0xA4000000);
 
+                // always use vertex color for effect materials for now
+                useVertexColor = useVertexColor || ((flag & 0xF0000000) == 0xB0000000);
             }
 
             public void TestTextures()
             {
-                // really need to clean this up
-                // texture flags
-
+                normalmap = (flag & (int)TextureFlags.NormalMap) > 0;
                 spheremap = (flag & (int)TextureFlags.SphereMap) > 0;
-
                 aomap = (flag & (int)TextureFlags.StageAOMap) > 0 && !dummyramp;
                 stagemap = (flag & (int)TextureFlags.StageAOMap) > 0 && dummyramp;
-
                 cubemap = (flag & (int)TextureFlags.RampCubeMap) > 0 && (!dummyramp) && (!spheremap);
                 ramp = (flag & (int) TextureFlags.RampCubeMap) > 0 && dummyramp; 
 
-                diffuse = (flag & (int)TextureFlags.DiffuseMap) > 0;
+                // effect materials use 4th byte 00 but still have diffuse
+                diffuse = (flag & (int)TextureFlags.DiffuseMap) > 0 || (flag & 0xF0000000) == 0xB0000000;
                 diffuse3 = (flag & 0x00009100) == 0x00009100 || (flag & 0x00009600) == 0x00009600 || (flag & 0x00009900) == 0x00009900; 
                 diffuse2 = (flag & (int)TextureFlags.RampCubeMap) > 0 && (flag & (int)TextureFlags.NormalMap) == 0 
                     && dummyramp || diffuse3;
-
-                normalmap = (flag & (int) TextureFlags.NormalMap) > 0;
             }
         }
 
@@ -2433,8 +2453,7 @@ namespace Smash_Forge
 
             public void AOSpecRefBlend()
             {
-                // change aomingain to only affect specular and reflection
-                // ignore 2nd material
+                // change aomingain to only affect specular and reflection. ignore 2nd material
                 if (materials[0].entries.ContainsKey("NU_aoMinGain"))
                 {
                     materials[0].entries["NU_aoMinGain"][0] = 15.0f;
@@ -2730,6 +2749,7 @@ namespace Smash_Forge
             public int sortBias = 0;
             public bool billboardY = false;
             public bool billboard = false;
+            public bool nsc = false;
 
             public float[] boundingBox = new float[8];
 

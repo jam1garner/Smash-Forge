@@ -94,6 +94,20 @@ namespace Smash_Forge
             ColorTools.HSV2RGB(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
         }
 
+        public Vector3 getSkyDirection()
+        {
+            Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, skyAngle * ((float)Math.PI / 180f));
+            Vector3 direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
+            return direction;
+        }
+
+        public Vector3 getGroundDirection()
+        {
+            Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, groundAngle * ((float)Math.PI / 180f));
+            Vector3 direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
+            return direction;
+        }
+
         public override string ToString()
         {
             return name;
@@ -142,11 +156,7 @@ namespace Smash_Forge
             this.rotX = rotX;
             this.rotY = rotY;
             this.rotZ = rotZ;
-            Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, rotX * ((float)Math.PI / 180f))
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, rotY * ((float)Math.PI / 180f))
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, rotZ * ((float)Math.PI / 180f));
-
-            direction = Vector3.Transform(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
+            UpdateDirection(rotX, rotY, rotZ);
 
             this.id = name;
         }
@@ -341,6 +351,22 @@ namespace Smash_Forge
 
         }
 
+        public LightMap(Vector3 scale, int texture_index, int texture_addr, Vector3 pos, float rotX, float rotY, float rotZ, string id)
+        {
+            this.scaleX = scale.X;
+            this.scaleY = scale.Y;
+            this.scaleZ = scale.Z;
+            this.texture_addr = texture_addr;
+            this.texture_index = texture_index;
+            this.posX = pos.X;
+            this.posY = pos.Y;
+            this.posZ = pos.Z;
+            this.rotX = rotX;
+            this.rotY = rotY;
+            this.rotZ = rotZ;
+            this.id = id;
+        }
+
         public override string ToString()
         {
             return id;
@@ -462,7 +488,7 @@ namespace Smash_Forge
             float rotZ = (float)RenderTools.GetValueFromParamFile(lightSet, 1, lightNumber, 7);
 
             DirectionalLight newLight = new DirectionalLight(hue, saturation, value, 0, 0, 0, rotX, rotY, rotZ, name);
-            newLight.enabled = enabled; // doesn't work properly for some stages
+            newLight.enabled = enabled; // doesn't render properly for some stages
             return newLight;
         }
 
@@ -581,7 +607,7 @@ namespace Smash_Forge
             Vector3 position = new Vector3(posX, posY, posZ);
             Vector3 scale = new Vector3(scaleX, scaleY, scaleZ);
 
-            return new LightMap();
+            return new LightMap(new Vector3(scaleX, scaleY, scaleZ), texture_index, texture_addr, new Vector3(posX, posY, posZ), rotX, rotY, rotZ, id);
         }
 
 

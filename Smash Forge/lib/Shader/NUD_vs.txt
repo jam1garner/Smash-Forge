@@ -112,7 +112,7 @@ void main()
     if(vBone.x != -1.0)
        objPos = skin(vPosition, ivec4(vBone));
 
-    objPos.xyz += NSC;
+    //objPos.xyz += NSC;
     objPos.z *= zScale;
 
     objPos = mvpMatrix * vec4(objPos.xyz, 1.0);
