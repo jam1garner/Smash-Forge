@@ -805,6 +805,7 @@ namespace Smash_Forge
             HasMatPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", "hasDualNormal");
             HasMatPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV", "hasNrmSamplerAUV");
             HasMatPropertyShaderUniform(shader, mat, "NU_normalSamplerBUV", "hasNrmSamplerBUV");
+            HasMatPropertyShaderUniform(shader, mat, "NU_finalColorGain", "hasFinalColorGain");
         }
 
         private static void SetTextureUniforms(Shader shader, Material mat)
