@@ -43,6 +43,7 @@ uniform int useDiffuseBlend;
 uniform int hasDualNormal;
 uniform int hasSoftLight;
 uniform int hasCustomSoftLight;
+uniform int hasFinalColorGain;
 
 // Da Flags
 uniform uint flags;
@@ -654,7 +655,7 @@ void main()
     fragColor.rgb = SmashShader(diffuseMapTotal, texture(normalMap, texCoord).a, bumpMapNormal);
 
     // not sure why vertex color values are greater than 1
-    if (renderVertColor == 1)
+    if (renderVertColor == 1 || hasFinalColorGain == 1)
         fragColor *= min(vertexColor, vec4(1));
 
     fragColor.rgb *= effColorGain.rgb;
