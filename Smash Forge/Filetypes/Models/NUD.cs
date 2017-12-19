@@ -32,8 +32,18 @@ namespace Smash_Forge
                 Runtime.shaders.Add("NUD_Debug", debug);
             }
 
+            if (!Runtime.shaders.ContainsKey("NUD_Eff"))
+            {
+                Shader effect = new Shader();
+                effect.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_Eff_vs.txt"));
+                effect.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_Eff_fs.txt"));
+                Runtime.shaders.Add("NUD_Eff", effect);
+            }
+
             Runtime.shaders["NUD"].displayCompilationWarning("NUD");
             Runtime.shaders["NUD_Debug"].displayCompilationWarning("NUD_Debug");
+            Runtime.shaders["NUD_Eff"].displayCompilationWarning("NUD_Eff");
+
 
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out ibo_elements);
@@ -370,7 +380,6 @@ namespace Smash_Forge
 
         public void Render(Shader shader)
         {
-            SetLightingUniforms(shader);
 
             // create lists...
             // first draw opaque
@@ -521,11 +530,6 @@ namespace Smash_Forge
 
             Material material = p.materials[0];
 
-            // final smash mats
-            /*
-            if (p.materials.Count > 1)
-                material = p.materials[1];*/
-
             GL.Uniform1(shader.getAttribute("flags"), material.flags);
             GL.Uniform1(shader.getAttribute("isTransparent"), p.isTransparent ? 1 : 0);
             GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
@@ -536,6 +540,7 @@ namespace Smash_Forge
             SetXMBUniforms(shader, p);
             SetRenderSettingsUniforms(shader, material);
             SetNSCUniform(p, shader);
+            SetLightingUniforms(shader);
 
             // vertex shader attributes (UVs, skin weights, etc)
             SetVertexAttributes(p, shader);
@@ -789,7 +794,9 @@ namespace Smash_Forge
             MatPropertyShaderUniform(shader, mat, "NU_effCombinerColor0", 1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_effCombinerColor1", 1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_effColorGain", 1, 1, 1, 1);
-
+            MatPropertyShaderUniform(shader, mat, "NU_effScaleUV", 1, 1, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_effTransUV", 1, 1, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_effMaxUV", 1, 1, 0, 0);
 
             // create some conditionals rather than using different shaders
             HasMatPropertyShaderUniform(shader, mat, "NU_softLightingParams", "hasSoftLight");
