@@ -1500,7 +1500,7 @@ namespace Smash_Forge
                         count = int.Parse((string)node.Attributes["count"].Value);
                         data = node.InnerText.Trim().Replace("\n", " ").Split(' ');
                     }
-                    if (node.Name.Equals("technique_common"))
+                    if (node.Name.Equals("technique_common") && node.ChildNodes.Count > 0 && node.ChildNodes[0].Attributes["stride"] != null)
                     {
                         stride = int.Parse((string)node.ChildNodes[0].Attributes["stride"].Value);
                     }
