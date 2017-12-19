@@ -37,10 +37,6 @@ namespace Smash_Forge
                 newFace.Add(t2);
                 newFace.Add(t3);
             }
-            //Console.WriteLine(input.Count + " " + (input.Count / 3f));
-            //foreach (int i in input)
-            //    Console.Write(i + " ");
-            //Console.WriteLine();
 
             return newFace;
         }

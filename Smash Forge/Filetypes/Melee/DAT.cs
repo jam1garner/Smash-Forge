@@ -204,7 +204,7 @@ namespace Smash_Forge
                 if (v.bones.Count == 1)
                 {
                     v.pos = Vector3.Transform(v.pos, mt);
-                    v.nrm = TransformNormal(mt, v.nrm);
+                    v.nrm = Vector3.TransformNormal(v.nrm, mt);
                 }
                 // scale it
                 v.pos = Vector3.Multiply(v.pos, stageScale);
@@ -219,6 +219,8 @@ namespace Smash_Forge
                     collisions.Read(d);
                 }
             }
+
+            PreRender();
         }
 
         Dictionary<int, PrimitiveType> primitiveTypes = new Dictionary<int, PrimitiveType>()
@@ -343,7 +345,7 @@ namespace Smash_Forge
                         {
                             Console.WriteLine("Triangulate " + primitiesTypes[d.type]);
                         }
-                        if(d.type == 0x98)
+                        if (d.type == 0x98)
                         {
                             d.faces = TriangleTools.fromTriangleStrip(d.faces);
                             d.type = 0x90;
@@ -450,6 +452,8 @@ namespace Smash_Forge
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(facedata.Length * sizeof(int)), facedata, BufferUsageHint.StaticDraw);
 
             int indiceat = 0;
+
+            GL.CullFace(CullFaceMode.Front);
 
             foreach (var da in displayList)
             {
@@ -675,13 +679,12 @@ namespace Smash_Forge
                 nut.draw.Add(0x40545400 + texid, NUT.loadImage(tex));
                 texid++;
             }
-
+            
             foreach (var da in displayList)
             {
                 DOBJ data = (DOBJ)da.Tag;
                 NUD.Mesh mesh = new NUD.Mesh();
                 mesh.Text = "Mesh_" + displayList.IndexOf(da);
-
 
                 texid = 0;
                 foreach (int key in texturesLinker.Keys)
@@ -694,6 +697,7 @@ namespace Smash_Forge
                 NUD.Polygon polygon = new NUD.Polygon();
                 polygon.setDefaultMaterial();
                 polygon.materials[0].textures[0].hash = 0x401B1000 + texid;
+                polygon.materials[0].cullMode = 2;
                 switch (data.material.texture.wrap_s)
                 {
                     case 0: polygon.materials[0].textures[0].WrapMode1 = 3; break;
@@ -706,18 +710,20 @@ namespace Smash_Forge
                     case 1: polygon.materials[0].textures[0].WrapMode2 = 1; break;
                     case 2: polygon.materials[0].textures[0].WrapMode2 = 2; break;
                 }
-
-
                 List<Vertex> usedVertices = new List<Vertex>();
+
+
                 foreach (POBJ poly in data.polygons)
                 {
                     foreach (POBJ.DisplayObject d in poly.display)
                     {
                         Console.WriteLine("Mesh Type" + primitiveTypes[d.type] + " " + mesh.Text);
                         List<int> faces = new List<int>();// d.faces;
-                        if (d.type == 0x98)faces = TriangleTools.fromTriangleStrip(d.faces);else
-                        if (d.type == 0x80)
-                            faces = TriangleTools.fromQuad(d.faces);
+                        if (d.type == 0x98) faces = TriangleTools.fromTriangleStrip(d.faces);
+                        else
+                        if (d.type == 0x80) faces = TriangleTools.fromQuad(d.faces);
+                        else
+                            faces = d.faces;
 
                         foreach (int index in faces)
                         {
@@ -727,7 +733,7 @@ namespace Smash_Forge
                         }
                     }
                 }
-
+                
                 if (usedVertices.Count == 0)
                     continue;
 
