@@ -97,6 +97,7 @@
     <Compile Include="Filetypes\Models\Skapon.cs" />
     <Compile Include="Filetypes\PAC.cs" />
     <Compile Include="Filetypes\Animation\PATH.cs" />
+    <Compile Include="Filetypes\Animation\LIGH.cs" />
     <Compile Include="Filetypes\Sounds\NUS3BANK.cs" />
     <Compile Include="Filetypes\Sounds\VGMStreamNative.cs" />
     <Compile Include="Filetypes\Sounds\WAVE.cs" />
@@ -732,6 +733,9 @@
     <None Include="param_labels\battle_object_param.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="param_labels\crazy_side_param.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="param_labels\event_param.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -802,6 +806,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\stdat_Kalos.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\stdat_Metroid.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\stdat_PeachCastle64_f.ini">
