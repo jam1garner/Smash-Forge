@@ -1861,7 +1861,7 @@ namespace Smash_Forge
 
             if (fileName.EndsWith(".nud"))
             {
-                openNud(fileName);
+                openNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
                 resyncTargetVBN();
             }
 

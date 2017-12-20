@@ -24,6 +24,19 @@ namespace Smash_Forge
         public float[] unk2 = new float[3];
         public int unk3 = unchecked((int)0xFFFFFFFF);
         public char[] boneName = new char[0x40];
+
+        public string BoneName
+        {
+            get
+            {
+                string name = "";
+                foreach (char b in boneName)
+                    if (b != (char)0)
+                        name += b;
+                    else break;
+                return name;
+            }
+        }
         
         public void read(FileData f)
         {
@@ -1221,7 +1234,7 @@ namespace Smash_Forge
                             {
                                 foreach (Bone b in m.vbn.bones)
                                 {
-                                    if (b.Equals(c.boneName))
+                                    if (b.Text.Equals(c.BoneName))
                                     {
                                         riggedBone = b;
                                     }
@@ -1249,6 +1262,8 @@ namespace Smash_Forge
                     Vector3 v2Neg = Vector3.Transform(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ - 5), transform);
                     Vector3 v2Zero = Vector3.Transform(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ), transform);
 
+                    Vector3 normals = Vector3.Transform(new Vector3(c.normals[i].x, c.normals[i].y, 0), transform);
+
                     GL.Begin(PrimitiveType.Quads);
                     if (c.normals.Count > i)
                     {
@@ -1264,13 +1279,15 @@ namespace Smash_Forge
                             GL.Begin(PrimitiveType.Quads);
                         }
 
+                        float angle = (float)(Math.Atan2(normals.Y, normals.X) * 180 / Math.PI);
+
                         if (c.flag4)
                             color = Color.FromArgb(128, Color.Yellow);
-                        else if (c.materials[i].getFlag(4) && Math.Abs(c.normals[i].x) > Math.Abs(c.normals[i].y))
+                        else if (c.materials[i].getFlag(4) && ((angle <= 0 && angle >= -70) || (angle <= -110 && angle >= -180) || angle == 180))
                             color = Color.FromArgb(128, Color.Purple);
-                        else if (Math.Abs(c.normals[i].x) > Math.Abs(c.normals[i].y))
+                        else if ((angle <= 0 && angle >= -70) || (angle <= -110 && angle >= -180) || angle == 180)
                             color = Color.FromArgb(128, Color.Lime);
-                        else if (c.normals[i].y < 0)
+                        else if (normals.Y < 0)
                             color = Color.FromArgb(128, Color.Red);
                         else
                             color = Color.FromArgb(128, Color.Cyan);
@@ -1333,7 +1350,7 @@ namespace Smash_Forge
                 }
                 for (int i = 0; i < c.cliffs.Count; i++)
                 {
-                    Vector3 pos = c.cliffs[i].useStartPos ? c.cliffs[i].startPos : new Vector3(c.cliffs[i].pos.x,c.cliffs[i].pos.y,0);
+                    Vector3 pos = c.cliffs[i].useStartPos ? Vector3.Transform(new Vector3(c.cliffs[i].startPos.X, c.cliffs[i].startPos.Y, 0), transform) : Vector3.Transform(new Vector3(c.cliffs[i].pos.x,c.cliffs[i].pos.y,0), transform);
 
                     GL.Color3(Color.White);
                     GL.Begin(PrimitiveType.Lines);

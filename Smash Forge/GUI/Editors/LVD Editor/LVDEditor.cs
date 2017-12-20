@@ -89,10 +89,7 @@ namespace Smash_Forge
                 yStart.Value = (decimal)currentEntry.startPos[1];
                 zStart.Value = (decimal)currentEntry.startPos[2];
                 flag1.Checked = currentEntry.useStartPos;
-                string boneNameRigging = "";
-                foreach (char b in currentEntry.boneName)
-                    if (b != (char)0)
-                        boneNameRigging += b;
+                string boneNameRigging = currentEntry.BoneName;
                 if (boneNameRigging.Length == 0)
                     boneNameRigging = "None";
                 button3.Text = boneNameRigging;
@@ -397,10 +394,7 @@ namespace Smash_Forge
             BoneRiggingSelector bs = new BoneRiggingSelector(str);
             bs.ShowDialog();
             currentEntry.boneName = str.data;
-            string boneNameRigging = "";
-            foreach (char b in currentEntry.boneName)
-                if (b != (char)0)
-                    boneNameRigging += b;
+            string boneNameRigging = currentEntry.BoneName;
             if (boneNameRigging.Length == 0)
                 boneNameRigging = "None";
             button3.Text = boneNameRigging;
