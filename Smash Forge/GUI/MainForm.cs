@@ -1721,6 +1721,10 @@ namespace Smash_Forge
             {
                 Runtime.TargetPath = new PathBin(fileName);
             }
+            else if (fileName.EndsWith("light.bin"))
+            {
+                Runtime.TargetLigh = new LighBin(fileName);
+            }
             else if (fileName.EndsWith(".bin"))
             {
                 FileData f = new FileData(fileName);
@@ -1748,6 +1752,10 @@ namespace Smash_Forge
                 else if (f.readString(4,4) == "PATH")
                 {
                     Runtime.TargetPath = new PathBin(fileName);
+                }
+                else if (f.readString(0,4) == "LIGH")
+                {
+                    Runtime.TargetLigh = new LighBin(fileName);
                 }
                 else if (f.readString(0,4) == "ATKD")
                 {
