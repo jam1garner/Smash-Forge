@@ -1350,7 +1350,7 @@ namespace Smash_Forge
                 }
                 for (int i = 0; i < c.cliffs.Count; i++)
                 {
-                    Vector3 pos = c.cliffs[i].useStartPos ? Vector3.Transform(new Vector3(c.cliffs[i].startPos.X, c.cliffs[i].startPos.Y, 0), transform) : Vector3.Transform(new Vector3(c.cliffs[i].pos.x,c.cliffs[i].pos.y,0), transform);
+                    Vector3 pos = c.cliffs[i].useStartPos ? Vector3.Transform(new Vector3(c.cliffs[i].startPos.X, c.cliffs[i].startPos.Y, c.cliffs[i].startPos.Z), transform) : Vector3.Transform(new Vector3(c.cliffs[i].pos.x,c.cliffs[i].pos.y,0), transform);
 
                     GL.Color3(Color.White);
                     GL.Begin(PrimitiveType.Lines);
