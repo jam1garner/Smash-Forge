@@ -652,7 +652,10 @@ void main()
     }
 
     // Material lighting done in sm4sh shader
-    fragColor.rgb = SmashShader(diffuseMapTotal, texture(normalMap, texCoord).a, bumpMapNormal);
+    float aoMap = texture(normalMap, texCoord).a;
+    if (hasColorGainOffset == 1)
+        aoMap = Luminance(texture(dif, texCoord).rgb);
+    fragColor.rgb = SmashShader(diffuseMapTotal, aoMap, bumpMapNormal);
 
     // not sure why vertex color values are greater than 1
     if (renderVertColor == 1 || hasFinalColorGain == 1)
