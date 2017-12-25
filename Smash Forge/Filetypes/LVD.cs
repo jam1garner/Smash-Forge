@@ -584,25 +584,25 @@ namespace Smash_Forge
         }
     }
     
-    public class GeneralShape : LVDGeneralShape //GeneralRects and GeneralPaths are both the same object type (this one), their difference is how they are used
+    public class GeneralShape : LVDGeneralShape //All objects in the general shapes section are this object type, they are just used differently
     {
         public float x1, y1, x2, y2;
         public List<Vector2D> points = new List<Vector2D>();
-        
+
         public void read(FileData f)
         {
             base.read(f);
-            
+
             f.readByte();
-            type = f.readInt(); //3 = rect, 4 = path
-            if ((type != 3) && (type != 4))
+            type = f.readInt(); //1 = point, 3 = rect, 4 = path
+            if ((type != 1) && (type != 3) && (type != 4))
                 throw new NotImplementedException($"Unknown general shape type {type} at offset {f.pos()-4}");
-            
+
             x1 = f.readFloat();
             y1 = f.readFloat();
             x2 = f.readFloat();
             y2 = f.readFloat();
-            
+
             f.skip(1);
             f.skip(1);
             int pointCount = f.readInt();
@@ -615,15 +615,15 @@ namespace Smash_Forge
         public void save(FileOutput f)
         {
             base.save(f);
-            
+
             f.writeByte(0x3);
             f.writeInt(type);
-            
+
             f.writeFloat(x1);
             f.writeFloat(y1);
             f.writeFloat(x2);
             f.writeFloat(y2);
-            
+
             f.writeByte(1);
             f.writeByte(1);
             f.writeInt(points.Count);
@@ -1019,6 +1019,11 @@ namespace Smash_Forge
 
             Vector3 sPos = s.useStartPos ? s.startPos : new Vector3(0,0,0);
 
+            if(s.type == 1)
+            {
+                Vector3 pos = s.useStartPos ? sPos : new Vector3(s.x1,s.y1,0);
+                RenderTools.drawCubeWireframe(pos, 3);
+            }
             if(s.type == 3)
             {
                 GL.Begin(PrimitiveType.LineLoop);

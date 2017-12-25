@@ -148,7 +148,7 @@ namespace Smash_Forge
                 else if (entry is GeneralShape)
                 {
                     GeneralShape s = (GeneralShape)entry;
-                    if (s.type == 3)
+                    if ((s.type == 1) || (s.type == 3))
                     {
                         rectangleGroup.Visible = true;
                         currentGeneralRect = s;

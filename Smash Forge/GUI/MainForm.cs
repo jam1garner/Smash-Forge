@@ -1001,11 +1001,9 @@ namespace Smash_Forge
 
         private void pointToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            return;
-            //Disabled this because I'm implementing general points as separate from general shapes
-            /*GeneralPoint g = new GeneralPoint() { name = "POINT_00_NEW", subname = "00_NEW" };
+            GeneralShape g = new GeneralShape() { name = "POINT_00_NEW", subname = "00_NEW", type = 1 };
             Runtime.TargetLVD.generalShapes.Add(g);
-            lvdList.fillList();*/
+            lvdList.fillList();
         }
 
         private void rectangleToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1668,7 +1666,6 @@ namespace Smash_Forge
                     Runtime.TargetLVD = new LVD(fileName);
                 else
                     Runtime.TargetLVD.Read(fileName);
-                LVD test = Runtime.TargetLVD;
                 lvdList.fillList();
             }
             
@@ -1756,6 +1753,14 @@ namespace Smash_Forge
                 else if (f.readString(0,4) == "LIGH")
                 {
                     Runtime.TargetLigh = new LighBin(fileName);
+                }
+                else if (f.readString(6,4) == "LVD1")
+                {
+                    if (Runtime.TargetLVD == null)
+                        Runtime.TargetLVD = new LVD(fileName);
+                    else
+                        Runtime.TargetLVD.Read(fileName);
+                    lvdList.fillList();
                 }
                 else if (f.readString(0,4) == "ATKD")
                 {
