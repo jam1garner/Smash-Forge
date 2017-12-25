@@ -385,7 +385,8 @@ namespace Smash_Forge
     public class ItemSpawner : LVDEntry
     {
         public override string magic { get { return "010401017735BB7500000002"; } }
-        
+
+        public int id;
         public List<Section> sections = new List<Section>();
 
         public ItemSpawner()
@@ -396,10 +397,11 @@ namespace Smash_Forge
         public void read(FileData f)
         {
             base.read(f);
-            
+
             f.skip(1);
-            f.skip(0x5);// unknown
-            
+            id = f.readInt();
+
+            f.skip(1);
             f.skip(1);
             int sectionCount = f.readInt();
             for(int i = 0; i < sectionCount; i++)
@@ -412,10 +414,11 @@ namespace Smash_Forge
         public void save(FileOutput f)
         {
             base.save(f);
-            
+
             f.writeByte(1);
-            f.writeHex("0984000101");
-            
+            f.writeInt(id);
+
+            f.writeByte(1);
             f.writeByte(1);
             f.writeInt(sections.Count);
             foreach(Section s in sections)
@@ -568,19 +571,21 @@ namespace Smash_Forge
     
     public class LVDGeneralShape : LVDShape
     {
+        public int id;
+
         public void read(FileData f)
         {
             base.read(f);
             
             f.skip(1);
-            f.readInt(); //unknown
+            id = f.readInt();
         }
         public void save(FileOutput f)
         {
             base.save(f);
             
             f.writeByte(1);
-            f.writeInt(0);
+            f.writeInt(id);
         }
     }
     
