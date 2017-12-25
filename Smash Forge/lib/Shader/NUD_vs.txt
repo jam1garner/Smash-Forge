@@ -35,8 +35,9 @@ uniform vec4 normalSamplerAUV;
 uniform vec4 normalSamplerBUV;
 
 uniform mat4 mvpMatrix;
+uniform mat4 nscMatrix;
+
 uniform uint flags;
-uniform vec3 NSC;
 uniform float zScale;
 uniform vec4 zOffset;
 
@@ -50,7 +51,6 @@ uniform int hasNrmSamplerBUV;
 uniform sampler2D boneWeight;
 uniform int debug1;
 uniform int debug2;
-
 
 uniform bones
 {
@@ -112,9 +112,8 @@ void main()
     if(vBone.x != -1.0)
        objPos = skin(vPosition, ivec4(vBone));
 
-    //objPos.xyz += NSC;
     objPos.z *= zScale;
-
+    objPos = nscMatrix * objPos;
     objPos = mvpMatrix * vec4(objPos.xyz, 1.0);
     gl_Position = objPos;
 

@@ -389,20 +389,12 @@ namespace Smash_Forge
 
             foreach (Mesh m in depthSortedMeshes)
             {
-                if (!m.nsc)
-                {
-                    Matrix4 mvpMatrix = Camera.viewportCamera.getMVPMatrix();
-                    GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
-                }
 
+                Matrix4 mvpMatrix = Camera.viewportCamera.getMVPMatrix();
+                GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
+                
                 Matrix4 modelView = Camera.viewportCamera.getModelViewMatrix();
                 GL.UniformMatrix4(shader.getAttribute("modelViewMatrix"), false, ref modelView);
-
-                /*if (m.billboardY)
-                {
-                    matrix = Camera.viewportCamera.getBillboardYMatrix();
-                    GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref matrix);
-                }*/
 
                 for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
                 {
@@ -612,29 +604,19 @@ namespace Smash_Forge
 
         private static void SetNSCUniform(Polygon p, Shader shader)
         {
-            // transform objects using the bone's transforms
-            GL.Uniform3(shader.getAttribute("NSC"), Vector3.Zero);
+            Matrix4 nscMatrix = Matrix4.Identity;
+
+            // transform object using the bone's transforms
             if (p.Parent != null && p.Parent.Text.Contains("_NSC"))
             {
                 int index = ((Mesh)p.Parent).singlebind;
-                Debug.WriteLine(index);
                 if (index != -1)
                 {
-                    GL.Uniform3(shader.getAttribute("NSC"), Vector3.Transform(Vector3.Zero, Runtime.ModelContainers[0].vbn.bones[index].transform));
-                    Matrix4 matrix = Runtime.ModelContainers[0].vbn.bones[index].transform;
-                    Vector3 pos = Runtime.ModelContainers[0].vbn.bones[index].pos;
-                    Camera.viewportCamera.setNscTransforms(pos, Runtime.ModelContainers[0].vbn.bones[index].rotation[0], 
-                        Runtime.ModelContainers[0].vbn.bones[index].rotation[1], Runtime.ModelContainers[0].vbn.bones[index].rotation[2]);
-                    matrix = Camera.viewportCamera.getNSCMatrix();
-
-
-                    //GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref matrix);
+                    nscMatrix = Runtime.ModelContainers[0].vbn.bones[index].transform;
                 }
             }
-            else
-            {
-                GL.Uniform3(shader.getAttribute("NSC"), Vector3.Zero);
-            }
+
+            GL.UniformMatrix4(shader.getAttribute("nscMatrix"), false, ref nscMatrix);
         }
 
         private static void SetRenderSettingsUniforms(Shader shader, Material material)
