@@ -433,9 +433,16 @@
     <Compile Include="GUI\ModelViewport.Designer.cs">
       <DependentUpon>ModelViewport.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Nodes\AnimationGroupNode.cs" />
     <Compile Include="GUI\Nodes\BaseNode.cs" />
     <Compile Include="GUI\Nodes\ModelNode.cs" />
     <Compile Include="GUI\Nodes\ProjectNode.cs" />
+    <Compile Include="GUI\ProgressAlert.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\ProgressAlert.Designer.cs">
+      <DependentUpon>ProgressAlert.cs</DependentUpon>
+    </Compile>
     <Compile Include="IO\FileBase.cs" />
     <Compile Include="lib\NintacoAPI.cs" />
     <Compile Include="MovesetManager.cs" />
@@ -600,6 +607,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\ModelViewport.resx">
       <DependentUpon>ModelViewport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\ProgressAlert.resx">
+      <DependentUpon>ProgressAlert.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -1035,6 +1045,7 @@
     </None>
     <Content Include="Resources\10080000.png" />
     <None Include="Resources\boneWeightGradient.png" />
+    <None Include="Resources\Flat Folder icon.png" />
     <Content Include="Resources\forge.ico" />
     <Content Include="lib\FITC.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

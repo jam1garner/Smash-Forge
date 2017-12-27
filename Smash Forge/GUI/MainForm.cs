@@ -18,6 +18,7 @@ using Smash_Forge.GUI.Editors;
 using SALT.PARAMS;
 using SALT.Graphics;
 using OpenTK.Graphics.OpenGL;
+using System.ComponentModel;
 
 namespace Smash_Forge
 {
@@ -36,10 +37,16 @@ namespace Smash_Forge
         public String[] filesToOpen = null;
         public static string executableDir = null;
         public static csvHashes Hashes;
+        public ProgessAlert Progress = new ProgessAlert();
 
         public MainForm()
         {
             InitializeComponent();
+        }
+        
+        public void UpdateProgress(object sender, ProgressChangedEventArgs e)
+        {
+            Progress.ProgressValue = e.ProgressPercentage;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -1190,6 +1197,8 @@ namespace Smash_Forge
             {
                 PAC p = new PAC();
                 p.Read(filename);
+                AnimationGroupNode animGroup = new AnimationGroupNode() { Text = filename};
+                animNode.Nodes.Add(animGroup);
 
                 foreach (var pair in p.Files)
                 {
@@ -1208,7 +1217,7 @@ namespace Smash_Forge
                                 Runtime.Animations[AnimName].Children.Add(anim);
                             else
                             {
-                                animNode.Nodes.Add(anim);
+                                animGroup.Nodes.Add(anim);
                                 Runtime.Animations.Add(AnimName, anim);
                             }
 
@@ -1295,11 +1304,6 @@ namespace Smash_Forge
                 BCHan.Read(filename);
                 BCH bch = new Smash_Forge.BCH();
                 bch.Read(filename);
-                List<Animation> anims = new List<Animation>();
-                
-                foreach (Animation a in animList.treeView1.Nodes[0].Nodes[0].Nodes)
-                    anims.Add(a);
-                BCH_Animation.Rebuild(filename + "_new", anims);
                 
             }
 

@@ -138,7 +138,7 @@ namespace Smash_Forge
 
 
             //Skeletal animation
-            TreeNode ThisAnimation = new TreeNode() { Text = filename};
+            AnimationGroupNode ThisAnimation = new AnimationGroupNode() { Text = filename};
             MainForm.animNode.Nodes.Add(ThisAnimation);
 
             for (int index1 = 0; index1 < content.skeletalAnimationsPointerTableEntries; index1++)//

@@ -22,6 +22,108 @@ namespace Smash_Forge
             Text = Name;
             ImageKey = "anim";
             SelectedImageKey = "anim";
+            
+            ContextMenu cm = new ContextMenu();
+
+            MenuItem Export = new MenuItem("Export As");
+            Export.Click += SaveAs;
+            cm.MenuItems.Add(Export);
+
+            MenuItem Replace = new MenuItem("Replace Animation");
+            Replace.Click += ReplaceAnimation;
+            cm.MenuItems.Add(Replace);
+            
+            ContextMenu = cm;
+        }
+
+        public void ReplaceAnimation(object sender, EventArgs args)
+        {
+            using (OpenFileDialog of = new OpenFileDialog())
+            {
+                of.ShowDialog();
+
+                foreach(string filename in of.FileNames)
+                {
+                    if (filename.EndsWith(".omo"))
+                    {
+                        Animation a = OMOOld.read(new FileData(filename));
+                        a.Text = filename;
+                        ReplaceMe(a);
+                    }
+                    if (filename.EndsWith(".chr0"))
+                    {
+                        Animation a = (CHR0.read(new FileData(filename), Runtime.TargetVBN));
+                        ReplaceMe(a);
+                    }
+                    if (filename.EndsWith(".anim"))
+                    {
+                        Animation a = (ANIM.read(filename, Runtime.TargetVBN));
+                        ReplaceMe(a);
+                    }
+                }
+            }
+        }
+
+        public void ReplaceMe(Animation a)
+        {
+            Nodes.Clear();
+            Bones.Clear();
+            Children.Clear();
+
+            Bones = a.Bones;
+
+            FrameCount = a.FrameCount;
+        }
+
+        public void SaveAs(object sender, EventArgs args)
+        {
+            if (Runtime.TargetVBN == null)
+            {
+                MessageBox.Show("You must have a bone set (VBN) open before saving animations");
+                return;
+            }
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Supported Files (.omo, .anim, .smd)|*.omo;*.anim;*.smd|" +
+                             "Maya Anim (.anim)|*.anim|" +
+                             "Object Motion (.omo)|*.omo|" +
+                             "Source Animation (.smd)|*.smd|" +
+                             "All Files (*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    sfd.FileName = sfd.FileName;
+
+                    if (sfd.FileName.EndsWith(".anim") & Runtime.TargetAnim != null)
+                    {
+                        if (Tag is AnimTrack)
+                            ((AnimTrack)Tag).createANIM(sfd.FileName, Runtime.TargetVBN);
+                        else
+                            ANIM.CreateANIM(sfd.FileName, this, Runtime.TargetVBN);
+
+                    }
+
+                    if (sfd.FileName.EndsWith(".omo"))
+                    {
+                        if (Tag is FileData)
+                        {
+                            FileOutput o = new FileOutput();
+                            o.writeBytes(((FileData)Tag).getSection(0,
+                                ((FileData)Tag).size()));
+                            o.save(sfd.FileName);
+                        }
+                        else
+                            OMOOld.createOMO(this, Runtime.TargetVBN, sfd.FileName);
+                    }
+
+
+                    if (sfd.FileName.EndsWith(".smd"))
+                    {
+                        SMD.Save(this, Runtime.TargetVBN, sfd.FileName);
+                    }
+                    
+                }
+            }
         }
 
         public enum InterpolationType

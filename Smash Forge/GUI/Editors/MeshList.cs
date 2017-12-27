@@ -28,7 +28,7 @@ namespace Smash_Forge
             refresh();
 
             iconList.ImageSize = new Size(24, 24);
-            iconList.Images.Add("sex", Properties.Resources.sexy_green_down_arrow);
+            iconList.Images.Add("group", Properties.Resources.icon_group);
             iconList.Images.Add("polygon", Properties.Resources.icon_polygon);
             iconList.Images.Add("mesh", Properties.Resources.icon_mesh);
             iconList.Images.Add("model", Properties.Resources.icon_model);

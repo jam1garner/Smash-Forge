@@ -20,7 +20,7 @@ namespace Smash_Forge
         {
             InitializeComponent();
             iconList.ImageSize = new Size(24, 24);
-            iconList.Images.Add("thesex", Properties.Resources.sexy_green_down_arrow);
+            iconList.Images.Add("group", Properties.Resources.icon_group);
             iconList.Images.Add("anim", Properties.Resources.icon_anim);
             iconList.Images.Add("bone", Properties.Resources.icon_bone);
             iconList.Images.Add("frame", Properties.Resources.icon_model);
