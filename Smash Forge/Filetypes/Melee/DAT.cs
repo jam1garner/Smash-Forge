@@ -453,6 +453,7 @@ namespace Smash_Forge
 
             int indiceat = 0;
 
+            GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
 
             foreach (var da in displayList)

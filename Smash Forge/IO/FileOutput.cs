@@ -27,8 +27,19 @@ namespace Smash_Forge
 			return data.Count;
 		}
 
-		public void writeOutput(FileOutput d){
-			foreach(byte b in d.data)
+		public void writeOutput(FileOutput d)
+        {
+            foreach (RelocOffset o in d.Offsets)
+            {
+                o.Position += data.Count;
+                Offsets.Add(o);
+            }
+            foreach (RelocOffset o in Offsets)
+            {
+                if(o.output == d || o.output == null)
+                    o.Value += data.Count;
+            }
+            foreach (byte b in d.data)
 				data.Add(b);
 		}
 
@@ -177,6 +188,19 @@ namespace Smash_Forge
         {
 			File.WriteAllBytes (fname, data.ToArray());
 		}
+
+        public class RelocOffset
+        {
+            public int Value;
+            public int Position;
+            public FileOutput output;
+        }
+        public List<RelocOffset> Offsets = new List<RelocOffset>();
+        public void WriteOffset(int i, FileOutput fo)
+        {
+            Offsets.Add(new RelocOffset() { Value = i, output = fo, Position = data.Count });
+            writeInt(i);
+        }
 	}
 }
 

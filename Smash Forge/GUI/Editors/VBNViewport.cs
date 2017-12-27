@@ -317,6 +317,7 @@ namespace Smash_Forge
             Runtime.TargetAnim.SetFrame(animFrameNum);
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
+                Runtime.TargetAnim.SetFrame(animFrameNum);
                 if (m.vbn != null)
                     Runtime.TargetAnim.NextFrame(m.vbn);
 

@@ -1293,6 +1293,14 @@ namespace Smash_Forge
                 //Runtime.Animations.Add(filename, );
                 //animNode.Nodes.Add();
                 BCHan.Read(filename);
+                BCH bch = new Smash_Forge.BCH();
+                bch.Read(filename);
+                List<Animation> anims = new List<Animation>();
+                
+                foreach (Animation a in animList.treeView1.Nodes[0].Nodes[0].Nodes)
+                    anims.Add(a);
+                BCH_Animation.Rebuild(filename + "_new", anims);
+                
             }
 
             animList.treeView1.EndUpdate();

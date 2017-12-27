@@ -20,6 +20,7 @@ namespace Smash_Forge
             public int height;
             public PixelInternalFormat type;
             public OpenTK.Graphics.OpenGL.PixelFormat utype;
+            public PixelType PixelType = PixelType.UnsignedByte;
             
             public override string ToString()
             {
@@ -62,6 +63,8 @@ namespace Smash_Forge
                         return 1;
                     case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
                         return 2;
+                    case PixelInternalFormat.Rgb16:
+                        return 8;
                     case PixelInternalFormat.Rgba:
                         if (utype == OpenTK.Graphics.OpenGL.PixelFormat.Rgba)
                             return 14;
@@ -91,6 +94,11 @@ namespace Smash_Forge
                         break;
                     case 0x2:
                         type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                        break;
+                    case 8:
+                        type = PixelInternalFormat.Rgb16;
+                        utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgb;
+                        PixelType = PixelType.UnsignedShort565Reversed;
                         break;
                     case 12:
                         type = PixelInternalFormat.Rgba16;
@@ -122,6 +130,8 @@ namespace Smash_Forge
 
         public Dictionary<int,int> draw = new Dictionary<int, int>();
         public List<NUD_Texture> textures = new List<NUD_Texture>();
+
+        public int Version = 0x200;
 
         public override Endianness Endian { get; set; }
 
@@ -163,7 +173,7 @@ namespace Smash_Forge
             FileOutput data = new FileOutput();
 
             o.writeInt(0x4E545033); // "NTP3"
-            o.writeShort(0x0200);
+            o.writeShort(Version);
             o.writeShort(textures.Count);
             o.writeInt(0);
             o.writeInt(0);
@@ -307,9 +317,10 @@ namespace Smash_Forge
 
         public void ReadNTP3(FileData d)
         {
-            d.skip(0x2);
+            Version = d.readShort();
             int count = d.readShort();
             d.skip(0x8);
+            if (Version == 0x100) count -= 1;
 
             int dataPtr = 0;
 
@@ -351,10 +362,14 @@ namespace Smash_Forge
                 tex.id = d.readInt();
                 d.skip(4); // padding align 8
 
+                if (Version == 0x100)
+                    dataOffset = d.pos();
+
                 // add mipmap data
                 for (int miplevel = 0; miplevel < numMips; miplevel++)
                 {
                     byte[] texArray = d.getSection(dataOffset, mipSizes[miplevel]);
+                    Debug.WriteLine(texArray.Length.ToString("x"));
                     tex.mipmaps.Add(texArray);
                     dataOffset += mipSizes[miplevel];
                 }
@@ -688,8 +703,16 @@ namespace Smash_Forge
             }
             else
             {
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.mipmaps.Count);
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
                 GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.width, t.height, 0,
-                    t.utype, PixelType.UnsignedByte, t.mipmaps[0]);
+                    t.utype, t.PixelType, t.mipmaps[0]);
+
+               /* for (int i = 0; i < t.mipmaps.Count; i++)
+                    GL.TexImage2D<byte>(TextureTarget.Texture2D, i, t.type, t.width, t.height, 0,
+                    t.utype, t.PixelType, t.mipmaps[i]);*/
+
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
             }
 

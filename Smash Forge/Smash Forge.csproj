@@ -77,9 +77,11 @@
     <Compile Include="Filetypes\Animation\BCHan.cs" />
     <Compile Include="Filetypes\Animation\OMO.cs" />
     <Compile Include="Filetypes\ATKD.cs" />
+    <Compile Include="Filetypes\BCH\BCH_Animation.cs" />
     <Compile Include="Filetypes\BCH\BCH_Main.cs" />
     <Compile Include="Filetypes\BCH\BCH_Model.cs" />
     <Compile Include="Filetypes\BCH\BCH_Texture.cs" />
+    <Compile Include="Filetypes\BCH\PatriciaTree.cs" />
     <Compile Include="Filetypes\BCH\_3DSGPU.cs" />
     <Compile Include="Filetypes\DRP.cs" />
     <Compile Include="Filetypes\MaterialXML.cs" />

@@ -16,12 +16,14 @@ namespace Smash_Forge
         public TreeNode Textures = new TreeNode() { Text = "Textures" };
         public TreeNode Models = new TreeNode() { Text = "Models" };
         public TreeNode Materials = new TreeNode() { Text = "Materials" };
+        public TreeNode Animations = new TreeNode() { Text = "Animations" };
 
         public BCH()
         {
             Nodes.Add(Models);
             Nodes.Add(Textures);
             Nodes.Add(Materials);
+            Nodes.Add(Animations);
             ImageKey = "model";
             SelectedImageKey = "model";
         }
