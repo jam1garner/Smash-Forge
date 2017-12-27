@@ -106,6 +106,7 @@
             this.glControl1 = new OpenTK.GLControl();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -485,27 +486,27 @@
             this.open3DSTEXEditorToolStripMenuItem,
             this.openDATTextureEditorToolStripMenuItem});
             this.texturesToolStripMenuItem.Name = "texturesToolStripMenuItem";
-            this.texturesToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
+            this.texturesToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
             this.texturesToolStripMenuItem.Text = "Textures";
             // 
             // openNUTEditorToolStripMenuItem
             // 
             this.openNUTEditorToolStripMenuItem.Name = "openNUTEditorToolStripMenuItem";
-            this.openNUTEditorToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.openNUTEditorToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.openNUTEditorToolStripMenuItem.Text = "Open NUT Editor";
             this.openNUTEditorToolStripMenuItem.Click += new System.EventHandler(this.openNUTEditorToolStripMenuItem_Click);
             // 
             // open3DSTEXEditorToolStripMenuItem
             // 
             this.open3DSTEXEditorToolStripMenuItem.Name = "open3DSTEXEditorToolStripMenuItem";
-            this.open3DSTEXEditorToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.open3DSTEXEditorToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.open3DSTEXEditorToolStripMenuItem.Text = "Open 3DS TEX Editor";
             this.open3DSTEXEditorToolStripMenuItem.Click += new System.EventHandler(this.open3DSTEXEditorToolStripMenuItem_Click);
             // 
             // openDATTextureEditorToolStripMenuItem
             // 
             this.openDATTextureEditorToolStripMenuItem.Name = "openDATTextureEditorToolStripMenuItem";
-            this.openDATTextureEditorToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.openDATTextureEditorToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.openDATTextureEditorToolStripMenuItem.Text = "Open DAT Texture Editor";
             this.openDATTextureEditorToolStripMenuItem.Click += new System.EventHandler(this.openDATTextureEditorToolStripMenuItem_Click);
             // 
@@ -737,6 +738,12 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.WorkerReportsProgress = true;
+            this.backgroundWorker1.WorkerSupportsCancellation = true;
+            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.UpdateProgress);
+            // 
             // MainForm
             // 
             this.AllowDrop = true;
@@ -848,6 +855,7 @@
         private System.Windows.Forms.ToolStripMenuItem exportParamsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripMenuItem stageLightingToolStripMenuItem;
+        public System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
 

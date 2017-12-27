@@ -418,13 +418,22 @@ namespace Smash_Forge
 
             a.setFrame(0);
 
+            List<List<Bone>> Frames = new List<List<Bone>>();
+            VBN tempvbn = new VBN();
+
             for (int i = 0; i < a.size(); i++)
             {
                 a.nextFrame(vbn);
-
+                List<Bone> bonelist = new List<Bone>();
                 for (int j = 0; j < nodeid.Count; j++)
                 {
                     Bone node = getNodeId(vbn, nodeid[j]);
+
+                    Bone f1 = new Bone(tempvbn);
+                    f1.pos = node.pos;
+                    f1.rot = node.rot;
+                    f1.sca = node.sca;
+                    bonelist.Add(f1);
 
                     if (minmax[j] == null)
                     {
@@ -550,9 +559,10 @@ namespace Smash_Forge
 
                 flag |= 0x00000001;
 
-                int hash = (int)getNodeId(vbn, nodeid[i]).boneId;
-                //if(hash == -1)
-                //hash = (int)FileData.crc32(getNodeId(nodeid.get(i)).name);
+                int hash = -1;
+                if(MainForm.Hashes.names.ContainsKey(getNodeId(vbn, nodeid[i]).Text))
+                    hash = (int)MainForm.Hashes.names[getNodeId(vbn, nodeid[i]).Text];
+                //else hash = (int)FileData.crc12(getNodeId(vbn, nodeid[i]).Text);
                 o.writeInt(flag); // flags...
                 o.writeInt(hash); //hash
                 o.writeInt(t1.size()); // Offset in 1 table
@@ -628,14 +638,16 @@ namespace Smash_Forge
 
             // INTERPOLATION
 
-            a.setFrame(0);
+            //a.setFrame(0);
 
-            for (int i = 0; i < a.size(); i++)
+            bool go = false;
+            foreach (List<Bone> bonelist in Frames)
             {
-                a.nextFrame(vbn);
-                for (int j = 0; j < nodeid.Count; j++)
+                //a.nextFrame(vbn);
+                int j = 0;
+                foreach (Bone node in bonelist)
                 {
-                    Bone node = getNodeId(vbn, nodeid[j]);
+                    //Bone node = getNodeId(vbn, nodeid[j]);
 
                     if (hasTrans[j] && !conTrans[j])
                     {
@@ -661,11 +673,12 @@ namespace Smash_Forge
                         t2.writeShort((int)(((node.sca.Y - minmax[j].s.Y) / minmax[j].s2.Y) * 0xFFFF));
                         t2.writeShort((int)(((node.sca.Z - minmax[j].s.Z) / minmax[j].s2.Z) * 0xFFFF));
                     }
+                    j++;
                 }
-
-                if (i == 0)
+                if (!go)
                 {
                     o.writeShortAt(t2.size(), 0x12);
+                    go = true;
                 }
             }
 
@@ -722,9 +735,10 @@ namespace Smash_Forge
             
             a.SetFrame(0);
 
-            //for (int i = 0; i < a.FrameCount; i++)
+            List<List<Bone>> Frames = new List<List<Bone>>();
+            VBN tempvbn = new VBN();
+
             {
-                //a.NextFrame(vbn);
 
                 for (int j = 0; j < a.Bones.Count; j++)
                 {
@@ -777,6 +791,8 @@ namespace Smash_Forge
                     a.SetFrame(0);
                     Bone b = vbn.getBone(keynode.Text);
                     if (b == null) continue;
+                    List<Bone> bonelist = new List<Bone>();
+                    Frames.Add(bonelist);
                     for (int i = 0; i < a.FrameCount; i++)
                     {
                         maxR[j].X = Math.Max(maxR[j].X, b.rot.X);
@@ -785,6 +801,13 @@ namespace Smash_Forge
                         minR[j].Y = Math.Min(minR[j].Y, b.rot.Y);
                         maxR[j].Z = Math.Max(maxR[j].Z, b.rot.Z);
                         minR[j].Z = Math.Min(minR[j].Z, b.rot.Z);
+
+                        Bone f1 = new Bone(tempvbn);
+                        f1.pos = b.pos;
+                        f1.rot = b.rot;
+                        f1.sca = b.sca;
+                        bonelist.Add(f1);
+
                         a.NextFrame(vbn);
                     }
 
@@ -851,12 +874,18 @@ namespace Smash_Forge
                 flag |= 0x00000001;
 
                 //uint id = 999;
+                
                 Bone b = vbn.getBone(a.Bones[i].Text);
                 int hash = -1;
-                if (b != null)
-                    hash = (int)b.boneId;
+                if (MainForm.Hashes.names.ContainsKey(a.Bones[i].Text))
+                    hash = (int)MainForm.Hashes.names[a.Bones[i].Text];
                 else
-                    continue;
+                {
+                    if (b != null)
+                        hash = (int)b.boneId;
+                    else
+                        continue;
+                }
                 //if(hash == -1)
                 //hash = (int)FileData.crc32(getNodeId(nodeid.get(i)).name);
                 o.writeInt(flag); // flags...
@@ -934,15 +963,16 @@ namespace Smash_Forge
 
             // INTERPOLATION
 
-            a.SetFrame(0);
+            //a.SetFrame(0);
 
-            for (int i = 0; i < a.FrameCount; i++)
+            bool go = true;
+            foreach (List<Bone> bonelist in Frames)
             {
-                //Console.WriteLine("Workin on" + i);
-                a.NextFrame(vbn);
-                for (int j = 0; j < a.Bones.Count; j++)
+                //a.nextFrame(vbn);
+                int j = 0;
+                foreach (Bone node in bonelist)
                 {
-                    Bone node = vbn.getBone(a.Bones[j].Text);
+                    //Bone node = vbn.getBone(a.Bones[j].Text);
                     if (node == null) continue;
 
                     if (hasTrans[j] && !conTrans[j])
@@ -969,13 +999,13 @@ namespace Smash_Forge
                     }
                 }
 
-                if (i == 0)
+                if (go)
                 {
                     o.writeShortAt(t2.size(), 0x12);
+                    go = false;
                 }
             }
-
-            //Console.WriteLine("Saving");
+            
             o.writeOutput(t2);
             return o.getBytes();
         }
