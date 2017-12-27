@@ -81,51 +81,6 @@ namespace Smash_Forge
                         f.writeInt((off * 4) + header.mainHeaderOffset, f.readInt() + header.dataOffset);
                         break;
                 }
-                
-                f.seek((off * 4) + header.gpuCommandsOffset);
-                if (header.backwardCompatibility < 6)
-                {
-                    switch (flag)
-                    {
-                        case 0x23: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataOffset); break; //Texture
-                        case 0x25: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataOffset); break; //Vertex
-                        //case 0x26: f.writeInt((off * 4) + header.gpuCommandsOffset, ((f.readInt() + header.dataOffset) & 0x7fffffff) | 0x80000000); break; //Index 16 bits mode
-                        case 0x27: f.writeInt((off * 4) + header.gpuCommandsOffset, (f.readInt() + header.dataOffset) & 0x7fffffff); break; //Index 8 bits mode
-                    }
-                }
-                else if (header.backwardCompatibility < 8)
-                {
-                    switch (flag)
-                    {
-                        case 0x24: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataOffset); break; //Texture
-                        case 0x26: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataOffset); break; //Vertex
-                        //case 0x27: writer.Write(((peek(input) + header.dataOffset) & 0x7fffffff) | 0x80000000); break; //Index 16 bits mode
-                        case 0x28: f.writeInt((off * 4) + header.gpuCommandsOffset, (f.readInt() + header.dataOffset) & 0x7fffffff); break; //Index 8 bits mode
-                    }
-                }
-                else if (header.backwardCompatibility < 0x21)
-                {
-                    switch (flag)
-                    {
-                        case 0x25: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataOffset); break; //Texture
-                        case 0x27: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataOffset); break; //Vertex
-                        //case 0x28: writer.Write(((peek(input) + header.dataOffset) & 0x7fffffff) | 0x80000000); break; //Index 16 bits mode
-                        case 0x29: f.writeInt((off * 4) + header.gpuCommandsOffset, (f.readInt() + header.dataOffset) & 0x7fffffff); break; //Index 8 bits mode
-                    }
-                }
-                else
-                {
-                    switch (flag)
-                    {
-                        case 0x25: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataOffset); break; //Texture
-                        case 0x26: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataOffset); break; //Vertex relative to Data Offset
-                        //case 0x27: writer.Write(((peek(input) + header.dataOffset) & 0x7fffffff) | 0x80000000); break; //Index 16 bits mode relative to Data Offset
-                        case 0x28: f.writeInt((off * 4) + header.gpuCommandsOffset, (f.readInt() + header.dataOffset) & 0x7fffffff); break; //Index 8 bits mode relative to Data Offset
-                        case 0x2b: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataExtendedOffset); break; //Vertex relative to Data Extended Offset
-                        //case 0x2c: writer.Write(((peek(input) + header.dataExtendedOffset) & 0x7fffffff) | 0x80000000); break; //Index 16 bits mode relative to Data Extended Offset
-                        case 0x2d: f.writeInt((off * 4) + header.gpuCommandsOffset, (f.readInt() + header.dataExtendedOffset) & 0x7fffffff); break; //Index 8 bits mode relative to Data Extended Offset
-                    }
-                }
 
             }
 
@@ -222,6 +177,7 @@ namespace Smash_Forge
                     uint flags = (uint)f.readInt();
 
                     OSegmentType segmentType = (OSegmentType)((animationTypeFlags >> 16) & 0xf);
+                    //Debug.WriteLine(bone.Text + " " + flags.ToString("x"));
                     switch (segmentType)
                     {
                         case OSegmentType.transform:
@@ -257,6 +213,7 @@ namespace Smash_Forge
                                             int position = f.pos();
                                             f.seek(frameOffset);
                                             float c = 0;
+                                            //Debug.WriteLine(j + " " + axis + " " + bone.Text);
                                             getAnimationKeyFrame(f, group, out c);
                                             if (c > a.FrameCount)
                                                 a.FrameCount = (int)c;
@@ -460,6 +417,7 @@ namespace Smash_Forge
             endFrame = input.readFloat();
 
             uint frameFlags = (uint)input.readInt();
+            //Debug.WriteLine(frameFlags.ToString("x"));
             //int preRepeat = (RenderBase.ORepeatMethod)(frameFlags & 0xf);
             //int postRepeat = (RenderBase.ORepeatMethod)((frameFlags >> 8) & 0xf);
 

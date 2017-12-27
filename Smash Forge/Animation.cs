@@ -104,6 +104,12 @@ namespace Smash_Forge
             }
 
             public List<KeyFrame> Keys = new List<KeyFrame>();
+            public float FrameCount { get {
+                    float fc = 0;
+                    foreach (KeyFrame k in Keys)
+                        if (k.Frame > fc) fc = k.Frame;
+                    return fc;
+                } }
 
             public float GetValue(float frame)
             {
