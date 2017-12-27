@@ -24,6 +24,19 @@ namespace Smash_Forge
         public float[] unk2 = new float[3];
         public int unk3 = unchecked((int)0xFFFFFFFF);
         public char[] boneName = new char[0x40];
+
+        public string BoneName
+        {
+            get
+            {
+                string name = "";
+                foreach (char b in boneName)
+                    if (b != (char)0)
+                        name += b;
+                    else break;
+                return name;
+            }
+        }
         
         public void read(FileData f)
         {
@@ -372,7 +385,8 @@ namespace Smash_Forge
     public class ItemSpawner : LVDEntry
     {
         public override string magic { get { return "010401017735BB7500000002"; } }
-        
+
+        public int id;
         public List<Section> sections = new List<Section>();
 
         public ItemSpawner()
@@ -383,10 +397,11 @@ namespace Smash_Forge
         public void read(FileData f)
         {
             base.read(f);
-            
+
             f.skip(1);
-            f.skip(0x5);// unknown
-            
+            id = f.readInt();
+
+            f.skip(1);
             f.skip(1);
             int sectionCount = f.readInt();
             for(int i = 0; i < sectionCount; i++)
@@ -399,10 +414,11 @@ namespace Smash_Forge
         public void save(FileOutput f)
         {
             base.save(f);
-            
+
             f.writeByte(1);
-            f.writeHex("0984000101");
-            
+            f.writeInt(id);
+
+            f.writeByte(1);
             f.writeByte(1);
             f.writeInt(sections.Count);
             foreach(Section s in sections)
@@ -555,41 +571,43 @@ namespace Smash_Forge
     
     public class LVDGeneralShape : LVDShape
     {
+        public int id;
+
         public void read(FileData f)
         {
             base.read(f);
             
             f.skip(1);
-            f.readInt(); //unknown
+            id = f.readInt();
         }
         public void save(FileOutput f)
         {
             base.save(f);
             
             f.writeByte(1);
-            f.writeInt(0);
+            f.writeInt(id);
         }
     }
     
-    public class GeneralShape : LVDGeneralShape //GeneralRects and GeneralPaths are both the same object type (this one), their difference is how they are used
+    public class GeneralShape : LVDGeneralShape //All objects in the general shapes section are this object type, they are just used differently
     {
         public float x1, y1, x2, y2;
         public List<Vector2D> points = new List<Vector2D>();
-        
+
         public void read(FileData f)
         {
             base.read(f);
-            
+
             f.readByte();
-            type = f.readInt(); //3 = rect, 4 = path
-            if ((type != 3) && (type != 4))
+            type = f.readInt(); //1 = point, 3 = rect, 4 = path
+            if ((type != 1) && (type != 3) && (type != 4))
                 throw new NotImplementedException($"Unknown general shape type {type} at offset {f.pos()-4}");
-            
+
             x1 = f.readFloat();
             y1 = f.readFloat();
             x2 = f.readFloat();
             y2 = f.readFloat();
-            
+
             f.skip(1);
             f.skip(1);
             int pointCount = f.readInt();
@@ -602,15 +620,15 @@ namespace Smash_Forge
         public void save(FileOutput f)
         {
             base.save(f);
-            
+
             f.writeByte(0x3);
             f.writeInt(type);
-            
+
             f.writeFloat(x1);
             f.writeFloat(y1);
             f.writeFloat(x2);
             f.writeFloat(y2);
-            
+
             f.writeByte(1);
             f.writeByte(1);
             f.writeInt(points.Count);
@@ -1006,6 +1024,11 @@ namespace Smash_Forge
 
             Vector3 sPos = s.useStartPos ? s.startPos : new Vector3(0,0,0);
 
+            if(s.type == 1)
+            {
+                Vector3 pos = s.useStartPos ? sPos : new Vector3(s.x1,s.y1,0);
+                RenderTools.drawCubeWireframe(pos, 3);
+            }
             if(s.type == 3)
             {
                 GL.Begin(PrimitiveType.LineLoop);
@@ -1221,7 +1244,7 @@ namespace Smash_Forge
                             {
                                 foreach (Bone b in m.vbn.bones)
                                 {
-                                    if (b.Equals(c.boneName))
+                                    if (b.Text.Equals(c.BoneName))
                                     {
                                         riggedBone = b;
                                     }
@@ -1249,6 +1272,8 @@ namespace Smash_Forge
                     Vector3 v2Neg = Vector3.Transform(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ - 5), transform);
                     Vector3 v2Zero = Vector3.Transform(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ), transform);
 
+                    Vector3 normals = Vector3.Transform(new Vector3(c.normals[i].x, c.normals[i].y, 0), transform);
+
                     GL.Begin(PrimitiveType.Quads);
                     if (c.normals.Count > i)
                     {
@@ -1264,13 +1289,15 @@ namespace Smash_Forge
                             GL.Begin(PrimitiveType.Quads);
                         }
 
+                        float angle = (float)(Math.Atan2(normals.Y, normals.X) * 180 / Math.PI);
+
                         if (c.flag4)
                             color = Color.FromArgb(128, Color.Yellow);
-                        else if (c.materials[i].getFlag(4) && Math.Abs(c.normals[i].x) > Math.Abs(c.normals[i].y))
+                        else if (c.materials[i].getFlag(4) && ((angle <= 0 && angle >= -70) || (angle <= -110 && angle >= -180) || angle == 180))
                             color = Color.FromArgb(128, Color.Purple);
-                        else if (Math.Abs(c.normals[i].x) > Math.Abs(c.normals[i].y))
+                        else if ((angle <= 0 && angle >= -70) || (angle <= -110 && angle >= -180) || angle == 180)
                             color = Color.FromArgb(128, Color.Lime);
-                        else if (c.normals[i].y < 0)
+                        else if (normals.Y < 0)
                             color = Color.FromArgb(128, Color.Red);
                         else
                             color = Color.FromArgb(128, Color.Cyan);
@@ -1333,7 +1360,7 @@ namespace Smash_Forge
                 }
                 for (int i = 0; i < c.cliffs.Count; i++)
                 {
-                    Vector3 pos = c.cliffs[i].useStartPos ? c.cliffs[i].startPos : new Vector3(c.cliffs[i].pos.x,c.cliffs[i].pos.y,0);
+                    Vector3 pos = c.cliffs[i].useStartPos ? Vector3.Transform(new Vector3(c.cliffs[i].startPos.X, c.cliffs[i].startPos.Y, c.cliffs[i].startPos.Z), transform) : Vector3.Transform(new Vector3(c.cliffs[i].pos.x,c.cliffs[i].pos.y,0), transform);
 
                     GL.Color3(Color.White);
                     GL.Begin(PrimitiveType.Lines);
