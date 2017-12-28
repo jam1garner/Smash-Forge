@@ -50,6 +50,12 @@ namespace Smash_Forge
                         a.Text = filename;
                         ReplaceMe(a);
                     }
+                    if (filename.EndsWith(".smd"))
+                    {
+                        Animation a = new Animation(filename.Replace(".smd", ""));
+                        SMD.read(filename, a, Runtime.TargetVBN);
+                        ReplaceMe(a);
+                    }
                     if (filename.EndsWith(".chr0"))
                     {
                         Animation a = (CHR0.read(new FileData(filename), Runtime.TargetVBN));
@@ -66,6 +72,7 @@ namespace Smash_Forge
 
         public void ReplaceMe(Animation a)
         {
+            Tag = null;
             Nodes.Clear();
             Bones.Clear();
             Children.Clear();

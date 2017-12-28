@@ -136,7 +136,7 @@ namespace Smash_Forge
                 Runtime.Animations = new Dictionary<string, Animation>();
                 MainForm.Instance.lvdList.fillList();
                 MainForm.animNode.Nodes.Clear();
-                MainForm.Instance.mtaNode.Nodes.Clear();
+                MainForm.mtaNode.Nodes.Clear();
                 MainForm.Instance.meshList.refresh();
                 MainForm.Instance.paramEditors = new List<PARAMEditor>();
                 MainForm.Instance.lvdEditor.Clear();
@@ -243,7 +243,16 @@ namespace Smash_Forge
                 }
             }
 
-            LoadAnimation(Runtime.TargetAnim);
+            if (Runtime.TargetAnim == null)
+            {
+                foreach (ModelContainer m in Runtime.ModelContainers)
+                {
+                    if (m.vbn != null)
+                        m.vbn.reset();
+                }
+            }
+            else
+                LoadAnimation(Runtime.TargetAnim);
         }
 
         private void btnFirstFrame_Click(object sender, EventArgs e)

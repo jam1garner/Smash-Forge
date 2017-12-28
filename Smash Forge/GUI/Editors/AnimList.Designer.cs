@@ -32,6 +32,7 @@
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.AnimationCM = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.exportAllAsOMOToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createAnimationGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.AnimationCM.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -50,16 +51,24 @@
             // AnimationCM
             // 
             this.AnimationCM.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportAllAsOMOToolStripMenuItem});
+            this.exportAllAsOMOToolStripMenuItem,
+            this.createAnimationGroupToolStripMenuItem});
             this.AnimationCM.Name = "AnimationCM";
-            this.AnimationCM.Size = new System.Drawing.Size(171, 48);
+            this.AnimationCM.Size = new System.Drawing.Size(204, 70);
             // 
             // exportAllAsOMOToolStripMenuItem
             // 
             this.exportAllAsOMOToolStripMenuItem.Name = "exportAllAsOMOToolStripMenuItem";
-            this.exportAllAsOMOToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.exportAllAsOMOToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
             this.exportAllAsOMOToolStripMenuItem.Text = "Export All as OMO";
             this.exportAllAsOMOToolStripMenuItem.Click += new System.EventHandler(this.exportAllAsOMOToolStripMenuItem_Click);
+            // 
+            // createAnimationGroupToolStripMenuItem
+            // 
+            this.createAnimationGroupToolStripMenuItem.Name = "createAnimationGroupToolStripMenuItem";
+            this.createAnimationGroupToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.createAnimationGroupToolStripMenuItem.Text = "Create Animation Group";
+            this.createAnimationGroupToolStripMenuItem.Click += new System.EventHandler(this.createAnimationGroupToolStripMenuItem_Click);
             // 
             // AnimListPanel
             // 
@@ -82,5 +91,6 @@
         public System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.ContextMenuStrip AnimationCM;
         private System.Windows.Forms.ToolStripMenuItem exportAllAsOMOToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createAnimationGroupToolStripMenuItem;
     }
 }

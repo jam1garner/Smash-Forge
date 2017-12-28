@@ -35,10 +35,42 @@ namespace Smash_Forge
 
         private void selectItem(object sender, TreeNodeMouseClickEventArgs e)
         {
+            Runtime.TargetMTA.Clear();
+            Runtime.TargetAnim = null;
+
             if (e.Node is Animation)
             {
                 Runtime.TargetAnimString = e.Node.Text;
-                Runtime.TargetAnim = (Animation)e.Node;// Runtime.Animations[e.Node.Text];
+
+                Animation running = new Animation("Running");
+                running.ReplaceMe((Animation)e.Node);
+
+                Queue<TreeNode> NodeQueue = new Queue<TreeNode>();
+                foreach(TreeNode n in MainForm.animNode.Nodes)
+                {
+                    NodeQueue.Enqueue(n);
+                }
+                List<MTA> display = new List<MTA>();
+                while (NodeQueue.Count > 0)
+                {
+                    TreeNode n = NodeQueue.Dequeue();
+                    if (n is Animation || n is MTA)
+                    {
+                        if (n == e.Node)
+                            continue;
+                        if (n.Text.Contains(e.Node.Text.Replace(".omo", "")))
+                            running.Children.Add(n);
+                        if (n.Text.Contains("default.mta") && n is MTA)
+                            display.Add((MTA)n);
+                    }
+                    if (n is AnimationGroupNode)
+                    {
+                        foreach (TreeNode tn in n.Nodes)
+                            NodeQueue.Enqueue(tn);
+                    }
+                }
+                
+                Runtime.TargetAnim = running;// Runtime.Animations[e.Node.Text];
 
                 //reset mtas
                 foreach (ModelContainer con in Runtime.ModelContainers)
@@ -46,35 +78,72 @@ namespace Smash_Forge
                     if (con.nud != null && con.mta != null)
                     {
                         con.nud.applyMTA(con.mta, 0);
-                        foreach (KeyValuePair<string, MTA> v in Runtime.MaterialAnimations)
+                        foreach(MTA d in display)
+                            con.nud.applyMTA(d, 0);
+
+                        /*foreach (KeyValuePair<string, MTA> v in Runtime.MaterialAnimations)
                         {
                             if (v.Key.Contains("display"))
                             {
                                 con.nud.applyMTA(v.Value, 0);
                                 break;
                             }
-                        }
+                        }*/
                     }
                 }
 
-                Runtime.TargetMTA.Clear();
+                /*Runtime.TargetMTA.Clear();
                 foreach (KeyValuePair<string, MTA> v in Runtime.MaterialAnimations)
                 {
                     if (v.Key.Contains(e.Node.Text.Replace(".omo", "")))
                     {
                         Runtime.TargetMTA.Add(v.Value);
                     }
-                }
+                }*/
 
                 //MainForm.Instance.viewports[0].loadMTA(Runtime.MaterialAnimations[e.Node.Text]);
 
                 //Console.WriteLine("Selected Anim " + e.Node.Text);
             }
-            if (e.Node.Parent != null && e.Node.Parent.Text == "Material Animations")
+            if (e.Node is MTA)
             {
-                MainForm.Instance.viewports[0].loadMTA(Runtime.MaterialAnimations[e.Node.Text]);
+                MainForm.Instance.viewports[0].loadMTA((MTA)e.Node);
                 //Runtime.TargetMTA = ;
                 Runtime.TargetMTAString = e.Node.Text;
+
+                Queue<TreeNode> NodeQueue = new Queue<TreeNode>();
+                foreach (TreeNode n in MainForm.animNode.Nodes)
+                {
+                    NodeQueue.Enqueue(n);
+                }
+                List<MTA> display = new List<MTA>();
+                while (NodeQueue.Count > 0)
+                {
+                    TreeNode n = NodeQueue.Dequeue();
+                    if (n is Animation || n is MTA)
+                    {
+                        if (n == e.Node)
+                            continue;
+                        if (n.Text.Contains("default.mta") && n is MTA)
+                            display.Add((MTA)n);
+                    }
+                    if (n is AnimationGroupNode)
+                    {
+                        foreach (TreeNode tn in n.Nodes)
+                            NodeQueue.Enqueue(tn);
+                    }
+                }
+
+                foreach (ModelContainer con in Runtime.ModelContainers)
+                {
+                    if (con.nud != null && con.mta != null)
+                    {
+                        con.nud.applyMTA(con.mta, 0);
+                        foreach (MTA d in display)
+                            con.nud.applyMTA(d, 0);
+                    }
+                }
+
             }
         }
 
@@ -127,6 +196,13 @@ namespace Smash_Forge
                     }
                 }
             }
+        }
+
+        private void createAnimationGroupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AnimationGroupNode ag = new AnimationGroupNode();
+            MainForm.animNode.Nodes.Add(ag);
+            //ag.BeginEdit();
         }
     }
 }

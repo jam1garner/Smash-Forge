@@ -370,7 +370,7 @@ namespace Smash_Forge
         public AnimListPanel animList = new AnimListPanel() { ShowHint = DockState.DockRight };
         public BoneTreePanel boneTreePanel = new BoneTreePanel() { ShowHint = DockState.DockLeft };
         public static TreeNode animNode = new TreeNode("Bone Animations");
-        public TreeNode mtaNode = new TreeNode("Material Animations");
+        public static TreeNode mtaNode = new TreeNode("Material Animations");
         public ProjectTree project = new ProjectTree() { ShowHint = DockState.DockLeft };
         public LVDList lvdList = new LVDList() { ShowHint = DockState.DockLeft };
         public LVDEditor lvdEditor = new LVDEditor() { ShowHint = DockState.DockRight };
@@ -833,6 +833,7 @@ namespace Smash_Forge
             else
                 project.Focus();
         }
+        
 
         private void openCharacterToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -843,6 +844,10 @@ namespace Smash_Forge
                 {
                     //project.openACMD($"{ofd.SelectedPath}\\script\\animcmd\\body\\motion.mtable",
                     //    $"{ofd.SelectedPath}\\motion");
+                    MainForm.Instance.Progress.ProgressValue = 0;
+                    MainForm.Instance.Progress.ControlBox = false;
+                    MainForm.Instance.Progress.Message = ("Please Wait... Opening Character");
+                    MainForm.Instance.Progress.Show();
 
                     string fighterName = new DirectoryInfo(ofd.SelectedPath).Name;
                     string[] dirs = Directory.GetDirectories(ofd.SelectedPath);
@@ -851,11 +856,25 @@ namespace Smash_Forge
                     {
                         if (s.EndsWith("model"))
                         {
+                            MainForm.Instance.Progress.ProgressValue = 10;
+                            MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Model");
                             // load default model
                             openNud(s + "\\body\\c00\\model.nud");
+                            MainForm.Instance.Progress.ProgressValue = 25;
+                            MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Expressions");
+                            string[] anims = Directory.GetFiles(s + "\\body\\c00\\");
+                            foreach(string ss in anims)
+                            {
+                                if (ss.EndsWith(".pac"))
+                                {
+                                    openAnimation(ss);
+                                }
+                            }
                         }
                         if (s.EndsWith("motion"))
                         {
+                            MainForm.Instance.Progress.ProgressValue = 50;
+                            MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Animation");
                             string[] anims = Directory.GetFiles(s + "\\body\\");
                             Array.Sort(anims, (a, b) =>
                             {
@@ -868,10 +887,12 @@ namespace Smash_Forge
                             }); //Sort files so main.pac is opened first
                             foreach (string a in anims)
                                 openAnimation(a);
-                            
+
                         }
                         if (s.EndsWith("script"))
                         {
+                            MainForm.Instance.Progress.ProgressValue = 75;
+                            MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Scripts");
                             if (File.Exists(s + "\\animcmd\\body\\motion.mtable"))
                             {
                                 //openFile(s + "\\animcmd\\body\\motion.mtable");
@@ -883,6 +904,8 @@ namespace Smash_Forge
 
                     resyncTargetVBN();
 
+                    MainForm.Instance.Progress.ProgressValue = 99;
+                    MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Params");
                     if (!String.IsNullOrEmpty(Runtime.paramDir))
                     {
                         // If they set the wrong dir, oh well
@@ -902,8 +925,11 @@ namespace Smash_Forge
                         }
                         catch { }
                     }
+                    MainForm.Instance.Progress.ProgressValue = 100;
                 }
             }
+
+
         }
 
         private void saveNUDToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1204,6 +1230,7 @@ namespace Smash_Forge
                 {
                     if (pair.Key.EndsWith(".omo"))
                     {
+                        Console.WriteLine("Adding " + pair.Key);
                         var anim = OMOOld.read(new FileData(pair.Value));
                         string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
                         //AnimName = pair.Key;
@@ -1211,10 +1238,12 @@ namespace Smash_Forge
                         //AnimName = AnimName.Insert(3, "_");
                         if (!string.IsNullOrEmpty(AnimName))
                         {
-                            Console.WriteLine("Adding " + AnimName);
                             anim.Text = AnimName;
                             if (Runtime.Animations.ContainsKey(AnimName))
-                                Runtime.Animations[AnimName].Children.Add(anim);
+                            {
+                                animGroup.Nodes.Add(anim);
+                                //Runtime.Animations[AnimName].Children.Add(anim);
+                            }
                             else
                             {
                                 animGroup.Nodes.Add(anim);
@@ -1226,7 +1255,10 @@ namespace Smash_Forge
                         else
                         {
                             if (Runtime.Animations.ContainsKey(pair.Key))
-                                Runtime.Animations[pair.Key].Children.Add(anim);
+                            {
+                                animNode.Nodes.Add(pair.Key);
+                                //Runtime.Animations[AnimName].Children.Add(anim);
+                            }
                             else
                             {
                                 animNode.Nodes.Add(pair.Key);
@@ -1238,13 +1270,16 @@ namespace Smash_Forge
                     else if (pair.Key.EndsWith(".mta"))
                     {
                         MTA mta = new MTA();
-                        try
+                        mta.read(new FileData(pair.Value));
+                        mta.Text = pair.Key;
+                        animGroup.Nodes.Add(mta);
+                        /*try
                         {
                             if (!Runtime.MaterialAnimations.ContainsKey(pair.Key))
                             {
                                 mta.read(new FileData(pair.Value));
-                                Runtime.MaterialAnimations.Add(pair.Key, mta);
-                                mtaNode.Nodes.Add(pair.Key);
+                                //Runtime.MaterialAnimations.Add(pair.Key, mta);
+                                //mtaNode.Nodes.Add(pair.Key);
                             }
 
                             // matching
@@ -1253,14 +1288,14 @@ namespace Smash_Forge
                                     .Replace(".mta", ".omo");
                             if (Runtime.Animations.ContainsKey(AnimName))
                             {
-                                Runtime.Animations[AnimName].Children.Add(mta);
+                                //Runtime.Animations[AnimName].Children.Add(mta);
                             }
 
                         }
                         catch (EndOfStreamException)
                         {
                             mta = null;
-                        }
+                        }*/
                     }
                 }
             }

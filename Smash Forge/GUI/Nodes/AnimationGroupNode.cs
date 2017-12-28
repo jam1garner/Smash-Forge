@@ -31,7 +31,7 @@ namespace Smash_Forge
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            float f = 0;
+            float f = 1;
             if (FileName.ToLower().EndsWith(".bch"))
             {
                 List<Animation> anims = new List<Animation>();
@@ -50,12 +50,14 @@ namespace Smash_Forge
                 {
                     worker.ReportProgress((int)((f / Node.Nodes.Count) * 100f));
                     f++;
-                    //MainForm.Instance.Progress.Message = ("Working on " + anim.Text);
-                    var bytes = OMOOld.CreateOMOFromAnimation(anim, Runtime.TargetVBN);
+                    //Console.WriteLine("Working on " + anim.Text + " " + (anim.Tag is FileData));
+                    var bytes = new byte[1];
                     if (anim.Tag is FileData)
-                        bytes = ((FileData)Runtime.TargetAnim.Tag).getSection(0, ((FileData)Runtime.TargetAnim.Tag).size());
+                        bytes = ((FileData)anim.Tag).getSection(0, ((FileData)anim.Tag).size());
+                    else
+                        bytes = OMOOld.CreateOMOFromAnimation(anim, Runtime.TargetVBN);
 
-                    pac.Files.Add(anim.Text + ".omo", bytes);
+                    pac.Files.Add(anim.Text.EndsWith(".omo") ? anim.Text : anim.Text + ".omo", bytes);
                 }
                 pac.Save(FileName);
             }
@@ -85,16 +87,25 @@ namespace Smash_Forge
 
                     if (sf.ShowDialog() == DialogResult.OK)
                     {
+                        if (sf.FileName.ToLower().EndsWith(".bch"))
+                            MessageBox.Show("Note: Only animations with linear interpolation are currently supported.");
+
                         Node = MainForm.Instance.animList.treeView1.SelectedNode;
                         FileName = sf.FileName;
 
+                        MainForm.Instance.Progress = new ProgessAlert();
                         MainForm.Instance.Progress.ProgressValue = 0;
                         MainForm.Instance.Progress.Message = ("Please Wait... Baking Animation Frames");
+                        MainForm.Instance.Progress.ControlBox = true;
 
-                        MainForm.Instance.backgroundWorker1.DoWork += new DoWorkEventHandler(Save);
+                        DoWorkEventHandler hand = new DoWorkEventHandler(Save);
+                        MainForm.Instance.backgroundWorker1.DoWork += hand;
                         MainForm.Instance.backgroundWorker1.RunWorkerAsync();
 
                         MainForm.Instance.Progress.ShowDialog();
+
+                        MainForm.Instance.backgroundWorker1.DoWork -= hand;
+
                     }
                 }
             }
