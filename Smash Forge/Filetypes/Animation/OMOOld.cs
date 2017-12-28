@@ -63,7 +63,7 @@ namespace Smash_Forge
             SkelAnimation anim = new SkelAnimation();
             anim.Tag = d;
 
-            if (boneCount != offset2 / 0x10)
+            if (boneCount > offset2 / 0x10)
             {
                 boneCount = offset2 / 0x10;
                 anim.Tag = null;

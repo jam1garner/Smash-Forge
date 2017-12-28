@@ -39,6 +39,7 @@
             // treeView1
             // 
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView1.LabelEdit = true;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(140, 125);
@@ -54,7 +55,7 @@
             this.exportAllAsOMOToolStripMenuItem,
             this.createAnimationGroupToolStripMenuItem});
             this.AnimationCM.Name = "AnimationCM";
-            this.AnimationCM.Size = new System.Drawing.Size(204, 70);
+            this.AnimationCM.Size = new System.Drawing.Size(204, 48);
             // 
             // exportAllAsOMOToolStripMenuItem
             // 

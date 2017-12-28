@@ -64,8 +64,6 @@ namespace Smash_Forge
             allViewsPreset(new Object(), new EventArgs());
 
             Hashes = new csvHashes(Path.Combine(executableDir, "hashTable.csv"));
-            animList.treeView1.Nodes.Add(animNode);
-            animList.treeView1.Nodes.Add(mtaNode);
             Runtime.renderBones = true;
             Runtime.renderLVD = true;
             Runtime.renderFloor = true;
@@ -315,10 +313,6 @@ namespace Smash_Forge
             if (animList.IsDisposed)
             {
                 animList = new AnimListPanel();
-                animNode = (TreeNode)animNode.Clone();
-                mtaNode = (TreeNode)mtaNode.Clone();
-                animList.treeView1.Nodes.Add(animNode);
-                animList.treeView1.Nodes.Add(mtaNode);
             }
             if (boneTreePanel.IsDisposed)
             {
@@ -369,8 +363,6 @@ namespace Smash_Forge
 
         public AnimListPanel animList = new AnimListPanel() { ShowHint = DockState.DockRight };
         public BoneTreePanel boneTreePanel = new BoneTreePanel() { ShowHint = DockState.DockLeft };
-        public static TreeNode animNode = new TreeNode("Bone Animations");
-        public static TreeNode mtaNode = new TreeNode("Material Animations");
         public ProjectTree project = new ProjectTree() { ShowHint = DockState.DockLeft };
         public LVDList lvdList = new LVDList() { ShowHint = DockState.DockLeft };
         public LVDEditor lvdEditor = new LVDEditor() { ShowHint = DockState.DockRight };
@@ -560,7 +552,7 @@ namespace Smash_Forge
             if (!Runtime.MaterialAnimations.ContainsValue(m) && !Runtime.MaterialAnimations.ContainsKey(name))
                 Runtime.MaterialAnimations.Add(name, m);
             viewports[0].loadMTA(m);
-            mtaNode.Nodes.Add(name);
+            animList.treeView1.Nodes.Add(name);
         }
 
         private void importToolStripMenuItem_Click(object sender, EventArgs e)
@@ -727,13 +719,12 @@ namespace Smash_Forge
 
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            animNode.Nodes.Clear();
-            mtaNode.Nodes.Clear();
             Runtime.SoundContainers.Clear();
             Runtime.Animations.Clear();
             Runtime.Animnames.Clear();
             Runtime.MaterialAnimations.Clear();
-            Runtime.TargetVBN.reset();
+            if(Runtime.TargetVBN!=null)
+                Runtime.TargetVBN.reset();
             Runtime.acmdEditor.updateCrcList();
         }
 
@@ -1171,7 +1162,7 @@ namespace Smash_Forge
                                     //Runtime.Animations.Add(f, );
                                     Animation a = OMOOld.read(new FileData(f));
                                     a.Text = f;
-                                    animNode.Nodes.Add(a);
+                                    animList.treeView1.Nodes.Add(a);
                                 }
                                 else if (f.EndsWith("path.bin"))
                                 {
@@ -1201,7 +1192,7 @@ namespace Smash_Forge
                 {
                     mta.Read(filename);
                     Runtime.MaterialAnimations.Add(filename, mta);
-                    mtaNode.Nodes.Add(filename);
+                    animList.treeView1.Nodes.Add(filename);
                     MainForm.Instance.viewports[0].loadMTA(mta);
                     Runtime.TargetMTAString = filename;
                 }
@@ -1218,14 +1209,14 @@ namespace Smash_Forge
                 SMD.read(filename, anim, Runtime.TargetVBN);
                 boneTreePanel.treeRefresh();
                 //Runtime.Animations.Add(filename, anim);
-                animNode.Nodes.Add(anim);
+                animList.treeView1.Nodes.Add(anim);
             }
             else if (filename.EndsWith(".pac"))
             {
                 PAC p = new PAC();
                 p.Read(filename);
                 AnimationGroupNode animGroup = new AnimationGroupNode() { Text = filename};
-                animNode.Nodes.Add(animGroup);
+                animList.treeView1.Nodes.Add(animGroup);
 
                 foreach (var pair in p.Files)
                 {
@@ -1233,6 +1224,7 @@ namespace Smash_Forge
                     {
                         Console.WriteLine("Adding " + pair.Key);
                         var anim = OMOOld.read(new FileData(pair.Value));
+                        animGroup.Nodes.Add(anim);
                         string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
                         //AnimName = pair.Key;
                         //AnimName = AnimName.Remove(AnimName.Length - 4);
@@ -1242,12 +1234,11 @@ namespace Smash_Forge
                             anim.Text = AnimName;
                             if (Runtime.Animations.ContainsKey(AnimName))
                             {
-                                animGroup.Nodes.Add(anim);
                                 //Runtime.Animations[AnimName].Children.Add(anim);
                             }
                             else
                             {
-                                animGroup.Nodes.Add(anim);
+                                //animGroup.Nodes.Add(anim);
                                 Runtime.Animations.Add(AnimName, anim);
                             }
 
@@ -1257,12 +1248,12 @@ namespace Smash_Forge
                         {
                             if (Runtime.Animations.ContainsKey(pair.Key))
                             {
-                                animNode.Nodes.Add(pair.Key);
+                                //.Nodes.Add(pair.Key);
                                 //Runtime.Animations[AnimName].Children.Add(anim);
                             }
                             else
                             {
-                                animNode.Nodes.Add(pair.Key);
+                                //animList.treeView1.Nodes.Add(pair.Key);
                                 Runtime.Animations.Add(pair.Key, anim);
                             }
                         }
@@ -1321,17 +1312,17 @@ namespace Smash_Forge
                 //Runtime.Animations.Add(filename, );
                 Animation a = OMOOld.read(new FileData(filename));
                 a.Text = filename;
-                animNode.Nodes.Add(a);
+                animList.treeView1.Nodes.Add(a);
             }
             if (filename.EndsWith(".chr0"))
             {
                 //Runtime.Animations.Add(filename, CHR0.read(new FileData(filename), Runtime.TargetVBN));
-                animNode.Nodes.Add(CHR0.read(new FileData(filename), Runtime.TargetVBN));
+                animList.treeView1.Nodes.Add(CHR0.read(new FileData(filename), Runtime.TargetVBN));
             }
             if (filename.EndsWith(".anim"))
             {
                 //Runtime.Animations.Add(filename, ANIM.read(filename, Runtime.TargetVBN));
-                animNode.Nodes.Add(ANIM.read(filename, Runtime.TargetVBN));
+                animList.treeView1.Nodes.Add(ANIM.read(filename, Runtime.TargetVBN));
             }
             if (filename.EndsWith(".bch"))
             {
@@ -2001,7 +1992,7 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc, .mbn)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.xmb;*.mtable;*.bin;*.dae;*.obj;*.dat;*.mta;*.wrkspc;*.nut;*.sb;*.mbn;*.tex;*.drp;*.nus3bank;*.wav|" +
+                    "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc, .mbn)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.xmb;*.mtable;*.bin;*.dae;*.obj;*.dat;*.mta;*.wrkspc;*.nut;*.sb;*.mbn;*.tex;*.drp;*.nus3bank;*.wav*.omo;*.anim;*.bch;*.chr0;*.smd;*.mta;*.pac;*.dat;*.xmb|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +
@@ -2010,7 +2001,15 @@ namespace Smash_Forge
                     "Smash 4 Parameters (.bin)|*.bin|" +
                     "Collada Model Format (.dae)|*.dae|" +
                     "Wavefront Object (.obj)|*.obj|" +
+                             "Object Motion|*.omo|" +
+                             "Maya Animation|*.anim|" +
+                             "3DS BCH Animation|*.bch|" +
+                             "NW4R Animation|*.chr0|" +
+                             "Source Animation (SMD)|*.smd|" +
+                             "Smash 4 Material Animation (MTA)|*.mta|" +
                     "All files(*.*)|*.*";
+
+
 
                 ofd.Multiselect = true;
                 // "Namco Universal Data Folder (.NUD)|*.nud|" +

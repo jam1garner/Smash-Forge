@@ -24,8 +24,67 @@ namespace Smash_Forge
             resave.Click += Resave;
             cm.MenuItems.Add(resave);
 
+            MenuItem import = new MenuItem("Import New Animation");
+            import.Click += Import;
+            cm.MenuItems.Add(import);
+
             ContextMenu = cm;
         }
+
+        public void Import(object sender, EventArgs args)
+        {
+            using (OpenFileDialog fd = new OpenFileDialog())
+            {
+                fd.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd;*.mta;|" +
+                             "Object Motion|*.omo|" +
+                             "Maya Animation|*.anim|" +
+                             "NW4R Animation|*.chr0|" +
+                             "Source Animation (SMD)|*.smd|" +
+                             "Smash 4 Material Animation (MTA)|*.mta|" +
+                             "All files(*.*)|*.*";
+                if(fd.ShowDialog() == DialogResult.OK)
+                {
+                    foreach(string filename in fd.FileNames)
+                    {
+                        if (filename.EndsWith(".mta"))
+                        {
+                            MTA mta = new MTA();
+                            try
+                            {
+                                mta.Read(filename);
+                                Runtime.MaterialAnimations.Add(filename, mta);
+                                Nodes.Add(filename);
+                            }
+                            catch (Exception)
+                            {
+                                mta = null;
+                            }
+                        }
+                        else if (filename.EndsWith(".smd"))
+                        {
+                            var anim = new Animation(filename);
+                            if (Runtime.TargetVBN == null)
+                                Runtime.TargetVBN = new VBN();
+                            SMD.read(filename, anim, Runtime.TargetVBN);
+                            Nodes.Add(anim);
+                        }
+                        if (filename.EndsWith(".omo"))
+                        {
+                            Animation a = OMOOld.read(new FileData(filename));
+                            a.Text = filename;
+                            Nodes.Add(a);
+                        }
+                        if (filename.EndsWith(".chr0"))
+                            Nodes.Add(CHR0.read(new FileData(filename), Runtime.TargetVBN));
+                        if (filename.EndsWith(".anim"))
+                            Nodes.Add(ANIM.read(filename, Runtime.TargetVBN));
+                    }
+                }
+            }
+        }
+
+        public static String FileName;
+        public static TreeNode Node;
 
         public static void Save(object sender, EventArgs args)
         {
@@ -62,10 +121,7 @@ namespace Smash_Forge
                 pac.Save(FileName);
             }
         }
-
-        public static String FileName;
-        public static TreeNode Node;
-
+        
         public static void Resave(object sender, EventArgs args)
         {
             TreeNode n = MainForm.Instance.animList.treeView1.SelectedNode;

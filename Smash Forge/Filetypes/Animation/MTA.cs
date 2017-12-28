@@ -148,7 +148,7 @@ namespace Smash_Forge
         }
     }
 
-    public class MatEntry
+    public class MatEntry : TreeNode
     {
         public int matHash;
         public int matHash2;
@@ -158,7 +158,11 @@ namespace Smash_Forge
         public PatData pat0 = new PatData();
         public List<MatData> properties = new List<MatData>();
 
-        public MatEntry() { }
+        public MatEntry()
+        {
+            ImageKey = "image";
+            SelectedImageKey = "image";
+        }
 
         public void read(FileData f)
         {
@@ -272,7 +276,7 @@ namespace Smash_Forge
         }
     }
 
-    public class VisEntry
+    public class VisEntry : TreeNode
     {
         public struct frame
         {
@@ -287,7 +291,11 @@ namespace Smash_Forge
         public string name;
         public List<frame> frames = new List<frame>();
 
-        public VisEntry() { }
+        public VisEntry()
+        {
+            ImageKey = "image";
+            SelectedImageKey = "image";
+        }
 
         public void read(FileData f)
         {
@@ -372,6 +380,27 @@ namespace Smash_Forge
         public MTA()
         {
             Endian = Endianness.Big;
+            ImageKey = "image";
+            SelectedImageKey = "image";
+        }
+
+        public void ExpandNodes()
+        {
+            Nodes.Clear();
+            TreeNode mat = new TreeNode();
+            TreeNode vis = new TreeNode();
+            foreach (MatEntry e in matEntries)
+            {
+                e.Text = e.name;
+                mat.Nodes.Add(e);
+            }
+            foreach (VisEntry e in visEntries)
+            {
+                e.Text = e.name;
+                vis.Nodes.Add(e);
+            }
+            Nodes.Add(mat);
+            Nodes.Add(vis);
         }
 
         public override Endianness Endian { get; set; }
@@ -562,6 +591,7 @@ namespace Smash_Forge
 
         public void Compile(List<string> f)
         {
+            Nodes.Clear();
             unknown = Convert.ToUInt32(f[1].Split(',')[1]);
             numFrames = Convert.ToUInt32(f[2].Split(',')[1]);
             frameRate = Convert.ToUInt32(f[3].Split(',')[1]);

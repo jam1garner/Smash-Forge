@@ -24,7 +24,20 @@ namespace Smash_Forge
             iconList.Images.Add("anim", Properties.Resources.icon_anim);
             iconList.Images.Add("bone", Properties.Resources.icon_bone);
             iconList.Images.Add("frame", Properties.Resources.icon_model);
+            iconList.Images.Add("image", Properties.Resources.icon_image);
             treeView1.ImageList = iconList;
+
+            ContextMenu m = new ContextMenu();
+
+            MenuItem exportAll = new MenuItem("Export All as OMO");
+            exportAll.Click += exportAllAsOMOToolStripMenuItem_Click;
+            m.MenuItems.Add(exportAll);
+
+            MenuItem createAG = new MenuItem("Create Animation Group");
+            createAG.Click += createAnimationGroupToolStripMenuItem_Click;
+            m.MenuItems.Add(createAG);
+
+            treeView1.ContextMenu = m;
         }
 
         private void lstAnims_SelectedIndexChanged(object sender, EventArgs e)
@@ -46,7 +59,7 @@ namespace Smash_Forge
                 running.ReplaceMe((Animation)e.Node);
 
                 Queue<TreeNode> NodeQueue = new Queue<TreeNode>();
-                foreach(TreeNode n in MainForm.animNode.Nodes)
+                foreach(TreeNode n in MainForm.Instance.animList.treeView1.Nodes)
                 {
                     NodeQueue.Enqueue(n);
                 }
@@ -119,7 +132,7 @@ namespace Smash_Forge
                 Runtime.TargetMTAString = e.Node.Text;
 
                 Queue<TreeNode> NodeQueue = new Queue<TreeNode>();
-                foreach (TreeNode n in MainForm.animNode.Nodes)
+                foreach (TreeNode n in MainForm.Instance.animList.treeView1.Nodes)
                 {
                     NodeQueue.Enqueue(n);
                 }
@@ -168,6 +181,10 @@ namespace Smash_Forge
             {
                 ((Animation.KeyGroup)treeView1.SelectedNode).ExpandNodes();
             }
+            if (treeView1.SelectedNode is MTA)
+            {
+                ((MTA)treeView1.SelectedNode).ExpandNodes();
+            }
         }
 
         private void treeView1_Click(object sender, EventArgs e)
@@ -177,14 +194,14 @@ namespace Smash_Forge
         private void treeView1_MouseDown(object sender, MouseEventArgs e)
         {
 
-            if (e.Button == MouseButtons.Right)
+            /*if (e.Button == MouseButtons.Right)
             {
                 treeView1.SelectedNode = treeView1.GetNodeAt(e.Location);
                 if (treeView1.SelectedNode.Level == 0 && treeView1.SelectedNode.Text.Equals("Bone Animations"))
                 {
                     AnimationCM.Show(this, e.X, e.Y);
                 }
-            }
+            }*/
         }
 
         private void exportAllAsOMOToolStripMenuItem_Click(object sender, EventArgs e)
@@ -196,7 +213,7 @@ namespace Smash_Forge
                 {
                     string path = ofd.SelectedPath;
 
-                    foreach(TreeNode v in MainForm.animNode.Nodes)
+                    foreach(TreeNode v in MainForm.Instance.animList.treeView1.Nodes)
                     {
                         if (v is Animation)
                             OMOOld.createOMO(((Animation)v), Runtime.TargetVBN, path + "\\" + v.Text + ".omo");
@@ -208,7 +225,7 @@ namespace Smash_Forge
         private void createAnimationGroupToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AnimationGroupNode ag = new AnimationGroupNode();
-            MainForm.animNode.Nodes.Add(ag);
+            MainForm.Instance.animList.treeView1.Nodes.Add(ag);
             //ag.BeginEdit();
         }
     }

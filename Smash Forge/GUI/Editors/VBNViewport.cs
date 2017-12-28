@@ -135,8 +135,6 @@ namespace Smash_Forge
                 Runtime.killWorkspace = false;
                 Runtime.Animations = new Dictionary<string, Animation>();
                 MainForm.Instance.lvdList.fillList();
-                MainForm.animNode.Nodes.Clear();
-                MainForm.mtaNode.Nodes.Clear();
                 MainForm.Instance.meshList.refresh();
                 MainForm.Instance.paramEditors = new List<PARAMEditor>();
                 MainForm.Instance.lvdEditor.Clear();
@@ -2115,7 +2113,7 @@ namespace Smash_Forge
             }
             if (e.KeyChar == ']')
             {
-                foreach (TreeNode v in MainForm.animNode.Nodes)
+                foreach (TreeNode v in MainForm.Instance.animList.treeView1.Nodes)
                 {
                     uint crc = Crc32.Compute(v.Text.Replace(".omo", "").Substring(3).ToLower());
                     if (Runtime.Moveset.Game.Scripts.ContainsKey(crc))

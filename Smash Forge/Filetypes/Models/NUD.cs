@@ -1213,7 +1213,7 @@ namespace Smash_Forge
 
                                     foreach(MatData md in mat.properties)
                                     {
-                                        if (md.frames.Count > 0)
+                                        if (md.frames.Count > 0 && md.frames.Count < frm)
                                         {
                                             if (ma.anims.ContainsKey(md.name))
                                                 ma.anims[md.name] = md.frames[frm].values;

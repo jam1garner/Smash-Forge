@@ -66,7 +66,7 @@ namespace Smash_Forge
                     if (mag.Equals("OMO "))
                     {
                         Runtime.Animations.Add(t.Text, OMOOld.read(new FileData(dat)));
-                        MainForm.animNode.Nodes.Add(t.Text);
+                        MainForm.Instance.animList.treeView1.Nodes.Add(t.Text);
                     }
                     
                 }
