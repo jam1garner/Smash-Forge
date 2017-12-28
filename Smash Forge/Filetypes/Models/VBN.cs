@@ -190,8 +190,13 @@ namespace Smash_Forge
 
     public class VBN : FileBase
     {
-        public VBN() { }
-        public VBN(string filename)
+        public VBN()
+        {
+            Text = "model.vbn";
+            ImageKey = "folder";
+            SelectedImageKey = "folder";
+        }
+        public VBN(string filename) : this()
         {
             Read(filename);
         }
@@ -600,8 +605,8 @@ namespace Smash_Forge
         public static string BoneNameFromHash(uint boneHash)
         {
             foreach (ModelContainer m in Runtime.ModelContainers)
-                if (m.vbn != null)
-                    foreach (Bone b in m.vbn.bones)
+                if (m.VBN != null)
+                    foreach (Bone b in m.VBN.bones)
                         if (b.boneId == boneHash)
                             return b.Text;
 
@@ -618,8 +623,8 @@ namespace Smash_Forge
             if(boneHash == 3449071621)
                 return null;
             foreach (ModelContainer m in Runtime.ModelContainers)
-                if (m.vbn != null)
-                    foreach (Bone b in m.vbn.bones)
+                if (m.VBN != null)
+                    foreach (Bone b in m.VBN.bones)
                         if (b.boneId == boneHash)
                             return b;
             MessageBox.Show("Open the VBN before editing the SB");

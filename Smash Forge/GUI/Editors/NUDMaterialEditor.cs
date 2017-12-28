@@ -940,7 +940,7 @@ namespace Smash_Forge
 
             GL.Enable(EnableCap.Texture2D);
 
-            NUT.NUD_Texture tex = null;
+            NUT_Texture tex = null;
             int texture = 0;
             if (materials[current].entries.ContainsKey("NU_materialHash") && texturesListView.SelectedIndices.Count > 0)
             {
@@ -982,7 +982,7 @@ namespace Smash_Forge
 
             GL.Enable(EnableCap.Texture2D);
 
-            NUT.NUD_Texture tex = null;
+            NUT_Texture tex = null;
             int texture = 0;
             if (materials[current].entries.ContainsKey("NU_materialHash") && texturesListView.SelectedIndices.Count > 0)
             {
@@ -999,13 +999,13 @@ namespace Smash_Forge
             float h = 1f, w = 1f;
             if (tex != null)
             {
-                float texureRatioW = tex.width / tex.height;
+                float texureRatioW = tex.Width / tex.Height;
                 float widthPre = texureRatioW * glControl2.Height;
                 w = glControl2.Width / widthPre;
                 if (texureRatioW > glControl2.AspectRatio)
                 {
                     w = 1f;
-                    float texureRatioH = tex.height / tex.width;
+                    float texureRatioH = tex.Height / tex.Width;
                     float HeightPre = texureRatioH * glControl2.Width;
                     h = glControl2.Height / HeightPre;
                 }

@@ -186,7 +186,7 @@ namespace Smash_Forge
             }else
             {
                 if (Runtime.ModelContainers.Count > 0)
-                    v = Runtime.ModelContainers[0].vbn;
+                    v = Runtime.ModelContainers[0].VBN;
             }
 
             return v;

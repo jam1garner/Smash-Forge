@@ -7,129 +7,148 @@ using System.IO;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {
-    public class NUT : FileBase
+    public class NUT_Texture : TreeNode
     {
-        public class NUD_Texture
+        public List<byte[]> mipmaps = new List<byte[]>();
+        public int HASHID
         {
-            public List<byte[]> mipmaps = new List<byte[]>();
-            public int id;
-            public int width;
-            public int height;
-            public PixelInternalFormat type;
-            public OpenTK.Graphics.OpenGL.PixelFormat utype;
-            public PixelType PixelType = PixelType.UnsignedByte;
-            
-            public override string ToString()
+            get
             {
-                return id.ToString("x").ToUpper();
+                return id;
             }
-
-            public int Size
+            set
             {
-                get
-                {
-                    switch (type)
-                    {
-                        case PixelInternalFormat.CompressedRedRgtc1:
-                            return (width * height / 2);
-                        case PixelInternalFormat.CompressedRgRgtc2:
-                            return (width * height / 2);
-                        case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
-                            return (width * height / 2);
-                        case PixelInternalFormat.CompressedRgbaS3tcDxt3Ext:
-                            return (width * height);
-                        case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
-                            return (width * height);
-                        case PixelInternalFormat.Rgba16:
-                            return mipmaps[0].Length/2;
-                        case PixelInternalFormat.Rgba:
-                            return mipmaps[0].Length;
-                        default:
-                            return mipmaps[0].Length;
-                    }
-                }
+                Text = value.ToString("x").ToUpper();
+                id = value;
             }
+        }
+        private int id;
+        public int Width;
+        public int Height;
+        public PixelInternalFormat type;
+        public OpenTK.Graphics.OpenGL.PixelFormat utype;
+        public PixelType PixelType = PixelType.UnsignedByte;
 
-            public int getNutFormat()
+        public NUT_Texture()
+        {
+            ImageKey = "texture";
+            SelectedImageKey = "texture";
+        }
+
+        public override string ToString()
+        {
+            return HASHID.ToString("x").ToUpper();
+        }
+
+        public int Size
+        {
+            get
             {
                 switch (type)
                 {
-                    case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
-                        return 0;
-                    case PixelInternalFormat.CompressedRgbaS3tcDxt3Ext:
-                        return 1;
-                    case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
-                        return 2;
-                    case PixelInternalFormat.Rgb16:
-                        return 8;
-                    case PixelInternalFormat.Rgba:
-                        if (utype == OpenTK.Graphics.OpenGL.PixelFormat.Rgba)
-                            return 14;
-                        else
-                        if (utype == OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt)
-                            return 16;
-                        else
-                            return 17;
                     case PixelInternalFormat.CompressedRedRgtc1:
-                        return 21;
+                        return (Width * Height / 2);
                     case PixelInternalFormat.CompressedRgRgtc2:
-                        return 22;
+                        return (Width * Height / 2);
+                    case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
+                        return (Width * Height / 2);
+                    case PixelInternalFormat.CompressedRgbaS3tcDxt3Ext:
+                        return (Width * Height);
+                    case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
+                        return (Width * Height);
+                    case PixelInternalFormat.Rgba16:
+                        return mipmaps[0].Length / 2;
+                    case PixelInternalFormat.Rgba:
+                        return mipmaps[0].Length;
                     default:
-                        throw new NotImplementedException($"Unknown pixel format 0x{type:X}");
-                }
-            }
-
-            public void setPixelFormatFromNutFormat (int typet)
-            {
-                switch (typet)
-                {
-                    case 0x0:
-                        type = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
-                        break;
-                    case 0x1:
-                        type = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
-                        break;
-                    case 0x2:
-                        type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
-                        break;
-                    case 8:
-                        type = PixelInternalFormat.Rgb16;
-                        utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgb;
-                        PixelType = PixelType.UnsignedShort565Reversed;
-                        break;
-                    case 12:
-                        type = PixelInternalFormat.Rgba16;
-                        utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
-                        break;
-                    case 14:
-                        type = PixelInternalFormat.Rgba;
-                        utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
-                        break;
-                    case 16:
-                        type = PixelInternalFormat.Rgba;
-                        utype = OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt;
-                        break;
-                    case 17:
-                        type = PixelInternalFormat.Rgba;
-                        utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
-                        break;
-                    case 21:
-                        type = PixelInternalFormat.CompressedRedRgtc1;
-                        break;
-                    case 22:
-                        type = PixelInternalFormat.CompressedRgRgtc2;
-                        break;
-                    default:
-                        throw new NotImplementedException($"Unknown nut format {typet}");
+                        return mipmaps[0].Length;
                 }
             }
         }
 
-        public Dictionary<int,int> draw = new Dictionary<int, int>();
-        public List<NUD_Texture> textures = new List<NUD_Texture>();
+        public int getNutFormat()
+        {
+            switch (type)
+            {
+                case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
+                    return 0;
+                case PixelInternalFormat.CompressedRgbaS3tcDxt3Ext:
+                    return 1;
+                case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
+                    return 2;
+                case PixelInternalFormat.Rgb16:
+                    return 8;
+                case PixelInternalFormat.Rgba:
+                    if (utype == OpenTK.Graphics.OpenGL.PixelFormat.Rgba)
+                        return 14;
+                    else
+                    if (utype == OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt)
+                        return 16;
+                    else
+                        return 17;
+                case PixelInternalFormat.CompressedRedRgtc1:
+                    return 21;
+                case PixelInternalFormat.CompressedRgRgtc2:
+                    return 22;
+                default:
+                    throw new NotImplementedException($"Unknown pixel format 0x{type:X}");
+            }
+        }
+
+        public void setPixelFormatFromNutFormat(int typet)
+        {
+            switch (typet)
+            {
+                case 0x0:
+                    type = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                    break;
+                case 0x1:
+                    type = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
+                    break;
+                case 0x2:
+                    type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    break;
+                case 8:
+                    type = PixelInternalFormat.Rgb16;
+                    utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgb;
+                    PixelType = PixelType.UnsignedShort565Reversed;
+                    break;
+                case 12:
+                    type = PixelInternalFormat.Rgba16;
+                    utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    break;
+                case 14:
+                    type = PixelInternalFormat.Rgba;
+                    utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    break;
+                case 16:
+                    type = PixelInternalFormat.Rgba;
+                    utype = OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt;
+                    break;
+                case 17:
+                    type = PixelInternalFormat.Rgba;
+                    utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    break;
+                case 21:
+                    type = PixelInternalFormat.CompressedRedRgtc1;
+                    break;
+                case 22:
+                    type = PixelInternalFormat.CompressedRgRgtc2;
+                    break;
+                default:
+                    throw new NotImplementedException($"Unknown nut format {typet}");
+            }
+        }
+    }
+
+    public class NUT : FileBase
+    {
+        public Dictionary<int, int> draw = new Dictionary<int, int>();
+        //public List<NUD_Texture> Nodes = new List<NUD_Texture>();
 
         public int Version = 0x200;
 
@@ -137,14 +156,17 @@ namespace Smash_Forge
 
         public NUT()
         {
+            Text = "model.nut";
+            ImageKey = "folder";
+            SelectedImageKey = "folder";
         }
 
-        public NUT (string filename)
+        public NUT (string filename) : this()
         {
             Read(filename);
         }
 
-        public NUT(FileData d)
+        public NUT(FileData d) : this()
         {
             Read(d);
         }
@@ -154,11 +176,11 @@ namespace Smash_Forge
             //Destroy();
         }
 
-        public bool getTextureByID(int hash, out NUD_Texture suc)
+        public bool getTextureByID(int hash, out NUT_Texture suc)
         {
             suc = null;
-            foreach (NUD_Texture t in textures)
-                if (t.id == hash)
+            foreach (NUT_Texture t in Nodes)
+                if (t.HASHID == hash)
                 {
                     suc = t;
                     return true;
@@ -174,14 +196,14 @@ namespace Smash_Forge
 
             o.writeInt(0x4E545033); // "NTP3"
             o.writeShort(Version);
-            o.writeShort(textures.Count);
+            o.writeShort(Nodes.Count);
             o.writeInt(0);
             o.writeInt(0);
 
             //calculate total header size
             int headerLength = 0;
 
-            foreach (var texture in textures)
+            foreach (NUT_Texture texture in Nodes)
             {
                 int headerSize = 0x50;
                 
@@ -195,7 +217,7 @@ namespace Smash_Forge
             }
 
             // write headers+data
-            foreach (var texture in textures)
+            foreach (NUT_Texture texture in Nodes)
             {
                 int size = 0;
                 
@@ -224,8 +246,8 @@ namespace Smash_Forge
                 o.writeShort(0);
                 o.writeShort(texture.mipmaps.Count);
                 o.writeShort(texture.getNutFormat());
-                o.writeShort(texture.width);
-                o.writeShort(texture.height);
+                o.writeShort(texture.Width);
+                o.writeShort(texture.Height);
                 o.writeInt(0);
                 o.writeInt(0);
                 o.writeInt(headerLength + data.size());
@@ -281,7 +303,7 @@ namespace Smash_Forge
                 o.writeInt(0x47494458); // "GIDX"
                 o.writeInt(0x10);
 
-                o.writeInt(texture.id);
+                o.writeInt(texture.HASHID);
                 o.writeInt(0);
             }
             o.writeOutput(data);
@@ -327,7 +349,7 @@ namespace Smash_Forge
             for (int i = 0; i < count; i++)
             {
                 Debug.WriteLine(d.pos().ToString("x"));
-                NUD_Texture tex = new NUD_Texture();
+                NUT_Texture tex = new NUT_Texture();
                 tex.type = PixelInternalFormat.Rgba32ui;
 
                 int totalSize = d.readInt();
@@ -340,8 +362,8 @@ namespace Smash_Forge
                 Debug.WriteLine(numMips);
                 d.skip(1);
                 tex.setPixelFormatFromNutFormat(d.readByte());
-                tex.width = d.readShort();
-                tex.height = d.readShort();
+                tex.Width = d.readShort();
+                tex.Height = d.readShort();
 
                 d.skip(8); // padding?
 
@@ -359,7 +381,7 @@ namespace Smash_Forge
                 d.align(16);
 
                 d.skip(0x18);
-                tex.id = d.readInt();
+                tex.HASHID = d.readInt();
                 d.skip(4); // padding align 8
 
                 if (Version == 0x100)
@@ -399,7 +421,7 @@ namespace Smash_Forge
                     }
                 }
 
-                textures.Add(tex);
+                Nodes.Add(tex);
 
                 /*for (int miplevel = 0; miplevel < numMips; miplevel++)
                 {
@@ -426,11 +448,11 @@ namespace Smash_Forge
                 }*/
             }
 
-            foreach (var tex in textures)
+            foreach (NUT_Texture tex in Nodes)
             {
-                if (!draw.ContainsKey(tex.id))
+                if (!draw.ContainsKey(tex.HASHID))
                 {
-                    draw.Add(tex.id, loadImage(tex, true));
+                    draw.Add(tex.HASHID, loadImage(tex, true));
                 }
             }
         }
@@ -446,7 +468,7 @@ namespace Smash_Forge
             int gtxHeaderOffset = 0;
 
             for (int i = 0; i < count; i++) {
-                NUD_Texture tex = new NUD_Texture();
+                NUT_Texture tex = new NUT_Texture();
                 tex.type = PixelInternalFormat.Rgba32ui;
 
                 d.seek(headerPtr);
@@ -454,8 +476,8 @@ namespace Smash_Forge
                 int headerSize = d.readShort();
                 int numMips = d.readInt();
                 tex.setPixelFormatFromNutFormat(d.readShort());
-                tex.width = d.readShort();
-                tex.height = d.readShort();
+                tex.Width = d.readShort();
+                tex.Height = d.readShort();
 
                 d.skip(8); // mipmaps and padding
                 int dataOffset = d.readInt() + dataPtr + 0x10;
@@ -483,7 +505,7 @@ namespace Smash_Forge
                 d.skip(headerSize - 0x50);
 
                 d.skip(0x18);
-                tex.id = d.readInt();
+                tex.HASHID = d.readInt();
 
                 Console.WriteLine(gtxHeaderOffset.ToString("x"));
                 d.seek(gtxHeaderOffset);
@@ -522,8 +544,8 @@ namespace Smash_Forge
 
                     //if (cmap) tex.height *= 2;
 
-                    int w = (tex.width >> mipLevel);
-                    int h = (tex.height >> mipLevel);
+                    int w = (tex.Width >> mipLevel);
+                    int h = (tex.Height >> mipLevel);
                     
                     {
                         byte[] deswiz = GTX.swizzleBC(
@@ -570,14 +592,14 @@ namespace Smash_Forge
                     //if (mipSize == 0x4000) dataOffset += 0x400;
                 }
 
-                textures.Add(tex);
+                Nodes.Add(tex);
             }
 
-            foreach (var tex in textures)
+            foreach (NUT_Texture tex in Nodes)
             {
-                if (!draw.ContainsKey(tex.id))
+                if (!draw.ContainsKey(tex.HASHID))
                 {
-                    draw.Add(tex.id, loadImage(tex, false));
+                    draw.Add(tex.HASHID, loadImage(tex, false));
                 }
 
                 // redo mipmaps
@@ -626,8 +648,8 @@ namespace Smash_Forge
         public static bool texIdUsed(int texId)
         {
             foreach (var nut in Runtime.TextureContainers)
-                foreach(var tex in nut.textures)
-                    if (tex.id == texId)
+                foreach(NUT_Texture tex in nut.Nodes)
+                    if (tex.HASHID == texId)
                         return true;
             return false;
         }
@@ -670,7 +692,7 @@ namespace Smash_Forge
             return texID;
         }
 
-        public static int loadImage(NUD_Texture t, bool DDS = false)
+        public static int loadImage(NUT_Texture t, bool DDS = false)
         {
             int texID = GL.GenTexture();
 
@@ -683,7 +705,7 @@ namespace Smash_Forge
                 || t.type == PixelInternalFormat.CompressedRgRgtc2)
             {
                 GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type,
-                    t.width, t.height, 0, t.Size, t.mipmaps[0]);
+                    t.Width, t.Height, 0, t.Size, t.mipmaps[0]);
                 
                 if (t.mipmaps.Count > 1 && DDS)
                 {
@@ -692,7 +714,7 @@ namespace Smash_Forge
 
                     for (int i = 0; i <t.mipmaps.Count; i++)
                         GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, i, t.type,
-                        t.width / (int)Math.Pow(2,i), t.height / (int)Math.Pow(2, i), 0, t.mipmaps[i].Length, t.mipmaps[i]);
+                        t.Width / (int)Math.Pow(2,i), t.Height / (int)Math.Pow(2, i), 0, t.mipmaps[i].Length, t.mipmaps[i]);
                 }
                 else
                 {
@@ -706,7 +728,7 @@ namespace Smash_Forge
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.mipmaps.Count);
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.width, t.height, 0,
+                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.Width, t.Height, 0,
                     t.utype, t.PixelType, t.mipmaps[0]);
 
                /* for (int i = 0; i < t.mipmaps.Count; i++)

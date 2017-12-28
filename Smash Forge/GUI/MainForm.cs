@@ -145,12 +145,12 @@ namespace Smash_Forge
             gradient.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Gradient_fs.txt"));
             Runtime.shaders.Add("Gradient", gradient);
 
-            if (!Runtime.shaders.ContainsKey("NUD"))
+            if (!Runtime.shaders.ContainsKey("nud"))
             {
                 Shader nud = new Shader();
                 nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
                 nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
-                Runtime.shaders.Add("NUD", nud);
+                Runtime.shaders.Add("nud", nud);
             }
 
             if (!Runtime.shaders.ContainsKey("NUD_Debug"))
@@ -461,27 +461,28 @@ namespace Smash_Forge
             }
 
             ModelContainer model = new ModelContainer();
-            model.name = name;
+            model.Text = name;
             if (!pathVBN.Equals(""))
             {
-                model.vbn = new VBN(pathVBN);
-                Runtime.TargetVBN = model.vbn;
+                model.VBN = new VBN(pathVBN);
+                Runtime.TargetVBN = model.VBN;
                 if (!pathJTB.Equals(""))
-                    model.vbn.readJointTable(pathJTB);
+                    model.VBN.readJointTable(pathJTB);
                 if (!pathSB.Equals(""))
-                    model.vbn.swingBones.Read(pathSB);
+                    model.VBN.swingBones.Read(pathSB);
             }
 
             NUT nut = null;
             if (!pathNUT.Equals(""))
             {
                 nut = new NUT(pathNUT);
+                model.NUT = nut;
                 Runtime.TextureContainers.Add(nut);
             }
 
             if (!pathNUD.Equals(""))
             {
-                model.nud = new NUD(pathNUD);
+                model.NUD = new NUD(pathNUD);
 
                 foreach (string s in pacs)
                 {
@@ -493,7 +494,7 @@ namespace Smash_Forge
                     {
                         MTA m = new MTA();
                         m.read(new FileData(data));
-                        model.nud.applyMTA(m, 0);
+                        model.NUD.applyMTA(m, 0);
                     }
                 }
             }
@@ -501,7 +502,7 @@ namespace Smash_Forge
             if (!pathXMB.Equals(""))
             {
                 model.xmb = new XMBFile(pathXMB);
-                model.nud.SetPropertiesFromXMB(model.xmb);
+                model.NUD.SetPropertiesFromXMB(model.xmb);
             }
 
             if (!pathMTA.Equals(""))
@@ -525,20 +526,20 @@ namespace Smash_Forge
                 model.moi = new MOI(pathMOI);
             }
 
-            if (model.nud != null)
+            if (model.NUD != null)
             {
-                model.nud.MergePoly();
+                model.NUD.MergePoly();
             }
 
             Runtime.ModelContainers.Add(model);
-            List<ModelContainer> sortedModelContainers = Runtime.ModelContainers.OrderBy(o => (o.nud.drawingOrder)).ToList();
+            List<ModelContainer> sortedModelContainers = Runtime.ModelContainers.OrderBy(o => (o.NUD.drawingOrder)).ToList();
             Runtime.ModelContainers = sortedModelContainers;
 
             meshList.refresh();
             
             ModelNode n = new ModelNode();
-            n.NUD.Model = model.nud;
-            n.VBN.Skeleton = model.vbn;
+            n.NUD.Model = model.NUD;
+            n.VBN.Skeleton = model.VBN;
             n.NUT.Texture = nut;
 
             project.treeView1.BeginUpdate();
@@ -668,9 +669,9 @@ namespace Smash_Forge
         {
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
-                if (m.vbn != null)
+                if (m.VBN != null)
                 {
-                    foreach (Bone bone in m.vbn.bones)
+                    foreach (Bone bone in m.VBN.bones)
                     {
                         uint bi = 0;
                         Hashes.names.TryGetValue(bone.Text, out bi);
@@ -836,6 +837,7 @@ namespace Smash_Forge
                     //project.openACMD($"{ofd.SelectedPath}\\script\\animcmd\\body\\motion.mtable",
                     //    $"{ofd.SelectedPath}\\motion");
                     MainForm.Instance.Progress = new ProgessAlert();
+                    MainForm.Instance.Progress.StartPosition = FormStartPosition.CenterScreen;
                     MainForm.Instance.Progress.ProgressValue = 0;
                     MainForm.Instance.Progress.ControlBox = false;
                     MainForm.Instance.Progress.Message = ("Please Wait... Opening Character");
@@ -907,7 +909,7 @@ namespace Smash_Forge
                             hurtboxList.refresh();
                             Runtime.ParamManagerHelper = new PARAMEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
                             Runtime.ParamMoveNameIdMapping = Runtime.ParamManagerHelper.getMoveNameIdMapping();
-                            Runtime.ModelContainers[0].name = fighterName;
+                            Runtime.ModelContainers[0].Text = fighterName;
 
                             // Model render size
                             ParamFile param = new ParamFile(Runtime.paramDir + "\\fighter\\fighter_param.bin");
@@ -940,13 +942,13 @@ namespace Smash_Forge
                         if (Runtime.ModelContainers[0].dat_melee != null)
                         {
                             ModelContainer m = Runtime.ModelContainers[0].dat_melee.wrapToNUD();
-                            m.nud.Save(filename);
-                            m.vbn.Save(filename.Replace(".nud", ".vbn"));
+                            m.NUD.Save(filename);
+                            m.VBN.Save(filename.Replace(".nud", ".vbn"));
                         }
                         /*else 
                         if(Runtime.ModelContainers[0].bch != null)
                         {
-                            NUD m = Runtime.ModelContainers[0].bch.mbn.toNUD();
+                            nud m = Runtime.ModelContainers[0].bch.mbn.toNUD();
                             VBN v = Runtime.ModelContainers[0].bch.models[0].skeleton;
                             m.Save(filename);
                             v.Save(filename.Replace(".nud", ".vbn"));
@@ -955,9 +957,9 @@ namespace Smash_Forge
                         {
                             foreach (ModelContainer c in Runtime.ModelContainers)
                             {
-                                if (c.nud != null)
+                                if (c.NUD != null)
                                 {
-                                    Runtime.ModelContainers[0].nud.Save(filename);
+                                    Runtime.ModelContainers[0].NUD.Save(filename);
                                     break;
                                 }
                             }
@@ -1590,8 +1592,8 @@ namespace Smash_Forge
                 if (Runtime.ModelContainers[0].dat_melee != null)
                 {
                     ModelContainer m = Runtime.ModelContainers[0].dat_melee.wrapToNUD();
-                    m.nud.Save(filename);
-                    m.vbn.Save(filename.Replace(".nud", ".vbn"));
+                    m.NUD.Save(filename);
+                    m.VBN.Save(filename.Replace(".nud", ".vbn"));
                 }
                 if (Runtime.ModelContainers[0].bch != null)
                 {
@@ -1601,9 +1603,9 @@ namespace Smash_Forge
             }
             if (filename.EndsWith(".mbn"))
             {
-                if (Runtime.ModelContainers[0].nud != null)
+                if (Runtime.ModelContainers[0].NUD != null)
                 {
-                    MBN m = Runtime.ModelContainers[0].nud.toMBN();
+                    MBN m = Runtime.ModelContainers[0].NUD.toMBN();
                     m.Save(filename);
                 }
             }
@@ -1626,7 +1628,7 @@ namespace Smash_Forge
                 if (Directory.Exists("Skapon\\"))
                 {
                     NUD nud = Skapon.Create(Runtime.TargetVBN);
-                    con.nud = nud;
+                    con.NUD = nud;
                 }
             }
 
@@ -1828,7 +1830,7 @@ namespace Smash_Forge
                 ModelContainer m = resyncTargetVBN();
                 if (m != null)
                 {
-                    m.nud = SMD.toNUD(fileName);
+                    m.NUD = SMD.toNUD(fileName);
                     meshList.refresh();
                 }
             }
@@ -1842,17 +1844,17 @@ namespace Smash_Forge
                     ModelContainer con = new ModelContainer();
 
                     // load vbn
-                    con.vbn = m.getVBN();
+                    con.VBN = m.getVBN();
 
                     Collada.DAEtoNUD(fileName, con, m.checkBox5.Checked);
                     Runtime.ModelContainers.Add(con);
 
-                    Runtime.TargetVBN = con.vbn;
+                    Runtime.TargetVBN = con.VBN;
                     resyncTargetVBN();
 
                     // apply settings
-                    m.Apply(con.nud);
-                    con.nud.MergePoly();
+                    m.Apply(con.NUD);
+                    con.NUD.MergePoly();
 
                     meshList.refresh();
                 }
@@ -1873,8 +1875,8 @@ namespace Smash_Forge
                 ModelViewport vp = new ModelViewport();
                 OBJ obj = new OBJ();
                 obj.Read(fileName);
-                vp.draw.Add(new ModelContainer() { nud = obj.toNUD() });
-                Runtime.ModelContainers.Add(new ModelContainer() { nud = obj.toNUD() });
+                vp.draw.Add(new ModelContainer() { NUD = obj.toNUD() });
+                Runtime.ModelContainers.Add(new ModelContainer() { NUD = obj.toNUD() });
                 meshList.refresh();
                 AddDockedControl(vp);
             }
@@ -1955,8 +1957,8 @@ namespace Smash_Forge
                 bool found = false;
                 foreach (ModelContainer m in Runtime.ModelContainers)
                 {
-                    if (m.vbn != null)
-                    if (m.vbn.essentialComparison(Runtime.TargetVBN))
+                    if (m.VBN != null)
+                    if (m.VBN.essentialComparison(Runtime.TargetVBN))
                     {
                         found = true;
                         break;
@@ -1965,7 +1967,7 @@ namespace Smash_Forge
                 if (!found)
                 {
                     modelContainer = new ModelContainer();
-                    modelContainer.vbn = Runtime.TargetVBN;
+                    modelContainer.VBN = Runtime.TargetVBN;
                     Runtime.ModelContainers.Add(modelContainer);
                 }
             }
@@ -1974,10 +1976,10 @@ namespace Smash_Forge
                 // Fetch the TargetVBN from the first model we come across
                 foreach (ModelContainer m in Runtime.ModelContainers)
                 {
-                    if (m.vbn != null)
+                    if (m.VBN != null)
                     {
                         // Use the first VBN we find
-                        Runtime.TargetVBN = Runtime.ModelContainers[0].vbn;
+                        Runtime.TargetVBN = Runtime.ModelContainers[0].VBN;
                         modelContainer = m;
                         break;
                     }
@@ -2012,7 +2014,7 @@ namespace Smash_Forge
 
 
                 ofd.Multiselect = true;
-                // "Namco Universal Data Folder (.NUD)|*.nud|" +
+                // "Namco Universal Data Folder (.nud)|*.nud|" +
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                     foreach (string filename in ofd.FileNames)
@@ -2086,20 +2088,20 @@ namespace Smash_Forge
                     if (Runtime.ModelContainers.Count > 0)
                     {
                         Collada.Save(model, Runtime.ModelContainers[0]);
-                        if (Runtime.ModelContainers[0].nud != null)
+                        if (Runtime.ModelContainers[0].NUD != null)
                         {
-                            NUD nud = Runtime.ModelContainers[0].nud;
+                            NUD nud = Runtime.ModelContainers[0].NUD;
                             List<int> texIds = nud.GetTexIds();
 
                             foreach (var nut in Runtime.TextureContainers)
                             {
-                                foreach (var tex in nut.textures)
+                                foreach (NUT_Texture tex in nut.Nodes)
                                 {
-                                    if (texIds.Contains(tex.id))
+                                    if (texIds.Contains(tex.HASHID))
                                     {
                                         DDS dds = new DDS();
                                         dds.fromNUT_Texture(tex);
-                                        dds.Save(Path.Combine(folder, $"Tex_0x{tex.id.ToString("X")}.png"));
+                                        dds.Save(Path.Combine(folder, $"Tex_0x{tex.HASHID.ToString("X")}.png"));
                                     }
                                 }
                             }

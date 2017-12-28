@@ -32,7 +32,7 @@ namespace Smash_Forge
             dae.Read(fname);
 
             NUD n = new NUD();
-            con.nud = n;
+            con.NUD = n;
 
             NUT thisNut = new NUT();
             Runtime.TextureContainers.Add(thisNut);
@@ -42,12 +42,12 @@ namespace Smash_Forge
             // find joint node
             foreach (ColladaNode node in dae.scene.nodes)
             {
-                if (node.type.Equals("JOINT") && con.vbn == null)
+                if (node.type.Equals("JOINT") && con.VBN == null)
                 {
                     // joint tree
 
                     VBN vbn = new VBN();
-                    con.vbn = vbn;
+                    con.VBN = vbn;
 
                     List<ColladaNode> parenttrack = new List<ColladaNode>();
                     Queue<ColladaNode> nodes = new Queue<ColladaNode>();
@@ -101,7 +101,7 @@ namespace Smash_Forge
             foreach (var mat in dae.library_materials)
                 materials.Add(mat.id, mat);
 
-            Dictionary<string, NUT.NUD_Texture> existingTextures = new Dictionary<string, NUT.NUD_Texture>();
+            Dictionary<string, NUT_Texture> existingTextures = new Dictionary<string, NUT_Texture>();
 
             // controllers
             Dictionary<string, List<NUD.Vertex>> vertices = new Dictionary<string, List<NUD.Vertex>>();
@@ -145,7 +145,7 @@ namespace Smash_Forge
                                     string bname = sources[input.source].data[skin.weights.v[v]];
                                     if (bname.StartsWith("_"))
                                         bname = bname.Substring(6, bname.Length - 6);
-                                    int index = con.vbn.boneIndex(bname);
+                                    int index = con.VBN.boneIndex(bname);
                                     vert.node.Add(index);
                                     break;
                                 case SemanticType.WEIGHT:
@@ -160,7 +160,7 @@ namespace Smash_Forge
             }
 
 
-            Dictionary<string, NUT.NUD_Texture> texturemap = new Dictionary<string, NUT.NUD_Texture>();
+            Dictionary<string, NUT_Texture> texturemap = new Dictionary<string, NUT_Texture>();
             Dictionary<string, NUD.Mesh> geometries = new Dictionary<string, NUD.Mesh>();
             foreach (ColladaGeometry geom in dae.library_geometries)
             {
@@ -202,7 +202,7 @@ namespace Smash_Forge
                     {
                         if (p.type == ColladaPrimitiveType.triangles)
                         {
-                            NUT.NUD_Texture tempTex = null;
+                            NUT_Texture tempTex = null;
                             ColladaMaterials mat = null;
                             ColladaEffects eff = null;
                             ColladaImages img = null;
@@ -225,7 +225,7 @@ namespace Smash_Forge
                             }else
                             if (tempTex == null && img != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fname), img.initref))))
                             {
-                                NUT.NUD_Texture tex = null;
+                                NUT_Texture tex = null;
                                 if (img.initref.ToLower().EndsWith(".dds"))
                                 {
                                     DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fname), img.initref))));
@@ -237,17 +237,17 @@ namespace Smash_Forge
                                 }
                                 if (tex == null) continue;
                                 texturemap.Add(img.initref, tex);
-                                tex.id = 0x40FFFF00;
-                                while (NUT.texIdUsed(tex.id))
-                                    tex.id++;
-                                thisNut.textures.Add(tex);
-                                thisNut.draw.Add(tex.id, NUT.loadImage(tex));
+                                tex.HASHID = 0x40FFFF00;
+                                while (NUT.texIdUsed(tex.HASHID))
+                                    tex.HASHID++;
+                                thisNut.Nodes.Add(tex);
+                                thisNut.draw.Add(tex.HASHID, NUT.loadImage(tex));
                                 existingTextures.Add(img.initref, tex);
                                 tempTex = tex;
                             }
                             if (tempTex != null)
                             {
-                                npoly.materials[0].textures[0].hash = tempTex.id;
+                                npoly.materials[0].textures[0].hash = tempTex.HASHID;
                             }
                         }
                     }
@@ -350,8 +350,8 @@ namespace Smash_Forge
             NUD n = new NUD();
             //if (con.vbn == null)
             //    return;
-            VBN vbn = con.vbn;
-            con.nud = n;
+            VBN vbn = con.VBN;
+            con.NUD = n;
 
             // Iterate on libraries
             foreach (var item in model.Items)
@@ -713,7 +713,7 @@ namespace Smash_Forge
                 vertex.id = geom.name + "_verts";
                 geom.mesh.vertices = vertex;
 
-                // create polygon objects (NUD uses basically 1)
+                // create polygon objects (nud uses basically 1)
                 ColladaPolygons p = new ColladaPolygons();
                 ColladaInput inv = new ColladaInput();
                 inv.offset = 0;
@@ -916,13 +916,13 @@ namespace Smash_Forge
                 Save(fname, con.dat_melee);
                 return;
             }
-            NUD nud = con.nud;
+            NUD nud = con.NUD;
 
 
             // bones
 
-            if(con.vbn != null)
-                SaveBoneNodes(dae, con.vbn.bones[0], con.vbn, null);
+            if(con.VBN != null)
+                SaveBoneNodes(dae, con.VBN.bones[0], con.VBN, null);
 
             // images
             /*int defaultTexture = -1;
@@ -1074,7 +1074,7 @@ namespace Smash_Forge
                         src.count = d.Count * 4;
                     }
 
-                    // create polygon objects (NUD uses basically 1)
+                    // create polygon objects (nud uses basically 1)
                     ColladaPolygons p = new ColladaPolygons();
                     ColladaInput inv = new ColladaInput();
                     inv.offset = 0;
@@ -1110,8 +1110,8 @@ namespace Smash_Forge
                         skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT });
                         weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT, offset = 0 });
                         List<string> d = new List<string>();
-                        if (con.vbn != null) { 
-                            foreach (Bone b in con.vbn.bones)
+                        if (con.VBN != null) { 
+                            foreach (Bone b in con.VBN.bones)
                             d.Add(b.Text);
                         }
                         else
@@ -1130,11 +1130,11 @@ namespace Smash_Forge
                         src.id = control.id + "_trans";
                         skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.INV_BIND_MATRIX });
                         List<string> d = new List<string>();
-                        if (con.vbn != null)
+                        if (con.VBN != null)
                         {
 
 
-                            foreach (Bone b in con.vbn.bones)
+                            foreach (Bone b in con.VBN.bones)
                             {
                                 d.Add(b.invert.M11 + " " + b.invert.M21 + " " + b.invert.M31 + " " + b.invert.M41 + " "
                                     + b.invert.M12 + " " + b.invert.M22 + " " + b.invert.M32 + " " + b.invert.M42 + " "

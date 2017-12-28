@@ -186,8 +186,8 @@ namespace Smash_Forge
                 string bid = "Unk";// MainForm.Hashes.ids.IndexOf(node.hash);
                 if (!MainForm.Hashes.ids.TryGetValue(baseNode[j].hash, out bid))
                     foreach (ModelContainer con in Runtime.ModelContainers)
-                        if (con.vbn != null)
-                            bid = con.vbn.getBone(baseNode[j].hash) == null ? "" : con.vbn.getBone(baseNode[j].hash).Text;
+                        if (con.VBN != null)
+                            bid = con.VBN.getBone(baseNode[j].hash) == null ? "" : con.VBN.getBone(baseNode[j].hash).Text;
                 Animation.KeyNode n = new Animation.KeyNode(bid);
                 a.Bones.Add(n);
                 n.Type = Animation.BoneType.NORMAL;

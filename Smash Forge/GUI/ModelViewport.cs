@@ -150,7 +150,7 @@ namespace Smash_Forge
 
                     foreach (ModelContainer con in draw)
                     {
-                        foreach (NUD.Mesh mesh in con.nud.meshes)
+                        foreach (NUD.Mesh mesh in con.NUD.meshes)
                         {
                             foreach (NUD.Polygon poly in mesh.Nodes)
                             {
@@ -175,7 +175,7 @@ namespace Smash_Forge
                     Vector3 close = Vector3.Zero;
                     foreach (ModelContainer con in draw)
                     {
-                        foreach (NUD.Mesh mesh in con.nud.meshes)
+                        foreach (NUD.Mesh mesh in con.NUD.meshes)
                         {
                             foreach (NUD.Polygon poly in mesh.Nodes)
                             {
@@ -318,8 +318,8 @@ namespace Smash_Forge
 
             // drawing the bones
             foreach (ModelContainer m in draw)
-                if(m.vbn != null)
-                    RenderTools.DrawVBN(m.vbn);
+                if(m.VBN != null)
+                    RenderTools.DrawVBN(m.VBN);
             
             // Mouse selection
             if (selecting)

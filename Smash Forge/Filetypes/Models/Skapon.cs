@@ -35,10 +35,10 @@ namespace Smash_Forge
 
                 if (e.Name.EndsWith(".dds"))
                 {
-                    NUT.NUD_Texture tex = new DDS(new FileData(b)).toNUT_Texture();
-                    nut.textures.Add(tex);
-                    tex.id = 0x40000000 + randomNumber;
-                    nut.draw.Add(tex.id, NUT.loadImage(tex));
+                    NUT_Texture tex = new DDS(new FileData(b)).toNUT_Texture();
+                    nut.Nodes.Add(tex);
+                    tex.HASHID = 0x40000000 + randomNumber;
+                    nut.draw.Add(tex.HASHID, NUT.loadImage(tex));
                 }
             }
 
@@ -228,7 +228,7 @@ namespace Smash_Forge
 
             // model--------------------------------------------------------
             ModelContainer converted = dat.wrapToNUD();
-            NUD nud = converted.nud;
+            NUD nud = converted.NUD;
             float sca = 0.6f;
 
 
@@ -238,11 +238,11 @@ namespace Smash_Forge
             Runtime.ModelContainers.Add(converted);
             //-------------------------------------------------
 
-            Runtime.TargetVBN = converted.vbn;
+            Runtime.TargetVBN = converted.VBN;
 
             MainForm.HashMatch();
 
-            Dictionary<string, SkelAnimation> anims = DAT_Animation.LoadAJ(path + "PlPcAJ.dat", converted.vbn);
+            Dictionary<string, SkelAnimation> anims = DAT_Animation.LoadAJ(path + "PlPcAJ.dat", converted.VBN);
 
             //ArrangeBones(converted.vbn, converted.nud);
 
@@ -252,12 +252,12 @@ namespace Smash_Forge
             {
                 effectiveScale(anims[an], Matrix4.CreateTranslation(0, 0, 0) * Matrix4.CreateScale(sca, sca, sca));
             }
-            effectiveScale(converted.nud, converted.vbn, Matrix4.CreateTranslation(0, 0, 0) * Matrix4.CreateScale(sca, sca, sca));
+            effectiveScale(converted.NUD, converted.VBN, Matrix4.CreateTranslation(0, 0, 0) * Matrix4.CreateScale(sca, sca, sca));
 
             Directory.CreateDirectory(path + "build\\model\\body\\c00\\");
             nud.Save(path + "build\\model\\body\\c00\\model.nud");
-            converted.vbn.Endian = Endianness.Little;
-            converted.vbn.Save(path + "build\\model\\body\\c00\\model.vbn");
+            converted.VBN.Endian = Endianness.Little;
+            converted.VBN.Save(path + "build\\model\\body\\c00\\model.vbn");
 
 
             PAC org = new PAC();
@@ -279,7 +279,7 @@ namespace Smash_Forge
                             KeyNode node = anims[an].getNode(0, 0);
                             node.t_type = 1;
                         }
-                        d = OMOOld.createOMO(anims[an], converted.vbn);
+                        d = OMOOld.createOMO(anims[an], converted.VBN);
                         break;
                     }
                 }

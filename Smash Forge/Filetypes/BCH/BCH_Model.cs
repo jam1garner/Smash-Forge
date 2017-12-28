@@ -102,14 +102,14 @@ namespace Smash_Forge
                             ModelContainer con = new ModelContainer();
 
                             // load vbn
-                            con.vbn = skeleton;
+                            con.VBN = skeleton;
 
                             Collada.DAEtoNUD(f, con, m.checkBox5.Checked);
                             
                             // apply settings
-                            m.Apply(con.nud);
-                            con.nud.MergePoly();
-                            CreateFromNUD(con.nud);
+                            m.Apply(con.NUD);
+                            con.NUD.MergePoly();
+                            CreateFromNUD(con.NUD);
                         }
                     }
                 }
@@ -483,7 +483,7 @@ namespace Smash_Forge
         }
 
 
-        // Create from NUD
+        // Create from nud
         public void CreateFromNUD(NUD n)
         {
             //Alrighty.............................

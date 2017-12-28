@@ -82,12 +82,12 @@ namespace Smash_Forge
             List<VBN> alreadyUsedVbns = new List<VBN>();
             foreach(ModelContainer model in Runtime.ModelContainers)
             {
-                if (!alreadyUsedVbns.Contains(model.vbn) && model.vbn != null)
+                if (!alreadyUsedVbns.Contains(model.VBN) && model.VBN != null)
                 {
-                    alreadyUsedVbns.Add(model.vbn);
-                    foreach (Bone b in model.vbn.bones)
+                    alreadyUsedVbns.Add(model.VBN);
+                    foreach (Bone b in model.VBN.bones)
                     {
-                        object[] objs = { model.vbn, b };
+                        object[] objs = { model.VBN, b };
                         TreeNode temp = new TreeNode(b.Text) {Tag = objs};
                         treeView1.Nodes.Add(temp);
                         if (str.data == b.Text.ToCharArray())

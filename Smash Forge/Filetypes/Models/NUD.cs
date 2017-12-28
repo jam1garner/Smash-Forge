@@ -16,12 +16,12 @@ namespace Smash_Forge
     {
         public NUD()
         {
-            if (!Runtime.shaders.ContainsKey("NUD"))
+            if (!Runtime.shaders.ContainsKey("nud"))
             {
                 Shader nud = new Shader();
                 nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
                 nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
-                Runtime.shaders.Add("NUD", nud);
+                Runtime.shaders.Add("nud", nud);
             }
 
             if (!Runtime.shaders.ContainsKey("NUD_Debug"))
@@ -40,7 +40,7 @@ namespace Smash_Forge
                 Runtime.shaders.Add("NUD_Eff", effect);
             }
 
-            Runtime.shaders["NUD"].displayCompilationWarning("NUD");
+            Runtime.shaders["nud"].displayCompilationWarning("nud");
             Runtime.shaders["NUD_Debug"].displayCompilationWarning("NUD_Debug");
             Runtime.shaders["NUD_Eff"].displayCompilationWarning("NUD_Eff");
 
@@ -55,6 +55,10 @@ namespace Smash_Forge
         {
             Read(fname);
             PreRender();
+
+            Text = "model.nud";
+            ImageKey = "model";
+            SelectedImageKey = "model";
         }
 
         // gl buffer objects
@@ -189,7 +193,7 @@ namespace Smash_Forge
                 DrawBoundingBoxes();
             }
 
-            Shader shader = Runtime.shaders["NUD"];
+            Shader shader = Runtime.shaders["nud"];
             GL.UseProgram(shader.programID);
 
             {
@@ -612,7 +616,7 @@ namespace Smash_Forge
                 int index = ((Mesh)p.Parent).singlebind;
                 if (index != -1)
                 {
-                    nscMatrix = Runtime.ModelContainers[0].vbn.bones[index].transform;
+                    nscMatrix = Runtime.ModelContainers[0].VBN.bones[index].transform;
                 }
             }
 
@@ -1730,8 +1734,8 @@ namespace Smash_Forge
 
             foreach (ModelContainer con in Runtime.ModelContainers)
             {
-                if (con.nud == this && con.vbn!=null)
-                    boneCount = con.vbn.bones.Count;   
+                if (con.NUD == this && con.VBN!=null)
+                    boneCount = con.VBN.bones.Count;   
             }
 
             d.writeShort(boneCount == 0 ? 0 : 2); // type

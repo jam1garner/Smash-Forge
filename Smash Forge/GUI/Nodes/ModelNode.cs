@@ -26,7 +26,7 @@ namespace Smash_Forge
         {
             base.DoubleClicked(sender, e);
             ModelContainer m = new ModelContainer();
-            m.vbn = Runtime.TargetVBN;
+            m.VBN = Runtime.TargetVBN;
             Runtime.ModelContainers.Add(m);
         }
 
@@ -43,7 +43,7 @@ namespace Smash_Forge
         {
             Runtime.TargetVBN = Skeleton;
             ModelContainer m = new ModelContainer();
-            m.vbn = Runtime.TargetVBN;
+            m.VBN = Runtime.TargetVBN;
             Runtime.ModelContainers.Add(m);
         }
     }

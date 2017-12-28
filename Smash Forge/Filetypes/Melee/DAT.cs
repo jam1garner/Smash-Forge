@@ -655,10 +655,10 @@ namespace Smash_Forge
         public ModelContainer wrapToNUD()
         {
             ModelContainer con = new ModelContainer();
-            con.vbn = bones;
+            con.VBN = bones;
 
             NUD nud = new NUD();
-            con.nud = nud;
+            con.NUD = nud;
 
             // create a nut?
             NUT nut = new NUT();
@@ -666,17 +666,17 @@ namespace Smash_Forge
             int texid = 0;
             foreach(int key in texturesLinker.Keys)
             {
-                NUT.NUD_Texture tex = new NUT.NUD_Texture();
-                tex.width = texturesLinker[key].Width;
-                tex.height = texturesLinker[key].Height;
-                tex.id = 0x401B1000 + texid;
+                NUT_Texture tex = new NUT_Texture();
+                tex.Width = texturesLinker[key].Width;
+                tex.Height = texturesLinker[key].Height;
+                tex.HASHID = 0x401B1000 + texid;
                 tex.mipmaps = new List<byte[]>();
                 byte[] mip1 = ConvertBitmapToByteArray(texturesLinker[key]);
                 Console.WriteLine(mip1.Length);
                 tex.mipmaps.Add(mip1);
                 tex.type = PixelInternalFormat.Rgba;
                 tex.utype = PixelFormat.Bgra;
-                nut.textures.Add(tex);
+                nut.Nodes.Add(tex);
                 nut.draw.Add(0x40545400 + texid, NUT.loadImage(tex));
                 texid++;
             }

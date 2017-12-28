@@ -26,7 +26,7 @@ namespace Smash_Forge
             vertexListBox.Items.Clear();
 
             ModelContainer con = vp.draw[0];
-            foreach(NUD.Mesh mesh in con.nud.meshes)
+            foreach(NUD.Mesh mesh in con.NUD.meshes)
             {
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {
@@ -45,15 +45,15 @@ namespace Smash_Forge
         {
             ModelContainer con = vp.draw[0];
             boneWeightList.Items.Clear();
-            if (con.vbn == null) return;
+            if (con.VBN == null) return;
             if (v.node.Count > 0)
-                boneWeightList.Items.Add(con.vbn.bones[v.node[0] > -1 ? v.node[0] : 0].Text + " _ " + v.weight[0]);
+                boneWeightList.Items.Add(con.VBN.bones[v.node[0] > -1 ? v.node[0] : 0].Text + " _ " + v.weight[0]);
             if (v.node.Count > 1)
-                boneWeightList.Items.Add(con.vbn.bones[v.node[1] > -1 ? v.node[1] : 0].Text + " _ " + v.weight[1]);
+                boneWeightList.Items.Add(con.VBN.bones[v.node[1] > -1 ? v.node[1] : 0].Text + " _ " + v.weight[1]);
             if (v.node.Count > 2)
-                boneWeightList.Items.Add(con.vbn.bones[v.node[2] > -1 ? v.node[2] : 0].Text + " _ " + v.weight[2]);
+                boneWeightList.Items.Add(con.VBN.bones[v.node[2] > -1 ? v.node[2] : 0].Text + " _ " + v.weight[2]);
             if (v.node.Count > 3)
-                boneWeightList.Items.Add(con.vbn.bones[v.node[3] > -1 ? v.node[3] : 0].Text + " _ " + v.weight[3]);
+                boneWeightList.Items.Add(con.VBN.bones[v.node[3] > -1 ? v.node[3] : 0].Text + " _ " + v.weight[3]);
         }
 
         private void vertexListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -70,7 +70,7 @@ namespace Smash_Forge
         private void SelectVertex(NUD.Vertex v)
         {
             ModelContainer con = vp.draw[0];
-            foreach (NUD.Mesh mesh in con.nud.meshes)
+            foreach (NUD.Mesh mesh in con.NUD.meshes)
             {
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {

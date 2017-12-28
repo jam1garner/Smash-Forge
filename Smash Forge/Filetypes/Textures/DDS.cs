@@ -119,11 +119,11 @@ namespace Smash_Forge
             f.save(fname);
         }
 
-        public void fromNUT_Texture(NUT.NUD_Texture tex)
+        public void fromNUT_Texture(NUT_Texture tex)
         {
             header = new Header();
-            header.width = tex.width;
-            header.height = tex.height;
+            header.width = tex.Width;
+            header.height = tex.Height;
             header.mipmapCount = tex.mipmaps.Count;
             switch (tex.type)
             {
@@ -172,12 +172,12 @@ namespace Smash_Forge
             data = d.ToArray();
         }
 
-        public NUT.NUD_Texture toNUT_Texture()
+        public NUT_Texture toNUT_Texture()
         {
-            NUT.NUD_Texture tex = new NUT.NUD_Texture();
-            tex.id = 0x48415348;
-            tex.height = header.height;
-            tex.width = header.width;
+            NUT_Texture tex = new NUT_Texture();
+            tex.HASHID = 0x48415348;
+            tex.Height = header.height;
+            tex.Width = header.width;
             float size = 1;
             int mips = header.mipmapCount;
             /*if (mips > header.mipmapCount)

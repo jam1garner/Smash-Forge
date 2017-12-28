@@ -95,11 +95,11 @@ namespace Smash_Forge
                 //reset mtas
                 foreach (ModelContainer con in Runtime.ModelContainers)
                 {
-                    if (con.nud != null && con.mta != null)
+                    if (con.NUD != null && con.mta != null)
                     {
-                        con.nud.applyMTA(con.mta, 0);
+                        con.NUD.applyMTA(con.mta, 0);
                         foreach(MTA d in display)
-                            con.nud.applyMTA(d, 0);
+                            con.NUD.applyMTA(d, 0);
 
                         /*foreach (KeyValuePair<string, MTA> v in Runtime.MaterialAnimations)
                         {
@@ -156,11 +156,11 @@ namespace Smash_Forge
 
                 foreach (ModelContainer con in Runtime.ModelContainers)
                 {
-                    if (con.nud != null && con.mta != null)
+                    if (con.NUD != null && con.mta != null)
                     {
-                        con.nud.applyMTA(con.mta, 0);
+                        con.NUD.applyMTA(con.mta, 0);
                         foreach (MTA d in display)
-                            con.nud.applyMTA(d, 0);
+                            con.NUD.applyMTA(d, 0);
                     }
                 }
 
