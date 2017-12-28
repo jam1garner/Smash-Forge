@@ -54,13 +54,20 @@ namespace Smash_Forge
                 while (NodeQueue.Count > 0)
                 {
                     TreeNode n = NodeQueue.Dequeue();
-                    if (n is Animation || n is MTA)
+                    if (n is Animation)
                     {
                         if (n == e.Node)
                             continue;
-                        if (n.Text.Contains(e.Node.Text.Replace(".omo", "")))
+                        if (n.Text.Equals(e.Node.Text))
                             running.Children.Add(n);
-                        if (n.Text.Contains("default.mta") && n is MTA)
+                    }
+                    if (n is MTA)
+                    {
+                        if (n == e.Node)
+                            continue;
+                        if (n.Text.Contains(e.Node.Text.Replace(".omo", ".")))
+                            running.Children.Add(n);
+                        if (n.Text.Contains("default.mta"))
                             display.Add((MTA)n);
                     }
                     if (n is AnimationGroupNode)

@@ -844,6 +844,7 @@ namespace Smash_Forge
                 {
                     //project.openACMD($"{ofd.SelectedPath}\\script\\animcmd\\body\\motion.mtable",
                     //    $"{ofd.SelectedPath}\\motion");
+                    MainForm.Instance.Progress = new ProgessAlert();
                     MainForm.Instance.Progress.ProgressValue = 0;
                     MainForm.Instance.Progress.ControlBox = false;
                     MainForm.Instance.Progress.Message = ("Please Wait... Opening Character");
