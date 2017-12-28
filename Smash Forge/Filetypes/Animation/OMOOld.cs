@@ -62,7 +62,12 @@ namespace Smash_Forge
 
             SkelAnimation anim = new SkelAnimation();
             anim.Tag = d;
-            //anim.setModel(m);
+
+            if (boneCount != offset2 / 0x10)
+            {
+                boneCount = offset2 / 0x10;
+                anim.Tag = null;
+            }
 
             // base frames
             // These are linked to bones via hashes
