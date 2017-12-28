@@ -44,6 +44,9 @@ namespace Smash_Forge
             GL.GenBuffers(1, out vbo_vert);
             GL.GenBuffers(1, out vbo_bone);
             GL.GenBuffers(1, out ibo_faces);
+            
+            ImageKey = "model";
+            SelectedImageKey = "model";
 
             ContextMenu cm = new ContextMenu();
             MenuItem im = new MenuItem("Import DAE");
@@ -560,6 +563,12 @@ namespace Smash_Forge
 
         //Material
         public int MaterialIndex = 0;
+
+        public BCH_Mesh()
+        {
+            ImageKey = "mesh";
+            SelectedImageKey = "mesh";
+        }
     }
 
     public class BCH_PolyGroup : TreeNode
@@ -567,6 +576,12 @@ namespace Smash_Forge
         public int Count;
         public int[] Faces;
         public int[] BoneList;
+
+        public BCH_PolyGroup()
+        {
+            ImageKey = "polygon";
+            SelectedImageKey = "polygon";
+        }
     }
 
     public class BCH_Material : TreeNode

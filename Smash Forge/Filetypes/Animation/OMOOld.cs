@@ -62,7 +62,12 @@ namespace Smash_Forge
 
             SkelAnimation anim = new SkelAnimation();
             anim.Tag = d;
-            //anim.setModel(m);
+
+            if (boneCount > offset2 / 0x10)
+            {
+                boneCount = offset2 / 0x10;
+                anim.Tag = null;
+            }
 
             // base frames
             // These are linked to bones via hashes
@@ -171,6 +176,7 @@ namespace Smash_Forge
             // from the coords specified with the bone node above
 
             Animation a = new Animation("Anim");
+            a.Tag = anim.Tag;
             a.FrameCount = frameCount;
 
             d.seek(offset3);
@@ -736,7 +742,6 @@ namespace Smash_Forge
             a.SetFrame(0);
 
             List<List<Bone>> Frames = new List<List<Bone>>();
-            VBN tempvbn = new VBN();
 
             {
 
@@ -787,30 +792,9 @@ namespace Smash_Forge
                         maxS[j].Z = Math.Max(maxS[j].Z, key.Value);
                         minS[j].Z = Math.Min(minS[j].Z, key.Value);
                     }
-                    //TODO: Euler Rotation Values
-                    a.SetFrame(0);
+
                     Bone b = vbn.getBone(keynode.Text);
-                    if (b == null) continue;
-                    List<Bone> bonelist = new List<Bone>();
-                    Frames.Add(bonelist);
-                    for (int i = 0; i < a.FrameCount; i++)
-                    {
-                        maxR[j].X = Math.Max(maxR[j].X, b.rot.X);
-                        minR[j].X = Math.Min(minR[j].X, b.rot.X);
-                        maxR[j].Y = Math.Max(maxR[j].Y, b.rot.Y);
-                        minR[j].Y = Math.Min(minR[j].Y, b.rot.Y);
-                        maxR[j].Z = Math.Max(maxR[j].Z, b.rot.Z);
-                        minR[j].Z = Math.Min(minR[j].Z, b.rot.Z);
-
-                        Bone f1 = new Bone(tempvbn);
-                        f1.pos = b.pos;
-                        f1.rot = b.rot;
-                        f1.sca = b.sca;
-                        bonelist.Add(f1);
-
-                        a.NextFrame(vbn);
-                    }
-
+                    //if (b == null)continue;
                     if (b != null)
                     {
                         if (maxT[j].X == -999) maxT[j].X = b.position[0];
@@ -828,6 +812,33 @@ namespace Smash_Forge
                         if (minS[j].Z == -999) minS[j].Z = b.scale[2];
                     }
                 }
+            }
+
+            //TODO: Euler Rotation Values
+            VBN tempvbn = new VBN();
+            a.SetFrame(0);
+            for (int i = 0; i < a.FrameCount; i++)
+            {
+                //Frames.Add(new List<Bone>());
+                for (int j = 0; j < a.Bones.Count; j++)
+                {
+                    Animation.KeyNode keynode = a.Bones[j];
+                    Bone b = vbn.getBone(keynode.Text);
+                    //if(b == null) continue;
+                    maxR[j].X = Math.Max(maxR[j].X, b.rot.X);
+                    minR[j].X = Math.Min(minR[j].X, b.rot.X);
+                    maxR[j].Y = Math.Max(maxR[j].Y, b.rot.Y);
+                    minR[j].Y = Math.Min(minR[j].Y, b.rot.Y);
+                    maxR[j].Z = Math.Max(maxR[j].Z, b.rot.Z);
+                    minR[j].Z = Math.Min(minR[j].Z, b.rot.Z);
+
+                    Bone f1 = new Bone(tempvbn);
+                    f1.pos = b.pos;
+                    f1.rot = b.rot;
+                    f1.sca = b.sca;
+                    //Frames[i].Add(f1);
+                }
+                a.NextFrame(vbn);
             }
 
             // NODE INFO
@@ -963,16 +974,15 @@ namespace Smash_Forge
 
             // INTERPOLATION
 
-            //a.SetFrame(0);
+            a.SetFrame(0);
 
             bool go = true;
-            foreach (List<Bone> bonelist in Frames)
+            for (int i = 0; i < a.FrameCount; i++)
             {
-                //a.nextFrame(vbn);
-                int j = 0;
-                foreach (Bone node in bonelist)
+                a.NextFrame(vbn);
+                for (int j = 0; j < a.Bones.Count; j++)
                 {
-                    //Bone node = vbn.getBone(a.Bones[j].Text);
+                    Bone node = vbn.getBone(a.Bones[j].Text);
                     if (node == null) continue;
 
                     if (hasTrans[j] && !conTrans[j])
@@ -985,7 +995,7 @@ namespace Smash_Forge
                     if (hasRot[j] && !conRot[j])
                     {
                         Quaternion r = node.rot;
-
+                        r.Normalize();
                         t2.writeShort((int)(((r.X - minR[j].X) / maxR[j].X) * 0xFFFF));
                         t2.writeShort((int)(((r.Y - minR[j].Y) / maxR[j].Y) * 0xFFFF));
                         t2.writeShort((int)(((r.Z - minR[j].Z) / maxR[j].Z) * 0xFFFF));

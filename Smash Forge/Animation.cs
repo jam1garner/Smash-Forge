@@ -29,11 +29,27 @@ namespace Smash_Forge
             Export.Click += SaveAs;
             cm.MenuItems.Add(Export);
 
-            MenuItem Replace = new MenuItem("Replace Animation");
+            MenuItem Replace = new MenuItem("Replace");
             Replace.Click += ReplaceAnimation;
             cm.MenuItems.Add(Replace);
-            
+
+            MenuItem Remove = new MenuItem("Remove");
+            Remove.Click += RemoveAnimation;
+            cm.MenuItems.Add(Remove);
+
             ContextMenu = cm;
+        }
+
+        #region Events
+
+        public void RemoveAnimation(object sender, EventArgs args)
+        {
+            if(Parent != null)
+                Parent.Nodes.Remove(this);
+            else
+            {
+                MainForm.Instance.animList.treeView1.Nodes.Remove(this);
+            }
         }
 
         public void ReplaceAnimation(object sender, EventArgs args)
@@ -48,6 +64,12 @@ namespace Smash_Forge
                     {
                         Animation a = OMOOld.read(new FileData(filename));
                         a.Text = filename;
+                        ReplaceMe(a);
+                    }
+                    if (filename.EndsWith(".smd"))
+                    {
+                        Animation a = new Animation(filename.Replace(".smd", ""));
+                        SMD.read(filename, a, Runtime.TargetVBN);
                         ReplaceMe(a);
                     }
                     if (filename.EndsWith(".chr0"))
@@ -66,6 +88,7 @@ namespace Smash_Forge
 
         public void ReplaceMe(Animation a)
         {
+            Tag = null;
             Nodes.Clear();
             Bones.Clear();
             Children.Clear();
@@ -125,6 +148,8 @@ namespace Smash_Forge
                 }
             }
         }
+
+        #endregion
 
         public enum InterpolationType
         {

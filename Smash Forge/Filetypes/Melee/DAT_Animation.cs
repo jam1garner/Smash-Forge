@@ -342,7 +342,7 @@ namespace Smash_Forge
                 SkelAnimation sa = track.BakeToSkel(vbn);
                 sa.Tag = track;
                 //Runtime.Animations.Add(anim.Name, sa);
-                MainForm.animNode.Nodes.Add(anim.Name);
+                MainForm.Instance.animList.treeView1.Nodes.Add(anim.Name);
                 animations.Add(anim.Name, sa);
 
                 if (pos != 0)

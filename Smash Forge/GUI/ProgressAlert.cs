@@ -14,11 +14,19 @@ namespace Smash_Forge
     {
         public int ProgressValue
         {
-            set { progressBar1.Value = value; }
+            set {
+                progressBar1.Value = value;
+                if (value >= 100)
+                    Close();
+                progressBar1.Refresh();
+            }
         }
         public string Message
         {
-            set { ProgressLabel.Text = value; }
+            set {
+                ProgressLabel.Text = value;
+                ProgressLabel.Refresh();
+            }
         }
 
         public ProgessAlert()

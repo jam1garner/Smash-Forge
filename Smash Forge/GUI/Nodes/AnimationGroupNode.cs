@@ -24,14 +24,73 @@ namespace Smash_Forge
             resave.Click += Resave;
             cm.MenuItems.Add(resave);
 
+            MenuItem import = new MenuItem("Import New Animation");
+            import.Click += Import;
+            cm.MenuItems.Add(import);
+
             ContextMenu = cm;
         }
+
+        public void Import(object sender, EventArgs args)
+        {
+            using (OpenFileDialog fd = new OpenFileDialog())
+            {
+                fd.Filter = "Supported Formats|*.omo;*.anim;*.chr0;*.smd;*.mta;|" +
+                             "Object Motion|*.omo|" +
+                             "Maya Animation|*.anim|" +
+                             "NW4R Animation|*.chr0|" +
+                             "Source Animation (SMD)|*.smd|" +
+                             "Smash 4 Material Animation (MTA)|*.mta|" +
+                             "All files(*.*)|*.*";
+                if(fd.ShowDialog() == DialogResult.OK)
+                {
+                    foreach(string filename in fd.FileNames)
+                    {
+                        if (filename.EndsWith(".mta"))
+                        {
+                            MTA mta = new MTA();
+                            try
+                            {
+                                mta.Read(filename);
+                                Runtime.MaterialAnimations.Add(filename, mta);
+                                Nodes.Add(filename);
+                            }
+                            catch (Exception)
+                            {
+                                mta = null;
+                            }
+                        }
+                        else if (filename.EndsWith(".smd"))
+                        {
+                            var anim = new Animation(filename);
+                            if (Runtime.TargetVBN == null)
+                                Runtime.TargetVBN = new VBN();
+                            SMD.read(filename, anim, Runtime.TargetVBN);
+                            Nodes.Add(anim);
+                        }
+                        if (filename.EndsWith(".omo"))
+                        {
+                            Animation a = OMOOld.read(new FileData(filename));
+                            a.Text = filename;
+                            Nodes.Add(a);
+                        }
+                        if (filename.EndsWith(".chr0"))
+                            Nodes.Add(CHR0.read(new FileData(filename), Runtime.TargetVBN));
+                        if (filename.EndsWith(".anim"))
+                            Nodes.Add(ANIM.read(filename, Runtime.TargetVBN));
+                    }
+                }
+            }
+        }
+
+        public static String FileName;
+        public static TreeNode Node;
 
         public static void Save(object sender, EventArgs args)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            float f = 0;
+            float f = 1;
             if (FileName.ToLower().EndsWith(".bch"))
             {
                 List<Animation> anims = new List<Animation>();
@@ -50,20 +109,19 @@ namespace Smash_Forge
                 {
                     worker.ReportProgress((int)((f / Node.Nodes.Count) * 100f));
                     f++;
-                    //MainForm.Instance.Progress.Message = ("Working on " + anim.Text);
-                    var bytes = OMOOld.CreateOMOFromAnimation(anim, Runtime.TargetVBN);
+                    //Console.WriteLine("Working on " + anim.Text + " " + (anim.Tag is FileData));
+                    var bytes = new byte[1];
                     if (anim.Tag is FileData)
-                        bytes = ((FileData)Runtime.TargetAnim.Tag).getSection(0, ((FileData)Runtime.TargetAnim.Tag).size());
+                        bytes = ((FileData)anim.Tag).getSection(0, ((FileData)anim.Tag).size());
+                    else
+                        bytes = OMOOld.CreateOMOFromAnimation(anim, Runtime.TargetVBN);
 
-                    pac.Files.Add(anim.Text + ".omo", bytes);
+                    pac.Files.Add(anim.Text.EndsWith(".omo") ? anim.Text : anim.Text + ".omo", bytes);
                 }
                 pac.Save(FileName);
             }
         }
-
-        public static String FileName;
-        public static TreeNode Node;
-
+        
         public static void Resave(object sender, EventArgs args)
         {
             TreeNode n = MainForm.Instance.animList.treeView1.SelectedNode;
@@ -85,16 +143,25 @@ namespace Smash_Forge
 
                     if (sf.ShowDialog() == DialogResult.OK)
                     {
+                        if (sf.FileName.ToLower().EndsWith(".bch"))
+                            MessageBox.Show("Note: Only animations with linear interpolation are currently supported.");
+
                         Node = MainForm.Instance.animList.treeView1.SelectedNode;
                         FileName = sf.FileName;
 
+                        MainForm.Instance.Progress = new ProgessAlert();
                         MainForm.Instance.Progress.ProgressValue = 0;
                         MainForm.Instance.Progress.Message = ("Please Wait... Baking Animation Frames");
+                        MainForm.Instance.Progress.ControlBox = true;
 
-                        MainForm.Instance.backgroundWorker1.DoWork += new DoWorkEventHandler(Save);
+                        DoWorkEventHandler hand = new DoWorkEventHandler(Save);
+                        MainForm.Instance.backgroundWorker1.DoWork += hand;
                         MainForm.Instance.backgroundWorker1.RunWorkerAsync();
 
                         MainForm.Instance.Progress.ShowDialog();
+
+                        MainForm.Instance.backgroundWorker1.DoWork -= hand;
+
                     }
                 }
             }
