@@ -16,12 +16,12 @@ namespace Smash_Forge
     {
         public NUD()
         {
-            if (!Runtime.shaders.ContainsKey("NUD"))
+            if (!Runtime.shaders.ContainsKey("nud"))
             {
                 Shader nud = new Shader();
                 nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
                 nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
-                Runtime.shaders.Add("NUD", nud);
+                Runtime.shaders.Add("nud", nud);
             }
 
             if (!Runtime.shaders.ContainsKey("NUD_Debug"))
@@ -40,7 +40,7 @@ namespace Smash_Forge
                 Runtime.shaders.Add("NUD_Eff", effect);
             }
 
-            Runtime.shaders["NUD"].displayCompilationWarning("NUD");
+            Runtime.shaders["nud"].displayCompilationWarning("nud");
             Runtime.shaders["NUD_Debug"].displayCompilationWarning("NUD_Debug");
             Runtime.shaders["NUD_Eff"].displayCompilationWarning("NUD_Eff");
 
@@ -49,6 +49,10 @@ namespace Smash_Forge
             GL.GenBuffers(1, out ibo_elements);
             GL.GenBuffers(1, out ubo_bones);
             GL.GenBuffers(1, out vbo_select);
+
+            Text = "model.nud";
+            ImageKey = "model";
+            SelectedImageKey = "model";
         }
 
         public NUD(string fname) : this()
@@ -189,7 +193,7 @@ namespace Smash_Forge
                 DrawBoundingBoxes();
             }
 
-            Shader shader = Runtime.shaders["NUD"];
+            Shader shader = Runtime.shaders["nud"];
             GL.UseProgram(shader.programID);
 
             {
@@ -612,7 +616,7 @@ namespace Smash_Forge
                 int index = ((Mesh)p.Parent).singlebind;
                 if (index != -1)
                 {
-                    nscMatrix = Runtime.ModelContainers[0].vbn.bones[index].transform;
+                    nscMatrix = Runtime.ModelContainers[0].VBN.bones[index].transform;
                 }
             }
 
@@ -701,8 +705,9 @@ namespace Smash_Forge
 
         private static void DrawModelSelection(Polygon p, Shader shader)
         {
-            GL.Enable(EnableCap.LineSmooth);
-            GL.LineWidth(2.0f);
+            GL.Enable(EnableCap.StencilTest);
+            GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
+            GL.Disable(EnableCap.DepthTest);
 
             bool[] cwm = new bool[4];
             GL.GetBoolean(GetIndexedPName.ColorWritemask, 4, cwm);
@@ -720,14 +725,18 @@ namespace Smash_Forge
 
             // use vertex color for model selection color
             GL.Uniform1(shader.getAttribute("colorOverride"), 1);
+
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
+            GL.LineWidth(2.0f);
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+
             GL.Uniform1(shader.getAttribute("colorOverride"), 0);
 
             GL.StencilMask(0xFF);
             GL.Clear(ClearBufferMask.StencilBufferBit);
-            GL.Enable(EnableCap.StencilTest);
+            GL.Disable(EnableCap.StencilTest);
+            GL.Enable(EnableCap.DepthTest);
         }
 
         private static void SetMaterialPropertyUniforms(Shader shader, Material mat)
@@ -1730,8 +1739,8 @@ namespace Smash_Forge
 
             foreach (ModelContainer con in Runtime.ModelContainers)
             {
-                if (con.nud == this && con.vbn!=null)
-                    boneCount = con.vbn.bones.Count;   
+                if (con.NUD == this && con.VBN!=null)
+                    boneCount = con.VBN.bones.Count;   
             }
 
             d.writeShort(boneCount == 0 ? 0 : 2); // type

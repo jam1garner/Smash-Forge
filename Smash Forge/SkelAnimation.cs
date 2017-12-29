@@ -152,9 +152,9 @@ namespace Smash_Forge
 
                 foreach (ModelContainer con in Runtime.ModelContainers)
                 {
-                    if (con.nud != null && con.mta != null)
+                    if (con.NUD != null && con.mta != null)
                     {
-                        con.nud.applyMTA(con.mta, 0);
+                        con.NUD.applyMTA(con.mta, 0);
                     }
                 }
             }
@@ -170,9 +170,9 @@ namespace Smash_Forge
                 {
                     foreach(ModelContainer con in Runtime.ModelContainers)
                     {
-                        if(con.nud != null)
+                        if(con.NUD != null)
                         {
-                            con.nud.applyMTA(((MTA)child), frame);
+                            con.NUD.applyMTA(((MTA)child), frame);
                         }
                     }
                 }

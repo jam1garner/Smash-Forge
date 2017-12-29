@@ -14,24 +14,29 @@ namespace Smash_Forge
 {
     public partial class BoneTreePanel : DockContent
     {
-        public BoneTreePanel()
+        private VBN VBN;
+
+        public BoneTreePanel(VBN vbn)
         {
             InitializeComponent();
+            VBN = vbn;
+            treeRefresh();
         }
+
         public void treeRefresh()
         {
-            if (Runtime.TargetVBN == null)
+            if (VBN == null)
                 return;
             treeView1.Nodes.Clear();
-            Runtime.TargetVBN.reset();
+            VBN.reset();
             treeView1.BeginUpdate();
-            foreach (Bone b in Runtime.TargetVBN.bones)
+            foreach (Bone b in VBN.bones)
                 if (b.Parent == null)
                     treeView1.Nodes.Add(b);
             treeView1.EndUpdate();
             treeView1.ExpandAll();
             listBox1.Items.Clear();
-            foreach (var item in Runtime.TargetVBN.bones)
+            foreach (var item in VBN.bones)
                 listBox1.Items.Add(item);
         }
 
@@ -59,30 +64,30 @@ namespace Smash_Forge
             dataGridView1.DataSource = tbl;
             tbl.Rows.Clear();
 
-            selectedBone = Runtime.TargetVBN.bone(treeView1.SelectedNode.Text);
+            selectedBone = VBN.bone(treeView1.SelectedNode.Text);
 
-            tbl.Rows.Add("Bone Index", Runtime.TargetVBN.getJTBIndex(treeView1.SelectedNode.Text));
-            tbl.Rows.Add("Bone Hash", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).boneId.ToString("X"));
-            tbl.Rows.Add("Bone Type", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).boneType);
-            tbl.Rows.Add("X Pos", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).position[0]);
-            tbl.Rows.Add("Y Pos", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).position[1]);
-            tbl.Rows.Add("Z Pos", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).position[2]);
-            tbl.Rows.Add("X Rot", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).rotation[0]);
-            tbl.Rows.Add("Y Rot", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).rotation[1]);
-            tbl.Rows.Add("Z Rot", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).rotation[2]);
-            tbl.Rows.Add("X Scale", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).scale[0]);
-            tbl.Rows.Add("Y Scale", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).scale[1]);
-            tbl.Rows.Add("Z Scale", Runtime.TargetVBN.bone(treeView1.SelectedNode.Text).scale[2]);
-            Runtime.TargetVBN.reset();
+            tbl.Rows.Add("Bone Index", VBN.getJTBIndex(treeView1.SelectedNode.Text));
+            tbl.Rows.Add("Bone Hash", ((Bone)treeView1.SelectedNode).boneId.ToString("X"));
+            tbl.Rows.Add("Bone Type", VBN.bone(treeView1.SelectedNode.Text).boneType);
+            tbl.Rows.Add("X Pos", ((Bone)treeView1.SelectedNode).position[0]);
+            tbl.Rows.Add("Y Pos", ((Bone)treeView1.SelectedNode).position[1]);
+            tbl.Rows.Add("Z Pos", ((Bone)treeView1.SelectedNode).position[2]);
+            tbl.Rows.Add("X Rot", ((Bone)treeView1.SelectedNode).rotation[0]);
+            tbl.Rows.Add("Y Rot", ((Bone)treeView1.SelectedNode).rotation[1]);
+            tbl.Rows.Add("Z Rot", ((Bone)treeView1.SelectedNode).rotation[2]);
+            tbl.Rows.Add("X Scale", ((Bone)treeView1.SelectedNode).scale[0]);
+            tbl.Rows.Add("Y Scale", ((Bone)treeView1.SelectedNode).scale[1]);
+            tbl.Rows.Add("Z Scale", ((Bone)treeView1.SelectedNode).scale[2]);
+            VBN.reset();
 
-            Runtime.selectedBoneIndex = Runtime.TargetVBN.bones.IndexOf((Bone)treeView1.SelectedNode);
+            Runtime.selectedBoneIndex = VBN.bones.IndexOf((Bone)treeView1.SelectedNode);
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            /*if(Runtime.TargetVBN != null)
+            /*if(VBN != null)
             {
-                Runtime.TargetVBN.bones[Runtime.TargetVBN.boneIndex(currentNode)].Text = textBox1.Text.ToCharArray();
+                VBN.bones[VBN.boneIndex(currentNode)].Text = textBox1.Text.ToCharArray();
                 currentNode = textBox1.Text;
                 treeView1.SelectedNode.Text = textBox1.Text;
             }*/
@@ -92,7 +97,7 @@ namespace Smash_Forge
         {
             Bone editingBone = (Bone)treeView1.SelectedNode;
             editingBone.boneId = uint.Parse(tbl.Rows[1][1].ToString(), System.Globalization.NumberStyles.HexNumber);
-            
+
             uint.TryParse(tbl.Rows[2][1].ToString(), out editingBone.boneType);
 
             float.TryParse(tbl.Rows[3][1].ToString(), out editingBone.position[0]);
@@ -108,7 +113,7 @@ namespace Smash_Forge
             float.TryParse(tbl.Rows[9][1].ToString(), out editingBone.scale[2]);
 
             //vbn.update ();
-            Runtime.TargetVBN.reset();
+            VBN.reset();
         }
 
         private bool isAChildOfB(TreeNode a, TreeNode b)
@@ -125,13 +130,13 @@ namespace Smash_Forge
 
             if (!draggedNode.Equals(targetNode) && targetNode != null && !isAChildOfB(targetNode, draggedNode))
             {
-                int oldParent = (int)Runtime.TargetVBN.bones[Runtime.TargetVBN.boneIndex(draggedNode.Text)].parentIndex;
-                //Runtime.TargetVBN.bones[oldParent].children.Remove(Runtime.TargetVBN.boneIndex(draggedNode.Text));
-                int newParent = Runtime.TargetVBN.boneIndex(targetNode.Text);
-                Bone temp = Runtime.TargetVBN.bones[Runtime.TargetVBN.boneIndex(draggedNode.Text)];
+                int oldParent = (int)VBN.bones[VBN.boneIndex(draggedNode.Text)].parentIndex;
+                //VBN.bones[oldParent].children.Remove(VBN.boneIndex(draggedNode.Text));
+                int newParent = VBN.boneIndex(targetNode.Text);
+                Bone temp = VBN.bones[VBN.boneIndex(draggedNode.Text)];
                 temp.parentIndex = (int)newParent;
-                Runtime.TargetVBN.bones[Runtime.TargetVBN.boneIndex(draggedNode.Text)] = temp;
-                //Runtime.TargetVBN.bones[newParent].children.Add(Runtime.TargetVBN.boneIndex(draggedNode.Text));
+                VBN.bones[VBN.boneIndex(draggedNode.Text)] = temp;
+                //VBN.bones[newParent].children.Add(VBN.boneIndex(draggedNode.Text));
 
                 draggedNode.Remove();
                 targetNode.Nodes.Add(draggedNode);
@@ -143,7 +148,7 @@ namespace Smash_Forge
                 draggedNode.Remove();
                 treeView1.Nodes.Add(draggedNode);
             }
-            Runtime.TargetVBN.reset();
+            VBN.reset();
         }
 
         private void treeView1_ItemDrag(object sender, ItemDragEventArgs e)
@@ -186,9 +191,9 @@ namespace Smash_Forge
             object data = listBox1.SelectedItem;
             this.listBox1.Items.Remove(data);
             this.listBox1.Items.Insert(index, data);
-            Runtime.TargetVBN.bones.Clear();
+            VBN.bones.Clear();
             foreach (var item in listBox1.Items)
-                Runtime.TargetVBN.bones.Add((Bone)item);
+                VBN.bones.Add((Bone)item);
         }
 
         private void selectBone(object bone, TreeNode t)
@@ -217,25 +222,39 @@ namespace Smash_Forge
         {
             Bone parent = null;
             if (treeView1.SelectedNode != null)
-                parent = (Bone) treeView1.SelectedNode;
-            new AddBone(parent).Show();
+                parent = (Bone)treeView1.SelectedNode;
+            new AddBone(parent, VBN).ShowDialog();
+            treeRefresh();
         }
 
         private void removeBoneToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (treeView1.SelectedNode == null)
                 return;
-            Runtime.TargetVBN.bones.Remove((Bone) treeView1.SelectedNode);
+            VBN.bones.Remove((Bone)treeView1.SelectedNode);
             // Reassign sub-bones to their new parent
             Bone parentBone = (Bone)treeView1.SelectedNode.Parent;
             if (parentBone != null)
             {
-                int parentIndex = Runtime.TargetVBN.bones.IndexOf(parentBone);
+                int parentIndex = VBN.bones.IndexOf(parentBone);
                 foreach (Bone b in treeView1.SelectedNode.Nodes)
                     b.parentIndex = parentIndex;
             }
             treeView1.SelectedNode.Remove();
             treeRefresh();
+        }
+
+        private void BoneTreePanel_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            treeView1.Nodes.Clear();
+        }
+
+        private void BoneTreePanel_ControlRemoved(object sender, ControlEventArgs e)
+        {
+        }
+
+        private void BoneTreePanel_FormClosing(object sender, FormClosingEventArgs e)
+        {
         }
     }
 }

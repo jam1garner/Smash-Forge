@@ -1470,10 +1470,10 @@ namespace Smash_Forge
                 m.dat_melee.Render(v);
             }
 
-            if (m.nud != null)
+            if (m.NUD != null)
             {
-                m.nud.Render(v, m.vbn);
-                m.nud.DrawPoints(v, m.vbn);
+                m.NUD.Render(v, m.VBN);
+                m.NUD.DrawPoints(v, m.VBN);
             }
         }
 
@@ -1483,7 +1483,7 @@ namespace Smash_Forge
             {
                 foreach (ModelContainer m in Runtime.ModelContainers)
                 {
-                    DrawVBN(m.vbn);
+                    DrawVBN(m.VBN);
                     if (m.bch != null)
                     {
                         //DrawVBN(m.bch.Models.Nodes[0].skeleton);

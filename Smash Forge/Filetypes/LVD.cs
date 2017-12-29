@@ -1237,12 +1237,12 @@ namespace Smash_Forge
                     Bone riggedBone = null;
                     foreach (ModelContainer m in Runtime.ModelContainers)
                     {
-                        if (m.name.Equals(c.subname))
+                        if (m.Text.Equals(c.subname))
                         {
                             riggedModel = m;
-                            if (m.vbn != null)
+                            if (m.VBN != null)
                             {
-                                foreach (Bone b in m.vbn.bones)
+                                foreach (Bone b in m.VBN.bones)
                                 {
                                     if (b.Text.Equals(c.BoneName))
                                     {
@@ -1254,9 +1254,9 @@ namespace Smash_Forge
                     }
                     if (riggedModel != null)
                     {
-                        if (riggedBone == null && riggedModel.vbn != null && riggedModel.vbn.bones.Count > 0)
+                        if (riggedBone == null && riggedModel.VBN != null && riggedModel.VBN.bones.Count > 0)
                         {
-                            riggedBone = riggedModel.vbn.bones[0];
+                            riggedBone = riggedModel.VBN.bones[0];
                         }
                         if (riggedBone != null)
                             transform = riggedBone.invert * riggedBone.transform;

@@ -363,9 +363,9 @@ namespace Smash_Forge
                 {
                     foreach (ModelContainer con in Runtime.ModelContainers)
                     {
-                        if (con.nud != null)
+                        if (con.NUD != null)
                         {
-                            con.nud.applyMTA(((MTA)child), (int)Frame);
+                            con.NUD.applyMTA(((MTA)child), (int)Frame);
                         }
                     }
                 }
@@ -428,7 +428,9 @@ namespace Smash_Forge
             {
                 Frame = 0;
             }
-            skeleton.update();
+
+            if(!isChild)
+                skeleton.update();
         }
 
         public void ExpandBones()

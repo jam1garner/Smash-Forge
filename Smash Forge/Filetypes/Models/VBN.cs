@@ -47,6 +47,8 @@ namespace Smash_Forge
         public Bone(VBN v)
         {
             vbnParent = v;
+            ImageKey = "bone";
+            SelectedImageKey = "bone";
         }
 
         public List<Bone> GetChildren()
@@ -190,8 +192,24 @@ namespace Smash_Forge
 
     public class VBN : FileBase
     {
-        public VBN() { }
-        public VBN(string filename)
+        public VBN()
+        {
+            Text = "model.vbn";
+            ImageKey = "skeleton";
+            SelectedImageKey = "skeleton";
+
+            ContextMenu = new ContextMenu();
+
+            MenuItem OpenEdit = new MenuItem("Open Editor");
+            OpenEdit.Click += OpenEditor;
+            ContextMenu.MenuItems.Add(OpenEdit);
+
+            MenuItem save = new MenuItem("Save As");
+            ContextMenu.MenuItems.Add(save);
+            save.Click += Save;
+        }
+
+        public VBN(string filename) : this()
         {
             Read(filename);
         }
@@ -205,6 +223,41 @@ namespace Smash_Forge
 
         public List<List<int>> jointTable = new List<List<int>>();
         public SB swingBones = new SB();
+
+        #region Events
+
+        BoneTreePanel Editor;
+
+        private void OpenEditor(object sender, EventArgs args)
+        {
+            Nodes.Clear();
+            if (Editor == null || Editor.IsDisposed)
+            {
+                Editor = new BoneTreePanel(this);
+                Editor.Text = Parent.Text + "\\" + Text;
+                MainForm.Instance.AddDockedControl(Editor);
+            }
+            else
+            {
+                Editor.BringToFront();
+            }
+        }
+
+        public void Save(object sender, EventArgs args)
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Visual Bones Namco (.vbn)|*.vbn|" +
+                             "All Files (*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    File.WriteAllBytes(sfd.FileName, Rebuild());
+                }
+            }
+        }
+
+        #endregion
 
         public Bone getBone(String name)
         {
@@ -334,6 +387,9 @@ namespace Smash_Forge
 
         public void reset()
         {
+            //Nodes.Clear();
+            //if (bones.Count > 0) Nodes.Add(bones[0]);
+            ExpandAll();
             for (int i = 0; i < bones.Count; i++)
             {
                 bones[i].pos = new Vector3(bones[i].position[0], bones[i].position[1], bones[i].position[2]);
@@ -600,8 +656,8 @@ namespace Smash_Forge
         public static string BoneNameFromHash(uint boneHash)
         {
             foreach (ModelContainer m in Runtime.ModelContainers)
-                if (m.vbn != null)
-                    foreach (Bone b in m.vbn.bones)
+                if (m.VBN != null)
+                    foreach (Bone b in m.VBN.bones)
                         if (b.boneId == boneHash)
                             return b.Text;
 
@@ -618,8 +674,8 @@ namespace Smash_Forge
             if(boneHash == 3449071621)
                 return null;
             foreach (ModelContainer m in Runtime.ModelContainers)
-                if (m.vbn != null)
-                    foreach (Bone b in m.vbn.bones)
+                if (m.VBN != null)
+                    foreach (Bone b in m.VBN.bones)
                         if (b.boneId == boneHash)
                             return b;
             MessageBox.Show("Open the VBN before editing the SB");

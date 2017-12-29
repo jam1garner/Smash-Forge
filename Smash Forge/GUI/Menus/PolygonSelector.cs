@@ -25,10 +25,10 @@ namespace Smash_Forge
             int modelCount = 0;
             foreach (ModelContainer mc in Runtime.ModelContainers)
             {
-                if (mc.nud != null)
+                if (mc.NUD != null)
                 {
-                    TreeNode model = new TreeNode($"Model {modelCount}") { Tag = mc.nud };
-                    foreach (NUD.Mesh m in mc.nud.meshes)
+                    TreeNode model = new TreeNode($"Model {modelCount}") { Tag = mc.NUD };
+                    foreach (NUD.Mesh m in mc.NUD.meshes)
                     {
                         TreeNode mesh = new TreeNode(m.Text) { Tag = m };
                         foreach (NUD.Polygon p in m.Nodes)

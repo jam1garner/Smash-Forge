@@ -138,7 +138,7 @@ namespace Smash_Forge
                 MainForm.Instance.meshList.refresh();
                 MainForm.Instance.paramEditors = new List<PARAMEditor>();
                 MainForm.Instance.lvdEditor.Clear();
-                MainForm.Instance.boneTreePanel.Clear();
+                //MainForm.Instance.boneTreePanel.Clear();
                 string acmdpath = Path.Combine(MainForm.executableDir, "workspace/animcmd/");
                 if (Directory.Exists(acmdpath))
                 {
@@ -172,8 +172,8 @@ namespace Smash_Forge
                     {
                         foreach (ModelContainer m in Runtime.ModelContainers)
                         {
-                            if (m.vbn != null && m.nud == null)
-                                m.nud = Skapon.Create(m.vbn);
+                            if (m.VBN != null && m.NUD == null)
+                                m.NUD = Skapon.Create(m.VBN);
                         }
                     }
                 }
@@ -206,7 +206,7 @@ namespace Smash_Forge
                 if (fpsCheckbox.Checked)
                 {
                     Overlay.Text = "FPS: " + (AnimationSpeed - stopWatch.ElapsedMilliseconds / 1000f) + "\n";
-                    if (MainForm.Instance.boneTreePanel.treeView1.SelectedNode != null)
+                    /*if (MainForm.Instance.boneTreePanel.treeView1.SelectedNode != null)
                     {
                         Bone bone = (Bone)MainForm.Instance.boneTreePanel.treeView1.SelectedNode;
                         Overlay.Text += bone.Text + "\n";
@@ -214,7 +214,7 @@ namespace Smash_Forge
                         Overlay.Text += bone.rot.ToString() + "\n";
                         Overlay.Text += ANIM.quattoeul(bone.rot).ToString() + "\n";
                         Overlay.Text += bone.sca.ToString() + "\n";
-                    }
+                    }*/
                 }
 
                 if (((1000 / AnimationSpeed) - stopWatch.ElapsedMilliseconds > 0))
@@ -245,8 +245,8 @@ namespace Smash_Forge
             {
                 foreach (ModelContainer m in Runtime.ModelContainers)
                 {
-                    if (m.vbn != null)
-                        m.vbn.reset();
+                    if (m.VBN != null)
+                        m.VBN.reset();
                 }
             }
             else
@@ -325,8 +325,8 @@ namespace Smash_Forge
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
                 Runtime.TargetAnim.SetFrame(animFrameNum);
-                if (m.vbn != null)
-                    Runtime.TargetAnim.NextFrame(m.vbn);
+                if (m.VBN != null)
+                    Runtime.TargetAnim.NextFrame(m.VBN);
 
                 // Deliberately do not ever use ACMD/animFrame to modify these other types of model
                 if (m.dat_melee != null)
@@ -476,7 +476,7 @@ namespace Smash_Forge
             //int hdrFBO;
             GL.GenFramebuffers(1, out hdrFBO);
 
-            // color texture (result of drawing NUD shader)
+            // color texture (result of drawing nud shader)
             int screenWidth = glControl1.Width; // how to handle screen resizing?
             int screenHeight = glControl1.Height;
 
@@ -595,13 +595,24 @@ namespace Smash_Forge
             // use fixed function pipeline for drawing background and floor grid
             GL.UseProgram(0);
 
-            if (MainForm.Instance.meshList.treeView1.SelectedNode != null && MainForm.Instance.meshList.treeView1.SelectedNode is BCH_Texture)
+            if (MainForm.Instance.meshList.treeView1.SelectedNode != null)
             {
-                GL.PopAttrib();
-                BCH_Texture tex = ((BCH_Texture)MainForm.Instance.meshList.treeView1.SelectedNode);
-                RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, true, true, true, false, true);
-                glControl1.SwapBuffers();
-                return;
+                if (MainForm.Instance.meshList.treeView1.SelectedNode is BCH_Texture)
+                {
+                    GL.PopAttrib();
+                    BCH_Texture tex = ((BCH_Texture)MainForm.Instance.meshList.treeView1.SelectedNode);
+                    RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, true, true, true, false, true);
+                    glControl1.SwapBuffers();
+                    return;
+                }
+                if (MainForm.Instance.meshList.treeView1.SelectedNode is NUT_Texture)
+                {
+                    GL.PopAttrib();
+                    NUT_Texture tex = ((NUT_Texture)MainForm.Instance.meshList.treeView1.SelectedNode);
+                    RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height, true, true, true, true, false, true);
+                    glControl1.SwapBuffers();
+                    return;
+                }
             }
 
 
@@ -790,9 +801,9 @@ namespace Smash_Forge
             
             foreach (ModelContainer c in Runtime.ModelContainers)
             {
-                if (c.nud != null)
+                if (c.NUD != null)
                 {
-                    c.nud.RenderShadow(lightMatrix, Camera.viewportCamera.getMVPMatrix(), modelMatrix);
+                    c.NUD.RenderShadow(lightMatrix, Camera.viewportCamera.getMVPMatrix(), modelMatrix);
                 }
             }
 
@@ -913,7 +924,7 @@ namespace Smash_Forge
                 DrawBoundingBoxes();
             }
   
-            shader = Runtime.shaders["NUD"];
+            shader = Runtime.shaders["nud"];
             GL.UseProgram(shader.programID);
 
             int renderType = (int)Runtime.renderType;
@@ -988,12 +999,12 @@ namespace Smash_Forge
                     m.dat_melee.Render(Camera.viewportCamera.getMVPMatrix());
                 }
 
-                if (m.nud != null && Runtime.shaders["NUD"].shadersCompiledSuccessfully() && Runtime.shaders["NUD_Debug"].shadersCompiledSuccessfully())
+                if (m.NUD != null && Runtime.shaders["nud"].shadersCompiledSuccessfully() && Runtime.shaders["NUD_Debug"].shadersCompiledSuccessfully())
                 {
                     if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                         shader = Runtime.shaders["NUD_Debug"];
                     else
-                        shader = Runtime.shaders["NUD"];
+                        shader = Runtime.shaders["nud"];
 
                     GL.UseProgram(shader.programID);
 
@@ -1008,7 +1019,7 @@ namespace Smash_Forge
                     GL.Uniform1(shader.getAttribute("renderType"), renderType);
 
                     float elapsedSeconds = 0;
-                    if (m.nud.useDirectUVTime)
+                    if (m.NUD.useDirectUVTime)
                     {
                         elapsedSeconds = (float)directUVTimeStopWatch.ElapsedMilliseconds / 1000.0f;
                         if (elapsedSeconds >= 100) // should be based on XMB eventually
@@ -1028,12 +1039,12 @@ namespace Smash_Forge
                     GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
                     GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
 
-                    if (m.vbn != null)
+                    if (m.VBN != null)
                     {
-                        Matrix4[] f = m.vbn.getShaderMatrix();
+                        Matrix4[] f = m.VBN.getShaderMatrix();
 
                         int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
-                        int boneCount = m.vbn.bones.Count;
+                        int boneCount = m.VBN.bones.Count;
                         int dataSize = boneCount * Vector4.SizeInBytes * 4;
 
                         GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
@@ -1051,16 +1062,16 @@ namespace Smash_Forge
                     }
 
                     shader.enableAttrib();
-                    m.nud.clearMTA();
+                    m.NUD.clearMTA();
 
                     if (m.mta != null)
-                        m.nud.applyMTA(m.mta, (int)nupdFrame.Value - 1);//Apply base mta
+                        m.NUD.applyMTA(m.mta, (int)nupdFrame.Value - 1);//Apply base mta
                     if (Runtime.TargetMTA != null)
                         foreach(MTA mta in Runtime.TargetMTA)
-                        m.nud.applyMTA(mta, (int)nupdFrame.Value - 1);//Apply additional mta (can override base)
+                        m.NUD.applyMTA(mta, (int)nupdFrame.Value - 1);//Apply additional mta (can override base)
 
 
-                    m.nud.Render(shader);
+                    m.NUD.Render(shader);
 
 
 
@@ -1156,13 +1167,13 @@ namespace Smash_Forge
         {
             foreach (ModelContainer m in Runtime.ModelContainers)
             {
-                if (m.nud != null)
+                if (m.NUD != null)
                 {
                     GL.Color4(Color.GhostWhite);
-                    RenderTools.drawCubeWireframe(new Vector3(m.nud.boundingBox[0], m.nud.boundingBox[1], m.nud.boundingBox[2]), m.nud.boundingBox[3]);
+                    RenderTools.drawCubeWireframe(new Vector3(m.NUD.boundingBox[0], m.NUD.boundingBox[1], m.NUD.boundingBox[2]), m.NUD.boundingBox[3]);
 
                     GL.Color4(Color.OrangeRed);
-                    foreach (NUD.Mesh mesh in m.nud.meshes)
+                    foreach (NUD.Mesh mesh in m.NUD.meshes)
                     {
                         if (mesh.Checked)
                             RenderTools.drawCubeWireframe(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3]);
@@ -1177,7 +1188,7 @@ namespace Smash_Forge
             {
                 foreach (ModelContainer m in Runtime.ModelContainers)
                 {
-                    RenderTools.DrawVBN(m.vbn);
+                    RenderTools.DrawVBN(m.VBN);
                     if (m.bch != null)
                     {
                         foreach(BCH_Model mo in m.bch.Models.Nodes)
@@ -1351,12 +1362,12 @@ namespace Smash_Forge
                     // ModelContainers should store Hitbox data or have them linked since it will use last
                     // modelcontainer bone for hitbox display (which might not be the character model).
                     // This is especially important for the future when importing weapons for some moves.
-                    if (m.vbn != null)
+                    if (m.VBN != null)
                     {
                         try //Try used to avoid bone not found issue that crashes the application
                         {
-                            if (m.vbn.jointTable.Count < 1)
-                                b = m.vbn.bones[bid];
+                            if (m.VBN.jointTable.Count < 1)
+                                b = m.VBN.bones[bid];
                             else
                             {
                                 if (jtbIndex == 0)
@@ -1364,24 +1375,24 @@ namespace Smash_Forge
                                     // Special rule for table 0, index 0 is *always* TransN, and index 1 counts as index 0
                                     if (bid <= 0)
                                     {
-                                        b = m.vbn.bones.Find(item => item.Name == "TransN");
+                                        b = m.VBN.bones.Find(item => item.Name == "TransN");
                                         if (b == null)
-                                            b = m.vbn.bones[0];
+                                            b = m.VBN.bones[0];
                                     }
                                     else  // Index 2 counts as index 1, etc
-                                        b = m.vbn.bones[m.vbn.jointTable[jtbIndex][bid - 1]];
+                                        b = m.VBN.bones[m.VBN.jointTable[jtbIndex][bid - 1]];
                                 }
-                                else if (jtbIndex < m.vbn.jointTable.Count)
+                                else if (jtbIndex < m.VBN.jointTable.Count)
                                 {
                                     // Extra joint tables don't have the TransN rule
-                                    b = m.vbn.bones[m.vbn.jointTable[jtbIndex][bid]];
+                                    b = m.VBN.bones[m.VBN.jointTable[jtbIndex][bid]];
                                 }
                                 else
                                 {
                                     //If there is no jointTable but bone is >1000 then don't look into a another joint table
                                     //This makes some weapons like Luma have hitboxes visualized
                                     //b = m.vbn.bones[bid];
-                                    b = m.vbn.bones[m.vbn.jointTable[m.vbn.jointTable.Count - 1][bid]];
+                                    b = m.VBN.bones[m.VBN.jointTable[m.VBN.jointTable.Count - 1][bid]];
                                 }
                             }
                         }
@@ -2144,7 +2155,7 @@ namespace Smash_Forge
         private void ReloadShadersFromFiles()
         {
             // the shaders will always be present in the lib/Shader folder, so this is safe to do
-            reloadVertFragShaderFromFile("NUD", MainForm.executableDir + "/lib/Shader/NUD_vs.txt", MainForm.executableDir + "/lib/Shader/NUD_fs.txt");
+            reloadVertFragShaderFromFile("nud", MainForm.executableDir + "/lib/Shader/NUD_vs.txt", MainForm.executableDir + "/lib/Shader/NUD_fs.txt");
             reloadVertFragShaderFromFile("Texture", MainForm.executableDir + "/lib/Shader/Texture_vs.txt", MainForm.executableDir + "/lib/Shader/Texture_fs.txt");
             reloadVertFragShaderFromFile("MBN", MainForm.executableDir + "/lib/Shader/MBN_vs.txt", MainForm.executableDir + "/lib/Shader/MBN_fs.txt");
             reloadVertFragShaderFromFile("DAT", MainForm.executableDir + "/lib/Shader/DAT_vs.txt", MainForm.executableDir + "/lib/Shader/DAT_fs.txt");
@@ -2192,9 +2203,9 @@ namespace Smash_Forge
 
             foreach (ModelContainer con in Runtime.ModelContainers)
             {
-                if (con.vbn != null)
+                if (con.VBN != null)
                 {
-                    foreach (Bone b in con.vbn.bones)
+                    foreach (Bone b in con.VBN.bones)
                     {
                         Vector3 closest = Vector3.Zero;
                         Vector3 cen = b.transform.ExtractTranslation();
@@ -2205,9 +2216,9 @@ namespace Smash_Forge
                         }
                     }
                 }
-                if(con.nud != null)
+                if(con.NUD != null)
                 {
-                    foreach (NUD.Mesh mesh in con.nud.meshes)
+                    foreach (NUD.Mesh mesh in con.NUD.meshes)
                     {
                         Vector3 closest = Vector3.Zero;
                         foreach (NUD.Polygon poly in mesh.Nodes)
@@ -2232,8 +2243,8 @@ namespace Smash_Forge
             {
                 if (Runtime.TargetVBN.bones.Contains(selected.Values.ElementAt(dbdistance)))
                 {
-                    MainForm.Instance.boneTreePanel.treeView1.SelectedNode = selected.Values.ElementAt(dbdistance);
-                    transformTool.b = (Bone)MainForm.Instance.boneTreePanel.treeView1.SelectedNode;
+                    /*MainForm.Instance.boneTreePanel.treeView1.SelectedNode = selected.Values.ElementAt(dbdistance);
+                    transformTool.b = (Bone)MainForm.Instance.boneTreePanel.treeView1.SelectedNode;*/
                 }
             }
 

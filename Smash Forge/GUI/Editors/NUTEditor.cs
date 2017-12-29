@@ -22,8 +22,8 @@ namespace Smash_Forge
     {
         private NUT selected;
         private FileSystemWatcher fw;
-        private Dictionary<NUT.NUD_Texture,string> fileFromTexture = new Dictionary<NUT.NUD_Texture, string>();
-        private Dictionary<string,NUT.NUD_Texture> textureFromFile = new Dictionary<string, NUT.NUD_Texture>();
+        private Dictionary<NUT_Texture,string> fileFromTexture = new Dictionary<NUT_Texture, string>();
+        private Dictionary<string,NUT_Texture> textureFromFile = new Dictionary<string, NUT_Texture>();
         private bool dontModify;
         private bool renderR = true;
         private bool renderG = true;
@@ -44,6 +44,13 @@ namespace Smash_Forge
             fw.EnableRaisingEvents = false;
             fw.Changed += new FileSystemEventHandler(OnChanged);
             fw.Filter = "";
+        }
+
+        public NUTEditor(NUT nut) : this()
+        {
+            listBox1.Hide();
+            fileToolStripMenuItem.Enabled = false;
+            SelectNUT(nut);
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
@@ -87,7 +94,7 @@ namespace Smash_Forge
             selected = n;
             
             listBox2.Items.Clear();
-            foreach (NUT.NUD_Texture tex in n.textures)
+            foreach (NUT_Texture tex in n.Nodes)
             {
                 listBox2.Items.Add(tex);
             }
@@ -97,13 +104,14 @@ namespace Smash_Forge
         {
             if (listBox2.SelectedIndex >= 0)
             {
-                NUT.NUD_Texture tex = ((NUT.NUD_Texture)listBox2.SelectedItem);
+                NUT_Texture tex = ((NUT_Texture)listBox2.SelectedItem);
                 textBox1.Text = tex.ToString();
                 label2.Text = "Format: " + (tex.type == PixelInternalFormat.Rgba ? "" + tex.utype : "" + tex.type);
-                label3.Text = "Width: " + tex.width;
-                label4.Text = "Height:" + tex.height;
+                label3.Text = "Width: " + tex.Width;
+                label4.Text = "Height:" + tex.Height;
                 label5.Text = "Mipmap:" + tex.mipmaps.Count;
-                RenderTexture();
+                glControl1.Invalidate();
+                //RenderTexture();
             }
             else
             {
@@ -117,6 +125,7 @@ namespace Smash_Forge
 
         private void RenderTexture()
         {
+            if (!_loaded || glControl1 == null) return;
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -132,10 +141,10 @@ namespace Smash_Forge
             if (listBox1.SelectedItem == null || listBox2.SelectedItem == null)
                 return;
 
-            int width = ((NUT.NUD_Texture)listBox2.SelectedItem).width;
-            int height = ((NUT.NUD_Texture)listBox2.SelectedItem).height; 
+            int width = ((NUT_Texture)listBox2.SelectedItem).Width;
+            int height = ((NUT_Texture)listBox2.SelectedItem).Height; 
 
-            int texture = ((NUT)listBox1.SelectedItem).draw[((NUT.NUD_Texture)listBox2.SelectedItem).id];
+            int texture = ((NUT)listBox1.SelectedItem).draw[((NUT_Texture)listBox2.SelectedItem).HASHID];
             bool alphaOverride = renderAlpha && !renderR && !renderG && !renderB;
             RenderTools.DrawTexturedQuad(texture, width, height, renderR, renderG, renderB, renderAlpha, alphaOverride, preserveAspectRatio);
 
@@ -196,10 +205,10 @@ namespace Smash_Forge
         {
             if (listBox2.SelectedIndex >= 0 && selected != null)
             {
-                NUT.NUD_Texture tex = ((NUT.NUD_Texture)listBox2.SelectedItem);
-                GL.DeleteTexture(selected.draw[tex.id]);
-                selected.draw.Remove(tex.id);
-                selected.textures.Remove(tex);
+                NUT_Texture tex = ((NUT_Texture)listBox2.SelectedItem);
+                GL.DeleteTexture(selected.draw[tex.HASHID]);
+                selected.draw.Remove(tex.HASHID);
+                selected.Nodes.Remove(tex);
                 FillForm();
                 listBox1.SelectedItem = selected;
                 listBox2.SelectedIndex = 0;
@@ -223,11 +232,11 @@ namespace Smash_Forge
                             new CultureInfo("en-US"), out texId);
 
                         if (isTex)
-                            foreach (NUT.NUD_Texture te in selected.textures)
-                                if (texId == te.id)
+                            foreach (NUT_Texture te in selected.Nodes)
+                                if (texId == te.HASHID)
                                     isTex = false;
 
-                        NUT.NUD_Texture tex = null;
+                        NUT_Texture tex = null;
 
                         if (ofd.FileName.EndsWith(".dds") && selected != null)
                         {
@@ -242,11 +251,11 @@ namespace Smash_Forge
                         if (tex != null)
                         {
                             if (isTex)
-                                tex.id = texId;
+                                tex.HASHID = texId;
                             else
-                                tex.id = 0x40FFFF00 | (selected.textures.Count);
-                            selected.textures.Add(tex);
-                            selected.draw.Add(tex.id, NUT.loadImage(tex));
+                                tex.HASHID = 0x40FFFF00 | (selected.Nodes.Count);
+                            selected.Nodes.Add(tex);
+                            selected.draw.Add(tex.HASHID, NUT.loadImage(tex));
                             FillForm();
                             listBox1.SelectedItem = selected;
                         }
@@ -255,10 +264,10 @@ namespace Smash_Forge
         }
 
 
-        public static NUT.NUD_Texture fromPNG(string fname, int mipcount)
+        public static NUT_Texture fromPNG(string fname, int mipcount)
         {
             Bitmap bmp = new Bitmap(fname);
-            NUT.NUD_Texture tex = new NUT.NUD_Texture();
+            NUT_Texture tex = new NUT_Texture();
 
             tex.mipmaps.Add(fromPNG(bmp));
             for (int i = 1; i < mipcount; i++)
@@ -266,8 +275,8 @@ namespace Smash_Forge
                 if(bmp.Width / (int)Math.Pow(2, i) < 4 || bmp.Height / (int)Math.Pow(2, i) < 4) break;
                 tex.mipmaps.Add(fromPNG(Pixel.ResizeImage(bmp, bmp.Width / (int)Math.Pow(2, i), bmp.Height / (int)Math.Pow(2, i))));
             }
-            tex.width = bmp.Width;
-            tex.height = bmp.Height;
+            tex.Width = bmp.Width;
+            tex.Height = bmp.Height;
             tex.type = PixelInternalFormat.Rgba;
             tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
 
@@ -305,7 +314,7 @@ namespace Smash_Forge
             if (listBox2.SelectedItem == null) return;
             using (var sfd = new SaveFileDialog())
             {
-                NUT.NUD_Texture tex = (NUT.NUD_Texture)(listBox2.SelectedItem);
+                NUT_Texture tex = (NUT_Texture)(listBox2.SelectedItem);
                 if (tex.type == PixelInternalFormat.Rgba)
                     sfd.Filter = "Portable Networks Graphic (.png)|*.png|" +
                                  "All files(*.*)|*.*";
@@ -330,7 +339,7 @@ namespace Smash_Forge
             }
         }
 
-        private void ExportPNG(string fname, NUT.NUD_Texture tex)
+        private void ExportPNG(string fname, NUT_Texture tex)
         {
             if (tex.mipmaps.Count > 1)
                 MessageBox.Show("RGBA texture exported as PNG do not preserve mipmaps");
@@ -338,13 +347,13 @@ namespace Smash_Forge
             switch (tex.utype)
             {
                 case OpenTK.Graphics.OpenGL.PixelFormat.Rgba:
-                    Pixel.fromRGBA(new FileData(tex.mipmaps[0]), tex.width, tex.height).Save(fname);
+                    Pixel.fromRGBA(new FileData(tex.mipmaps[0]), tex.Width, tex.Height).Save(fname);
                     break;
                 case OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt:
-                    Pixel.fromABGR(new FileData(tex.mipmaps[0]), tex.width, tex.height).Save(fname);
+                    Pixel.fromABGR(new FileData(tex.mipmaps[0]), tex.Width, tex.Height).Save(fname);
                     break;
                 case OpenTK.Graphics.OpenGL.PixelFormat.Bgra:
-                    Pixel.fromBGRA(new FileData(tex.mipmaps[0]), tex.width, tex.height).Save(fname);
+                    Pixel.fromBGRA(new FileData(tex.mipmaps[0]), tex.Width, tex.Height).Save(fname);
                     break;
             }
         }
@@ -353,16 +362,16 @@ namespace Smash_Forge
         {
             if(listBox2.SelectedItem != null && !textBox1.Text.Equals(""))
             {
-                int oldid = ((NUT.NUD_Texture)listBox2.SelectedItem).id;
+                int oldid = ((NUT_Texture)listBox2.SelectedItem).HASHID;
                 int newid = -1;
                 int.TryParse(textBox1.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out newid);
                 if (newid == -1)
-                    textBox1.Text = ((NUT.NUD_Texture)listBox2.SelectedItem).id.ToString("x");
+                    textBox1.Text = ((NUT_Texture)listBox2.SelectedItem).HASHID.ToString("x");
                 if(oldid!=newid)
                 {
                     if (!selected.draw.ContainsKey(newid))
                     {
-                        ((NUT.NUD_Texture)listBox2.SelectedItem).id = newid;
+                        ((NUT_Texture)listBox2.SelectedItem).HASHID = newid;
                         selected.draw.Add(newid, selected.draw[oldid]);
                         selected.draw.Remove(oldid);
                     }
@@ -381,7 +390,7 @@ namespace Smash_Forge
         private void NUTEditor_Resize(object sender, EventArgs e)
         {
 
-            RenderTexture();
+            //RenderTexture();
             
         }
 
@@ -389,7 +398,7 @@ namespace Smash_Forge
         {
             using (var ofd = new OpenFileDialog())
             {
-                NUT.NUD_Texture tex = (NUT.NUD_Texture)(listBox2.SelectedItem);
+                NUT_Texture tex = (NUT_Texture)(listBox2.SelectedItem);
 
                 if (tex.type == PixelInternalFormat.Rgba)
                     ofd.Filter = "Portable Networks Graphic (.png)|*.png|" +
@@ -400,7 +409,7 @@ namespace Smash_Forge
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    NUT.NUD_Texture ntex = null;
+                    NUT_Texture ntex = null;
                     if (ofd.FileName.EndsWith(".dds") && selected != null)
                     {
                         DDS dds = new DDS(new FileData(ofd.FileName));
@@ -410,8 +419,8 @@ namespace Smash_Forge
                     if (ofd.FileName.EndsWith(".png") && selected != null)
                         ntex = fromPNG(ofd.FileName, 1);
                     
-                    tex.height = ntex.height;
-                    tex.width = ntex.width;
+                    tex.Height = ntex.Height;
+                    tex.Width = ntex.Width;
                     tex.type = ntex.type;
                     tex.mipmaps = ntex.mipmaps;
                     tex.utype = ntex.utype;
@@ -419,9 +428,9 @@ namespace Smash_Forge
                     if (ntex == null)
                         return;
                     
-                    GL.DeleteTexture(selected.draw[tex.id]);
-                    selected.draw.Remove(tex.id);
-                    selected.draw.Add(tex.id, NUT.loadImage(tex));
+                    GL.DeleteTexture(selected.draw[tex.HASHID]);
+                    selected.draw.Remove(tex.HASHID);
+                    selected.draw.Add(tex.HASHID, NUT.loadImage(tex));
 
                     FillForm();
                     listBox1.SelectedItem = selected;
@@ -519,23 +528,23 @@ namespace Smash_Forge
             bool setupFileModifying = false;
             dontModify = true;
             fw.EnableRaisingEvents = true;
-            if (!fileFromTexture.ContainsKey((NUT.NUD_Texture) (listBox2.SelectedItem)))
+            if (!fileFromTexture.ContainsKey((NUT_Texture) (listBox2.SelectedItem)))
             {
                 tempFileName = Path.GetTempFileName();
                 DeleteIfExists(Path.ChangeExtension(tempFileName, ".dds"));
                 File.Move(tempFileName, Path.ChangeExtension(tempFileName, ".dds"));
                 tempFileName = Path.ChangeExtension(tempFileName, ".dds");
-                fileFromTexture.Add((NUT.NUD_Texture)listBox2.SelectedItem, tempFileName);
-                textureFromFile.Add(tempFileName, (NUT.NUD_Texture)listBox2.SelectedItem);
+                fileFromTexture.Add((NUT_Texture)listBox2.SelectedItem, tempFileName);
+                textureFromFile.Add(tempFileName, (NUT_Texture)listBox2.SelectedItem);
                 setupFileModifying = true;
             }
             else
             {
-                tempFileName = fileFromTexture[(NUT.NUD_Texture) listBox2.SelectedItem];
+                tempFileName = fileFromTexture[(NUT_Texture) listBox2.SelectedItem];
             }
 
             DDS dds = new DDS();
-            dds.fromNUT_Texture((NUT.NUD_Texture)(listBox2.SelectedItem));
+            dds.fromNUT_Texture((NUT_Texture)(listBox2.SelectedItem));
             dds.Save(tempFileName);
             System.Diagnostics.Process.Start(tempFileName);
             if (setupFileModifying)
@@ -555,23 +564,23 @@ namespace Smash_Forge
             bool setupFileModifying = false;
             dontModify = true;
             fw.EnableRaisingEvents = true;
-            if (!fileFromTexture.ContainsKey((NUT.NUD_Texture)(listBox2.SelectedItem)))
+            if (!fileFromTexture.ContainsKey((NUT_Texture)(listBox2.SelectedItem)))
             {
                 tempFileName = Path.GetTempFileName();
                 DeleteIfExists(Path.ChangeExtension(tempFileName, ".dds"));
                 File.Move(tempFileName, Path.ChangeExtension(tempFileName, ".dds"));
                 tempFileName = Path.ChangeExtension(tempFileName, ".dds");
-                fileFromTexture.Add((NUT.NUD_Texture)(listBox2.SelectedItem), tempFileName);
-                textureFromFile.Add(tempFileName, (NUT.NUD_Texture)listBox2.SelectedItem);
+                fileFromTexture.Add((NUT_Texture)(listBox2.SelectedItem), tempFileName);
+                textureFromFile.Add(tempFileName, (NUT_Texture)listBox2.SelectedItem);
                 setupFileModifying = true;
             }
             else
             {
-                tempFileName = fileFromTexture[(NUT.NUD_Texture)listBox2.SelectedItem];
+                tempFileName = fileFromTexture[(NUT_Texture)listBox2.SelectedItem];
             }
 
             DDS dds = new DDS();
-            dds.fromNUT_Texture((NUT.NUD_Texture)(listBox2.SelectedItem));
+            dds.fromNUT_Texture((NUT_Texture)(listBox2.SelectedItem));
             dds.Save(tempFileName);
             ShowOpenWithDialog(tempFileName);
             if (setupFileModifying)
@@ -591,27 +600,28 @@ namespace Smash_Forge
             if (dontModify)
                 return;
             
-            NUT.NUD_Texture tex = textureFromFile[filename];
+            NUT_Texture tex = textureFromFile[filename];
 
             try
             {
                 DDS dds = new DDS(new FileData(filename));
-                NUT.NUD_Texture ntex = dds.toNUT_Texture();
+                NUT_Texture ntex = dds.toNUT_Texture();
 
-                tex.height = ntex.height;
-                tex.width = ntex.width;
+                tex.Height = ntex.Height;
+                tex.Width = ntex.Width;
                 tex.type = ntex.type;
                 tex.mipmaps = ntex.mipmaps;
                 tex.utype = ntex.utype;
 
-                GL.DeleteTexture(selected.draw[tex.id]);
-                selected.draw.Remove(tex.id);
-                selected.draw.Add(tex.id, NUT.loadImage(tex));
+                GL.DeleteTexture(selected.draw[tex.HASHID]);
+                selected.draw.Remove(tex.HASHID);
+                selected.draw.Add(tex.HASHID, NUT.loadImage(tex));
 
                 FillForm();
                 listBox1.SelectedItem = selected;
                 listBox2.SelectedItem = tex;
-                RenderTexture();
+                glControl1.Invalidate();
+                //RenderTexture();
             }
             catch
             {
@@ -621,7 +631,7 @@ namespace Smash_Forge
 
         private void importEditedFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            importBack(fileFromTexture[(NUT.NUD_Texture)listBox2.SelectedItem]);
+            importBack(fileFromTexture[(NUT_Texture)listBox2.SelectedItem]);
         }
 
         private void exportNutToFolder(object sender, EventArgs e)
@@ -632,9 +642,9 @@ namespace Smash_Forge
                 {
                     if (!Directory.Exists(f.SelectedPath))
                         Directory.CreateDirectory(f.SelectedPath);
-                    foreach (var tex in selected.textures)
+                    foreach (NUT_Texture tex in selected.Nodes)
                     {
-                        string filename = Path.Combine(f.SelectedPath, $"{tex.id.ToString("X")}.dds");
+                        string filename = Path.Combine(f.SelectedPath, $"{tex.HASHID.ToString("X")}.dds");
                         if(tex.type == PixelInternalFormat.Rgba)
                         {
                             ExportPNG(filename, tex);
@@ -671,15 +681,15 @@ namespace Smash_Forge
                         bool isTex = int.TryParse(Path.GetFileNameWithoutExtension(texPath), NumberStyles.HexNumber,
                             new CultureInfo("en-US"), out texId);
 
-                        NUT.NUD_Texture texture = null;
-                        foreach (var tex in nut.textures)
-                            if (tex.id == texId)
+                        NUT_Texture texture = null;
+                        foreach (NUT_Texture tex in nut.Nodes)
+                            if (tex.HASHID == texId)
                                 texture = tex;
 
                         if (texture == null)
                         {
                             //new texture
-                            NUT.NUD_Texture tex = null;
+                            NUT_Texture tex = null;
                             if (texPath.ToLower().EndsWith(".png"))
                                 tex = fromPNG(texPath, 1);
                             if (texPath.ToLower().EndsWith(".dds"))
@@ -688,18 +698,18 @@ namespace Smash_Forge
                                 tex = dds.toNUT_Texture();
                             }
                             if (isTex)
-                                tex.id = texId;
+                                tex.HASHID = texId;
                             else
-                                tex.id = nut.textures.Count;
-                            nut.textures.Add(tex);
-                            nut.draw.Add(tex.id, NUT.loadImage(tex));
+                                tex.HASHID = nut.Nodes.Count;
+                            nut.Nodes.Add(tex);
+                            nut.draw.Add(tex.HASHID, NUT.loadImage(tex));
                         }
                         else
                         {
                             //old texture
-                            NUT.NUD_Texture tex = texture;
+                            NUT_Texture tex = texture;
 
-                            NUT.NUD_Texture ntex = null;
+                            NUT_Texture ntex = null;
                             if (texPath.ToLower().EndsWith(".png"))
                                 ntex = fromPNG(texPath, 1);
                             if (texPath.ToLower().EndsWith(".dds"))
@@ -708,15 +718,15 @@ namespace Smash_Forge
                                 ntex = dds.toNUT_Texture();
                             }
 
-                            tex.height = ntex.height;
-                            tex.width = ntex.width;
+                            tex.Height = ntex.Height;
+                            tex.Width = ntex.Width;
                             tex.type = ntex.type;
                             tex.mipmaps = ntex.mipmaps;
                             tex.utype = ntex.utype;
 
-                            GL.DeleteTexture(selected.draw[tex.id]);
-                            selected.draw.Remove(tex.id);
-                            selected.draw.Add(tex.id, NUT.loadImage(tex));
+                            GL.DeleteTexture(selected.draw[tex.HASHID]);
+                            selected.draw.Remove(tex.HASHID);
+                            selected.draw.Add(tex.HASHID, NUT.loadImage(tex));
                         }
                     }
                     if (!Runtime.TextureContainers.Contains(nut))
@@ -779,7 +789,8 @@ namespace Smash_Forge
             }
 
             // Uniforms need to be udpated.
-            RenderTexture(); 
+            glControl1.Invalidate();
+            //RenderTexture(); 
         }
 
         private void renderChannelG_Click(object sender, EventArgs e)
@@ -796,7 +807,8 @@ namespace Smash_Forge
             }
 
             // Uniforms need to be udpated.
-            RenderTexture();
+            glControl1.Invalidate();
+            //RenderTexture();
         }
 
         private void renderChannelB_Click_1(object sender, EventArgs e)
@@ -814,7 +826,8 @@ namespace Smash_Forge
             }
 
             // Uniforms need to be udpated.
-            RenderTexture(); 
+            glControl1.Invalidate();
+            //RenderTexture(); 
         }
 
         private void renderChannelA_Click_1(object sender, EventArgs e)
@@ -832,13 +845,15 @@ namespace Smash_Forge
             }
 
             // Uniforms need to be udpated.
-            RenderTexture(); 
+            glControl1.Invalidate();
+            //RenderTexture(); 
         }
 
         private void aspectRatioCB_CheckedChanged(object sender, EventArgs e)
         {
             preserveAspectRatio = aspectRatioCB.Checked;
-            RenderTexture();
+            glControl1.Invalidate();
+            //RenderTexture();
         }
 
         private void glControl1_KeyPress(object sender, KeyPressEventArgs e)
@@ -852,6 +867,17 @@ namespace Smash_Forge
                 renderChannelB.PerformClick();
             if (e.KeyChar == 'a')
                 renderChannelA.PerformClick();
+        }
+
+        private bool _loaded = false;
+        private void NUTEditor_Load(object sender, EventArgs e)
+        {
+            _loaded = true;
+        }
+
+        private void glControl1_Paint(object sender, PaintEventArgs e)
+        {
+            RenderTexture();
         }
     }
 }
