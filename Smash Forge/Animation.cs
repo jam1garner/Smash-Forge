@@ -82,12 +82,6 @@ namespace Smash_Forge
                         Animation a = (ANIM.read(filename, Runtime.TargetVBN));
                         ReplaceMe(a);
                     }
-                    if (filename.EndsWith(".smd"))
-                    {
-                        Animation a = new Animation(filename.Replace(".smd",""));
-                        SMD.read(filename, a, Runtime.TargetVBN);
-                        ReplaceMe(a);
-                    }
                 }
             }
         }
