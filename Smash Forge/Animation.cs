@@ -156,6 +156,7 @@ namespace Smash_Forge
             LINEAR = 0,
             COSTANT,
             HERMITE,
+            STEP,
         };
 
         public enum BoneType
@@ -256,10 +257,12 @@ namespace Smash_Forge
 
                 if (k1.InterType == InterpolationType.COSTANT)
                     return k1.Value;
+                if (k1.InterType == InterpolationType.STEP)
+                    return k1.Value;
                 if (k1.InterType == InterpolationType.LINEAR)
                     return Lerp(k1.Value, k2.Value, k1.Frame, k2.Frame, frame);
                 if (k1.InterType == InterpolationType.HERMITE)
-                    return Hermite(frame, k1.Frame, k2.Frame, k1.Weighted ? k1.In : 0, k2.Weighted ? k2.In : 0, k1.Value, k2.Value);
+                    return Hermite(frame, k1.Frame, k2.Frame, k1.Weighted ? k1.In : 0, k1.Out != -1 ? k1.Out : (k2.Weighted ? k2.In : 0), k1.Value, k2.Value);//k1.Out != -1 ? k1.Out : 
 
                 return k1.Value;
             }
@@ -308,7 +311,7 @@ namespace Smash_Forge
             }
             public String Text;
             public float _frame;
-            public float In, Out;
+            public float In, Out = -1;
             public bool Weighted = false;
             public InterpolationType InterType = InterpolationType.LINEAR;
 

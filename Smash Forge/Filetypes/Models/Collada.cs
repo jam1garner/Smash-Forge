@@ -260,25 +260,48 @@ namespace Smash_Forge
                     if (i * maxoffset >= p.p.Length) break;
                     foreach (ColladaInput input in p.inputs)
                     {
-                        if (input.semantic == SemanticType.VERTEX)
+                        if (input.semantic == SemanticType.POSITION)
                         {
-                            v = new NUD.Vertex();
                             if (dae.library_controllers.Count > 0)
                             {
                                 if (vertices.ContainsKey("#" + geom.id))
                                 {
+                                    Console.WriteLine(vertices["#" + geom.id].Count + " " + i + " " + p.p[i]);
                                     v.node.AddRange(vertices["#" + geom.id][p.p[i]].node);
                                     v.weight.AddRange(vertices["#" + geom.id][p.p[i]].weight);
                                 }
-                            }else
+                            }
+                            else
                             {
                                 v.node.Add(-1);
                                 v.weight.Add(1);
                             }
+                        }
+                        if (input.semantic == SemanticType.VERTEX)
+                        {
+                            v = new NUD.Vertex();
+                            
                             npoly.vertices.Add(v);
                             npoly.faces.Add(npoly.vertices.IndexOf(v));
                             foreach (ColladaInput vinput in mesh.vertices.inputs)
                             {
+                                if (vinput.semantic == SemanticType.POSITION)
+                                {
+                                    if (dae.library_controllers.Count > 0)
+                                    {
+                                        if (vertices.ContainsKey("#" + geom.id))
+                                        {
+                                            Console.WriteLine(vertices["#" + geom.id].Count + " " + i + " " + p.p[i]);
+                                            v.node.AddRange(vertices["#" + geom.id][p.p[i]].node);
+                                            v.weight.AddRange(vertices["#" + geom.id][p.p[i]].weight);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        v.node.Add(-1);
+                                        v.weight.Add(1);
+                                    }
+                                }
                                 ReadSemantic(vinput, v, p.p[maxoffset * i], sources);
                             }
                         }
