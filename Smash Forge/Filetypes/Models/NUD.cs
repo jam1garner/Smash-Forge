@@ -49,16 +49,16 @@ namespace Smash_Forge
             GL.GenBuffers(1, out ibo_elements);
             GL.GenBuffers(1, out ubo_bones);
             GL.GenBuffers(1, out vbo_select);
+
+            Text = "model.nud";
+            ImageKey = "model";
+            SelectedImageKey = "model";
         }
 
         public NUD(string fname) : this()
         {
             Read(fname);
             PreRender();
-
-            Text = "model.nud";
-            ImageKey = "model";
-            SelectedImageKey = "model";
         }
 
         // gl buffer objects
@@ -705,8 +705,9 @@ namespace Smash_Forge
 
         private static void DrawModelSelection(Polygon p, Shader shader)
         {
-            GL.Enable(EnableCap.LineSmooth);
-            GL.LineWidth(2.0f);
+            GL.Enable(EnableCap.StencilTest);
+            GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
+            GL.Disable(EnableCap.DepthTest);
 
             bool[] cwm = new bool[4];
             GL.GetBoolean(GetIndexedPName.ColorWritemask, 4, cwm);
@@ -724,14 +725,18 @@ namespace Smash_Forge
 
             // use vertex color for model selection color
             GL.Uniform1(shader.getAttribute("colorOverride"), 1);
+
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
+            GL.LineWidth(2.0f);
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+
             GL.Uniform1(shader.getAttribute("colorOverride"), 0);
 
             GL.StencilMask(0xFF);
             GL.Clear(ClearBufferMask.StencilBufferBit);
-            GL.Enable(EnableCap.StencilTest);
+            GL.Disable(EnableCap.StencilTest);
+            GL.Enable(EnableCap.DepthTest);
         }
 
         private static void SetMaterialPropertyUniforms(Shader shader, Material mat)

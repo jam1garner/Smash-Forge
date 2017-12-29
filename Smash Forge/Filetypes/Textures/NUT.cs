@@ -37,6 +37,10 @@ namespace Smash_Forge
         {
             ImageKey = "texture";
             SelectedImageKey = "texture";
+
+            ContextMenu cm = new ContextMenu();
+
+            ContextMenu = cm;
         }
 
         public override string ToString()
@@ -157,8 +161,16 @@ namespace Smash_Forge
         public NUT()
         {
             Text = "model.nut";
-            ImageKey = "folder";
-            SelectedImageKey = "folder";
+            ImageKey = "nut";
+            SelectedImageKey = "nut";
+
+            ContextMenu = new ContextMenu();
+            MenuItem edit = new MenuItem("Edit");
+            ContextMenu.MenuItems.Add(edit);
+            edit.Click += OpenEditor;
+            MenuItem save = new MenuItem("Save As");
+            ContextMenu.MenuItems.Add(save);
+            save.Click += Save;
         }
 
         public NUT (string filename) : this()
@@ -188,6 +200,39 @@ namespace Smash_Forge
 
             return false;
         }
+
+        #region Functions
+        NUTEditor Editor;
+
+        private void OpenEditor(object sender, EventArgs args)
+        {
+            if (Editor == null || Editor.IsDisposed)
+            {
+                Editor = new NUTEditor(this);
+                Editor.Text = Parent.Text + "\\" + Text;
+                //Editor.ShowDialog();
+                MainForm.Instance.AddDockedControl(Editor);
+            }
+            else
+            {
+                Editor.BringToFront();
+            }
+        }
+
+        public void Save(object sender, EventArgs args)
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Namco Universal Texture (.nut)|*.nut|" +
+                             "All Files (*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    File.WriteAllBytes(sfd.FileName, Rebuild());
+                }
+            }
+        }
+        #endregion
 
         public override byte[] Rebuild()
         {

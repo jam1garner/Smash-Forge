@@ -60,6 +60,10 @@ namespace Smash_Forge
         {
             ImageKey = "folder";
             SelectedImageKey = "folder";
+            nud = new NUD();
+            nut = new NUT();
+            vbn = new VBN();
+            Refresh();
         }
 
         public void Refresh()

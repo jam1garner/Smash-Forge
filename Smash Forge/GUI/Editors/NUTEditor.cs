@@ -46,6 +46,13 @@ namespace Smash_Forge
             fw.Filter = "";
         }
 
+        public NUTEditor(NUT nut) : this()
+        {
+            listBox1.Hide();
+            fileToolStripMenuItem.Enabled = false;
+            SelectNUT(nut);
+        }
+
         private void OnChanged(object sender, FileSystemEventArgs e)
         {
             Console.WriteLine("File modified!");
@@ -103,7 +110,8 @@ namespace Smash_Forge
                 label3.Text = "Width: " + tex.Width;
                 label4.Text = "Height:" + tex.Height;
                 label5.Text = "Mipmap:" + tex.mipmaps.Count;
-                RenderTexture();
+                glControl1.Invalidate();
+                //RenderTexture();
             }
             else
             {
@@ -117,6 +125,7 @@ namespace Smash_Forge
 
         private void RenderTexture()
         {
+            if (!_loaded || glControl1 == null) return;
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -381,7 +390,7 @@ namespace Smash_Forge
         private void NUTEditor_Resize(object sender, EventArgs e)
         {
 
-            RenderTexture();
+            //RenderTexture();
             
         }
 
@@ -611,7 +620,8 @@ namespace Smash_Forge
                 FillForm();
                 listBox1.SelectedItem = selected;
                 listBox2.SelectedItem = tex;
-                RenderTexture();
+                glControl1.Invalidate();
+                //RenderTexture();
             }
             catch
             {
@@ -779,7 +789,8 @@ namespace Smash_Forge
             }
 
             // Uniforms need to be udpated.
-            RenderTexture(); 
+            glControl1.Invalidate();
+            //RenderTexture(); 
         }
 
         private void renderChannelG_Click(object sender, EventArgs e)
@@ -796,7 +807,8 @@ namespace Smash_Forge
             }
 
             // Uniforms need to be udpated.
-            RenderTexture();
+            glControl1.Invalidate();
+            //RenderTexture();
         }
 
         private void renderChannelB_Click_1(object sender, EventArgs e)
@@ -814,7 +826,8 @@ namespace Smash_Forge
             }
 
             // Uniforms need to be udpated.
-            RenderTexture(); 
+            glControl1.Invalidate();
+            //RenderTexture(); 
         }
 
         private void renderChannelA_Click_1(object sender, EventArgs e)
@@ -832,13 +845,15 @@ namespace Smash_Forge
             }
 
             // Uniforms need to be udpated.
-            RenderTexture(); 
+            glControl1.Invalidate();
+            //RenderTexture(); 
         }
 
         private void aspectRatioCB_CheckedChanged(object sender, EventArgs e)
         {
             preserveAspectRatio = aspectRatioCB.Checked;
-            RenderTexture();
+            glControl1.Invalidate();
+            //RenderTexture();
         }
 
         private void glControl1_KeyPress(object sender, KeyPressEventArgs e)
@@ -852,6 +867,17 @@ namespace Smash_Forge
                 renderChannelB.PerformClick();
             if (e.KeyChar == 'a')
                 renderChannelA.PerformClick();
+        }
+
+        private bool _loaded = false;
+        private void NUTEditor_Load(object sender, EventArgs e)
+        {
+            _loaded = true;
+        }
+
+        private void glControl1_Paint(object sender, PaintEventArgs e)
+        {
+            RenderTexture();
         }
     }
 }

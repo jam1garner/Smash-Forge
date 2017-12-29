@@ -58,8 +58,8 @@ namespace Smash_Forge
             foreach (var vp in viewports)
                 AddDockedControl(vp);
 
-            animationsWindowToolStripMenuItem.Checked =
-                boneTreeToolStripMenuItem.Checked = true;
+            //animationsWindowToolStripMenuItem.Checked =
+            //    boneTreeToolStripMenuItem.Checked = true;
 
             allViewsPreset(new Object(), new EventArgs());
 
@@ -314,11 +314,11 @@ namespace Smash_Forge
             {
                 animList = new AnimListPanel();
             }
-            if (boneTreePanel.IsDisposed)
+            /*if (boneTreePanel.IsDisposed)
             {
                 boneTreePanel = new BoneTreePanel();
                 boneTreePanel.treeRefresh();
-            }
+            }*/
             if (project.IsDisposed)
             {
                 project = new ProjectTree();
@@ -362,7 +362,7 @@ namespace Smash_Forge
         #region Members
 
         public AnimListPanel animList = new AnimListPanel() { ShowHint = DockState.DockRight };
-        public BoneTreePanel boneTreePanel = new BoneTreePanel() { ShowHint = DockState.DockLeft };
+        //public BoneTreePanel boneTreePanel = new BoneTreePanel() { ShowHint = DockState.DockLeft };
         public ProjectTree project = new ProjectTree() { ShowHint = DockState.DockLeft };
         public LVDList lvdList = new LVDList() { ShowHint = DockState.DockLeft };
         public LVDEditor lvdEditor = new LVDEditor() { ShowHint = DockState.DockRight };
@@ -768,10 +768,10 @@ namespace Smash_Forge
 
         private void boneTreeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (boneTreeToolStripMenuItem.Checked)
+            /*if (boneTreeToolStripMenuItem.Checked)
                 boneTreePanel.Show(dockPanel1);
             else
-                boneTreePanel.Hide();
+                boneTreePanel.Hide();*/
         }
 
         #endregion
@@ -804,6 +804,7 @@ namespace Smash_Forge
             Runtime.clearMoveset();
             Lights.areaLights.Clear();
             Lights.lightMaps.Clear();
+            animList.treeView1.Nodes.Clear();
         }
 
         private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1053,6 +1054,7 @@ namespace Smash_Forge
             {
                 nutEditor = new NUTEditor();
                 nutEditor.Show();
+                //AddDockedControl(nutEditor);
             }
             else
             {
@@ -1209,7 +1211,7 @@ namespace Smash_Forge
                 if (Runtime.TargetVBN == null)
                     Runtime.TargetVBN = new VBN();
                 SMD.read(filename, anim, Runtime.TargetVBN);
-                boneTreePanel.treeRefresh();
+                //boneTreePanel.treeRefresh();
                 //Runtime.Animations.Add(filename, anim);
                 animList.treeView1.Nodes.Add(anim);
             }
@@ -1985,7 +1987,7 @@ namespace Smash_Forge
                     }
                 }
             }
-            boneTreePanel.treeRefresh();
+            //boneTreePanel.treeRefresh();
             return modelContainer;
         }
 
@@ -2118,7 +2120,7 @@ namespace Smash_Forge
             Runtime.hitboxList = new HitboxList() { ShowHint = DockState.DockLeft };
             Runtime.variableViewer = new VariableList() { ShowHint = DockState.DockLeft };
             animList.ShowHint = DockState.DockRight;
-            boneTreePanel.ShowHint = DockState.DockLeft;
+            //boneTreePanel.ShowHint = DockState.DockLeft;
             project.ShowHint = DockState.DockLeft;
             lvdList.ShowHint = DockState.DockLeft;
             lvdEditor.ShowHint = DockState.DockRight;
@@ -2130,7 +2132,7 @@ namespace Smash_Forge
             
 
             AddDockedControl(Runtime.acmdEditor);
-            AddDockedControl(boneTreePanel);
+            //AddDockedControl(boneTreePanel);
             AddDockedControl(animList);
             AddDockedControl(lvdEditor);
             AddDockedControl(lvdList);
@@ -2144,21 +2146,21 @@ namespace Smash_Forge
         private void modelViewPreset(object sender, EventArgs e)
         {
             animList.Hide();
-            boneTreePanel.ShowHint = DockState.DockLeft;
+            //boneTreePanel.ShowHint = DockState.DockLeft;
             project.Hide();
             lvdList.Hide();
             lvdEditor.Hide();
             RegenPanels();
             meshList.ShowHint = DockState.DockRight;
             Runtime.acmdEditor.ShowHint = DockState.Hidden;
-            AddDockedControl(boneTreePanel);
+            //AddDockedControl(boneTreePanel);
             AddDockedControl(meshList);
         }
 
         private void movesetModdingPreset(object sender, EventArgs e)
         {
             animList.ShowHint = DockState.DockLeft;
-            boneTreePanel.Hide();
+            //boneTreePanel.Hide();
             project.Hide();
             lvdList.Hide();
             lvdEditor.Hide();
@@ -2172,14 +2174,14 @@ namespace Smash_Forge
         private void stageWorkPreset(object sender, EventArgs e)
         {
             animList.Hide();
-            boneTreePanel.ShowHint = DockState.DockLeft;
+            //boneTreePanel.ShowHint = DockState.DockLeft;
             project.Hide();
             lvdList.ShowHint = DockState.DockLeft;
             lvdEditor.ShowHint = DockState.DockRight;
             Runtime.acmdEditor.Hide();
             meshList.ShowHint = DockState.DockRight;
             RegenPanels();
-            AddDockedControl(boneTreePanel);
+            //AddDockedControl(boneTreePanel);
             AddDockedControl(meshList);
             AddDockedControl(lvdEditor);
             AddDockedControl(lvdList);
@@ -2188,7 +2190,7 @@ namespace Smash_Forge
         private void cleanPreset(object sender, EventArgs e)
         {
             animList.Hide();
-            boneTreePanel.Hide();
+            //boneTreePanel.Hide();
             project.Hide();
             lvdList.Hide();
             lvdEditor.Hide();
@@ -2200,7 +2202,7 @@ namespace Smash_Forge
         private void superCleanPreset(object sender, EventArgs e)
         {
             animList.Hide();
-            boneTreePanel.Hide();
+            //boneTreePanel.Hide();
             project.Hide();
             lvdList.Hide();
             lvdEditor.Hide();

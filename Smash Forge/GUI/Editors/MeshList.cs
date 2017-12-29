@@ -21,6 +21,7 @@ namespace Smash_Forge
     {
         
         public static ImageList iconList = new ImageList();
+        private ContextMenu MainContextMenu;
 
         public MeshList()
         {
@@ -34,7 +35,23 @@ namespace Smash_Forge
             iconList.Images.Add("model", Properties.Resources.icon_model);
             iconList.Images.Add("texture", Properties.Resources.icon_image);
             iconList.Images.Add("folder", Properties.Resources.icon_group);
+            iconList.Images.Add("anim", Properties.Resources.icon_anim);
+            iconList.Images.Add("bone", Properties.Resources.icon_bone);
+            iconList.Images.Add("frame", Properties.Resources.icon_model);
+            iconList.Images.Add("image", Properties.Resources.icon_image);
+            iconList.Images.Add("skeleton", Properties.Resources.icon_skeleton);
+            iconList.Images.Add("nut", Properties.Resources.UVPattern);
             treeView1.ImageList = iconList;
+
+            MainContextMenu = new ContextMenu();
+            MenuItem newMC = new MenuItem("Create Blank Model");
+            newMC.Click += delegate (object sender, EventArgs e)
+            {
+                Console.WriteLine("Adding");
+                Runtime.ModelContainers.Add(new ModelContainer() { Text = "Model_"+Runtime.ModelContainers.Count });
+                refresh();
+            };
+            MainContextMenu.MenuItems.Add(newMC);
         }
 
         bool changingValue = false;
@@ -372,14 +389,25 @@ namespace Smash_Forge
                 {
                     meshContextMenu.Show(this, e.X, e.Y);
                 }
+                else
                 if (treeView1.SelectedNode is NUD.Polygon)
                 {
                     polyContextMenu.Show(this, e.X, e.Y);
                 }
-                if(treeView1.SelectedNode != null)
+                else
                 if (treeView1.SelectedNode is NUD)
                 {
                     nudContextMenu.Show(this, e.X, e.Y);
+                }
+                else
+                if (treeView1.SelectedNode is ModelContainer)
+                {
+                    MCContextMenu.Show(this, e.X, e.Y);
+                }
+                else
+                if(treeView1.SelectedNode == null)
+                {
+                    MainContextMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
                 }
             }
         }
@@ -477,28 +505,20 @@ namespace Smash_Forge
 
         private void merge(TreeNode n)
         {
-            NUD org = (NUD)treeView1.SelectedNode;
-            NUD nud = (NUD)n;
+            ModelContainer org = (ModelContainer)treeView1.SelectedNode;
+            ModelContainer nud = (ModelContainer)n;
 
-            nud.meshes.AddRange(org.meshes);
-            org.meshes.Clear();
+            nud.NUD.meshes.AddRange(org.NUD.meshes);
+            org.NUD.meshes.Clear();
 
-            org.Destroy();
-            nud.PreRender();
+            org.NUD.Destroy();
+            nud.NUD.PreRender();
 
             treeView1.Nodes.Remove(treeView1.SelectedNode);
             treeView1.SelectedNode = n;
 
             // remove from model containers too
-            ModelContainer torem = null;
-            foreach (ModelContainer con in Runtime.ModelContainers)
-            {
-                if (con.NUD == org)
-                {
-                    torem = con;
-                    break;
-                }
-            }
+            ModelContainer torem = org;
             Runtime.ModelContainers.Remove(torem);
 
             refresh();
@@ -839,6 +859,24 @@ namespace Smash_Forge
         {
             if (treeView1.SelectedNode is NUD.Polygon)
                 ((NUD.Polygon)treeView1.SelectedNode).AOSpecRefBlend();
+        }
+
+        private void belowToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            TreeNode n = treeView1.SelectedNode.NextNode;
+            if (n != null)
+            {
+                merge(n);
+            }
+        }
+
+        private void aboveToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            TreeNode n = treeView1.SelectedNode.PrevNode;
+            if (n != null)
+            {
+                merge(n);
+            }
         }
     }
 }

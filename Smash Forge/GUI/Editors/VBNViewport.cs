@@ -138,7 +138,7 @@ namespace Smash_Forge
                 MainForm.Instance.meshList.refresh();
                 MainForm.Instance.paramEditors = new List<PARAMEditor>();
                 MainForm.Instance.lvdEditor.Clear();
-                MainForm.Instance.boneTreePanel.Clear();
+                //MainForm.Instance.boneTreePanel.Clear();
                 string acmdpath = Path.Combine(MainForm.executableDir, "workspace/animcmd/");
                 if (Directory.Exists(acmdpath))
                 {
@@ -206,7 +206,7 @@ namespace Smash_Forge
                 if (fpsCheckbox.Checked)
                 {
                     Overlay.Text = "FPS: " + (AnimationSpeed - stopWatch.ElapsedMilliseconds / 1000f) + "\n";
-                    if (MainForm.Instance.boneTreePanel.treeView1.SelectedNode != null)
+                    /*if (MainForm.Instance.boneTreePanel.treeView1.SelectedNode != null)
                     {
                         Bone bone = (Bone)MainForm.Instance.boneTreePanel.treeView1.SelectedNode;
                         Overlay.Text += bone.Text + "\n";
@@ -214,7 +214,7 @@ namespace Smash_Forge
                         Overlay.Text += bone.rot.ToString() + "\n";
                         Overlay.Text += ANIM.quattoeul(bone.rot).ToString() + "\n";
                         Overlay.Text += bone.sca.ToString() + "\n";
-                    }
+                    }*/
                 }
 
                 if (((1000 / AnimationSpeed) - stopWatch.ElapsedMilliseconds > 0))
@@ -2243,8 +2243,8 @@ namespace Smash_Forge
             {
                 if (Runtime.TargetVBN.bones.Contains(selected.Values.ElementAt(dbdistance)))
                 {
-                    MainForm.Instance.boneTreePanel.treeView1.SelectedNode = selected.Values.ElementAt(dbdistance);
-                    transformTool.b = (Bone)MainForm.Instance.boneTreePanel.treeView1.SelectedNode;
+                    /*MainForm.Instance.boneTreePanel.treeView1.SelectedNode = selected.Values.ElementAt(dbdistance);
+                    transformTool.b = (Bone)MainForm.Instance.boneTreePanel.treeView1.SelectedNode;*/
                 }
             }
 

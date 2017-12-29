@@ -173,7 +173,7 @@
             this.exportAsDDSToolStripMenuItem1,
             this.replaceToolStripMenuItem});
             this.textureToolStripMenuItem.Name = "textureToolStripMenuItem";
-            this.textureToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.textureToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
             this.textureToolStripMenuItem.Text = "Texture";
             // 
             // importToolStripMenuItem
@@ -412,6 +412,7 @@
             this.glControl1.Size = new System.Drawing.Size(368, 368);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = false;
+            this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
             this.glControl1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.glControl1_KeyPress);
             // 
             // NUTEditor
@@ -430,6 +431,7 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "NUTEditor";
             this.Text = "NUT Editor";
+            this.Load += new System.EventHandler(this.NUTEditor_Load);
             this.Resize += new System.EventHandler(this.NUTEditor_Resize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
