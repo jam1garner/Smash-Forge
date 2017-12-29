@@ -160,15 +160,15 @@ namespace Smash_Forge
                     stageScale = d.readFloat();
                     Console.WriteLine($"Stage scale - {stageScale}");
                 }
-            }
-
-            foreach(TreeNode node in tree)
-            {
-                d.seek((int)node.Tag);
-                if (node.Text.EndsWith("map_head"))
+                else if (node.Text.EndsWith("map_head"))
                 {
                     Map_Head head = new Map_Head();
                     head.Read(d, this, node);
+                }
+                else if (node.Text.EndsWith("coll_data"))
+                {
+                    collisions = new COLL_DATA();
+                    collisions.Read(d);
                 }
             }
 
@@ -208,16 +208,6 @@ namespace Smash_Forge
                 }
                 // scale it
                 v.pos = Vector3.Multiply(v.pos, stageScale);
-            }
-
-            foreach (TreeNode node in tree)
-            {
-                if (node.Text.EndsWith("coll_data"))
-                {
-                    d.seek((int)node.Tag);
-                    collisions = new COLL_DATA();
-                    collisions.Read(d);
-                }
             }
 
             PreRender();
@@ -1150,7 +1140,7 @@ namespace Smash_Forge
                 pos.Y = d.readFloat();
                 pos.Z = d.readFloat();
                 inverseTransformOffset = d.readInt();
-                d.skip(4); // offset?
+                int OFFsetmb = d.readInt();
 
                 transform = Matrix4.CreateScale(sca)
                                     * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(rot.Z, rot.Y, rot.X))
@@ -1205,6 +1195,7 @@ namespace Smash_Forge
 
                 if (dobjOffset != 0)
                 {
+                    Console.WriteLine("DOBJ Flag " + flags.ToString("X"));
                     if ((flags & 0x4000) != 0)
                     {
 
