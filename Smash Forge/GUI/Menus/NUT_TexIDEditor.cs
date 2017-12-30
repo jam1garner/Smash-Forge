@@ -155,6 +155,11 @@ namespace Smash_Forge
         {
             Dictionary<int, int> oldtonew = new Dictionary<int, int>();
             int i = 0;
+
+            Dictionary<int, int> old = new Dictionary<int, int>();
+            foreach (int k in nut.draw.Keys)
+                old.Add(k, nut.draw[k]);
+            nut.draw.Clear();
             foreach (NUT_Texture tex in nut.Nodes)
             {
                 int t = 0;
@@ -169,8 +174,8 @@ namespace Smash_Forge
                 if (!oldtonew.ContainsKey(tex.HASHID))
                 {
                     oldtonew.Add(tex.HASHID, newid);
-                    nut.draw.Add(newid, nut.draw[tex.HASHID]);
-                    nut.draw.Remove(tex.HASHID);
+                    nut.draw.Add(newid, old[tex.HASHID]);
+                    //nut.draw.Remove(tex.HASHID);
                     tex.HASHID = newid;
                 }
             }

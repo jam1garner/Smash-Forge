@@ -37,12 +37,8 @@ namespace Smash_Forge
         {
             ImageKey = "texture";
             SelectedImageKey = "texture";
-
-            ContextMenu cm = new ContextMenu();
-
-            ContextMenu = cm;
         }
-
+        
         public override string ToString()
         {
             return HASHID.ToString("x").ToUpper();

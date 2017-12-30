@@ -384,6 +384,11 @@ namespace Smash_Forge
 
         private void openNUDToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (dockPanel1.ActiveContent is EditorBase)
+            {
+                ((EditorBase)dockPanel1.ActiveContent).Save();
+                return;
+            }
             PARAMEditor currentParam = null;
             ACMDEditor currentACMD = null;
             SwagEditor currentSwagEditor = null;
@@ -1676,8 +1681,10 @@ namespace Smash_Forge
 
             if (fileName.EndsWith(".nut"))
             {
-                Runtime.TextureContainers.Add(new NUT(fileName));
-                if (nutEditor == null || nutEditor.IsDisposed)
+                //Runtime.TextureContainers.Add(new NUT(fileName));
+                NUTEditor editor = new NUTEditor(fileName);
+                AddDockedControl(editor);
+                /*if (nutEditor == null || nutEditor.IsDisposed)
                 {
                     nutEditor = new NUTEditor();
                     nutEditor.Show();
@@ -1686,7 +1693,7 @@ namespace Smash_Forge
                 {
                     nutEditor.BringToFront();
                 }
-                nutEditor.FillForm();
+                nutEditor.FillForm();*/
             }
 
             if (fileName.EndsWith(".tex"))
@@ -2349,6 +2356,21 @@ namespace Smash_Forge
         {
             StageLighting stageLightForm = new StageLighting();
             stageLightForm.Show();
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(dockPanel1.ActiveContent is EditorBase)
+            {
+                ((EditorBase)dockPanel1.ActiveContent).SaveAs();
+            }
+        }
+
+        private void nUTToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NUT nut = new NUT();
+            NUTEditor editor = new NUTEditor(nut);
+            AddDockedControl(editor);
         }
     }
 }

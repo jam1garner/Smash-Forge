@@ -32,11 +32,14 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nUTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openVBNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openStageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.openCharacterToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.openNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportErrorLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
@@ -76,7 +79,6 @@
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.clearToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.texturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openNUTEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.open3DSTEXEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openDATTextureEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -133,8 +135,10 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newToolStripMenuItem,
             this.openVBNToolStripMenuItem,
             this.openNUDToolStripMenuItem,
+            this.saveAsToolStripMenuItem,
             this.exportErrorLogToolStripMenuItem,
             this.exportModelToolStripMenuItem,
             this.toolStripSeparator4,
@@ -143,6 +147,21 @@
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
+            // 
+            // newToolStripMenuItem
+            // 
+            this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.nUTToolStripMenuItem});
+            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.newToolStripMenuItem.Text = "New";
+            // 
+            // nUTToolStripMenuItem
+            // 
+            this.nUTToolStripMenuItem.Name = "nUTToolStripMenuItem";
+            this.nUTToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.nUTToolStripMenuItem.Text = "NUT";
+            this.nUTToolStripMenuItem.Click += new System.EventHandler(this.nUTToolStripMenuItem_Click);
             // 
             // openVBNToolStripMenuItem
             // 
@@ -188,6 +207,13 @@
             this.openNUDToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.openNUDToolStripMenuItem.Text = "Save";
             this.openNUDToolStripMenuItem.Click += new System.EventHandler(this.openNUDToolStripMenuItem_Click);
+            // 
+            // saveAsToolStripMenuItem
+            // 
+            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.saveAsToolStripMenuItem.Text = "Save As";
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // exportErrorLogToolStripMenuItem
             // 
@@ -482,19 +508,11 @@
             // texturesToolStripMenuItem
             // 
             this.texturesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openNUTEditorToolStripMenuItem,
             this.open3DSTEXEditorToolStripMenuItem,
             this.openDATTextureEditorToolStripMenuItem});
             this.texturesToolStripMenuItem.Name = "texturesToolStripMenuItem";
             this.texturesToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
             this.texturesToolStripMenuItem.Text = "Textures";
-            // 
-            // openNUTEditorToolStripMenuItem
-            // 
-            this.openNUTEditorToolStripMenuItem.Name = "openNUTEditorToolStripMenuItem";
-            this.openNUTEditorToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
-            this.openNUTEditorToolStripMenuItem.Text = "Open NUT Editor";
-            this.openNUTEditorToolStripMenuItem.Click += new System.EventHandler(this.openNUTEditorToolStripMenuItem_Click);
             // 
             // open3DSTEXEditorToolStripMenuItem
             // 
@@ -810,7 +828,6 @@
         private System.Windows.Forms.ToolStripMenuItem blastzonesToolStripMenuItem;
         private OpenTK.GLControl glControl1;
         private System.Windows.Forms.ToolStripMenuItem texturesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openNUTEditorToolStripMenuItem;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.ToolStripMenuItem itemSpawnerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteLVDEntryToolStripMenuItem;
@@ -856,6 +873,9 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripMenuItem stageLightingToolStripMenuItem;
         public System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem nUTToolStripMenuItem;
     }
 }
 

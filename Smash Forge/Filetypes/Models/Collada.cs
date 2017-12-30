@@ -266,7 +266,7 @@ namespace Smash_Forge
                             {
                                 if (vertices.ContainsKey("#" + geom.id))
                                 {
-                                    Console.WriteLine(vertices["#" + geom.id].Count + " " + i + " " + p.p[i]);
+                                    //Console.WriteLine(vertices["#" + geom.id].Count + " " + i + " " + p.p[i]);
                                     v.node.AddRange(vertices["#" + geom.id][p.p[i]].node);
                                     v.weight.AddRange(vertices["#" + geom.id][p.p[i]].weight);
                                 }
@@ -291,7 +291,7 @@ namespace Smash_Forge
                                     {
                                         if (vertices.ContainsKey("#" + geom.id))
                                         {
-                                            Console.WriteLine(vertices["#" + geom.id].Count + " " + i + " " + p.p[i]);
+                                            //Console.WriteLine(vertices["#" + geom.id].Count + " " + i + " " + p.p[i]);
                                             v.node.AddRange(vertices["#" + geom.id][p.p[i]].node);
                                             v.weight.AddRange(vertices["#" + geom.id][p.p[i]].weight);
                                         }

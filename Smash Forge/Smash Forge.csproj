@@ -118,6 +118,9 @@
     <Compile Include="GUI\Controls\VertexTool.Designer.cs">
       <DependentUpon>VertexTool.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\EditorBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="GUI\Editors\3DS\3DSTexEditor.cs">
       <SubType>Form</SubType>
     </Compile>
