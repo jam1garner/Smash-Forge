@@ -18,14 +18,20 @@ namespace Smash_Forge
         public ProjectTree()
         {
             InitializeComponent();
+
+            ImageList iconList = new ImageList();
+            iconList.ImageSize = new Size(24, 24);
+            iconList.Images.Add("folder", Properties.Resources.icon_group);
+            iconList.Images.Add("file", Properties.Resources.node_file);
+            iconList.Images.Add("nud", Properties.Resources.node_nud);
+            iconList.Images.Add("nut", Properties.Resources.node_nut);
+            iconList.Images.Add("vbn", Properties.Resources.node_vbn);
+            treeView1.ImageList = iconList;
         }
 
         private string acmdDirectory;
 
-        private Dictionary<TreeNode, ModelContainer> modelLinks = new Dictionary<TreeNode, ModelContainer>();
-        private Dictionary<TreeNode, NUT> textureLinks = new Dictionary<TreeNode, NUT>();
-
-        public void PopulateTreeView(string root)
+        public void PopulateTreeView(string root, bool ImportFromExisting = false)
         {
             treeView1.BeginUpdate();
 
@@ -68,16 +74,29 @@ namespace Smash_Forge
         {
             foreach (var fileinfo in dir.GetFiles())
             {
-                var child = new TreeNode(fileinfo.Name, 0, 0);
+                TreeNode child;
+                switch (fileinfo.Extension.ToLower())
+                {
+                    case ".nud":
+                        child = new NUDNode(fileinfo.FullName);
+                        break;
+                    case ".nut":
+                        child = new NUTNode(fileinfo.FullName);
+                        break;
+                    case ".vbn":
+                        child = new VBNNode(fileinfo.FullName);
+                        break;
+                    default:
+                        child = new BaseNode(fileinfo.FullName);
+                        break;
+                }
                 child.Tag = fileinfo;
-                child.ImageIndex = 1;
-                child.SelectedImageIndex = 1;
                 nodeToAddTo.Nodes.Add(child);
             }
         }
         public void fillTree()
         {
-            if (!Directory.Exists(Path.Combine(Application.StartupPath, "workspace/animcmd/")))
+            /*if (!Directory.Exists(Path.Combine(Application.StartupPath, "workspace/animcmd/")))
                 Directory.CreateDirectory(Path.Combine(Application.StartupPath, "workspace/animcmd/"));
 
             treeView1.Nodes.Clear();
@@ -86,34 +105,7 @@ namespace Smash_Forge
             {
                 acmdFiles.Add(new TreeNode(Path.GetFileName(f)));
             }
-            treeView1.Nodes.Add(new TreeNode("ACMD", acmdFiles.ToArray()));
-
-
-            /*List<TreeNode> models = new List<TreeNode>();
-            modelLinks.Clear();
-            foreach (ModelContainer con in Runtime.ModelContainers)
-            {
-                List<TreeNode> modelCon = new List<TreeNode>();
-                if(con.nud != null)
-                    modelCon.Add(new TreeNode("Mesh"));
-                
-                if(con.vbn != null)
-                    modelCon.Add(new TreeNode("Bones"));
-                
-                TreeNode node = new TreeNode(con.name, modelCon.ToArray());
-                modelLinks.Add(node, con);
-                models.Add(node);
-            }
-            treeView1.Nodes.Add(new TreeNode("Models", models.ToArray()));
-            List<TreeNode> textures = new List<TreeNode>();
-            modelLinks.Clear();
-            foreach (NUT n in Runtime.TextureContainers)
-            {
-                TreeNode node = new TreeNode("NUT");
-                textureLinks.Add(node, n);
-                textures.Add(node);
-            }
-            treeView1.Nodes.Add(new TreeNode("Textures", textures.ToArray()));*/
+            treeView1.Nodes.Add(new TreeNode("ACMD", acmdFiles.ToArray()));*/
 
         }
 
@@ -205,7 +197,18 @@ namespace Smash_Forge
             }
             if (e.Node.Tag is FileInfo)
             {
-                ((ProjectExplorerNode)e.Node).ProjectNode.Project.RenameFile(((FileInfo)e.Node.Tag).FullName, e.Node.Text, e.Label);
+                //((ProjectExplorerNode)e.Node).ProjectNode.Project.RenameFile(((FileInfo)e.Node.Tag).FullName, e.Node.Text, e.Label);
+            }
+        }
+
+        private void treeView1_DoubleClick(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode == null) return;
+
+            if(treeView1.SelectedNode.Tag is BaseNode)
+            {
+                if (((BaseNode)treeView1.SelectedNode).Openable)
+                    MainForm.Instance.openFile(((FileInfo)treeView1.SelectedNode.Tag).FullName);
             }
         }
     }

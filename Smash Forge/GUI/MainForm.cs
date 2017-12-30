@@ -541,16 +541,6 @@ namespace Smash_Forge
             Runtime.ModelContainers = sortedModelContainers;
 
             meshList.refresh();
-            
-            ModelNode n = new ModelNode();
-            n.NUD.Model = model.NUD;
-            n.VBN.Skeleton = model.VBN;
-            n.NUT.Texture = nut;
-
-            project.treeView1.BeginUpdate();
-            project.treeView1.Nodes.Add(n);
-            project.treeView1.EndUpdate();
-            project.treeView1.Refresh();
         }
 
         private void addMaterialAnimation(string name, MTA m)
@@ -1627,18 +1617,26 @@ namespace Smash_Forge
             if (!fileName.EndsWith(".mta") && !fileName.EndsWith(".dat") && !fileName.EndsWith(".smd"))
                 openAnimation(fileName);
 
+            // Redone-----------------------------------------------------
             if (fileName.EndsWith(".vbn"))
             {
-                Runtime.TargetVBN = new VBN(fileName);
-
-                ModelContainer con = resyncTargetVBN();
-                if (Directory.Exists("Skapon\\"))
-                {
-                    NUD nud = Skapon.Create(Runtime.TargetVBN);
-                    con.NUD = nud;
-                }
+                BoneTreePanel editor = new BoneTreePanel(fileName);
+                AddDockedControl(editor);
             }
 
+            if (fileName.EndsWith(".nut"))
+            {
+                NUTEditor editor = new NUTEditor(fileName);
+                AddDockedControl(editor);
+            }
+
+            if (fileName.EndsWith(".tex"))
+            {
+                _3DSTexEditor editor = new _3DSTexEditor(fileName);
+                AddDockedControl(editor);
+            }
+
+            // TODO-----------------------------------------------------
             if (fileName.EndsWith(".sb"))
             {
                 SB sb = new SB();
@@ -1677,37 +1675,6 @@ namespace Smash_Forge
 
                 meshList.refresh();
                 resyncTargetVBN();
-            }
-
-            if (fileName.EndsWith(".nut"))
-            {
-                //Runtime.TextureContainers.Add(new NUT(fileName));
-                NUTEditor editor = new NUTEditor(fileName);
-                AddDockedControl(editor);
-                /*if (nutEditor == null || nutEditor.IsDisposed)
-                {
-                    nutEditor = new NUTEditor();
-                    nutEditor.Show();
-                }
-                else
-                {
-                    nutEditor.BringToFront();
-                }
-                nutEditor.FillForm();*/
-            }
-
-            if (fileName.EndsWith(".tex"))
-            {
-                if (texEditor == null || texEditor.IsDisposed)
-                {
-                    texEditor = new _3DSTexEditor();
-                    texEditor.Show();
-                }
-                else
-                {
-                    texEditor.BringToFront();
-                }
-                texEditor.OpenTEX(fileName);
             }
 
             if (fileName.EndsWith(".lvd"))
@@ -1881,29 +1848,14 @@ namespace Smash_Forge
 
             if (fileName.ToLower().EndsWith(".obj"))
             {
-                ModelViewport vp = new ModelViewport();
                 OBJ obj = new OBJ();
                 obj.Read(fileName);
-                vp.draw.Add(new ModelContainer() { NUD = obj.toNUD() });
                 Runtime.ModelContainers.Add(new ModelContainer() { NUD = obj.toNUD() });
                 meshList.refresh();
-                AddDockedControl(vp);
             }
 
             if (fileName.EndsWith(".mbn"))
             {
-                /*MBN m = new MBN();
-                m.Read(fileName);
-                ModelContainer con = new ModelContainer();
-                BCH b = new BCH();
-                con.bch = b;
-                b.mbn = m;
-                b.Read(fileName.Replace(".mbn", ".bch"));
-                Runtime.ModelContainers.Add(con);
-                Runtime.TargetVBN = b.bones;
-                resyncTargetVBN();
-                meshList.refresh();*/
-
                 ModelContainer con = new ModelContainer();
                 BCH b = new BCH();
                 b.Read(fileName.Replace(".mbn", ".bch"));

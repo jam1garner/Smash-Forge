@@ -9,18 +9,66 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
+using System.IO;
 
 namespace Smash_Forge
 {
-    public partial class BoneTreePanel : DockContent
+    public partial class BoneTreePanel : EditorBase
     {
         private VBN VBN;
 
-        public BoneTreePanel(VBN vbn)
+        public BoneTreePanel()
         {
             InitializeComponent();
+            FilePath = "";
+            Text = "New VBN";
+            treeRefresh();
+        }
+
+        public BoneTreePanel(VBN vbn) : this()
+        {
             VBN = vbn;
             treeRefresh();
+        }
+
+        public BoneTreePanel(string filePath) : this()
+        {
+            FilePath = filePath;
+            VBN = new VBN(filePath);
+            Edited = false;
+            treeRefresh();
+        }
+
+        public override void Save()
+        {
+            if (FilePath.Equals(""))
+            {
+                SaveAs();
+                return;
+            }
+            FileOutput o = new FileOutput();
+            byte[] n = VBN.Rebuild();
+            o.writeBytes(n);
+            o.save(FilePath);
+            Edited = false;
+        }
+
+        public override void SaveAs()
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Namco Visual Bones (.vbn)|*.vbn|" +
+                             "All Files (*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    if (sfd.FileName.EndsWith(".vbn"))
+                    {
+                        FilePath = sfd.FileName;
+                        Save();
+                    }
+                }
+            }
         }
 
         public void treeRefresh()
@@ -95,6 +143,7 @@ namespace Smash_Forge
 
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            Edited = true;
             Bone editingBone = (Bone)treeView1.SelectedNode;
             editingBone.boneId = uint.Parse(tbl.Rows[1][1].ToString(), System.Globalization.NumberStyles.HexNumber);
 
@@ -142,11 +191,13 @@ namespace Smash_Forge
                 targetNode.Nodes.Add(draggedNode);
 
                 targetNode.Expand();
+                Edited = true;
             }
             if (targetNode == null)
             {
                 draggedNode.Remove();
                 treeView1.Nodes.Add(draggedNode);
+                Edited = true;
             }
             VBN.reset();
         }
@@ -242,6 +293,7 @@ namespace Smash_Forge
             }
             treeView1.SelectedNode.Remove();
             treeRefresh();
+            Edited = true;
         }
 
         private void BoneTreePanel_FormClosed(object sender, FormClosedEventArgs e)

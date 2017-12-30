@@ -38,7 +38,7 @@ namespace Smash_Forge
         {
             InitializeComponent();
             FilePath = "";
-            Text = "Blank NUT";
+            Text = "New NUT";
 
             fw = new FileSystemWatcher();
             fw.Path = Path.GetTempPath();

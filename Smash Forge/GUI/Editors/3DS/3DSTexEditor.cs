@@ -11,11 +11,49 @@ using System.IO;
 
 namespace Smash_Forge
 {
-    public partial class _3DSTexEditor : Form
+    public partial class _3DSTexEditor : EditorBase
     {
         public _3DSTexEditor()
         {
-            InitializeComponent(); 
+            InitializeComponent();
+            FilePath = "";
+            Text = "New 3DS TEX";
+        }
+
+        public _3DSTexEditor(string fname) : this()
+        {
+            FilePath = fname;
+            OpenTEX(fname);
+            Edited = false;
+        }
+
+        public override void Save()
+        {
+            if (FilePath.Equals(""))
+            {
+                SaveAs();
+                return;
+            }
+            ExportTEX(FilePath);
+            Edited = false;
+        }
+
+        public override void SaveAs()
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Smash for 3DS TEX|*.tex|" +
+                             "All files(*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    if (sfd.FileName.EndsWith(".tex"))
+                    {
+                        FilePath = sfd.FileName;
+                        Save();
+                    }
+                }
+            }
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -30,6 +68,7 @@ namespace Smash_Forge
 
         public void OpenTEX(string fname)
         {
+            Edited = true;
             FileData d = new FileData(fname);
             d.Endian = System.IO.Endianness.Little;
 
@@ -65,6 +104,7 @@ namespace Smash_Forge
 
         public void OpenPNG(string filename)
         {
+            Edited = true;
             pictureBox1.Image = new Bitmap(filename);
 
             if (formatSelector.SelectedIndex < 0)

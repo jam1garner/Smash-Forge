@@ -1075,6 +1075,10 @@
     <None Include="Resources\icon_bone.png" />
     <None Include="Resources\icon_image.png" />
     <None Include="Resources\icon_skeleton.png" />
+    <None Include="Resources\node_nud.png" />
+    <None Include="Resources\node_file.png" />
+    <None Include="Resources\node_nut.png" />
+    <None Include="Resources\node_vbn.png" />
     <Content Include="Resources\sexy_green_down_arrow.png" />
     <Content Include="Resources\forge2.ico" />
     <None Include="Resources\DefaultTexture.png" />
