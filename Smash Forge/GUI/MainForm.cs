@@ -2197,7 +2197,7 @@ namespace Smash_Forge
         {
             if (cameraForm == null || cameraForm.IsDisposed)
             {
-                cameraForm = new CameraSettings(viewports[0].Camera);
+                cameraForm = new CameraSettings(viewports[0].vbnViewportCamera);
                 viewports[0].cameraPosForm = cameraForm;
             }
             cameraForm.Show();

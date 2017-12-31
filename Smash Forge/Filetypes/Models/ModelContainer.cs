@@ -171,32 +171,10 @@ namespace Smash_Forge
 
                     GL.Uniform1(shader.getAttribute("elapsedTime"), elapsedSeconds);
 
-                    GL.ActiveTexture(TextureUnit.Texture11);
-                    GL.BindTexture(TextureTarget.Texture2D, depthmap);
-                    GL.Uniform1(shader.getAttribute("shadowmap"), 11);
-
                     GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
                     GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
 
-                    if (Runtime.cameraLight) // camera light should only affects character lighting
-                    {
-                        Matrix4 invertedCamera = camera.getMVPMatrix().Inverted();
-                        Vector3 lightDirection = new Vector3(0f, 0f, -1f);
-                        GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
-                        GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
-                        GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
-                    }
-                    else
-                    {
-                        GL.Uniform3(shader.getAttribute("specLightDirection"), Lights.specularLight.direction);
-                        GL.Uniform3(shader.getAttribute("difLightDirection"), Lights.diffuseLight.direction);
-                    }
-
-                    shader.enableAttrib();
-
-                    NUD.Render(VBN);
-                    
-                    shader.disableAttrib();
+                    NUD.Render(VBN, camera);                    
                 }
             }
         }

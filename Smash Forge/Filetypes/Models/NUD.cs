@@ -188,7 +188,7 @@ namespace Smash_Forge
         }
 
 
-        public void Render(VBN vbn)
+        public void Render(VBN vbn, Camera camera)
         {
             if (Runtime.renderBoundingBox)
             {
@@ -197,31 +197,39 @@ namespace Smash_Forge
 
             Shader shader = Runtime.shaders["nud"];
 
+            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
+                shader = Runtime.shaders["NUD_Debug"];
+            else
+                shader = Runtime.shaders["nud"];
+
+            GL.UseProgram(shader.programID);
+
+            shader.enableAttrib();
+            if (vbn != null)
             {
-                if (vbn != null)
+                Matrix4[] f = vbn.getShaderMatrix();
+
+                int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
+                int boneCount = vbn.bones.Count;
+                int dataSize = boneCount * Vector4.SizeInBytes * 4;
+
+                GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
+                GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
+                GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+
+                var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
+                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
+
+                if (f.Length > 0)
                 {
-                    Matrix4[] f = vbn.getShaderMatrix();
-
-                    int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
-                    int boneCount = vbn.bones.Count;
-                    int dataSize = boneCount * Vector4.SizeInBytes * 4;
-
                     GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
-                    GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
-                    GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-
-                    var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
-                    GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
-
-                    if (f.Length > 0)
-                    {
-                        GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
-                        GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
-                    }
+                    GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
                 }
-                
-                Render(shader);
             }
+
+
+            Render(shader, camera);
+            
         }
 
         private void DrawBoundingBoxes()
@@ -376,7 +384,7 @@ namespace Smash_Forge
             }
         }
 
-        public void Render(Shader shader)
+        public void Render(Shader shader, Camera camera)
         {
 
             // create lists...
@@ -406,11 +414,11 @@ namespace Smash_Forge
 
             foreach (Polygon p in opaque)
                 if (p.Parent != null && ((Mesh)p.Parent).Checked)
-                    DrawPolygon(p, shader);
+                    DrawPolygon(p, shader, camera);
 
             foreach (Polygon p in trans)
                 if (((Mesh)p.Parent).Checked)
-                    DrawPolygon(p, shader);
+                    DrawPolygon(p, shader, camera);
 
             foreach (Mesh m in Nodes)
             {
@@ -421,14 +429,14 @@ namespace Smash_Forge
                     {
                         if (Runtime.renderModelSelection && (((Mesh)p.Parent).IsSelected || p.IsSelected))
                         {
-                            DrawPolygon(p, shader, true);
+                            DrawPolygon(p, shader, camera, true);
                         }
                     }
                 }
             }
         }
 
-        private void SetLightingUniforms(Shader shader)
+        private void SetLightingUniforms(Shader shader, Camera camera)
         {
             // fresnel sky/ground color for characters & stages
             GL.Uniform3(shader.getAttribute("fresGroundColor"), Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB);
@@ -491,9 +499,24 @@ namespace Smash_Forge
             GL.Uniform3(shader.getAttribute("stageLight2Direction"), Lights.stageLight2.direction);
             GL.Uniform3(shader.getAttribute("stageLight3Direction"), Lights.stageLight3.direction);
             GL.Uniform3(shader.getAttribute("stageLight4Direction"), Lights.stageLight4.direction);
+
+
+            if (Runtime.cameraLight) // camera light should only affects character lighting
+            {
+                Matrix4 invertedCamera = camera.getMVPMatrix().Inverted();
+                Vector3 lightDirection = new Vector3(0f, 0f, -1f);
+                GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+                GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+            }
+            else
+            {
+                GL.Uniform3(shader.getAttribute("specLightDirection"), Lights.specularLight.direction);
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Lights.diffuseLight.direction);
+            }
         }
 
-        private void DrawPolygon(Polygon p, Shader shader, bool drawSelection = false)
+        private void DrawPolygon(Polygon p, Shader shader, Camera camera, bool drawSelection = false)
         {
             if (p.faces.Count <= 3)
                 return;
@@ -510,7 +533,7 @@ namespace Smash_Forge
             SetXMBUniforms(shader, p);
             SetRenderSettingsUniforms(shader, material);
             SetNSCUniform(p, shader);
-            SetLightingUniforms(shader);
+            SetLightingUniforms(shader, camera);
 
             // vertex shader attributes (UVs, skin weights, etc)
             SetVertexAttributes(p, shader);

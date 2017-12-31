@@ -1463,21 +1463,6 @@ namespace Smash_Forge
 
         #region FileRendering
 
-
-        public static void DrawModel(ModelContainer m, Matrix4 v)
-        {
-            if (m.dat_melee != null)
-            {
-                m.dat_melee.Render(v);
-            }
-
-            if (m.NUD != null)
-            {
-                m.NUD.Render(m.VBN);
-                m.NUD.DrawPoints(v, m.VBN);
-            }
-        }
-
         public static void DrawBones(List<ModelContainer> con)
         {
             if (con.Count > 0)
