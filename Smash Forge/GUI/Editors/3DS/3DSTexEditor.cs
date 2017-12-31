@@ -191,5 +191,46 @@ namespace Smash_Forge
                 ExportTEX(save.FileName);
             }
         }
+
+        private void importButton_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Portable Network Graphic, Smash for 3DS Tex (.png, .tex)|*.png;*.tex;|" +
+                             "All files(*.*)|*.*";
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    if (Path.GetExtension(ofd.FileName).ToLower().Equals(".png"))
+                    {
+                        OpenPNG(ofd.FileName);
+                    }
+                    if (Path.GetExtension(ofd.FileName).ToLower().Equals(".tex"))
+                    {
+                        OpenTEX(ofd.FileName);
+                    }
+                }
+            }
+        }
+
+        private void exportButton_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog save = new SaveFileDialog();
+            save.Filter = "Portable Network Graphic, Smash for 3DS Tex (.png, .tex)|*.png;*.tex;|" +
+                             "All files(*.*)|*.*";
+            DialogResult result = save.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                if (Path.GetExtension(save.FileName).ToLower().Equals(".png"))
+                {
+                    pictureBox1.Image.Save(save.FileName);
+                }
+                if (Path.GetExtension(save.FileName).ToLower().Equals(".tex"))
+                {
+                    ExportTEX(save.FileName);
+                }
+            }
+        }
     }
 }

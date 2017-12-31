@@ -2274,5 +2274,11 @@ namespace Smash_Forge
             ModelViewport mvp = new ModelViewport();
             AddDockedControl(mvp);
         }
+
+        private void dSTexToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _3DSTexEditor mvp = new _3DSTexEditor();
+            AddDockedControl(mvp);
+        }
     }
 }

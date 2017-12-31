@@ -79,6 +79,7 @@
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.dSTexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -121,7 +122,8 @@
             // 
             this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.modelToolStripMenuItem,
-            this.nUTToolStripMenuItem});
+            this.nUTToolStripMenuItem,
+            this.dSTexToolStripMenuItem});
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
             this.newToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.newToolStripMenuItem.Text = "New";
@@ -129,14 +131,14 @@
             // modelToolStripMenuItem
             // 
             this.modelToolStripMenuItem.Name = "modelToolStripMenuItem";
-            this.modelToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.modelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.modelToolStripMenuItem.Text = "Model";
             this.modelToolStripMenuItem.Click += new System.EventHandler(this.modelToolStripMenuItem_Click);
             // 
             // nUTToolStripMenuItem
             // 
             this.nUTToolStripMenuItem.Name = "nUTToolStripMenuItem";
-            this.nUTToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.nUTToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.nUTToolStripMenuItem.Text = "NUT";
             this.nUTToolStripMenuItem.Click += new System.EventHandler(this.nUTToolStripMenuItem_Click);
             // 
@@ -349,9 +351,11 @@
             this.texturesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.open3DSTEXEditorToolStripMenuItem,
             this.openDATTextureEditorToolStripMenuItem});
+            this.texturesToolStripMenuItem.Enabled = false;
             this.texturesToolStripMenuItem.Name = "texturesToolStripMenuItem";
             this.texturesToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
             this.texturesToolStripMenuItem.Text = "Textures";
+            this.texturesToolStripMenuItem.Visible = false;
             // 
             // open3DSTEXEditorToolStripMenuItem
             // 
@@ -499,6 +503,13 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
+            // dSTexToolStripMenuItem
+            // 
+            this.dSTexToolStripMenuItem.Name = "dSTexToolStripMenuItem";
+            this.dSTexToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dSTexToolStripMenuItem.Text = "3DS Tex";
+            this.dSTexToolStripMenuItem.Click += new System.EventHandler(this.dSTexToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AllowDrop = true;
@@ -583,6 +594,7 @@
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem nUTToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dSTexToolStripMenuItem;
     }
 }
 

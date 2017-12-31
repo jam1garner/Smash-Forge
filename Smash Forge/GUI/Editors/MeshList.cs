@@ -419,7 +419,7 @@ namespace Smash_Forge
                 }
             }
 
-            BoneRiggingSelector brs = new BoneRiggingSelector(str);
+            BoneRiggingSelector brs = new BoneRiggingSelector(str) { ModelContainers = GetModelContainers() };
             brs.ShowDialog();
             if (!brs.Cancelled)
             {
@@ -536,9 +536,20 @@ namespace Smash_Forge
                 ((NUD.Polygon)treeView1.SelectedNode).SmoothNormals();
         }
 
+        public List<ModelContainer> GetModelContainers()
+        {
+            List<ModelContainer> models = new List<ModelContainer>();
+            foreach (TreeNode n in treeView1.Nodes)
+            {
+                if (n is ModelContainer)
+                    models.Add((ModelContainer)n);
+            }
+            return models;
+        }
+
         private void copyMaterialToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            List<NUD.Polygon> polys = PolygonSelector.Popup();
+            List<NUD.Polygon> polys = PolygonSelector.Popup(GetModelContainers());
             foreach (NUD.Polygon poly in polys)
             {
                 // link materials. don't link a material to itself

@@ -19,7 +19,7 @@ namespace Smash_Forge
 
         public List<NUD.Polygon> selected = new List<NUD.Polygon>();
         public bool finished = false;
-        public List<ModelContainer> ModelContainers = new List<ModelContainer>();
+        List<ModelContainer> ModelContainers;
 
         private void PolygonSelector_Load(object sender, EventArgs e)
         {
@@ -78,9 +78,9 @@ namespace Smash_Forge
             Close();
         }
 
-        public static List<NUD.Polygon> Popup()
+        public static List<NUD.Polygon> Popup(List<ModelContainer> ModelContainer)
         {
-            PolygonSelector selector = new PolygonSelector();
+            PolygonSelector selector = new PolygonSelector() { ModelContainers = ModelContainer};
             selector.ShowDialog();
             return selector.selected;
         }

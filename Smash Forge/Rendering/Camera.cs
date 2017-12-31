@@ -118,40 +118,43 @@ namespace Smash_Forge
 
         public void Update()
         {
-            try{
+            try
+            {
                 OpenTK.Input.Mouse.GetState();
-            } catch (Exception)
-            {
-                return;
+
+                // left click drag to rotate. right click drag to pan
+                if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
+                {
+                    position.Y += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                    position.X += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                }
+                if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
+                {
+                    cameraYRotation += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                    cameraXRotation += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                }
+
+                float zoomscale = zoomSpeed;
+
+                // hold shift to change zoom speed
+                if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
+                    zoomscale *= shiftZoomMultiplier;
+
+                // zoom in or out with arrow keys
+                if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Down))
+                    position.Z -= 1 * zoomscale;
+                if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Up))
+                    position.Z += 1 * zoomscale;
+
+                this.mouseXLast = OpenTK.Input.Mouse.GetState().X;
+                this.mouseYLast = OpenTK.Input.Mouse.GetState().Y;
+
+                position.Z += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale * scrollWheelZoomSpeed;
+
             }
-            // left click drag to rotate. right click drag to pan
-            if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
+            catch (Exception)
             {
-                position.Y += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                position.X += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
             }
-            if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
-            {
-                cameraYRotation += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                cameraXRotation += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-            }
-
-            float zoomscale = zoomSpeed;
-
-            // hold shift to change zoom speed
-            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
-                zoomscale *= shiftZoomMultiplier;
-
-            // zoom in or out with arrow keys
-            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Down))
-                position.Z -= 1 * zoomscale;
-            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Up))
-                position.Z += 1 * zoomscale;
-
-            this.mouseXLast = OpenTK.Input.Mouse.GetState().X;
-            this.mouseYLast = OpenTK.Input.Mouse.GetState().Y;
-
-            position.Z += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale * scrollWheelZoomSpeed;
 
             UpdateMatrices();
         }

@@ -13,6 +13,9 @@ using OpenTK.Graphics.OpenGL;
 using System.Security.Cryptography;
 using SALT.Moveset.AnimCMD;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Drawing.Imaging;
+using Gif.Components;
 
 namespace Smash_Forge
 {
@@ -537,6 +540,104 @@ namespace Smash_Forge
                     ACMDEditor.Visible = true;
                     break;
             }
+        }
+
+        private void RenderButton_Click(object sender, EventArgs e)
+        {
+            CaptureScreen(true).Save(MainForm.executableDir + "\\Render.png");
+        }
+
+        public Bitmap CaptureScreen(bool saveAlpha)
+        {
+            int width = glViewport.Width;
+            int height = glViewport.Height;
+
+            byte[] pixels = new byte[width * height * 4];
+            glViewport.MakeCurrent();
+            GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
+            // Flip data because glReadPixels reads it in from bottom row to top row
+            byte[] fixedPixels = new byte[width * height * 4];
+            for (int h = 0; h < height; h++)
+            {
+                for (int w = 0; w < width; w++)
+                {
+                    // Remove alpha blending from the end image - we just want the post-render colors
+                    if (!saveAlpha)
+                        pixels[((w + h * width) * 4) + 3] = 255;
+
+                    // Copy a 4 byte pixel one at a time
+                    Array.Copy(pixels, (w + h * width) * 4, fixedPixels, ((height - h - 1) * width + w) * 4, 4);
+                }
+            }
+
+            // Format and save the data
+            Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bmp.PixelFormat);
+            Marshal.Copy(fixedPixels, 0, bmpData.Scan0, fixedPixels.Length);
+            bmp.UnlockBits(bmpData);
+            return bmp;
+        }
+
+        List<Bitmap> images = new List<Bitmap>();
+        float ScaleFactor = 1f;
+        private void GIFButton_Click(object sender, EventArgs e)
+        {
+            if (Animation == null)
+                return;
+
+            isPlaying = false;
+            playButton.Text = "Play";
+
+            GIFSettings settings = new GIFSettings((int)totalFrame.Value, ScaleFactor, images.Count > 0);
+            settings.ShowDialog();
+
+            if (settings.ClearFrames)
+                images.Clear();
+
+            if (!settings.OK)
+                return;
+
+            ScaleFactor = settings.ScaleFactor;
+
+            int cFrame = (int)currentFrame.Value; //Get current frame so at the end of capturing all frames of the animation it goes back to this frame
+                                                    //Disable controls
+            this.Enabled = false;
+
+            for (int i = settings.StartFrame; i <= settings.EndFrame + 1; i++)
+            {
+                currentFrame.Value = i;
+                currentFrame.Refresh(); //Refresh the frame counter control
+                Render(null, null);
+
+                if (i != settings.StartFrame) //On i=StartFrame it captures the frame the user had before setting frame to it so ignore that one, the +1 on the for makes it so the last frame is captured
+                {
+                    Bitmap cs = CaptureScreen(false);
+                    images.Add(new Bitmap(cs, new Size((int)(cs.Width / ScaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
+                    cs.Dispose();
+                }
+            }
+
+
+            if (images.Count > 0 && !settings.StoreFrames)
+            {
+                SaveFileDialog sf = new SaveFileDialog();
+
+                sf.FileName = "Render.gif";
+                sf.Filter = "GIF file (*.gif)|*.gif";
+
+                if (sf.ShowDialog() == DialogResult.OK)
+                {
+                    GIFProgress g = new GIFProgress(images, sf.FileName, AnimationSpeed, settings.Repeat, settings.Quality);
+                    g.Show();
+                }
+
+                images = new List<Bitmap>();
+
+            }
+            //Enable controls
+            this.Enabled = true;
+
+            currentFrame.Value = cFrame;
         }
 
         private void checkSelect()

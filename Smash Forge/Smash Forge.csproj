@@ -952,6 +952,8 @@
     <Content Include="lib\SALT.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\strip_gif.png" />
+    <None Include="Resources\strip_render.png" />
     <None Include="Resources\strip_camsettings.png" />
     <None Include="Resources\strip_camreset.png" />
     <None Include="Resources\UVPattern.png" />

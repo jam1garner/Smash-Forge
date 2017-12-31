@@ -160,20 +160,8 @@ namespace Smash_Forge
                     GL.Uniform1(shader.getAttribute("shadowMap"), 11);
 
                     GL.Uniform1(shader.getAttribute("renderType"), renderType);
-
-                    float elapsedSeconds = 0;
-                    /*if (m.NUD.useDirectUVTime)
-                    {
-                        elapsedSeconds = (float)directUVTimeStopWatch.ElapsedMilliseconds / 1000.0f;
-                        if (elapsedSeconds >= 100) // should be based on XMB eventually
-                        {
-                            directUVTimeStopWatch.Restart();
-                        }
-                    }
-                    else
-                        directUVTimeStopWatch.Stop();*/
-
-                    GL.Uniform1(shader.getAttribute("elapsedTime"), elapsedSeconds);
+                    
+                    GL.Uniform1(shader.getAttribute("elapsedTime"), (DateTime.Now.Second / 60f) * 100);
 
                     GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
                     GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);

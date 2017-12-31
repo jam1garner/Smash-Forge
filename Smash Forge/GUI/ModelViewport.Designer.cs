@@ -45,10 +45,12 @@
             this.ViewComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.weightToolButton = new System.Windows.Forms.ToolStripButton();
             this.ResetCamera = new System.Windows.Forms.ToolStripButton();
             this.CameraSettings = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.RenderButton = new System.Windows.Forms.ToolStripButton();
+            this.GIFButton = new System.Windows.Forms.ToolStripButton();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.animationTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalFrame)).BeginInit();
@@ -207,7 +209,9 @@
             this.weightToolButton,
             this.ResetCamera,
             this.CameraSettings,
-            this.toolStripSeparator1});
+            this.toolStripSeparator1,
+            this.RenderButton,
+            this.GIFButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(624, 31);
@@ -235,6 +239,11 @@
             this.toolStripLabel1.Name = "toolStripLabel1";
             this.toolStripLabel1.Size = new System.Drawing.Size(48, 28);
             this.toolStripLabel1.Text = "Camera";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
             // 
             // weightToolButton
             // 
@@ -270,10 +279,27 @@
             this.CameraSettings.ToolTipText = "Change camera settings";
             this.CameraSettings.Click += new System.EventHandler(this.CameraSettings_Click);
             // 
-            // toolStripSeparator1
+            // RenderButton
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
+            this.RenderButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.RenderButton.Image = global::Smash_Forge.Properties.Resources.strip_render;
+            this.RenderButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.RenderButton.Name = "RenderButton";
+            this.RenderButton.Size = new System.Drawing.Size(28, 28);
+            this.RenderButton.Text = "toolStripButton1";
+            this.RenderButton.ToolTipText = "Render Viewport to File";
+            this.RenderButton.Click += new System.EventHandler(this.RenderButton_Click);
+            // 
+            // GIFButton
+            // 
+            this.GIFButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.GIFButton.Image = global::Smash_Forge.Properties.Resources.strip_gif;
+            this.GIFButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.GIFButton.Name = "GIFButton";
+            this.GIFButton.Size = new System.Drawing.Size(28, 28);
+            this.GIFButton.Text = "toolStripButton2";
+            this.GIFButton.ToolTipText = "Render GIF of Current Animation";
+            this.GIFButton.Click += new System.EventHandler(this.GIFButton_Click);
             // 
             // ModelViewport
             // 
@@ -321,5 +347,7 @@
         public System.Windows.Forms.ToolStripComboBox ViewComboBox;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton RenderButton;
+        private System.Windows.Forms.ToolStripButton GIFButton;
     }
 }
