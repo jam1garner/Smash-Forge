@@ -14,7 +14,7 @@ using System.IO;
 
 namespace Smash_Forge
 {
-    public partial class PARAMEditor : DockContent
+    public partial class PARAMEditor : EditorBase
     {
         public PARAMEditor(string filename)
         {

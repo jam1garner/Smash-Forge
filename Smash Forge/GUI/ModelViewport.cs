@@ -80,9 +80,17 @@ namespace Smash_Forge
         }
 
         // ACMD
+        public int scriptId = -1;
+        public Dictionary<string, int> ParamMoveNameIdMapping;
         public CharacterParamManager ParamManager;
+        public PARAMEditor ParamManagerHelper;
         public MovesetManager MovesetManager;
         public ForgeACMDScript ACMDScript;
+
+        public ACMDPreviewEditor ACMDEditor;
+        public HitboxList HitboxList;
+        public HurtboxList HurtboxList;
+        public VariableList VariableViewer;
 
         //LVD
         public LVD LVD
@@ -104,6 +112,9 @@ namespace Smash_Forge
         LVDList LVDList = new LVDList();
         LVDEditor LVDEditor = new LVDEditor();
 
+        //Path
+        public PathBin PathBin;
+        
         // Selection Functions
         public float sx1, sy1;
         
@@ -132,20 +143,40 @@ namespace Smash_Forge
             CalculateLightSource();
 
             MeshList.Dock = DockStyle.Right;
+            MeshList.MaximumSize = new Size(300, 2000);
+            MeshList.Size = new Size(300, 2000);
             AddControl(MeshList);
 
             AnimList.Dock = DockStyle.Left;
+            AnimList.MaximumSize = new Size(300, 2000);
+            AnimList.Size = new Size(300, 2000);
             AddControl(AnimList);
 
             LVDList.Dock = DockStyle.Left;
-            LVDList.MaximumSize = new Size(240, 2000);
+            LVDList.MaximumSize = new Size(300, 2000);
             AddControl(LVDList);
+            LVDList.lvdEditor = LVDEditor;
 
             LVDEditor.Dock = DockStyle.Right;
-            LVDEditor.MaximumSize = new Size(240, 2000);
+            LVDEditor.MaximumSize = new Size(300, 2000);
             AddControl(LVDEditor);
 
-            LVDList.lvdEditor = LVDEditor;
+
+            ACMDEditor = new ACMDPreviewEditor();
+            ACMDEditor.Owner = this;
+            ACMDEditor.Dock = DockStyle.Right;
+            AddControl(ACMDEditor);
+
+            HitboxList = new HitboxList();
+            HitboxList.Dock = DockStyle.Right;
+            AddControl(HitboxList);
+
+            HurtboxList = new HurtboxList();
+            HurtboxList.Dock = DockStyle.Right;
+
+            VariableViewer = new VariableList();
+            VariableViewer.Dock = DockStyle.Right;
+
 
             ViewComboBox.SelectedIndex = 0;
 
@@ -384,7 +415,7 @@ namespace Smash_Forge
             //Console.WriteLine("Handling " + animname);
             var crc = Crc32.Compute(animname.Replace(".omo", "").ToLower());
 
-            Runtime.scriptId = -1;
+            scriptId = -1;
 
             if (MovesetManager == null)
             {
@@ -395,14 +426,14 @@ namespace Smash_Forge
             // Try and set up the editor
             try
             {
-                if (Runtime.acmdEditor.crc != crc)
-                    Runtime.acmdEditor.SetAnimation(crc);
+                if (ACMDEditor.crc != crc)
+                    ACMDEditor.SetAnimation(crc);
             }
             catch { }
 
             //Putting scriptId here to get intangibility of the animation, previous method only did it for animations that had game scripts
             if (MovesetManager.ScriptsHashList.Contains(crc))
-                Runtime.scriptId = MovesetManager.ScriptsHashList.IndexOf(crc);
+                scriptId = MovesetManager.ScriptsHashList.IndexOf(crc);
 
             // Game script specific processing stuff below here
             if (!MovesetManager.Game.Scripts.ContainsKey(crc))
@@ -449,8 +480,8 @@ namespace Smash_Forge
                 else
                 {
                     ACMDScript = null;
-                    Runtime.hitboxList.refresh();
-                    Runtime.variableViewer.refresh();
+                    HitboxList.refresh();
+                    VariableViewer.refresh();
                     return;
                 }
             }
@@ -486,19 +517,24 @@ namespace Smash_Forge
 
         private void ViewComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            LVDEditor.Visible = false;
+            LVDList.Visible = false;
+            MeshList.Visible = false;
+            AnimList.Visible = false;
+            ACMDEditor.Visible = false;
             switch (ViewComboBox.SelectedIndex)
             {
                 case 0:
-                    LVDEditor.Visible = false;
-                    LVDList.Visible = false;
                     MeshList.Visible = true;
                     AnimList.Visible = true;
                     break;
                 case 1:
-                    MeshList.Visible = false;
-                    AnimList.Visible = false;
                     LVDEditor.Visible = true;
                     LVDList.Visible = true;
+                    break;
+                case 2:
+                    AnimList.Visible = true;
+                    ACMDEditor.Visible = true;
                     break;
             }
         }
@@ -641,7 +677,8 @@ namespace Smash_Forge
                 //if (cameraPosForm != null && !cameraPosForm.IsDisposed)
                 //    cameraPosForm.updatePosition();
             }
-            Camera.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
+            if(OpenTK.Input.Mouse.GetState() != null)
+                Camera.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
 
             Matrix4 matrix = Camera.getMVPMatrix();
             GL.MatrixMode(MatrixMode.Modelview);
@@ -725,7 +762,14 @@ namespace Smash_Forge
                 foreach (ModelContainer m in draw)
                     m.RenderBones();
 
-            if(ACMDScript!=null && MeshList.treeView1.Nodes.Count > 0 && (MeshList.treeView1.Nodes[0] is ModelContainer))
+
+            // ACMD
+            if (ParamManager != null && Runtime.renderHurtboxes && MeshList.treeView1.Nodes.Count > 0 && (MeshList.treeView1.Nodes[0] is ModelContainer))
+            {
+                ParamManager.RenderHurtboxes(Frame, scriptId, ACMDScript, ((ModelContainer)MeshList.treeView1.Nodes[0]).VBN);
+            }
+
+            if (ACMDScript!=null && MeshList.treeView1.Nodes.Count > 0 && (MeshList.treeView1.Nodes[0] is ModelContainer))
                 ACMDScript.Render(((ModelContainer)MeshList.treeView1.Nodes[0]).VBN);
 
 

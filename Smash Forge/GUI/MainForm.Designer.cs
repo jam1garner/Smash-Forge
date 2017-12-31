@@ -77,8 +77,8 @@
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.glControl1 = new OpenTK.GLControl();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -201,6 +201,7 @@
             // 
             // exportModelToolStripMenuItem
             // 
+            this.exportModelToolStripMenuItem.Enabled = false;
             this.exportModelToolStripMenuItem.Name = "exportModelToolStripMenuItem";
             this.exportModelToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.exportModelToolStripMenuItem.Text = "Export Model";
@@ -272,9 +273,11 @@
             this.exportToolStripMenuItem1,
             this.toolStripSeparator2,
             this.toolStripMenuItem2});
+            this.toolStripMenuItem1.Enabled = false;
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(64, 20);
             this.toolStripMenuItem1.Text = "Moveset";
+            this.toolStripMenuItem1.Visible = false;
             // 
             // importToolStripMenuItem1
             // 
@@ -309,9 +312,11 @@
             this.exportParamsToolStripMenuItem,
             this.toolStripSeparator5,
             this.clearToolStripMenuItem1});
+            this.parametersToolStripMenuItem.Enabled = false;
             this.parametersToolStripMenuItem.Name = "parametersToolStripMenuItem";
             this.parametersToolStripMenuItem.Size = new System.Drawing.Size(78, 20);
             this.parametersToolStripMenuItem.Text = "Parameters";
+            this.parametersToolStripMenuItem.Visible = false;
             // 
             // importParamsToolStripMenuItem
             // 
@@ -437,8 +442,9 @@
             // 
             // dockPanel1
             // 
+            this.dockPanel1.BackgroundImage = global::Smash_Forge.Properties.Resources.ForgeBack;
+            this.dockPanel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.dockPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dockPanel1.DockBackColor = System.Drawing.Color.SlateGray;
             this.dockPanel1.DockBottomPortion = 150D;
             this.dockPanel1.DockLeftPortion = 200D;
             this.dockPanel1.DockRightPortion = 290D;
@@ -475,6 +481,12 @@
             this.checkBox1.Text = "Big Endian Bones";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.WorkerReportsProgress = true;
+            this.backgroundWorker1.WorkerSupportsCancellation = true;
+            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.UpdateProgress);
+            // 
             // pictureBox1
             // 
             this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -486,12 +498,6 @@
             this.pictureBox1.TabIndex = 25;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
-            // 
-            // backgroundWorker1
-            // 
-            this.backgroundWorker1.WorkerReportsProgress = true;
-            this.backgroundWorker1.WorkerSupportsCancellation = true;
-            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.UpdateProgress);
             // 
             // MainForm
             // 

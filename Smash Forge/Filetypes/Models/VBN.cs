@@ -676,7 +676,7 @@ namespace Smash_Forge
             foreach (Bone b in bones)
                 if (b.boneId == boneHash)
                     return b;
-            MessageBox.Show("Open the VBN before editing the SB");
+            //MessageBox.Show("Open the VBN before editing the SB");
             return null;
         }
 

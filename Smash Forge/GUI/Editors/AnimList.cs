@@ -272,7 +272,7 @@ namespace Smash_Forge
                         {
                             anim.Text = AnimName;
                         }
-                        Runtime.acmdEditor.updateCrcList();
+                        //Runtime.acmdEditor.updateCrcList();
                     }
                     else if (pair.Key.EndsWith(".mta"))
                     {

@@ -1,4 +1,4 @@
-﻿namespace Smash_Forge.GUI.Editors
+﻿namespace Smash_Forge
 {
     partial class VariableList
     {

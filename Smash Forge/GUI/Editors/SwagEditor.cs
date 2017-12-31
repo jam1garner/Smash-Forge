@@ -11,7 +11,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Smash_Forge
 {
-    public partial class SwagEditor : DockContent
+    public partial class SwagEditor : EditorBase
     {
         public SwagEditor(SB swag)
         {
@@ -21,11 +21,47 @@ namespace Smash_Forge
             boneButton1.BoneChanged += new EventHandler(BoneChange);
             foreach(BoneButton b in buttons)
                 b.BoneChanged += new EventHandler(BoneChange);
+
+            FilePath = "";
+            Text = "New Swag Bone";
+            Edited = false;
         }
 
         private SB swag;
         private BoneButton[] buttons;
         private bool dontChange = false;
+
+        public override void Save()
+        {
+            if (FilePath.Equals(""))
+            {
+                SaveAs();
+                return;
+            }
+            FileOutput o = new FileOutput();
+            byte[] n = swag.Rebuild();
+            o.writeBytes(n);
+            o.save(FilePath);
+            Edited = false;
+        }
+
+        public override void SaveAs()
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Physics Bones (.sb)|*.sb|" +
+                             "All Files (*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    if (sfd.FileName.EndsWith(".sb"))
+                    {
+                        FilePath = sfd.FileName;
+                        Save();
+                    }
+                }
+            }
+        }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -138,6 +174,7 @@ namespace Smash_Forge
             SB.SBEntry newEntry = new SB.SBEntry();
             swag.bones.Add(newEntry);
             listBox1.Items.Add(newEntry);
+            Edited = true;
         }
 
         private void removeEntryToolStripMenuItem_Click(object sender, EventArgs e)

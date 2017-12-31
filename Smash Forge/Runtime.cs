@@ -44,8 +44,8 @@ namespace Smash_Forge
         public static Object LVDSelection { get; set; }
         //public static Animation TargetAnim { get { return _targetAnim; } set { _targetAnim = value; OnAnimationChanged(); } }
         //private static Animation _targetAnim;
-        public static GUI.Editors.HitboxList hitboxList { get; set; }
-        public static GUI.Editors.VariableList variableViewer { get; set; }
+        public static HitboxList hitboxList { get; set; }
+        public static VariableList variableViewer { get; set; }
 
         public static ParamFile lightSetParam = null;
         public static string lightSetDirectory = "";

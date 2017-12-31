@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Smash_Forge.GUI.Editors
+namespace Smash_Forge
 {
     public partial class VariableList : DockContent
     {

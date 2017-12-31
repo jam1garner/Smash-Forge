@@ -118,6 +118,7 @@ namespace Smash_Forge
 
         public void Update()
         {
+            if (OpenTK.Input.Mouse.GetState() == null) return;
             // left click drag to rotate. right click drag to pan
             if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
             {

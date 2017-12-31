@@ -42,8 +42,8 @@
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.hashMatch = new System.Windows.Forms.Button();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -93,6 +93,7 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.HideSelection = false;
             this.treeView1.Indent = 12;
+            this.treeView1.LabelEdit = true;
             this.treeView1.Location = new System.Drawing.Point(3, 3);
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(180, 237);
@@ -172,6 +173,16 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Bone Info";
             // 
+            // hashMatch
+            // 
+            this.hashMatch.Location = new System.Drawing.Point(12, 19);
+            this.hashMatch.Name = "hashMatch";
+            this.hashMatch.Size = new System.Drawing.Size(170, 23);
+            this.hashMatch.TabIndex = 7;
+            this.hashMatch.Text = "Auto Hash Match";
+            this.hashMatch.UseVisualStyleBackColor = true;
+            this.hashMatch.Click += new System.EventHandler(this.hashMatch_Click);
+            // 
             // dataGridView1
             // 
             this.dataGridView1.AllowUserToAddRows = false;
@@ -204,16 +215,6 @@
             this.dataGridView1.Size = new System.Drawing.Size(188, 206);
             this.dataGridView1.TabIndex = 6;
             this.dataGridView1.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellValueChanged);
-            // 
-            // hashMatch
-            // 
-            this.hashMatch.Location = new System.Drawing.Point(12, 19);
-            this.hashMatch.Name = "hashMatch";
-            this.hashMatch.Size = new System.Drawing.Size(170, 23);
-            this.hashMatch.TabIndex = 7;
-            this.hashMatch.Text = "Auto Hash Match";
-            this.hashMatch.UseVisualStyleBackColor = true;
-            this.hashMatch.Click += new System.EventHandler(this.hashMatch_Click);
             // 
             // BoneTreePanel
             // 

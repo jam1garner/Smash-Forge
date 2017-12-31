@@ -103,6 +103,16 @@ namespace Smash_Forge.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ForgeBack {
+            get {
+                object obj = ResourceManager.GetObject("ForgeBack", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap icon_anim {
             get {
                 object obj = ResourceManager.GetObject("icon_anim", resourceCulture);
@@ -226,6 +236,26 @@ namespace Smash_Forge.Properties {
         internal static System.Drawing.Bitmap sexy_green_down_arrow {
             get {
                 object obj = ResourceManager.GetObject("sexy_green_down_arrow", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap strip_camreset {
+            get {
+                object obj = ResourceManager.GetObject("strip_camreset", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap strip_camsettings {
+            get {
+                object obj = ResourceManager.GetObject("strip_camsettings", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

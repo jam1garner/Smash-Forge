@@ -952,6 +952,8 @@
     <Content Include="lib\SALT.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\strip_camsettings.png" />
+    <None Include="Resources\strip_camreset.png" />
     <None Include="Resources\UVPattern.png" />
     <None Include="Resources\1.dds.png" />
     <None Include="Resources\10102000.png" />
@@ -1079,6 +1081,8 @@
     <None Include="Resources\node_file.png" />
     <None Include="Resources\node_nut.png" />
     <None Include="Resources\node_vbn.png" />
+    <None Include="Resources\Forge.png" />
+    <None Include="Resources\ForgeBack.png" />
     <Content Include="Resources\sexy_green_down_arrow.png" />
     <Content Include="Resources\forge2.ico" />
     <None Include="Resources\DefaultTexture.png" />

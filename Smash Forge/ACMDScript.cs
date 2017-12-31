@@ -994,7 +994,7 @@ namespace Smash_Forge
 
         }
 
-        public Tuple<int, int> translateScriptBoneId(int boneId)
+        public static Tuple<int, int> translateScriptBoneId(int boneId)
         {
             int jtbIndex = 0;
             while (boneId >= 1000)
@@ -1005,7 +1005,7 @@ namespace Smash_Forge
             return Tuple.Create(boneId, jtbIndex);
         }
 
-        public Bone getBone(int bone, VBN VBN)
+        public static Bone getBone(int bone, VBN VBN)
         {
             Tuple<int, int> boneInfo = translateScriptBoneId(bone);
             int bid = boneInfo.Item1;
