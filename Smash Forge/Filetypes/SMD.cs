@@ -186,7 +186,7 @@ namespace Smash_Forge
                         }
 
                         NUD.Mesh mes = null;
-                        foreach (NUD.Mesh m in nud.meshes)
+                        foreach (NUD.Mesh m in nud.Nodes)
                         {
                             if (m.Text.Equals(meshName))
                             {
@@ -197,7 +197,7 @@ namespace Smash_Forge
                         {
                             mes = new NUD.Mesh();
                             mes.Text = meshName;
-                            nud.meshes.Add(mes);
+                            nud.Nodes.Add(mes);
                         }
                         if (mes.Nodes.Count == 0)
                         {

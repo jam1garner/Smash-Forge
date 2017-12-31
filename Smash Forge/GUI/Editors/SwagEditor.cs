@@ -33,12 +33,12 @@ namespace Smash_Forge
             SB.SBEntry sbEntry = (SB.SBEntry) listBox1.SelectedItem;
             if (sbEntry == null)
                 return;
-            boneButton1.SetBone(VBN.GetBone(sbEntry.hash));
+            /*boneButton1.SetBone(VBN.GetBone(sbEntry.hash));
             for (int i = 0; i < buttons.Length; i++)
             {
                 Bone bone = VBN.GetBone(sbEntry.boneHashes[i]);
                 buttons[i].SetBone(bone);
-            }
+            }*/
             xMin.Value = (Decimal)sbEntry.rx1;
             xMax.Value = (Decimal)sbEntry.rx2;
             yMin.Value = (Decimal)sbEntry.ry1;

@@ -117,7 +117,7 @@ namespace Smash_Forge
                 {
                     sfd.FileName = sfd.FileName;
 
-                    if (sfd.FileName.EndsWith(".anim") & Runtime.TargetAnim != null)
+                    if (sfd.FileName.EndsWith(".anim"))
                     {
                         if (Tag is AnimTrack)
                             ((AnimTrack)Tag).createANIM(sfd.FileName, Runtime.TargetVBN);
@@ -175,6 +175,7 @@ namespace Smash_Forge
 
         public class KeyNode : TreeNode
         {
+            public int Hash = -1;
             public BoneType Type = BoneType.NORMAL;
 
             public KeyGroup XPOS = new KeyGroup() { Text = "XPOS" };
@@ -364,11 +365,11 @@ namespace Smash_Forge
                 }
                 if (child is MTA)
                 {
-                    foreach (ModelContainer con in Runtime.ModelContainers)
+                    //foreach (ModelContainer con in Runtime.ModelContainers)
                     {
-                        if (con.NUD != null)
+                        if (((ModelContainer)skeleton.Parent).NUD != null)
                         {
-                            con.NUD.applyMTA(((MTA)child), (int)Frame);
+                            ((ModelContainer)skeleton.Parent).NUD.applyMTA(((MTA)child), (int)Frame);
                         }
                     }
                 }
@@ -377,7 +378,11 @@ namespace Smash_Forge
             foreach (KeyNode node in Bones)
             {
                 // Get Skeleton Node
-                Bone b = skeleton.getBone(node.Text);
+                Bone b = null;
+                if (node.Hash == -1)
+                    b = skeleton.getBone(node.Text);
+                else
+                    b = skeleton.GetBone((uint)node.Hash);
                 if (b == null) continue;
 
                 if (node.XPOS.HasAnimation())
@@ -432,8 +437,10 @@ namespace Smash_Forge
                 Frame = 0;
             }
 
-            if(!isChild)
+            if (!isChild)
+            {
                 skeleton.update();
+            }
         }
 
         public void ExpandBones()

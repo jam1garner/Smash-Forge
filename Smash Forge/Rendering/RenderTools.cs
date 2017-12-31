@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Reflection;
 using SALT.PARAMS;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace Smash_Forge
 {
@@ -1472,16 +1473,16 @@ namespace Smash_Forge
 
             if (m.NUD != null)
             {
-                m.NUD.Render(v, m.VBN);
+                m.NUD.Render(m.VBN);
                 m.NUD.DrawPoints(v, m.VBN);
             }
         }
 
-        public static void DrawBones()
+        public static void DrawBones(List<ModelContainer> con)
         {
-            if (Runtime.ModelContainers.Count > 0)
+            if (con.Count > 0)
             {
-                foreach (ModelContainer m in Runtime.ModelContainers)
+                foreach (ModelContainer m in con)
                 {
                     DrawVBN(m.VBN);
                     if (m.bch != null)

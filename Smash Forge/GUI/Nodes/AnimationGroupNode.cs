@@ -28,7 +28,16 @@ namespace Smash_Forge
             import.Click += Import;
             cm.MenuItems.Add(import);
 
+            MenuItem remove = new MenuItem("Remove Group");
+            remove.Click += Remove;
+            cm.MenuItems.Add(remove);
+
             ContextMenu = cm;
+        }
+
+        public void Remove(object sender, EventArgs args)
+        {
+            //Parent.Nodes.Remove(this);
         }
 
         public void Import(object sender, EventArgs args)
@@ -122,9 +131,9 @@ namespace Smash_Forge
             }
         }
         
-        public static void Resave(object sender, EventArgs args)
+        public void Resave(object sender, EventArgs args)
         {
-            TreeNode n = MainForm.Instance.animList.treeView1.SelectedNode;
+            TreeNode n = this;
 
             if(Runtime.TargetVBN == null)
             {
@@ -146,7 +155,7 @@ namespace Smash_Forge
                         if (sf.FileName.ToLower().EndsWith(".bch"))
                             MessageBox.Show("Note: Only animations with linear interpolation are currently supported.");
 
-                        Node = MainForm.Instance.animList.treeView1.SelectedNode;
+                        Node = n;
                         FileName = sf.FileName;
 
                         MainForm.Instance.Progress = new ProgessAlert();

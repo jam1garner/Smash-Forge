@@ -19,16 +19,17 @@ namespace Smash_Forge
 
         public List<NUD.Polygon> selected = new List<NUD.Polygon>();
         public bool finished = false;
+        public List<ModelContainer> ModelContainers = new List<ModelContainer>();
 
         private void PolygonSelector_Load(object sender, EventArgs e)
         {
             int modelCount = 0;
-            foreach (ModelContainer mc in Runtime.ModelContainers)
+            foreach (ModelContainer mc in ModelContainers)
             {
                 if (mc.NUD != null)
                 {
                     TreeNode model = new TreeNode($"Model {modelCount}") { Tag = mc.NUD };
-                    foreach (NUD.Mesh m in mc.NUD.meshes)
+                    foreach (NUD.Mesh m in mc.NUD.Nodes)
                     {
                         TreeNode mesh = new TreeNode(m.Text) { Tag = m };
                         foreach (NUD.Polygon p in m.Nodes)

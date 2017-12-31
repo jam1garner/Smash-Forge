@@ -93,13 +93,16 @@ namespace Smash_Forge
             //grab all that material data so we can apply images later
             Dictionary<string, ColladaImages> images = new Dictionary<string, ColladaImages>();
             foreach (var image in dae.library_images)
-                images.Add(image.id, image);
+                if(!images.ContainsKey(image.id))
+                    images.Add(image.id, image);
             Dictionary<string, ColladaEffects> effects = new Dictionary<string, ColladaEffects>();
             foreach (var efc in dae.library_effects)
-                effects.Add(efc.id, efc);
+                if (!effects.ContainsKey(efc.id))
+                    effects.Add(efc.id, efc);
             Dictionary<string, ColladaMaterials> materials = new Dictionary<string, ColladaMaterials>();
             foreach (var mat in dae.library_materials)
-                materials.Add(mat.id, mat);
+                if (!materials.ContainsKey(mat.id))
+                    materials.Add(mat.id, mat);
 
             Dictionary<string, NUT_Texture> existingTextures = new Dictionary<string, NUT_Texture>();
 
@@ -189,7 +192,7 @@ namespace Smash_Forge
                 }
 
                 geometries.Add("#" + geom.id, nmesh);
-                n.meshes.Add(nmesh);
+                n.Nodes.Add(nmesh);
                 nmesh.Text = geom.name;
                 NUD.Polygon npoly = new NUD.Polygon();
                 npoly.setDefaultMaterial();
@@ -390,7 +393,7 @@ namespace Smash_Forge
                             continue;
 
                         NUD.Mesh n_mesh = new NUD.Mesh();
-                        n.meshes.Add(n_mesh);
+                        n.Nodes.Add(n_mesh);
                         n_mesh.Text = geom.name;
 
                         Dictionary<string, double[]> sources = new Dictionary<string, double[]>();
@@ -566,7 +569,7 @@ namespace Smash_Forge
                             }
                         }
                         // Dump Items[] for geom
-                        NUD.Mesh m = n.meshes[cid];
+                        NUD.Mesh m = (NUD.Mesh)n.Nodes[cid];
                         List<NUD.Vertex> v = ((NUD.Polygon)m.Nodes[0]).vertices;
                         string[] vcount = skin.vertex_weights.vcount.Split(' ');
                         string[] vi = skin.vertex_weights.v.Split(' ');
@@ -616,7 +619,7 @@ namespace Smash_Forge
                 }
             }
 
-            foreach (NUD.Mesh mesh in n.meshes)
+            foreach (NUD.Mesh mesh in n.Nodes)
             {
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {
@@ -647,10 +650,10 @@ namespace Smash_Forge
             node.name = b.Text;
             node.id = node.name + "_id";
             node.type = "JOINT";
-            node.mat = Matrix4.CreateScale(b.sca) * Matrix4.CreateFromQuaternion(b.rot) * Matrix4.CreateTranslation(b.pos);
-            node.pos = b.pos;
-            node.sca = b.sca;
-            node.rot = ANIM.quattoeul(b.rot);
+            node.pos = new Vector3(b.position[0], b.position[1], b.position[2]);
+            node.sca = new Vector3(b.scale[0], b.scale[1], b.scale[2]);
+            node.rot = new Vector3(b.rotation[0], b.rotation[1], b.rotation[2]);
+            node.mat = Matrix4.CreateScale(node.sca) * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(node.rot.X, node.rot.Y, node.rot.Z)) * Matrix4.CreateTranslation(node.pos);
             foreach (var bone in b.GetChildren())
                 SaveBoneNodes(dae, bone, vbn, node);
         }
@@ -965,7 +968,7 @@ namespace Smash_Forge
             // geometry
 
             int num = 0;
-            foreach (NUD.Mesh mesh in nud.meshes)
+            foreach (NUD.Mesh mesh in nud.Nodes)
             {
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {

@@ -12,7 +12,9 @@ namespace Smash_Forge.GUI.Menus
 {
     public partial class CameraSettings : Form
     {
-        public CameraSettings()
+        public Camera Camera;
+
+        public CameraSettings(Camera c)
         {
             InitializeComponent();
             numericHorizontalRadians.Maximum = Decimal.MaxValue;
@@ -33,10 +35,12 @@ namespace Smash_Forge.GUI.Menus
             numericZoom.Maximum = Decimal.MaxValue;
             numericZoom.Minimum = Decimal.MinValue;
 
-            depthSlider.Value = Math.Min((int)Runtime.renderDepth, depthSlider.Maximum);
-            fovSlider.Value = (int)(Camera.viewportCamera.fov * 180.0f / Math.PI);
-            fovTB.Text = (int)(Camera.viewportCamera.fov * 180.0f / Math.PI) + "";
-            renderDepthTB.Text = Runtime.renderDepth + "";
+            Camera = c;
+            depthSlider.Value = Math.Min((int)Camera.RenderDepth, depthSlider.Maximum);
+            fovSlider.Value = (int)(Camera.fov * 180.0f / Math.PI);
+            fovTB.Text = (int)(Camera.fov * 180.0f / Math.PI) + "";
+            renderDepthTB.Text = Camera.RenderDepth + "";
+            updatePosition();
         }
 
         private void CameraPosition_Load(object sender, EventArgs e)
@@ -53,56 +57,64 @@ namespace Smash_Forge.GUI.Menus
             float height = Convert.ToSingle(numericPositionY.Value);
             float zoom = Convert.ToSingle(numericZoom.Value);
 
-            Camera.viewportCamera.setPosition(new OpenTK.Vector3(width, height, zoom));
-            Camera.viewportCamera.setRotX(xRotation);
-            Camera.viewportCamera.setRotY(yRotation);
-            Camera.viewportCamera.Update();
+            Camera.setPosition(new OpenTK.Vector3(width, height, zoom));
+            Camera.setRotX(xRotation);
+            Camera.setRotY(yRotation);
+            Camera.Update();
         }
 
         // Updates text controls based on parentViewport's current camera position
         public void updatePosition()
         {
-            OpenTK.Vector3 pos = Camera.viewportCamera.getPosition();
+            OpenTK.Vector3 pos = Camera.getPosition();
 
-            numericHorizontalRadians.Value = Convert.ToDecimal(Camera.viewportCamera.getRotY());
-            numericVerticalRadians.Value = Convert.ToDecimal(Camera.viewportCamera.getRotX());
+            numericHorizontalRadians.Value = Convert.ToDecimal(Camera.getRotY());
+            numericVerticalRadians.Value = Convert.ToDecimal(Camera.getRotX());
             numericPositionX.Value = Convert.ToDecimal(pos.X);
             numericPositionY.Value = Convert.ToDecimal(pos.Y);
             numericZoom.Value = Convert.ToDecimal(pos.Z);
 
             // derived values
-            numericHorizontalDegrees.Value = Convert.ToDecimal(Camera.viewportCamera.getRotY() * (180 / Math.PI));
-            numericVerticalDegrees.Value = Convert.ToDecimal(Camera.viewportCamera.getRotX() * (180 / Math.PI));
+            numericHorizontalDegrees.Value = Convert.ToDecimal(Camera.getRotY() * (180 / Math.PI));
+            numericVerticalDegrees.Value = Convert.ToDecimal(Camera.getRotX() * (180 / Math.PI));
+
+            //buttonApply_Click(null, null);
         }
 
         private void numericHorizontalDegrees_ValueChanged(object sender, EventArgs e)
         {
             numericHorizontalRadians.Value = Convert.ToDecimal(Convert.ToSingle(numericHorizontalDegrees.Value) * (Math.PI / 180));
+            //buttonApply_Click(null, null);
         }
 
         private void numericVerticalDegrees_ValueChanged(object sender, EventArgs e)
         {
             numericVerticalRadians.Value = Convert.ToDecimal(Convert.ToSingle(numericVerticalDegrees.Value) * (Math.PI / 180));
+            //buttonApply_Click(null, null);
         }
 
         private void numericHorizontalRadians_ValueChanged(object sender, EventArgs e)
         {
             numericHorizontalDegrees.Value = Convert.ToDecimal(Convert.ToSingle(numericHorizontalRadians.Value) * (180 / Math.PI));
+            //buttonApply_Click(null, null);
         }
 
         private void numericVerticalRadians_ValueChanged(object sender, EventArgs e)
         {
             numericVerticalDegrees.Value = Convert.ToDecimal(Convert.ToSingle(numericVerticalRadians.Value) * (180 / Math.PI));
+            //buttonApply_Click(null, null);
         }
 
         private void fovSlider_Scroll(object sender, EventArgs e)
         {
             fovTB.Text = fovSlider.Value + "";
+            //buttonApply_Click(null, null);
         }
 
         private void depthSlider_Scroll(object sender, EventArgs e)
         {
             renderDepthTB.Text = depthSlider.Value + "";
+            //buttonApply_Click(null, null);
         }
 
         private void renderDepthTB_TextChanged(object sender, EventArgs e)
@@ -111,7 +123,7 @@ namespace Smash_Forge.GUI.Menus
             if (float.TryParse(renderDepthTB.Text, out i))
             {
                 renderDepthTB.BackColor = Color.White;
-                Runtime.renderDepth = i;
+                Camera.RenderDepth = i;
             }
             else
                 renderDepthTB.BackColor = Color.Red;
@@ -121,6 +133,7 @@ namespace Smash_Forge.GUI.Menus
             newSliderValue = Math.Min(newSliderValue, depthSlider.Maximum);
             newSliderValue = Math.Max(newSliderValue, depthSlider.Minimum);
             depthSlider.Value = newSliderValue;
+            //buttonApply_Click(null, null);
         }
 
         private void fovTB_TextChanged(object sender, EventArgs e)
@@ -129,7 +142,7 @@ namespace Smash_Forge.GUI.Menus
             if (float.TryParse(fovTB.Text, out i))
             {
                 fovTB.BackColor = Color.White;
-                Camera.viewportCamera.fov = i * (float)Math.PI / 180.0f;
+                Camera.fov = i * (float)Math.PI / 180.0f;
             }
             else
                 fovTB.BackColor = Color.Red;
@@ -139,6 +152,7 @@ namespace Smash_Forge.GUI.Menus
             newSliderValue = Math.Min(newSliderValue, fovSlider.Maximum);
             newSliderValue = Math.Max(newSliderValue, 0);
             fovSlider.Value = newSliderValue;
+            //buttonApply_Click(null, null);
         }
     }
 }

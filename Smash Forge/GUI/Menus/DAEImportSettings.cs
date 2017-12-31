@@ -68,7 +68,7 @@ namespace Smash_Forge
 
             bool warning = false;
 
-            foreach (NUD.Mesh mesh in nud.meshes)
+            foreach (NUD.Mesh mesh in nud.Nodes)
             {
                 if (BoneTypes[(string)comboBox2.SelectedItem] == BoneTypes["No Bones"])
                     mesh.boneflag = 0;
@@ -165,7 +165,7 @@ namespace Smash_Forge
 
             if (checkBox2.Checked)
             {
-                foreach (NUD.Mesh mesh in nud.meshes)
+                foreach (NUD.Mesh mesh in nud.Nodes)
                 {
                     if (mesh.Text.Length > 5)
                         mesh.Text = mesh.Text.Substring(5, mesh.Text.Length - 5);
@@ -178,18 +178,10 @@ namespace Smash_Forge
 
         public VBN getVBN()
         {
-            VBN v = null;
-
             if (!vbnFileLabel.Text.Equals(""))
-            {
-                v = new VBN(vbnFileLabel.Text);
-            }else
-            {
-                if (Runtime.ModelContainers.Count > 0)
-                    v = Runtime.ModelContainers[0].VBN;
-            }
-
-            return v;
+                return new VBN(vbnFileLabel.Text);
+            else
+                return null;
         }
 
         private void closeButton(object sender, EventArgs e)
@@ -210,8 +202,19 @@ namespace Smash_Forge
 
         private void button1_Click(object sender, EventArgs e)
         {
-            exitStatus = Opened;
-            Close();
+            if (vbnFileLabel.Text.Equals(""))
+            {
+                DialogResult dialogResult = MessageBox.Show("You are not using a VBN to import.\nDo you want to generate one?", "Warning", MessageBoxButtons.OKCancel);
+                if (dialogResult == DialogResult.OK)
+                {
+                    exitStatus = Opened;
+                    Close();
+                }
+            }else
+            {
+                exitStatus = Opened;
+                Close();
+            }
         }
 
         private void checkBox5_CheckedChanged(object sender, EventArgs e)

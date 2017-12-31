@@ -655,11 +655,11 @@ namespace Smash_Forge
 
         public static string BoneNameFromHash(uint boneHash)
         {
-            foreach (ModelContainer m in Runtime.ModelContainers)
+            /*foreach (ModelContainer m in Runtime.ModelContainers)
                 if (m.VBN != null)
                     foreach (Bone b in m.VBN.bones)
                         if (b.boneId == boneHash)
-                            return b.Text;
+                            return b.Text;*/
 
             /*csvHashes csv = new csvHashes(Path.Combine(MainForm.executableDir, "hashTable.csv"));
             for (int i = 0; i < csv.ids.Count; i++)
@@ -669,15 +669,13 @@ namespace Smash_Forge
             return $"[Bonehash {boneHash.ToString("X")}]";
         }
 
-        public static Bone GetBone(uint boneHash)
+        public Bone GetBone(uint boneHash)
         {
             if(boneHash == 3449071621)
                 return null;
-            foreach (ModelContainer m in Runtime.ModelContainers)
-                if (m.VBN != null)
-                    foreach (Bone b in m.VBN.bones)
-                        if (b.boneId == boneHash)
-                            return b;
+            foreach (Bone b in bones)
+                if (b.boneId == boneHash)
+                    return b;
             MessageBox.Show("Open the VBN before editing the SB");
             return null;
         }

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
+using System.Text.RegularExpressions;
 
 namespace Smash_Forge
 {
@@ -29,6 +30,8 @@ namespace Smash_Forge
 
             ContextMenu m = new ContextMenu();
 
+            // Import Animation
+
             MenuItem exportAll = new MenuItem("Export All as OMO");
             exportAll.Click += exportAllAsOMOToolStripMenuItem_Click;
             m.MenuItems.Add(exportAll);
@@ -36,6 +39,10 @@ namespace Smash_Forge
             MenuItem createAG = new MenuItem("Create Animation Group");
             createAG.Click += createAnimationGroupToolStripMenuItem_Click;
             m.MenuItems.Add(createAG);
+
+            MenuItem importPAC = new MenuItem("Import PAC");
+            importPAC.Click += importPAC_Click;
+            m.MenuItems.Add(importPAC);
 
             treeView1.ContextMenu = m;
         }
@@ -48,18 +55,19 @@ namespace Smash_Forge
 
         private void selectItem(object sender, TreeNodeMouseClickEventArgs e)
         {
-            Runtime.TargetMTA.Clear();
-            Runtime.TargetAnim = null;
+            //Runtime.TargetMTA.Clear();
+            //Runtime.TargetAnim = null;
 
             if (e.Node is Animation)
             {
-                Runtime.TargetAnimString = e.Node.Text;
+                //Runtime.TargetAnimString = e.Node.Text;
 
-                Animation running = new Animation("Running");
+                Animation running = new Animation(e.Node.Text);
                 running.ReplaceMe((Animation)e.Node);
+                ((ModelViewport)Parent).CurrentAnimation = running;
 
                 Queue<TreeNode> NodeQueue = new Queue<TreeNode>();
-                foreach(TreeNode n in MainForm.Instance.animList.treeView1.Nodes)
+                foreach (TreeNode n in treeView1.Nodes)
                 {
                     NodeQueue.Enqueue(n);
                 }
@@ -89,11 +97,11 @@ namespace Smash_Forge
                             NodeQueue.Enqueue(tn);
                     }
                 }
-                
-                Runtime.TargetAnim = running;// Runtime.Animations[e.Node.Text];
+
+                //Runtime.TargetAnim = running;// Runtime.Animations[e.Node.Text];
 
                 //reset mtas
-                foreach (ModelContainer con in Runtime.ModelContainers)
+                foreach (ModelContainer con in ((ModelViewport)Parent).draw)
                 {
                     if (con.NUD != null && con.mta != null)
                     {
@@ -101,14 +109,14 @@ namespace Smash_Forge
                         foreach(MTA d in display)
                             con.NUD.applyMTA(d, 0);
 
-                        /*foreach (KeyValuePair<string, MTA> v in Runtime.MaterialAnimations)
+                        foreach (KeyValuePair<string, MTA> v in Runtime.MaterialAnimations)
                         {
                             if (v.Key.Contains("display"))
                             {
-                                con.nud.applyMTA(v.Value, 0);
+                                con.NUD.applyMTA(v.Value, 0);
                                 break;
                             }
-                        }*/
+                        }
                     }
                 }
 
@@ -127,12 +135,12 @@ namespace Smash_Forge
             }
             if (e.Node is MTA)
             {
-                MainForm.Instance.viewports[0].loadMTA((MTA)e.Node);
+                //MainForm.Instance.viewports[0].loadMTA((MTA)e.Node);
                 //Runtime.TargetMTA = ;
-                Runtime.TargetMTAString = e.Node.Text;
+                //Runtime.TargetMTAString = e.Node.Text;
 
                 Queue<TreeNode> NodeQueue = new Queue<TreeNode>();
-                foreach (TreeNode n in MainForm.Instance.animList.treeView1.Nodes)
+                foreach (TreeNode n in treeView1.Nodes)
                 {
                     NodeQueue.Enqueue(n);
                 }
@@ -154,7 +162,7 @@ namespace Smash_Forge
                     }
                 }
 
-                foreach (ModelContainer con in Runtime.ModelContainers)
+                /*foreach (ModelContainer con in Runtime.ModelContainers)
                 {
                     if (con.NUD != null && con.mta != null)
                     {
@@ -162,7 +170,7 @@ namespace Smash_Forge
                         foreach (MTA d in display)
                             con.NUD.applyMTA(d, 0);
                     }
-                }
+                }*/
 
             }
         }
@@ -213,7 +221,7 @@ namespace Smash_Forge
                 {
                     string path = ofd.SelectedPath;
 
-                    foreach(TreeNode v in MainForm.Instance.animList.treeView1.Nodes)
+                    foreach (TreeNode v in treeView1.Nodes)
                     {
                         if (v is Animation)
                             OMOOld.createOMO(((Animation)v), Runtime.TargetVBN, path + "\\" + v.Text + ".omo");
@@ -225,8 +233,58 @@ namespace Smash_Forge
         private void createAnimationGroupToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AnimationGroupNode ag = new AnimationGroupNode();
-            MainForm.Instance.animList.treeView1.Nodes.Add(ag);
+            treeView1.Nodes.Add(ag);
             //ag.BeginEdit();
+        }
+
+        private void importPAC_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter =
+                    "Smash 4 PACK (.pac)|*.pac|" +
+                    "All files(*.*)|*.*";
+                
+                ofd.Multiselect = true;
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                    foreach (string filename in ofd.FileNames)
+                        ImportAnimation(filename);
+            }
+        }
+
+        public void ImportAnimation(string filename)
+        {
+            if (filename.ToLower().EndsWith(".pac"))
+            {
+                PAC p = new PAC();
+                p.Read(filename);
+                AnimationGroupNode animGroup = new AnimationGroupNode() { Text = filename };
+
+                foreach (var pair in p.Files)
+                {
+                    if (pair.Key.EndsWith(".omo"))
+                    {
+                        var anim = OMOOld.read(new FileData(pair.Value));
+                        animGroup.Nodes.Add(anim);
+                        string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
+                        if (!string.IsNullOrEmpty(AnimName))
+                        {
+                            anim.Text = AnimName;
+                        }
+                        Runtime.acmdEditor.updateCrcList();
+                    }
+                    else if (pair.Key.EndsWith(".mta"))
+                    {
+                        MTA mta = new MTA();
+                        mta.read(new FileData(pair.Value));
+                        mta.Text = pair.Key;
+                        animGroup.Nodes.Add(mta);
+                    }
+                }
+
+                treeView1.Nodes.Add(animGroup);
+            }
         }
     }
 }

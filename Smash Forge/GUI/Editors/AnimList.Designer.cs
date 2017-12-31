@@ -42,7 +42,7 @@
             this.treeView1.LabelEdit = true;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(140, 125);
+            this.treeView1.Size = new System.Drawing.Size(224, 89);
             this.treeView1.TabIndex = 0;
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.selectItem);
             this.treeView1.Click += new System.EventHandler(this.treeView1_Click);
@@ -55,7 +55,7 @@
             this.exportAllAsOMOToolStripMenuItem,
             this.createAnimationGroupToolStripMenuItem});
             this.AnimationCM.Name = "AnimationCM";
-            this.AnimationCM.Size = new System.Drawing.Size(204, 48);
+            this.AnimationCM.Size = new System.Drawing.Size(204, 70);
             // 
             // exportAllAsOMOToolStripMenuItem
             // 
@@ -75,7 +75,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(140, 125);
+            this.ClientSize = new System.Drawing.Size(224, 89);
             this.Controls.Add(this.treeView1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.HideOnClose = true;

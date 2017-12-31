@@ -44,7 +44,7 @@ namespace Smash_Forge
 
             NUD nud = new NUD();
             NUD.Mesh head = new NUD.Mesh();
-            nud.meshes.Add(head);
+            nud.Nodes.Add(head);
             head.Text = "Skapon";
 
             head.Nodes.Add(setToBone(scale(readPoly(files["head.obj"]), 1, 1, 1), vbn.bones[vbn.boneIndex("HeadN")], vbn));
@@ -235,7 +235,7 @@ namespace Smash_Forge
             removeLowPolyNr(nud);
             nud.PreRender();
 
-            Runtime.ModelContainers.Add(converted);
+            //Runtime.ModelContainers.Add(converted);
             //-------------------------------------------------
 
             Runtime.TargetVBN = converted.VBN;
@@ -302,10 +302,10 @@ namespace Smash_Forge
             List<NUD.Mesh> toRemove = new List<NUD.Mesh>();
 
             for (int i = 15; i <= 32; i++)
-                toRemove.Add(n.meshes[i]);
+                toRemove.Add((NUD.Mesh)n.Nodes[i]);
 
             foreach (NUD.Mesh m in toRemove)
-                n.meshes.Remove(m);
+                n.Nodes.Remove(m);
         }
 
 
@@ -353,7 +353,7 @@ namespace Smash_Forge
 
             vbn.reset();
 
-            foreach (NUD.Mesh mesh in nud.meshes)
+            foreach (NUD.Mesh mesh in nud.Nodes)
             {
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {
@@ -405,7 +405,7 @@ namespace Smash_Forge
 
             // now fix the nud
 
-            foreach (NUD.Mesh mesh in nud.meshes)
+            foreach (NUD.Mesh mesh in nud.Nodes)
             {
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {

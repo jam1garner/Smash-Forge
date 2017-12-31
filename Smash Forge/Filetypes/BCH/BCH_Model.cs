@@ -493,8 +493,8 @@ namespace Smash_Forge
             int i = 0;
             List<BCH_Mesh> Meshes = new List<BCH_Mesh>();
             List<Vertex> Verts = new List<Vertex>();
-            Console.WriteLine(n.Nodes.Count + " " + n.meshes.Count);
-            foreach (NUD.Mesh nudmesh in n.meshes)
+            Console.WriteLine(n.Nodes.Count + " " + n.Nodes.Count);
+            foreach (NUD.Mesh nudmesh in n.Nodes)
             {
                 BCH_Mesh mesh = new BCH_Mesh();
                 mesh.Text = Nodes[i].Text; //nudmesh.Text;//

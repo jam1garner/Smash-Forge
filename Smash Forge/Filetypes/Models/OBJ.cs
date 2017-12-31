@@ -151,7 +151,7 @@ namespace Smash_Forge
                     }
                 }
                 if(m.Nodes.Count > 0)
-                    n.meshes.Add(m);
+                    n.Nodes.Add(m);
             }
 
             n.Optimize();

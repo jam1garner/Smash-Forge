@@ -14,6 +14,8 @@ namespace Smash_Forge
 {
     public partial class LVDEditor : DockContent
     {
+        public LVD LVD;
+
         public class StringWrapper
         {
             public char[] data;
@@ -197,7 +199,7 @@ namespace Smash_Forge
         private void vertices_AfterSelect(object sender, TreeViewEventArgs e)
         {
             currentVert = (Vector2D)e.Node.Tag;
-            Runtime.LVDSelection = currentVert;
+            LVD.LVDSelection = currentVert;
             MainForm.Instance.viewports[0].timeSinceSelected.Restart();
             xVert.Value = (decimal)currentVert.x;
             yVert.Value = (decimal)currentVert.y;
@@ -206,7 +208,7 @@ namespace Smash_Forge
         private void lines_AfterSelect(object sender, TreeViewEventArgs e)
         {
             currentNormal = (Vector2D)((object[])e.Node.Tag)[0];
-            Runtime.LVDSelection = currentNormal;
+            LVD.LVDSelection = currentNormal;
             MainForm.Instance.viewports[0].timeSinceSelected.Restart();
             currentMat = (CollisionMat)((object[])e.Node.Tag)[1];
             leftLedge.Checked = currentMat.getFlag(6);

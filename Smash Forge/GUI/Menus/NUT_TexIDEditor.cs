@@ -127,6 +127,7 @@ namespace Smash_Forge
         public void Set(NUT n)
         {
             this.nut = n;
+            if (n.Nodes.Count == 0) return;
             int hash = ((NUT_Texture)n.Nodes[0]).HASHID;
             int type = hash >> 24;
             int chr = (hash >> 16) & 0xFF;
@@ -180,11 +181,11 @@ namespace Smash_Forge
                 }
             }
 
-            foreach(ModelContainer mc in Runtime.ModelContainers)
+            /*foreach(ModelContainer mc in Runtime.ModelContainers)
             {
                 if(mc.NUD != null)
                 {
-                    foreach(NUD.Mesh m in mc.NUD.meshes)
+                    foreach(NUD.Mesh m in mc.NUD.Nodes)
                     {
                         foreach(NUD.Polygon p in m.Nodes)
                         {
@@ -197,7 +198,7 @@ namespace Smash_Forge
                         }
                     }
                 }
-            }
+            }*/
         }
 
         private void button1_Click(object sender, EventArgs e)

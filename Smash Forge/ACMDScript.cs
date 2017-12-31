@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenTK;
+using OpenTK.Graphics.OpenGL;
+using System.Drawing;
 
 namespace Smash_Forge
 {
@@ -376,7 +379,7 @@ namespace Smash_Forge
                 case 0xFA1BC28A: // Subroutine1: call another script
                     // Try and load the other script. If we can't, then just keep going as per normal
                     uint crc = (uint)int.Parse(cmd.Parameters[0] + "");
-                    if (Runtime.Moveset.Game.Scripts.ContainsKey(crc))
+                    if (Runtime.Moveset.Game.Scripts.ContainsKey(crc)) //TODO:
                     {
                         subscripts.Add((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
 
@@ -894,5 +897,170 @@ namespace Smash_Forge
             // Modified version of Math.Round to try an approximate in-game behaviour
             return (int)Math.Floor(animFrame + 0.4);
         }
+
+        #region Rendering
+
+        public void Render(VBN Skeleton)
+        {
+            if (!Runtime.renderHitboxes || Skeleton == null) return;
+
+            if (Hitboxes.Count <= 0)
+                return;
+
+            GL.Enable(EnableCap.Blend);
+            GL.Disable(EnableCap.CullFace);
+            foreach (var pair in Hitboxes)
+            {
+                var h = pair.Value;
+
+                if (Runtime.HiddenHitboxes.Contains(h.ID))
+                    continue;
+
+                Bone b = getBone(h.Bone, Skeleton);
+                h.va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
+
+                // Draw angle marker
+                /*GL.LineWidth(7f);
+                GL.Begin(PrimitiveType.Lines);
+                GL.Color3(Color.Black);
+                GL.Vertex3(va);
+                GL.Vertex3(va + Vector3.Transform(new Vector3(0,0,h.Size), Matrix4.CreateRotationX(-h.Angle * ((float)Math.PI / 180f))));
+                GL.End();*/
+
+                GL.Color4(h.GetDisplayColor());
+
+                // Draw everything to the stencil buffer
+                RenderTools.beginTopLevelStencil();
+                if (!h.IsSphere())
+                {
+                    h.va2 = new Vector3(h.X2, h.Y2, h.Z2);
+                    if (h.Bone != -1) h.va2 = Vector3.Transform(h.va2, b.transform.ClearScale());
+                    RenderTools.drawCylinder(h.va, h.va2, h.Size);
+                }
+                else
+                {
+                    RenderTools.drawSphere(h.va, h.Size, 30);
+                }
+
+                // n factorial (n!) algorithm (NOT EFFICIENT) to draw subsequent hitboxes around each other.
+                // Will work fine for the low amounts of hitboxes in smash4.
+                if (Runtime.renderHitboxesNoOverlap)
+                {
+                    // Remove the stencil for the already drawn hitboxes
+                    RenderTools.beginTopLevelAntiStencil();
+                    foreach (var pair2 in Hitboxes.Reverse())
+                    {
+                        if (pair2.Key == pair.Key)
+                            break;  // this only works because the list is sorted
+                        var h2 = pair2.Value;
+
+                        if (!Runtime.HiddenHitboxes.Contains(h2.ID))
+                        {
+
+                            Bone b2 = getBone(h2.Bone, Skeleton);
+                            var va = Vector3.Transform(new Vector3(h2.X, h2.Y, h2.Z), b2.transform.ClearScale());
+                            if (!h2.IsSphere())
+                            {
+                                var va2 = new Vector3(h2.X2, h2.Y2, h2.Z2);
+                                if (h2.Bone != -1) va2 = Vector3.Transform(va2, b2.transform.ClearScale());
+                                RenderTools.drawCylinder(va, va2, h2.Size);
+                            }
+                            else
+                            {
+                                RenderTools.drawSphere(va, h2.Size, 30);
+                            }
+                        }
+                    }
+                }
+
+                if (Runtime.SelectedHitboxID == h.ID)
+                {
+                    GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColorSelected));
+                    if (!h.IsSphere())
+                    {
+                        RenderTools.drawWireframeCylinder(h.va, h.va2, h.Size);
+                    }
+                    else
+                    {
+                        RenderTools.drawWireframeSphere(h.va, h.Size, 10);
+                    }
+                }
+
+                // End stenciling and draw over all the stenciled bits
+                RenderTools.endTopLevelStencilAndDraw();
+            }
+            GL.Enable(EnableCap.CullFace);
+            GL.Disable(EnableCap.Blend);
+
+        }
+
+        public Tuple<int, int> translateScriptBoneId(int boneId)
+        {
+            int jtbIndex = 0;
+            while (boneId >= 1000)
+            {
+                boneId -= 1000;
+                jtbIndex++;  // look in a different joint table
+            }
+            return Tuple.Create(boneId, jtbIndex);
+        }
+
+        public Bone getBone(int bone, VBN VBN)
+        {
+            Tuple<int, int> boneInfo = translateScriptBoneId(bone);
+            int bid = boneInfo.Item1;
+            int jtbIndex = boneInfo.Item2;
+
+            Bone b = new Bone(null);
+
+            if (bone != -1)
+            {
+                //foreach (ModelContainer m in ModelContainers)
+                {
+                    // ModelContainers should store Hitbox data or have them linked since it will use last
+                    // modelcontainer bone for hitbox display (which might not be the character model).
+                    // This is especially important for the future when importing weapons for some moves.
+                    if (VBN != null)
+                    {
+                        try //Try used to avoid bone not found issue that crashes the application
+                        {
+                            if (VBN.jointTable.Count < 1)
+                                b = VBN.bones[bid];
+                            else
+                            {
+                                if (jtbIndex == 0)
+                                {
+                                    // Special rule for table 0, index 0 is *always* TransN, and index 1 counts as index 0
+                                    if (bid <= 0)
+                                    {
+                                        b = VBN.bones.Find(item => item.Name == "TransN");
+                                        if (b == null)
+                                            b = VBN.bones[0];
+                                    }
+                                    else  // Index 2 counts as index 1, etc
+                                        b = VBN.bones[VBN.jointTable[jtbIndex][bid - 1]];
+                                }
+                                else if (jtbIndex < VBN.jointTable.Count)
+                                {
+                                    // Extra joint tables don't have the TransN rule
+                                    b = VBN.bones[VBN.jointTable[jtbIndex][bid]];
+                                }
+                                else
+                                {
+                                    //If there is no jointTable but bone is >1000 then don't look into a another joint table
+                                    //This makes some weapons like Luma have hitboxes visualized
+                                    //b = m.vbn.bones[bid];
+                                    b = VBN.bones[VBN.jointTable[VBN.jointTable.Count - 1][bid]];
+                                }
+                            }
+                        }
+                        catch { }
+                    }
+                }
+            }
+            return b;
+        }
+
+        #endregion
     }
 }

@@ -74,13 +74,14 @@ namespace Smash_Forge
             Close();
         }
 
+        public List<ModelContainer> ModelContainers = new List<ModelContainer>();
         private void BoneRiggingSelector_Load(object sender, EventArgs e)
         {
             //List<ModelContainer> m = Runtime.ModelContainers;
             //Console.WriteLine($"Model Count: {Runtime.ModelContainers.Count}");
             treeView1.Nodes.Clear();
             List<VBN> alreadyUsedVbns = new List<VBN>();
-            foreach(ModelContainer model in Runtime.ModelContainers)
+            foreach(ModelContainer model in ModelContainers)
             {
                 if (!alreadyUsedVbns.Contains(model.VBN) && model.VBN != null)
                 {

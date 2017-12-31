@@ -29,8 +29,9 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ModelViewport));
-            this.glViewport = new OpenTK.GLControl();
+            this.glViewport = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(8, 8, 8, 8), 24, 8, 16));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.animationTrackBar = new System.Windows.Forms.TrackBar();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.totalFrame = new System.Windows.Forms.NumericUpDown();
@@ -43,7 +44,13 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.weightToolButton = new System.Windows.Forms.ToolStripButton();
+            this.ResetCamera = new System.Windows.Forms.ToolStripButton();
+            this.CameraSettings = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.ViewComboBox = new System.Windows.Forms.ToolStripComboBox();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.animationTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalFrame)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.currentFrame)).BeginInit();
             this.toolStrip1.SuspendLayout();
@@ -55,15 +62,19 @@
             this.glViewport.Dock = System.Windows.Forms.DockStyle.Fill;
             this.glViewport.Location = new System.Drawing.Point(0, 0);
             this.glViewport.Name = "glViewport";
-            this.glViewport.Size = new System.Drawing.Size(624, 441);
+            this.glViewport.Size = new System.Drawing.Size(624, 468);
             this.glViewport.TabIndex = 0;
             this.glViewport.VSync = false;
             this.glViewport.Click += new System.EventHandler(this.glViewport_Click);
+            this.glViewport.Paint += new System.Windows.Forms.PaintEventHandler(this.Render);
             this.glViewport.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseDoubleClick);
+            this.glViewport.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseMove);
             this.glViewport.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseUp);
+            this.glViewport.Resize += new System.EventHandler(this.glViewport_Resize);
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.animationTrackBar);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.totalFrame);
@@ -74,12 +85,22 @@
             this.groupBox1.Controls.Add(this.prevButton);
             this.groupBox1.Controls.Add(this.playButton);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox1.Location = new System.Drawing.Point(0, 350);
+            this.groupBox1.Location = new System.Drawing.Point(0, 348);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(624, 91);
+            this.groupBox1.Size = new System.Drawing.Size(624, 120);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Settings";
+            this.groupBox1.Text = "Animation Controls";
+            // 
+            // animationTrackBar
+            // 
+            this.animationTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.animationTrackBar.Location = new System.Drawing.Point(12, 16);
+            this.animationTrackBar.Name = "animationTrackBar";
+            this.animationTrackBar.Size = new System.Drawing.Size(423, 45);
+            this.animationTrackBar.TabIndex = 9;
+            this.animationTrackBar.ValueChanged += new System.EventHandler(this.animationTrackBar_ValueChanged);
             // 
             // label2
             // 
@@ -106,6 +127,11 @@
             this.totalFrame.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.totalFrame.Enabled = false;
             this.totalFrame.Location = new System.Drawing.Point(564, 14);
+            this.totalFrame.Maximum = new decimal(new int[] {
+            99999,
+            0,
+            0,
+            0});
             this.totalFrame.Name = "totalFrame";
             this.totalFrame.Size = new System.Drawing.Size(54, 20);
             this.totalFrame.TabIndex = 6;
@@ -114,14 +140,20 @@
             // 
             this.currentFrame.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.currentFrame.Location = new System.Drawing.Point(482, 14);
+            this.currentFrame.Maximum = new decimal(new int[] {
+            99999,
+            0,
+            0,
+            0});
             this.currentFrame.Name = "currentFrame";
             this.currentFrame.Size = new System.Drawing.Size(54, 20);
             this.currentFrame.TabIndex = 5;
+            this.currentFrame.ValueChanged += new System.EventHandler(this.currentFrame_ValueChanged);
             // 
             // endButton
             // 
             this.endButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.endButton.Location = new System.Drawing.Point(580, 40);
+            this.endButton.Location = new System.Drawing.Point(580, 64);
             this.endButton.Name = "endButton";
             this.endButton.Size = new System.Drawing.Size(38, 45);
             this.endButton.TabIndex = 4;
@@ -131,7 +163,7 @@
             // nextButton
             // 
             this.nextButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.nextButton.Location = new System.Drawing.Point(542, 40);
+            this.nextButton.Location = new System.Drawing.Point(542, 64);
             this.nextButton.Name = "nextButton";
             this.nextButton.Size = new System.Drawing.Size(32, 45);
             this.nextButton.TabIndex = 3;
@@ -140,7 +172,7 @@
             // 
             // beginButton
             // 
-            this.beginButton.Location = new System.Drawing.Point(6, 40);
+            this.beginButton.Location = new System.Drawing.Point(6, 64);
             this.beginButton.Name = "beginButton";
             this.beginButton.Size = new System.Drawing.Size(38, 44);
             this.beginButton.TabIndex = 2;
@@ -149,7 +181,7 @@
             // 
             // prevButton
             // 
-            this.prevButton.Location = new System.Drawing.Point(50, 40);
+            this.prevButton.Location = new System.Drawing.Point(50, 64);
             this.prevButton.Name = "prevButton";
             this.prevButton.Size = new System.Drawing.Size(34, 44);
             this.prevButton.TabIndex = 1;
@@ -161,45 +193,95 @@
             this.playButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.playButton.AutoSize = true;
-            this.playButton.Location = new System.Drawing.Point(90, 40);
+            this.playButton.Location = new System.Drawing.Point(90, 64);
             this.playButton.Name = "playButton";
             this.playButton.Size = new System.Drawing.Size(446, 44);
             this.playButton.TabIndex = 0;
             this.playButton.Text = "Play";
             this.playButton.UseVisualStyleBackColor = true;
+            this.playButton.Click += new System.EventHandler(this.playButton_Click);
             // 
             // toolStrip1
             // 
+            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ViewComboBox,
+            this.toolStripSeparator2,
             this.toolStripLabel1,
-            this.weightToolButton});
+            this.weightToolButton,
+            this.ResetCamera,
+            this.CameraSettings,
+            this.toolStripSeparator1});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(624, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(624, 31);
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
             // 
             // toolStripLabel1
             // 
             this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(48, 22);
+            this.toolStripLabel1.Size = new System.Drawing.Size(48, 28);
             this.toolStripLabel1.Text = "Camera";
             // 
             // weightToolButton
             // 
             this.weightToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.weightToolButton.Enabled = false;
             this.weightToolButton.Image = ((System.Drawing.Image)(resources.GetObject("weightToolButton.Image")));
             this.weightToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.weightToolButton.Name = "weightToolButton";
-            this.weightToolButton.Size = new System.Drawing.Size(23, 22);
+            this.weightToolButton.Size = new System.Drawing.Size(28, 28);
             this.weightToolButton.Text = "toolStripButton1";
             this.weightToolButton.Click += new System.EventHandler(this.weightToolButton_Click);
+            // 
+            // ResetCamera
+            // 
+            this.ResetCamera.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ResetCamera.Image = ((System.Drawing.Image)(resources.GetObject("ResetCamera.Image")));
+            this.ResetCamera.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ResetCamera.Name = "ResetCamera";
+            this.ResetCamera.Size = new System.Drawing.Size(28, 28);
+            this.ResetCamera.Text = "Reset Camera";
+            this.ResetCamera.ToolTipText = "Resets the camera to default view";
+            this.ResetCamera.Click += new System.EventHandler(this.ResetCamera_Click);
+            // 
+            // CameraSettings
+            // 
+            this.CameraSettings.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.CameraSettings.Image = ((System.Drawing.Image)(resources.GetObject("CameraSettings.Image")));
+            this.CameraSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.CameraSettings.Name = "CameraSettings";
+            this.CameraSettings.Size = new System.Drawing.Size(28, 28);
+            this.CameraSettings.Text = "Camera Settings";
+            this.CameraSettings.ToolTipText = "Change camera settings";
+            this.CameraSettings.Click += new System.EventHandler(this.CameraSettings_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
+            // 
+            // ViewComboBox
+            // 
+            this.ViewComboBox.Items.AddRange(new object[] {
+            "Model Viewer",
+            "LVD Editor"});
+            this.ViewComboBox.Name = "ViewComboBox";
+            this.ViewComboBox.Size = new System.Drawing.Size(121, 31);
+            this.ViewComboBox.ToolTipText = "The current view for the Viewport";
+            this.ViewComboBox.SelectedIndexChanged += new System.EventHandler(this.ViewComboBox_SelectedIndexChanged);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 31);
             // 
             // ModelViewport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(624, 441);
+            this.ClientSize = new System.Drawing.Size(624, 468);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.glViewport);
@@ -207,9 +289,9 @@
             this.Name = "ModelViewport";
             this.Text = "ModelViewport";
             this.Load += new System.EventHandler(this.ModelViewport_Load);
-            this.Resize += new System.EventHandler(this.ModelViewport_Resize);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.animationTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalFrame)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.currentFrame)).EndInit();
             this.toolStrip1.ResumeLayout(false);
@@ -235,5 +317,11 @@
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripLabel toolStripLabel1;
         private System.Windows.Forms.ToolStripButton weightToolButton;
+        private System.Windows.Forms.TrackBar animationTrackBar;
+        private System.Windows.Forms.ToolStripButton ResetCamera;
+        private System.Windows.Forms.ToolStripButton CameraSettings;
+        public System.Windows.Forms.ToolStripComboBox ViewComboBox;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     }
 }

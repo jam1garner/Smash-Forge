@@ -10,7 +10,7 @@ namespace Smash_Forge
 {
     public class Camera
     {
-        public static Camera viewportCamera = new Camera();
+        //public static Camera viewportCamera = new Camera();
 
         private Vector3 position = new Vector3(0, 10, -80);
         private float cameraXRotation = 0;
@@ -34,6 +34,8 @@ namespace Smash_Forge
         public float mouseSLast = 0;
         public float mouseYLast = 0;
         public float mouseXLast = 0;
+
+        public float RenderDepth = 5000;
 
         public Camera()
         {
@@ -157,7 +159,7 @@ namespace Smash_Forge
         {
             Matrix4 translation = Matrix4.CreateTranslation(position.X, -position.Y, position.Z);
             Matrix4 rotation = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation);
-            Matrix4 perspFOV = Matrix4.CreatePerspectiveFieldOfView(fov, renderWidth / (float)renderHeight, 1.0f, Runtime.renderDepth);
+            Matrix4 perspFOV = Matrix4.CreatePerspectiveFieldOfView(fov, renderWidth / (float)renderHeight, 1.0f, RenderDepth);
 
             modelViewMatrix = rotation * translation;
             mvpMatrix = modelViewMatrix * perspFOV;

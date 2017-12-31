@@ -728,7 +728,7 @@ namespace Smash_Forge
                 if (usedVertices.Count == 0)
                     continue;
 
-                nud.meshes.Add(mesh);
+                nud.Nodes.Add(mesh);
 
                 foreach (Vertex vert in usedVertices)
                 {

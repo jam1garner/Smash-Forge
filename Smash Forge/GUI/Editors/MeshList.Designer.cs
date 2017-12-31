@@ -72,6 +72,8 @@
             this.mergeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.belowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportAsDAEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importFromDAEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
             this.meshContextMenu.SuspendLayout();
@@ -401,9 +403,11 @@
             // MCContextMenu
             // 
             this.MCContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.importFromDAEToolStripMenuItem,
+            this.exportAsDAEToolStripMenuItem,
             this.mergeToolStripMenuItem});
             this.MCContextMenu.Name = "MCContextMenu";
-            this.MCContextMenu.Size = new System.Drawing.Size(109, 26);
+            this.MCContextMenu.Size = new System.Drawing.Size(167, 92);
             // 
             // mergeToolStripMenuItem
             // 
@@ -427,6 +431,20 @@
             this.aboveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboveToolStripMenuItem.Text = "Above";
             this.aboveToolStripMenuItem.Click += new System.EventHandler(this.aboveToolStripMenuItem_Click_1);
+            // 
+            // exportAsDAEToolStripMenuItem
+            // 
+            this.exportAsDAEToolStripMenuItem.Name = "exportAsDAEToolStripMenuItem";
+            this.exportAsDAEToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportAsDAEToolStripMenuItem.Text = "Export As DAE";
+            this.exportAsDAEToolStripMenuItem.Click += new System.EventHandler(this.exportAsDAEToolStripMenuItem_Click);
+            // 
+            // importFromDAEToolStripMenuItem
+            // 
+            this.importFromDAEToolStripMenuItem.Name = "importFromDAEToolStripMenuItem";
+            this.importFromDAEToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.importFromDAEToolStripMenuItem.Text = "Import From DAE";
+            this.importFromDAEToolStripMenuItem.Click += new System.EventHandler(this.importFromDAEToolStripMenuItem_Click);
             // 
             // MeshList
             // 
@@ -495,5 +513,7 @@
         private System.Windows.Forms.ToolStripMenuItem mergeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem belowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportAsDAEToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importFromDAEToolStripMenuItem;
     }
 }

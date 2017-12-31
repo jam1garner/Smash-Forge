@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace Smash_Forge
 {
@@ -307,6 +308,18 @@ namespace Smash_Forge
 
         private void BoneTreePanel_FormClosing(object sender, FormClosingEventArgs e)
         {
+        }
+
+        private void hashMatch_Click(object sender, EventArgs e)
+        {
+            foreach (Bone bone in VBN.bones)
+            {
+                uint bi = 0;
+                MainForm.Hashes.names.TryGetValue(bone.Text, out bi);
+                bone.boneId = bi;
+                if (bone.boneId == 0)
+                    bone.boneId = Crc32.Compute(bone.Text);
+            }
         }
     }
 }
