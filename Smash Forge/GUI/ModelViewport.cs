@@ -677,8 +677,14 @@ namespace Smash_Forge
                 //if (cameraPosForm != null && !cameraPosForm.IsDisposed)
                 //    cameraPosForm.updatePosition();
             }
-            if(OpenTK.Input.Mouse.GetState() != null)
-                Camera.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
+            try
+            {
+                if (OpenTK.Input.Mouse.GetState() != null)
+                    Camera.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
+            } catch
+            {
+
+            }
 
             Matrix4 matrix = Camera.getMVPMatrix();
             GL.MatrixMode(MatrixMode.Modelview);

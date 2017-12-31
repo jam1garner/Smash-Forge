@@ -88,7 +88,11 @@ namespace Smash_Forge
 
         public void Render(Camera camera, int depthmap, Matrix4 lightMatrix, Matrix4 modelMatrix)
         {
-            Shader shader = Runtime.shaders["nud"];
+            Shader shader;
+            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
+                shader = Runtime.shaders["NUD_Debug"];
+            else
+                shader = Runtime.shaders["nud"];
             GL.UseProgram(shader.programID);
 
             int renderType = (int)Runtime.renderType;

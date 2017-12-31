@@ -269,9 +269,9 @@ namespace Smash_Forge
                             {
                                 if (vertices.ContainsKey("#" + geom.id))
                                 {
-                                    //Console.WriteLine(vertices["#" + geom.id].Count + " " + i + " " + p.p[i]);
-                                    v.node.AddRange(vertices["#" + geom.id][p.p[i]].node);
-                                    v.weight.AddRange(vertices["#" + geom.id][p.p[i]].weight);
+                                    Console.WriteLine(vertices["#" + geom.id].Count + " " + i + " " + p.p[maxoffset * i]);
+                                    v.node.AddRange(vertices["#" + geom.id][p.p[maxoffset * i]].node);
+                                    v.weight.AddRange(vertices["#" + geom.id][p.p[maxoffset * i]].weight);
                                 }
                             }
                             else
@@ -294,9 +294,9 @@ namespace Smash_Forge
                                     {
                                         if (vertices.ContainsKey("#" + geom.id))
                                         {
-                                            //Console.WriteLine(vertices["#" + geom.id].Count + " " + i + " " + p.p[i]);
-                                            v.node.AddRange(vertices["#" + geom.id][p.p[i]].node);
-                                            v.weight.AddRange(vertices["#" + geom.id][p.p[i]].weight);
+                                            Console.WriteLine(vertices["#" + geom.id].Count + " " + i + " " + p.p[maxoffset * i]);
+                                            v.node.AddRange(vertices["#" + geom.id][p.p[maxoffset * i]].node);
+                                            v.weight.AddRange(vertices["#" + geom.id][p.p[maxoffset * i]].weight);
                                         }
                                     }
                                     else
