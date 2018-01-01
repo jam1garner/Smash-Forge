@@ -297,7 +297,7 @@ namespace Smash_Forge
         public static void clearMoveset()
         {
             Moveset = null;
-            acmdEditor.updateCrcList();
+            //acmdEditor.updateCrcList();
         }
 
         public static void StartupFromConfig(string config)

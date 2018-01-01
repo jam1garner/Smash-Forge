@@ -17,6 +17,8 @@ namespace Smash_Forge
             set
             {
                 nud = value;
+                if (xmb != null)
+                    nud.SetPropertiesFromXMB(xmb);
                 Refresh();
             }
         }
@@ -47,12 +49,50 @@ namespace Smash_Forge
             }
         }
         private VBN vbn;
+        public MTA MTA
+        {
+            get
+            {
+                return mta;
+            }
+            set
+            {
+                mta = value;
+                Refresh();
+            }
+        }
         public MTA mta;
-        public MOI moi;
-        public XMBFile xmb;
+        public MOI MOI
+        {
+            get
+            {
+                return moi;
+            }
+            set
+            {
+                moi = value;
+                Refresh();
+            }
+        }
+        private MOI moi;
+        public XMBFile XMB
+        {
+            get
+            {
+                return xmb;
+            }
+            set
+            {
+                xmb = value;
+                if (NUD != null)
+                    NUD.SetPropertiesFromXMB(xmb);
+                Refresh();
+            }
+        }
+        private XMBFile xmb;
 
+        // Other Model Formats
         public BCH bch;
-
         public DAT dat_melee;
 
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
@@ -65,6 +105,9 @@ namespace Smash_Forge
             nud = new NUD();
             nut = new NUT();
             vbn = new VBN();
+            mta = new MTA();
+            MOI = new MOI();
+            XMB = new XMBFile();
             Refresh();
         }
 
@@ -73,7 +116,17 @@ namespace Smash_Forge
             Nodes.Clear();
             if (nud != null) Nodes.Add(nud);
             if (nut != null) Nodes.Add(nut);
-            if (vbn != null) Nodes.Add(vbn);
+            if (vbn != null && vbn.Parent == null) Nodes.Add(vbn);
+            if (mta != null) Nodes.Add(mta);
+            if (moi != null) Nodes.Add(moi);
+            if (xmb != null) Nodes.Add(
+                new TreeNode()
+                {
+                    Tag = xmb,
+                    Text = "model.xmb",
+                    ImageKey = "info",
+                    SelectedImageKey = "info"
+                });
         }
 
         /*

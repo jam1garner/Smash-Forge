@@ -204,11 +204,13 @@ namespace Smash_Forge
         private void treeView1_DoubleClick(object sender, EventArgs e)
         {
             if (treeView1.SelectedNode == null) return;
-
-            if(treeView1.SelectedNode.Tag is BaseNode)
+            
+            if (treeView1.SelectedNode is BaseNode)
             {
                 if (((BaseNode)treeView1.SelectedNode).Openable)
+                {
                     MainForm.Instance.openFile(((FileInfo)treeView1.SelectedNode.Tag).FullName);
+                }
             }
         }
     }

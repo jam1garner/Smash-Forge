@@ -168,6 +168,7 @@ namespace Smash_Forge
             ACMDEditor = new ACMDPreviewEditor();
             ACMDEditor.Owner = this;
             ACMDEditor.Dock = DockStyle.Right;
+            ACMDEditor.updateCrcList();
             AddControl(ACMDEditor);
 
             HitboxList = new HitboxList();
@@ -189,6 +190,11 @@ namespace Smash_Forge
         public ModelViewport(string filename) : this()
         {
 
+        }
+
+        ~ModelViewport()
+        {
+            
         }
 
         public override void Save()
@@ -255,11 +261,6 @@ namespace Smash_Forge
                 // should properly initialize these eventually
                 Lights.stageFogSet[i] = new Vector3(0);
             }
-        }
-
-        ~ModelViewport()
-        {
-            //Application.Idle -= Application_Idle;
         }
 
         private void Application_Idle(object sender, EventArgs e)
@@ -638,6 +639,21 @@ namespace Smash_Forge
             this.Enabled = true;
 
             currentFrame.Value = cFrame;
+        }
+
+        private void ModelViewport_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            foreach (TreeNode n in MeshList.treeView1.Nodes)
+            {
+                if (n is ModelContainer)
+                {
+                    Runtime.TextureContainers.Remove(((ModelContainer)n).NUT);
+                    ((ModelContainer)n).NUT.Destroy();
+                    ((ModelContainer)n).NUD.Destroy();
+                }
+            }
+            
+            GC.Collect();
         }
 
         private void checkSelect()

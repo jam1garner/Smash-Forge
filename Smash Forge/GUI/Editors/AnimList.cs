@@ -103,9 +103,9 @@ namespace Smash_Forge
                 //reset mtas
                 foreach (ModelContainer con in ((ModelViewport)Parent).draw)
                 {
-                    if (con.NUD != null && con.mta != null)
+                    if (con.NUD != null && con.MTA != null)
                     {
-                        con.NUD.applyMTA(con.mta, 0);
+                        con.NUD.applyMTA(con.MTA, 0);
                         foreach(MTA d in display)
                             con.NUD.applyMTA(d, 0);
 

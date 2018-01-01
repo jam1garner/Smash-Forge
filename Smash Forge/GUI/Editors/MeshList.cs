@@ -40,6 +40,8 @@ namespace Smash_Forge
             iconList.Images.Add("frame", Properties.Resources.icon_model);
             iconList.Images.Add("image", Properties.Resources.icon_image);
             iconList.Images.Add("skeleton", Properties.Resources.icon_skeleton);
+            iconList.Images.Add("info", Properties.Resources.icon_info);
+            iconList.Images.Add("number", Properties.Resources.icon_number);
             iconList.Images.Add("nut", Properties.Resources.UVPattern);
             treeView1.ImageList = iconList;
 

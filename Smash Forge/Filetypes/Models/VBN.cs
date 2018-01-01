@@ -207,22 +207,39 @@ namespace Smash_Forge
             MenuItem save = new MenuItem("Save As");
             ContextMenu.MenuItems.Add(save);
             save.Click += Save;
+
+            ResetNodes();
         }
 
         public VBN(string filename) : this()
         {
+            FilePath = filename;
             Read(filename);
         }
 
         public override Endianness Endian { get; set; }
 
+        public string FilePath = "";
         public Int16 unk_1 = 2, unk_2 = 1;
         public UInt32 totalBoneCount;
         public UInt32[] boneCountPerType = new UInt32[4];
         public List<Bone> bones = new List<Bone>();
 
         public List<List<int>> jointTable = new List<List<int>>();
-        public SB swingBones = new SB();
+        public SB SwingBones {
+            get 
+            {
+                if (_swingBones == null)
+                    _swingBones = new SB();
+                return _swingBones;
+            }
+            set
+            {
+                _swingBones = value;
+                ResetNodes();
+            }
+        }
+        private SB _swingBones;
 
         #region Events
 
@@ -230,10 +247,10 @@ namespace Smash_Forge
 
         private void OpenEditor(object sender, EventArgs args)
         {
-            Nodes.Clear();
             if (Editor == null || Editor.IsDisposed)
             {
                 Editor = new BoneTreePanel(this);
+                Editor.FilePath = FilePath;
                 Editor.Text = Parent.Text + "\\" + Text;
                 MainForm.Instance.AddDockedControl(Editor);
             }
@@ -241,6 +258,13 @@ namespace Smash_Forge
             {
                 Editor.BringToFront();
             }
+        }
+
+        public void ResetNodes()
+        {
+            Nodes.Clear();
+
+            Nodes.Add(SwingBones);
         }
 
         public void Save(object sender, EventArgs args)
@@ -722,7 +746,20 @@ namespace Smash_Forge
             }
         }
 
+        public string FilePath;
         public List<SBEntry> bones = new List<SBEntry>();
+
+        public SB()
+        {
+            ImageKey = "skeleton";
+            SelectedImageKey = "skeleton";
+            Text = "model.sb";
+
+            ContextMenu = new ContextMenu();
+            MenuItem OpenEdit = new MenuItem("Open Editor");
+            OpenEdit.Click += OpenEditor;
+            ContextMenu.MenuItems.Add(OpenEdit);
+        }
 
         public void TryGetEntry(uint hash, out SBEntry entry)
         {
@@ -732,9 +769,18 @@ namespace Smash_Forge
                     entry = sb;
         }
 
+        public void OpenEditor(object sender, EventArgs args)
+        {
+            SwagEditor swagEditor = new SwagEditor(this);
+            swagEditor.Text = Path.GetFileName(FilePath);
+            swagEditor.FilePath = FilePath;
+            MainForm.Instance.AddDockedControl(swagEditor);
+        }
+
         public override void Read(string filename)
         {
             FileData d = new FileData(filename);
+            FilePath = filename;
             d.Endian = Endianness.Little; // characters are little
             d.seek(8); // skip magic and version?
             int count = d.readInt(); // entry count

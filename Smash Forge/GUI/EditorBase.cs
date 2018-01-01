@@ -7,6 +7,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using SALT.PARAMS;
 using System.IO;
 using System.Windows.Forms;
+using System.ComponentModel;
 
 namespace Smash_Forge
 {
@@ -39,6 +40,19 @@ namespace Smash_Forge
         public virtual void SaveAs()
         {
             throw new NotImplementedException();
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            if (Edited)
+            {
+                var window = MessageBox.Show(
+                    "Are you sure?\nYou have unsaved changes",
+                    "Close the window?",
+                    MessageBoxButtons.YesNo);
+
+                e.Cancel = (window == DialogResult.No);
+            }
         }
     }
 }

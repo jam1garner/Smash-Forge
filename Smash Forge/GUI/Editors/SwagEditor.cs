@@ -27,13 +27,16 @@ namespace Smash_Forge
             Edited = false;
         }
 
-        private SB swag;
+        private SB swag { get { return _swag; } set { _swag = value; vbn = ((VBN)_swag.Parent); } }
+        private SB _swag;
+        
+        private VBN vbn;
         private BoneButton[] buttons;
         private bool dontChange = false;
 
         public override void Save()
         {
-            if (FilePath.Equals(""))
+            if (String.IsNullOrEmpty(FilePath))
             {
                 SaveAs();
                 return;
@@ -69,12 +72,14 @@ namespace Smash_Forge
             SB.SBEntry sbEntry = (SB.SBEntry) listBox1.SelectedItem;
             if (sbEntry == null)
                 return;
-            /*boneButton1.SetBone(VBN.GetBone(sbEntry.hash));
+            boneButton1.vbn = vbn;
+            boneButton1.SetBone(vbn.GetBone(sbEntry.hash));
             for (int i = 0; i < buttons.Length; i++)
             {
-                Bone bone = VBN.GetBone(sbEntry.boneHashes[i]);
+                buttons[i].vbn = vbn;
+                Bone bone = vbn.GetBone(sbEntry.boneHashes[i]);
                 buttons[i].SetBone(bone);
-            }*/
+            }
             xMin.Value = (Decimal)sbEntry.rx1;
             xMax.Value = (Decimal)sbEntry.rx2;
             yMin.Value = (Decimal)sbEntry.ry1;

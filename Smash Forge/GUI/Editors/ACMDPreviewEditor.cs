@@ -238,8 +238,8 @@ namespace Smash_Forge
                 for (int i = 0; i < crcs.Count; i++)
                 {
                     string s = "";
-                    if (Runtime.Animnames.ContainsKey(crcs[i]))
-                        s = Runtime.Animnames[crcs[i]] + " - ";
+                    //if (Runtime.Animnames.ContainsKey(crcs[i]))
+                    //    s = Runtime.Animnames[crcs[i]] + " - ";
 
                     s += $"0x{crcs[i].ToString("X8")}";
 

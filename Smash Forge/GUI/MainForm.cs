@@ -486,11 +486,11 @@ namespace Smash_Forge
             if (!pathVBN.Equals(""))
             {
                 model.VBN = new VBN(pathVBN);
-                Runtime.TargetVBN = model.VBN;
+                //Runtime.TargetVBN = model.VBN;
                 if (!pathJTB.Equals(""))
                     model.VBN.readJointTable(pathJTB);
                 if (!pathSB.Equals(""))
-                    model.VBN.swingBones.Read(pathSB);
+                    model.VBN.SwingBones.Read(pathSB);
             }
 
             NUT nut = null;
@@ -522,29 +522,28 @@ namespace Smash_Forge
 
             if (!pathXMB.Equals(""))
             {
-                model.xmb = new XMBFile(pathXMB);
-                model.NUD.SetPropertiesFromXMB(model.xmb);
+                model.XMB = new XMBFile(pathXMB);
             }
 
             if (!pathMTA.Equals(""))
             {
                 try
                 {
-                    model.mta = new MTA();
-                    model.mta.Read(pathMTA);
-                    string mtaName = Path.Combine(Path.GetFileName(Path.GetDirectoryName(pathMTA)), Path.GetFileName(pathMTA));
-                    Console.WriteLine($"MTA Name - {mtaName}");
-                    addMaterialAnimation(mtaName, model.mta);
+                    model.MTA = new MTA();
+                    model.MTA.Read(pathMTA);
+                    //string mtaName = Path.Combine(Path.GetFileName(Path.GetDirectoryName(pathMTA)), Path.GetFileName(pathMTA));
+                    //Console.WriteLine($"MTA Name - {mtaName}");
+                    //addMaterialAnimation(mtaName, model.MTA);
                 }
                 catch (EndOfStreamException)
                 {
-                    model.mta = null;
+                    model.MTA = null;
                 }
             }
 
             if (!pathMOI.Equals(""))
             {
-                model.moi = new MOI(pathMOI);
+                model.MOI = new MOI(pathMOI);
             }
 
             if (model.NUD != null)
@@ -846,7 +845,6 @@ namespace Smash_Forge
             else
                 project.Focus();
         }
-        
 
         private void openCharacterToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -864,6 +862,7 @@ namespace Smash_Forge
                     MainForm.Instance.Progress.Message = ("Please Wait... Opening Character");
                     MainForm.Instance.Progress.Show();
 
+
                     string fighterName = new DirectoryInfo(ofd.SelectedPath).Name;
                     string[] dirs = Directory.GetDirectories(ofd.SelectedPath);
 
@@ -875,8 +874,9 @@ namespace Smash_Forge
                         {
                             MainForm.Instance.Progress.ProgressValue = 10;
                             MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Model");
-                            // load default model
-                            mvp = openNud(s + "\\body\\c00\\model.nud", mvp : mvp);
+                            MainForm.Instance.Progress.Refresh();
+                             // load default model
+                             mvp = openNud(s + "\\body\\c00\\model.nud", mvp : mvp);
                             MainForm.Instance.Progress.ProgressValue = 25;
                             MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Expressions");
                             string[] anims = Directory.GetFiles(s + "\\body\\c00\\");
@@ -1631,15 +1631,21 @@ namespace Smash_Forge
                 _3DSTexEditor editor = new _3DSTexEditor(fileName);
                 AddDockedControl(editor);
             }
-
-            // TODO-----------------------------------------------------
+            
             if (fileName.EndsWith(".sb"))
             {
-                SB sb = new SB();
-                sb.Read(fileName);
-                SwagEditor swagEditor = new SwagEditor(sb);
-                AddDockedControl(swagEditor);
-                //SwagEditors.Add(swagEditor);
+                //needs vbn
+                if(File.Exists(fileName.Replace(".sb", ".vbn")))
+                {
+                    VBN vbn = new VBN(fileName.Replace(".sb", ".vbn"));
+                    SB sb = new SB();
+                    sb.Read(fileName);
+                    vbn.SwingBones = sb;
+                    sb.OpenEditor(null, null);
+                }else
+                {
+                    MessageBox.Show("Swing Bones need a VBN with the same name");
+                }
             }
 
             if (fileName.EndsWith(".dat"))

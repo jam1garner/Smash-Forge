@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ModelViewport));
-            this.glViewport = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(8, 8, 8, 8), 24, 8, 16));
+            this.glViewport = new OpenTK.GLControl();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.animationTrackBar = new System.Windows.Forms.TrackBar();
             this.label2 = new System.Windows.Forms.Label();
@@ -45,10 +45,10 @@
             this.ViewComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.weightToolButton = new System.Windows.Forms.ToolStripButton();
             this.ResetCamera = new System.Windows.Forms.ToolStripButton();
             this.CameraSettings = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.RenderButton = new System.Windows.Forms.ToolStripButton();
             this.GIFButton = new System.Windows.Forms.ToolStripButton();
             this.groupBox1.SuspendLayout();
@@ -240,11 +240,6 @@
             this.toolStripLabel1.Size = new System.Drawing.Size(48, 28);
             this.toolStripLabel1.Text = "Camera";
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
-            // 
             // weightToolButton
             // 
             this.weightToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -279,6 +274,11 @@
             this.CameraSettings.ToolTipText = "Change camera settings";
             this.CameraSettings.Click += new System.EventHandler(this.CameraSettings_Click);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
+            // 
             // RenderButton
             // 
             this.RenderButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -312,6 +312,7 @@
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "ModelViewport";
             this.Text = "ModelViewport";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ModelViewport_FormClosed);
             this.Load += new System.EventHandler(this.ModelViewport_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

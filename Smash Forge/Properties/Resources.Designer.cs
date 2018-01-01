@@ -153,6 +153,16 @@ namespace Smash_Forge.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap icon_info {
+            get {
+                object obj = ResourceManager.GetObject("icon_info", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap icon_mesh {
             get {
                 object obj = ResourceManager.GetObject("icon_mesh", resourceCulture);
@@ -166,6 +176,16 @@ namespace Smash_Forge.Properties {
         internal static System.Drawing.Bitmap icon_model {
             get {
                 object obj = ResourceManager.GetObject("icon_model", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icon_number {
+            get {
+                object obj = ResourceManager.GetObject("icon_number", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
