@@ -2340,5 +2340,57 @@ namespace Smash_Forge
         {
             SetupShaders();
         }
+
+        private void open3DSCharacterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new FolderSelectDialog())
+            {
+                ofd.Title = "Character Folder";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    /*MainForm.Instance.Progress = new ProgessAlert();
+                    MainForm.Instance.Progress.StartPosition = FormStartPosition.CenterScreen;
+                    MainForm.Instance.Progress.ProgressValue = 0;
+                    MainForm.Instance.Progress.ControlBox = false;
+                    MainForm.Instance.Progress.Message = ("Please Wait... Opening Character");
+                    MainForm.Instance.Progress.Show();*/
+
+
+                    string fighterName = new DirectoryInfo(ofd.SelectedPath).Name;
+
+                    ModelViewport mvp = new ModelViewport();
+                    mvp.Text = fighterName;
+
+                    String ModelFolder = ofd.SelectedPath + "\\body\\h00\\";
+                    Console.WriteLine(ModelFolder);
+                    if (Directory.Exists(ModelFolder))
+                    {
+                        ModelContainer con = new Smash_Forge.ModelContainer();
+                        if (File.Exists(ModelFolder + "normal.bch"))
+                        {
+                            BCH bch = new Smash_Forge.BCH(ModelFolder + "normal.bch");
+                            if (bch.Models.Nodes.Count > 0 && File.Exists(ModelFolder + "normal.mbn"))
+                                ((BCH_Model)bch.Models.Nodes[0]).OpenMBN(new FileData(ModelFolder + "normal.mbn"));
+                            con.BCH = bch;
+                        }
+                        mvp.draw.Add(con);
+                    }
+
+                    String AnimationFolder = ofd.SelectedPath.Replace("model", "motion") + "\\body\\";
+                    if (Directory.Exists(AnimationFolder))
+                    {
+                        string[] anims = Directory.GetFiles(ModelFolder);
+                        foreach (string s in anims)
+                        {
+                            if(s.EndsWith("main.bch"))
+                            mvp.AnimList.treeView1.Nodes.Add(BCHan.Read(s));
+                        }
+
+                    }
+
+                    AddDockedControl(mvp);
+                }
+            }
+        }
     }
 }

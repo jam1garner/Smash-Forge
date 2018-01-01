@@ -332,6 +332,22 @@ namespace Smash_Forge
 
         private void treeView1_MouseDown(object sender, MouseEventArgs e)
         {
+            if (e.Button == MouseButtons.Left)
+            {
+                Runtime.TargetVBN = null;
+                if (treeView1.SelectedNode is VBN)
+                {
+                    Runtime.TargetVBN = ((VBN)treeView1.SelectedNode);
+                }
+                if (treeView1.SelectedNode is ModelContainer)
+                {
+                    Runtime.TargetVBN = ((ModelContainer)treeView1.SelectedNode).VBN;
+                }
+                if (treeView1.SelectedNode is BCH_Model)
+                {
+                    Runtime.TargetVBN = ((BCH_Model)treeView1.SelectedNode).skeleton;
+                }
+            }
             if (e.Button == MouseButtons.Right)
             {
                 treeView1.SelectedNode = treeView1.GetNodeAt(e.Location);

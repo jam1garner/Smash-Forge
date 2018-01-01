@@ -42,6 +42,7 @@
             this.openCharacterToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.openNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reloadShadersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportErrorLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
@@ -80,7 +81,7 @@
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.reloadShadersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.open3DSCharacterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -156,7 +157,8 @@
             this.openVBNToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openFileToolStripMenuItem,
             this.openStageToolStripMenuItem1,
-            this.openCharacterToolStripMenuItem1});
+            this.openCharacterToolStripMenuItem1,
+            this.open3DSCharacterToolStripMenuItem});
             this.openVBNToolStripMenuItem.Name = "openVBNToolStripMenuItem";
             this.openVBNToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.openVBNToolStripMenuItem.Text = "Open";
@@ -165,7 +167,7 @@
             // 
             this.openFileToolStripMenuItem.Name = "openFileToolStripMenuItem";
             this.openFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openFileToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.openFileToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
             this.openFileToolStripMenuItem.Text = "Open File";
             this.openFileToolStripMenuItem.Click += new System.EventHandler(this.openFileToolStripMenuItem_Click);
             // 
@@ -174,7 +176,7 @@
             this.openStageToolStripMenuItem1.Name = "openStageToolStripMenuItem1";
             this.openStageToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.S)));
-            this.openStageToolStripMenuItem1.Size = new System.Drawing.Size(232, 22);
+            this.openStageToolStripMenuItem1.Size = new System.Drawing.Size(252, 22);
             this.openStageToolStripMenuItem1.Text = "Open Stage";
             this.openStageToolStripMenuItem1.Click += new System.EventHandler(this.openStageToolStripMenuItem1_Click);
             // 
@@ -183,7 +185,7 @@
             this.openCharacterToolStripMenuItem1.Name = "openCharacterToolStripMenuItem1";
             this.openCharacterToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.O)));
-            this.openCharacterToolStripMenuItem1.Size = new System.Drawing.Size(232, 22);
+            this.openCharacterToolStripMenuItem1.Size = new System.Drawing.Size(252, 22);
             this.openCharacterToolStripMenuItem1.Text = "Open Character";
             this.openCharacterToolStripMenuItem1.ToolTipText = "Opens supported file in a characters folder";
             this.openCharacterToolStripMenuItem1.Click += new System.EventHandler(this.openCharacterToolStripMenuItem_Click);
@@ -202,6 +204,13 @@
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.saveAsToolStripMenuItem.Text = "Save As";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            // 
+            // reloadShadersToolStripMenuItem
+            // 
+            this.reloadShadersToolStripMenuItem.Name = "reloadShadersToolStripMenuItem";
+            this.reloadShadersToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.reloadShadersToolStripMenuItem.Text = "Reload Shaders";
+            this.reloadShadersToolStripMenuItem.Click += new System.EventHandler(this.reloadShadersToolStripMenuItem_Click);
             // 
             // exportErrorLogToolStripMenuItem
             // 
@@ -512,12 +521,14 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
-            // reloadShadersToolStripMenuItem
+            // open3DSCharacterToolStripMenuItem
             // 
-            this.reloadShadersToolStripMenuItem.Name = "reloadShadersToolStripMenuItem";
-            this.reloadShadersToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.reloadShadersToolStripMenuItem.Text = "Reload Shaders";
-            this.reloadShadersToolStripMenuItem.Click += new System.EventHandler(this.reloadShadersToolStripMenuItem_Click);
+            this.open3DSCharacterToolStripMenuItem.Name = "open3DSCharacterToolStripMenuItem";
+            this.open3DSCharacterToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.D3)));
+            this.open3DSCharacterToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
+            this.open3DSCharacterToolStripMenuItem.Text = "Open 3DS Character";
+            this.open3DSCharacterToolStripMenuItem.Click += new System.EventHandler(this.open3DSCharacterToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -605,6 +616,7 @@
         private System.Windows.Forms.ToolStripMenuItem modelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dSTexToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reloadShadersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem open3DSCharacterToolStripMenuItem;
     }
 }
 

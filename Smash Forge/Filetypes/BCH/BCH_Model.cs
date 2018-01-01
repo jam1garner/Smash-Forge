@@ -22,7 +22,18 @@ namespace Smash_Forge
         public int skeletonScaleType;
         public int silhouetteMaterialEntries;
 
-        public VBN skeleton = new VBN();
+        public VBN skeleton
+        {
+            get
+            {
+                return vbn;
+            }
+            set
+            {
+                vbn = value;
+            }
+        }
+        private VBN vbn = new VBN();
         public Matrix4 worldTransform;
 
         List<VertexAttribute> Attributes = new List<VertexAttribute>();
