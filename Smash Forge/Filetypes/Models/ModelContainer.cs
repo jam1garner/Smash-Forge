@@ -45,6 +45,8 @@ namespace Smash_Forge
             set
             {
                 vbn = value;
+                if (vbn == null)
+                    vbn = new VBN();
                 Refresh();
             }
         }
