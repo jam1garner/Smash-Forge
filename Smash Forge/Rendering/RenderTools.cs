@@ -1569,8 +1569,6 @@ namespace Smash_Forge
             GL.BindTexture(TextureTarget.Texture2D, texture);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.Uniform1(shader.getAttribute("image"), 0);
 
             GL.Uniform1(shader.getAttribute("renderR"), renderR ? 1 : 0);
@@ -1583,9 +1581,28 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("width"), width);
             GL.Uniform1(shader.getAttribute("height"), height);
 
+            // draw full screen "quad" (big triangle)
+            float[] vertices = 
+            {
+                -1f, -1f, 0.0f,
+                 3f, -1f, 0.0f,
+                 -1f, 3f, 0.0f
+            };
+
+            int vao;
+            GL.GenVertexArrays(1, out vao);
+            GL.BindVertexArray(vao);
+
+            int vbo;
+            GL.GenBuffers(1, out vbo);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(sizeof(float) * vertices.Length), vertices, BufferUsageHint.StaticDraw);
+
+            GL.VertexAttribPointer(shader.getAttribute("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
+            GL.EnableVertexAttribArray(0);
+
             GL.Disable(EnableCap.DepthTest);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // draw full screen "quad" (big triangle)
-            GL.BindVertexArray(0);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
         }
 
         #endregion

@@ -1,5 +1,5 @@
-﻿#version 330
-in vec2 texCoord;
+﻿#version 120
+varying vec2 texCoord;
 
 uniform sampler2D image;
 
@@ -12,10 +12,9 @@ uniform int preserveAspectRatio;
 uniform int width;
 uniform int height;
 
-out vec4 outColor;
-
 void main()
-{   outColor = vec4(0,0,0,1);
+{
+    gl_FragColor = vec4(0,0,0,1);
     vec4 textureColor = vec4(1);
     bool fill = false;
     // Perform texture aspect ratio scaling.
@@ -46,28 +45,28 @@ void main()
     // Control what channels are displayed. Single channels are greyscale.
     if (renderR == 1)
     {
-        outColor.r = textureColor.r;
+        gl_FragColor.r = textureColor.r;
         if (renderB == 0 && renderG == 0)
-            outColor.rgb = textureColor.rrr;
+            gl_FragColor.rgb = textureColor.rrr;
     }
     if (renderG == 1)
     {
-        outColor.g = textureColor.g;
+        gl_FragColor.g = textureColor.g;
         if (renderB == 0 && renderR == 0)
-            outColor.rgb = textureColor.ggg;
+            gl_FragColor.rgb = textureColor.ggg;
     }
     if (renderB == 1)
     {
-        outColor.b = textureColor.b;
+        gl_FragColor.b = textureColor.b;
         if (renderG == 0 && renderR == 0)
-            outColor.rgb = textureColor.bbb;
+            gl_FragColor.rgb = textureColor.bbb;
     }
     if (renderAlpha == 1)
     {
-        outColor.a = textureColor.a;
+        gl_FragColor.a = textureColor.a;
     }
     if (alphaOverride == 1)
-        outColor = vec4(textureColor.aaa, 1);
+        gl_FragColor = vec4(textureColor.aaa, 1);
     if (fill)
-        outColor = vec4(1);
+        gl_FragColor = vec4(1);
 }

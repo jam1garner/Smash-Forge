@@ -139,10 +139,22 @@ namespace Smash_Forge
             sha.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Shadow_fs.txt"));
             Runtime.shaders.Add("Shadow", sha);
 
-            Shader texture = new Shader();
-            texture.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_vs.txt"));
-            texture.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_fs.txt"));
-            Runtime.shaders.Add("Texture", texture);
+            if (!Runtime.shaders.ContainsKey("Texture"))
+            {
+                Shader texture = new Shader();
+                if (Runtime.useLegacyShaders)
+                {
+                    texture.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Legacy/Texture_vs.txt"));
+                    texture.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Legacy/Texture_fs.txt"));
+                }
+                else
+                {
+                    texture.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_vs.txt"));
+                    texture.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_fs.txt"));
+                }
+                Runtime.shaders.Add("Texture", texture);
+            }
+   
 
             Shader gradient = new Shader();
             gradient.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Gradient_vs.txt"));
