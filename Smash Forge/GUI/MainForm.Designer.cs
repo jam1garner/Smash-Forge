@@ -35,6 +35,7 @@
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nUTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dSTexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openVBNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openStageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -79,7 +80,7 @@
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.dSTexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reloadShadersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -109,6 +110,7 @@
             this.openVBNToolStripMenuItem,
             this.openNUDToolStripMenuItem,
             this.saveAsToolStripMenuItem,
+            this.reloadShadersToolStripMenuItem,
             this.exportErrorLogToolStripMenuItem,
             this.exportModelToolStripMenuItem,
             this.toolStripSeparator4,
@@ -141,6 +143,13 @@
             this.nUTToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.nUTToolStripMenuItem.Text = "NUT";
             this.nUTToolStripMenuItem.Click += new System.EventHandler(this.nUTToolStripMenuItem_Click);
+            // 
+            // dSTexToolStripMenuItem
+            // 
+            this.dSTexToolStripMenuItem.Name = "dSTexToolStripMenuItem";
+            this.dSTexToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dSTexToolStripMenuItem.Text = "3DS Tex";
+            this.dSTexToolStripMenuItem.Click += new System.EventHandler(this.dSTexToolStripMenuItem_Click);
             // 
             // openVBNToolStripMenuItem
             // 
@@ -503,12 +512,12 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
-            // dSTexToolStripMenuItem
+            // reloadShadersToolStripMenuItem
             // 
-            this.dSTexToolStripMenuItem.Name = "dSTexToolStripMenuItem";
-            this.dSTexToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.dSTexToolStripMenuItem.Text = "3DS Tex";
-            this.dSTexToolStripMenuItem.Click += new System.EventHandler(this.dSTexToolStripMenuItem_Click);
+            this.reloadShadersToolStripMenuItem.Name = "reloadShadersToolStripMenuItem";
+            this.reloadShadersToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.reloadShadersToolStripMenuItem.Text = "Reload Shaders";
+            this.reloadShadersToolStripMenuItem.Click += new System.EventHandler(this.reloadShadersToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -595,6 +604,7 @@
         private System.Windows.Forms.ToolStripMenuItem nUTToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dSTexToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem reloadShadersToolStripMenuItem;
     }
 }
 

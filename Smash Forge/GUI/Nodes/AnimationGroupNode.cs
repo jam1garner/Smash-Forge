@@ -9,7 +9,7 @@ using System.ComponentModel;
 
 namespace Smash_Forge
 {
-    class AnimationGroupNode : TreeNode
+    public class AnimationGroupNode : TreeNode
     {
 
         public AnimationGroupNode()

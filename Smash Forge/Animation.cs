@@ -375,6 +375,7 @@ namespace Smash_Forge
                 }
             }
 
+            bool Updated = false; // no need to update skeleton of animations that didn't change
             foreach (KeyNode node in Bones)
             {
                 // Get Skeleton Node
@@ -384,6 +385,7 @@ namespace Smash_Forge
                 else
                     b = skeleton.GetBone((uint)node.Hash);
                 if (b == null) continue;
+                Updated = true;
 
                 if (node.XPOS.HasAnimation())
                     b.pos.X = node.XPOS.GetValue(Frame);
@@ -437,7 +439,7 @@ namespace Smash_Forge
                 Frame = 0;
             }
 
-            if (!isChild)
+            if (!isChild && Updated)
             {
                 skeleton.update();
             }

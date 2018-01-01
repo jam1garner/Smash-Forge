@@ -404,7 +404,7 @@ namespace Smash_Forge
 
         public void Render(Matrix4 view)
         {
-
+            if (Vertices == null) return;
             shader = Runtime.shaders["MBN"];
             GL.UseProgram(shader.programID);
 

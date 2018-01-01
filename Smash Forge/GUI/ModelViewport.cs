@@ -279,7 +279,6 @@ namespace Smash_Forge
                 }
                 glViewport.Invalidate();
             }
-
         }
         
         public Vector2 GetMouseOnViewport()
@@ -369,9 +368,9 @@ namespace Smash_Forge
                 {
                     Animation.NextFrame(m.dat_melee.bones);
                 }
-                if (m.bch != null)
+                if (m.BCH != null)
                 {
-                    foreach (BCH_Model mod in m.bch.Models.Nodes)
+                    foreach (BCH_Model mod in m.BCH.Models.Nodes)
                     {
                         if (mod.skeleton != null)
                             Animation.NextFrame(mod.skeleton);

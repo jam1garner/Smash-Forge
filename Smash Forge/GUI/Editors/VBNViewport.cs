@@ -338,9 +338,9 @@ namespace Smash_Forge
                 {
                     TargetAnim.NextFrame(m.dat_melee.bones);
                 }
-                if (m.bch != null)
+                if (m.BCH != null)
                 {
-                    foreach (BCH_Model mod in m.bch.Models.Nodes)
+                    foreach (BCH_Model mod in m.BCH.Models.Nodes)
                     {
                         if (mod.skeleton != null)
                             TargetAnim.NextFrame(mod.skeleton);
@@ -1013,9 +1013,9 @@ namespace Smash_Forge
                 foreach (ModelContainer m in ModelContainers)
                 {
                     RenderTools.DrawVBN(m.VBN);
-                    if (m.bch != null)
+                    if (m.BCH != null)
                     {
-                        foreach (BCH_Model mo in m.bch.Models.Nodes)
+                        foreach (BCH_Model mo in m.BCH.Models.Nodes)
                             RenderTools.DrawVBN(mo.skeleton);
                     }
 

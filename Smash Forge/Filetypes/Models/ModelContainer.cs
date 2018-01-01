@@ -95,6 +95,18 @@ namespace Smash_Forge
 
         // Other Model Formats
         public BCH bch;
+        public BCH BCH
+        {
+            get
+            {
+                return bch;
+            }
+            set
+            {
+                bch = value;
+                Refresh();
+            }
+        }
         public DAT dat_melee;
 
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
@@ -110,25 +122,33 @@ namespace Smash_Forge
             mta = new MTA();
             MOI = new MOI();
             XMB = new XMBFile();
+            Checked = true;
             Refresh();
         }
 
         public void Refresh()
         {
             Nodes.Clear();
-            if (nud != null) Nodes.Add(nud);
-            if (nut != null) Nodes.Add(nut);
-            if (vbn != null && vbn.Parent == null) Nodes.Add(vbn);
-            if (mta != null) Nodes.Add(mta);
-            if (moi != null) Nodes.Add(moi);
-            if (xmb != null) Nodes.Add(
-                new TreeNode()
-                {
-                    Tag = xmb,
-                    Text = "model.xmb",
-                    ImageKey = "info",
-                    SelectedImageKey = "info"
-                });
+
+            if(bch != null)
+            {
+                Nodes.Add(bch);
+            }else
+            {
+                if (nud != null) Nodes.Add(nud);
+                if (nut != null) Nodes.Add(nut);
+                if (vbn != null && vbn.Parent == null) Nodes.Add(vbn);
+                if (mta != null) Nodes.Add(mta);
+                if (moi != null) Nodes.Add(moi);
+                if (xmb != null) Nodes.Add(
+                    new TreeNode()
+                    {
+                        Tag = xmb,
+                        Text = "model.xmb",
+                        ImageKey = "info",
+                        SelectedImageKey = "info"
+                    });
+            }
         }
 
         /*
@@ -143,6 +163,7 @@ namespace Smash_Forge
 
         public void Render(Camera camera, int depthmap, Matrix4 lightMatrix, Matrix4 modelMatrix)
         {
+            if (!Checked) return;
             Shader shader;
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = Runtime.shaders["NUD_Debug"];
@@ -184,9 +205,9 @@ namespace Smash_Forge
             #endregion
 
             {
-                if (bch != null)
+                if (BCH != null)
                 {
-                    foreach (BCH_Model mo in bch.Models.Nodes)
+                    foreach (BCH_Model mo in BCH.Models.Nodes)
                     {
                         mo.Render(camera.getMVPMatrix());
                     }
@@ -205,6 +226,9 @@ namespace Smash_Forge
                         shader = Runtime.shaders["nud"];
 
                     GL.UseProgram(shader.programID);
+
+                    SetRenderSettingsUniforms(shader);
+                    SetLightingUniforms(shader, camera);
 
                     GL.ActiveTexture(TextureUnit.Texture2);
                     GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
@@ -245,15 +269,110 @@ namespace Smash_Forge
             if (VBN != null)
                 RenderTools.DrawVBN(VBN);
 
-            if (bch != null)
+            if (BCH != null)
             {
-                foreach (BCH_Model mo in bch.Models.Nodes)
+                foreach (BCH_Model mo in BCH.Models.Nodes)
                     RenderTools.DrawVBN(mo.skeleton);
             }
 
             if (dat_melee != null)
             {
                 RenderTools.DrawVBN(dat_melee.bones);
+            }
+        }
+
+        private static void SetRenderSettingsUniforms(Shader shader)
+        {
+            GL.Uniform1(shader.getAttribute("renderStageLighting"), Runtime.renderStageLighting ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderMaterialLighting ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderDiffuse"), Runtime.renderDiffuse ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
+
+            GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.renderNormalMap ? 1 : 0);
+
+            GL.Uniform1(shader.getAttribute("ambientIntensity"), Runtime.amb_inten);
+            GL.Uniform1(shader.getAttribute("diffuseIntensity"), Runtime.dif_inten);
+            GL.Uniform1(shader.getAttribute("specularIntensity"), Runtime.spc_inten);
+            GL.Uniform1(shader.getAttribute("fresnelIntensity"), Runtime.frs_inten);
+            GL.Uniform1(shader.getAttribute("reflectionIntensity"), Runtime.ref_inten);
+
+            GL.Uniform1(shader.getAttribute("zScale"), Runtime.zScale);
+
+            GL.Uniform1(shader.getAttribute("renderR"), Runtime.renderR ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderG"), Runtime.renderG ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderB"), Runtime.renderB ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
+
+            GL.Uniform1(shader.getAttribute("uvChannel"), (int)Runtime.uvChannel);
+
+            bool alphaOverride = Runtime.renderAlpha && !Runtime.renderR && !Runtime.renderG && !Runtime.renderB;
+            GL.Uniform1(shader.getAttribute("alphaOverride"), alphaOverride ? 1 : 0);
+
+            GL.Uniform3(shader.getAttribute("lightSetColor"), 0, 0, 0);
+
+            GL.Uniform1(shader.getAttribute("colorOverride"), 0);
+
+            GL.Uniform1(shader.getAttribute("debug1"), Runtime.debug1 ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("debug2"), Runtime.debug2 ? 1 : 0);
+
+        }
+
+        private static void SetLightingUniforms(Shader shader, Camera camera)
+        {
+            // fresnel sky/ground color for characters & stages
+            GL.Uniform3(shader.getAttribute("fresGroundColor"), Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB);
+            GL.Uniform3(shader.getAttribute("fresSkyColor"), Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB);
+            GL.Uniform3(shader.getAttribute("fresSkyDirection"), Lights.fresnelLight.getSkyDirection());
+            GL.Uniform3(shader.getAttribute("fresGroundDirection"), Lights.fresnelLight.getGroundDirection());
+
+            // reflection color for characters & stages
+            float refR, refG, refB = 1.0f;
+            ColorTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
+            GL.Uniform3(shader.getAttribute("refLightColor"), refR, refG, refB);
+
+            // character diffuse lights
+            GL.Uniform3(shader.getAttribute("difLightColor"), Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB);
+            GL.Uniform3(shader.getAttribute("ambLightColor"), Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB);
+
+            GL.Uniform3(shader.getAttribute("difLightColor2"), Lights.diffuseLight2.difR, Lights.diffuseLight2.difG, Lights.diffuseLight2.difB);
+            GL.Uniform3(shader.getAttribute("ambLightColor2"), Lights.diffuseLight2.ambR, Lights.diffuseLight2.ambG, Lights.diffuseLight2.ambB);
+
+            GL.Uniform3(shader.getAttribute("difLightColor3"), Lights.diffuseLight3.difR, Lights.diffuseLight3.difG, Lights.diffuseLight3.difB);
+            GL.Uniform3(shader.getAttribute("ambLightColor3"), Lights.diffuseLight3.ambR, Lights.diffuseLight3.ambG, Lights.diffuseLight3.ambB);
+
+            // character specular light
+            Lights.specularLight.setColorFromHSV(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity);
+            Lights.specularLight.setDirectionFromXYZAngles(Runtime.specular_rotX, Runtime.specular_rotY, Runtime.specular_rotZ);
+            GL.Uniform3(shader.getAttribute("specLightColor"), Lights.specularLight.difR, Lights.specularLight.difG, Lights.specularLight.difB);
+
+            // stage fog
+            GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
+
+            GL.Uniform3(shader.getAttribute("difLight2Direction"), Lights.diffuseLight2.direction);
+            GL.Uniform3(shader.getAttribute("difLight3Direction"), Lights.diffuseLight2.direction);
+
+            GL.Uniform3(shader.getAttribute("stageLight1Direction"), Lights.stageLight1.direction);
+            GL.Uniform3(shader.getAttribute("stageLight2Direction"), Lights.stageLight2.direction);
+            GL.Uniform3(shader.getAttribute("stageLight3Direction"), Lights.stageLight3.direction);
+            GL.Uniform3(shader.getAttribute("stageLight4Direction"), Lights.stageLight4.direction);
+
+
+            if (Runtime.cameraLight) // camera light should only affects character lighting
+            {
+                Matrix4 invertedCamera = camera.getMVPMatrix().Inverted();
+                Vector3 lightDirection = new Vector3(0f, 0f, -1f);
+                GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+                GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+            }
+            else
+            {
+                GL.Uniform3(shader.getAttribute("specLightDirection"), Lights.specularLight.direction);
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Lights.diffuseLight.direction);
             }
         }
     }

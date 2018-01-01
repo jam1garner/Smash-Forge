@@ -62,6 +62,9 @@ namespace Smash_Forge
             Runtime.renderDepth = 100000.0f;
             //foreach (var vp in viewports)
             //    AddDockedControl(vp);
+            
+            //if (Smash_Forge.Update.Downloaded)
+            //    MainForm.Instance.pictureBox1.Image = Resources.Resources.sexy_green_down_arrow;
 
             //animationsWindowToolStripMenuItem.Checked =
             //    boneTreeToolStripMenuItem.Checked = true;
@@ -1614,6 +1617,54 @@ namespace Smash_Forge
                 openAnimation(fileName);
 
             // Redone-----------------------------------------------------
+            if (fileName.EndsWith(".bch"))
+            {
+                //BCH bch = new BCH(fileName);
+
+                ModelViewport mvp = new ModelViewport();
+                //if (bch.Animations.Nodes.Count > 0)
+                {
+                    // Load as Animation
+                    if(dockPanel1.ActiveContent is ModelViewport)
+                    {
+                        DialogResult dialogResult = MessageBox.Show("Import Animation Data into active viewport?", "", MessageBoxButtons.YesNo);
+                        if (dialogResult == DialogResult.Yes)
+                        {
+                            mvp = (ModelViewport)dockPanel1.ActiveContent;
+                            mvp.AnimList.treeView1.Nodes.Add(BCHan.Read(fileName));
+                            return;
+                        }else
+                        {
+                            mvp.AnimList.treeView1.Nodes.Add(BCHan.Read(fileName));
+                        }
+                    }
+                }
+                //mvp.draw.Add(new ModelContainer() { BCH = bch });
+                mvp.Text = fileName;
+                AddDockedControl(mvp);
+            }
+
+            if (fileName.EndsWith(".mbn"))
+            {
+                if(!File.Exists(fileName.Replace(".mbn", ".bch")))
+                {
+                    MessageBox.Show("Missing BCH file");
+                    return;
+                }
+                BCH b = new BCH(fileName.Replace(".mbn", ".bch"));
+                if(b.Models.Nodes.Count == 0)
+                {
+                    MessageBox.Show("BCH is Missing Model Data");
+                    return;
+                }
+                ((BCH_Model)b.Models.Nodes[0]).OpenMBN(new FileData(fileName));
+
+                ModelViewport mvp = new ModelViewport();
+                mvp.draw.Add(new ModelContainer() { BCH = b });
+                mvp.Text = fileName;
+                AddDockedControl(mvp);
+            }
+
             if (fileName.EndsWith(".vbn"))
             {
                 BoneTreePanel editor = new BoneTreePanel(fileName);
@@ -1891,30 +1942,6 @@ namespace Smash_Forge
                 AddDockedControl(mvp);
             }
 
-            if (fileName.EndsWith(".mbn"))
-            {
-                ModelContainer con = new ModelContainer();
-                BCH b = new BCH();
-                b.Read(fileName.Replace(".mbn", ".bch"));
-                ((BCH_Model)b.Models.Nodes[0]).OpenMBN(new FileData(fileName));
-                con.bch = b;
-
-                ModelViewport mvp = new ModelViewport();
-                mvp.draw.Add(con);
-                AddDockedControl(mvp);
-
-                if (b.Models.Nodes.Count > 0)
-                {
-                    Runtime.TargetVBN = ((BCH_Model)b.Models.Nodes[0]).skeleton;
-                    resyncTargetVBN();
-                }
-                //meshList.refresh();
-            }
-
-            if (fileName.EndsWith(".bch"))
-            {
-            }
-
             if (fileName.EndsWith(".nud"))
             {
                 if(dockPanel1.ActiveContent is ModelViewport)
@@ -2010,7 +2037,7 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb|" +
+                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +
@@ -2285,6 +2312,11 @@ namespace Smash_Forge
         {
             _3DSTexEditor mvp = new _3DSTexEditor();
             AddDockedControl(mvp);
+        }
+
+        private void reloadShadersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetupShaders();
         }
     }
 }
