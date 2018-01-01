@@ -659,6 +659,28 @@ namespace Smash_Forge
             GC.Collect();
         }
 
+        private void beginButton_Click(object sender, EventArgs e)
+        {
+            currentFrame.Value = 0;
+        }
+
+        private void endButton_Click(object sender, EventArgs e)
+        {
+            currentFrame.Value = totalFrame.Value;
+        }
+
+        private void nextButton_Click(object sender, EventArgs e)
+        {
+            if (currentFrame.Value != totalFrame.Value)
+                currentFrame.Value++;
+        }
+
+        private void prevButton_Click(object sender, EventArgs e)
+        {
+            if(currentFrame.Value != 0)
+                currentFrame.Value--;
+        }
+
         private void checkSelect()
         {
             if (CurrentMode == Mode.Selection)
