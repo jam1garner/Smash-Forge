@@ -386,12 +386,12 @@ namespace Smash_Forge
                     b = skeleton.GetBone((uint)node.Hash);
                 if (b == null) continue;
                 Updated = true;
-
-                if (node.XPOS.HasAnimation())
+                 
+                if (node.XPOS.HasAnimation() && b.boneType != 3)
                     b.pos.X = node.XPOS.GetValue(Frame);
-                if (node.YPOS.HasAnimation())
+                if (node.YPOS.HasAnimation() && b.boneType != 3)
                     b.pos.Y = node.YPOS.GetValue(Frame);
-                if (node.ZPOS.HasAnimation())
+                if (node.ZPOS.HasAnimation() && b.boneType != 3)
                     b.pos.Z = node.ZPOS.GetValue(Frame);
 
                 if (node.XSCA.HasAnimation())

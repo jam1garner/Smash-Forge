@@ -1613,10 +1613,32 @@ namespace Smash_Forge
         /// <param name="fileName"> Filename of file to open</param>
         public void openFile(string fileName)
         {
-            if (!fileName.EndsWith(".mta") && !fileName.EndsWith(".dat") && !fileName.EndsWith(".smd"))
-                openAnimation(fileName);
+            //if (!fileName.EndsWith(".mta") && !fileName.EndsWith(".dat") && !fileName.EndsWith(".smd"))
+            //    openAnimation(fileName);
 
             // Redone-----------------------------------------------------
+
+            if (fileName.EndsWith(".pac"))
+            {
+                ModelViewport mvp = new ModelViewport();
+                if (dockPanel1.ActiveContent is ModelViewport)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Import Animation Data into active viewport?", "", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        mvp = (ModelViewport)dockPanel1.ActiveContent;
+                        mvp.AnimList.treeView1.Nodes.Add(openAnimation(fileName));
+                        return;
+                    }
+                    else
+                    {
+                        mvp.AnimList.treeView1.Nodes.Add(openAnimation(fileName));
+                    }
+                    mvp.Text = fileName;
+                    AddDockedControl(mvp);
+                }
+            }
+
             if (fileName.EndsWith(".bch"))
             {
                 //BCH bch = new BCH(fileName);

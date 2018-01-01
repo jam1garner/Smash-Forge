@@ -35,6 +35,7 @@ namespace Smash_Forge
             con.NUD = n;
 
             NUT thisNut = new NUT();
+            con.NUT = thisNut;
             Runtime.TextureContainers.Add(thisNut);
 
             // next will be nodes then controllers

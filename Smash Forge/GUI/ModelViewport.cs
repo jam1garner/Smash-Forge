@@ -811,7 +811,7 @@ namespace Smash_Forge
             // Camera Update
             // -------------------------------------------------------------
             GL.MatrixMode(MatrixMode.Projection);
-            if (glViewport.ClientRectangle.Contains(PointToClient(Cursor.Position))
+            if (glViewport.ClientRectangle.Contains(glViewport.PointToClient(Cursor.Position))
              && glViewport.Focused 
              && CurrentMode == Mode.Normal)
             {
@@ -873,12 +873,12 @@ namespace Smash_Forge
 
             // Models
             // -------------------------------------------------------------
-            frameTime.Start();
+            //frameTime.Start();
             if (Runtime.renderModel)
                 foreach (ModelContainer m in draw)
                     m.Render(Camera, 0, Matrix4.Zero, Camera.getMVPMatrix());
 
-            Debug.WriteLine(frameTime.getAverageRenderTime());
+            //Debug.WriteLine(frameTime.getAverageRenderTime());
 
             //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 

@@ -14,6 +14,14 @@ namespace Smash_Forge
         public VBN vbnParent;
         public UInt32 boneType;
 
+        public enum BoneType
+        {
+            Normal = 0,
+            UNK,
+            Helper,
+            Swing
+        }
+
         public UInt32 boneId;
         public float[] position = new float[] { 0, 0, 0 };
         public float[] rotation = new float[] { 0, 0, 0 };
@@ -353,9 +361,10 @@ namespace Smash_Forge
             }
         }
 
-        
+        private bool Updated = false;
         public void update(bool reset = false)
         {
+            Updated = true;
             List<Bone> nodesToProcess = new List<Bone>();
             // Add all root nodes from the VBN
             foreach (Bone b in bones)
@@ -392,18 +401,6 @@ namespace Smash_Forge
                     currentBone.transform = currentBone.transform * ((Bone)currentBone.Parent).transform;
                 }
             }
-            
-            // bone influences
-            if(bonemat.Length != bones.Count)
-                bonemat = new Matrix4[bones.Count];
-
-            for (int i = 0; i < bones.Count; i++)
-            {
-                bonemat[i] = bones[i].invert * bones[i].transform;
-                //bonematIT[i] = bones[i].invert * bones[i].transform;
-                //bonematIT[i].Invert();
-                //bonematIT[i].Transpose();
-            }
         }
 
         //public void updateOld(bool reset = false)
@@ -437,7 +434,7 @@ namespace Smash_Forge
             for (int i = 0; i < bones.Count; i++)
             {
                 try{
-                bones[i].invert = Matrix4.Invert(bones[i].transform);
+                    bones[i].invert = Matrix4.Invert(bones[i].transform);
                 } catch (InvalidOperationException){
                     bones[i].invert = Matrix4.Zero;
                 }
@@ -481,7 +478,7 @@ namespace Smash_Forge
                     temp.position = new float[3];
                     temp.rotation = new float[3];
                     temp.scale = new float[3];
-                    temp.isSwingBone = temp.Text.Contains("__swing");
+                    //temp.isSwingBone = temp.Text.Contains("__swing");
                     bones.Add(temp);
                 }
 
@@ -667,6 +664,21 @@ namespace Smash_Forge
 
         public Matrix4[] getShaderMatrix()
         {
+            if (Updated)
+            {
+                Updated = false;
+                if (bonemat.Length != bones.Count)
+                    bonemat = new Matrix4[bones.Count];
+
+                for (int i = 0; i < bones.Count; i++)
+                {
+                    bonemat[i] = bones[i].invert * bones[i].transform;
+                    //bonematIT[i] = bones[i].invert * bones[i].transform;
+                    //bonematIT[i].Invert();
+                    //bonematIT[i].Transpose();
+                }
+            }
+
             return bonemat;
         }
 
