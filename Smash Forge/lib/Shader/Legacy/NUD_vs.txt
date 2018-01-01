@@ -1,0 +1,55 @@
+﻿#version 120
+
+attribute vec3 vPosition;
+attribute vec4 vColor;
+attribute vec3 vNormal;
+attribute vec3 vTangent;
+attribute vec3 vBiTangent;
+attribute vec2 vUV;
+attribute vec2 vUV2;
+attribute vec2 vUV3;
+attribute vec4 vBone;
+attribute vec4 vWeight;
+attribute vec4 vBoneHash;
+
+uniform vec4 colorSamplerUV;
+uniform vec4 colorSampler2UV;
+uniform vec4 colorSampler3UV;
+uniform vec4 normalSamplerAUV;
+uniform vec4 normalSamplerBUV;
+
+uniform mat4 mvpMatrix;
+uniform mat4 nscMatrix;
+uniform mat4 sphereMapMatrix;
+
+// uniform uint flags;
+uniform float zScale;
+uniform vec4 zOffset;
+
+uniform float elapsedTime;
+uniform int useDirectUVTime;
+uniform int selectedBoneIndex;
+
+uniform int hasNrmSamplerAUV;
+uniform int hasNrmSamplerBUV;
+
+uniform sampler2D boneWeight;
+uniform int debug1;
+uniform int debug2;
+
+/*uniform bones
+{
+    mat4 transforms[200];
+} bones_;*/
+
+uniform int renderType;
+
+void main()
+{
+    // vertex skinning
+    vec4 objPos = vec4(vPosition.xyz, 1.0);
+    objPos.z *= zScale;
+    objPos = nscMatrix * objPos;
+    objPos = mvpMatrix * vec4(objPos.xyz, 1.0);
+    gl_Position = objPos;
+}

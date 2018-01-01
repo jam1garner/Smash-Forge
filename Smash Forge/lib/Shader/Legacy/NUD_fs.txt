@@ -1,0 +1,169 @@
+#version 120
+
+varying vec3 viewPosition;
+varying vec3 objectPosition;
+varying vec2 texCoord;
+varying vec2 texCoord2;
+varying vec2 texCoord3;
+varying vec2 normaltexCoord;
+varying vec4 vertexColor;
+varying vec3 normal;
+varying vec3 viewNormal;
+varying vec3 tangent;
+varying vec3 bitangent;
+
+// Textures
+uniform sampler2D dif;
+uniform sampler2D dif2;
+uniform sampler2D dif3;
+uniform sampler2D ramp;
+uniform sampler2D dummyRamp;
+uniform sampler2D normalMap;
+uniform sampler2D ao;
+uniform samplerCube cube;
+uniform samplerCube stagecube;
+uniform sampler2D spheremap;
+uniform samplerCube cmap;
+uniform sampler2D UVTestPattern;
+
+// flags tests
+uniform int hasDif;
+uniform int hasDif2;
+uniform int hasDif3;
+uniform int hasStage;
+uniform int hasCube;
+uniform int hasNrm;
+uniform int hasRamp;
+uniform int hasAo;
+uniform int hasDummyRamp;
+uniform int hasColorGainOffset;
+uniform int hasSpecularParams;
+uniform int useDiffuseBlend;
+uniform int hasDualNormal;
+uniform int hasSoftLight;
+uniform int hasCustomSoftLight;
+uniform int hasFinalColorGain;
+
+// Da Flags
+uniform int flags;
+uniform int isTransparent;
+
+uniform int lightSet;
+uniform int isStage;
+uniform int renderStageLighting;
+
+// NU_ Material Properties
+uniform vec4 colorOffset;
+uniform vec4 aoMinGain;
+uniform vec4 fresnelColor;
+uniform vec4 specularColor;
+uniform vec4 specularColorGain;
+uniform vec4 diffuseColor;
+uniform vec4 characterColor;
+uniform vec4 colorGain;
+uniform vec4 finalColorGain;
+uniform vec4 finalColorGain2;
+uniform vec4 finalColorGain3;
+uniform vec4 reflectionColor;
+uniform vec4 fogColor;
+uniform vec4 effColorGain;
+uniform vec4 zOffset;
+
+// NU_ material params
+uniform vec4 fresnelParams;
+uniform vec4 specularParams;
+uniform vec4 reflectionParams;
+uniform vec4 fogParams;
+uniform vec4 normalParams;
+uniform vec4 angleFadeParams;
+uniform vec4 dualNormalScrollParams;
+uniform vec4 alphaBlendParams;
+uniform vec4 softLightingParams;
+uniform vec4 customSoftLightParams;
+
+// render settings
+uniform int renderDiffuse;
+uniform int renderSpecular;
+uniform int renderFresnel;
+uniform int renderReflection;
+uniform int renderType;
+uniform int renderLighting;
+uniform int renderVertColor;
+uniform int renderNormal;
+uniform int useNormalMap;
+uniform int renderAlpha;
+
+uniform float diffuseIntensity;
+uniform float ambientIntensity;
+uniform float specularIntensity;
+uniform float fresnelIntensity;
+uniform float reflectionIntensity;
+
+// character lighting
+uniform vec3 difLightColor;
+uniform vec3 ambLightColor;
+uniform vec3 difLightDirection;
+
+uniform vec3 difLight2Color;
+uniform vec3 ambLight2Color;
+uniform vec3 difLight2Direction;
+
+uniform vec3 difLight3Color;
+uniform vec3 ambLight3Color;
+uniform vec3 difLight3Direction;
+
+uniform vec3 fresGroundColor;
+uniform vec3 fresSkyColor;
+uniform vec3 specLightColor;
+uniform vec3 fresSkyDirection;
+uniform vec3 fresGroundDirection;
+
+uniform vec3 specLightDirection;
+uniform vec3 refLightColor;
+
+// stage light 1
+uniform int renderStageLight1;
+uniform vec3 stageLight1Color;
+uniform vec3 stageLight1Direction;
+
+// stage light 2
+uniform int renderStageLight2;
+uniform vec3 stageLight2Color;
+uniform vec3 stageLight2Direction;
+
+// stage light 3
+uniform int renderStageLight3;
+uniform vec3 stageLight3Color;
+uniform vec3 stageLight3Direction;
+
+// stage light 4
+uniform int renderStageLight4;
+uniform vec3 stageLight4Color;
+uniform vec3 stageLight4Direction;
+
+// light_set fog
+uniform int renderFog;
+uniform vec3 stageFogColor;
+
+uniform int colorOverride;
+
+uniform mat4 mvpMatrix;
+
+uniform sampler2D shadowMap;
+
+uniform vec3 NSC;
+uniform float elapsedTime;
+
+
+vec3 SmashShader(vec4 diffuseMap, float aoMap, vec3 N){
+    // used for wireframe rendering
+    if (colorOverride == 1)
+        return vec3(1);
+    else
+        return vec3(0);
+}
+
+void main()
+{
+    gl_FragColor = vec4(0,0,0,1);
+}

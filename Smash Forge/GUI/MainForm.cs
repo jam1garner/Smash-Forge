@@ -159,6 +159,14 @@ namespace Smash_Forge
                 Runtime.shaders.Add("nud", nud);
             }
 
+            if (!Runtime.shaders.ContainsKey("nud_legacy"))
+            {
+                Shader nud = new Shader();
+                nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Legacy/NUD_vs.txt"));
+                nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Legacy/NUD_fs.txt"));
+                Runtime.shaders.Add("nud_legacy", nud);
+            }
+
             if (!Runtime.shaders.ContainsKey("NUD_Debug"))
             {
                 Shader debug = new Shader();
