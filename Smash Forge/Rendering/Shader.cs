@@ -168,7 +168,7 @@ namespace Smash_Forge
                 if (compileStatusVS == 0)
                 {
                     MessageBox.Show("The " + shaderName
-                          + " vertex shader failed to compile. Check that your system supports OpenGL and GLSL 3.30." +
+                          + " vertex shader failed to compile. Check that your system supports OpenGL 3.30. Enable legacy shading in the config for OpenGL 2.10." +
                           " Please export a shader error log and " +
                           "upload it when reporting rendering issues.", "Shader Compilation Error");
                 }
@@ -178,7 +178,7 @@ namespace Smash_Forge
                 if (compileStatusFS == 0)
                 {
                     MessageBox.Show("The " + shaderName
-                  + " fragment shader failed to compile. Check that your system supports OpenGL and GLSL 3.30." +
+                  + " fragment shader failed to compile. Check that your system supports OpenGL 3.30. Enable legacy shading in the config for OpenGL 2.10." +
                   " Please export a shader error log and " +
                   "upload it when reporting rendering issues.", "Shader Compilation Error");
                 }

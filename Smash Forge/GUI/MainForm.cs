@@ -129,8 +129,6 @@ namespace Smash_Forge
 
         private static void SetupShaders()
         {
-            // load up the shaders
-
             Shader cub = new Shader();
             cub.vertexShader(RenderTools.cubevs);
             cub.fragmentShader(RenderTools.cubefs);
@@ -154,24 +152,32 @@ namespace Smash_Forge
             if (!Runtime.shaders.ContainsKey("nud"))
             {
                 Shader nud = new Shader();
-                nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
-                nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
+                if(Runtime.useLegacyShaders)
+                {
+                    nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Legacy/NUD_vs.txt"));
+                    nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Legacy/NUD_fs.txt"));
+                }
+                else
+                {
+                    nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
+                    nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
+                }
                 Runtime.shaders.Add("nud", nud);
-            }
-
-            if (!Runtime.shaders.ContainsKey("nud_legacy"))
-            {
-                Shader nud = new Shader();
-                nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Legacy/NUD_vs.txt"));
-                nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Legacy/NUD_fs.txt"));
-                Runtime.shaders.Add("nud_legacy", nud);
             }
 
             if (!Runtime.shaders.ContainsKey("NUD_Debug"))
             {
                 Shader debug = new Shader();
-                debug.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
-                debug.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_Debug_fs.txt"));
+                if (Runtime.useLegacyShaders)
+                {
+                    debug.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Legacy/NUD_vs.txt"));
+                    debug.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Legacy/NUD_Debug_fs.txt"));
+                }
+                else
+                {
+                    debug.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
+                    debug.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_Debug_fs.txt"));
+                }
                 Runtime.shaders.Add("NUD_Debug", debug);
             }
 
@@ -186,8 +192,16 @@ namespace Smash_Forge
             if (!Runtime.shaders.ContainsKey("MBN"))
             {
                 Shader mbn = new Shader();
-                mbn.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_vs.txt"));
-                mbn.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_fs.txt"));
+                if (Runtime.useLegacyShaders)
+                {
+                    mbn.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_vs.txt"));
+                    mbn.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_fs.txt"));
+                }
+                else
+                {
+                    mbn.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Legacy/MBN_vs.txt"));
+                    mbn.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Legacy/MBN_fs.txt"));
+                }
                 Runtime.shaders.Add("MBN", mbn);
             }
 
@@ -204,8 +218,17 @@ namespace Smash_Forge
             if (!Runtime.shaders.ContainsKey("DAT"))
             {
                 Shader DAT = new Shader();
-                DAT.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_vs.txt"));
-                DAT.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_fs.txt"));
+                if (Runtime.useLegacyShaders)
+                {
+                    DAT.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_vs.txt"));
+                    DAT.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_fs.txt"));
+                }
+                else
+                {
+                    DAT.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Legacy/DAT_vs.txt"));
+                    DAT.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Legacy/DAT_fs.txt"));
+                }
+
                 Runtime.shaders.Add("DAT", DAT);
             }
         }

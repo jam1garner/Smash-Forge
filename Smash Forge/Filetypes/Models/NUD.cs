@@ -187,7 +187,6 @@ namespace Smash_Forge
             DepthSortMeshes();
         }
 
-
         public void Render(VBN vbn, Camera camera)
         {
             if (Runtime.renderBoundingBox)
