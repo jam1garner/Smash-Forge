@@ -658,7 +658,6 @@ namespace Smash_Forge
 
             GL.Uniform1(shader.getAttribute("debug1"), Runtime.debug1 ? 1 : 0);
             GL.Uniform1(shader.getAttribute("debug2"), Runtime.debug2 ? 1 : 0);
-
         }
 
         private void SetXMBUniforms(Shader shader, Polygon p)

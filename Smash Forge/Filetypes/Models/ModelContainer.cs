@@ -155,8 +155,11 @@ namespace Smash_Forge
             Matrix4 mvpMatrix = camera.getMVPMatrix();
             GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
 
-            Matrix4 modelView = camera.getModelViewMatrix();
-            GL.UniformMatrix4(shader.getAttribute("modelViewMatrix"), false, ref modelView);
+            // Perform the calculations here to reduce render times in shader
+            Matrix4 sphereMapMatrix = camera.getModelViewMatrix();
+            sphereMapMatrix.Invert();
+            sphereMapMatrix.Transpose();
+            GL.UniformMatrix4(shader.getAttribute("sphereMapMatrix"), false, ref sphereMapMatrix);
 
             #region MBN Uniforms
 

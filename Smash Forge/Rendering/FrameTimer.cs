@@ -17,7 +17,6 @@ namespace Smash_Forge
 
         public double getAverageRenderTime()
         {
-            //Debug.WriteLine(renderTime.ElapsedMilliseconds);
             totalRenderTime += ElapsedMilliseconds;
             Reset();
             renderedFrameCount += 1;
