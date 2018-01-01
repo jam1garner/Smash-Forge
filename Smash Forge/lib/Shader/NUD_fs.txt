@@ -8,6 +8,7 @@ in vec2 texCoord3;
 in vec2 normaltexCoord;
 in vec4 vertexColor;
 in vec3 normal;
+in vec3 viewNormal;
 in vec3 tangent;
 in vec3 bitangent;
 
@@ -149,7 +150,6 @@ uniform vec3 stageFogColor;
 uniform int colorOverride;
 
 uniform mat4 mvpMatrix;
-uniform mat4 modelViewMatrix;
 
 uniform sampler2D shadowMap;
 
@@ -263,9 +263,7 @@ vec3 DummyRampColor(vec3 color){
 vec3 SphereMapColor(vec3 N)
 {
     // Calculate UVs based on view space normals.
-    vec4 viewNormals = transpose(inverse(modelViewMatrix)) * vec4(N.xyz, 0);
-    viewNormals = viewNormals * 0.5 + 0.5;
-    vec2 sphereTexcoord = vec2(viewNormals.x, (1 - viewNormals.y));
+    vec2 sphereTexcoord = vec2(viewNormal.x, (1 - viewNormal.y));
     return texture(spheremap, sphereTexcoord).xyz;
 }
 

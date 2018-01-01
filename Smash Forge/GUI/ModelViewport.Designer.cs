@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ModelViewport));
-            this.glViewport = new OpenTK.GLControl();
+            this.glViewport = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(8, 8, 8, 8), 24, 8, 16));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.animationTrackBar = new System.Windows.Forms.TrackBar();
             this.label2 = new System.Windows.Forms.Label();

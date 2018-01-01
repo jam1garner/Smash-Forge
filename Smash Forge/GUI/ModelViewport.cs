@@ -16,6 +16,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
 using Gif.Components;
+using System.Diagnostics;
 
 namespace Smash_Forge
 {
@@ -40,6 +41,9 @@ namespace Smash_Forge
             Selection
         }
         public Mode CurrentMode = Mode.Normal;
+
+        FrameTimer frameTime = new FrameTimer();
+
 
         //Animation
         private VBN TargetVBN;
@@ -847,9 +851,12 @@ namespace Smash_Forge
 
             // Models
             // -------------------------------------------------------------
+            frameTime.Start();
             if (Runtime.renderModel)
                 foreach (ModelContainer m in draw)
                     m.Render(Camera, 0, Matrix4.Zero, Camera.getMVPMatrix());
+
+            Debug.WriteLine(frameTime.getAverageRenderTime());
 
             //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
