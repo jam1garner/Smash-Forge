@@ -1024,7 +1024,7 @@ namespace Smash_Forge
                     {
                         try //Try used to avoid bone not found issue that crashes the application
                         {
-                            if (VBN.jointTable.Count < 1)
+                            if (VBN.JointTable.Tables.Count < 1)
                                 b = VBN.bones[bid];
                             else
                             {
@@ -1038,19 +1038,19 @@ namespace Smash_Forge
                                             b = VBN.bones[0];
                                     }
                                     else  // Index 2 counts as index 1, etc
-                                        b = VBN.bones[VBN.jointTable[jtbIndex][bid - 1]];
+                                        b = VBN.bones[VBN.JointTable.Tables[jtbIndex][bid - 1]];
                                 }
-                                else if (jtbIndex < VBN.jointTable.Count)
+                                else if (jtbIndex < VBN.JointTable.Tables.Count)
                                 {
                                     // Extra joint tables don't have the TransN rule
-                                    b = VBN.bones[VBN.jointTable[jtbIndex][bid]];
+                                    b = VBN.bones[VBN.JointTable.Tables[jtbIndex][bid]];
                                 }
                                 else
                                 {
                                     //If there is no jointTable but bone is >1000 then don't look into a another joint table
                                     //This makes some weapons like Luma have hitboxes visualized
                                     //b = m.vbn.bones[bid];
-                                    b = VBN.bones[VBN.jointTable[VBN.jointTable.Count - 1][bid]];
+                                    b = VBN.bones[VBN.JointTable.Tables[VBN.JointTable.Tables.Count - 1][bid]];
                                 }
                             }
                         }

@@ -434,7 +434,7 @@ namespace Smash_Forge
 
             for (int i = 0; i < a.size(); i++)
             {
-                a.nextFrame(vbn);
+                a.nextFrame(vbn, true);
                 List<Bone> bonelist = new List<Bone>();
                 for (int j = 0; j < nodeid.Count; j++)
                 {

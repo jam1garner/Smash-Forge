@@ -11,33 +11,45 @@ namespace Smash_Forge
     {
         public JTB()
         {
-            Table1 = new List<short>();
-            Table2 = new List<short>();
         }
         public JTB(string filename) : this()
         {
             Read(filename);
+            Text = Path.GetFileName(filename);
+            FilePath = filename;
         }
+
+        public string FilePath;
         public override Endianness Endian { get; set; }
-        public List<short> Table1 { get; set; }
-        public List<short> Table2 { get; set; }
+        public List<List<short>> Tables { get; set; }
+
 
         public override void Read(string filename)
         {
-            using (var stream = File.Open(filename, FileMode.Open))
             {
-                using (var reader = new BinaryReader(stream))
                 {
-                    var size1 = reader.ReadBint16();
-                    var size2 = reader.ReadBint16();
+                    FileData d = new FileData(filename);
+                    var size1 = d.readShort();
+                    if (size1 > 255)
+                    {
+                        d.seek(0);
+                        d.Endian = Endianness.Little;
+                        size1 = d.readShort();
+                    }
+                    var size2 = d.readShort();
+                    List<short> Table1 = new List<short>();
                     for (int i = 0; i < size1; i++)
                     {
-                        Table1.Add(reader.ReadBint16());
+                        Table1.Add((short)d.readShort());
                     }
+                    List<short> Table2 = new List<short>();
                     for (int i = 0; i < size2; i++)
                     {
-                        Table2.Add(reader.ReadBint16());
+                        Table2.Add((short)d.readShort());
                     }
+                    Tables = new List<List<short>>();
+                    Tables.Add(Table1);
+                    Tables.Add(Table2);
                 }
             }
         }

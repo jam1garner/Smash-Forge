@@ -17,6 +17,7 @@ using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
 using Gif.Components;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace Smash_Forge
 {
@@ -69,18 +70,39 @@ namespace Smash_Forge
                         {
                             //Remove manual crc flag
                             //acmdEditor.manualCrc = false;
-                            HandleACMD(TargetAnimString.Substring(3));
+                            HandleACMD(TargetAnimString);
                             if (ACMDScript != null)
                                 ACMDScript.processToFrame(0);
 
                         }
                     }
                 }
-
+                ResetModels();
+                MaterialAnimation = null;
                 Animation = value;
                 totalFrame.Value = value.FrameCount;
                 animationTrackBar.TickFrequency = 1;
                 animationTrackBar.SetRange(0, value.FrameCount);
+                currentFrame.Value = 1;
+                currentFrame.Value = 0;
+            }
+        }
+
+        private MTA MaterialAnimation;
+        public MTA CurrentMaterialAnimation
+        {
+            get
+            {
+                return MaterialAnimation;
+            }
+            set
+            {
+                ResetModels();
+                Animation = null;
+                MaterialAnimation = value;
+                totalFrame.Value = value.numFrames;
+                animationTrackBar.TickFrequency = 1;
+                animationTrackBar.SetRange(0, (int)value.numFrames);
                 currentFrame.Value = 1;
                 currentFrame.Value = 0;
             }
@@ -91,8 +113,21 @@ namespace Smash_Forge
         public Dictionary<string, int> ParamMoveNameIdMapping;
         public CharacterParamManager ParamManager;
         public PARAMEditor ParamManagerHelper;
-        public MovesetManager MovesetManager;
-        public ForgeACMDScript ACMDScript;
+        public MovesetManager MovesetManager
+        {
+            get
+            {
+                return _MovesetManager;
+            }
+            set
+            {
+                _MovesetManager = value;
+                if(ACMDEditor != null)
+                    ACMDEditor.updateCrcList();
+            }
+        }
+        public MovesetManager _MovesetManager;
+        public ForgeACMDScript ACMDScript = null;
 
         public ACMDPreviewEditor ACMDEditor;
         public HitboxList HitboxList;
@@ -213,6 +248,9 @@ namespace Smash_Forge
                 case ".lvd":
                     _lvd.Save(FilePath);
                     break;
+                case ".mtable":
+                    _MovesetManager.Save(FilePath);
+                    break;
             }
             Edited = false;
         }
@@ -222,11 +260,17 @@ namespace Smash_Forge
             using (var sfd = new SaveFileDialog())
             {
                 sfd.Filter = "Smash 4 Level Data (.lvd)|*.lvd|" +
+                             "ACMD|*.mtable|" +
                              "All Files (*.*)|*.*";
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     if (sfd.FileName.EndsWith(".lvd") && _lvd != null)
+                    {
+                        FilePath = sfd.FileName;
+                        Save();
+                    }
+                    if (sfd.FileName.EndsWith(".mtable") && _MovesetManager != null)
                     {
                         FilePath = sfd.FileName;
                         Save();
@@ -249,7 +293,7 @@ namespace Smash_Forge
             vertexTool.vp = this;
             //Application.Idle += Application_Idle;
             var timer = new Timer();
-            timer.Interval = 1000 / 60;
+            timer.Interval = 1000 / 120;
             timer.Tick += new EventHandler(Application_Idle);
             timer.Start();
 
@@ -350,10 +394,22 @@ namespace Smash_Forge
                 animationTrackBar.Value = (int)totalFrame.Value;
             currentFrame.Value = animationTrackBar.Value;
 
+
+            int frameNum = animationTrackBar.Value;
+
+            if (MaterialAnimation != null)
+            {
+                foreach (TreeNode node in MeshList.treeView1.Nodes)
+                {
+                    if (!(node is ModelContainer)) continue;
+                    ModelContainer m = (ModelContainer)node;
+                    m.NUD.applyMTA(MaterialAnimation, frameNum);
+                }
+            }
+            
             if (Animation == null) return;
 
             // Process script first in case we have to speed up the animation
-            int frameNum = animationTrackBar.Value;
             if (ACMDScript != null)
                 ACMDScript.processToFrame(frameNum);
 
@@ -361,8 +417,10 @@ namespace Smash_Forge
             if (ACMDScript != null && Runtime.useFrameDuration)
                 animFrameNum = ACMDScript.animationFrame;// - 1;
             
-            foreach (ModelContainer m in MeshList.treeView1.Nodes)
+            foreach (TreeNode node in MeshList.treeView1.Nodes)
             {
+                if (!(node is ModelContainer)) continue;
+                ModelContainer m = (ModelContainer)node;
                 Animation.SetFrame(animFrameNum);
                 if (m.VBN != null)
                     Animation.NextFrame(m.VBN);
@@ -370,6 +428,7 @@ namespace Smash_Forge
                 // Deliberately do not ever use ACMD/animFrame to modify these other types of model
                 if (m.dat_melee != null)
                 {
+                    Animation.SetFrame(frameNum);
                     Animation.NextFrame(m.dat_melee.bones);
                 }
                 if (m.BCH != null)
@@ -377,12 +436,43 @@ namespace Smash_Forge
                     foreach (BCH_Model mod in m.BCH.Models.Nodes)
                     {
                         if (mod.skeleton != null)
+                        {
+                            Animation.SetFrame(animFrameNum);
                             Animation.NextFrame(mod.skeleton);
+                        }
                     }
                 }
             }
 
             //Frame = (int)animFrameNum;
+        }
+
+        public void ResetModels()
+        {
+            foreach (TreeNode node in MeshList.treeView1.Nodes)
+            {
+                if (!(node is ModelContainer)) continue;
+                ModelContainer m = (ModelContainer)node;
+                m.NUD.clearMTA();
+                if (m.VBN != null)
+                    m.VBN.reset();
+
+                // Deliberately do not ever use ACMD/animFrame to modify these other types of model
+                if (m.dat_melee != null)
+                {
+                    m.dat_melee.bones.reset();
+                }
+                if (m.BCH != null)
+                {
+                    foreach (BCH_Model mod in m.BCH.Models.Nodes)
+                    {
+                        if (mod.skeleton != null)
+                        {
+                            mod.skeleton.reset();
+                        }
+                    }
+                }
+            }
         }
 
         private void currentFrame_ValueChanged(object sender, EventArgs e)
@@ -416,10 +506,9 @@ namespace Smash_Forge
 
         public void HandleACMD(string animname)
         {
-            //if (acmdEditor.manualCrc)
+            //if (ACMDEditor.manualCrc)
             //    return;
 
-            //Console.WriteLine("Handling " + animname);
             var crc = Crc32.Compute(animname.Replace(".omo", "").ToLower());
 
             scriptId = -1;
@@ -875,10 +964,10 @@ namespace Smash_Forge
             // -------------------------------------------------------------
             //frameTime.Start();
             if (Runtime.renderModel)
-                foreach (ModelContainer m in draw)
-                    m.Render(Camera, 0, Matrix4.Zero, Camera.getMVPMatrix());
+                foreach (TreeNode m in draw)
+                    if(m is ModelContainer)
+                        ((ModelContainer)m).Render(Camera, 0, Matrix4.Zero, Camera.getMVPMatrix());
 
-            //Debug.WriteLine(frameTime.getAverageRenderTime());
 
             //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
@@ -915,13 +1004,14 @@ namespace Smash_Forge
 
 
             // ACMD
-            if (ParamManager != null && Runtime.renderHurtboxes && MeshList.treeView1.Nodes.Count > 0 && (MeshList.treeView1.Nodes[0] is ModelContainer))
+            if (ParamManager != null && Runtime.renderHurtboxes && draw.Count > 0 && (draw[0] is ModelContainer))
             {
-                ParamManager.RenderHurtboxes(Frame, scriptId, ACMDScript, ((ModelContainer)MeshList.treeView1.Nodes[0]).VBN);
+                ParamManager.RenderHurtboxes(Frame, scriptId, ACMDScript, ((ModelContainer)draw[0]).GetVBN());
             }
 
-            if (ACMDScript!=null && MeshList.treeView1.Nodes.Count > 0 && (MeshList.treeView1.Nodes[0] is ModelContainer))
-                ACMDScript.Render(((ModelContainer)MeshList.treeView1.Nodes[0]).VBN);
+            if (ACMDScript!=null && draw.Count > 0 && (draw[0] is ModelContainer))
+                ACMDScript.Render(((ModelContainer)draw[0]).GetVBN());
+            //Debug.WriteLine(frameTime.getAverageRenderTime());
 
 
             // Mouse selection

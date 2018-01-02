@@ -40,6 +40,7 @@
             this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openStageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.openCharacterToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.open3DSCharacterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadShadersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -81,7 +82,8 @@
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.open3DSCharacterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.forgeWikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -97,7 +99,8 @@
             this.texturesToolStripMenuItem,
             this.viewToolStripMenuItem,
             this.masterpiecesToolStripMenuItem,
-            this.cameraToolStripMenuItem});
+            this.cameraToolStripMenuItem,
+            this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1217, 24);
@@ -134,21 +137,21 @@
             // modelToolStripMenuItem
             // 
             this.modelToolStripMenuItem.Name = "modelToolStripMenuItem";
-            this.modelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.modelToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
             this.modelToolStripMenuItem.Text = "Model";
             this.modelToolStripMenuItem.Click += new System.EventHandler(this.modelToolStripMenuItem_Click);
             // 
             // nUTToolStripMenuItem
             // 
             this.nUTToolStripMenuItem.Name = "nUTToolStripMenuItem";
-            this.nUTToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.nUTToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
             this.nUTToolStripMenuItem.Text = "NUT";
             this.nUTToolStripMenuItem.Click += new System.EventHandler(this.nUTToolStripMenuItem_Click);
             // 
             // dSTexToolStripMenuItem
             // 
             this.dSTexToolStripMenuItem.Name = "dSTexToolStripMenuItem";
-            this.dSTexToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dSTexToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
             this.dSTexToolStripMenuItem.Text = "3DS Tex";
             this.dSTexToolStripMenuItem.Click += new System.EventHandler(this.dSTexToolStripMenuItem_Click);
             // 
@@ -189,6 +192,15 @@
             this.openCharacterToolStripMenuItem1.Text = "Open Character";
             this.openCharacterToolStripMenuItem1.ToolTipText = "Opens supported file in a characters folder";
             this.openCharacterToolStripMenuItem1.Click += new System.EventHandler(this.openCharacterToolStripMenuItem_Click);
+            // 
+            // open3DSCharacterToolStripMenuItem
+            // 
+            this.open3DSCharacterToolStripMenuItem.Name = "open3DSCharacterToolStripMenuItem";
+            this.open3DSCharacterToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.D3)));
+            this.open3DSCharacterToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
+            this.open3DSCharacterToolStripMenuItem.Text = "Open 3DS Character";
+            this.open3DSCharacterToolStripMenuItem.Click += new System.EventHandler(this.open3DSCharacterToolStripMenuItem_Click);
             // 
             // openNUDToolStripMenuItem
             // 
@@ -521,14 +533,20 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
-            // open3DSCharacterToolStripMenuItem
+            // helpToolStripMenuItem
             // 
-            this.open3DSCharacterToolStripMenuItem.Name = "open3DSCharacterToolStripMenuItem";
-            this.open3DSCharacterToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.D3)));
-            this.open3DSCharacterToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
-            this.open3DSCharacterToolStripMenuItem.Text = "Open 3DS Character";
-            this.open3DSCharacterToolStripMenuItem.Click += new System.EventHandler(this.open3DSCharacterToolStripMenuItem_Click);
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.forgeWikiToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // forgeWikiToolStripMenuItem
+            // 
+            this.forgeWikiToolStripMenuItem.Name = "forgeWikiToolStripMenuItem";
+            this.forgeWikiToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.forgeWikiToolStripMenuItem.Text = "Forge Wiki";
+            this.forgeWikiToolStripMenuItem.Click += new System.EventHandler(this.forgeWikiToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -617,6 +635,8 @@
         private System.Windows.Forms.ToolStripMenuItem dSTexToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reloadShadersToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem open3DSCharacterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem forgeWikiToolStripMenuItem;
     }
 }
 

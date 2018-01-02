@@ -232,8 +232,7 @@ namespace Smash_Forge
         public UInt32 totalBoneCount;
         public UInt32[] boneCountPerType = new UInt32[4];
         public List<Bone> bones = new List<Bone>();
-
-        public List<List<int>> jointTable = new List<List<int>>();
+        
         public SB SwingBones {
             get 
             {
@@ -248,6 +247,21 @@ namespace Smash_Forge
             }
         }
         private SB _swingBones;
+        public JTB JointTable
+        {
+            get
+            {
+                if (_jointTable == null)
+                    _jointTable = new JTB();
+                return _jointTable;
+            }
+            set
+            {
+                _jointTable = value;
+                ResetNodes();
+            }
+        }
+        private JTB _jointTable;
 
         #region Events
 
@@ -325,6 +339,8 @@ namespace Smash_Forge
 
         public List<Bone> getBoneTreeOrder()
         {
+            if (bones.Count == 0)
+                return null;
             List<Bone> bone = new List<Bone>();
             Queue<Bone> q = new Queue<Bone>();
 
@@ -558,7 +574,7 @@ namespace Smash_Forge
             return file.getBytes();
         }
 
-        public void readJointTable(string fname)
+        /*public void readJointTable(string fname)
         {
             FileData d = new FileData(fname);
             d.Endian = Endianness.Big;
@@ -592,7 +608,7 @@ namespace Smash_Forge
                     t2.Add(d.readShort());
                 jointTable.Add(t2);
             }
-        }
+        }*/
 
         public Bone bone(string name)
         {
@@ -624,13 +640,13 @@ namespace Smash_Forge
         {
             int index = -1;
             int vbnIndex = boneIndex(name);
-            if(jointTable != null)
+            if(JointTable != null)
             {
-                for(int i = 0; i < jointTable.Count; i++)
+                for(int i = 0; i < JointTable.Tables.Count; i++)
                 {
-                    for(int j = 0; j < jointTable[i].Count; j++)
+                    for(int j = 0; j < JointTable.Tables[i].Count; j++)
                     {
-                        if(jointTable[i][j] == vbnIndex)
+                        if(JointTable.Tables[i][j] == vbnIndex)
                         {
                             // Note that some bones appear twice in the joint tables
                             // and this function will only find the first occurrence.

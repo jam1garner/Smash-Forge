@@ -1190,9 +1190,9 @@ namespace Smash_Forge
                     {
                         try //Try used to avoid bone not found issue that crashes the application
                         {
-                            if (m.VBN.jointTable.Count < 1)
+                            /*if (m.VBN.jointTable.Count < 1)
                                 b = m.VBN.bones[bid];
-                            else
+                            else*/
                             {
                                 if (jtbIndex == 0)
                                 {
@@ -1203,20 +1203,20 @@ namespace Smash_Forge
                                         if (b == null)
                                             b = m.VBN.bones[0];
                                     }
-                                    else  // Index 2 counts as index 1, etc
-                                        b = m.VBN.bones[m.VBN.jointTable[jtbIndex][bid - 1]];
+                                   // else  // Index 2 counts as index 1, etc
+                                        //b = m.VBN.bones[m.VBN.jointTable[jtbIndex][bid - 1]];
                                 }
-                                else if (jtbIndex < m.VBN.jointTable.Count)
+                                //else if (jtbIndex < m.VBN.jointTable.Count)
                                 {
                                     // Extra joint tables don't have the TransN rule
-                                    b = m.VBN.bones[m.VBN.jointTable[jtbIndex][bid]];
+                                    //b = m.VBN.bones[m.VBN.jointTable[jtbIndex][bid]];
                                 }
-                                else
+                                //else
                                 {
                                     //If there is no jointTable but bone is >1000 then don't look into a another joint table
                                     //This makes some weapons like Luma have hitboxes visualized
                                     //b = m.vbn.bones[bid];
-                                    b = m.VBN.bones[m.VBN.jointTable[m.VBN.jointTable.Count - 1][bid]];
+                                    //b = m.VBN.bones[m.VBN.jointTable[m.VBN.jointTable.Count - 1][bid]];
                                 }
                             }
                         }

@@ -62,34 +62,44 @@ namespace Smash_Forge
             {
                 //Runtime.TargetAnimString = e.Node.Text;
 
-                Animation running = new Animation(e.Node.Text);
+                string AnimName = Regex.Match(e.Node.Text, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString().Substring(3);
+
+                Animation running = new Animation(AnimName);
                 running.ReplaceMe((Animation)e.Node);
-                ((ModelViewport)Parent).CurrentAnimation = running;
+
+                List<MTA> display = new List<MTA>();
+                List<MTA> def = new List<MTA>();
 
                 Queue<TreeNode> NodeQueue = new Queue<TreeNode>();
                 foreach (TreeNode n in treeView1.Nodes)
                 {
                     NodeQueue.Enqueue(n);
                 }
-                List<MTA> display = new List<MTA>();
                 while (NodeQueue.Count > 0)
                 {
                     TreeNode n = NodeQueue.Dequeue();
+                    string NodeName = Regex.Match(n.Text, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
+                    if (NodeName.Length <= 3)
+                        Console.WriteLine(NodeName);
+                    else
+                        NodeName = NodeName.Substring(3);
                     if (n is Animation)
                     {
                         if (n == e.Node)
                             continue;
-                        if (n.Text.Equals(e.Node.Text))
+                        if (matchAnim.Checked && NodeName.Equals(AnimName))
                             running.Children.Add(n);
                     }
                     if (n is MTA)
                     {
                         if (n == e.Node)
                             continue;
-                        if (n.Text.Contains(e.Node.Text.Replace(".omo", ".")))
+                        if (NodeName.Contains(AnimName.Replace(".omo", ".")))
                             running.Children.Add(n);
-                        if (n.Text.Contains("default.mta"))
+                        if (n.Text.Contains("display"))
                             display.Add((MTA)n);
+                        if (n.Text.Contains("default.mta"))
+                            def.Add((MTA)n);
                     }
                     if (n is AnimationGroupNode)
                     {
@@ -98,26 +108,38 @@ namespace Smash_Forge
                     }
                 }
 
-                //Runtime.TargetAnim = running;// Runtime.Animations[e.Node.Text];
+                ((ModelViewport)Parent).CurrentAnimation = running;
 
                 //reset mtas
-                foreach (ModelContainer con in ((ModelViewport)Parent).draw)
+                foreach (TreeNode node in ((ModelViewport)Parent).draw)
                 {
-                    if (con.NUD != null && con.MTA != null)
+                    if (node is ModelContainer)
                     {
-                        con.NUD.applyMTA(con.MTA, 0);
-                        foreach(MTA d in display)
-                            con.NUD.applyMTA(d, 0);
-
-                        foreach (KeyValuePair<string, MTA> v in Runtime.MaterialAnimations)
+                        ModelContainer con = (ModelContainer)node;
+                        if (con.NUD != null)
                         {
-                            if (v.Key.Contains("display"))
+                            con.NUD.clearMTA();
+                            con.NUD.applyMTA(con.MTA, 0);
+                            foreach (MTA d in display)
                             {
-                                con.NUD.applyMTA(v.Value, 0);
-                                break;
+                                con.NUD.applyMTA(d, 0);
                             }
+                            foreach (MTA d in def)
+                            {
+                                con.NUD.applyMTA(d, 0);
+                            }
+
+                            /*foreach (KeyValuePair<string, MTA> v in Runtime.MaterialAnimations)
+                            {
+                                if (v.Key.Contains("display"))
+                                {
+                                    con.NUD.applyMTA(v.Value, 0);
+                                    break;
+                                }
+                            }*/
                         }
                     }
+
                 }
 
                 /*Runtime.TargetMTA.Clear();
@@ -138,6 +160,7 @@ namespace Smash_Forge
                 //MainForm.Instance.viewports[0].loadMTA((MTA)e.Node);
                 //Runtime.TargetMTA = ;
                 //Runtime.TargetMTAString = e.Node.Text;
+                ((ModelViewport)Parent).CurrentMaterialAnimation = (MTA)e.Node;
 
                 Queue<TreeNode> NodeQueue = new Queue<TreeNode>();
                 foreach (TreeNode n in treeView1.Nodes)
@@ -152,7 +175,7 @@ namespace Smash_Forge
                     {
                         if (n == e.Node)
                             continue;
-                        if (n.Text.Contains("default.mta") && n is MTA)
+                        if ((n.Text.Contains("default.mta") || n.Text.Contains("display")) && n is MTA)
                             display.Add((MTA)n);
                     }
                     if (n is AnimationGroupNode)
@@ -162,15 +185,29 @@ namespace Smash_Forge
                     }
                 }
 
-                /*foreach (ModelContainer con in Runtime.ModelContainers)
+                foreach (TreeNode node in ((ModelViewport)Parent).draw)
                 {
-                    if (con.NUD != null && con.mta != null)
+                    if (node is ModelContainer)
                     {
-                        con.NUD.applyMTA(con.mta, 0);
-                        foreach (MTA d in display)
-                            con.NUD.applyMTA(d, 0);
+                        ModelContainer con = (ModelContainer)node;
+                        if (con.NUD != null && con.MTA != null)
+                        {
+                            con.NUD.applyMTA(con.MTA, 0);
+                            foreach (MTA d in display)
+                                con.NUD.applyMTA(d, 0);
+
+                            /*foreach (KeyValuePair<string, MTA> v in Runtime.MaterialAnimations)
+                            {
+                                if (v.Key.Contains("display"))
+                                {
+                                    con.NUD.applyMTA(v.Value, 0);
+                                    break;
+                                }
+                            }*/
+                        }
                     }
-                }*/
+
+                }
 
             }
         }

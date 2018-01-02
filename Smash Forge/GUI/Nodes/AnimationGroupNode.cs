@@ -37,7 +37,11 @@ namespace Smash_Forge
 
         public void Remove(object sender, EventArgs args)
         {
-            //Parent.Nodes.Remove(this);
+            if(Parent != null)
+            {
+                Nodes.Clear();
+                Parent.Nodes.Remove(this);
+            }
         }
 
         public void Import(object sender, EventArgs args)

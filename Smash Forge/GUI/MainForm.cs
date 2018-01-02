@@ -54,6 +54,17 @@ namespace Smash_Forge
             Progress.ProgressValue = e.ProgressPercentage;
         }
 
+        private void AppIdle(object sender, EventArgs e)
+        {
+            if (Smash_Forge.Update.Downloaded)
+                MainForm.Instance.pictureBox1.Image = Resources.Resources.sexy_green_down_arrow;
+        }
+
+        ~MainForm()
+        {
+            System.Windows.Forms.Application.Idle -= AppIdle;
+        }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             ThreadStart t = new ThreadStart(Smash_Forge.Update.CheckLatest);
@@ -62,9 +73,11 @@ namespace Smash_Forge
             Runtime.renderDepth = 100000.0f;
             //foreach (var vp in viewports)
             //    AddDockedControl(vp);
-            
+
             //if (Smash_Forge.Update.Downloaded)
             //    MainForm.Instance.pictureBox1.Image = Resources.Resources.sexy_green_down_arrow;
+
+            System.Windows.Forms.Application.Idle += AppIdle;
 
             //animationsWindowToolStripMenuItem.Checked =
             //    boneTreeToolStripMenuItem.Checked = true;
@@ -414,7 +427,7 @@ namespace Smash_Forge
                     currentSwagEditor = s;
 
             if (currentParam != null)
-                currentParam.saveAs();
+                currentParam.SaveAs();
             else if (currentACMD != null)
                 currentACMD.save();
             else if (currentSwagEditor != null)
@@ -491,7 +504,7 @@ namespace Smash_Forge
                 model.VBN = new VBN(pathVBN);
                 //Runtime.TargetVBN = model.VBN;
                 if (!pathJTB.Equals(""))
-                    model.VBN.readJointTable(pathJTB);
+                    model.JTB = new JTB(pathJTB);
                 if (!pathSB.Equals(""))
                     model.VBN.SwingBones.Read(pathSB);
             }
@@ -513,8 +526,13 @@ namespace Smash_Forge
                     PAC p = new PAC();
                     p.Read(s);
                     byte[] data;
-                    p.Files.TryGetValue("default.mta", out data);
-                    if (data != null)
+                    if (p.Files.TryGetValue("display", out data))
+                    {
+                        MTA m = new MTA();
+                        m.read(new FileData(data));
+                        model.NUD.applyMTA(m, 0);
+                    }
+                    if (p.Files.TryGetValue("default.mta", out data))
                     {
                         MTA m = new MTA();
                         m.read(new FileData(data));
@@ -935,7 +953,9 @@ namespace Smash_Forge
                         // If they set the wrong dir, oh well
                         try
                         {
-                            Console.WriteLine(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin", fighterName);
+                            string fighterparam = Runtime.paramDir + "\\fighter\\fighter_param_vl_"+fighterName+".bin";
+                            //mvp.draw.Add(new TreeNode() { Text = fighterparam });
+
                             mvp.ParamManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin", fighterName);
                             mvp.HurtboxList.refresh();
                             mvp.ParamManagerHelper = new PARAMEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
@@ -1263,7 +1283,7 @@ namespace Smash_Forge
             {
                 PAC p = new PAC();
                 p.Read(filename);
-                AnimationGroupNode animGroup = new AnimationGroupNode() { Text = filename};
+                AnimationGroupNode animGroup = new AnimationGroupNode() { Text = Path.GetFileName(filename)};
 
                 foreach (var pair in p.Files)
                 {
@@ -1272,7 +1292,7 @@ namespace Smash_Forge
                         Console.WriteLine("Adding " + pair.Key);
                         var anim = OMOOld.read(new FileData(pair.Value));
                         animGroup.Nodes.Add(anim);
-                        string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
+                        string AnimName = pair.Key; //Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
                         if (!string.IsNullOrEmpty(AnimName))
                         {
                             anim.Text = AnimName;
@@ -1613,6 +1633,7 @@ namespace Smash_Forge
         /// <param name="fileName"> Filename of file to open</param>
         public void openFile(string fileName)
         {
+            glControl1.MakeCurrent();
             //if (!fileName.EndsWith(".mta") && !fileName.EndsWith(".dat") && !fileName.EndsWith(".smd"))
             //    openAnimation(fileName);
 
@@ -2373,6 +2394,11 @@ namespace Smash_Forge
                                 ((BCH_Model)bch.Models.Nodes[0]).OpenMBN(new FileData(ModelFolder + "normal.mbn"));
                             con.BCH = bch;
                         }
+
+                        if (File.Exists(ofd.SelectedPath + "\\body\\c00\\" + "model.jtb"))
+                        {
+                            con.JTB = new Smash_Forge.JTB(ofd.SelectedPath + "\\body\\c00\\" + "model.jtb");
+                        }
                         mvp.draw.Add(con);
                     }
 
@@ -2383,14 +2409,26 @@ namespace Smash_Forge
                         foreach (string s in anims)
                         {
                             if(s.EndsWith("main.bch"))
-                            mvp.AnimList.treeView1.Nodes.Add(BCHan.Read(s));
+                                mvp.AnimList.treeView1.Nodes.Add(BCHan.Read(s));
                         }
 
+                    }
+
+
+                    String ACMDFolder = ofd.SelectedPath.Replace("model", "animcmd") + "\\";
+                    if (Directory.Exists(ACMDFolder))
+                    {
+                        mvp.MovesetManager = new MovesetManager(ACMDFolder + "motion.mtable");
                     }
 
                     AddDockedControl(mvp);
                 }
             }
+        }
+
+        private void forgeWikiToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/jam1garner/Smash-Forge/wiki");
         }
     }
 }

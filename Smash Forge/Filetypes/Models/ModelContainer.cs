@@ -45,6 +45,8 @@ namespace Smash_Forge
             set
             {
                 vbn = value;
+                if(JTB != null)
+                    vbn.JointTable = JTB;
                 if (vbn == null)
                     vbn = new VBN();
                 Refresh();
@@ -77,6 +79,21 @@ namespace Smash_Forge
             }
         }
         private MOI moi;
+        public JTB JTB
+        {
+            get
+            {
+                return jtb;
+            }
+            set
+            {
+                jtb = value;
+                if(VBN != null)
+                    VBN.JointTable = jtb;
+                Refresh();
+            }
+        }
+        private JTB jtb;
         public XMBFile XMB
         {
             get
@@ -121,6 +138,7 @@ namespace Smash_Forge
             vbn = new VBN();
             mta = new MTA();
             MOI = new MOI();
+            jtb = new JTB();
             XMB = new XMBFile();
             Checked = true;
             Refresh();
@@ -140,6 +158,7 @@ namespace Smash_Forge
                 if (vbn != null && vbn.Parent == null) Nodes.Add(vbn);
                 if (mta != null) Nodes.Add(mta);
                 if (moi != null) Nodes.Add(moi);
+                if (jtb != null) Nodes.Add(jtb);
                 if (xmb != null) Nodes.Add(
                     new TreeNode()
                     {
@@ -159,6 +178,21 @@ namespace Smash_Forge
         {
             if(NUD != null)
                 NUD.Destroy();
+        }
+
+        public VBN GetVBN()
+        {
+            if (BCH != null)
+                if (BCH.Models.Nodes.Count > 0)
+                {
+                    ((BCH_Model)BCH.Models.Nodes[0]).skeleton.JointTable = JTB;
+                    return ((BCH_Model)BCH.Models.Nodes[0]).skeleton;
+                }
+            if (VBN != null)
+            {
+                return VBN;
+            }
+            return null;
         }
 
         public void Render(Camera camera, int depthmap, Matrix4 lightMatrix, Matrix4 modelMatrix)
