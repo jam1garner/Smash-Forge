@@ -101,7 +101,7 @@ namespace Smash_Forge
 
         public static void Save(object sender, EventArgs args)
         {
-            BackgroundWorker worker = sender as BackgroundWorker;
+            //BackgroundWorker worker = sender as BackgroundWorker;
 
             float f = 1;
             if (FileName.ToLower().EndsWith(".bch"))
@@ -109,7 +109,7 @@ namespace Smash_Forge
                 List<Animation> anims = new List<Animation>();
                 foreach (Animation a in ((TreeNode)Node).Nodes)
                 {
-                    worker.ReportProgress((int)((f / Node.Nodes.Count) * 100f));
+                    //worker.ReportProgress((int)((f / Node.Nodes.Count) * 100f));
                     f++;
                     anims.Add(a);
                 }
@@ -120,11 +120,11 @@ namespace Smash_Forge
                 var pac = new PAC();
                 foreach (Animation anim in Node.Nodes)
                 {
-                    worker.ReportProgress((int)((f / Node.Nodes.Count) * 100f));
+                    //worker.ReportProgress((int)((f / Node.Nodes.Count) * 100f));
                     f++;
                     //Console.WriteLine("Working on " + anim.Text + " " + (anim.Tag is FileData));
                     var bytes = new byte[1];
-                    if (anim.Tag is FileData)
+                    if (anim.Tag != null && anim.Tag is FileData)
                         bytes = ((FileData)anim.Tag).getSection(0, ((FileData)anim.Tag).size());
                     else
                         bytes = OMOOld.CreateOMOFromAnimation(anim, Runtime.TargetVBN);
@@ -162,7 +162,9 @@ namespace Smash_Forge
                         Node = n;
                         FileName = sf.FileName;
 
-                        MainForm.Instance.Progress = new ProgessAlert();
+                        Save(null, null);
+
+                        /*MainForm.Instance.Progress = new ProgessAlert();
                         MainForm.Instance.Progress.ProgressValue = 0;
                         MainForm.Instance.Progress.Message = ("Please Wait... Baking Animation Frames");
                         MainForm.Instance.Progress.ControlBox = true;
@@ -173,7 +175,7 @@ namespace Smash_Forge
 
                         MainForm.Instance.Progress.ShowDialog();
 
-                        MainForm.Instance.backgroundWorker1.DoWork -= hand;
+                        MainForm.Instance.backgroundWorker1.DoWork -= hand;*/
 
                     }
                 }

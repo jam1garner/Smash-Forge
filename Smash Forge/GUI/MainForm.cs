@@ -1639,6 +1639,27 @@ namespace Smash_Forge
 
             // Redone-----------------------------------------------------
 
+            if (fileName.EndsWith(".omo"))
+            {
+                ModelViewport mvp = new ModelViewport();
+                if (dockPanel1.ActiveContent is ModelViewport)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Import Animation Data into active viewport?", "", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        mvp = (ModelViewport)dockPanel1.ActiveContent;
+                        mvp.AnimList.treeView1.Nodes.Add(OMOOld.read(new FileData(fileName)));
+                        return;
+                    }
+                    else
+                    {
+                        mvp.AnimList.treeView1.Nodes.Add(OMOOld.read(new FileData(fileName)));
+                    }
+                    mvp.Text = fileName;
+                    AddDockedControl(mvp);
+                }
+            }
+
             if (fileName.EndsWith(".pac"))
             {
                 ModelViewport mvp = new ModelViewport();
