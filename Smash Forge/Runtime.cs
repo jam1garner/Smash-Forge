@@ -69,6 +69,7 @@ namespace Smash_Forge
 
         public static ViewportModes ViewportMode = ViewportModes.EDITVERT;
 
+        public static float RenderLineSize = 2;
         public static bool renderLVD;
         public static bool renderModel;
         public static bool renderModelSelection = true;

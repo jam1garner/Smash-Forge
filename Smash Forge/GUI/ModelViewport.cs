@@ -329,7 +329,9 @@ namespace Smash_Forge
                 glViewport.Invalidate();
             }
         }
-        
+
+        #region Picking
+
         public Vector2 GetMouseOnViewport()
         {
             float mouse_x = glViewport.PointToClient(Cursor.Position).X;
@@ -340,6 +342,8 @@ namespace Smash_Forge
             return new Vector2(mx, my);
         }
 
+        int dbdistance = 0;
+        System.Drawing.Point _LastPoint;
         private void glViewport_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (ReadyToRender && glViewport != null)
@@ -352,7 +356,39 @@ namespace Smash_Forge
                 Camera.setRenderHeight(glViewport.Height);
                 Camera.Update();
             }
+            //Mesh Selection Test
+            if(e.Button == MouseButtons.Left)
+            {
+                Ray ray = new Ray(Camera, glViewport);
+                int selectedSize = 0;
+
+                foreach (TreeNode node in draw)
+                {
+                    if (!(node is ModelContainer)) continue;
+                    ModelContainer con = (ModelContainer)node;
+                    if (modeBone.Checked)
+                    {
+                        SortedList<double, Bone> selected = con.GetBoneSelection(ray);
+                        selectedSize = selected.Count;
+                        if (selected.Count > dbdistance && MeshList.treeView1.Nodes.Contains(selected.Values.ElementAt(dbdistance)))
+                            MeshList.treeView1.SelectedNode = selected.Values.ElementAt(dbdistance);
+                    }
+                    if (modeMesh.Checked)
+                    {
+                        SortedList<double, NUD.Mesh> selected = con.GetMeshSelection(ray);
+                        selectedSize = selected.Count;
+                        if (selected.Count > dbdistance)
+                            MeshList.treeView1.SelectedNode = selected.Values.ElementAt(dbdistance);
+                    }
+                }
+                
+                dbdistance += 1;
+                if (dbdistance >= selectedSize) dbdistance = 0;
+                _LastPoint = e.Location;
+            }
         }
+
+        #endregion
 
         public void CalculateLightSource()
         {
@@ -374,7 +410,7 @@ namespace Smash_Forge
 
         private void glViewport_Resize(object sender, EventArgs e)
         {
-            if (ReadyToRender && glViewport.Height != 0 && glViewport.Width != 0)
+            if (ReadyToRender && CurrentMode != Mode.Selection && glViewport.Height != 0 && glViewport.Width != 0)
             {
                 GL.LoadIdentity();
                 GL.Viewport(glViewport.ClientRectangle);
@@ -609,8 +645,11 @@ namespace Smash_Forge
 
         private void glViewport_MouseMove(object sender, MouseEventArgs e)
         {
-            Camera.Update();
+            if(CurrentMode != Mode.Selection)
+                Camera.Update();
         }
+
+        #region Controls
 
         private void ViewComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -626,10 +665,13 @@ namespace Smash_Forge
                     AnimList.Visible = true;
                     break;
                 case 1:
+                    MeshList.Visible = true;
+                    break;
+                case 2:
                     LVDEditor.Visible = true;
                     LVDList.Visible = true;
                     break;
-                case 2:
+                case 3:
                     AnimList.Visible = true;
                     ACMDEditor.Visible = true;
                     break;
@@ -771,6 +813,16 @@ namespace Smash_Forge
                 currentFrame.Value--;
         }
 
+        private void viewStripButtons(object sender, EventArgs e)
+        {
+            modeBone.Checked = false;
+            modePolygon.Checked = false;
+            modeMesh.Checked = false;
+            ((ToolStripButton)sender).Checked = true;
+        }
+
+        #endregion
+
         private void checkSelect()
         {
             if (CurrentMode == Mode.Selection)
@@ -784,8 +836,10 @@ namespace Smash_Forge
                     float width = Math.Abs(sx1 - m.X);
                     float height = Math.Abs(sy1 - m.Y);
 
-                    foreach (ModelContainer con in draw)
+                    foreach (TreeNode node in draw)
                     {
+                        if (!(node is ModelContainer)) continue;
+                        ModelContainer con = (ModelContainer)node;
                         foreach (NUD.Mesh mesh in con.NUD.Nodes)
                         {
                             foreach (NUD.Polygon poly in mesh.Nodes)
@@ -794,7 +848,8 @@ namespace Smash_Forge
                                 int i = 0;
                                 foreach (NUD.Vertex v in poly.vertices)
                                 {
-                                    poly.selectedVerts[i] = 0;
+                                    if (!OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ControlLeft))
+                                        poly.selectedVerts[i] = 0;
                                     Vector3 n = getScreenPoint(v.pos);
                                     if (n.X >= minx && n.Y >= miny && n.X <= minx + width && n.Y <= miny + height)
                                         poly.selectedVerts[i] = 1;
@@ -807,10 +862,16 @@ namespace Smash_Forge
                 else
                 {
                     // single vertex
+                    // Selects the closest vertex
                     Ray r = RenderTools.createRay(Camera.getMVPMatrix(), GetMouseOnViewport());
                     Vector3 close = Vector3.Zero;
-                    foreach (ModelContainer con in draw)
+                    foreach (TreeNode node in draw)
                     {
+                        if (!(node is ModelContainer)) continue;
+                        ModelContainer con = (ModelContainer)node;
+                        NUD.Polygon Close = null;
+                        int index = 0;
+                        double mindis = 999;
                         foreach (NUD.Mesh mesh in con.NUD.Nodes)
                         {
                             foreach (NUD.Polygon poly in mesh.Nodes)
@@ -819,12 +880,27 @@ namespace Smash_Forge
                                 int i = 0;
                                 foreach (NUD.Vertex v in poly.vertices)
                                 {
-                                    if (!poly.IsSelected) continue;
+                                    //if (!poly.IsSelected) continue;
+                                    if(!OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ControlLeft))
+                                        poly.selectedVerts[i] = 0;
+
                                     if (r.TrySphereHit(v.pos, 0.2f, out close))
-                                        poly.selectedVerts[i] = 1;
+                                    {
+                                        double dis = r.Distance(close);
+                                        if(dis < mindis)
+                                        {
+                                            mindis = dis;
+                                            Close = poly;
+                                            index = i;
+                                        }
+                                    }
                                     i++;
                                 }
                             }
+                        }
+                        if(Close != null)
+                        {
+                            Close.selectedVerts[index] = 1;
                         }
                     }
                 }
@@ -841,13 +917,16 @@ namespace Smash_Forge
 
         private void glViewport_MouseUp(object sender, MouseEventArgs e)
         {
-            checkSelect();
+            //checkSelect();
         }
 
         private void weightToolButton_Click(object sender, EventArgs e)
         {
             vertexTool.Show();
         }
+
+        #region Rendering
+
 
         private void Render(object sender, PaintEventArgs e)
         {
@@ -964,10 +1043,15 @@ namespace Smash_Forge
             // Models
             // -------------------------------------------------------------
             //frameTime.Start();
-            if (Runtime.renderModel)
+            if (Runtime.renderModel || Runtime.renderModelWireframe)
                 foreach (TreeNode m in draw)
                     if(m is ModelContainer)
                         ((ModelContainer)m).Render(Camera, 0, Matrix4.Zero, Camera.getMVPMatrix());
+
+            if (ViewComboBox.SelectedIndex == 1)
+                foreach (TreeNode m in draw)
+                    if (m is ModelContainer)
+                        ((ModelContainer)m).RenderPoints(Camera);
 
 
             //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -1017,27 +1101,55 @@ namespace Smash_Forge
 
             // Mouse selection
             // -------------------------------------------------------------
-
-            if (CurrentMode == Mode.Selection)
+            if(ViewComboBox.SelectedIndex == 1)
             {
-                GL.MatrixMode(MatrixMode.Projection);
-                GL.LoadIdentity();
-                GL.Clear(ClearBufferMask.DepthBufferBit);
-
-                if (OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
+                try
                 {
-                    CurrentMode = Mode.Normal;
+                    if (CurrentMode == Mode.Normal && OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
+                    {
+                        CurrentMode = Mode.Selection;
+                        Vector2 m = GetMouseOnViewport();
+                        sx1 = m.X;
+                        sy1 = m.Y;
+                    }
+                }
+                catch
+                {
+
+                }
+                if (CurrentMode == Mode.Selection)
+                {
+                    if (!OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
+                    {
+                        checkSelect();
+                        CurrentMode = Mode.Normal;
+                    }
+
+                    GL.MatrixMode(MatrixMode.Modelview);
+                    GL.PushMatrix();
+                    GL.LoadIdentity();
+
+                    Vector2 m = GetMouseOnViewport();
+                    GL.Color3(Color.Black);
+                    GL.LineWidth(2f);
+                    GL.Begin(PrimitiveType.LineLoop);
+                    GL.Vertex2(sx1, sy1);
+                    GL.Vertex2(m.X, sy1);
+                    GL.Vertex2(m.X, m.Y);
+                    GL.Vertex2(sx1, m.Y);
+                    GL.End();
+
+                    GL.Color3(Color.White);
+                    GL.LineWidth(1f);
+                    GL.Begin(PrimitiveType.LineLoop);
+                    GL.Vertex2(sx1, sy1);
+                    GL.Vertex2(m.X, sy1);
+                    GL.Vertex2(m.X, m.Y);
+                    GL.Vertex2(sx1, m.Y);
+                    GL.End();
+                    GL.PopMatrix();
                 }
 
-                Vector2 m = GetMouseOnViewport();
-                GL.Color3(Color.AliceBlue);
-                GL.LineWidth(2f);
-                GL.Begin(PrimitiveType.LineLoop);
-                GL.Vertex2(sx1, sy1);
-                GL.Vertex2(m.X, sy1);
-                GL.Vertex2(m.X, m.Y);
-                GL.Vertex2(sx1, m.Y);
-                GL.End();
             }
 
             /*if (CurrentMode == Mode.Photoshoot)
@@ -1082,6 +1194,8 @@ namespace Smash_Forge
             GL.Enable(EnableCap.StencilTest);
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
         }
+
+        #endregion
 
     }
 }

@@ -2032,13 +2032,13 @@ namespace Smash_Forge
                 {
                     foreach (Bone b in con.VBN.bones)
                     {
-                        Vector3 closest = Vector3.Zero;
+                        /*Vector3 closest = Vector3.Zero;
                         Vector3 cen = b.transform.ExtractTranslation();
                         if (!selected.Values.Contains(b) && RenderTools.CheckSphereHit(cen, .3f, p1, p2, out closest))
                         {
                             double dis = Math.Pow(closest.X - p1.X, 2) + Math.Pow(closest.Y - p1.Y, 2) + Math.Pow(closest.Z - p1.Z, 2);
                             selected.Add(dis, b);
-                        }
+                        }*/
                     }
                 }
                 if (con.NUD != null)
@@ -2052,11 +2052,11 @@ namespace Smash_Forge
                             foreach (NUD.Vertex v in poly.vertices)
                             {
                                 poly.selectedVerts[i] = 0;
-                                if (RenderTools.CheckSphereHit(v.pos, 1f, p1, p2, out closest))
+                                /*if (RenderTools.CheckSphereHit(v.pos, 1f, p1, p2, out closest))
                                 {
                                     //Console.WriteLine("Selected Vert");
                                     poly.selectedVerts[i] = 1;
-                                }
+                                }*/
                                 i++;
                             }
                         }
@@ -2123,7 +2123,7 @@ namespace Smash_Forge
                 p1 = va.Xyz;
                 p2 = p1 - (va - (va + vb)).Xyz * 100;
 
-                freezeCamera = (RenderTools.intersectCircle(new Vector3(6, 6, 6), 5, 90, p1, p2));
+                //freezeCamera = (RenderTools.intersectCircle(new Vector3(6, 6, 6), 5, 90, p1, p2));
             }
         }
 

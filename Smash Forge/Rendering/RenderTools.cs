@@ -13,24 +13,6 @@ using System.Collections.Generic;
 
 namespace Smash_Forge
 {
-
-    public class Ray
-    {
-        public Vector3 p1, p2;
-
-        public Ray(Vector3 p1, Vector3 p2)
-        {
-            this.p1 = p1;
-            this.p2 = p2;
-        }
-
-        public bool TrySphereHit(Vector3 sphere, float rad, out Vector3 closest)
-        {
-            return RenderTools.CheckSphereHit(sphere, rad, p1, p2,  out closest);
-        }
-    }
-
-
     public class RenderTools
     {
         public static int defaultTex = -1, floorTexture;
@@ -1412,53 +1394,6 @@ namespace Smash_Forge
             }
 
             GL.End();
-        }
-
-        public static bool intersectCircle(Vector3 pos, float r, int smooth, Vector3 vA, Vector3 vB)
-        {
-            float t = 2 * (float)Math.PI / smooth;
-            float tf = (float)Math.Tan(t);
-
-            float rf = (float)Math.Cos(t);
-
-            float x = r;
-            float y = 0;
-            
-            for (int i = 0; i < smooth; i++)
-            {
-                Vector3 c;
-                Vector3 p = new Vector3(x + pos.X, y +pos.Y, pos.Z);
-                if (CheckSphereHit(p, 0.3f, vA, vB, out c))
-                    return true;
-                float tx = -y;
-                float ty = x;
-                x += tx * tf;
-                y += ty * tf;
-                x *= rf;
-                y *= rf;
-            }
-
-            return false;
-        }
-
-        public static bool CheckSphereHit(Vector3 sphere, float rad, Vector3 vA, Vector3 vB, out Vector3 closest)
-        {
-            Vector3 dirToSphere = sphere - vA;
-            Vector3 vLineDir = (vB - vA).Normalized();
-            float fLineLength = 100;
-
-            float t = Vector3.Dot(dirToSphere, vLineDir);
-
-            if (t <= 0.0f)
-                closest = vA;
-            else if (t >= fLineLength)
-                closest = vB;
-            else
-                closest = vA + vLineDir * t;
-
-            return (Math.Pow(sphere.X - closest.X, 2)
-                + Math.Pow(sphere.Y - closest.Y, 2)
-                + Math.Pow(sphere.Z - closest.Z, 2) <= rad * rad);
         }
 
         #region FileRendering

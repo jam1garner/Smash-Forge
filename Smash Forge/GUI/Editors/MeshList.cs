@@ -475,8 +475,9 @@ namespace Smash_Forge
         {
             ModelContainer org = (ModelContainer)treeView1.SelectedNode;
             ModelContainer nud = (ModelContainer)n;
-
-            for (int i = 0; i < org.NUD.Nodes.Count; i++)
+            
+            int count = org.NUD.Nodes.Count;
+            for (int i = 0; i < count; i++)
             {
                 TreeNode node = org.NUD.Nodes[0];
                 org.NUD.Nodes.Remove(node);
@@ -491,7 +492,7 @@ namespace Smash_Forge
             treeView1.SelectedNode = n;
 
             // remove from model containers too
-            ModelContainer torem = org;
+            //ModelContainer torem = org;
             //Runtime.ModelContainers.Remove(torem);
 
             refresh();
@@ -906,6 +907,11 @@ namespace Smash_Forge
                     }
                 }
             }
+        }
+
+        private void generateBoundingBoxesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ((NUD)treeView1.SelectedNode).GenerateBoundingBoxes();
         }
     }
 }

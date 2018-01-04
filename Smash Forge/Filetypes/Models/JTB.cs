@@ -11,6 +11,7 @@ namespace Smash_Forge
     {
         public JTB()
         {
+            Tables = new List<List<short>>();
         }
         public JTB(string filename) : this()
         {

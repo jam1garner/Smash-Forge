@@ -77,12 +77,12 @@ namespace Smash_Forge
 
         public int CheckControl(Ray r)
         {
-
+            /*
             Vector3 pos_c = Vector3.Transform(Vector3.Zero, transform);
             if (RenderTools.intersectCircle(pos_c, 2f, 30, r.p1, r.p2))
                 return 1;
             
-
+            */
             return -1;
         }
 
@@ -263,12 +263,15 @@ namespace Smash_Forge
         }
         private JTB _jointTable;
 
+        private TreeNode RootNode = new TreeNode() { Text = "Bones" };
+
         #region Events
 
         BoneTreePanel Editor;
 
         private void OpenEditor(object sender, EventArgs args)
         {
+            RootNode.Nodes.Clear();
             if (Editor == null || Editor.IsDisposed)
             {
                 Editor = new BoneTreePanel(this);
@@ -285,7 +288,8 @@ namespace Smash_Forge
         public void ResetNodes()
         {
             Nodes.Clear();
-
+            
+            Nodes.Add(RootNode);
             Nodes.Add(SwingBones);
         }
 
@@ -435,10 +439,15 @@ namespace Smash_Forge
         //    }
         //}
 
-        public void reset()
+        public void reset(bool Main = true)
         {
-            //Nodes.Clear();
-            //if (bones.Count > 0) Nodes.Add(bones[0]);
+            //if(Main)
+            {
+                /*RootNode.Nodes.Clear();
+                if (bones.Count > 0 && bones[0].Parent == null)
+                    RootNode.Nodes.Add(bones[0]);*/
+            }
+
             ExpandAll();
             for (int i = 0; i < bones.Count; i++)
             {

@@ -45,10 +45,10 @@ namespace Smash_Forge
             set
             {
                 vbn = value;
-                if(JTB != null)
-                    vbn.JointTable = JTB;
                 if (vbn == null)
                     vbn = new VBN();
+                if (JTB != null)
+                    vbn.JointTable = JTB;
                 Refresh();
             }
         }
@@ -195,7 +195,7 @@ namespace Smash_Forge
             return null;
         }
 
-        public void Render(Camera camera, int depthmap, Matrix4 lightMatrix, Matrix4 modelMatrix)
+        public void Render(Camera camera, int depthmap, Matrix4 lightMatrix, Matrix4 modelMatrix, bool specialWireFrame = false)
         {
             if (!Checked) return;
             Shader shader;
@@ -282,11 +282,25 @@ namespace Smash_Forge
                     GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
                     GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
 
+                    if (specialWireFrame)
+                    {
+                        Runtime.renderModelWireframe = true;
+                        Runtime.renderModel = false;
+                    }
+
                     NUD.Render(VBN, camera);                    
                 }
             }
         }
 
+        public void RenderPoints(Camera camera)
+        {
+            if (NUD != null)
+            {
+                NUD.DrawPoints(camera, VBN, PrimitiveType.Triangles);
+                NUD.DrawPoints(camera, VBN, PrimitiveType.Points);
+            }
+        }
 
         public void RenderShadow(Camera camera, int depthmap, Matrix4 lightMatrix, Matrix4 modelMatrix)
         {
@@ -412,6 +426,55 @@ namespace Smash_Forge
                 GL.Uniform3(shader.getAttribute("difLightDirection"), Lights.diffuseLight.direction);
             }
         }
+
+
+        #region Editing Tools
+        
+        public class DuplicateKeyComparer<TKey> : IComparer<TKey> where TKey : IComparable
+        {
+            public int Compare(TKey x, TKey y)
+            {
+                int result = x.CompareTo(y);
+
+                if (result == 0)
+                    return 1;
+                else
+                    return result;
+            }
+        }
+
+        public SortedList<double, NUD.Mesh> GetMeshSelection(Ray ray)
+        {
+            SortedList<double, NUD.Mesh> selected = new SortedList<double, NUD.Mesh>(new DuplicateKeyComparer<double>());
+            if (NUD != null)
+            {
+                Vector3 closest = Vector3.Zero;
+                foreach (NUD.Mesh mesh in NUD.Nodes)
+                {
+                    if (ray.CheckSphereHit(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3], out closest))
+                        selected.Add(ray.Distance(closest), mesh);
+                }
+            }
+            return selected;
+        }
+
+        public SortedList<double, Bone> GetBoneSelection(Ray ray)
+        {
+            SortedList<double, Bone> selected = new SortedList<double, Bone>(new DuplicateKeyComparer<double>());
+            if (VBN != null)
+            {
+                Vector3 closest = Vector3.Zero;
+                foreach (Bone b in VBN.bones)
+                {
+                    if (ray.CheckSphereHit(Vector3.Transform(Vector3.Zero, b.transform), 2, out closest))
+                        selected.Add(ray.Distance(closest), b);
+                }
+            }
+            return selected;
+        }
+
+        #endregion
+
     }
 }
 

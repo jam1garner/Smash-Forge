@@ -77,7 +77,7 @@ namespace Smash_Forge
             if (VBN == null)
                 return;
             treeView1.Nodes.Clear();
-            VBN.reset();
+            VBN.reset(false);
             treeView1.BeginUpdate();
             foreach (Bone b in VBN.bones)
                 if (b.Parent == null)
@@ -304,6 +304,7 @@ namespace Smash_Forge
 
         private void BoneTreePanel_ControlRemoved(object sender, ControlEventArgs e)
         {
+            VBN.reset();
         }
 
         private void BoneTreePanel_FormClosing(object sender, FormClosingEventArgs e)

@@ -59,6 +59,7 @@ namespace Smash_Forge
 
         public void Apply(NUD nud)
         {
+            nud.GenerateBoundingBoxes();
             Matrix4 rot = Matrix4.CreateRotationX(0.5f * (float)Math.PI);
             float sc = 1f;
             bool hasScale = float.TryParse(scaleTB.Text, out sc);

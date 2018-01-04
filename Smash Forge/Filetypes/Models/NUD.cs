@@ -40,9 +40,18 @@ namespace Smash_Forge
                 Runtime.shaders.Add("NUD_Eff", effect);
             }
 
+            if (!Runtime.shaders.ContainsKey("Point"))
+            {
+                Shader nud = new Shader();
+                nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Point_vs.txt"));
+                nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Point_fs.txt"));
+                Runtime.shaders.Add("Point", nud);
+            }
+
             Runtime.shaders["nud"].displayCompilationWarning("nud");
             Runtime.shaders["NUD_Debug"].displayCompilationWarning("NUD_Debug");
             Runtime.shaders["NUD_Eff"].displayCompilationWarning("NUD_Eff");
+            Runtime.shaders["Point"].displayCompilationWarning("Point");
 
 
             GL.GenBuffers(1, out vbo_position);
@@ -517,7 +526,10 @@ namespace Smash_Forge
                     }
 
                     // need this
-                    GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+                    if (Runtime.renderModel)
+                    {
+                        GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+                    }
                 }
             }
         }
@@ -615,7 +627,7 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("colorOverride"), 1);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.Enable(EnableCap.LineSmooth);
-            GL.LineWidth(2.0f);
+            GL.LineWidth(1f);
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             GL.Uniform1(shader.getAttribute("colorOverride"), 0);
@@ -966,18 +978,18 @@ namespace Smash_Forge
             GL.UseProgram(0);
         }
 
-        public void DrawPoints(Matrix4 mvpMatrix, VBN vbn)
+        public void DrawPoints(Camera cam, VBN vbn, PrimitiveType type)
         {
             Shader shader = Runtime.shaders["Point"];
             GL.UseProgram(shader.programID);
-            GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
-            GL.Uniform4(shader.getAttribute("color"), 1, 1, 1, 1);
+            Matrix4 mat = cam.getMVPMatrix();
+            GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mat);
+            //GL.Uniform4(shader.getAttribute("color"), 1, 1, 1, 1);
 
             if (vbn != null)
             {
                 Matrix4[] f = vbn.getShaderMatrix();
-
-                int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
+                
                 int boneCount = vbn.bones.Count;
                 int dataSize = boneCount * Vector4.SizeInBytes * 4;
 
@@ -993,6 +1005,17 @@ namespace Smash_Forge
                     GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
                     GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
                 }
+            }
+
+            if (type == PrimitiveType.Points)
+            {
+                GL.Uniform3(shader.getAttribute("col1"), 0f, 0f, 1f);
+                GL.Uniform3(shader.getAttribute("col2"), 1f, 1f, 0f);
+            }
+            if (type == PrimitiveType.Triangles)
+            {
+                GL.Uniform3(shader.getAttribute("col1"), 0.5f, 0.5f, 0.5f);
+                GL.Uniform3(shader.getAttribute("col2"), 1f, 0f, 0f);
             }
 
             shader.enableAttrib();
@@ -1017,7 +1040,7 @@ namespace Smash_Forge
                     
                     GL.PointSize(6f);
                     GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-                    GL.DrawElements(PrimitiveType.Points, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+                    GL.DrawElements(type, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
                 }
             }
             shader.disableAttrib();
@@ -1658,7 +1681,7 @@ namespace Smash_Forge
             FileOutput d = new FileOutput(); // data
             d.Endian = Endianness.Big;
 
-            GenerateBoundingBoxes();
+            //GenerateBoundingBoxes();
 
             // mesh optimize
 
@@ -2403,7 +2426,6 @@ namespace Smash_Forge
 
             public void PreRender()
             {
-
                 // rearrange faces
                 display = getDisplayFace().ToArray();
 
@@ -2419,7 +2441,7 @@ namespace Smash_Forge
                         nrm = v.nrm,
                         tan = v.tan.Xyz,
                         bit = v.bitan.Xyz,
-                        col = v.col / 0x7F, 
+                        col = v.col / 0x7F,
                         uv = v.uv.Count > 0 ? v.uv[0] : new Vector2(0, 0),
                         uv2 = v.uv.Count > 1 ? v.uv[1] : new Vector2(0, 0),
                         uv3 = v.uv.Count > 2 ? v.uv[2] : new Vector2(0, 0),
@@ -2443,7 +2465,7 @@ namespace Smash_Forge
                 vertdata = vert.ToArray();
                 vert = new List<dVertex>();
                 selectedVerts = new int[vertdata.Length];
-                }
+            }
 
             public void computeTangentBitangent()
             {
