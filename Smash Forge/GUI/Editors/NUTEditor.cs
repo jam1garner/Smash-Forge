@@ -460,9 +460,9 @@ namespace Smash_Forge
 
         private void NUTEditor_Resize(object sender, EventArgs e)
         {
-            int size = Math.Min(glControl1.Width, glControl1.Height);
-            glControl1.Width = size;
-            glControl1.Height = size;
+            //int size = Math.Min(glControl1.Width, glControl1.Height);
+            //glControl1.Width = size;
+            //glControl1.Height = size;
         }
 
         private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
@@ -956,6 +956,13 @@ namespace Smash_Forge
                     TextureMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
                 }
             }
+        }
+
+        private void previewBox_Resize(object sender, EventArgs e)
+        {
+            int size = Math.Min(previewBox.Width, previewBox.Height);
+            glControl1.Width = size;
+            glControl1.Height = size;
         }
     }
 }

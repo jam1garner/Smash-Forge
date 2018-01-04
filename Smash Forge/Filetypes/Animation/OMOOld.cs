@@ -704,6 +704,8 @@ namespace Smash_Forge
 
         public static byte[] CreateOMOFromAnimation(Animation a, VBN vbn)
         {
+            if (vbn == null || a == null)
+                return new byte[] { };
             FileOutput o = new FileOutput();
             o.Endian = Endianness.Big;
 

@@ -150,7 +150,7 @@ namespace Smash_Forge
                 LVDList.fillList();
             }
         }
-        private LVD _lvd = new LVD();
+        private LVD _lvd;
         LVDList LVDList = new LVDList();
         LVDEditor LVDEditor = new LVDEditor();
 
@@ -220,6 +220,7 @@ namespace Smash_Forge
             VariableViewer = new VariableList();
             VariableViewer.Dock = DockStyle.Right;
 
+            LVD = new Smash_Forge.LVD();
 
             ViewComboBox.SelectedIndex = 0;
 

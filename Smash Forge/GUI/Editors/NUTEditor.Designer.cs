@@ -48,9 +48,11 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.aspectRatioCB = new System.Windows.Forms.CheckBox();
             this.glControl1 = new OpenTK.GLControl();
+            this.previewBox = new System.Windows.Forms.GroupBox();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.previewBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // textureList
@@ -274,22 +276,36 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.glControl1.AutoSize = true;
             this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(107, 135);
+            this.glControl1.Location = new System.Drawing.Point(10, 19);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(377, 319);
+            this.glControl1.Size = new System.Drawing.Size(361, 295);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = false;
             this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
             this.glControl1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.glControl1_KeyPress);
+            // 
+            // previewBox
+            // 
+            this.previewBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.previewBox.Controls.Add(this.glControl1);
+            this.previewBox.Location = new System.Drawing.Point(107, 135);
+            this.previewBox.Name = "previewBox";
+            this.previewBox.Size = new System.Drawing.Size(377, 320);
+            this.previewBox.TabIndex = 13;
+            this.previewBox.TabStop = false;
+            this.previewBox.Text = "Preview";
+            this.previewBox.Resize += new System.EventHandler(this.previewBox_Resize);
             // 
             // NUTEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(496, 473);
+            this.Controls.Add(this.previewBox);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.textureList);
-            this.Controls.Add(this.glControl1);
             this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.KeyPreview = true;
@@ -305,6 +321,8 @@
             this.tableLayoutPanel1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.previewBox.ResumeLayout(false);
+            this.previewBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -331,5 +349,6 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox aspectRatioCB;
         private OpenTK.GLControl glControl1;
+        private System.Windows.Forms.GroupBox previewBox;
     }
 }

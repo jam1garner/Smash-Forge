@@ -82,6 +82,7 @@ namespace Smash_Forge
             numericUpDown1.Visible = false;
             label1.Visible = false;
             button1.Visible = false;
+            Runtime.TargetVBN = null;
             if (e.Node is NUD.Mesh)
             {
                 //Since we are changing value but we don't want the entire model order to swap,
@@ -100,6 +101,14 @@ namespace Smash_Forge
             else if (e.Node is ModelContainer)
             {
                 Runtime.TargetVBN = ((ModelContainer)e.Node).VBN;
+            } else
+            if (treeView1.SelectedNode is VBN)
+            {
+                Runtime.TargetVBN = ((VBN)e.Node);
+            }
+            if (treeView1.SelectedNode is BCH_Model)
+            {
+                Runtime.TargetVBN = ((BCH_Model)e.Node).skeleton;
             }
         }
 
@@ -292,7 +301,7 @@ namespace Smash_Forge
                 else if (treeView1.SelectedNode is NUD.Mesh)
                 {
                     NUD parent = ((NUD)treeView1.SelectedNode.Parent);
-                    parent.Nodes.Remove((NUD.Mesh)treeView1.SelectedNode);
+                    //parent.Nodes.Remove((NUD.Mesh)treeView1.SelectedNode);
                     treeView1.SelectedNode.Parent.Nodes.Remove(treeView1.SelectedNode);
                     parent.PreRender();
                 }
@@ -332,22 +341,6 @@ namespace Smash_Forge
 
         private void treeView1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                Runtime.TargetVBN = null;
-                if (treeView1.SelectedNode is VBN)
-                {
-                    Runtime.TargetVBN = ((VBN)treeView1.SelectedNode);
-                }
-                if (treeView1.SelectedNode is ModelContainer)
-                {
-                    Runtime.TargetVBN = ((ModelContainer)treeView1.SelectedNode).VBN;
-                }
-                if (treeView1.SelectedNode is BCH_Model)
-                {
-                    Runtime.TargetVBN = ((BCH_Model)treeView1.SelectedNode).skeleton;
-                }
-            }
             if (e.Button == MouseButtons.Right)
             {
                 treeView1.SelectedNode = treeView1.GetNodeAt(e.Location);

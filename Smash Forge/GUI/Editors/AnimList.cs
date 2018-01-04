@@ -62,7 +62,9 @@ namespace Smash_Forge
             {
                 //Runtime.TargetAnimString = e.Node.Text;
 
-                string AnimName = Regex.Match(e.Node.Text, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString().Substring(3);
+                string AnimName = e.Node.Text;
+                if(AnimName.Length >= 3)
+                    Regex.Match(AnimName, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString().Substring(3);
 
                 Animation running = new Animation(AnimName);
                 running.ReplaceMe((Animation)e.Node);
@@ -77,35 +79,43 @@ namespace Smash_Forge
                 }
                 while (NodeQueue.Count > 0)
                 {
-                    TreeNode n = NodeQueue.Dequeue();
-                    string NodeName = Regex.Match(n.Text, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
-                    if (NodeName.Length <= 3)
-                        Console.WriteLine(NodeName);
-                    else
-                        NodeName = NodeName.Substring(3);
-                    if (n is Animation)
+                    try
                     {
-                        if (n == e.Node)
-                            continue;
-                        if (matchAnim.Checked && NodeName.Equals(AnimName))
-                            running.Children.Add(n);
+                        TreeNode n = NodeQueue.Dequeue();
+                        string NodeName = Regex.Match(n.Text, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
+                        if (NodeName.Length <= 3)
+                            Console.WriteLine(NodeName);
+                        else
+                            NodeName = NodeName.Substring(3);
+                        if (n is Animation)
+                        {
+                            if (n == e.Node)
+                                continue;
+                            if (matchAnim.Checked && NodeName.Equals(AnimName))
+                                running.Children.Add(n);
+                        }
+                        if (n is MTA)
+                        {
+                            if (n == e.Node)
+                                continue;
+                            if (NodeName.Contains(AnimName.Replace(".omo", ".")))
+                                running.Children.Add(n);
+                            if (n.Text.Contains("display"))
+                                display.Add((MTA)n);
+                            if (n.Text.Contains("default.mta"))
+                                def.Add((MTA)n);
+                        }
+                        if (n is AnimationGroupNode)
+                        {
+                            foreach (TreeNode tn in n.Nodes)
+                                NodeQueue.Enqueue(tn);
+                        }
                     }
-                    if (n is MTA)
+                    catch
                     {
-                        if (n == e.Node)
-                            continue;
-                        if (NodeName.Contains(AnimName.Replace(".omo", ".")))
-                            running.Children.Add(n);
-                        if (n.Text.Contains("display"))
-                            display.Add((MTA)n);
-                        if (n.Text.Contains("default.mta"))
-                            def.Add((MTA)n);
+
                     }
-                    if (n is AnimationGroupNode)
-                    {
-                        foreach (TreeNode tn in n.Nodes)
-                            NodeQueue.Enqueue(tn);
-                    }
+                    
                 }
 
                 ((ModelViewport)Parent).CurrentAnimation = running;

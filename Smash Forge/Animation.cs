@@ -136,7 +136,7 @@ namespace Smash_Forge
                             o.save(sfd.FileName);
                         }
                         else
-                            OMOOld.createOMO(this, Runtime.TargetVBN, sfd.FileName);
+                            OMOOld.CreateOMOFromAnimation(this, Runtime.TargetVBN);
                     }
 
 
