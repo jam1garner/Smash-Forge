@@ -479,7 +479,6 @@ namespace Smash_Forge
                 Runtime.hitboxIdColors = new List<Color>(Runtime.defaultHitboxIdColors);
         }
 
-
         public static void SaveConfig()
         {
             EnsureHitboxColors();
@@ -487,25 +486,25 @@ namespace Smash_Forge
             XmlDocument doc = new XmlDocument();
 
             string comment = @"
-Config ENUMS
+                Config ENUMS
 
-floor style
--Normal
--Solid
--Textured
+                floor style
+                -Normal
+                -Solid
+                -Textured
 
-for setting floor texture 
-<texture>(texture location)</texture>
+                for setting floor texture 
+                <texture>(texture location)</texture>
 
-render type
--Texture
--Normals
--NormalsBnW
--VertColor
+                render type
+                -Texture
+                -Normals
+                -NormalsBnW
+                -VertColor
 
-for changing default texure
-<default_texture>(texture location)</default_texture>
-";
+                for changing default texure
+                <default_texture>(texture location)</default_texture>";
+
             XmlComment com = doc.CreateComment(comment);
 
             XmlNode mainNode = doc.CreateElement("FORGECONFIG");

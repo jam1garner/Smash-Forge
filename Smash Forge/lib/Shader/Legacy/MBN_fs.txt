@@ -1,9 +1,10 @@
-#version 330
-in vec2 texcoord;
-in vec4 vertexColor;
-in vec3 normal;
-in vec4 position;
-in vec3 boneWeightsColored;
+#version 120
+
+varying vec2 texcoord;
+varying vec4 vertexColor;
+varying vec3 normal;
+varying vec4 position;
+varying vec3 boneWeightsColored;
 
 uniform vec3 difLightDirection;
 uniform vec3 difLightColor;

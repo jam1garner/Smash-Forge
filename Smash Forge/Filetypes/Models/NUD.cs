@@ -32,18 +32,8 @@ namespace Smash_Forge
                 Runtime.shaders.Add("NUD_Debug", debug);
             }
 
-            if (!Runtime.shaders.ContainsKey("NUD_Eff"))
-            {
-                Shader effect = new Shader();
-                effect.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_Eff_vs.txt"));
-                effect.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_Eff_fs.txt"));
-                Runtime.shaders.Add("NUD_Eff", effect);
-            }
-
             Runtime.shaders["nud"].displayCompilationWarning("nud");
             Runtime.shaders["NUD_Debug"].displayCompilationWarning("NUD_Debug");
-            Runtime.shaders["NUD_Eff"].displayCompilationWarning("NUD_Eff");
-
 
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out ibo_elements);
@@ -806,8 +796,14 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("hasNrm"), mat.normalmap ? 1 : 0);
             GL.Uniform1(shader.getAttribute("hasRamp"), mat.ramp ? 1 : 0);
             GL.Uniform1(shader.getAttribute("hasDummyRamp"), mat.dummyramp ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("hasSphereMap"), mat.spheremap ? 1 : 0);
+
             GL.Uniform1(shader.getAttribute("hasColorGainOffset"), mat.useColorGainOffset ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("hasBayoHair"), mat.hasBayoHair ? 1 : 0);
             GL.Uniform1(shader.getAttribute("useDiffuseBlend"), mat.useDiffuseBlend ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("useDifRefMask"), mat.useReflectionMask ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("softLightBrighten"), mat.softLightBrighten ? 1 : 0);
+
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
@@ -2297,8 +2293,11 @@ namespace Smash_Forge
             public bool glow = false;
             public bool hasShadow = false;
             public bool useVertexColor = false;
+            public bool useReflectionMask = false;
             public bool useColorGainOffset = false;
+            public bool hasBayoHair = false;
             public bool useDiffuseBlend = false;
+            public bool softLightBrighten = false;
 
             public bool diffuse = false;
             public bool normalmap = false;
@@ -2367,7 +2366,6 @@ namespace Smash_Forge
                 if (glow) t |= (int) TextureFlags.Glow;
                 if (hasShadow) t |= (int) TextureFlags.Shadow;
                 if (dummyramp) t |= (int) TextureFlags.DummyRamp; 
-                if (useColorGainOffset) t |= 0x0C000061;
                 flag = (uint)(((int)flag & 0xFFFFFF00) | t);
 
                 return flag;
@@ -2403,6 +2401,10 @@ namespace Smash_Forge
 
                 // always use vertex color for effect materials for now
                 useVertexColor = useVertexColor || ((flag & 0xF0000000) == 0xB0000000);
+
+                useReflectionMask = (flag & 0xFFFFFF00) == 0xF8820000;
+                hasBayoHair = (flag & 0x00FF0000) == 0x00420000;
+                softLightBrighten = ((flag & 0x00FF0000) == 0x00810000 || (flag & 0xFFFF0000) == 0xFA600000);
             }
 
             public void TestTextures()

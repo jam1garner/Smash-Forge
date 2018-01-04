@@ -193,14 +193,6 @@ namespace Smash_Forge
                 Runtime.shaders.Add("NUD_Debug", debug);
             }
 
-            if (!Runtime.shaders.ContainsKey("NUD_Eff"))
-            {
-                Shader effect = new Shader();
-                effect.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_Eff_vs.txt"));
-                effect.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_Eff_fs.txt"));
-                Runtime.shaders.Add("NUD_Eff", effect);
-            }
-
             if (!Runtime.shaders.ContainsKey("MBN"))
             {
                 Shader mbn = new Shader();
