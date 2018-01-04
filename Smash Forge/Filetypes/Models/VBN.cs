@@ -88,7 +88,7 @@ namespace Smash_Forge
 
         public void Draw()
         {
-            Vector3 pos_c = Vector3.Transform(Vector3.Zero, transform);
+            Vector3 pos_c = Vector3.TransformVector(Vector3.Zero, transform);
             // first calcuate the point and draw a point
             if (IsSelected)
             {
@@ -112,7 +112,7 @@ namespace Smash_Forge
             GL.Begin(PrimitiveType.Lines);
             if (Parent != null && Parent is Bone)
             {
-                Vector3 pos_p = Vector3.Transform(Vector3.Zero, ((Bone)Parent).transform);
+                Vector3 pos_p = Vector3.TransformVector(Vector3.Zero, ((Bone)Parent).transform);
                 GL.Vertex3(pos_c);
                 GL.Color3(Color.Blue);
                 GL.Vertex3(pos_p);

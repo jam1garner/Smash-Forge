@@ -152,8 +152,8 @@ namespace Smash_Forge
 
                         if (checkBox4.Checked)
                         {
-                            v.pos = Vector3.Transform(v.pos, rot);
-                            v.nrm = Vector3.Transform(v.nrm, rot);
+                            v.pos = Vector3.TransformVector(v.pos, rot);
+                            v.nrm = Vector3.TransformVector(v.nrm, rot);
                         }
                         if (sc != 1f)
                             v.pos = Vector3.Multiply(v.pos, sc);

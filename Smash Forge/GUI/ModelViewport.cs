@@ -225,6 +225,8 @@ namespace Smash_Forge
             ViewComboBox.SelectedIndex = 0;
 
             draw = MeshList.treeView1.Nodes;
+
+            RenderTools.Setup();
         }
 
         public ModelViewport(string filename) : this()
@@ -393,7 +395,7 @@ namespace Smash_Forge
         public void CalculateLightSource()
         {
             Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, Runtime.renderDepth, out lightProjection);
-            Matrix4 lightView = Matrix4.LookAt(Vector3.Transform(Vector3.Zero, Camera.getMVPMatrix()).Normalized(),
+            Matrix4 lightView = Matrix4.LookAt(Vector3.TransformVector(Vector3.Zero, Camera.getMVPMatrix()).Normalized(),
                 new Vector3(0),
                 new Vector3(0, 1, 0));
             lightMatrix = lightProjection * lightView;

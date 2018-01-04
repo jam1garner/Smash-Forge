@@ -575,7 +575,7 @@ namespace Smash_Forge
         public void CalculateLightSource()
         {
             Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, Runtime.renderDepth, out lightProjection);
-            Matrix4 lightView = Matrix4.LookAt(Vector3.Transform(Vector3.Zero, vbnViewportCamera.getMVPMatrix()).Normalized(),
+            Matrix4 lightView = Matrix4.LookAt(Vector3.TransformVector(Vector3.Zero, vbnViewportCamera.getMVPMatrix()).Normalized(),
                 new Vector3(0),
                 new Vector3(0, 1, 0));
             lightMatrix = lightProjection * lightView;
@@ -1242,7 +1242,7 @@ namespace Smash_Forge
                     continue;
 
                 Bone b = getBone(h.Bone);
-                h.va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
+                h.va = Vector3.TransformVector(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
 
                 // Draw angle marker
                 /*GL.LineWidth(7f);
@@ -1259,7 +1259,7 @@ namespace Smash_Forge
                 if (!h.IsSphere())
                 {
                     h.va2 = new Vector3(h.X2, h.Y2, h.Z2);
-                    if (h.Bone != -1) h.va2 = Vector3.Transform(h.va2, b.transform.ClearScale());
+                    if (h.Bone != -1) h.va2 = Vector3.TransformVector(h.va2, b.transform.ClearScale());
                     RenderTools.drawCylinder(h.va, h.va2, h.Size);
                 }
                 else
@@ -1283,11 +1283,11 @@ namespace Smash_Forge
                         {
 
                             Bone b2 = getBone(h2.Bone);
-                            var va = Vector3.Transform(new Vector3(h2.X, h2.Y, h2.Z), b2.transform.ClearScale());
+                            var va = Vector3.TransformVector(new Vector3(h2.X, h2.Y, h2.Z), b2.transform.ClearScale());
                             if (!h2.IsSphere())
                             {
                                 var va2 = new Vector3(h2.X2, h2.Y2, h2.Z2);
-                                if (h2.Bone != -1) va2 = Vector3.Transform(va2, b2.transform.ClearScale());
+                                if (h2.Bone != -1) va2 = Vector3.TransformVector(va2, b2.transform.ClearScale());
                                 RenderTools.drawCylinder(va, va2, h2.Size);
                             }
                             else
@@ -1341,7 +1341,7 @@ namespace Smash_Forge
                         continue;
 
                     Bone b = getBone(h.Bone);
-                    Vector3 va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
+                    Vector3 va = Vector3.TransformVector(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
 
                     // Draw a cylinder between the last known area and the current one
                     Hitbox lastMatchingHitbox = null;
@@ -1364,12 +1364,12 @@ namespace Smash_Forge
                         continue;
 
                     Bone b = getBone(h.Bone);
-                    Vector3 va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
+                    Vector3 va = Vector3.TransformVector(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
 
                     if (!h.IsSphere())
                     {
                         Vector3 va2 = new Vector3(h.X2, h.Y2, h.Z2);
-                        if (h.Bone != -1) va2 = Vector3.Transform(va2, b.transform.ClearScale());
+                        if (h.Bone != -1) va2 = Vector3.TransformVector(va2, b.transform.ClearScale());
                         RenderTools.drawCylinder(va, va2, h.Size);
                     }
                     else
@@ -1505,8 +1505,8 @@ namespace Smash_Forge
                     Bone b = getBone(0);
                     var va2 = new Vector3(0, l.Y2, l.Z2);
 
-                    va = Vector3.Transform(va, b.transform);
-                    va2 = Vector3.Transform(va2, b.transform);
+                    va = Vector3.TransformVector(va, b.transform);
+                    va2 = Vector3.TransformVector(va2, b.transform);
 
                     if (Runtime.renderLedgeGrabboxes)
                     {
@@ -1587,7 +1587,7 @@ namespace Smash_Forge
                     var va = new Vector3(e.X, e.Y, e.Z);
                     Bone b = getBone(e.Bone);
 
-                    va = Vector3.Transform(va, b.transform.ClearScale());
+                    va = Vector3.TransformVector(va, b.transform.ClearScale());
 
                     // Draw everything to the stencil buffer
                     RenderTools.beginTopLevelStencil();
@@ -1600,7 +1600,7 @@ namespace Smash_Forge
                 GL.Color4(Color.FromArgb(160, Color.DarkBlue));
                 var v = new Vector3(0, 0, 0);
                 Bone bone = getBone(3);
-                v = Vector3.Transform(v, bone.transform.ClearScale());
+                v = Vector3.TransformVector(v, bone.transform.ClearScale());
 
                 RenderTools.beginTopLevelStencil();
                 RenderTools.drawSphere(v, 0.5f, 30);

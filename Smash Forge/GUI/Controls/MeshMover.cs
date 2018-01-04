@@ -49,9 +49,9 @@ namespace Smash_Forge
                         case 1: v.pos.X += move; break;
                         case 2: v.pos.Y += move; break;
                         case 3: v.pos.Z += move; break;
-                        case 4: v.pos = Vector3.Transform(v.pos, Matrix4.CreateRotationX(move * ((float)Math.PI / 180))); break;
-                        case 5: v.pos = Vector3.Transform(v.pos, Matrix4.CreateRotationY(move * ((float)Math.PI / 180))); break;
-                        case 6: v.pos = Vector3.Transform(v.pos, Matrix4.CreateRotationZ(move * ((float)Math.PI / 180))); break;
+                        case 4: v.pos = Vector3.TransformVector(v.pos, Matrix4.CreateRotationX(move * ((float)Math.PI / 180))); break;
+                        case 5: v.pos = Vector3.TransformVector(v.pos, Matrix4.CreateRotationY(move * ((float)Math.PI / 180))); break;
+                        case 6: v.pos = Vector3.TransformVector(v.pos, Matrix4.CreateRotationZ(move * ((float)Math.PI / 180))); break;
                         case 7: v.pos = Vector3.Multiply(v.pos, move); break;
                     }
                     

@@ -466,7 +466,7 @@ namespace Smash_Forge
                 Vector3 closest = Vector3.Zero;
                 foreach (Bone b in VBN.bones)
                 {
-                    if (ray.CheckSphereHit(Vector3.Transform(Vector3.Zero, b.transform), 2, out closest))
+                    if (ray.CheckSphereHit(Vector3.TransformVector(Vector3.Zero, b.transform), 2, out closest))
                         selected.Add(ray.Distance(closest), b);
                 }
             }

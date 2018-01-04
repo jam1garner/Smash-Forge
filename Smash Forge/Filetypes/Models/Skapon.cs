@@ -72,7 +72,7 @@ namespace Smash_Forge
                 v.pos.Y = v.pos.Y * sy;
                 v.pos.Z = v.pos.Z * sz;
 
-                if (sx == -1) v.pos = Vector3.Transform(v.pos, Matrix4.CreateRotationX((float)Math.PI));
+                if (sx == -1) v.pos = Vector3.TransformVector(v.pos, Matrix4.CreateRotationX((float)Math.PI));
             }
             return poly;
         }
@@ -84,7 +84,7 @@ namespace Smash_Forge
                 v.node.Clear();
                 v.node.Add(vbn.bones.IndexOf(b));
 
-                Vector3 newpos = Vector3.Transform(Vector3.Zero, b.transform);
+                Vector3 newpos = Vector3.TransformVector(Vector3.Zero, b.transform);
                 v.pos += newpos;
             }
 
@@ -317,7 +317,7 @@ namespace Smash_Forge
                 {
                     if (node.t_type != -1)
                     {
-                        Vector3 pos = Vector3.Transform(node.t, sca);
+                        Vector3 pos = Vector3.TransformVector(node.t, sca);
                         if (node.t.X != -99) node.t.X = pos.X;
                         if (node.t.Y != -99) node.t.Y = pos.Y;
                         if (node.t.Z != -99) node.t.Z = pos.Z;
@@ -336,7 +336,7 @@ namespace Smash_Forge
                         || track2.type == DAT_Animation.AnimType.ZPOS)
                         foreach (DAT_Animation.KeyNode node in track2.keys)
                         {
-                            node.value = Vector3.Transform(new Vector3(node.value, 0, 0), sca).X;
+                            node.value = Vector3.TransformVector(new Vector3(node.value, 0, 0), sca).X;
                         }
                 }
             }
@@ -345,7 +345,7 @@ namespace Smash_Forge
         {
             foreach (Bone b in vbn.bones)
             {
-                Vector3 pos = Vector3.Transform(new Vector3(b.position[0], b.position[1], b.position[2]), sca);
+                Vector3 pos = Vector3.TransformVector(new Vector3(b.position[0], b.position[1], b.position[2]), sca);
                 b.position[0] = pos.X;
                 b.position[1] = pos.Y;
                 b.position[2] = pos.Z;
@@ -359,7 +359,7 @@ namespace Smash_Forge
                 {
                     foreach (NUD.Vertex v in poly.vertices)
                     {
-                        v.pos = Vector3.Transform(v.pos, sca);
+                        v.pos = Vector3.TransformVector(v.pos, sca);
                     }
                 }
             }

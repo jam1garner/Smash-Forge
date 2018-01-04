@@ -137,10 +137,10 @@ namespace Smash_Forge
             openFiles();
 
             Runtime.StartupFromConfig(MainForm.executableDir + "\\config.xml");
-            
+
             SetupShaders();
 
-            RenderTools.Setup();
+            //RenderTools.Setup();
         }
 
         private static void SetupShaders()

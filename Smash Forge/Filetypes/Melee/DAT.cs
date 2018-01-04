@@ -203,7 +203,7 @@ namespace Smash_Forge
 
                 if (v.bones.Count == 1)
                 {
-                    v.pos = Vector3.Transform(v.pos, mt);
+                    v.pos = Vector3.TransformVector(v.pos, mt);
                     v.nrm = Vector3.TransformNormal(v.nrm, mt);
                 }
                 // scale it
@@ -1664,7 +1664,7 @@ namespace Smash_Forge
                                                                             * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(jobj.rot.Z, jobj.rot.Y, jobj.rot.X))
                                                                             * Matrix4.CreateTranslation(jobj.pos);
                                                         Matrix4 mt = jobj.inverseTransform * transform.Inverted() * ((JOBJ)parent.Parent.Tag).transform;
-                                                        v.pos = Vector3.Transform(v.pos, mt);
+                                                        v.pos = Vector3.TransformVector(v.pos, mt);
 
                                                         v.Tags.Add(offset);
                                                         v.weights.Add(1);
@@ -1690,7 +1690,7 @@ namespace Smash_Forge
                                             {
                                                 v.Tags.Add(parent.Parent.Tag);
                                                 v.weights.Add(1);
-                                                v.pos = Vector3.Transform(v.pos, ((JOBJ)parent.Parent.Tag).transform);
+                                                v.pos = Vector3.TransformVector(v.pos, ((JOBJ)parent.Parent.Tag).transform);
                                             }
                                         }
                                         break;

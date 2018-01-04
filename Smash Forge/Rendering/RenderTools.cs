@@ -25,18 +25,19 @@ namespace Smash_Forge
 
         public static void Setup()
         {
-            cubeMapHigh = LoadCubeMap(Smash_Forge.Properties.Resources._10102000, TextureUnit.Texture12);
-            cubeMapLow = LoadCubeMap(Smash_Forge.Properties.Resources._10101000, TextureUnit.Texture13);
-            defaultRamp = NUT.loadImage(Smash_Forge.Properties.Resources._10080000);
-            UVTestPattern = NUT.loadImage(Smash_Forge.Properties.Resources.UVPattern);
-            boneWeightGradient = NUT.loadImage(Smash_Forge.Properties.Resources.boneWeightGradient);
-
-
-            if (defaultTex == -1)
+            if(defaultTex == -1)
+            {
+                cubeMapHigh = LoadCubeMap(Smash_Forge.Properties.Resources._10102000, TextureUnit.Texture12);
+                cubeMapLow = LoadCubeMap(Smash_Forge.Properties.Resources._10101000, TextureUnit.Texture13);
+                defaultRamp = NUT.loadImage(Smash_Forge.Properties.Resources._10080000);
+                UVTestPattern = NUT.loadImage(Smash_Forge.Properties.Resources.UVPattern);
+                boneWeightGradient = NUT.loadImage(Smash_Forge.Properties.Resources.boneWeightGradient);
+                
                 defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
-         
-            GL.GenBuffers(1, out cubeVAO);
-            GL.GenBuffers(1, out cubeVBO);
+
+                GL.GenBuffers(1, out cubeVAO);
+                GL.GenBuffers(1, out cubeVBO);
+            }
         }
 
         public static object GetValueFromParamFile(ParamFile paramFile, int groupNum, int entryNum, int valNum)
@@ -73,8 +74,8 @@ namespace Smash_Forge
 
             // check if within range
             {
-                Vector3 p1 = Vector3.Transform(center, view).Normalized();
-                Vector3 p2 = Vector3.Transform(center + new Vector3(0, 5, 0), view).Normalized();
+                Vector3 p1 = Vector3.TransformVector(center, view).Normalized();
+                Vector3 p2 = Vector3.TransformVector(center + new Vector3(0, 5, 0), view).Normalized();
 
                 // check if mouse is within range
                 
@@ -363,7 +364,7 @@ namespace Smash_Forge
 
                     GL.Normal3(norm.X, norm.Y, norm.Z);
                     GL.TexCoord2(i * oneThroughPrecision, 2.0f * (j + 1) * oneThroughPrecision);
-                    GL.Vertex3(Vector3.Transform(new Vector3(pos.X, pos.Y, pos.Z), transform));
+                    GL.Vertex3(Vector3.TransformVector(new Vector3(pos.X, pos.Y, pos.Z), transform));
 
                     norm.X = (float)(Math.Cos(theta1) * Math.Cos(theta3));
                     norm.Y = (float)Math.Sin(theta1);
@@ -374,7 +375,7 @@ namespace Smash_Forge
 
                     GL.Normal3(norm.X, norm.Y, norm.Z);
                     GL.TexCoord2(i * oneThroughPrecision, 2.0f * j * oneThroughPrecision);
-                    GL.Vertex3(Vector3.Transform(new Vector3(pos.X, pos.Y, pos.Z), transform));
+                    GL.Vertex3(Vector3.TransformVector(new Vector3(pos.X, pos.Y, pos.Z), transform));
                 }
                 GL.End();
             }
@@ -417,7 +418,7 @@ namespace Smash_Forge
 
                     GL.Normal3(norm.X, norm.Y, norm.Z);
                     GL.TexCoord2(i * oneThroughPrecision, 2.0f * (j + 1) * oneThroughPrecision);
-                    GL.Vertex3(Vector3.Transform(new Vector3(pos.X, pos.Y, pos.Z), transform));
+                    GL.Vertex3(Vector3.TransformVector(new Vector3(pos.X, pos.Y, pos.Z), transform));
 
                     norm.X = (float)(Math.Cos(theta1) * Math.Cos(theta3));
                     norm.Y = (float)Math.Sin(theta1);
@@ -428,7 +429,7 @@ namespace Smash_Forge
 
                     GL.Normal3(norm.X, norm.Y, norm.Z);
                     GL.TexCoord2(i * oneThroughPrecision, 2.0f * j * oneThroughPrecision);
-                    GL.Vertex3(Vector3.Transform(new Vector3(pos.X, pos.Y, pos.Z), transform));
+                    GL.Vertex3(Vector3.TransformVector(new Vector3(pos.X, pos.Y, pos.Z), transform));
                 }
                 GL.End();
             }
@@ -1033,7 +1034,7 @@ namespace Smash_Forge
 
             for (int i = 0; i < smooth; i++)
             {
-                GL.Vertex3(Vector3.Transform(new Vector3(x + pos.X, y + pos.Y, pos.Z),view));
+                GL.Vertex3(Vector3.TransformVector(new Vector3(x + pos.X, y + pos.Y, pos.Z),view));
                 float tx = -y;
                 float ty = x;
                 x += tx * tf;
@@ -1079,7 +1080,7 @@ namespace Smash_Forge
             GL.Begin(PrimitiveType.LineStrip);
             for (int i = 0; i < precision; i++)
             {
-                GL.Vertex3(Vector3.Transform(new Vector3(x, y, 0), transform) + center);
+                GL.Vertex3(Vector3.TransformVector(new Vector3(x, y, 0), transform) + center);
 
                 //apply the rotation matrix
                 var temp = x;
@@ -1321,7 +1322,7 @@ namespace Smash_Forge
                     GL.Color3(Color.DarkGray);
                     GL.PointSize(1f);
 
-                    Vector3 pos_c = Vector3.Transform(Vector3.Zero, bone.transform);
+                    Vector3 pos_c = Vector3.TransformVector(Vector3.Zero, bone.transform);
 
                     GL.Begin(PrimitiveType.LineLoop);
                     GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z - offset));
@@ -1334,7 +1335,7 @@ namespace Smash_Forge
                     if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex != -1)
                     {
                         int i = bone.parentIndex;
-                        pos_p = Vector3.Transform(Vector3.Zero, vbn.bones[i].transform);
+                        pos_p = Vector3.TransformVector(Vector3.Zero, vbn.bones[i].transform);
                     }
 
                     GL.Color3(Color.Gray);
