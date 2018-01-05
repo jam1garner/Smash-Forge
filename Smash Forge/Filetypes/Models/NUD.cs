@@ -711,23 +711,51 @@ namespace Smash_Forge
 
         private static void SetTextureUniforms(Shader shader, Material mat)
         {
-            GL.Uniform1(shader.getAttribute("hasDif"), mat.diffuse ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("hasDif2"), mat.diffuse2 ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("hasDif3"), mat.diffuse3 ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("hasStage"), mat.stagemap ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("hasCube"), mat.cubemap ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("hasAo"), mat.aomap ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("hasNrm"), mat.normalmap ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("hasRamp"), mat.ramp ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("hasDummyRamp"), mat.dummyramp ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("hasSphereMap"), mat.spheremap ? 1 : 0);
+            int v = 0; // Yes else if is faster than ternary
+            if (mat.diffuse) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("hasDif"), v);
 
-            GL.Uniform1(shader.getAttribute("hasColorGainOffset"), mat.useColorGainOffset ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("hasBayoHair"), mat.hasBayoHair ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("useDiffuseBlend"), mat.useDiffuseBlend ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("useDifRefMask"), mat.useReflectionMask ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("softLightBrighten"), mat.softLightBrighten ? 1 : 0);
+            if (mat.diffuse2) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("hasDif2"), v);
 
+            if (mat.diffuse3) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("hasDif3"), v);
+
+            if (mat.stagemap) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("hasStage"), v);
+
+            if (mat.cubemap) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("hasCube"), v);
+
+            if (mat.aomap) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("hasAo"), v);
+
+            if (mat.normalmap) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("hasNrm"), v);
+
+            if (mat.ramp) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("hasRamp"), v);
+
+            if (mat.dummyramp) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("hasDummyRamp"), v);
+
+            if (mat.useColorGainOffset) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("hasColorGainOffset"), v);
+
+            if (mat.useDiffuseBlend) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("useDiffuseBlend"), v);
+
+            if (mat.spheremap) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("hasSphereMap"), v);
+
+            if (mat.hasBayoHair) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("hasBayoHair"), v);
+
+            if (mat.useReflectionMask) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("useDifRefMask"), v);
+
+            if (mat.softLightBrighten) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("softLightBrighten"), v);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
