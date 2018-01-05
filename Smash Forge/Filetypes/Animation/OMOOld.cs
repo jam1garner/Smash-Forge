@@ -183,14 +183,19 @@ namespace Smash_Forge
 
             for (int j = 0; j < boneCount; j++)
             {
-                string bid = "Unk";// MainForm.Hashes.ids.IndexOf(node.hash);
+                string bid = "";
+                int hash = -1;
                 if (!MainForm.Hashes.ids.TryGetValue(baseNode[j].hash, out bid))
-                    foreach (ModelContainer con in Runtime.ModelContainers)
-                        if (con.VBN != null)
-                            bid = con.VBN.getBone(baseNode[j].hash) == null ? "" : con.VBN.getBone(baseNode[j].hash).Text;
+                {
+                    hash = (int)baseNode[j].hash;
+                }
                 Animation.KeyNode n = new Animation.KeyNode(bid);
+                n.Hash = hash;
                 a.Bones.Add(n);
                 n.Type = Animation.BoneType.NORMAL;
+                /*foreach (ModelContainer con in Runtime.ModelContainers)
+                    if (con.VBN != null)
+                        bid = con.VBN.getBone(baseNode[j].hash) == null ? "" : con.VBN.getBone(baseNode[j].hash).Text;*/
 
                 for (int i = 0; i < a.FrameCount; i++)
                 {
@@ -429,7 +434,7 @@ namespace Smash_Forge
 
             for (int i = 0; i < a.size(); i++)
             {
-                a.nextFrame(vbn);
+                a.nextFrame(vbn, true);
                 List<Bone> bonelist = new List<Bone>();
                 for (int j = 0; j < nodeid.Count; j++)
                 {
@@ -699,6 +704,8 @@ namespace Smash_Forge
 
         public static byte[] CreateOMOFromAnimation(Animation a, VBN vbn)
         {
+            if (vbn == null || a == null)
+                return new byte[] { };
             FileOutput o = new FileOutput();
             o.Endian = Endianness.Big;
 

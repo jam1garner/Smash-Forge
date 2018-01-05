@@ -27,7 +27,12 @@ namespace Smash_Forge
     {
         public static int defaulttex = 0;
 
+        public Camera vbnViewportCamera = new Camera();
         public Mode CurrentMode = Mode.Normal;
+
+        public string TargetAnimString = "";
+        public Animation TargetAnim;
+        public List<ModelContainer> ModelContainers = new List<ModelContainer>();
 
         public enum Mode
         {
@@ -76,9 +81,9 @@ namespace Smash_Forge
                 GL.LoadIdentity();
                 GL.Viewport(glControl1.ClientRectangle);
 
-                Camera.viewportCamera.setRenderWidth(glControl1.Width);
-                Camera.viewportCamera.setRenderHeight(glControl1.Height);
-                Camera.viewportCamera.Update();
+                vbnViewportCamera.setRenderWidth(glControl1.Width);
+                vbnViewportCamera.setRenderHeight(glControl1.Height);
+                vbnViewportCamera.Update();
             }
 
         }
@@ -116,7 +121,7 @@ namespace Smash_Forge
             // the editor has been closed 
             if (Runtime.killWorkspace)
             {
-                foreach (ModelContainer n in Runtime.ModelContainers)
+                /*foreach (ModelContainer n in ModelContainers)
                 {
                     n.Destroy();
                 }
@@ -124,10 +129,10 @@ namespace Smash_Forge
                 {
                     //n.Destroy();
                 }
-                Runtime.ModelContainers = new List<ModelContainer>();
+                ModelContainers = new List<ModelContainer>();
                 Runtime.TextureContainers = new List<NUT>();
                 Runtime.TargetVBN = null;
-                Runtime.TargetAnim = null;
+                TargetAnim = null;
                 Runtime.TargetLVD = null;
                 Runtime.TargetPath = null;
                 Runtime.TargetCMR0 = null;
@@ -149,7 +154,7 @@ namespace Smash_Forge
 
                 MainForm.Instance.project.fillTree();
 
-                GC.Collect();
+                GC.Collect();*/
             }
 
             if (this.IsDisposed == true)
@@ -159,7 +164,7 @@ namespace Smash_Forge
             {
                 if (Smash_Forge.Update.Downloaded)
                     MainForm.Instance.pictureBox1.Image = Resources.Resources.sexy_green_down_arrow;
-                
+
                 if (Keyboard.GetState().IsKeyDown(Key.S)
                     && Keyboard.GetState().IsKeyDown(Key.K)
                     && Keyboard.GetState().IsKeyDown(Key.A)
@@ -170,7 +175,7 @@ namespace Smash_Forge
                     DialogResult dialogResult = MessageBox.Show("Activate Skapon?", "Skapon Code", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {
-                        foreach (ModelContainer m in Runtime.ModelContainers)
+                        foreach (ModelContainer m in ModelContainers)
                         {
                             if (m.VBN != null && m.NUD == null)
                                 m.NUD = Skapon.Create(m.VBN);
@@ -225,32 +230,32 @@ namespace Smash_Forge
         private void Runtime_AnimationChanged(object sender, EventArgs e)
         {
             //If moveset is loaded then initialize with null script so handleACMD loads script for frame speed modifiers and FAF (if parameters are imported)
-            if(Runtime.Moveset != null && Runtime.gameAcmdScript == null)
+            if (Runtime.Moveset != null && Runtime.gameAcmdScript == null)
                 Runtime.gameAcmdScript = new ForgeACMDScript(null);
 
-            if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
+            if (!string.IsNullOrEmpty(TargetAnimString))
             {
                 if (Runtime.gameAcmdScript != null)
                 {
                     //Remove manual crc flag
                     Runtime.acmdEditor.manualCrc = false;
-                    HandleACMD(Runtime.TargetAnimString.Substring(3));
-                    if(Runtime.gameAcmdScript != null)
+                    HandleACMD(TargetAnimString.Substring(3));
+                    if (Runtime.gameAcmdScript != null)
                         Runtime.gameAcmdScript.processToFrame(0);
 
                 }
             }
 
-            if (Runtime.TargetAnim == null)
+            if (TargetAnim == null)
             {
-                foreach (ModelContainer m in Runtime.ModelContainers)
+                foreach (ModelContainer m in ModelContainers)
                 {
                     if (m.VBN != null)
                         m.VBN.reset();
                 }
             }
             else
-                LoadAnimation(Runtime.TargetAnim);
+                LoadAnimation(TargetAnim);
         }
 
         private void btnFirstFrame_Click(object sender, EventArgs e)
@@ -264,12 +269,12 @@ namespace Smash_Forge
         }
         private void btnLastFrame_Click(object sender, EventArgs e)
         {
-            if (Runtime.TargetAnim != null)
+            if (TargetAnim != null)
                 this.nupdFrame.Value = this.nupdMaxFrame.Value;
         }
         private void btnNextFrame_Click(object sender, EventArgs e)
         {
-            if (Runtime.TargetAnim != null)
+            if (TargetAnim != null)
                 this.nupdFrame.Value += 1;
         }
         private void btnPlay_Click(object sender, EventArgs e)
@@ -295,7 +300,7 @@ namespace Smash_Forge
         }
         private void nupdFrame_ValueChanged(Object sender, EventArgs e)
         {
-            if (Runtime.TargetAnim == null)
+            if (TargetAnim == null)
                 return;
 
             if (this.nupdFrame.Value > this.nupdMaxFrame.Value)
@@ -321,24 +326,24 @@ namespace Smash_Forge
             if (Runtime.gameAcmdScript != null && Runtime.useFrameDuration)
                 animFrameNum = Runtime.gameAcmdScript.animationFrame;// - 1;
 
-            Runtime.TargetAnim.SetFrame(animFrameNum);
-            foreach (ModelContainer m in Runtime.ModelContainers)
+            TargetAnim.SetFrame(animFrameNum);
+            foreach (ModelContainer m in ModelContainers)
             {
-                Runtime.TargetAnim.SetFrame(animFrameNum);
+                TargetAnim.SetFrame(animFrameNum);
                 if (m.VBN != null)
-                    Runtime.TargetAnim.NextFrame(m.VBN);
+                    TargetAnim.NextFrame(m.VBN);
 
                 // Deliberately do not ever use ACMD/animFrame to modify these other types of model
                 if (m.dat_melee != null)
                 {
-                    Runtime.TargetAnim.NextFrame(m.dat_melee.bones);
+                    TargetAnim.NextFrame(m.dat_melee.bones);
                 }
-                if (m.bch != null)
+                if (m.BCH != null)
                 {
-                    foreach (BCH_Model mod in m.bch.Models.Nodes)
+                    foreach (BCH_Model mod in m.BCH.Models.Nodes)
                     {
                         if (mod.skeleton != null)
-                            Runtime.TargetAnim.NextFrame(mod.skeleton);                       
+                            TargetAnim.NextFrame(mod.skeleton);
                     }
                 }
             }
@@ -381,7 +386,7 @@ namespace Smash_Forge
         {
             if (FrameChanged != null)
                 FrameChanged(this, e);
-            //HandleACMD(Runtime.TargetAnimString);
+            //HandleACMD(TargetAnimString);
         }
         #endregion
 
@@ -409,7 +414,7 @@ namespace Smash_Forge
         #endregion
 
         #region Rendering
-        
+
         public int ubo_bones, ubo_bonesIT;
         public static int cubeTex;
 
@@ -429,13 +434,13 @@ namespace Smash_Forge
             int w = Width;
             GL.LoadIdentity();
             GL.Viewport(glControl1.ClientRectangle);
-            Camera.viewportCamera.Update();
+            vbnViewportCamera.Update();
 
             SetupFrameBuffersRenderBuffers();
 
             GetOpenGLSystemInfo();
 
-            for(int i = 0; i < Lights.stageDiffuseLightSet.Length; i++)
+            for (int i = 0; i < Lights.stageDiffuseLightSet.Length; i++)
             {
                 // should properly initialize these eventually
                 Lights.stageDiffuseLightSet[i] = new DirectionalLight();
@@ -449,7 +454,7 @@ namespace Smash_Forge
             }
 
             Debug.WriteLine(GL.GetError());
-            CalculateLightSource();           
+            CalculateLightSource();
         }
 
         private void SetupFrameBuffersRenderBuffers()
@@ -502,16 +507,16 @@ namespace Smash_Forge
             int rboDepth;
             GL.GenRenderbuffers(1, out rboDepth);
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rboDepth);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, 
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent,
                 screenWidth, screenHeight);
 
             // attach buffers and stuff
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, hdrFBO);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, 
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0,
                 TextureTarget.Texture2D, colorTexture1, 0);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, 
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1,
                 TextureTarget.Texture2D, colorTexture2, 0);
-            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, 
+            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment,
                 RenderbufferTarget.Renderbuffer, rboDepth);
             DrawBuffersEnum[] bufs = new DrawBuffersEnum[2] { (DrawBuffersEnum)FramebufferAttachment.ColorAttachment0,
                 (DrawBuffersEnum)FramebufferAttachment.ColorAttachment1 };
@@ -525,26 +530,26 @@ namespace Smash_Forge
             GL.GenTextures(1, out pingPongColorTexture1);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, pingPongFBO1);
             GL.BindTexture(TextureTarget.Texture2D, pingPongColorTexture1);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, screenWidth, screenHeight, 0, 
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, screenWidth, screenHeight, 0,
                 OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, 
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0,
                 TextureTarget.Texture2D, pingPongColorTexture1, 0);
 
             // pingpong texture 2
             GL.GenTextures(1, out pingPongColorTexture2);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, pingPongFBO2);
             GL.BindTexture(TextureTarget.Texture2D, pingPongColorTexture2);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, screenWidth, screenHeight, 0, 
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, screenWidth, screenHeight, 0,
                 OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, 
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0,
                 TextureTarget.Texture2D, pingPongColorTexture2, 0);
 
             Debug.WriteLine(GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer));
@@ -559,7 +564,7 @@ namespace Smash_Forge
         }
 
         int cf = 0;
-        int sfb, sw=512, sh=512, depthmap, hdrFBO;
+        int sfb, sw = 512, sh = 512, depthmap, hdrFBO;
         int colorTexture1, colorTexture2;
         int pingPongColorTexture1, pingPongColorTexture2;
         int pingPongFBO1, pingPongFBO2;
@@ -568,9 +573,9 @@ namespace Smash_Forge
         Matrix4 lightProjection;
 
         public void CalculateLightSource()
-        {   
+        {
             Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, Runtime.renderDepth, out lightProjection);
-            Matrix4 lightView = Matrix4.LookAt(Vector3.Transform(Vector3.Zero, Camera.viewportCamera.getMVPMatrix()).Normalized(),
+            Matrix4 lightView = Matrix4.LookAt(Vector3.TransformVector(Vector3.Zero, vbnViewportCamera.getMVPMatrix()).Normalized(),
                 new Vector3(0),
                 new Vector3(0, 1, 0));
             lightMatrix = lightProjection * lightView;
@@ -637,10 +642,10 @@ namespace Smash_Forge
                     UpdateMousePosition();
                 UpdateCameraPositionControl();
             }
-            Camera.viewportCamera.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
+            vbnViewportCamera.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
             SetCameraAnimation();
 
-            Matrix4 matrix = Camera.viewportCamera.getMVPMatrix();
+            Matrix4 matrix = vbnViewportCamera.getMVPMatrix();
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref matrix);
 
@@ -666,7 +671,8 @@ namespace Smash_Forge
             // GL.DepthFunc(DepthFunction.Lequal);
 
             if (Runtime.renderModel)
-                DrawModels();
+                foreach (ModelContainer m in ModelContainers)
+                    m.Render(vbnViewportCamera, depthmap, lightMatrix, modelMatrix);
 
             //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
@@ -702,7 +708,7 @@ namespace Smash_Forge
 
             DrawHitboxesHurtboxes();
 
-            if(CurrentMode == Mode.Photoshoot)
+            if (CurrentMode == Mode.Photoshoot)
             {
                 freezeCamera = false;
                 if (Keyboard.GetState().IsKeyDown(Key.W) && Mouse.GetState().IsButtonDown(MouseButton.Left))
@@ -727,7 +733,7 @@ namespace Smash_Forge
                 2.0f * (x / glControl1.Width) - 1.0f,
                 2.0f * ((glControl1.Height - y) / glControl1.Height) - 1.0f,
                 2.0f * z - 1.0f,
-                1.0f), Camera.viewportCamera.getMVPMatrix().Inverted()).Xyz;
+                1.0f), vbnViewportCamera.getMVPMatrix().Inverted()).Xyz;
         }
 
         private static void DrawLightArrows(float rotX, float rotY, float rotZ, Vector3 center, float R, float G, float B)
@@ -797,21 +803,21 @@ namespace Smash_Forge
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
 
             // critical to clear depth buffer
-            GL.Clear(ClearBufferMask.DepthBufferBit); 
-            
-            foreach (ModelContainer c in Runtime.ModelContainers)
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            foreach (ModelContainer c in ModelContainers)
             {
                 if (c.NUD != null)
                 {
-                    c.NUD.RenderShadow(lightMatrix, Camera.viewportCamera.getMVPMatrix(), modelMatrix);
+                    c.NUD.RenderShadow(lightMatrix, vbnViewportCamera.getMVPMatrix(), modelMatrix);
                 }
             }
 
-            Matrix4 matrix = Camera.viewportCamera.getMVPMatrix();
+            Matrix4 matrix = vbnViewportCamera.getMVPMatrix();
             // reset matrices and viewport for model rendering again
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             GL.LoadMatrix(ref matrix);
-            GL.Viewport(glControl1.ClientRectangle); 
+            GL.Viewport(glControl1.ClientRectangle);
         }
 
         private void DrawQuadBlur()
@@ -840,9 +846,9 @@ namespace Smash_Forge
 
         private void DrawHitboxesHurtboxes()
         {
-            if (!string.IsNullOrEmpty(Runtime.TargetAnimString))
+            if (!string.IsNullOrEmpty(TargetAnimString))
             {
-                HandleACMD(Runtime.TargetAnimString.Substring(3));
+                HandleACMD(TargetAnimString.Substring(3));
             }
 
             // Hurtboxes and ECBs first so they appear under hitboxes
@@ -870,13 +876,13 @@ namespace Smash_Forge
             foreach (AreaLight light in Lights.areaLights)
             {
                 Color color = Color.White;
-         
+
                 RenderTools.drawRectangularPrismWireframe(new Vector3(light.positionX, light.positionY, light.positionZ),
-                    light.scaleX, light.scaleY, light.scaleZ, color);          
+                    light.scaleX, light.scaleY, light.scaleZ, color);
             }
         }
 
-        
+
 
         public void UpdateCameraPositionControl()
         {
@@ -886,7 +892,7 @@ namespace Smash_Forge
 
         public void UpdateMousePosition()
         {
-            Camera.viewportCamera.Update();
+            vbnViewportCamera.Update();
         }
 
         public bool IsMouseOverViewport()
@@ -904,7 +910,7 @@ namespace Smash_Forge
                 if (cf >= Runtime.TargetPath.Frames.Count)
                     cf = 0;
                 pathFrame f = Runtime.TargetPath.Frames[cf];
-                Camera.viewportCamera.Update();
+                vbnViewportCamera.Update();
                 cf++;
             }
             else if (Runtime.TargetCMR0 != null && checkBox1.Checked)
@@ -912,175 +918,12 @@ namespace Smash_Forge
                 if (cf >= Runtime.TargetCMR0.frames.Count)
                     cf = 0;
                 Matrix4 m = Runtime.TargetCMR0.frames[cf].Inverted();
-                Camera.viewportCamera.Update();
+                vbnViewportCamera.Update();
                 cf++;
             }
         }
 
-        private void DrawModels()
-        {
-            if (Runtime.renderBoundingBox)
-            {
-                DrawBoundingBoxes();
-            }
-  
-            shader = Runtime.shaders["nud"];
-            GL.UseProgram(shader.programID);
-
-            int renderType = (int)Runtime.renderType;
-
-            #region MBN Uniforms
-
-            shader = Runtime.shaders["MBN"];
-            GL.UseProgram(shader.programID);
-
-            if (Runtime.cameraLight)
-            {
-                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(new Vector3(0f, 0f, -1f), Camera.viewportCamera.getMVPMatrix().Inverted()).Normalized());
-            }
-            else
-            {
-                GL.Uniform3(shader.getAttribute("difLightDirection"), Lights.diffuseLight.direction);
-            }
-
-
-
-            #endregion
-
-            #region DAT uniforms
-            shader = Runtime.shaders["DAT"];
-            GL.UseProgram(shader.programID);
-
-            GL.Uniform3(shader.getAttribute("difLightColor"), Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB);
-            GL.Uniform3(shader.getAttribute("ambLightColor"), Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB);
-
-
-            #endregion
-
-
-
-            foreach (ModelContainer m in Runtime.ModelContainers)
-            {
-                if (m.bch != null)
-                {
-                    foreach(BCH_Model mo in m.bch.Models.Nodes)
-                    {
-                        mo.Render(Camera.viewportCamera.getMVPMatrix());
-                    }
-                    /*if (m.bch.mbn != null && Runtime.shaders["MBN"].shadersCompiledSuccessfully())
-                    {
-                        if (m.bch.bones != null)
-                        {
-                            Matrix4[] f = m.bch.bones.getShaderMatrix();
-
-                            int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
-                            int boneCount = m.bch.bones.bones.Count;
-                            int dataSize = boneCount * Vector4.SizeInBytes * 4;
-
-                            GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
-                            GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
-                            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-
-                            var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
-                            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
-
-                            if (f.Length > 0)
-                            {
-                                GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
-                                GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
-                            }
-                        }
-                        m.bch.mbn.Render(Camera.viewportCamera.getMVPMatrix());
-                    }*/
-                }
-
-                if (m.dat_melee != null && Runtime.shaders["DAT"].shadersCompiledSuccessfully())
-                {
-                    m.dat_melee.Render(Camera.viewportCamera.getMVPMatrix());
-                }
-
-                if (m.NUD != null && Runtime.shaders["nud"].shadersCompiledSuccessfully() && Runtime.shaders["NUD_Debug"].shadersCompiledSuccessfully())
-                {
-                    if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-                        shader = Runtime.shaders["NUD_Debug"];
-                    else
-                        shader = Runtime.shaders["nud"];
-
-                    GL.UseProgram(shader.programID);
-
-                    GL.ActiveTexture(TextureUnit.Texture2);
-                    GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
-                    GL.Uniform1(shader.getAttribute("cmap"), 2);
-                   
-                    GL.ActiveTexture(TextureUnit.Texture11);
-                    GL.BindTexture(TextureTarget.Texture2D, depthmap);
-                    GL.Uniform1(shader.getAttribute("shadowMap"), 11);
-
-                    GL.Uniform1(shader.getAttribute("renderType"), renderType);
-
-                    float elapsedSeconds = 0;
-                    if (m.NUD.useDirectUVTime)
-                    {
-                        elapsedSeconds = (float)directUVTimeStopWatch.ElapsedMilliseconds / 1000.0f;
-                        if (elapsedSeconds >= 100) // should be based on XMB eventually
-                        {
-                            directUVTimeStopWatch.Restart();
-                        }
-                    }
-                    else
-                        directUVTimeStopWatch.Stop();
-
-                    GL.Uniform1(shader.getAttribute("elapsedTime"), elapsedSeconds);
-
-                    GL.ActiveTexture(TextureUnit.Texture11);
-                    GL.BindTexture(TextureTarget.Texture2D, depthmap);
-                    GL.Uniform1(shader.getAttribute("shadowmap"), 11);
-
-                    GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
-                    GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
-
-                    if (m.VBN != null)
-                    {
-                        Matrix4[] f = m.VBN.getShaderMatrix();
-
-                        int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
-                        int boneCount = m.VBN.bones.Count;
-                        int dataSize = boneCount * Vector4.SizeInBytes * 4;
-
-                        GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
-                        GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
-                        GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-
-                        var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
-                        GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
-
-                        if (f.Length > 0)
-                        {
-                            GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
-                            GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
-                        }
-                    }
-
-                    shader.enableAttrib();
-                    m.NUD.clearMTA();
-
-                    if (m.mta != null)
-                        m.NUD.applyMTA(m.mta, (int)nupdFrame.Value - 1);//Apply base mta
-                    if (Runtime.TargetMTA != null)
-                        foreach(MTA mta in Runtime.TargetMTA)
-                        m.NUD.applyMTA(mta, (int)nupdFrame.Value - 1);//Apply additional mta (can override base)
-
-
-                    m.NUD.Render(shader);
-
-
-
-                    shader.disableAttrib();
-                }
-            }
-        }
-
-        private void DrawScreenQuad() 
+        private void DrawScreenQuad()
         {
             // draw a full screen quad for fbo debugging and post processing
             shader = Runtime.shaders["Quad"];
@@ -1099,35 +942,35 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("ScreenRenderBlur"), 1);
 
             // just use a big triangle instead of a quad
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3); 
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
             GL.BindVertexArray(0);
-      
+
         }
 
 
-        private void DrawScreenQuadBlur(int blur_amount, bool horizontal, bool first_iteration) 
+        private void DrawScreenQuadBlur(int blur_amount, bool horizontal, bool first_iteration)
         {
             // draw a full screen quad for fbo debugging and post processing
             shader = Runtime.shaders["Blur"];
             GL.UseProgram(shader.programID);
-            
+
             GL.ActiveTexture(TextureUnit.Texture0);// should I bind a texture here
             GL.Uniform1(shader.getAttribute("image"), 0);
 
             // this whole section in general is pretty broken
             for (int i = 0; i < blur_amount; i++)
             {
-                
+
                 if (horizontal)
                 {
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, pingPongFBO1);
                 }
-    
+
                 else
                 {
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, pingPongFBO2);
                 }
-                 
+
 
                 GL.Uniform1(shader.getAttribute("horizontal"), horizontal ? 1 : 0);
 
@@ -1135,7 +978,7 @@ namespace Smash_Forge
                 {
                     GL.BindTexture(TextureTarget.Texture2D, colorTexture2);
                 }
-                   
+
                 else
                 {
 
@@ -1148,13 +991,13 @@ namespace Smash_Forge
                     {
                         GL.BindTexture(TextureTarget.Texture2D, pingPongColorTexture2);
                     }
-               
+
                 }
-            
+
                 // render screen quad
                 GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // just use a big triangle instead
                 GL.BindVertexArray(0);
-       
+
                 horizontal = !horizontal;
                 if (first_iteration)
                     first_iteration = false;
@@ -1163,35 +1006,16 @@ namespace Smash_Forge
 
         }
 
-        private static void DrawBoundingBoxes()
-        {
-            foreach (ModelContainer m in Runtime.ModelContainers)
-            {
-                if (m.NUD != null)
-                {
-                    GL.Color4(Color.GhostWhite);
-                    RenderTools.drawCubeWireframe(new Vector3(m.NUD.boundingBox[0], m.NUD.boundingBox[1], m.NUD.boundingBox[2]), m.NUD.boundingBox[3]);
-
-                    GL.Color4(Color.OrangeRed);
-                    foreach (NUD.Mesh mesh in m.NUD.meshes)
-                    {
-                        if (mesh.Checked)
-                            RenderTools.drawCubeWireframe(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3]);
-                    }
-                }
-            }
-        }
-
         private void DrawBones()
         {
-            if (Runtime.ModelContainers.Count > 0)
+            if (ModelContainers.Count > 0)
             {
-                foreach (ModelContainer m in Runtime.ModelContainers)
+                foreach (ModelContainer m in ModelContainers)
                 {
                     RenderTools.DrawVBN(m.VBN);
-                    if (m.bch != null)
+                    if (m.BCH != null)
                     {
-                        foreach(BCH_Model mo in m.bch.Models.Nodes)
+                        foreach (BCH_Model mo in m.BCH.Models.Nodes)
                             RenderTools.DrawVBN(mo.skeleton);
                     }
 
@@ -1199,18 +1023,18 @@ namespace Smash_Forge
                     {
                         RenderTools.DrawVBN(m.dat_melee.bones);
                     }
-                }           
+                }
             }
         }
-        
-        
+
+
         public void DrawLVD()
         {
             GL.Disable(EnableCap.CullFace);
 
-            foreach (ModelContainer m in Runtime.ModelContainers)
+            foreach (ModelContainer m in ModelContainers)
             {
-                
+
                 if (m.dat_melee != null && m.dat_melee.collisions != null)
                 {
                     LVD.DrawDATCollisions(m);
@@ -1229,7 +1053,7 @@ namespace Smash_Forge
 
                 if (m.dat_melee != null && m.dat_melee.targets != null)
                 {
-                    foreach(Point target in m.dat_melee.targets)
+                    foreach (Point target in m.dat_melee.targets)
                     {
                         RenderTools.drawCircleOutline(new Vector3(target.x, target.y, 0), 2, 30);
                         RenderTools.drawCircleOutline(new Vector3(target.x, target.y, 0), 4, 30);
@@ -1260,12 +1084,12 @@ namespace Smash_Forge
             {
                 if (Runtime.renderCollisions)
                 {
-                    LVD.DrawCollisions(timeSinceSelected);
+                    Runtime.TargetLVD.DrawCollisions();
                 }
 
                 if (Runtime.renderItemSpawners)
                 {
-                    LVD.DrawItemSpawners();
+                    Runtime.TargetLVD.DrawItemSpawners();
                 }
 
                 if (Runtime.renderSpawns)
@@ -1277,21 +1101,21 @@ namespace Smash_Forge
                 if (Runtime.renderRespawns)
                 {
                     foreach (Spawn s in Runtime.TargetLVD.respawns)
-                        LVD.DrawSpawn(s,true);
+                        LVD.DrawSpawn(s, true);
                 }
 
                 if (Runtime.renderGeneralPoints)
                 {
                     foreach (GeneralPoint p in Runtime.TargetLVD.generalPoints)
                         LVD.DrawPoint(p);
-                    
+
                     foreach (GeneralShape s in Runtime.TargetLVD.generalShapes)
                         LVD.DrawShape(s);
                 }
 
                 if (Runtime.renderOtherLVDEntries)
                 {
-                    LVD.DrawEnemySpawners();
+                    Runtime.TargetLVD.DrawEnemySpawners();
 
                     foreach (DamageShape s in Runtime.TargetLVD.damageShapes)
                         LVD.DrawShape(s);
@@ -1357,7 +1181,7 @@ namespace Smash_Forge
 
             if (bone != -1)
             {
-                foreach (ModelContainer m in Runtime.ModelContainers)
+                foreach (ModelContainer m in ModelContainers)
                 {
                     // ModelContainers should store Hitbox data or have them linked since it will use last
                     // modelcontainer bone for hitbox display (which might not be the character model).
@@ -1366,9 +1190,9 @@ namespace Smash_Forge
                     {
                         try //Try used to avoid bone not found issue that crashes the application
                         {
-                            if (m.VBN.jointTable.Count < 1)
+                            /*if (m.VBN.jointTable.Count < 1)
                                 b = m.VBN.bones[bid];
-                            else
+                            else*/
                             {
                                 if (jtbIndex == 0)
                                 {
@@ -1379,20 +1203,20 @@ namespace Smash_Forge
                                         if (b == null)
                                             b = m.VBN.bones[0];
                                     }
-                                    else  // Index 2 counts as index 1, etc
-                                        b = m.VBN.bones[m.VBN.jointTable[jtbIndex][bid - 1]];
+                                   // else  // Index 2 counts as index 1, etc
+                                        //b = m.VBN.bones[m.VBN.jointTable[jtbIndex][bid - 1]];
                                 }
-                                else if (jtbIndex < m.VBN.jointTable.Count)
+                                //else if (jtbIndex < m.VBN.jointTable.Count)
                                 {
                                     // Extra joint tables don't have the TransN rule
-                                    b = m.VBN.bones[m.VBN.jointTable[jtbIndex][bid]];
+                                    //b = m.VBN.bones[m.VBN.jointTable[jtbIndex][bid]];
                                 }
-                                else
+                                //else
                                 {
                                     //If there is no jointTable but bone is >1000 then don't look into a another joint table
                                     //This makes some weapons like Luma have hitboxes visualized
                                     //b = m.vbn.bones[bid];
-                                    b = m.VBN.bones[m.VBN.jointTable[m.VBN.jointTable.Count - 1][bid]];
+                                    //b = m.VBN.bones[m.VBN.jointTable[m.VBN.jointTable.Count - 1][bid]];
                                 }
                             }
                         }
@@ -1418,7 +1242,7 @@ namespace Smash_Forge
                     continue;
 
                 Bone b = getBone(h.Bone);
-                h.va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
+                h.va = Vector3.TransformVector(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
 
                 // Draw angle marker
                 /*GL.LineWidth(7f);
@@ -1435,7 +1259,7 @@ namespace Smash_Forge
                 if (!h.IsSphere())
                 {
                     h.va2 = new Vector3(h.X2, h.Y2, h.Z2);
-                    if (h.Bone != -1) h.va2 = Vector3.Transform(h.va2, b.transform.ClearScale());
+                    if (h.Bone != -1) h.va2 = Vector3.TransformVector(h.va2, b.transform.ClearScale());
                     RenderTools.drawCylinder(h.va, h.va2, h.Size);
                 }
                 else
@@ -1459,11 +1283,11 @@ namespace Smash_Forge
                         {
 
                             Bone b2 = getBone(h2.Bone);
-                            var va = Vector3.Transform(new Vector3(h2.X, h2.Y, h2.Z), b2.transform.ClearScale());
+                            var va = Vector3.TransformVector(new Vector3(h2.X, h2.Y, h2.Z), b2.transform.ClearScale());
                             if (!h2.IsSphere())
                             {
                                 var va2 = new Vector3(h2.X2, h2.Y2, h2.Z2);
-                                if (h2.Bone != -1) va2 = Vector3.Transform(va2, b2.transform.ClearScale());
+                                if (h2.Bone != -1) va2 = Vector3.TransformVector(va2, b2.transform.ClearScale());
                                 RenderTools.drawCylinder(va, va2, h2.Size);
                             }
                             else
@@ -1517,7 +1341,7 @@ namespace Smash_Forge
                         continue;
 
                     Bone b = getBone(h.Bone);
-                    Vector3 va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
+                    Vector3 va = Vector3.TransformVector(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
 
                     // Draw a cylinder between the last known area and the current one
                     Hitbox lastMatchingHitbox = null;
@@ -1540,12 +1364,12 @@ namespace Smash_Forge
                         continue;
 
                     Bone b = getBone(h.Bone);
-                    Vector3 va = Vector3.Transform(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
+                    Vector3 va = Vector3.TransformVector(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
 
                     if (!h.IsSphere())
                     {
                         Vector3 va2 = new Vector3(h.X2, h.Y2, h.Z2);
-                        if (h.Bone != -1) va2 = Vector3.Transform(va2, b.transform.ClearScale());
+                        if (h.Bone != -1) va2 = Vector3.TransformVector(va2, b.transform.ClearScale());
                         RenderTools.drawCylinder(va, va2, h.Size);
                     }
                     else
@@ -1617,13 +1441,13 @@ namespace Smash_Forge
 
                     if (Runtime.gameAcmdScript != null)
                     {
-                        if(Runtime.gameAcmdScript.SuperArmor)
+                        if (Runtime.gameAcmdScript.SuperArmor)
                             GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, 0x73, 0x0a, 0x43));
 
-                        if(Runtime.gameAcmdScript.BodyInvincible)
+                        if (Runtime.gameAcmdScript.BodyInvincible)
                             GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Color.White));
 
-                        if(Runtime.gameAcmdScript.InvincibleBones.Contains(h.Bone))
+                        if (Runtime.gameAcmdScript.InvincibleBones.Contains(h.Bone))
                             GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Color.White));
                     }
 
@@ -1664,7 +1488,7 @@ namespace Smash_Forge
                 if (Runtime.gameAcmdScript.LedgeGrabDisallowed)
                     return;
 
-            if(Runtime.ParamManager.LedgeGrabboxes.Count > 0)
+            if (Runtime.ParamManager.LedgeGrabboxes.Count > 0)
             {
                 GL.Enable(EnableCap.Blend);
                 GL.Disable(EnableCap.CullFace);
@@ -1681,8 +1505,8 @@ namespace Smash_Forge
                     Bone b = getBone(0);
                     var va2 = new Vector3(0, l.Y2, l.Z2);
 
-                    va = Vector3.Transform(va, b.transform);
-                    va2 = Vector3.Transform(va2, b.transform);
+                    va = Vector3.TransformVector(va, b.transform);
+                    va2 = Vector3.TransformVector(va2, b.transform);
 
                     if (Runtime.renderLedgeGrabboxes)
                     {
@@ -1700,15 +1524,15 @@ namespace Smash_Forge
                                     break;
                                 default:
                                     continue;
-                                //case 1:
-                                //    GL.Color4(Color.FromArgb(90, Color.DarkGreen));
-                                //    break;
-                                //case 2:
-                                //    GL.Color4(Color.FromArgb(90, Color.DarkOrange));
-                                //    break;
-                                //default:
-                                //    GL.Color4(Color.FromArgb(90, Color.DarkRed));
-                                //    break;
+                                    //case 1:
+                                    //    GL.Color4(Color.FromArgb(90, Color.DarkGreen));
+                                    //    break;
+                                    //case 2:
+                                    //    GL.Color4(Color.FromArgb(90, Color.DarkOrange));
+                                    //    break;
+                                    //default:
+                                    //    GL.Color4(Color.FromArgb(90, Color.DarkRed));
+                                    //    break;
                             }
 
 
@@ -1763,7 +1587,7 @@ namespace Smash_Forge
                     var va = new Vector3(e.X, e.Y, e.Z);
                     Bone b = getBone(e.Bone);
 
-                    va = Vector3.Transform(va, b.transform.ClearScale());
+                    va = Vector3.TransformVector(va, b.transform.ClearScale());
 
                     // Draw everything to the stencil buffer
                     RenderTools.beginTopLevelStencil();
@@ -1776,7 +1600,7 @@ namespace Smash_Forge
                 GL.Color4(Color.FromArgb(160, Color.DarkBlue));
                 var v = new Vector3(0, 0, 0);
                 Bone bone = getBone(3);
-                v = Vector3.Transform(v, bone.transform.ClearScale());
+                v = Vector3.TransformVector(v, bone.transform.ClearScale());
 
                 RenderTools.beginTopLevelStencil();
                 RenderTools.drawSphere(v, 0.5f, 30);
@@ -1790,7 +1614,7 @@ namespace Smash_Forge
         public void RenderSpecialBubbles()
         {
 
-            if(Runtime.TargetAnimString == null)
+            if (TargetAnimString == null)
                 return;
 
             if (Runtime.ParamManager.SpecialBubbles.Count > 0)
@@ -1802,7 +1626,7 @@ namespace Smash_Forge
                 {
                     var h = pair.Value;
 
-                    if (!h.Animations.Contains(Runtime.TargetAnimString.Substring(3).Replace(".omo", "").ToLower()) && !h.Animations.Contains("*"))
+                    if (!h.Animations.Contains(TargetAnimString.Substring(3).Replace(".omo", "").ToLower()) && !h.Animations.Contains("*"))
                         continue;
 
                     if ((int)nupdFrame.Value < h.StartFrame)
@@ -1827,7 +1651,7 @@ namespace Smash_Forge
                     {
                         RenderTools.drawReducedCylinderTransformed(va, va2, h.Size, b.transform.ClearScale());
                     }
-                    
+
                 }
                 GL.Disable(EnableCap.DepthTest);
                 GL.Disable(EnableCap.Blend);
@@ -1895,7 +1719,7 @@ namespace Smash_Forge
 
             lastFrame = Frame;
 
-            
+
         }
 
         public void HandleACMD(string animname)
@@ -1919,7 +1743,8 @@ namespace Smash_Forge
             {
                 if (Runtime.acmdEditor.crc != crc)
                     Runtime.acmdEditor.SetAnimation(crc);
-            } catch { }
+            }
+            catch { }
 
             //Putting scriptId here to get intangibility of the animation, previous method only did it for animations that had game scripts
             if (Runtime.Moveset.ScriptsHashList.Contains(crc))
@@ -2028,9 +1853,9 @@ namespace Smash_Forge
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Camera.viewportCamera.setPosition(new Vector3(0, 10, -80));
-            Camera.viewportCamera.setRotX(0);
-            Camera.viewportCamera.setRotY(0);
+            vbnViewportCamera.setPosition(new Vector3(0, 10, -80));
+            vbnViewportCamera.setRotX(0);
+            vbnViewportCamera.setRotY(0);
             UpdateMousePosition();
             UpdateCameraPositionControl();
         }
@@ -2065,7 +1890,7 @@ namespace Smash_Forge
             }
             if (e.KeyChar == 'g')
             {
-                if (Runtime.TargetAnim == null)
+                if (TargetAnim == null)
                     return;
 
                 isPlaying = false;
@@ -2145,8 +1970,8 @@ namespace Smash_Forge
                     width = tr.X / 5f;
                     height = (tr.Y+5f) / -5f;
                     zoom = -(tr.Z + 15f);*/
-            }
-            else
+                }
+                else
                 {
                 }
             }
@@ -2193,32 +2018,32 @@ namespace Smash_Forge
 
             float x = (2.0f * mouse_x) / glControl1.Width - 1.0f;
             float y = 1.0f - (2.0f * mouse_y) / glControl1.Height;
-            Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), Camera.viewportCamera.getMVPMatrix().Inverted());
-            Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), Camera.viewportCamera.getMVPMatrix().Inverted());
+            Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), vbnViewportCamera.getMVPMatrix().Inverted());
+            Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), vbnViewportCamera.getMVPMatrix().Inverted());
 
             p1 = va.Xyz;
             p2 = p1 - (va - (va + vb)).Xyz * 100;
 
             SortedList<double, Bone> selected = new SortedList<double, Bone>(new DuplicateKeyComparer<double>());
 
-            foreach (ModelContainer con in Runtime.ModelContainers)
+            foreach (ModelContainer con in ModelContainers)
             {
                 if (con.VBN != null)
                 {
                     foreach (Bone b in con.VBN.bones)
                     {
-                        Vector3 closest = Vector3.Zero;
+                        /*Vector3 closest = Vector3.Zero;
                         Vector3 cen = b.transform.ExtractTranslation();
                         if (!selected.Values.Contains(b) && RenderTools.CheckSphereHit(cen, .3f, p1, p2, out closest))
                         {
                             double dis = Math.Pow(closest.X - p1.X, 2) + Math.Pow(closest.Y - p1.Y, 2) + Math.Pow(closest.Z - p1.Z, 2);
                             selected.Add(dis, b);
-                        }
+                        }*/
                     }
                 }
-                if(con.NUD != null)
+                if (con.NUD != null)
                 {
-                    foreach (NUD.Mesh mesh in con.NUD.meshes)
+                    foreach (NUD.Mesh mesh in con.NUD.Nodes)
                     {
                         Vector3 closest = Vector3.Zero;
                         foreach (NUD.Polygon poly in mesh.Nodes)
@@ -2227,11 +2052,11 @@ namespace Smash_Forge
                             foreach (NUD.Vertex v in poly.vertices)
                             {
                                 poly.selectedVerts[i] = 0;
-                                if (RenderTools.CheckSphereHit(v.pos, 1f, p1, p2, out closest))
+                                /*if (RenderTools.CheckSphereHit(v.pos, 1f, p1, p2, out closest))
                                 {
                                     //Console.WriteLine("Selected Vert");
                                     poly.selectedVerts[i] = 1;
-                                }
+                                }*/
                                 i++;
                             }
                         }
@@ -2257,9 +2082,9 @@ namespace Smash_Forge
         {
             Runtime.useFAFasAnimationLength = cbFAFanimation.Checked;
 
-            if (Runtime.TargetAnim != null)
+            if (TargetAnim != null)
             {
-                setAnimMaxFrames(Runtime.TargetAnim);
+                setAnimMaxFrames(TargetAnim);
             }
         }
 
@@ -2275,7 +2100,7 @@ namespace Smash_Forge
                 int result = x.CompareTo(y);
 
                 if (result == 0)
-                    return 1;  
+                    return 1;
                 else
                     return result;
             }
@@ -2285,20 +2110,20 @@ namespace Smash_Forge
         {
             freezeCamera = false;
             if (transformTool.hit) freezeCamera = true;
-            if(mouseDownPos == this.PointToClient(Cursor.Position) && 1==2)
+            if (mouseDownPos == this.PointToClient(Cursor.Position) && 1 == 2)
             {
                 float mouse_x = this.PointToClient(Cursor.Position).X;
                 float mouse_y = this.PointToClient(Cursor.Position).Y;
 
                 float x = (2.0f * mouse_x) / glControl1.Width - 1.0f;
                 float y = 1.0f - (2.0f * mouse_y) / glControl1.Height;
-                Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), Camera.viewportCamera.getMVPMatrix().Inverted());
-                Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), Camera.viewportCamera.getMVPMatrix().Inverted());
+                Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), vbnViewportCamera.getMVPMatrix().Inverted());
+                Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), vbnViewportCamera.getMVPMatrix().Inverted());
 
                 p1 = va.Xyz;
                 p2 = p1 - (va - (va + vb)).Xyz * 100;
 
-                freezeCamera = (RenderTools.intersectCircle(new Vector3(6, 6, 6), 5, 90, p1, p2));
+                //freezeCamera = (RenderTools.intersectCircle(new Vector3(6, 6, 6), 5, 90, p1, p2));
             }
         }
 
@@ -2306,9 +2131,9 @@ namespace Smash_Forge
         {
             Runtime.useFrameDuration = cbUseFrameSpeed.Checked;
 
-            if (Runtime.TargetAnim != null)
+            if (TargetAnim != null)
             {
-                setAnimMaxFrames(Runtime.TargetAnim);
+                setAnimMaxFrames(TargetAnim);
             }
         }
 
@@ -2335,7 +2160,7 @@ namespace Smash_Forge
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
 
-            Camera.viewportCamera.Update();
+            vbnViewportCamera.Update();
             modelMatrix = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation) * Matrix4.CreateTranslation(5 * width, -5f - 5f * height, -15f + zoom);
         }
 
@@ -2360,7 +2185,7 @@ namespace Smash_Forge
                     Array.Copy(pixels, (w + h * width) * 4, fixedPixels, ((height - h - 1) * width + w) * 4, 4);
                 }
             }
-    
+
             // Format and save the data
             Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bmp.PixelFormat);

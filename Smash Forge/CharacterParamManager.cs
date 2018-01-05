@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using SALT.PARAMS;
 using System.Drawing;
 using System.IO;
+using OpenTK;
+using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge
 {
@@ -188,6 +190,102 @@ namespace Smash_Forge
                 ((ParamGroup)param.Groups[4])[id][7].Value = Convert.ToUInt32(Hurtboxes[id].Bone);
                 //((ParamGroup)param.Groups[4])[id][8].Value = Convert.ToUInt32(Hurtboxes[id].Part);
                 ((ParamGroup)param.Groups[4])[id][9].Value = Convert.ToUInt32(Hurtboxes[id].Zone);
+            }
+        }
+
+        public void RenderHurtboxes(float Frame, int scriptId, ForgeACMDScript ACMDScript, VBN VBN)
+        {
+            if (Hurtboxes.Count > 0)
+            {
+                GL.Enable(EnableCap.DepthTest);
+                GL.Enable(EnableCap.Blend);
+
+                if (ACMDScript != null)
+                {
+                    if (ACMDScript.BodyIntangible)
+                        return;
+                }
+
+                if (scriptId != -1)
+                    if (Frame + 1 >= MovesData[scriptId].IntangibilityStart && Frame + 1 < MovesData[scriptId].IntangibilityEnd)
+                        return;
+
+                foreach (var pair in Hurtboxes)
+                {
+                    var h = pair.Value;
+                    if (!h.Visible)
+                        continue;
+
+                    var va = new Vector3(h.X, h.Y, h.Z);
+                    Bone b = ForgeACMDScript.getBone(h.Bone, VBN);
+                    if (b == null) continue; 
+
+                    if (ACMDScript != null)
+                    {
+                        if (ACMDScript.IntangibleBones.Contains(h.Bone))
+                            continue;
+                    }
+
+                    //va = Vector3.Transform(va, b.transform);
+
+                    GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColor));
+
+                    if (Runtime.renderHurtboxesZone)
+                    {
+                        switch (h.Zone)
+                        {
+                            case Hurtbox.LW_ZONE:
+                                GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColorLow));
+                                break;
+                            case Hurtbox.N_ZONE:
+                                GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColorMed));
+                                break;
+                            case Hurtbox.HI_ZONE:
+                                GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColorHi));
+                                break;
+                        }
+                    }
+
+                    if (ACMDScript != null)
+                    {
+                        if (ACMDScript.SuperArmor)
+                            GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, 0x73, 0x0a, 0x43));
+
+                        if (ACMDScript.BodyInvincible)
+                            GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Color.White));
+
+                        if (ACMDScript.InvincibleBones.Contains(h.Bone))
+                            GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Color.White));
+                    }
+
+                    var va2 = new Vector3(h.X2, h.Y2, h.Z2);
+
+                    //if (h.Bone != -1)va2 = Vector3.Transform(va2, b.transform);
+
+                    if (h.isSphere)
+                    {
+                        RenderTools.drawSphereTransformedVisible(va, h.Size, 30, b.transform);
+                    }
+                    else
+                    {
+                        RenderTools.drawReducedCylinderTransformed(va, va2, h.Size, b.transform);
+                    }
+                    if (Runtime.SelectedHurtboxID == h.ID)
+                    {
+                        GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColorSelected));
+                        if (h.isSphere)
+                        {
+                            RenderTools.drawWireframeSphereTransformedVisible(va, h.Size, 20, b.transform);
+                        }
+                        else
+                        {
+                            RenderTools.drawWireframeCylinderTransformed(va, va2, h.Size, b.transform);
+                        }
+                    }
+                }
+
+                GL.Disable(EnableCap.Blend);
+                GL.Disable(EnableCap.DepthTest);
             }
         }
 

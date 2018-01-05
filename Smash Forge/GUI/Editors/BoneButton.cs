@@ -25,6 +25,7 @@ namespace Smash_Forge
             if (bone != null)
                 name.data = bone.Text.ToCharArray();
             BoneRiggingSelector brs = new BoneRiggingSelector(name);
+            brs.ModelContainers.Add(new ModelContainer() { VBN = vbn});
             brs.CurrentBone = bone;
             brs.ShowDialog();
             if (!brs.Cancelled)
@@ -56,6 +57,7 @@ namespace Smash_Forge
                 Text = bone.Text;
         }
 
+        public VBN vbn;
         private Bone bone = null;
         public uint noBone = 3449071621;
         public uint boneId;

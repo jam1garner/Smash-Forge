@@ -22,7 +22,18 @@ namespace Smash_Forge
         public int skeletonScaleType;
         public int silhouetteMaterialEntries;
 
-        public VBN skeleton = new VBN();
+        public VBN skeleton
+        {
+            get
+            {
+                return vbn;
+            }
+            set
+            {
+                vbn = value;
+            }
+        }
+        private VBN vbn = new VBN();
         public Matrix4 worldTransform;
 
         List<VertexAttribute> Attributes = new List<VertexAttribute>();
@@ -404,7 +415,7 @@ namespace Smash_Forge
 
         public void Render(Matrix4 view)
         {
-
+            if (Vertices == null) return;
             shader = Runtime.shaders["MBN"];
             GL.UseProgram(shader.programID);
 
@@ -493,8 +504,8 @@ namespace Smash_Forge
             int i = 0;
             List<BCH_Mesh> Meshes = new List<BCH_Mesh>();
             List<Vertex> Verts = new List<Vertex>();
-            Console.WriteLine(n.Nodes.Count + " " + n.meshes.Count);
-            foreach (NUD.Mesh nudmesh in n.meshes)
+            Console.WriteLine(n.Nodes.Count + " " + n.Nodes.Count);
+            foreach (NUD.Mesh nudmesh in n.Nodes)
             {
                 BCH_Mesh mesh = new BCH_Mesh();
                 mesh.Text = Nodes[i].Text; //nudmesh.Text;//

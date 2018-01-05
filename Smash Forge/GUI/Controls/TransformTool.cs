@@ -23,8 +23,8 @@ namespace Smash_Forge
             if (b == null) return;
 
             Matrix4 mat = b.transform;
-            Vector3 center = Vector3.Transform(Vector3.Zero, mat);
-            Vector3 camPoint = Vector3.Transform(Vector3.Zero, view);
+            Vector3 center = Vector3.TransformVector(Vector3.Zero, mat);
+            Vector3 camPoint = Vector3.TransformVector(Vector3.Zero, view);
 
             Matrix4 rot = mat;
             float Radius = CamDistance(center, camPoint);// / 1 * (Runtime.fov / 45.0f) * 1.0f;
@@ -50,7 +50,7 @@ namespace Smash_Forge
                 hit = true;
 
                 
-                Vector3 angle = Angles(Vector3.Transform(point, invTrasnform)) * new Vector3(180f / (float)Math.PI);
+                Vector3 angle = Angles(Vector3.TransformVector(point, invTrasnform)) * new Vector3(180f / (float)Math.PI);
                 angle.X = Math.Abs(angle.X);
                 angle.Y = Math.Abs(angle.Y);
                 angle.Z = Math.Abs(angle.Z);

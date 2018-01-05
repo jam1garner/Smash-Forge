@@ -28,26 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.listBox1 = new System.Windows.Forms.ListBox();
-            this.listBox2 = new System.Windows.Forms.ListBox();
+            this.textureList = new System.Windows.Forms.ListBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openNUTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.newNUTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveNUTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveNUTZLIBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.dumpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importNUTFromFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.textureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportAsDDSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportAsDDSToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.replaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractAndOpenInDefaultEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractAndPickAProgramToEditWithToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importEditedFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.texIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label2 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
@@ -62,155 +48,44 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.aspectRatioCB = new System.Windows.Forms.CheckBox();
             this.glControl1 = new OpenTK.GLControl();
+            this.previewBox = new System.Windows.Forms.GroupBox();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.previewBox.SuspendLayout();
             this.SuspendLayout();
             // 
-            // listBox1
+            // textureList
             // 
-            this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.textureList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(14, 22);
-            this.listBox1.Margin = new System.Windows.Forms.Padding(2);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(84, 368);
-            this.listBox1.TabIndex = 1;
-            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
-            // 
-            // listBox2
-            // 
-            this.listBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.listBox2.FormattingEnabled = true;
-            this.listBox2.Location = new System.Drawing.Point(100, 22);
-            this.listBox2.Margin = new System.Windows.Forms.Padding(2);
-            this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(91, 368);
-            this.listBox2.TabIndex = 2;
-            this.listBox2.SelectedIndexChanged += new System.EventHandler(this.listBox2_SelectedIndexChanged);
+            this.textureList.FormattingEnabled = true;
+            this.textureList.Location = new System.Drawing.Point(11, 22);
+            this.textureList.Margin = new System.Windows.Forms.Padding(2);
+            this.textureList.Name = "textureList";
+            this.textureList.Size = new System.Drawing.Size(91, 433);
+            this.textureList.TabIndex = 2;
+            this.textureList.SelectedIndexChanged += new System.EventHandler(this.listBox2_SelectedIndexChanged);
+            this.textureList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBox2_MouseDown);
             // 
             // menuStrip1
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.textureToolStripMenuItem,
             this.editingToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(806, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(496, 24);
             this.menuStrip1.TabIndex = 11;
             this.menuStrip1.Text = "menuStrip1";
-            // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openNUTToolStripMenuItem,
-            this.newNUTToolStripMenuItem,
-            this.saveNUTToolStripMenuItem,
-            this.saveNUTZLIBToolStripMenuItem,
-            this.dumpToolStripMenuItem,
-            this.importNUTFromFolderToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
-            // 
-            // openNUTToolStripMenuItem
-            // 
-            this.openNUTToolStripMenuItem.Name = "openNUTToolStripMenuItem";
-            this.openNUTToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.openNUTToolStripMenuItem.Text = "Open NUT";
-            this.openNUTToolStripMenuItem.Click += new System.EventHandler(this.openNUTToolStripMenuItem_Click);
-            // 
-            // newNUTToolStripMenuItem
-            // 
-            this.newNUTToolStripMenuItem.Name = "newNUTToolStripMenuItem";
-            this.newNUTToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.newNUTToolStripMenuItem.Text = "New NUT";
-            this.newNUTToolStripMenuItem.ToolTipText = "Creates a new NUT";
-            this.newNUTToolStripMenuItem.Click += new System.EventHandler(this.newNUTToolStripMenuItem_Click);
-            // 
-            // saveNUTToolStripMenuItem
-            // 
-            this.saveNUTToolStripMenuItem.Name = "saveNUTToolStripMenuItem";
-            this.saveNUTToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.saveNUTToolStripMenuItem.Text = "Save NUT";
-            this.saveNUTToolStripMenuItem.Click += new System.EventHandler(this.saveNUTToolStripMenuItem_Click);
-            // 
-            // saveNUTZLIBToolStripMenuItem
-            // 
-            this.saveNUTZLIBToolStripMenuItem.Name = "saveNUTZLIBToolStripMenuItem";
-            this.saveNUTZLIBToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.saveNUTZLIBToolStripMenuItem.Text = "Save NUT (ZLIB)";
-            this.saveNUTZLIBToolStripMenuItem.ToolTipText = "Compresses the NUT with ZLIB when saving. Don\'t use if you don\'t know what that m" +
-    "eans.";
-            this.saveNUTZLIBToolStripMenuItem.Click += new System.EventHandler(this.saveNUTZLIBToolStripMenuItem_Click);
-            // 
-            // dumpToolStripMenuItem
-            // 
-            this.dumpToolStripMenuItem.Name = "dumpToolStripMenuItem";
-            this.dumpToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.dumpToolStripMenuItem.Text = "Export Entire NUT";
-            this.dumpToolStripMenuItem.ToolTipText = "Exports all selected NUT\'s textures as DDS";
-            this.dumpToolStripMenuItem.Click += new System.EventHandler(this.exportNutToFolder);
-            // 
-            // importNUTFromFolderToolStripMenuItem
-            // 
-            this.importNUTFromFolderToolStripMenuItem.Name = "importNUTFromFolderToolStripMenuItem";
-            this.importNUTFromFolderToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.importNUTFromFolderToolStripMenuItem.Text = "Import Entire NUT";
-            this.importNUTFromFolderToolStripMenuItem.ToolTipText = "Imports a folder of DDS files into a NUT";
-            this.importNUTFromFolderToolStripMenuItem.Click += new System.EventHandler(this.importNutFromFolder);
-            // 
-            // textureToolStripMenuItem
-            // 
-            this.textureToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.importToolStripMenuItem,
-            this.exportAsDDSToolStripMenuItem,
-            this.exportAsDDSToolStripMenuItem1,
-            this.replaceToolStripMenuItem});
-            this.textureToolStripMenuItem.Name = "textureToolStripMenuItem";
-            this.textureToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
-            this.textureToolStripMenuItem.Text = "Texture";
-            // 
-            // importToolStripMenuItem
-            // 
-            this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
-            this.importToolStripMenuItem.Text = "Import";
-            this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
-            // 
-            // exportAsDDSToolStripMenuItem
-            // 
-            this.exportAsDDSToolStripMenuItem.Name = "exportAsDDSToolStripMenuItem";
-            this.exportAsDDSToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
-            this.exportAsDDSToolStripMenuItem.Text = "Export";
-            this.exportAsDDSToolStripMenuItem.Click += new System.EventHandler(this.exportAsDDSToolStripMenuItem_Click);
-            // 
-            // exportAsDDSToolStripMenuItem1
-            // 
-            this.exportAsDDSToolStripMenuItem1.Name = "exportAsDDSToolStripMenuItem1";
-            this.exportAsDDSToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
-            this.exportAsDDSToolStripMenuItem1.Text = "Remove";
-            this.exportAsDDSToolStripMenuItem1.Click += new System.EventHandler(this.RemoveToolStripMenuItem1_Click_1);
-            // 
-            // replaceToolStripMenuItem
-            // 
-            this.replaceToolStripMenuItem.Name = "replaceToolStripMenuItem";
-            this.replaceToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
-            this.replaceToolStripMenuItem.Text = "Replace";
-            this.replaceToolStripMenuItem.Click += new System.EventHandler(this.replaceToolStripMenuItem_Click);
             // 
             // editingToolStripMenuItem
             // 
             this.editingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.extractAndOpenInDefaultEditorToolStripMenuItem,
             this.extractAndPickAProgramToEditWithToolStripMenuItem,
-            this.importEditedFileToolStripMenuItem,
-            this.texIDToolStripMenuItem});
+            this.importEditedFileToolStripMenuItem});
             this.editingToolStripMenuItem.Name = "editingToolStripMenuItem";
             this.editingToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             this.editingToolStripMenuItem.Text = "Editing";
@@ -235,13 +110,6 @@
             this.importEditedFileToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.importEditedFileToolStripMenuItem.Text = "Import Edited File";
             this.importEditedFileToolStripMenuItem.Click += new System.EventHandler(this.importEditedFileToolStripMenuItem_Click);
-            // 
-            // texIDToolStripMenuItem
-            // 
-            this.texIDToolStripMenuItem.Name = "texIDToolStripMenuItem";
-            this.texIDToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
-            this.texIDToolStripMenuItem.Text = "TexID";
-            this.texIDToolStripMenuItem.Click += new System.EventHandler(this.texIDToolStripMenuItem_Click);
             // 
             // label2
             // 
@@ -374,6 +242,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.aspectRatioCB);
             this.groupBox1.Controls.Add(this.renderChannelR);
             this.groupBox1.Controls.Add(this.renderChannelA);
@@ -381,10 +251,9 @@
             this.groupBox1.Controls.Add(this.renderChannelB);
             this.groupBox1.Controls.Add(this.tableLayoutPanel1);
             this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.groupBox1.Location = new System.Drawing.Point(568, 24);
+            this.groupBox1.Location = new System.Drawing.Point(107, 27);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(238, 373);
+            this.groupBox1.Size = new System.Drawing.Size(377, 102);
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Texture Settings";
@@ -407,23 +276,36 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.glControl1.AutoSize = true;
             this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(196, 22);
+            this.glControl1.Location = new System.Drawing.Point(10, 19);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(368, 368);
+            this.glControl1.Size = new System.Drawing.Size(361, 295);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = false;
             this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
             this.glControl1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.glControl1_KeyPress);
             // 
+            // previewBox
+            // 
+            this.previewBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.previewBox.Controls.Add(this.glControl1);
+            this.previewBox.Location = new System.Drawing.Point(107, 135);
+            this.previewBox.Name = "previewBox";
+            this.previewBox.Size = new System.Drawing.Size(377, 320);
+            this.previewBox.TabIndex = 13;
+            this.previewBox.TabStop = false;
+            this.previewBox.Text = "Preview";
+            this.previewBox.Resize += new System.EventHandler(this.previewBox_Resize);
+            // 
             // NUTEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(806, 397);
+            this.ClientSize = new System.Drawing.Size(496, 473);
+            this.Controls.Add(this.previewBox);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.listBox2);
-            this.Controls.Add(this.listBox1);
-            this.Controls.Add(this.glControl1);
+            this.Controls.Add(this.textureList);
             this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.KeyPreview = true;
@@ -439,32 +321,20 @@
             this.tableLayoutPanel1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.previewBox.ResumeLayout(false);
+            this.previewBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.ListBox listBox2;
+        private System.Windows.Forms.ListBox textureList;
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openNUTToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem newNUTToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem textureToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportAsDDSToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportAsDDSToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem saveNUTToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem replaceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractAndOpenInDefaultEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractAndPickAProgramToEditWithToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importEditedFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem dumpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem importNUTFromFolderToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveNUTZLIBToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem texIDToolStripMenuItem;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label label1;
@@ -479,5 +349,6 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox aspectRatioCB;
         private OpenTK.GLControl glControl1;
+        private System.Windows.Forms.GroupBox previewBox;
     }
 }

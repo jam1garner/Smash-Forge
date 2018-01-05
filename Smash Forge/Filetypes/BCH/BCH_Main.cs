@@ -28,6 +28,12 @@ namespace Smash_Forge
             SelectedImageKey = "model";
         }
 
+        public BCH(string fname) : this()
+        {
+            Text = Path.GetFileName(fname);
+            Read(fname);
+        }
+
         public override void Read(string filename)
         {
             FileData f = new FileData(filename);

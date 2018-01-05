@@ -68,6 +68,16 @@ namespace Smash_Forge
 
         public List<uint> ScriptsHashList { get; set; }
 
+        public void Save(String fname)
+        {
+            string path = Path.GetDirectoryName(fname) + "\\";
+            MotionTable.Export(fname);
+            Game.Export(path + "game.bin");
+            Effect.Export(path + "effect.bin");
+            Sound.Export(path + "sound.bin");
+            Expression.Export(path + "expression.bin");
+        }
+
         public acmd_frame CommandsAtFrame(string animation, int frame)
         {
             var _commandsGame = new List<ACMDCommand>();

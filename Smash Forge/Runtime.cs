@@ -25,7 +25,7 @@ namespace Smash_Forge
 
         public static Dictionary<string, Shader> shaders = new Dictionary<string, Shader>();
 
-        public static List<ModelContainer> ModelContainers = new List<ModelContainer>();
+        //public static List<ModelContainer> ModelContainers = new List<ModelContainer>();
         public static List<NUT> TextureContainers = new List<NUT>();
         public static List<NUS3BANK> SoundContainers = new List<NUS3BANK>();
 
@@ -42,10 +42,10 @@ namespace Smash_Forge
         public static CMR0 TargetCMR0 { get; set; }
         public static List<MTA> TargetMTA = new List<MTA>();
         public static Object LVDSelection { get; set; }
-        public static Animation TargetAnim { get { return _targetAnim; } set { _targetAnim = value; OnAnimationChanged(); } }
-        private static Animation _targetAnim;
-        public static GUI.Editors.HitboxList hitboxList { get; set; }
-        public static GUI.Editors.VariableList variableViewer { get; set; }
+        //public static Animation TargetAnim { get { return _targetAnim; } set { _targetAnim = value; OnAnimationChanged(); } }
+        //private static Animation _targetAnim;
+        public static HitboxList hitboxList { get; set; }
+        public static VariableList variableViewer { get; set; }
 
         public static ParamFile lightSetParam = null;
         public static string lightSetDirectory = "";
@@ -69,6 +69,7 @@ namespace Smash_Forge
 
         public static ViewportModes ViewportMode = ViewportModes.EDITVERT;
 
+        public static float RenderLineSize = 2;
         public static bool renderLVD;
         public static bool renderModel;
         public static bool renderModelSelection = true;
@@ -297,7 +298,7 @@ namespace Smash_Forge
         public static void clearMoveset()
         {
             Moveset = null;
-            acmdEditor.updateCrcList();
+            //acmdEditor.updateCrcList();
         }
 
         public static void StartupFromConfig(string config)

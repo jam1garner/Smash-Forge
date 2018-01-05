@@ -118,20 +118,32 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="sexy_green_down_arrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\sexy_green_down_arrow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="node_vbn" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\node_vbn.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="_10080000" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\10080000.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="node_nut" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\node_nut.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_image" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_image.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="node_nud" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\node_nud.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_anim" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_anim.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="node_file" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\node_file.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="_10101000" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\10101000.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="icon_mesh" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_mesh.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="icon_group" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Flat Folder icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="icon_model" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_model.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="_10080000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\10080000.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="icon_polygon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\icon_polygon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -139,25 +151,46 @@
   <data name="UVPattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\UVPattern.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="_10102000" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\10102000.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="boneWeightGradient" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\boneWeightGradient.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="icon_anim" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_anim.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="_10102000" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\10102000.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sexy_green_down_arrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sexy_green_down_arrow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_skeleton" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_skeleton.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_model" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_model.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="icon_bone" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\icon_bone.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="icon_image" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_image.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="icon_mesh" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_mesh.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="icon_group" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Flat Folder icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="ForgeBack" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ForgeBack.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="icon_skeleton" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_skeleton.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="strip_camreset" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\strip_camreset.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="strip_camsettings" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\strip_camsettings.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="strip_gif" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\strip_gif.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="strip_render" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\strip_render.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_info" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_info.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_number" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_number.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

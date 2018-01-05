@@ -3,6 +3,10 @@ using System.Drawing;
 using System.Collections.Generic;
 using OpenTK;
 
+// Obselete as f
+// Will probably remove eventually
+// Still used for some converting...
+
 namespace Smash_Forge
 {
     public class KeyFrame
@@ -150,13 +154,13 @@ namespace Smash_Forge
             {
                 vbn.reset();
 
-                foreach (ModelContainer con in Runtime.ModelContainers)
+                /*foreach (ModelContainer con in Runtime.ModelContainers)
                 {
                     if (con.NUD != null && con.mta != null)
                     {
                         con.NUD.applyMTA(con.mta, 0);
                     }
-                }
+                }*/
             }
 
             foreach (object child in children)
@@ -168,13 +172,13 @@ namespace Smash_Forge
                 }
                 if (child is MTA)
                 {
-                    foreach(ModelContainer con in Runtime.ModelContainers)
+                    /*foreach(ModelContainer con in Runtime.ModelContainers)
                     {
                         if(con.NUD != null)
                         {
                             con.NUD.applyMTA(((MTA)child), frame);
                         }
-                    }
+                    }*/
                 }
             }
 

@@ -69,27 +69,30 @@
             this.generateTanBitanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openEditToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MCContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.importFromDAEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportAsDAEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mergeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.belowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.generateBoundingBoxesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
             this.meshContextMenu.SuspendLayout();
             this.nudContextMenu.SuspendLayout();
             this.MCContextMenu.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeView1
             // 
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView1.CheckBoxes = true;
+            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.HideSelection = false;
             this.treeView1.LabelEdit = true;
-            this.treeView1.Location = new System.Drawing.Point(0, 0);
+            this.treeView1.Location = new System.Drawing.Point(3, 16);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(199, 280);
+            this.treeView1.Size = new System.Drawing.Size(187, 257);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
             this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
@@ -308,21 +311,22 @@
             this.calculateNormalsToolStripMenuItem,
             this.smoothNormalsToolStripMenuItem1,
             this.generateTanBitanToolStripMenuItem,
+            this.generateBoundingBoxesToolStripMenuItem,
             this.openEditToolStripMenuItem});
             this.nudContextMenu.Name = "nudContextMenu";
-            this.nudContextMenu.Size = new System.Drawing.Size(177, 186);
+            this.nudContextMenu.Size = new System.Drawing.Size(210, 230);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.saveToolStripMenuItem.Text = "Save as nud";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // makeMetalToolStripMenuItem
             // 
             this.makeMetalToolStripMenuItem.Name = "makeMetalToolStripMenuItem";
-            this.makeMetalToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.makeMetalToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.makeMetalToolStripMenuItem.Text = "Make Metal";
             this.makeMetalToolStripMenuItem.Click += new System.EventHandler(this.makeMetalToolStripMenuItem_Click);
             // 
@@ -333,7 +337,7 @@
             this.importFromXMLToolStripMenuItem,
             this.useAOAsSpecToolStripMenuItem});
             this.materialToolStripMenuItem.Name = "materialToolStripMenuItem";
-            this.materialToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.materialToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.materialToolStripMenuItem.Text = "Material";
             // 
             // exportAsXMLToolStripMenuItem
@@ -360,33 +364,33 @@
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(173, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(206, 6);
             // 
             // addBlankMeshToolStripMenuItem
             // 
             this.addBlankMeshToolStripMenuItem.Name = "addBlankMeshToolStripMenuItem";
-            this.addBlankMeshToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.addBlankMeshToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.addBlankMeshToolStripMenuItem.Text = "Add Blank Mesh";
             this.addBlankMeshToolStripMenuItem.Click += new System.EventHandler(this.addBlankMeshToolStripMenuItem_Click);
             // 
             // calculateNormalsToolStripMenuItem
             // 
             this.calculateNormalsToolStripMenuItem.Name = "calculateNormalsToolStripMenuItem";
-            this.calculateNormalsToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.calculateNormalsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.calculateNormalsToolStripMenuItem.Text = "Calculate Normals";
             this.calculateNormalsToolStripMenuItem.Click += new System.EventHandler(this.calculateNormalsToolStripMenuItem_Click_1);
             // 
             // smoothNormalsToolStripMenuItem1
             // 
             this.smoothNormalsToolStripMenuItem1.Name = "smoothNormalsToolStripMenuItem1";
-            this.smoothNormalsToolStripMenuItem1.Size = new System.Drawing.Size(176, 22);
+            this.smoothNormalsToolStripMenuItem1.Size = new System.Drawing.Size(209, 22);
             this.smoothNormalsToolStripMenuItem1.Text = "Smooth Normals";
             this.smoothNormalsToolStripMenuItem1.Click += new System.EventHandler(this.smoothNormalsToolStripMenuItem1_Click);
             // 
             // generateTanBitanToolStripMenuItem
             // 
             this.generateTanBitanToolStripMenuItem.Name = "generateTanBitanToolStripMenuItem";
-            this.generateTanBitanToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.generateTanBitanToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.generateTanBitanToolStripMenuItem.Text = "Generate Tan/Bitan";
             this.generateTanBitanToolStripMenuItem.Click += new System.EventHandler(this.generateTanBitanToolStripMenuItem_Click);
             // 
@@ -394,16 +398,32 @@
             // 
             this.openEditToolStripMenuItem.Enabled = false;
             this.openEditToolStripMenuItem.Name = "openEditToolStripMenuItem";
-            this.openEditToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.openEditToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.openEditToolStripMenuItem.Text = "Open Edit";
             this.openEditToolStripMenuItem.Click += new System.EventHandler(this.openEditToolStripMenuItem_Click);
             // 
             // MCContextMenu
             // 
             this.MCContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.importFromDAEToolStripMenuItem,
+            this.exportAsDAEToolStripMenuItem,
             this.mergeToolStripMenuItem});
             this.MCContextMenu.Name = "MCContextMenu";
-            this.MCContextMenu.Size = new System.Drawing.Size(109, 26);
+            this.MCContextMenu.Size = new System.Drawing.Size(167, 70);
+            // 
+            // importFromDAEToolStripMenuItem
+            // 
+            this.importFromDAEToolStripMenuItem.Name = "importFromDAEToolStripMenuItem";
+            this.importFromDAEToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.importFromDAEToolStripMenuItem.Text = "Import From DAE";
+            this.importFromDAEToolStripMenuItem.Click += new System.EventHandler(this.importFromDAEToolStripMenuItem_Click);
+            // 
+            // exportAsDAEToolStripMenuItem
+            // 
+            this.exportAsDAEToolStripMenuItem.Name = "exportAsDAEToolStripMenuItem";
+            this.exportAsDAEToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.exportAsDAEToolStripMenuItem.Text = "Export As DAE";
+            this.exportAsDAEToolStripMenuItem.Click += new System.EventHandler(this.exportAsDAEToolStripMenuItem_Click);
             // 
             // mergeToolStripMenuItem
             // 
@@ -411,32 +431,52 @@
             this.belowToolStripMenuItem,
             this.aboveToolStripMenuItem});
             this.mergeToolStripMenuItem.Name = "mergeToolStripMenuItem";
-            this.mergeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.mergeToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.mergeToolStripMenuItem.Text = "Merge";
             // 
             // belowToolStripMenuItem
             // 
             this.belowToolStripMenuItem.Name = "belowToolStripMenuItem";
-            this.belowToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.belowToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.belowToolStripMenuItem.Text = "Below";
             this.belowToolStripMenuItem.Click += new System.EventHandler(this.belowToolStripMenuItem_Click_1);
             // 
             // aboveToolStripMenuItem
             // 
             this.aboveToolStripMenuItem.Name = "aboveToolStripMenuItem";
-            this.aboveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboveToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.aboveToolStripMenuItem.Text = "Above";
             this.aboveToolStripMenuItem.Click += new System.EventHandler(this.aboveToolStripMenuItem_Click_1);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.treeView1);
+            this.groupBox1.Location = new System.Drawing.Point(3, 1);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(193, 276);
+            this.groupBox1.TabIndex = 4;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Model List";
+            // 
+            // generateBoundingBoxesToolStripMenuItem
+            // 
+            this.generateBoundingBoxesToolStripMenuItem.Name = "generateBoundingBoxesToolStripMenuItem";
+            this.generateBoundingBoxesToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.generateBoundingBoxesToolStripMenuItem.Text = "Generate Bounding Boxes";
+            this.generateBoundingBoxesToolStripMenuItem.Click += new System.EventHandler(this.generateBoundingBoxesToolStripMenuItem_Click);
             // 
             // MeshList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(199, 306);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.numericUpDown1);
-            this.Controls.Add(this.treeView1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "MeshList";
             this.Text = "Model List";
@@ -445,6 +485,7 @@
             this.meshContextMenu.ResumeLayout(false);
             this.nudContextMenu.ResumeLayout(false);
             this.MCContextMenu.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -495,5 +536,9 @@
         private System.Windows.Forms.ToolStripMenuItem mergeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem belowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportAsDAEToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importFromDAEToolStripMenuItem;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.ToolStripMenuItem generateBoundingBoxesToolStripMenuItem;
     }
 }

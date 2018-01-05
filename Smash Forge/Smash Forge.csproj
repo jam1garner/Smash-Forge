@@ -43,6 +43,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Octokit.dll</HintPath>
     </Reference>
+    <Reference Include="OpenTK, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\OpenTK.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
@@ -57,9 +61,6 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="OpenTK">
-      <HintPath>OpenTK.dll</HintPath>
-    </Reference>
     <Reference Include="OpenTK.GLControl">
       <HintPath>OpenTK.GLControl.dll</HintPath>
     </Reference>
@@ -117,6 +118,9 @@
     </Compile>
     <Compile Include="GUI\Controls\VertexTool.Designer.cs">
       <DependentUpon>VertexTool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\EditorBase.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\Editors\3DS\3DSTexEditor.cs">
       <SubType>Form</SubType>
@@ -458,6 +462,7 @@
     <Compile Include="Rendering\ColorTools.cs" />
     <Compile Include="Rendering\FrameTimer.cs" />
     <Compile Include="Rendering\Lights.cs" />
+    <Compile Include="Rendering\Ray.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Controls\MeshMover.resx">
@@ -465,6 +470,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Controls\VertexTool.resx">
       <DependentUpon>VertexTool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\EditorBase.resx">
+      <DependentUpon>EditorBase.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\3DS\3DSTexEditor.resx">
       <DependentUpon>3DSTexEditor.cs</DependentUpon>
@@ -949,6 +957,10 @@
     <Content Include="lib\SALT.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\strip_gif.png" />
+    <None Include="Resources\strip_render.png" />
+    <None Include="Resources\strip_camsettings.png" />
+    <None Include="Resources\strip_camreset.png" />
     <None Include="Resources\UVPattern.png" />
     <None Include="Resources\1.dds.png" />
     <None Include="Resources\10102000.png" />
@@ -1043,6 +1055,12 @@
     <None Include="lib\Shader\NUD_Eff_vs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="lib\Shader\Point_fs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\Point_vs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Resources\10080000.png" />
     <None Include="Resources\boneWeightGradient.png" />
     <None Include="Resources\Flat Folder icon.png" />
@@ -1072,6 +1090,14 @@
     <None Include="Resources\icon_bone.png" />
     <None Include="Resources\icon_image.png" />
     <None Include="Resources\icon_skeleton.png" />
+    <None Include="Resources\node_nud.png" />
+    <None Include="Resources\node_file.png" />
+    <None Include="Resources\node_nut.png" />
+    <None Include="Resources\node_vbn.png" />
+    <None Include="Resources\Forge.png" />
+    <None Include="Resources\ForgeBack.png" />
+    <None Include="Resources\icon_info.png" />
+    <None Include="Resources\icon_number.png" />
     <Content Include="Resources\sexy_green_down_arrow.png" />
     <Content Include="Resources\forge2.ico" />
     <None Include="Resources\DefaultTexture.png" />

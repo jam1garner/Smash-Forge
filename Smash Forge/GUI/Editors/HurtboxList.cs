@@ -11,7 +11,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using SALT.Moveset.AnimCMD;
 using System.Text.RegularExpressions;
 
-namespace Smash_Forge.GUI.Editors
+namespace Smash_Forge
 {
     public partial class HurtboxList : DockContent
     {

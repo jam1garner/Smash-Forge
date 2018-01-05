@@ -40,6 +40,8 @@ namespace Smash_Forge
             iconList.Images.Add("frame", Properties.Resources.icon_model);
             iconList.Images.Add("image", Properties.Resources.icon_image);
             iconList.Images.Add("skeleton", Properties.Resources.icon_skeleton);
+            iconList.Images.Add("info", Properties.Resources.icon_info);
+            iconList.Images.Add("number", Properties.Resources.icon_number);
             iconList.Images.Add("nut", Properties.Resources.UVPattern);
             treeView1.ImageList = iconList;
 
@@ -48,7 +50,7 @@ namespace Smash_Forge
             newMC.Click += delegate (object sender, EventArgs e)
             {
                 Console.WriteLine("Adding");
-                Runtime.ModelContainers.Add(new ModelContainer() { Text = "Model_"+Runtime.ModelContainers.Count });
+                treeView1.Nodes.Add(new ModelContainer() { Text = "Model_"+treeView1.Nodes.Count });
                 refresh();
             };
             MainContextMenu.MenuItems.Add(newMC);
@@ -58,50 +60,7 @@ namespace Smash_Forge
 
         public void refresh()
         {
-            treeView1.Nodes.Clear();
-            foreach(ModelContainer m in Runtime.ModelContainers)
-            {
-                if (m.NUD != null)
-                {
-                    treeView1.Nodes.Add(m);
-                    m.NUD.Nodes.Clear();
-                    foreach (NUD.Mesh mesh in m.NUD.meshes)
-                    {
-                        m.NUD.Nodes.Add(mesh);
-                        int i = 0;
-                        foreach (NUD.Polygon poly in mesh.Nodes)
-                        {
-                            poly.Text = "Polygon_" + i;
-                            i++;
-                        }
-                    }
-
-                    /*TreeNode model;
-                    if (string.IsNullOrWhiteSpace(m.name))
-                        model = new TreeNode($"Model {j}") { Tag = m.NUD };
-                    else
-                        model = new TreeNode(m.name) { Tag = m.NUD };
-                    treeView1.Nodes.Add(model);
-                    model.ImageKey = "model";
-                    model.SelectedImageKey = "model";
-                    j++; 
-                    foreach (NUD.Mesh mesh in m.NUD.meshes)
-                    {
-                        model.Nodes.Add(mesh);
-                        int i = 0;
-                        foreach(NUD.Polygon poly in mesh.Nodes)
-                        {
-                            poly.Text = "Polygon_" + i;
-                            i++;
-                        }
-                    }*/
-                }
-                if (m.bch != null)
-                {
-                    treeView1.Nodes.Add(m.bch);
-                }
-            }
-            //treeView1.ExpandAll();
+            
         }
 
         private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
@@ -123,13 +82,14 @@ namespace Smash_Forge
             numericUpDown1.Visible = false;
             label1.Visible = false;
             button1.Visible = false;
+            Runtime.TargetVBN = null;
             if (e.Node is NUD.Mesh)
             {
                 //Since we are changing value but we don't want the entire model order to swap,
                 // we are disabling the event for on change value temporarily
                 changingValue = true;
-                numericUpDown1.Maximum = ((NUD)e.Node.Parent).meshes.Count - 1;
-                numericUpDown1.Value = ((NUD)e.Node.Parent).meshes.IndexOf((NUD.Mesh)e.Node);
+                numericUpDown1.Maximum = ((NUD)e.Node.Parent).Nodes.Count - 1;
+                numericUpDown1.Value = ((NUD)e.Node.Parent).Nodes.IndexOf((NUD.Mesh)e.Node);
 
                 numericUpDown1.Visible = true;
                 label1.Visible = true;
@@ -137,6 +97,18 @@ namespace Smash_Forge
             else if (e.Node is NUD)
             {
                 button1.Visible = true;
+            }
+            else if (e.Node is ModelContainer)
+            {
+                Runtime.TargetVBN = ((ModelContainer)e.Node).VBN;
+            } else
+            if (treeView1.SelectedNode is VBN)
+            {
+                Runtime.TargetVBN = ((VBN)e.Node);
+            }
+            if (treeView1.SelectedNode is BCH_Model)
+            {
+                Runtime.TargetVBN = ((BCH_Model)e.Node).skeleton;
             }
         }
 
@@ -149,8 +121,8 @@ namespace Smash_Forge
                 TreeNode parent = node.Parent;
                 NUD.Mesh m = (NUD.Mesh)node;
                 NUD n = (NUD)parent;
-                n.meshes.Remove(m);
-                n.meshes.Insert(pos, m);
+                n.Nodes.Remove(m);
+                n.Nodes.Insert(pos, m);
                 parent.Nodes.Remove(node);
                 parent.Nodes.Insert(pos, node);
                 treeView1.SelectedNode = node;
@@ -161,7 +133,8 @@ namespace Smash_Forge
 
         private void treeView1_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == 'c')
+            //WTF were these even
+            /*if (e.KeyChar == 'c')
             {
                 if (treeView1.SelectedNode is NUD.Polygon)
                 {
@@ -196,7 +169,7 @@ namespace Smash_Forge
                             con.NUD.PreRender();
                     }
                 }
-            }
+            }*/
             if (e.KeyChar == '=')
             {
                 if (treeView1.SelectedNode is NUD.Mesh)
@@ -205,11 +178,11 @@ namespace Smash_Forge
                     TreeNode parent = node.Parent;
                     NUD.Mesh m = (NUD.Mesh)node;
                     NUD n = (NUD)parent;
-                    int pos = n.meshes.IndexOf(m) + 1;
-                    if (pos >= n.meshes.Count)
-                        pos = n.meshes.Count - 1;
-                    n.meshes.Remove(m);
-                    n.meshes.Insert(pos, m);
+                    int pos = n.Nodes.IndexOf(m) + 1;
+                    if (pos >= n.Nodes.Count)
+                        pos = n.Nodes.Count - 1;
+                    n.Nodes.Remove(m);
+                    n.Nodes.Insert(pos, m);
                     parent.Nodes.Remove(node);
                     parent.Nodes.Insert(pos, node);
                     treeView1.SelectedNode = node;
@@ -224,11 +197,11 @@ namespace Smash_Forge
                     TreeNode parent = node.Parent;
                     NUD.Mesh m = (NUD.Mesh)node;
                     NUD n = (NUD)parent;
-                    int pos = n.meshes.IndexOf(m) - 1;
+                    int pos = n.Nodes.IndexOf(m) - 1;
                     if (pos < 0)
                         pos = 0;
-                    n.meshes.Remove(m);
-                    n.meshes.Insert(pos, m);
+                    n.Nodes.Remove(m);
+                    n.Nodes.Insert(pos, m);
                     parent.Nodes.Remove(node);
                     parent.Nodes.Insert(pos, node);
                     treeView1.SelectedNode = node;
@@ -248,25 +221,25 @@ namespace Smash_Forge
                     NUD nud = new NUD(filename);
                     NUD unorderedNud = (NUD)treeView1.SelectedNode;
                     //Gonna reorder some NUDs, nud-in to it
-                    int meshCount = nud.meshes.Count;
-                    if (unorderedNud.meshes.Count > meshCount)
-                        meshCount = unorderedNud.meshes.Count;
+                    int meshCount = nud.Nodes.Count;
+                    if (unorderedNud.Nodes.Count > meshCount)
+                        meshCount = unorderedNud.Nodes.Count;
                     NUD.Mesh[] meshes = new NUD.Mesh[meshCount];
 
                     //Fill in matching meshes
-                    foreach (NUD.Mesh m in nud.meshes)
+                    foreach (NUD.Mesh m in nud.Nodes)
                     {
-                        foreach (NUD.Mesh m2 in unorderedNud.meshes)
+                        foreach (NUD.Mesh m2 in unorderedNud.Nodes)
                         {
                             if (m2.Text.Equals(m.Text))
                             {
-                                meshes[nud.meshes.IndexOf((m))] = m2;
+                                meshes[nud.Nodes.IndexOf((m))] = m2;
                                 break;
                             }
                         }
                     }
                     //Fill in mismatched meshes
-                    foreach (NUD.Mesh m in unorderedNud.meshes)
+                    foreach (NUD.Mesh m in unorderedNud.Nodes)
                     {
                         if (!meshes.Contains(m))
                         {
@@ -328,27 +301,13 @@ namespace Smash_Forge
                 else if (treeView1.SelectedNode is NUD.Mesh)
                 {
                     NUD parent = ((NUD)treeView1.SelectedNode.Parent);
-                    parent.meshes.Remove((NUD.Mesh)treeView1.SelectedNode);
+                    //parent.Nodes.Remove((NUD.Mesh)treeView1.SelectedNode);
                     treeView1.SelectedNode.Parent.Nodes.Remove(treeView1.SelectedNode);
                     parent.PreRender();
                 }
                 else if (treeView1.SelectedNode is NUD)
                 {
                     NUD model = (NUD)treeView1.SelectedNode;
-                    ModelContainer m = null;
-                    foreach (ModelContainer modelContainer in Runtime.ModelContainers)
-                    {
-                        if (modelContainer.NUD == model)
-                            m = modelContainer;
-                    }
-                    if (m != null)
-                        Runtime.ModelContainers.Remove(m);
-                    if (Runtime.TargetVBN == m.VBN)
-                        Runtime.TargetVBN = null;
-                    //if (Runtime.TargetMTA == m.mta)
-                    //    Runtime.TargetMTA = null;
-                    if (Runtime.TargetNUD == m.NUD)
-                        Runtime.TargetNUD = null;
 
                     treeView1.Nodes.Remove(treeView1.SelectedNode);
                 }
@@ -366,8 +325,8 @@ namespace Smash_Forge
                     {
                         string filename = ofd.FileName;
                         NUD nud = new NUD(filename);
-                        foreach (NUD.Mesh mesh in nud.meshes)
-                            ((NUD)treeView1.SelectedNode).meshes.Add((mesh));
+                        foreach (NUD.Mesh mesh in nud.Nodes)
+                            ((NUD)treeView1.SelectedNode).Nodes.Add((mesh));
                         ((NUD)treeView1.SelectedNode).PreRender();
                         refresh();
                     }
@@ -424,10 +383,13 @@ namespace Smash_Forge
                         v.uv[i] = new OpenTK.Vector2(v.uv[i].X, 1 - v.uv[i].Y);
                 }
 
-                foreach (ModelContainer con in Runtime.ModelContainers)
+                foreach (TreeNode con in treeView1.Nodes)
                 {
-                    if (con.NUD != null)
-                        con.NUD.PreRender();
+                    if(con is ModelContainer)
+                    {
+                        if (((ModelContainer)con).NUD != null)
+                            ((ModelContainer)con).NUD.PreRender();
+                    }
                 }
             }
         }
@@ -457,12 +419,18 @@ namespace Smash_Forge
             NUD.Mesh mesh = (NUD.Mesh)treeView1.SelectedNode;
             char[] d = "None".ToCharArray();
             LVDEditor.StringWrapper str = new LVDEditor.StringWrapper() { data = d };
-            foreach (ModelContainer mc in Runtime.ModelContainers)
-                if (treeView1.SelectedNode.Parent == mc.NUD)
-                    if (mc.VBN.bones.Count > mesh.singlebind && mesh.singlebind != -1)
-                        str = new LVDEditor.StringWrapper() { data = mc.VBN.bones[mesh.singlebind].Text.ToCharArray() };
+            foreach (TreeNode node in treeView1.Nodes)
+            {
+                if(node is ModelContainer)
+                {
+                    ModelContainer mc = (ModelContainer)node;
+                    if (treeView1.SelectedNode.Parent == mc.NUD)
+                        if (mc.VBN.bones.Count > mesh.singlebind && mesh.singlebind != -1)
+                            str = new LVDEditor.StringWrapper() { data = mc.VBN.bones[mesh.singlebind].Text.ToCharArray() };
+                }
+            }
 
-            BoneRiggingSelector brs = new BoneRiggingSelector(str);
+            BoneRiggingSelector brs = new BoneRiggingSelector(str) { ModelContainers = GetModelContainers() };
             brs.ShowDialog();
             if (!brs.Cancelled)
             {
@@ -507,9 +475,15 @@ namespace Smash_Forge
         {
             ModelContainer org = (ModelContainer)treeView1.SelectedNode;
             ModelContainer nud = (ModelContainer)n;
-
-            nud.NUD.meshes.AddRange(org.NUD.meshes);
-            org.NUD.meshes.Clear();
+            
+            int count = org.NUD.Nodes.Count;
+            for (int i = 0; i < count; i++)
+            {
+                TreeNode node = org.NUD.Nodes[0];
+                org.NUD.Nodes.Remove(node);
+                nud.NUD.Nodes.Add(node);
+            }
+            org.NUD.Nodes.Clear();
 
             org.NUD.Destroy();
             nud.NUD.PreRender();
@@ -518,8 +492,8 @@ namespace Smash_Forge
             treeView1.SelectedNode = n;
 
             // remove from model containers too
-            ModelContainer torem = org;
-            Runtime.ModelContainers.Remove(torem);
+            //ModelContainer torem = org;
+            //Runtime.ModelContainers.Remove(torem);
 
             refresh();
         }
@@ -574,9 +548,20 @@ namespace Smash_Forge
                 ((NUD.Polygon)treeView1.SelectedNode).SmoothNormals();
         }
 
+        public List<ModelContainer> GetModelContainers()
+        {
+            List<ModelContainer> models = new List<ModelContainer>();
+            foreach (TreeNode n in treeView1.Nodes)
+            {
+                if (n is ModelContainer)
+                    models.Add((ModelContainer)n);
+            }
+            return models;
+        }
+
         private void copyMaterialToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            List<NUD.Polygon> polys = PolygonSelector.Popup();
+            List<NUD.Polygon> polys = PolygonSelector.Popup(GetModelContainers());
             foreach (NUD.Polygon poly in polys)
             {
                 // link materials. don't link a material to itself
@@ -595,14 +580,18 @@ namespace Smash_Forge
             if (treeView1.SelectedNode is NUD)
             {
                 NUD org = (NUD)treeView1.SelectedNode;
-                foreach (ModelContainer con in Runtime.ModelContainers)
+                foreach (TreeNode node in treeView1.Nodes)
                 {
-                    if (con.NUD == org)
+                    if(node is ModelContainer)
                     {
-                        ModelViewport v = new ModelViewport();
-                        v.draw.Add(con);
-                        MainForm.Instance.AddDockedControl(v);
-                        break;
+                        ModelContainer con = (ModelContainer)node;
+                        if (con.NUD == org)
+                        {
+                            ModelViewport v = new ModelViewport();
+                            v.draw.Add(con);
+                            MainForm.Instance.AddDockedControl(v);
+                            break;
+                        }
                     }
                 }
             }
@@ -616,11 +605,11 @@ namespace Smash_Forge
                 NUD.Mesh parent = (NUD.Mesh)p.Parent;
                 p.Parent.Nodes.Remove(p);
                 NUD.Mesh m = new NUD.Mesh();
-                ((NUD)parent.Parent).meshes.Add(m);
+                ((NUD)parent.Parent).Nodes.Add(m);
                 m.Text = parent.Text + "_" + p.Text;
                 m.Nodes.Add(p);
 
-                if (parent.Nodes.Count == 0) ((NUD)parent.Parent).meshes.Remove(parent);
+                if (parent.Nodes.Count == 0) ((NUD)parent.Parent).Nodes.Remove(parent);
 
                 refresh();
             }
@@ -634,13 +623,13 @@ namespace Smash_Forge
 
                 NUD nud = (NUD)(m.Parent);
 
-                int index = nud.meshes.IndexOf(m);
+                int index = nud.Nodes.IndexOf(m);
 
                 if(index > 0)
                 {
-                    nud.meshes.Remove(m);
+                    nud.Nodes.Remove(m);
 
-                    NUD.Mesh merge = nud.meshes[index-1];
+                    NUD.Mesh merge = (NUD.Mesh)nud.Nodes[index-1];
 
                     List<TreeNode> polygons = new List<TreeNode>();
                     foreach(NUD.Polygon p in m.Nodes)
@@ -665,13 +654,13 @@ namespace Smash_Forge
 
                 NUD nud = (NUD)(m.Parent);
 
-                int index = nud.meshes.IndexOf(m);
+                int index = nud.Nodes.IndexOf(m);
 
-                if (index+1 < nud.meshes.Count)
+                if (index+1 < nud.Nodes.Count)
                 {
-                    nud.meshes.Remove(m);
+                    nud.Nodes.Remove(m);
 
-                    NUD.Mesh merge = nud.meshes[index];
+                    NUD.Mesh merge = (NUD.Mesh)nud.Nodes[index];
 
                     List<TreeNode> polygons = new List<TreeNode>();
                     foreach (NUD.Polygon p in m.Nodes)
@@ -699,11 +688,14 @@ namespace Smash_Forge
                     for (int i = 0; i < v.uv.Count; i++)
                         v.uv[i] = new OpenTK.Vector2(1 - v.uv[i].X, v.uv[i].Y);
                 }
-
-                foreach (ModelContainer con in Runtime.ModelContainers)
+                
+                foreach (TreeNode con in treeView1.Nodes)
                 {
-                    if (con.NUD != null)
-                        con.NUD.PreRender();
+                    if (con is ModelContainer)
+                    {
+                        if (((ModelContainer)con).NUD != null)
+                            ((ModelContainer)con).NUD.PreRender();
+                    }
                 }
             }
         }
@@ -777,12 +769,12 @@ namespace Smash_Forge
                 {
                     m.Text = $"Blank Mesh {i++}";
                     foundName = true;
-                    foreach (NUD.Mesh mesh in nud.meshes)
+                    foreach (NUD.Mesh mesh in nud.Nodes)
                         if (mesh.Text.Equals(m.Text))
                             foundName = false;
                 }
 
-                nud.meshes.Add(m);
+                nud.Nodes.Add(m);
 
                 refresh();
             }
@@ -792,7 +784,7 @@ namespace Smash_Forge
         {
             if (treeView1.SelectedNode is NUD)
             {
-                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).meshes)
+                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
                 {
                     foreach (NUD.Polygon poly in mesh.Nodes)
                     {
@@ -817,7 +809,7 @@ namespace Smash_Forge
         {
             if (treeView1.SelectedNode is NUD)
             {
-                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).meshes)
+                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
                 {
                     foreach (NUD.Polygon poly in mesh.Nodes)
                     {
@@ -831,7 +823,7 @@ namespace Smash_Forge
         {
             if (treeView1.SelectedNode is NUD)
             {
-                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).meshes)
+                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
                 {
                     foreach (NUD.Polygon poly in mesh.Nodes)
                     {
@@ -845,7 +837,7 @@ namespace Smash_Forge
         {
             if (treeView1.SelectedNode is NUD)
             {
-                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).meshes)
+                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
                 {
                     foreach (NUD.Polygon poly in mesh.Nodes)
                     {
@@ -877,6 +869,49 @@ namespace Smash_Forge
             {
                 merge(n);
             }
+        }
+
+        private void exportAsDAEToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog save = new SaveFileDialog();
+            save.Filter = "Supported Filetypes (DAE)|*.dae;|All files(*.*)|*.*";
+            DialogResult result = save.ShowDialog();
+
+            if (result == DialogResult.OK && treeView1.SelectedNode is ModelContainer)
+            {
+                Collada.Save(save.FileName, (ModelContainer)treeView1.SelectedNode);
+            }
+        }
+
+        private void importFromDAEToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is ModelContainer)) return;
+
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                if(ofd.ShowDialog() == DialogResult.OK)
+                {
+                    DAEImportSettings m = new DAEImportSettings();
+                    m.ShowDialog();
+                    if (m.exitStatus == DAEImportSettings.Opened)
+                    {
+                        ModelContainer con = (ModelContainer)treeView1.SelectedNode;
+                        
+                        con.VBN = m.getVBN();
+
+                        Collada.DAEtoNUD(ofd.FileName, con, m.checkBox5.Checked);
+
+                        // apply settings
+                        m.Apply(con.NUD);
+                        con.NUD.MergePoly();
+                    }
+                }
+            }
+        }
+
+        private void generateBoundingBoxesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ((NUD)treeView1.SelectedNode).GenerateBoundingBoxes();
         }
     }
 }

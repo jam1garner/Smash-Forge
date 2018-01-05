@@ -117,7 +117,7 @@ namespace Smash_Forge
                 {
                     sfd.FileName = sfd.FileName;
 
-                    if (sfd.FileName.EndsWith(".anim") & Runtime.TargetAnim != null)
+                    if (sfd.FileName.EndsWith(".anim"))
                     {
                         if (Tag is AnimTrack)
                             ((AnimTrack)Tag).createANIM(sfd.FileName, Runtime.TargetVBN);
@@ -136,7 +136,7 @@ namespace Smash_Forge
                             o.save(sfd.FileName);
                         }
                         else
-                            OMOOld.createOMO(this, Runtime.TargetVBN, sfd.FileName);
+                            OMOOld.CreateOMOFromAnimation(this, Runtime.TargetVBN);
                     }
 
 
@@ -156,6 +156,7 @@ namespace Smash_Forge
             LINEAR = 0,
             COSTANT,
             HERMITE,
+            STEP,
         };
 
         public enum BoneType
@@ -174,6 +175,7 @@ namespace Smash_Forge
 
         public class KeyNode : TreeNode
         {
+            public int Hash = -1;
             public BoneType Type = BoneType.NORMAL;
 
             public KeyGroup XPOS = new KeyGroup() { Text = "XPOS" };
@@ -256,10 +258,12 @@ namespace Smash_Forge
 
                 if (k1.InterType == InterpolationType.COSTANT)
                     return k1.Value;
+                if (k1.InterType == InterpolationType.STEP)
+                    return k1.Value;
                 if (k1.InterType == InterpolationType.LINEAR)
                     return Lerp(k1.Value, k2.Value, k1.Frame, k2.Frame, frame);
                 if (k1.InterType == InterpolationType.HERMITE)
-                    return Hermite(frame, k1.Frame, k2.Frame, k1.Weighted ? k1.In : 0, k2.Weighted ? k2.In : 0, k1.Value, k2.Value);
+                    return Hermite(frame, k1.Frame, k2.Frame, k1.Weighted ? k1.In : 0, k1.Out != -1 ? k1.Out : (k2.Weighted ? k2.In : 0), k1.Value, k2.Value);//k1.Out != -1 ? k1.Out : 
 
                 return k1.Value;
             }
@@ -308,7 +312,7 @@ namespace Smash_Forge
             }
             public String Text;
             public float _frame;
-            public float In, Out;
+            public float In, Out = -1;
             public bool Weighted = false;
             public InterpolationType InterType = InterpolationType.LINEAR;
 
@@ -361,27 +365,33 @@ namespace Smash_Forge
                 }
                 if (child is MTA)
                 {
-                    foreach (ModelContainer con in Runtime.ModelContainers)
+                    //foreach (ModelContainer con in Runtime.ModelContainers)
                     {
-                        if (con.NUD != null)
+                        if (((ModelContainer)skeleton.Parent).NUD != null)
                         {
-                            con.NUD.applyMTA(((MTA)child), (int)Frame);
+                            ((ModelContainer)skeleton.Parent).NUD.applyMTA(((MTA)child), (int)Frame);
                         }
                     }
                 }
             }
 
+            bool Updated = false; // no need to update skeleton of animations that didn't change
             foreach (KeyNode node in Bones)
             {
                 // Get Skeleton Node
-                Bone b = skeleton.getBone(node.Text);
+                Bone b = null;
+                if (node.Hash == -1)
+                    b = skeleton.getBone(node.Text);
+                else
+                    b = skeleton.GetBone((uint)node.Hash);
                 if (b == null) continue;
-
-                if (node.XPOS.HasAnimation())
+                Updated = true;
+                 
+                if (node.XPOS.HasAnimation() && b.boneType != 3)
                     b.pos.X = node.XPOS.GetValue(Frame);
-                if (node.YPOS.HasAnimation())
+                if (node.YPOS.HasAnimation() && b.boneType != 3)
                     b.pos.Y = node.YPOS.GetValue(Frame);
-                if (node.ZPOS.HasAnimation())
+                if (node.ZPOS.HasAnimation() && b.boneType != 3)
                     b.pos.Z = node.ZPOS.GetValue(Frame);
 
                 if (node.XSCA.HasAnimation())
@@ -429,8 +439,10 @@ namespace Smash_Forge
                 Frame = 0;
             }
 
-            if(!isChild)
+            if (!isChild && Updated)
+            {
                 skeleton.update();
+            }
         }
 
         public void ExpandBones()

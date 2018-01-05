@@ -25,8 +25,9 @@ namespace Smash_Forge
             // grab contcainer
             vertexListBox.Items.Clear();
 
-            ModelContainer con = vp.draw[0];
-            foreach(NUD.Mesh mesh in con.NUD.meshes)
+            if (!(vp.draw[0] is ModelContainer)) return;
+            ModelContainer con = (ModelContainer)vp.draw[0];
+            foreach(NUD.Mesh mesh in con.NUD.Nodes)
             {
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {
@@ -43,7 +44,8 @@ namespace Smash_Forge
 
         public void LoadVertexInfo(NUD.Vertex v)
         {
-            ModelContainer con = vp.draw[0];
+            if (!(vp.draw[0] is ModelContainer)) return;
+            ModelContainer con = (ModelContainer)vp.draw[0];
             boneWeightList.Items.Clear();
             if (con.VBN == null) return;
             if (v.node.Count > 0)
@@ -58,9 +60,10 @@ namespace Smash_Forge
 
         private void vertexListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(vertexListBox.SelectedIndex >= 0)
+            if (vertexListBox.SelectedIndex >= 0)
             {
-                ModelContainer con = vp.draw[0];
+                if (!(vp.draw[0] is ModelContainer)) return;
+                ModelContainer con = (ModelContainer)vp.draw[0];
                 NUD.Vertex v = (NUD.Vertex)vertexListBox.SelectedItem;
                 SelectVertex(v);
                 LoadVertexInfo(v);
@@ -69,8 +72,9 @@ namespace Smash_Forge
 
         private void SelectVertex(NUD.Vertex v)
         {
-            ModelContainer con = vp.draw[0];
-            foreach (NUD.Mesh mesh in con.NUD.meshes)
+            if (!(vp.draw[0] is ModelContainer)) return;
+            ModelContainer con = (ModelContainer)vp.draw[0];
+            foreach (NUD.Mesh mesh in con.NUD.Nodes)
             {
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {

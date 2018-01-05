@@ -14,7 +14,7 @@ using System.IO;
 
 namespace Smash_Forge
 {
-    public partial class PARAMEditor : DockContent
+    public partial class PARAMEditor : EditorBase
     {
         public PARAMEditor(string filename)
         {
@@ -25,13 +25,14 @@ namespace Smash_Forge
             dataGridView1.DataSource = tbl;
             labels = new IniLabels(filename);
             openParam(filename);
+            FilePath = filename;
+            Edited = false;
         }
 
         private IniLabels labels;
         private ParamFile p;
         private DataTable tbl;
         private int[] currentEntry = new int[2];
-        private bool notSaved = false;
 
         private string getValueName(int i, int j, int k)
         {
@@ -189,101 +190,103 @@ namespace Smash_Forge
 
         private void edit(object sender, DataGridViewCellEventArgs e)
         {
-            IParamCollection i = p.Groups[currentEntry[0]];
-            int entrySize = -1;
-            if (i is ParamGroup)
+            try
             {
-                entrySize = ((ParamGroup)i).EntrySize;
-            }
-            else
-            {
-                foreach (IniLabels.Label label in labels.labels)
+                IParamCollection i = p.Groups[currentEntry[0]];
+                int entrySize = -1;
+                if (i is ParamGroup)
                 {
-                    if (label.Type == IniLabels.Label.type.Group && label.group == currentEntry[0] && label.entries != -1)
+                    entrySize = ((ParamGroup)i).EntrySize;
+                }
+                else
+                {
+                    foreach (IniLabels.Label label in labels.labels)
                     {
-                        entrySize = (int)((p.Groups[currentEntry[0]].Values.ToArray().Length / label.entries) + 0.5);
+                        if (label.Type == IniLabels.Label.type.Group && label.group == currentEntry[0] && label.entries != -1)
+                        {
+                            entrySize = (int)((p.Groups[currentEntry[0]].Values.ToArray().Length / label.entries) + 0.5);
+                        }
                     }
                 }
-            }
-            if (entrySize != -1)
-            {
-                IParamCollection pg = i;
-                switch(pg.Values[entrySize * currentEntry[1] + e.RowIndex].Type)
+                if (entrySize != -1)
                 {
-                    case ParamType.str:
-                        pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
-                        break;
-                    case ParamType.s8:
-                        pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
-                        break;
-                    case ParamType.u8:
-                        pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
-                        break;
-                    case ParamType.s16:
-                        pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToInt16(tbl.Rows[e.RowIndex][1]);
-                        break;
-                    case ParamType.u16:
-                        pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToUInt16(tbl.Rows[e.RowIndex][1]);
-                        break;
-                    case ParamType.s32:
-                        pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToInt32(tbl.Rows[e.RowIndex][1]);
-                        break;
-                    case ParamType.u32:
-                        pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToUInt32(tbl.Rows[e.RowIndex][1]);
-                        break;
-                    case ParamType.f32:
-                        pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToSingle(tbl.Rows[e.RowIndex][1]);
-                        break;
+                    IParamCollection pg = i;
+                    switch (pg.Values[entrySize * currentEntry[1] + e.RowIndex].Type)
+                    {
+                        case ParamType.str:
+                            pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
+                            break;
+                        case ParamType.s8:
+                            pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
+                            break;
+                        case ParamType.u8:
+                            pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
+                            break;
+                        case ParamType.s16:
+                            pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToInt16(tbl.Rows[e.RowIndex][1]);
+                            break;
+                        case ParamType.u16:
+                            pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToUInt16(tbl.Rows[e.RowIndex][1]);
+                            break;
+                        case ParamType.s32:
+                            pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToInt32(tbl.Rows[e.RowIndex][1]);
+                            break;
+                        case ParamType.u32:
+                            pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToUInt32(tbl.Rows[e.RowIndex][1]);
+                            break;
+                        case ParamType.f32:
+                            pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToSingle(tbl.Rows[e.RowIndex][1]);
+                            break;
+                    }
+                    //pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
                 }
-                //pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
-            }
-            else
-            {
-                switch (i.Values[e.RowIndex].Type)
+                else
                 {
-                    case ParamType.str:
-                        i.Values[e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
-                        break;
-                    case ParamType.s8:
-                        i.Values[e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
-                        break;
-                    case ParamType.u8:
-                        i.Values[e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
-                        break;
-                    case ParamType.s16:
-                        i.Values[e.RowIndex].Value = Convert.ToInt16(tbl.Rows[e.RowIndex][1]);
-                        break;
-                    case ParamType.u16:
-                        i.Values[e.RowIndex].Value = Convert.ToUInt16(tbl.Rows[e.RowIndex][1]);
-                        break;
-                    case ParamType.s32:
-                        i.Values[e.RowIndex].Value = Convert.ToInt32(tbl.Rows[e.RowIndex][1]);
-                        break;
-                    case ParamType.u32:
-                        i.Values[e.RowIndex].Value = Convert.ToUInt32(tbl.Rows[e.RowIndex][1]);
-                        break;
-                    case ParamType.f32:
-                        i.Values[e.RowIndex].Value = Convert.ToSingle(tbl.Rows[e.RowIndex][1]);
-                        break;
+                    switch (i.Values[e.RowIndex].Type)
+                    {
+                        case ParamType.str:
+                            i.Values[e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
+                            break;
+                        case ParamType.s8:
+                            i.Values[e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
+                            break;
+                        case ParamType.u8:
+                            i.Values[e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
+                            break;
+                        case ParamType.s16:
+                            i.Values[e.RowIndex].Value = Convert.ToInt16(tbl.Rows[e.RowIndex][1]);
+                            break;
+                        case ParamType.u16:
+                            i.Values[e.RowIndex].Value = Convert.ToUInt16(tbl.Rows[e.RowIndex][1]);
+                            break;
+                        case ParamType.s32:
+                            i.Values[e.RowIndex].Value = Convert.ToInt32(tbl.Rows[e.RowIndex][1]);
+                            break;
+                        case ParamType.u32:
+                            i.Values[e.RowIndex].Value = Convert.ToUInt32(tbl.Rows[e.RowIndex][1]);
+                            break;
+                        case ParamType.f32:
+                            i.Values[e.RowIndex].Value = Convert.ToSingle(tbl.Rows[e.RowIndex][1]);
+                            break;
+                    }
+                    //i.Values[e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
                 }
-                //i.Values[e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
+                Edited = true;
             }
-            if (!notSaved)
+            catch (Exception)
             {
-                Text += "*";
-                notSaved = true;
+
             }
+            
         }
 
-        private void save()
+        public override void Save()
         {
             p.Export(p.Filepath);
-            notSaved = false;
-            if (Text.EndsWith("*"))
-                Text = Text.Substring(0, Text.Length - 1);
+            Edited = false;
         }
 
-        public void saveAs()
+        public override void SaveAs()
         {
             using (var sfd = new SaveFileDialog())
             {
@@ -294,9 +297,7 @@ namespace Smash_Forge
                 {
                     string filename = sfd.FileName;
                     p.Export(filename);
-                    notSaved = false;
-                    if (Text.EndsWith("*"))
-                        Text = Text.Substring(0, Text.Length - 1);
+                    Edited = false;
                 }
             }
 

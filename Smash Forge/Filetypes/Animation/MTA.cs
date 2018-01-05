@@ -379,6 +379,7 @@ namespace Smash_Forge
 
         public MTA()
         {
+            Text = "model.mta";
             Endian = Endianness.Big;
             ImageKey = "image";
             SelectedImageKey = "image";

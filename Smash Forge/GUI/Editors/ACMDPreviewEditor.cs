@@ -21,6 +21,8 @@ namespace Smash_Forge
         private bool ignoreTextChangedEvent = false;
         private Dictionary<uint, string> crcDict = new Dictionary<uint, string>();
 
+        public ModelViewport Owner;
+
         public ACMDPreviewEditor()
         {
             InitializeComponent();
@@ -29,35 +31,35 @@ namespace Smash_Forge
         public void SetManualScript(uint crc)
         {
             bool changed = false;
-            if (cb_section.Text.Equals("GAME") && Runtime.Moveset.Game.Scripts.ContainsKey(crc))
+            if (cb_section.Text.Equals("GAME") && Owner.MovesetManager.Game.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
+                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
                 changed = true;
             }
-            if (cb_section.Text.Equals("SOUND") && Runtime.Moveset.Sound.Scripts.ContainsKey(crc))
+            if (cb_section.Text.Equals("SOUND") && Owner.MovesetManager.Sound.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Runtime.Moveset.Sound.Scripts[crc]);
+                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Sound.Scripts[crc]);
                 changed = true;
             }
-            if (cb_section.Text.Equals("EXPRESSION") && Runtime.Moveset.Expression.Scripts.ContainsKey(crc))
+            if (cb_section.Text.Equals("EXPRESSION") && Owner.MovesetManager.Expression.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Runtime.Moveset.Expression.Scripts[crc]);
+                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Expression.Scripts[crc]);
                 changed = true;
             }
-            if (cb_section.Text.Equals("EFFECT") && Runtime.Moveset.Effect.Scripts.ContainsKey(crc))
+            if (cb_section.Text.Equals("EFFECT") && Owner.MovesetManager.Effect.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Runtime.Moveset.Effect.Scripts[crc]);
+                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Effect.Scripts[crc]);
                 changed = true;
             }
 
-            if (Runtime.Moveset.ScriptsHashList.Contains(crc))
-                Runtime.scriptId = Runtime.Moveset.ScriptsHashList.IndexOf(crc);
+            if (Owner.MovesetManager.ScriptsHashList.Contains(crc))
+                Owner.scriptId = Owner.MovesetManager.ScriptsHashList.IndexOf(crc);
 
-            if (Runtime.Moveset.Game.Scripts.ContainsKey(crc))
+            if (Owner.MovesetManager.Game.Scripts.ContainsKey(crc))
             {
-                Runtime.gameAcmdScript = new ForgeACMDScript((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
-                if (Runtime.vbnViewport != null && Runtime.TargetAnim != null)
-                    Runtime.vbnViewport.setAnimMaxFrames(Runtime.TargetAnim);
+                Owner.ACMDScript = new ForgeACMDScript((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
+                //if (Runtime.vbnViewport != null && Runtime.TargetAnim != null)
+                //    Runtime.vbnViewport.setAnimMaxFrames(Runtime.TargetAnim);
             }
 
             if (changed)
@@ -87,24 +89,24 @@ namespace Smash_Forge
                 cb_crc.Text = crcDict[crc];
 
             bool changed = false;
-            if (cb_section.Text.Equals("GAME") && Runtime.Moveset.Game.Scripts.ContainsKey(crc))
+            if (cb_section.Text.Equals("GAME") && Owner.MovesetManager.Game.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
+                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
                 changed = true;
             }
-            if (cb_section.Text.Equals("SOUND") && Runtime.Moveset.Sound.Scripts.ContainsKey(crc))
+            if (cb_section.Text.Equals("SOUND") && Owner.MovesetManager.Sound.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Runtime.Moveset.Sound.Scripts[crc]);
+                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Sound.Scripts[crc]);
                 changed = true;
             }
-            if (cb_section.Text.Equals("EXPRESSION") && Runtime.Moveset.Expression.Scripts.ContainsKey(crc))
+            if (cb_section.Text.Equals("EXPRESSION") && Owner.MovesetManager.Expression.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Runtime.Moveset.Expression.Scripts[crc]);
+                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Expression.Scripts[crc]);
                 changed = true;
             }
-            if (cb_section.Text.Equals("EFFECT") && Runtime.Moveset.Effect.Scripts.ContainsKey(crc))
+            if (cb_section.Text.Equals("EFFECT") && Owner.MovesetManager.Effect.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Runtime.Moveset.Effect.Scripts[crc]);
+                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Effect.Scripts[crc]);
                 changed = true;
             }
             if (changed)
@@ -119,7 +121,7 @@ namespace Smash_Forge
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if(Runtime.Moveset != null && cb_section.SelectedIndex >= 0)
+            if(Owner.MovesetManager != null && cb_section.SelectedIndex >= 0)
             {
                 // need to split into lines
                 string[] line = richTextBox1.Text.Split('\n');
@@ -141,13 +143,13 @@ namespace Smash_Forge
 
                     SortedList<uint, SALT.Moveset.IScript> scriptList = null;
                     if (cb_section.Text.Equals("GAME"))
-                        scriptList = Runtime.Moveset.Game.Scripts;
+                        scriptList = Owner.MovesetManager.Game.Scripts;
                     else if (cb_section.Text.Equals("SOUND"))
-                        scriptList = Runtime.Moveset.Sound.Scripts;
+                        scriptList = Owner.MovesetManager.Sound.Scripts;
                     else if (cb_section.Text.Equals("EXPRESSION"))
-                        scriptList = Runtime.Moveset.Expression.Scripts;
+                        scriptList = Owner.MovesetManager.Expression.Scripts;
                     else if (cb_section.Text.Equals("EFFECT"))
-                        scriptList = Runtime.Moveset.Effect.Scripts;
+                        scriptList = Owner.MovesetManager.Effect.Scripts;
 
                     //Update script if it already exists
                     if (scriptList.ContainsKey(crc))
@@ -155,8 +157,8 @@ namespace Smash_Forge
 
                     if (cb_section.Text.Equals("GAME"))
                     {
-                        Runtime.gameAcmdScript = new ForgeACMDScript(script);
-                        Runtime.gameAcmdScript.processToFrame(0);
+                        Owner.ACMDScript = new ForgeACMDScript(script);
+                        Owner.ACMDScript.processToFrame(0);
                     }
                 } catch (Exception)
                 {
@@ -229,15 +231,15 @@ namespace Smash_Forge
             crcDict.Clear();
             List<uint> crcs = new List<uint>();
             List<string> list = new List<string>();
-            if (Runtime.Moveset != null)
+            if (Owner.MovesetManager != null)
             {
                 //Get unique crc
-                crcs = Runtime.Moveset.ScriptsHashList.Distinct().ToList();
+                crcs = Owner.MovesetManager.ScriptsHashList.Distinct().ToList();
                 for (int i = 0; i < crcs.Count; i++)
                 {
                     string s = "";
-                    if (Runtime.Animnames.ContainsKey(crcs[i]))
-                        s = Runtime.Animnames[crcs[i]] + " - ";
+                    //if (Runtime.Animnames.ContainsKey(crcs[i]))
+                    //    s = Runtime.Animnames[crcs[i]] + " - ";
 
                     s += $"0x{crcs[i].ToString("X8")}";
 

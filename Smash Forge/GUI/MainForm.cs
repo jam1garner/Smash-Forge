@@ -19,6 +19,8 @@ using SALT.PARAMS;
 using SALT.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.ComponentModel;
+using OpenTK;
+using OpenTK.Graphics;
 
 namespace Smash_Forge
 {
@@ -39,14 +41,28 @@ namespace Smash_Forge
         public static csvHashes Hashes;
         public ProgessAlert Progress = new ProgessAlert();
 
+        Camera camera = new Camera();
+
         public MainForm()
         {
             InitializeComponent();
+
         }
-        
+
         public void UpdateProgress(object sender, ProgressChangedEventArgs e)
         {
             Progress.ProgressValue = e.ProgressPercentage;
+        }
+
+        private void AppIdle(object sender, EventArgs e)
+        {
+            if (Smash_Forge.Update.Downloaded)
+                MainForm.Instance.pictureBox1.Image = Resources.Resources.sexy_green_down_arrow;
+        }
+
+        ~MainForm()
+        {
+            System.Windows.Forms.Application.Idle -= AppIdle;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -55,8 +71,13 @@ namespace Smash_Forge
             Thread thread = new Thread(t);
             thread.Start();
             Runtime.renderDepth = 100000.0f;
-            foreach (var vp in viewports)
-                AddDockedControl(vp);
+            //foreach (var vp in viewports)
+            //    AddDockedControl(vp);
+
+            //if (Smash_Forge.Update.Downloaded)
+            //    MainForm.Instance.pictureBox1.Image = Resources.Resources.sexy_green_down_arrow;
+
+            System.Windows.Forms.Application.Idle += AppIdle;
 
             //animationsWindowToolStripMenuItem.Checked =
             //    boneTreeToolStripMenuItem.Checked = true;
@@ -112,19 +133,20 @@ namespace Smash_Forge
             Runtime.renderReverseLedgeGrabboxes = false;
             Runtime.paramDir = "";
 
-            viewportWindowToolStripMenuItem.Checked = true;
+            //viewportWindowToolStripMenuItem.Checked = true;
             openFiles();
 
             Runtime.StartupFromConfig(MainForm.executableDir + "\\config.xml");
 
             SetupShaders();
 
-            RenderTools.Setup();
+            //RenderTools.Setup();
         }
 
         private static void SetupShaders()
         {
             // load up the shaders
+
             Shader cub = new Shader();
             cub.vertexShader(RenderTools.cubevs);
             cub.fragmentShader(RenderTools.cubefs);
@@ -287,14 +309,14 @@ namespace Smash_Forge
             if (Runtime.TargetNUD != null)
                 Runtime.TargetNUD.Destroy();
 
-            foreach (ModelContainer n in Runtime.ModelContainers)
+            /*foreach (ModelContainer n in Runtime.ModelContainers)
             {
                 n.Destroy();
             }
             foreach (NUT n in Runtime.TextureContainers)
             {
                 n.Destroy();
-            }
+            }*/
         }
 
         public void AddDockedControl(DockContent content)
@@ -365,7 +387,7 @@ namespace Smash_Forge
         //public BoneTreePanel boneTreePanel = new BoneTreePanel() { ShowHint = DockState.DockLeft };
         public ProjectTree project = new ProjectTree() { ShowHint = DockState.DockLeft };
         public LVDList lvdList = new LVDList() { ShowHint = DockState.DockLeft };
-        public LVDEditor lvdEditor = new LVDEditor() { ShowHint = DockState.DockRight };
+        public LVDEditor lvdEditor = new LVDEditor() { ShowHint = DockState.DockLeft };
         public List<PARAMEditor> paramEditors = new List<PARAMEditor>() { };
         public List<MTAEditor> mtaEditors = new List<MTAEditor>() { };
         public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() { };
@@ -384,6 +406,11 @@ namespace Smash_Forge
 
         private void openNUDToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (dockPanel1.ActiveContent is EditorBase)
+            {
+                ((EditorBase)dockPanel1.ActiveContent).Save();
+                return;
+            }
             PARAMEditor currentParam = null;
             ACMDEditor currentACMD = null;
             SwagEditor currentSwagEditor = null;
@@ -400,7 +427,7 @@ namespace Smash_Forge
                     currentSwagEditor = s;
 
             if (currentParam != null)
-                currentParam.saveAs();
+                currentParam.SaveAs();
             else if (currentACMD != null)
                 currentACMD.save();
             else if (currentSwagEditor != null)
@@ -426,7 +453,7 @@ namespace Smash_Forge
 
         }
 
-        private void openNud(string filename, string name = "")
+        private ModelViewport openNud(string filename, string name = "", ModelViewport mvp = null)
         {
             string[] files = Directory.GetFiles(System.IO.Path.GetDirectoryName(filename));
 
@@ -460,16 +487,26 @@ namespace Smash_Forge
                     pathXMB = file;
             }
 
+
             ModelContainer model = new ModelContainer();
+            if (mvp == null)
+            {
+                mvp = new ModelViewport();
+                AddDockedControl(mvp);
+            }
+            mvp.draw.Add(model);
             model.Text = name;
+            mvp.Text = name;
+
+
             if (!pathVBN.Equals(""))
             {
                 model.VBN = new VBN(pathVBN);
-                Runtime.TargetVBN = model.VBN;
+                //Runtime.TargetVBN = model.VBN;
                 if (!pathJTB.Equals(""))
-                    model.VBN.readJointTable(pathJTB);
+                    model.JTB = new JTB(pathJTB);
                 if (!pathSB.Equals(""))
-                    model.VBN.swingBones.Read(pathSB);
+                    model.VBN.SwingBones.Read(pathSB);
             }
 
             NUT nut = null;
@@ -489,8 +526,13 @@ namespace Smash_Forge
                     PAC p = new PAC();
                     p.Read(s);
                     byte[] data;
-                    p.Files.TryGetValue("default.mta", out data);
-                    if (data != null)
+                    if (p.Files.TryGetValue("display", out data))
+                    {
+                        MTA m = new MTA();
+                        m.read(new FileData(data));
+                        model.NUD.applyMTA(m, 0);
+                    }
+                    if (p.Files.TryGetValue("default.mta", out data))
                     {
                         MTA m = new MTA();
                         m.read(new FileData(data));
@@ -501,29 +543,28 @@ namespace Smash_Forge
 
             if (!pathXMB.Equals(""))
             {
-                model.xmb = new XMBFile(pathXMB);
-                model.NUD.SetPropertiesFromXMB(model.xmb);
+                model.XMB = new XMBFile(pathXMB);
             }
 
             if (!pathMTA.Equals(""))
             {
                 try
                 {
-                    model.mta = new MTA();
-                    model.mta.Read(pathMTA);
-                    string mtaName = Path.Combine(Path.GetFileName(Path.GetDirectoryName(pathMTA)), Path.GetFileName(pathMTA));
-                    Console.WriteLine($"MTA Name - {mtaName}");
-                    addMaterialAnimation(mtaName, model.mta);
+                    model.MTA = new MTA();
+                    model.MTA.Read(pathMTA);
+                    //string mtaName = Path.Combine(Path.GetFileName(Path.GetDirectoryName(pathMTA)), Path.GetFileName(pathMTA));
+                    //Console.WriteLine($"MTA Name - {mtaName}");
+                    //addMaterialAnimation(mtaName, model.MTA);
                 }
                 catch (EndOfStreamException)
                 {
-                    model.mta = null;
+                    model.MTA = null;
                 }
             }
 
             if (!pathMOI.Equals(""))
             {
-                model.moi = new MOI(pathMOI);
+                model.MOI = new MOI(pathMOI);
             }
 
             if (model.NUD != null)
@@ -531,21 +572,12 @@ namespace Smash_Forge
                 model.NUD.MergePoly();
             }
 
-            Runtime.ModelContainers.Add(model);
-            List<ModelContainer> sortedModelContainers = Runtime.ModelContainers.OrderBy(o => (o.NUD.drawingOrder)).ToList();
-            Runtime.ModelContainers = sortedModelContainers;
-
-            meshList.refresh();
-            
-            ModelNode n = new ModelNode();
-            n.NUD.Model = model.NUD;
-            n.VBN.Skeleton = model.VBN;
-            n.NUT.Texture = nut;
-
-            project.treeView1.BeginUpdate();
-            project.treeView1.Nodes.Add(n);
-            project.treeView1.EndUpdate();
-            project.treeView1.Refresh();
+            //Runtime.ModelContainers.Add(model);
+            //TODO move sorting into individual model viewport
+            //List<ModelContainer> sortedModelContainers = Runtime.ModelContainers.OrderBy(o => (o.NUD.drawingOrder)).ToList();
+            //Runtime.ModelContainers = sortedModelContainers;
+            //meshList.refresh();
+            return mvp;
         }
 
         private void addMaterialAnimation(string name, MTA m)
@@ -586,7 +618,7 @@ namespace Smash_Forge
                 return;
             }*/
 
-            using (var sfd = new SaveFileDialog())
+            /*using (var sfd = new SaveFileDialog())
             {
                 sfd.Filter = "Supported Files (.omo, .anim, .pac, .mta .smd)|*.omo;*.anim;*.pac;*.mta;*.smd|" +
                              "Maya Anim (.anim)|*.anim|" +
@@ -656,7 +688,7 @@ namespace Smash_Forge
                         f.save(sfd.FileName);
                     }
                 }
-            }
+            }*/
         }
 
         private void hashMatchToolStripMenuItem_Click(object sender, EventArgs e)
@@ -667,7 +699,7 @@ namespace Smash_Forge
 
         public static void HashMatch()
         {
-            foreach (ModelContainer m in Runtime.ModelContainers)
+            /*foreach (ModelContainer m in Runtime.ModelContainers)
             {
                 if (m.VBN != null)
                 {
@@ -707,7 +739,7 @@ namespace Smash_Forge
                         }
                     }
                 }
-            }
+            }*/
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -748,22 +780,22 @@ namespace Smash_Forge
 
         private void viewportWindowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (viewportWindowToolStripMenuItem.Checked == false)
+            /*if (viewportWindowToolStripMenuItem.Checked == false)
             {
                 var vp = new VBNViewport();
                 viewports.Add(vp);
                 AddDockedControl(vp);
                 viewportWindowToolStripMenuItem.Checked = true;
-            }
+            }*/
 
         }
 
         private void animationsWindowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (animationsWindowToolStripMenuItem.Checked)
+            /*if (animationsWindowToolStripMenuItem.Checked)
                 animList.Show(dockPanel1);
             else
-                animList.Hide();
+                animList.Hide();*/
         }
 
         private void boneTreeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -805,6 +837,14 @@ namespace Smash_Forge
             Lights.areaLights.Clear();
             Lights.lightMaps.Clear();
             animList.treeView1.Nodes.Clear();
+
+            //Close all Editors
+            List<DockContent> openContent = new List<DockContent>();
+            foreach (DockContent c in dockPanel1.Contents)
+                openContent.Add(c);
+            foreach(DockContent c in openContent)
+                if (c is EditorBase)
+                    c.Close();
         }
 
         private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -826,7 +866,6 @@ namespace Smash_Forge
             else
                 project.Focus();
         }
-        
 
         private void openCharacterToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -844,8 +883,11 @@ namespace Smash_Forge
                     MainForm.Instance.Progress.Message = ("Please Wait... Opening Character");
                     MainForm.Instance.Progress.Show();
 
+
                     string fighterName = new DirectoryInfo(ofd.SelectedPath).Name;
                     string[] dirs = Directory.GetDirectories(ofd.SelectedPath);
+
+                    ModelViewport mvp = new ModelViewport();
 
                     foreach (string s in dirs)
                     {
@@ -853,16 +895,19 @@ namespace Smash_Forge
                         {
                             MainForm.Instance.Progress.ProgressValue = 10;
                             MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Model");
-                            // load default model
-                            openNud(s + "\\body\\c00\\model.nud");
+                            MainForm.Instance.Progress.Refresh();
+                             // load default model
+                             mvp = openNud(s + "\\body\\c00\\model.nud", mvp : mvp);
                             MainForm.Instance.Progress.ProgressValue = 25;
                             MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Expressions");
                             string[] anims = Directory.GetFiles(s + "\\body\\c00\\");
+                            float a = 0;
                             foreach(string ss in anims)
                             {
+                                MainForm.Instance.Progress.ProgressValue = 25 + (int)((a++ / anims.Length)*25f);
                                 if (ss.EndsWith(".pac"))
                                 {
-                                    openAnimation(ss);
+                                    mvp.AnimList.treeView1.Nodes.Add(openAnimation(ss));
                                 }
                             }
                         }
@@ -881,7 +926,7 @@ namespace Smash_Forge
                                 return 0;
                             }); //Sort files so main.pac is opened first
                             foreach (string a in anims)
-                                openAnimation(a);
+                                mvp.AnimList.treeView1.Nodes.Add(openAnimation(a));
 
                         }
                         if (s.EndsWith("script"))
@@ -891,13 +936,15 @@ namespace Smash_Forge
                             if (File.Exists(s + "\\animcmd\\body\\motion.mtable"))
                             {
                                 //openFile(s + "\\animcmd\\body\\motion.mtable");
-                                Runtime.Moveset = new MovesetManager(s + "\\animcmd\\body\\motion.mtable");
-                                Runtime.acmdEditor.updateCrcList();
+                                mvp.MovesetManager = new MovesetManager(s + "\\animcmd\\body\\motion.mtable");
+                                //Runtime.acmdEditor.updateCrcList();
                             }
                         }
                     }
 
-                    resyncTargetVBN();
+                    mvp.Text = fighterName;
+
+                    //resyncTargetVBN();
 
                     MainForm.Instance.Progress.ProgressValue = 99;
                     MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Params");
@@ -906,11 +953,14 @@ namespace Smash_Forge
                         // If they set the wrong dir, oh well
                         try
                         {
-                            Runtime.ParamManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin", fighterName);
-                            hurtboxList.refresh();
-                            Runtime.ParamManagerHelper = new PARAMEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
-                            Runtime.ParamMoveNameIdMapping = Runtime.ParamManagerHelper.getMoveNameIdMapping();
-                            Runtime.ModelContainers[0].Text = fighterName;
+                            string fighterparam = Runtime.paramDir + "\\fighter\\fighter_param_vl_"+fighterName+".bin";
+                            //mvp.draw.Add(new TreeNode() { Text = fighterparam });
+
+                            mvp.ParamManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin", fighterName);
+                            mvp.HurtboxList.refresh();
+                            mvp.ParamManagerHelper = new PARAMEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
+                            mvp.ParamMoveNameIdMapping = mvp.ParamManagerHelper.getMoveNameIdMapping();
+                            //Runtime.ModelContainers[0].Text = fighterName;
 
                             // Model render size
                             ParamFile param = new ParamFile(Runtime.paramDir + "\\fighter\\fighter_param.bin");
@@ -921,7 +971,9 @@ namespace Smash_Forge
                         catch { }
                     }
                     MainForm.Instance.Progress.ProgressValue = 100;
+                    AddDockedControl(mvp);
                 }
+
             }
 
 
@@ -929,7 +981,7 @@ namespace Smash_Forge
 
         private void saveNUDToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Runtime.ModelContainers.Count > 0)
+            /*if (Runtime.ModelContainers.Count > 0)
             {
                 string filename = "";
                 SaveFileDialog save = new SaveFileDialog();
@@ -946,14 +998,14 @@ namespace Smash_Forge
                             m.NUD.Save(filename);
                             m.VBN.Save(filename.Replace(".nud", ".vbn"));
                         }
-                        /*else 
+                        else 
                         if(Runtime.ModelContainers[0].bch != null)
                         {
                             nud m = Runtime.ModelContainers[0].bch.mbn.toNUD();
                             VBN v = Runtime.ModelContainers[0].bch.models[0].skeleton;
                             m.Save(filename);
                             v.Save(filename.Replace(".nud", ".vbn"));
-                        }*/
+                        }
                         else
                         {
                             foreach (ModelContainer c in Runtime.ModelContainers)
@@ -966,7 +1018,7 @@ namespace Smash_Forge
                             }
                         }
                 }
-            }
+            }*/
         }
 
         private void collisionToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1091,12 +1143,22 @@ namespace Smash_Forge
                 ofd.Title = "Stage Folder";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
+                    MainForm.Instance.Progress = new ProgessAlert();
+                    MainForm.Instance.Progress.StartPosition = FormStartPosition.CenterScreen;
+                    MainForm.Instance.Progress.ProgressValue = 0;
+                    MainForm.Instance.Progress.ControlBox = false;
+                    MainForm.Instance.Progress.Message = ("Please Wait... Opening Stage Models");
+                    MainForm.Instance.Progress.Show();
+
                     string stagePath = ofd.SelectedPath;
                     string modelPath = stagePath + "\\model\\";
                     string paramPath = stagePath + "\\param\\";
                     string animationPath = stagePath + "\\animation\\";
                     string renderPath = stagePath + "\\render\\";
                     List<string> nuds = new List<string>();
+
+                    ModelViewport mvp = new ModelViewport();
+                    mvp.Text = Path.GetFileName(ofd.SelectedPath);
 
                     if (Directory.Exists(modelPath))
                     {
@@ -1106,20 +1168,21 @@ namespace Smash_Forge
                             {
                                 if (f.EndsWith(".nud"))
                                 {
-                                    openNud(f, Path.GetFileName(d));
+                                    openNud(f, Path.GetFileName(d), mvp);
                                 }
                             }
                         }
                     }
 
+                    MainForm.Instance.Progress.ProgressValue = 50;
+                    MainForm.Instance.Progress.Message = ("Please Wait... Opening Stage Parameters");
                     if (Directory.Exists(paramPath))
                     {
-                        Runtime.TargetLVD = null;
                         foreach (string fileName in Directory.GetFiles(paramPath))
                         {
                             if (Path.GetExtension(fileName).Equals(".lvd") && Runtime.TargetLVD == null)
                             {
-                                Runtime.TargetLVD = new LVD(fileName);
+                                mvp.LVD = new LVD(fileName);
                                 lvdList.fillList();
                             }
 
@@ -1132,6 +1195,8 @@ namespace Smash_Forge
                         }
                     }
 
+                    MainForm.Instance.Progress.ProgressValue = 75;
+                    MainForm.Instance.Progress.Message = ("Please Wait... Opening Stage Path");
                     if (Directory.Exists(renderPath))
                     {
                         foreach (string fileName in Directory.GetFiles(renderPath))
@@ -1155,6 +1220,8 @@ namespace Smash_Forge
                         }
                     }
 
+                    MainForm.Instance.Progress.ProgressValue = 80;
+                    MainForm.Instance.Progress.Message = ("Please Wait... Opening Stage Animation");
                     if (Directory.Exists(animationPath))
                     {
                         foreach (string d in Directory.GetDirectories(animationPath))
@@ -1166,16 +1233,18 @@ namespace Smash_Forge
                                     //Runtime.Animations.Add(f, );
                                     Animation a = OMOOld.read(new FileData(f));
                                     a.Text = f;
-                                    animList.treeView1.Nodes.Add(a);
+                                    mvp.AnimList.treeView1.Nodes.Add(a);
                                 }
                                 else if (f.EndsWith("path.bin"))
                                 {
-                                    Runtime.TargetPath = new PathBin();
-                                    Runtime.TargetPath.Read(f);
+                                    mvp.PathBin = new PathBin();
+                                    mvp.PathBin.Read(f);
                                 }
                             }
                         }
                     }
+                    MainForm.Instance.Progress.ProgressValue = 100;
+                    AddDockedControl(mvp);
                 }
             }
 
@@ -1184,21 +1253,15 @@ namespace Smash_Forge
         //<summary>
         //Open an animation based on filename
         //</summary>
-        public void openAnimation(string filename)
+        public TreeNode openAnimation(string filename)
         {
-
-            //Runtime.Animations.Clear();
-            animList.treeView1.BeginUpdate();
             if (filename.EndsWith(".mta"))
             {
                 MTA mta = new MTA();
                 try
                 {
                     mta.Read(filename);
-                    Runtime.MaterialAnimations.Add(filename, mta);
-                    animList.treeView1.Nodes.Add(filename);
-                    MainForm.Instance.viewports[0].loadMTA(mta);
-                    Runtime.TargetMTAString = filename;
+                    return (mta);
                 }
                 catch (EndOfStreamException)
                 {
@@ -1213,14 +1276,14 @@ namespace Smash_Forge
                 SMD.read(filename, anim, Runtime.TargetVBN);
                 //boneTreePanel.treeRefresh();
                 //Runtime.Animations.Add(filename, anim);
-                animList.treeView1.Nodes.Add(anim);
+                TreeNode mvp = new TreeNode();
+                return(anim);
             }
             else if (filename.EndsWith(".pac"))
             {
                 PAC p = new PAC();
                 p.Read(filename);
-                AnimationGroupNode animGroup = new AnimationGroupNode() { Text = filename};
-                animList.treeView1.Nodes.Add(animGroup);
+                AnimationGroupNode animGroup = new AnimationGroupNode() { Text = Path.GetFileName(filename)};
 
                 foreach (var pair in p.Files)
                 {
@@ -1229,39 +1292,13 @@ namespace Smash_Forge
                         Console.WriteLine("Adding " + pair.Key);
                         var anim = OMOOld.read(new FileData(pair.Value));
                         animGroup.Nodes.Add(anim);
-                        string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
-                        //AnimName = pair.Key;
-                        //AnimName = AnimName.Remove(AnimName.Length - 4);
-                        //AnimName = AnimName.Insert(3, "_");
+                        string AnimName = pair.Key; //Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
                         if (!string.IsNullOrEmpty(AnimName))
                         {
                             anim.Text = AnimName;
-                            if (Runtime.Animations.ContainsKey(AnimName))
-                            {
-                                //Runtime.Animations[AnimName].Children.Add(anim);
-                            }
-                            else
-                            {
-                                //animGroup.Nodes.Add(anim);
-                                Runtime.Animations.Add(AnimName, anim);
-                            }
-
                             AddAnimName(AnimName.Substring(3).Replace(".omo",""));
                         }
-                        else
-                        {
-                            if (Runtime.Animations.ContainsKey(pair.Key))
-                            {
-                                //.Nodes.Add(pair.Key);
-                                //Runtime.Animations[AnimName].Children.Add(anim);
-                            }
-                            else
-                            {
-                                //animList.treeView1.Nodes.Add(pair.Key);
-                                Runtime.Animations.Add(pair.Key, anim);
-                            }
-                        }
-                        Runtime.acmdEditor.updateCrcList();
+                        //Runtime.acmdEditor.updateCrcList();
                     }
                     else if (pair.Key.EndsWith(".mta"))
                     {
@@ -1269,31 +1306,9 @@ namespace Smash_Forge
                         mta.read(new FileData(pair.Value));
                         mta.Text = pair.Key;
                         animGroup.Nodes.Add(mta);
-                        /*try
-                        {
-                            if (!Runtime.MaterialAnimations.ContainsKey(pair.Key))
-                            {
-                                mta.read(new FileData(pair.Value));
-                                //Runtime.MaterialAnimations.Add(pair.Key, mta);
-                                //mtaNode.Nodes.Add(pair.Key);
-                            }
-
-                            // matching
-                            string AnimName =
-                                Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString()
-                                    .Replace(".mta", ".omo");
-                            if (Runtime.Animations.ContainsKey(AnimName))
-                            {
-                                //Runtime.Animations[AnimName].Children.Add(mta);
-                            }
-
-                        }
-                        catch (EndOfStreamException)
-                        {
-                            mta = null;
-                        }*/
                     }
                 }
+                return animGroup;
             }
 
             if (filename.EndsWith(".dat"))
@@ -1302,10 +1317,10 @@ namespace Smash_Forge
                     MessageBox.Show("Not a DAT animation");
                 else
                 {
-                    if (Runtime.ModelContainers[0].dat_melee == null)
+                    /*if (Runtime.ModelContainers[0].dat_melee == null)
                         MessageBox.Show("Load a DAT model first");
                     else
-                        DAT_Animation.LoadAJ(filename, Runtime.ModelContainers[0].dat_melee.bones);
+                        DAT_Animation.LoadAJ(filename, Runtime.ModelContainers[0].dat_melee.bones);*/
                 }
 
             }
@@ -1316,17 +1331,17 @@ namespace Smash_Forge
                 //Runtime.Animations.Add(filename, );
                 Animation a = OMOOld.read(new FileData(filename));
                 a.Text = filename;
-                animList.treeView1.Nodes.Add(a);
+                return a;
             }
             if (filename.EndsWith(".chr0"))
             {
                 //Runtime.Animations.Add(filename, CHR0.read(new FileData(filename), Runtime.TargetVBN));
-                animList.treeView1.Nodes.Add(CHR0.read(new FileData(filename), Runtime.TargetVBN));
+                return(CHR0.read(new FileData(filename), Runtime.TargetVBN));
             }
             if (filename.EndsWith(".anim"))
             {
                 //Runtime.Animations.Add(filename, ANIM.read(filename, Runtime.TargetVBN));
-                animList.treeView1.Nodes.Add(ANIM.read(filename, Runtime.TargetVBN));
+                return(ANIM.read(filename, Runtime.TargetVBN));
             }
             if (filename.EndsWith(".bch"))
             {
@@ -1335,10 +1350,9 @@ namespace Smash_Forge
                 BCHan.Read(filename);
                 BCH bch = new Smash_Forge.BCH();
                 bch.Read(filename);
-                
             }
 
-            animList.treeView1.EndUpdate();
+            return null;
         }
 
         private static void writeDatJobjPositions(TreeNode node, FileOutput f)
@@ -1372,7 +1386,7 @@ namespace Smash_Forge
                 File.WriteAllBytes(filename, Runtime.TargetLVD.Rebuild());
             else if (filename.EndsWith(".lvd"))
             {
-                DAT d = null;
+                /*DAT d = null;
                 foreach (ModelContainer c in Runtime.ModelContainers)
                     if (c.dat_melee != null)
                         d = c.dat_melee;
@@ -1390,19 +1404,19 @@ namespace Smash_Forge
                     {
                         File.WriteAllBytes(filename, d.toLVD(false).Rebuild());
                     }
-                }
+                }*/
 
             }
 
             if (filename.EndsWith(".dae"))
             {
-                if (Runtime.ModelContainers.Count > 0)
+                /*if (Runtime.ModelContainers.Count > 0)
                 {
                     Collada.Save(filename, Runtime.ModelContainers[0]);
-                }
+                }*/
             }
 
-            if (filename.EndsWith(".dat"))
+            /*if (filename.EndsWith(".dat"))
             {
                 foreach(ModelContainer mc in Runtime.ModelContainers)
                 {
@@ -1610,7 +1624,7 @@ namespace Smash_Forge
                     MBN m = Runtime.ModelContainers[0].NUD.toMBN();
                     m.Save(filename);
                 }
-            }
+            }*/
         }
 
         ///<summary>
@@ -1619,28 +1633,134 @@ namespace Smash_Forge
         /// <param name="fileName"> Filename of file to open</param>
         public void openFile(string fileName)
         {
-            if (!fileName.EndsWith(".mta") && !fileName.EndsWith(".dat") && !fileName.EndsWith(".smd"))
-                openAnimation(fileName);
+            glControl1.MakeCurrent();
+            //if (!fileName.EndsWith(".mta") && !fileName.EndsWith(".dat") && !fileName.EndsWith(".smd"))
+            //    openAnimation(fileName);
 
-            if (fileName.EndsWith(".vbn"))
+            // Redone-----------------------------------------------------
+
+            if (fileName.EndsWith(".omo"))
             {
-                Runtime.TargetVBN = new VBN(fileName);
-
-                ModelContainer con = resyncTargetVBN();
-                if (Directory.Exists("Skapon\\"))
+                ModelViewport mvp = new ModelViewport();
+                if (dockPanel1.ActiveContent is ModelViewport)
                 {
-                    NUD nud = Skapon.Create(Runtime.TargetVBN);
-                    con.NUD = nud;
+                    DialogResult dialogResult = MessageBox.Show("Import Animation Data into active viewport?", "", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        mvp = (ModelViewport)dockPanel1.ActiveContent;
+                        mvp.AnimList.treeView1.Nodes.Add(OMOOld.read(new FileData(fileName)));
+                        return;
+                    }
+                    else
+                    {
+                        mvp.AnimList.treeView1.Nodes.Add(OMOOld.read(new FileData(fileName)));
+                    }
+                    mvp.Text = fileName;
+                    AddDockedControl(mvp);
                 }
             }
 
+            if (fileName.EndsWith(".pac"))
+            {
+                ModelViewport mvp = new ModelViewport();
+                if (dockPanel1.ActiveContent is ModelViewport)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Import Animation Data into active viewport?", "", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        mvp = (ModelViewport)dockPanel1.ActiveContent;
+                        mvp.AnimList.treeView1.Nodes.Add(openAnimation(fileName));
+                        return;
+                    }
+                    else
+                    {
+                        mvp.AnimList.treeView1.Nodes.Add(openAnimation(fileName));
+                    }
+                    mvp.Text = fileName;
+                    AddDockedControl(mvp);
+                }
+            }
+
+            if (fileName.EndsWith(".bch"))
+            {
+                //BCH bch = new BCH(fileName);
+
+                ModelViewport mvp = new ModelViewport();
+                //if (bch.Animations.Nodes.Count > 0)
+                {
+                    // Load as Animation
+                    if(dockPanel1.ActiveContent is ModelViewport)
+                    {
+                        DialogResult dialogResult = MessageBox.Show("Import Animation Data into active viewport?", "", MessageBoxButtons.YesNo);
+                        if (dialogResult == DialogResult.Yes)
+                        {
+                            mvp = (ModelViewport)dockPanel1.ActiveContent;
+                            mvp.AnimList.treeView1.Nodes.Add(BCHan.Read(fileName));
+                            return;
+                        }else
+                        {
+                            mvp.AnimList.treeView1.Nodes.Add(BCHan.Read(fileName));
+                        }
+                    }
+                }
+                //mvp.draw.Add(new ModelContainer() { BCH = bch });
+                mvp.Text = fileName;
+                AddDockedControl(mvp);
+            }
+
+            if (fileName.EndsWith(".mbn"))
+            {
+                if(!File.Exists(fileName.Replace(".mbn", ".bch")))
+                {
+                    MessageBox.Show("Missing BCH file");
+                    return;
+                }
+                BCH b = new BCH(fileName.Replace(".mbn", ".bch"));
+                if(b.Models.Nodes.Count == 0)
+                {
+                    MessageBox.Show("BCH is Missing Model Data");
+                    return;
+                }
+                ((BCH_Model)b.Models.Nodes[0]).OpenMBN(new FileData(fileName));
+
+                ModelViewport mvp = new ModelViewport();
+                mvp.draw.Add(new ModelContainer() { BCH = b });
+                mvp.Text = fileName;
+                AddDockedControl(mvp);
+            }
+
+            if (fileName.EndsWith(".vbn"))
+            {
+                BoneTreePanel editor = new BoneTreePanel(fileName);
+                AddDockedControl(editor);
+            }
+
+            if (fileName.EndsWith(".nut"))
+            {
+                NUTEditor editor = new NUTEditor(fileName);
+                AddDockedControl(editor);
+            }
+
+            if (fileName.EndsWith(".tex"))
+            {
+                _3DSTexEditor editor = new _3DSTexEditor(fileName);
+                AddDockedControl(editor);
+            }
+            
             if (fileName.EndsWith(".sb"))
             {
-                SB sb = new SB();
-                sb.Read(fileName);
-                SwagEditor swagEditor = new SwagEditor(sb) {ShowHint = DockState.DockRight};
-                AddDockedControl(swagEditor);
-                SwagEditors.Add(swagEditor);
+                //needs vbn
+                if(File.Exists(fileName.Replace(".sb", ".vbn")))
+                {
+                    VBN vbn = new VBN(fileName.Replace(".sb", ".vbn"));
+                    SB sb = new SB();
+                    sb.Read(fileName);
+                    vbn.SwingBones = sb;
+                    sb.OpenEditor(null, null);
+                }else
+                {
+                    MessageBox.Show("Swing Bones need a VBN with the same name");
+                }
             }
 
             if (fileName.EndsWith(".dat"))
@@ -1654,7 +1774,10 @@ namespace Smash_Forge
                 dat.filename = fileName;
                 dat.Read(new FileData(fileName));
                 ModelContainer c = new ModelContainer();
-                Runtime.ModelContainers.Add(c);
+
+                //TODO move to model viewport
+
+                //Runtime.ModelContainers.Add(c);
                 c.dat_melee = dat;
                 dat.PreRender();
 
@@ -1674,42 +1797,38 @@ namespace Smash_Forge
                 resyncTargetVBN();
             }
 
-            if (fileName.EndsWith(".nut"))
-            {
-                Runtime.TextureContainers.Add(new NUT(fileName));
-                if (nutEditor == null || nutEditor.IsDisposed)
-                {
-                    nutEditor = new NUTEditor();
-                    nutEditor.Show();
-                }
-                else
-                {
-                    nutEditor.BringToFront();
-                }
-                nutEditor.FillForm();
-            }
-
-            if (fileName.EndsWith(".tex"))
-            {
-                if (texEditor == null || texEditor.IsDisposed)
-                {
-                    texEditor = new _3DSTexEditor();
-                    texEditor.Show();
-                }
-                else
-                {
-                    texEditor.BringToFront();
-                }
-                texEditor.OpenTEX(fileName);
-            }
-
             if (fileName.EndsWith(".lvd"))
             {
-                if (Runtime.TargetLVD == null)
+                if (dockPanel1.ActiveContent is ModelViewport)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        ((ModelViewport)dockPanel1.ActiveContent).LVD = new LVD(fileName);
+                    }
+                    if (dialogResult == DialogResult.No)
+                    {
+                        ModelViewport mvp = new ModelViewport();
+                        mvp.Text = fileName;
+                        mvp.LVD = new LVD(fileName);
+                        mvp.ViewComboBox.SelectedItem = "LVD Editor";
+                        AddDockedControl(mvp);
+                    }
+                }
+                else
+                {
+                    ModelViewport mvp = new ModelViewport();
+                    mvp.Text = fileName;
+                    mvp.LVD = new LVD(fileName);
+                    mvp.ViewComboBox.SelectedItem = "LVD Editor";
+                    AddDockedControl(mvp);
+                }
+                /*if (Runtime.TargetLVD == null)
                     Runtime.TargetLVD = new LVD(fileName);
                 else
                     Runtime.TargetLVD.Read(fileName);
-                lvdList.fillList();
+                lvdList.fillList();*/
+
             }
             
             if (fileName.EndsWith(".nus3bank"))
@@ -1849,16 +1968,19 @@ namespace Smash_Forge
                     con.VBN = m.getVBN();
 
                     Collada.DAEtoNUD(fileName, con, m.checkBox5.Checked);
-                    Runtime.ModelContainers.Add(con);
+                    //Runtime.ModelContainers.Add(con);
+                    ModelViewport mvp = new ModelViewport();
+                    mvp.draw.Add(con);
+                    AddDockedControl(mvp);
 
-                    Runtime.TargetVBN = con.VBN;
-                    resyncTargetVBN();
+                    //Runtime.TargetVBN = con.VBN;
+                    //resyncTargetVBN();
 
                     // apply settings
                     m.Apply(con.NUD);
                     con.NUD.MergePoly();
 
-                    meshList.refresh();
+                    //meshList.refresh();
                 }
             }
 
@@ -1874,51 +1996,34 @@ namespace Smash_Forge
 
             if (fileName.ToLower().EndsWith(".obj"))
             {
-                ModelViewport vp = new ModelViewport();
                 OBJ obj = new OBJ();
                 obj.Read(fileName);
-                vp.draw.Add(new ModelContainer() { NUD = obj.toNUD() });
-                Runtime.ModelContainers.Add(new ModelContainer() { NUD = obj.toNUD() });
-                meshList.refresh();
-                AddDockedControl(vp);
-            }
+                ModelContainer con = (new ModelContainer() { NUD = obj.toNUD() });
+                //meshList.refresh();
 
-            if (fileName.EndsWith(".mbn"))
-            {
-                /*MBN m = new MBN();
-                m.Read(fileName);
-                ModelContainer con = new ModelContainer();
-                BCH b = new BCH();
-                con.bch = b;
-                b.mbn = m;
-                b.Read(fileName.Replace(".mbn", ".bch"));
-                Runtime.ModelContainers.Add(con);
-                Runtime.TargetVBN = b.bones;
-                resyncTargetVBN();
-                meshList.refresh();*/
-
-                ModelContainer con = new ModelContainer();
-                BCH b = new BCH();
-                b.Read(fileName.Replace(".mbn", ".bch"));
-                ((BCH_Model)b.Models.Nodes[0]).OpenMBN(new FileData(fileName));
-                con.bch = b;
-                Runtime.ModelContainers.Add(con);
-                if(b.Models.Nodes.Count > 0)
-                {
-                    Runtime.TargetVBN = ((BCH_Model)b.Models.Nodes[0]).skeleton;
-                    resyncTargetVBN();
-                }
-                meshList.refresh();
-            }
-
-            if (fileName.EndsWith(".bch"))
-            {
+                ModelViewport mvp = new ModelViewport();
+                mvp.draw.Add(con);
+                AddDockedControl(mvp);
             }
 
             if (fileName.EndsWith(".nud"))
             {
-                openNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
-                resyncTargetVBN();
+                if(dockPanel1.ActiveContent is ModelViewport)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        openNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name, (ModelViewport)dockPanel1.ActiveContent);
+                    }
+                    if (dialogResult == DialogResult.No)
+                    {
+                        openNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
+                    }
+                }
+                else
+                {
+                    openNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
+                }
             }
 
             if (fileName.EndsWith(".moi"))
@@ -1953,7 +2058,7 @@ namespace Smash_Forge
         private ModelContainer resyncTargetVBN()
         {
             ModelContainer modelContainer = null;
-            if (Runtime.TargetVBN != null)
+            /*if (Runtime.TargetVBN != null)
             {
                 // Make sure the TargetVBN is in use *somewhere* in our models
                 bool found = false;
@@ -1987,7 +2092,7 @@ namespace Smash_Forge
                     }
                 }
             }
-            //boneTreePanel.treeRefresh();
+            //boneTreePanel.treeRefresh();*/
             return modelContainer;
         }
 
@@ -1996,7 +2101,7 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats(.vbn, .mdl0, .smd, .nud, .lvd, .bin, .dae, .mta, .wrkspc, .mbn)|*.vbn;*.mdl0;*.smd;*.lvd;*.nud;*.xmb;*.mtable;*.bin;*.dae;*.obj;*.dat;*.mta;*.wrkspc;*.nut;*.sb;*.mbn;*.tex;*.drp;*.nus3bank;*.wav*.omo;*.anim;*.bch;*.chr0;*.smd;*.mta;*.pac;*.dat;*.xmb|" +
+                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +
@@ -2079,141 +2184,31 @@ namespace Smash_Forge
 
         private void saveAsDAEToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var sfd = new FolderSelectDialog())
-            {
-                sfd.Title = "Model Save Folder";
-
-                if (sfd.ShowDialog() == DialogResult.OK)
-                {
-                    string folder = sfd.SelectedPath;
-                    string model = Path.Combine(folder, "model.dae");
-                    if (Runtime.ModelContainers.Count > 0)
-                    {
-                        Collada.Save(model, Runtime.ModelContainers[0]);
-                        if (Runtime.ModelContainers[0].NUD != null)
-                        {
-                            NUD nud = Runtime.ModelContainers[0].NUD;
-                            List<int> texIds = nud.GetTexIds();
-
-                            foreach (var nut in Runtime.TextureContainers)
-                            {
-                                foreach (NUT_Texture tex in nut.Nodes)
-                                {
-                                    if (texIds.Contains(tex.HASHID))
-                                    {
-                                        DDS dds = new DDS();
-                                        dds.fromNUT_Texture(tex);
-                                        dds.Save(Path.Combine(folder, $"Tex_0x{tex.HASHID.ToString("X")}.png"));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
 
 
         private void allViewsPreset(object sender, EventArgs e)
         {
-            Runtime.acmdEditor = new ACMDPreviewEditor() { ShowHint = DockState.DockRight };
-            Runtime.hitboxList = new HitboxList() { ShowHint = DockState.DockLeft };
-            Runtime.variableViewer = new VariableList() { ShowHint = DockState.DockLeft };
-            animList.ShowHint = DockState.DockRight;
-            //boneTreePanel.ShowHint = DockState.DockLeft;
-            project.ShowHint = DockState.DockLeft;
-            lvdList.ShowHint = DockState.DockLeft;
-            lvdEditor.ShowHint = DockState.DockRight;
-            Runtime.acmdEditor.ShowHint = DockState.DockLeft;
-            meshList.ShowHint = DockState.DockRight;
-            Runtime.hitboxList.ShowHint = DockState.DockLeft;
-            Runtime.variableViewer.ShowHint = DockState.DockLeft;
-
-            
-
-            AddDockedControl(Runtime.acmdEditor);
-            //AddDockedControl(boneTreePanel);
-            AddDockedControl(animList);
-            AddDockedControl(lvdEditor);
-            AddDockedControl(lvdList);
-            AddDockedControl(Runtime.variableViewer);
-            AddDockedControl(Runtime.hitboxList);
-            AddDockedControl(hurtboxList);
-            AddDockedControl(project);
-            AddDockedControl(meshList);
         }
 
         private void modelViewPreset(object sender, EventArgs e)
         {
-            animList.Hide();
-            //boneTreePanel.ShowHint = DockState.DockLeft;
-            project.Hide();
-            lvdList.Hide();
-            lvdEditor.Hide();
-            RegenPanels();
-            meshList.ShowHint = DockState.DockRight;
-            Runtime.acmdEditor.ShowHint = DockState.Hidden;
-            //AddDockedControl(boneTreePanel);
-            AddDockedControl(meshList);
         }
 
         private void movesetModdingPreset(object sender, EventArgs e)
         {
-            animList.ShowHint = DockState.DockLeft;
-            //boneTreePanel.Hide();
-            project.Hide();
-            lvdList.Hide();
-            lvdEditor.Hide();
-            meshList.Hide();
-            RegenPanels();
-            Runtime.acmdEditor.ShowHint = DockState.Float;
-            AddDockedControl(Runtime.acmdEditor);
-            AddDockedControl(animList);
         }
 
         private void stageWorkPreset(object sender, EventArgs e)
         {
-            animList.Hide();
-            //boneTreePanel.ShowHint = DockState.DockLeft;
-            project.Hide();
-            lvdList.ShowHint = DockState.DockLeft;
-            lvdEditor.ShowHint = DockState.DockRight;
-            Runtime.acmdEditor.Hide();
-            meshList.ShowHint = DockState.DockRight;
-            RegenPanels();
-            //AddDockedControl(boneTreePanel);
-            AddDockedControl(meshList);
-            AddDockedControl(lvdEditor);
-            AddDockedControl(lvdList);
         }
 
         private void cleanPreset(object sender, EventArgs e)
         {
-            animList.Hide();
-            //boneTreePanel.Hide();
-            project.Hide();
-            lvdList.Hide();
-            lvdEditor.Hide();
-            Runtime.acmdEditor.Hide();
-            meshList.Hide();
-            RegenPanels();
         }
 
         private void superCleanPreset(object sender, EventArgs e)
         {
-            animList.Hide();
-            //boneTreePanel.Hide();
-            project.Hide();
-            lvdList.Hide();
-            lvdEditor.Hide();
-            Runtime.acmdEditor.Hide();
-            meshList.Hide();
-            //RegenPanels();
-            Runtime.acmdEditor.Hide();
-            Runtime.hitboxList.Hide();
-            hurtboxList.Hide();
-            Runtime.variableViewer.Hide();
-            viewports[0].groupBox2.Visible = false;
         }
 
         private void open3DSTEXEditorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2239,8 +2234,6 @@ namespace Smash_Forge
 
         private void editVerticesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Runtime.ViewportMode == Runtime.ViewportModes.NORMAL) Runtime.ViewportMode = Runtime.ViewportModes.EDITVERT; else
-            if (Runtime.ViewportMode == Runtime.ViewportModes.EDITVERT) Runtime.ViewportMode = Runtime.ViewportModes.NORMAL;
         }
 
         private void exportErrorLogToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2285,9 +2278,9 @@ namespace Smash_Forge
         private void openDATTextureEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DAT datToOpen = null;
-            foreach (ModelContainer mc in Runtime.ModelContainers)
+            /*foreach (ModelContainer mc in Runtime.ModelContainers)
                 if (mc.dat_melee != null)
-                    datToOpen = mc.dat_melee;
+                    datToOpen = mc.dat_melee;*/
             if(datToOpen != null)
                 AddDockedControl(new DatTexEditor(datToOpen));
         }
@@ -2301,7 +2294,7 @@ namespace Smash_Forge
         {
             if (cameraForm == null || cameraForm.IsDisposed)
             {
-                cameraForm = new CameraSettings();
+                cameraForm = new CameraSettings(viewports[0].vbnViewportCamera);
                 viewports[0].cameraPosForm = cameraForm;
             }
             cameraForm.Show();
@@ -2349,6 +2342,114 @@ namespace Smash_Forge
         {
             StageLighting stageLightForm = new StageLighting();
             stageLightForm.Show();
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(dockPanel1.ActiveContent is EditorBase)
+            {
+                ((EditorBase)dockPanel1.ActiveContent).SaveAs();
+            }
+        }
+
+        private void nUTToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NUT nut = new NUT();
+            NUTEditor editor = new NUTEditor(nut);
+            AddDockedControl(editor);
+        }
+
+        private void glControl1_Paint(object sender, PaintEventArgs e)
+        {
+            glControl1.MakeCurrent();
+            RenderTools.RenderBackground();
+            glControl1.SwapBuffers();
+        }
+
+        private void modelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ModelViewport mvp = new ModelViewport();
+            AddDockedControl(mvp);
+        }
+
+        private void dSTexToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _3DSTexEditor mvp = new _3DSTexEditor();
+            AddDockedControl(mvp);
+        }
+
+        private void reloadShadersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetupShaders();
+        }
+
+        private void open3DSCharacterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new FolderSelectDialog())
+            {
+                ofd.Title = "Character Folder";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    /*MainForm.Instance.Progress = new ProgessAlert();
+                    MainForm.Instance.Progress.StartPosition = FormStartPosition.CenterScreen;
+                    MainForm.Instance.Progress.ProgressValue = 0;
+                    MainForm.Instance.Progress.ControlBox = false;
+                    MainForm.Instance.Progress.Message = ("Please Wait... Opening Character");
+                    MainForm.Instance.Progress.Show();*/
+
+
+                    string fighterName = new DirectoryInfo(ofd.SelectedPath).Name;
+
+                    ModelViewport mvp = new ModelViewport();
+                    mvp.Text = fighterName;
+
+                    String ModelFolder = ofd.SelectedPath + "\\body\\h00\\";
+                    Console.WriteLine(ModelFolder);
+                    if (Directory.Exists(ModelFolder))
+                    {
+                        ModelContainer con = new Smash_Forge.ModelContainer();
+                        if (File.Exists(ModelFolder + "normal.bch"))
+                        {
+                            BCH bch = new Smash_Forge.BCH(ModelFolder + "normal.bch");
+                            if (bch.Models.Nodes.Count > 0 && File.Exists(ModelFolder + "normal.mbn"))
+                                ((BCH_Model)bch.Models.Nodes[0]).OpenMBN(new FileData(ModelFolder + "normal.mbn"));
+                            con.BCH = bch;
+                        }
+
+                        if (File.Exists(ofd.SelectedPath + "\\body\\c00\\" + "model.jtb"))
+                        {
+                            con.JTB = new Smash_Forge.JTB(ofd.SelectedPath + "\\body\\c00\\" + "model.jtb");
+                        }
+                        mvp.draw.Add(con);
+                    }
+
+                    String AnimationFolder = ofd.SelectedPath.Replace("model", "motion") + "\\body\\";
+                    if (Directory.Exists(AnimationFolder))
+                    {
+                        string[] anims = Directory.GetFiles(ModelFolder);
+                        foreach (string s in anims)
+                        {
+                            if(s.EndsWith("main.bch"))
+                                mvp.AnimList.treeView1.Nodes.Add(BCHan.Read(s));
+                        }
+
+                    }
+
+
+                    String ACMDFolder = ofd.SelectedPath.Replace("model", "animcmd") + "\\";
+                    if (Directory.Exists(ACMDFolder))
+                    {
+                        mvp.MovesetManager = new MovesetManager(ACMDFolder + "motion.mtable");
+                    }
+
+                    AddDockedControl(mvp);
+                }
+            }
+        }
+
+        private void forgeWikiToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/jam1garner/Smash-Forge/wiki");
         }
     }
 }

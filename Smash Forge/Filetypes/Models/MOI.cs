@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Smash_Forge
 {
-    public class MOI
+    public class MOI : FileBase
     {
         public class Entry
         {
@@ -15,7 +15,15 @@ namespace Smash_Forge
             public int[] values;
         }
 
-        public MOI(string filename)
+        public MOI()
+        {
+            Text = "model.moi";
+            ImageKey = "number";
+            SelectedImageKey = "number";
+            ToolTipText = "The model index file";
+        }
+
+        public MOI(string filename) : this()
         {
             Read(new FileData(filename));
         }
@@ -23,6 +31,12 @@ namespace Smash_Forge
         public Endianness endianess = Endianness.Big;
         public List<Entry> entries = new List<Entry>();
         public List<Entry> otherEntries = new List<Entry>();
+
+        public override Endianness Endian
+        {
+            get;
+            set;
+        }
 
         public void Read(FileData f)
         {
@@ -122,7 +136,7 @@ namespace Smash_Forge
             return f.getBytes();
         }
 
-        public byte[] Rebuild()
+        public override byte[] Rebuild()
         {
             FileOutput f = new FileOutput();
             f.Endian = endianess;
@@ -140,6 +154,11 @@ namespace Smash_Forge
             f.writeBytes(RebuildOtherEntries(new FileOutput(),f.pos()));
 
             return f.getBytes();
+        }
+
+        public override void Read(string filename)
+        {
+            Read(new FileData(filename));
         }
     }
 }

@@ -11,7 +11,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Smash_Forge
 {
-    public partial class SwagEditor : DockContent
+    public partial class SwagEditor : EditorBase
     {
         public SwagEditor(SB swag)
         {
@@ -21,11 +21,50 @@ namespace Smash_Forge
             boneButton1.BoneChanged += new EventHandler(BoneChange);
             foreach(BoneButton b in buttons)
                 b.BoneChanged += new EventHandler(BoneChange);
+
+            FilePath = "";
+            Text = "New Swag Bone";
+            Edited = false;
         }
 
-        private SB swag;
+        private SB swag { get { return _swag; } set { _swag = value; vbn = ((VBN)_swag.Parent); } }
+        private SB _swag;
+        
+        private VBN vbn;
         private BoneButton[] buttons;
         private bool dontChange = false;
+
+        public override void Save()
+        {
+            if (String.IsNullOrEmpty(FilePath))
+            {
+                SaveAs();
+                return;
+            }
+            FileOutput o = new FileOutput();
+            byte[] n = swag.Rebuild();
+            o.writeBytes(n);
+            o.save(FilePath);
+            Edited = false;
+        }
+
+        public override void SaveAs()
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Physics Bones (.sb)|*.sb|" +
+                             "All Files (*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    if (sfd.FileName.EndsWith(".sb"))
+                    {
+                        FilePath = sfd.FileName;
+                        Save();
+                    }
+                }
+            }
+        }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -33,10 +72,12 @@ namespace Smash_Forge
             SB.SBEntry sbEntry = (SB.SBEntry) listBox1.SelectedItem;
             if (sbEntry == null)
                 return;
-            boneButton1.SetBone(VBN.GetBone(sbEntry.hash));
+            boneButton1.vbn = vbn;
+            boneButton1.SetBone(vbn.GetBone(sbEntry.hash));
             for (int i = 0; i < buttons.Length; i++)
             {
-                Bone bone = VBN.GetBone(sbEntry.boneHashes[i]);
+                buttons[i].vbn = vbn;
+                Bone bone = vbn.GetBone(sbEntry.boneHashes[i]);
                 buttons[i].SetBone(bone);
             }
             xMin.Value = (Decimal)sbEntry.rx1;
@@ -138,6 +179,7 @@ namespace Smash_Forge
             SB.SBEntry newEntry = new SB.SBEntry();
             swag.bones.Add(newEntry);
             listBox1.Items.Add(newEntry);
+            Edited = true;
         }
 
         private void removeEntryToolStripMenuItem_Click(object sender, EventArgs e)

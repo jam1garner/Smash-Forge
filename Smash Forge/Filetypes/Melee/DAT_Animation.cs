@@ -325,8 +325,9 @@ namespace Smash_Forge
             int pos = 0;
 
             Dictionary<string, SkelAnimation> animations = new Dictionary<string, SkelAnimation>();
-
-            while(pos < f.size())
+            AnimationGroupNode group = new AnimationGroupNode() { Text = fname};
+            MainForm.Instance.animList.treeView1.Nodes.Add(group);
+            while (pos < f.size())
             {
                 Console.WriteLine(pos.ToString("x"));
                 int len = f.readInt();
@@ -338,11 +339,11 @@ namespace Smash_Forge
                 {
                     //track.Show();
                 }
-
+                group.Nodes.Add(track.toAnimation(vbn));
                 SkelAnimation sa = track.BakeToSkel(vbn);
-                sa.Tag = track;
+                //sa.Tag = track;
                 //Runtime.Animations.Add(anim.Name, sa);
-                MainForm.Instance.animList.treeView1.Nodes.Add(anim.Name);
+               // MainForm.Instance.animList.treeView1.Nodes.Add(anim.Name);
                 animations.Add(anim.Name, sa);
 
                 if (pos != 0)

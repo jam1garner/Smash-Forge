@@ -1007,6 +1007,112 @@ namespace Smash_Forge
 
         #region rendering
 
+        public object LVDSelection;
+        public MeshList MeshList;
+
+        public void Render()
+        {
+            GL.Disable(EnableCap.CullFace);
+
+            /*foreach (ModelContainer m in ModelContainers)
+            {
+
+                if (m.dat_melee != null && m.dat_melee.collisions != null)
+                {
+                    LVD.DrawDATCollisions(m);
+
+                }
+
+                if (m.dat_melee != null && m.dat_melee.blastzones != null)
+                {
+                    LVD.DrawBounds(m.dat_melee.blastzones, Color.Red);
+                }
+
+                if (m.dat_melee != null && m.dat_melee.cameraBounds != null)
+                {
+                    LVD.DrawBounds(m.dat_melee.cameraBounds, Color.Blue);
+                }
+
+                if (m.dat_melee != null && m.dat_melee.targets != null)
+                {
+                    foreach (Point target in m.dat_melee.targets)
+                    {
+                        RenderTools.drawCircleOutline(new Vector3(target.x, target.y, 0), 2, 30);
+                        RenderTools.drawCircleOutline(new Vector3(target.x, target.y, 0), 4, 30);
+                    }
+                }
+
+                if (m.dat_melee != null && m.dat_melee.respawns != null)
+                    foreach (Point r in m.dat_melee.respawns)
+                    {
+                        Spawn temp = new Spawn() { x = r.x, y = r.y };
+                        LVD.DrawSpawn(temp, true);
+                    }
+
+                if (m.dat_melee != null && m.dat_melee.spawns != null)
+                    foreach (Point r in m.dat_melee.spawns)
+                    {
+                        Spawn temp = new Spawn() { x = r.x, y = r.y };
+                        LVD.DrawSpawn(temp, false);
+                    }
+
+                GL.Color4(Color.FromArgb(200, Color.Fuchsia));
+                if (m.dat_melee != null && m.dat_melee.itemSpawns != null)
+                    foreach (Point r in m.dat_melee.itemSpawns)
+                        RenderTools.drawCubeWireframe(new Vector3(r.x, r.y, 0), 3);
+            }
+            */
+            //if (Runtime.TargetLVD != null)
+            {
+                if (Runtime.renderCollisions)
+                {
+                    DrawCollisions();
+                }
+
+                if (Runtime.renderItemSpawners)
+                {
+                    DrawItemSpawners();
+                }
+
+                if (Runtime.renderSpawns)
+                {
+                    foreach (Spawn s in spawns)
+                        LVD.DrawSpawn(s, false);
+                }
+
+                if (Runtime.renderRespawns)
+                {
+                    foreach (Spawn s in respawns)
+                        LVD.DrawSpawn(s, true);
+                }
+
+                if (Runtime.renderGeneralPoints)
+                {
+                    foreach (GeneralPoint p in generalPoints)
+                        LVD.DrawPoint(p);
+
+                    foreach (GeneralShape s in generalShapes)
+                        LVD.DrawShape(s);
+                }
+
+                if (Runtime.renderOtherLVDEntries)
+                {
+                    DrawEnemySpawners();
+
+                    foreach (DamageShape s in damageShapes)
+                        LVD.DrawShape(s);
+
+                    foreach (Bounds b in cameraBounds)
+                        LVD.DrawBounds(b, Color.Blue);
+
+                    foreach (Bounds b in blastzones)
+                        LVD.DrawBounds(b, Color.Red);
+                }
+            }
+
+            GL.Enable(EnableCap.CullFace);
+        }
+
         public static void DrawPoint(GeneralPoint p)
         {
             GL.LineWidth(2);
@@ -1163,11 +1269,11 @@ namespace Smash_Forge
             GL.End();
         }
 
-        public static void DrawEnemySpawners()
+        public void DrawEnemySpawners()
         {
             GL.LineWidth(2);
 
-            foreach (EnemyGenerator c in Runtime.TargetLVD.enemySpawns)
+            foreach (EnemyGenerator c in enemySpawns)
             {
                 GL.Color4(Color.FromArgb(200, Color.Fuchsia));
                 foreach (EnmSection s in c.sections)
@@ -1178,9 +1284,9 @@ namespace Smash_Forge
             }
         }
 
-        public static void DrawItemSpawners()
+        public void DrawItemSpawners()
         {
-            foreach (ItemSpawner c in Runtime.TargetLVD.itemSpawns)
+            foreach (ItemSpawner c in itemSpawns)
             {
                 Vector3 sPos = c.useStartPos ? c.startPos : new Vector3(0,0,0);
                 foreach (Section s in c.sections)
@@ -1215,14 +1321,15 @@ namespace Smash_Forge
             }
         }
 
-        public static void DrawCollisions(Stopwatch timeSinceSelected)
+        public void DrawCollisions()
         {
+            bool blink = DateTime.UtcNow.Second % 2 == 1;
             Color color;
             GL.LineWidth(4);
             Matrix4 transform = Matrix4.Identity;
-            foreach (Collision c in Runtime.TargetLVD.collisions)
+            foreach (Collision c in collisions)
             {
-                bool colSelected = (Runtime.LVDSelection == c);
+                bool colSelected = (LVDSelection == c);
                 float addX = 0, addY = 0, addZ = 0;
                 if (c.useStartPos)
                 {
@@ -1235,7 +1342,7 @@ namespace Smash_Forge
                     //Flag2 == rigged collision
                     ModelContainer riggedModel = null;
                     Bone riggedBone = null;
-                    foreach (ModelContainer m in Runtime.ModelContainers)
+                    foreach (ModelContainer m in MeshList.treeView1.Nodes)
                     {
                         if (m.Text.Equals(c.subname))
                         {
@@ -1265,14 +1372,14 @@ namespace Smash_Forge
 
                 for (int i = 0; i < c.verts.Count - 1; i++)
                 {
-                    Vector3 v1Pos = Vector3.Transform(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ + 5), transform);
-                    Vector3 v1Neg = Vector3.Transform(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ - 5), transform);
-                    Vector3 v1Zero = Vector3.Transform(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ), transform);
-                    Vector3 v2Pos = Vector3.Transform(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ + 5), transform);
-                    Vector3 v2Neg = Vector3.Transform(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ - 5), transform);
-                    Vector3 v2Zero = Vector3.Transform(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ), transform);
+                    Vector3 v1Pos = Vector3.TransformVector(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ + 5), transform);
+                    Vector3 v1Neg = Vector3.TransformVector(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ - 5), transform);
+                    Vector3 v1Zero = Vector3.TransformVector(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ), transform);
+                    Vector3 v2Pos = Vector3.TransformVector(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ + 5), transform);
+                    Vector3 v2Neg = Vector3.TransformVector(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ - 5), transform);
+                    Vector3 v2Zero = Vector3.TransformVector(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ), transform);
 
-                    Vector3 normals = Vector3.Transform(new Vector3(c.normals[i].x, c.normals[i].y, 0), transform);
+                    Vector3 normals = Vector3.TransformVector(new Vector3(c.normals[i].x, c.normals[i].y, 0), transform);
 
                     GL.Begin(PrimitiveType.Quads);
                     if (c.normals.Count > i)
@@ -1302,7 +1409,7 @@ namespace Smash_Forge
                         else
                             color = Color.FromArgb(128, Color.Cyan);
 
-                        if ((colSelected || Runtime.LVDSelection == c.normals[i]) && ((int)((timeSinceSelected.ElapsedMilliseconds % 1000) / 500) == 0))
+                        if ((colSelected || LVDSelection == c.normals[i]) && blink)
                             color = ColorTools.invertColor(color);
 
                         GL.Color4(color);
@@ -1325,7 +1432,7 @@ namespace Smash_Forge
                         else
                             color = Color.Orange;
 
-                        if ((colSelected || Runtime.LVDSelection == c.verts[i]) && ((int)((timeSinceSelected.ElapsedMilliseconds % 1000) / 500) == 0))
+                        if ((colSelected || LVDSelection == c.verts[i]) && blink)
                             color = ColorTools.invertColor(color);
                         GL.Color4(color);
                     }
@@ -1345,7 +1452,7 @@ namespace Smash_Forge
                             else
                                 color = Color.Orange;
 
-                            if (Runtime.LVDSelection == c.verts[i + 1] && ((int)((timeSinceSelected.ElapsedMilliseconds % 1000) / 500) == 0))
+                            if (LVDSelection == c.verts[i + 1] && blink)
                                 color = ColorTools.invertColor(color);
                             GL.Color4(color);
                         }
@@ -1360,7 +1467,7 @@ namespace Smash_Forge
                 }
                 for (int i = 0; i < c.cliffs.Count; i++)
                 {
-                    Vector3 pos = c.cliffs[i].useStartPos ? Vector3.Transform(new Vector3(c.cliffs[i].startPos.X, c.cliffs[i].startPos.Y, c.cliffs[i].startPos.Z), transform) : Vector3.Transform(new Vector3(c.cliffs[i].pos.x,c.cliffs[i].pos.y,0), transform);
+                    Vector3 pos = c.cliffs[i].useStartPos ? Vector3.TransformVector(new Vector3(c.cliffs[i].startPos.X, c.cliffs[i].startPos.Y, c.cliffs[i].startPos.Z), transform) : Vector3.TransformVector(new Vector3(c.cliffs[i].pos.x,c.cliffs[i].pos.y,0), transform);
 
                     GL.Color3(Color.White);
                     GL.Begin(PrimitiveType.Lines);

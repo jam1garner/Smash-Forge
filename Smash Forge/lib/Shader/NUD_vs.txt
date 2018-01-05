@@ -13,6 +13,7 @@ in vec4 vWeight;
 in vec4 vBoneHash;
 
 out vec3 normal;
+out vec3 viewNormal;
 out vec3 tangent;
 out vec3 bitangent;
 out vec3 fragpos;
@@ -36,6 +37,7 @@ uniform vec4 normalSamplerBUV;
 
 uniform mat4 mvpMatrix;
 uniform mat4 nscMatrix;
+uniform mat4 sphereMapMatrix;
 
 uniform uint flags;
 uniform float zScale;
@@ -158,4 +160,7 @@ void main()
     normal = vNormal;
 	if(vBone.x != -1.0)
 		normal = normalize((skinNRM(vNormal.xyz, ivec4(vBone))).xyz);
+
+    viewNormal = mat3(sphereMapMatrix) * normal.xyz;
+    viewNormal = viewNormal * 0.5 + 0.5;
 }
