@@ -145,76 +145,38 @@ namespace Smash_Forge
 
         private static void SetupShaders()
         {
-            // load up the shaders
-
             Shader cub = new Shader();
             cub.vertexShader(RenderTools.cubevs);
             cub.fragmentShader(RenderTools.cubefs);
             Runtime.shaders.Add("SkyBox", cub);
 
-            Shader sha = new Shader();
-            sha.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Shadow_vs.txt"));
-            sha.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Shadow_fs.txt"));
-            Runtime.shaders.Add("Shadow", sha);
+            CreateShader("Texture", "Texture_fs.txt", "Texture_vs.txt", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("nud", "NUD_fs.txt", "NUD_vs.txt", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("MBN", "MBN_fs.txt", "MBN_vs.txt", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("DAT", "DAT_fs.txt", "DAT_vs.txt", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("NUD_Debug", "NUD_Debug_fs.txt", "NUD_vs.txt", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("Gradient", "Gradient_fs.txt", "Gradient_vs.txt", "/lib/Shader/", "/lib/Shader/");
+            CreateShader("Quad", "Quad_fs.txt", "Quad_vs.txt", "/lib/Shader/", "/lib/Shader/");
+            CreateShader("Blur", "Blur_fs.txt", "Blur_vs.txt", "/lib/Shader/", "/lib/Shader/");
+            CreateShader("Shadow", "Shadow_fs.txt", "Shadow_vs.txt", "/lib/Shader/", "/lib/Shader/");
+        }
 
-            Shader texture = new Shader();
-            texture.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_vs.txt"));
-            texture.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Texture_fs.txt"));
-            Runtime.shaders.Add("Texture", texture);
-
-            Shader gradient = new Shader();
-            gradient.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Gradient_vs.txt"));
-            gradient.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Gradient_fs.txt"));
-            Runtime.shaders.Add("Gradient", gradient);
-
-            if (!Runtime.shaders.ContainsKey("nud"))
+        private static void CreateShader(string name, string frag, string vert, string legacyPath, string normalPath)
+        {
+            if (!Runtime.shaders.ContainsKey(name))
             {
-                Shader nud = new Shader();
-                nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
-                nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
-                Runtime.shaders.Add("nud", nud);
-            }
-
-            if (!Runtime.shaders.ContainsKey("NUD_Debug"))
-            {
-                Shader debug = new Shader();
-                debug.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
-                debug.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_Debug_fs.txt"));
-                Runtime.shaders.Add("NUD_Debug", debug);
-            }
-
-            if (!Runtime.shaders.ContainsKey("NUD_Eff"))
-            {
-                Shader effect = new Shader();
-                effect.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_Eff_vs.txt"));
-                effect.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_Eff_fs.txt"));
-                Runtime.shaders.Add("NUD_Eff", effect);
-            }
-
-            if (!Runtime.shaders.ContainsKey("MBN"))
-            {
-                Shader mbn = new Shader();
-                mbn.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_vs.txt"));
-                mbn.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_fs.txt"));
-                Runtime.shaders.Add("MBN", mbn);
-            }
-
-            Shader quad = new Shader();
-            quad.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Quad_vs.txt"));
-            quad.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Quad_fs.txt"));
-            Runtime.shaders.Add("Quad", quad);
-
-            Shader blur = new Shader();
-            blur.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Blur_vs.txt"));
-            blur.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Blur_fs.txt"));
-            Runtime.shaders.Add("Blur", blur);
-
-            if (!Runtime.shaders.ContainsKey("DAT"))
-            {
-                Shader DAT = new Shader();
-                DAT.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_vs.txt"));
-                DAT.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_fs.txt"));
-                Runtime.shaders.Add("DAT", DAT);
+                Shader shader = new Shader();
+                if (Runtime.useLegacyShaders)
+                {
+                    shader.vertexShader(File.ReadAllText(MainForm.executableDir + legacyPath + vert));
+                    shader.fragmentShader(File.ReadAllText(MainForm.executableDir + legacyPath + frag));
+                }
+                else
+                {
+                    shader.vertexShader(File.ReadAllText(MainForm.executableDir + normalPath + vert));
+                    shader.fragmentShader(File.ReadAllText(MainForm.executableDir + normalPath + frag));
+                }
+                Runtime.shaders.Add(name, shader);
             }
         }
 

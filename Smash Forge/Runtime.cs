@@ -242,6 +242,7 @@ namespace Smash_Forge
         public static string renderer = "";
         public static string openGLVersion = "";
         public static string GLSLVersion = "";
+        public static bool useLegacyShaders = false;
 
         public enum RenderTypes
         {
@@ -373,6 +374,7 @@ namespace Smash_Forge
                         case "back_gradient_bottom": try { back2 = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
 
                         case "type": if (node.ParentNode != null && node.ParentNode.Name.Equals("RENDERSETTINGS")) Enum.TryParse(node.InnerText, out renderType); break;
+                        case "OpenGL_2.10": bool.TryParse(node.InnerText, out useLegacyShaders); break;
                         case "camera_light": bool.TryParse(node.InnerText, out cameraLight); break;
                         case "use_normal_map": bool.TryParse(node.InnerText, out renderNormalMap); break;
                         case "render_vertex_color": bool.TryParse(node.InnerText, out renderVertColor); break;
@@ -478,7 +480,6 @@ namespace Smash_Forge
                 Runtime.hitboxIdColors = new List<Color>(Runtime.defaultHitboxIdColors);
         }
 
-
         public static void SaveConfig()
         {
             EnsureHitboxColors();
@@ -486,25 +487,25 @@ namespace Smash_Forge
             XmlDocument doc = new XmlDocument();
 
             string comment = @"
-Config ENUMS
+                Config ENUMS
 
-floor style
--Normal
--Solid
--Textured
+                floor style
+                -Normal
+                -Solid
+                -Textured
 
-for setting floor texture 
-<texture>(texture location)</texture>
+                for setting floor texture 
+                <texture>(texture location)</texture>
 
-render type
--Texture
--Normals
--NormalsBnW
--VertColor
+                render type
+                -Texture
+                -Normals
+                -NormalsBnW
+                -VertColor
 
-for changing default texure
-<default_texture>(texture location)</default_texture>
-";
+                for changing default texure
+                <default_texture>(texture location)</default_texture>";
+
             XmlComment com = doc.CreateComment(comment);
 
             XmlNode mainNode = doc.CreateElement("FORGECONFIG");
@@ -538,6 +539,7 @@ for changing default texure
             renderNode.AppendChild(createNode(doc, "render_vertex_color", renderVertColor.ToString()));
             renderNode.AppendChild(createNode(doc, "render_alpha", renderAlpha.ToString()));
             renderNode.AppendChild(createNode(doc, "camera_light", cameraLight.ToString()));
+            renderNode.AppendChild(createNode(doc, "OpenGL_2.10", useLegacyShaders.ToString()));
             renderNode.AppendChild(createNode(doc, "use_normal_map", renderNormalMap.ToString()));
 
             {
