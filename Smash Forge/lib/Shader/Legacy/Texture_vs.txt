@@ -1,6 +1,6 @@
-#version 330
-in vec3 position;
-out vec2 texCoord;
+﻿#version 120
+attribute vec3 position;
+varying vec2 texCoord;
 
 void main()
 {
