@@ -145,11 +145,6 @@ namespace Smash_Forge
 
         private static void SetupShaders()
         {
-            Shader cub = new Shader();
-            cub.vertexShader(RenderTools.cubevs);
-            cub.fragmentShader(RenderTools.cubefs);
-            Runtime.shaders.Add("SkyBox", cub);
-
             CreateShader("Texture", "Texture_fs.txt", "Texture_vs.txt", "/lib/Shader/Legacy/", "/lib/Shader/");
             CreateShader("nud", "NUD_fs.txt", "NUD_vs.txt", "/lib/Shader/Legacy/", "/lib/Shader/");
             CreateShader("MBN", "MBN_fs.txt", "MBN_vs.txt", "/lib/Shader/Legacy/", "/lib/Shader/");
@@ -159,6 +154,7 @@ namespace Smash_Forge
             CreateShader("Quad", "Quad_fs.txt", "Quad_vs.txt", "/lib/Shader/", "/lib/Shader/");
             CreateShader("Blur", "Blur_fs.txt", "Blur_vs.txt", "/lib/Shader/", "/lib/Shader/");
             CreateShader("Shadow", "Shadow_fs.txt", "Shadow_vs.txt", "/lib/Shader/", "/lib/Shader/");
+            CreateShader("Point", "Point_fs.txt", "Point_vs.txt", "/lib/Shader/", "/lib/Shader/");
         }
 
         private static void CreateShader(string name, string frag, string vert, string legacyPath, string normalPath)
