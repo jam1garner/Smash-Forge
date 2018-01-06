@@ -168,7 +168,7 @@
             this.vertcolorCB.Name = "vertcolorCB";
             this.vertcolorCB.Size = new System.Drawing.Size(195, 17);
             this.vertcolorCB.TabIndex = 8;
-            this.vertcolorCB.Text = "Ignore Vertex Colors (sets all to 127)";
+            this.vertcolorCB.Text = "Ignore vertex colors (sets all to 127)";
             this.vertcolorCB.UseVisualStyleBackColor = true;
             // 
             // checkBox5
@@ -225,7 +225,7 @@
             this.checkBox4.Name = "checkBox4";
             this.checkBox4.Size = new System.Drawing.Size(73, 17);
             this.checkBox4.TabIndex = 6;
-            this.checkBox4.Text = "Rotate 90";
+            this.checkBox4.Text = "Rotate 90 degrees";
             this.checkBox4.UseVisualStyleBackColor = true;
             // 
             // checkBox2
@@ -235,7 +235,7 @@
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(173, 17);
             this.checkBox2.TabIndex = 3;
-            this.checkBox2.Text = "Remove ### from Mesh Name";
+            this.checkBox2.Text = "Translate UVs vertically by -1";
             this.checkBox2.UseVisualStyleBackColor = true;
             // 
             // label2
@@ -254,7 +254,7 @@
             this.vertColorDivCB.Name = "vertColorDivCB";
             this.vertColorDivCB.Size = new System.Drawing.Size(128, 17);
             this.vertColorDivCB.TabIndex = 15;
-            this.vertColorDivCB.Text = "Divide Vert Color by 2";
+            this.vertColorDivCB.Text = "Divide vertex color values by 2";
             this.vertColorDivCB.UseVisualStyleBackColor = true;
             this.vertColorDivCB.CheckedChanged += new System.EventHandler(this.vertColorDivCB_CheckedChanged);
             // 

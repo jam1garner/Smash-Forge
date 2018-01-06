@@ -47,8 +47,8 @@ namespace Smash_Forge
             if (Edited)
             {
                 var window = MessageBox.Show(
-                    "Are you sure?\nYou have unsaved changes",
-                    "Close the window?",
+                    "Are you sure you want to close this window?\nYou have unsaved changes that will be lost.",
+                    "Close",
                     MessageBoxButtons.YesNo);
 
                 e.Cancel = (window == DialogResult.No);

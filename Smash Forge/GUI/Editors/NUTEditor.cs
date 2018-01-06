@@ -101,7 +101,7 @@ namespace Smash_Forge
             }
             FileOutput o = new FileOutput();
             byte[] n = NUT.Rebuild();
-            DialogResult dialogResult = MessageBox.Show("If you are unsure press No", "Compress with ZLIB?", MessageBoxButtons.YesNo);
+            DialogResult dialogResult = MessageBox.Show("Would you like to compress this NUT file with zlib?\nIf you are unsure, select \"No\".", "zlib Compression", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
                 n = FileData.DeflateZLIB(n);
             o.writeBytes(n);
