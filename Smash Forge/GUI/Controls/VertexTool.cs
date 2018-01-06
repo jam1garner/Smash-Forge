@@ -13,41 +13,41 @@ namespace Smash_Forge
     public partial class VertexTool : Form
     {
         public ModelViewport vp;
-        public List<NUD.Vertex> vertices = new List<NUD.Vertex>();
+
+        public NUD.Vertex SelectedVertex
+        {
+            get
+            {
+                return _selectedVertex;
+            }
+            set
+            {
+                _selectedVertex = value;
+                LoadVertexInfo(_selectedVertex);
+            }
+        }
+        private NUD.Vertex _selectedVertex;
+
+        private VBN VBN;
+
+        private int SelectedWeight = -1;
 
         public VertexTool()
         {
             InitializeComponent();
         }
 
-        public void refresh()
-        {
-            // grab contcainer
-            vertexListBox.Items.Clear();
-
-            if (!(vp.draw[0] is ModelContainer)) return;
-            ModelContainer con = (ModelContainer)vp.draw[0];
-            foreach(NUD.Mesh mesh in con.NUD.Nodes)
-            {
-                foreach (NUD.Polygon poly in mesh.Nodes)
-                {
-                    for(int i = 0; i < poly.selectedVerts.Length; i++)
-                    {
-                        if (poly.selectedVerts[i] > 0)
-                        {
-                            vertexListBox.Items.Add(poly.vertices[i]);
-                        }
-                    }
-                }
-            }
-        }
-
         public void LoadVertexInfo(NUD.Vertex v)
         {
+            boneWeightList.Items.Clear();
+            if (v == null)
+            {
+                return;
+            }
             if (!(vp.draw[0] is ModelContainer)) return;
             ModelContainer con = (ModelContainer)vp.draw[0];
-            boneWeightList.Items.Clear();
             if (con.VBN == null) return;
+            VBN = con.VBN;
             if (v.node.Count > 0)
                 boneWeightList.Items.Add(con.VBN.bones[v.node[0] > -1 ? v.node[0] : 0].Text + " _ " + v.weight[0]);
             if (v.node.Count > 1)
@@ -62,34 +62,19 @@ namespace Smash_Forge
         {
             if (vertexListBox.SelectedIndex >= 0)
             {
-                if (!(vp.draw[0] is ModelContainer)) return;
-                ModelContainer con = (ModelContainer)vp.draw[0];
-                NUD.Vertex v = (NUD.Vertex)vertexListBox.SelectedItem;
-                SelectVertex(v);
-                LoadVertexInfo(v);
+                SelectedVertex = ((NUD.Vertex)vertexListBox.SelectedItem);
             }
         }
 
-        private void SelectVertex(NUD.Vertex v)
+        private void boneWeightList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!(vp.draw[0] is ModelContainer)) return;
-            ModelContainer con = (ModelContainer)vp.draw[0];
-            foreach (NUD.Mesh mesh in con.NUD.Nodes)
-            {
-                foreach (NUD.Polygon poly in mesh.Nodes)
-                {
-                    for (int i = 0; i < poly.vertices.Count; i++)
-                    {
-                        if (poly.selectedVerts[i] < 0)
-                            poly.selectedVerts[i] = 1;
-                        if (poly.vertices[i] == v)
-                        {
-                            poly.selectedVerts[i] = -1;
-                            return;
-                        }
-                    }
-                }
-            }
+            UpdateWeights();
+        }
+
+        private void UpdateWeights()
+        {
+            SelectedWeight = boneWeightList.SelectedIndex;
+            WeightValue.Value = (decimal)SelectedVertex.weight[SelectedWeight];
         }
     }
 }

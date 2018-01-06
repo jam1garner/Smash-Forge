@@ -12,7 +12,7 @@ using SALT.Graphics;
 
 namespace Smash_Forge
 {
-    public class NUD : FileBase
+    public class NUD : FileBase, IDisposable
     {
         public NUD()
         {
@@ -3024,6 +3024,18 @@ namespace Smash_Forge
                         if(!texIds.Contains(mat.displayTexId))
                             texIds.Add(mat.displayTexId);
             return texIds;
+        }
+
+        public void Dispose()
+        {
+            if (GL.IsBuffer(ibo_elements))
+            {
+                GL.DeleteBuffer(ibo_elements);
+                GL.DeleteBuffer(vbo_position);
+                GL.DeleteBuffer(ubo_bones);
+                GL.DeleteBuffer(vbo_select);
+            }
+            Nodes.Clear();
         }
     }
 }

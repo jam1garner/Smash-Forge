@@ -32,8 +32,10 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.boneWeightList = new System.Windows.Forms.ListBox();
+            this.WeightValue = new System.Windows.Forms.NumericUpDown();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.WeightValue)).BeginInit();
             this.SuspendLayout();
             // 
             // vertexListBox
@@ -59,6 +61,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.WeightValue);
             this.groupBox2.Controls.Add(this.boneWeightList);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(0, 139);
@@ -77,6 +80,20 @@
             this.boneWeightList.Name = "boneWeightList";
             this.boneWeightList.Size = new System.Drawing.Size(218, 95);
             this.boneWeightList.TabIndex = 0;
+            this.boneWeightList.SelectedIndexChanged += new System.EventHandler(this.boneWeightList_SelectedIndexChanged);
+            // 
+            // WeightValue
+            // 
+            this.WeightValue.DecimalPlaces = 6;
+            this.WeightValue.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.WeightValue.Location = new System.Drawing.Point(12, 19);
+            this.WeightValue.Name = "WeightValue";
+            this.WeightValue.Size = new System.Drawing.Size(86, 20);
+            this.WeightValue.TabIndex = 1;
             // 
             // VertexTool
             // 
@@ -89,15 +106,17 @@
             this.Text = "Vertex Tool";
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.WeightValue)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.ListBox vertexListBox;
+        public System.Windows.Forms.ListBox vertexListBox;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.ListBox boneWeightList;
+        private System.Windows.Forms.NumericUpDown WeightValue;
     }
 }

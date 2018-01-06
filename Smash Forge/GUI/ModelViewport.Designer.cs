@@ -56,6 +56,7 @@
             this.prevButton = new System.Windows.Forms.Button();
             this.playButton = new System.Windows.Forms.Button();
             this.glViewport = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(8, 8, 8, 8), 24, 8, 16));
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.animationTrackBar)).BeginInit();
@@ -80,6 +81,7 @@
             this.modePolygon,
             this.toolStripSeparator1,
             this.RenderButton,
+            this.toolStripButton1,
             this.GIFButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -371,6 +373,17 @@
             this.glViewport.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseUp);
             this.glViewport.Resize += new System.EventHandler(this.glViewport_Resize);
             // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton1.Image = global::Smash_Forge.Properties.Resources.strip_render;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(28, 28);
+            this.toolStripButton1.Text = "toolStripButton1";
+            this.toolStripButton1.ToolTipText = "Render Viewport to File (No Alpha)";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
+            // 
             // ModelViewport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -382,6 +395,7 @@
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "ModelViewport";
             this.Text = "ModelViewport";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ModelViewport_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ModelViewport_FormClosed);
             this.Load += new System.EventHandler(this.ModelViewport_Load);
             this.toolStrip1.ResumeLayout(false);
@@ -425,5 +439,6 @@
         private System.Windows.Forms.ToolStripButton modeBone;
         private System.Windows.Forms.ToolStripButton modeMesh;
         private System.Windows.Forms.ToolStripButton modePolygon;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
     }
 }

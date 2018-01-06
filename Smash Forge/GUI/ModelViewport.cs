@@ -45,6 +45,7 @@ namespace Smash_Forge
 
         FrameTimer frameTime = new FrameTimer();
 
+        VertexTool VertexTool = new VertexTool();
 
         //Animation
         private VBN TargetVBN;
@@ -203,6 +204,10 @@ namespace Smash_Forge
             LVDEditor.MaximumSize = new Size(300, 2000);
             AddControl(LVDEditor);
 
+            VertexTool.Dock = DockStyle.Left;
+            VertexTool.MaximumSize = new Size(300, 2000);
+            AddControl(VertexTool);
+            VertexTool.vp = this;
 
             ACMDEditor = new ACMDPreviewEditor();
             ACMDEditor.Owner = this;
@@ -660,6 +665,7 @@ namespace Smash_Forge
             MeshList.Visible = false;
             AnimList.Visible = false;
             ACMDEditor.Visible = false;
+            VertexTool.Visible = false;
             switch (ViewComboBox.SelectedIndex)
             {
                 case 0:
@@ -668,6 +674,7 @@ namespace Smash_Forge
                     break;
                 case 1:
                     MeshList.Visible = true;
+                    VertexTool.Visible = true;
                     break;
                 case 2:
                     LVDEditor.Visible = true;
@@ -825,6 +832,23 @@ namespace Smash_Forge
 
         #endregion
 
+        private void ModelViewport_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            foreach(TreeNode n in MeshList.treeView1.Nodes)
+            {
+                if(n is ModelContainer)
+                {
+                    ((ModelContainer)n).NUD.Dispose();
+                    ((ModelContainer)n).NUT.Destroy();
+                }
+            }
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            CaptureScreen(false).Save(MainForm.executableDir + "\\Render.png");
+        }
+
         private void checkSelect()
         {
             if (CurrentMode == Mode.Selection)
@@ -883,13 +907,13 @@ namespace Smash_Forge
                                 foreach (NUD.Vertex v in poly.vertices)
                                 {
                                     //if (!poly.IsSelected) continue;
-                                    if(!OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ControlLeft))
+                                    if (!OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ControlLeft))
                                         poly.selectedVerts[i] = 0;
 
                                     if (r.TrySphereHit(v.pos, 0.2f, out close))
                                     {
                                         double dis = r.Distance(close);
-                                        if(dis < mindis)
+                                        if (dis < mindis)
                                         {
                                             mindis = dis;
                                             Close = poly;
@@ -900,14 +924,35 @@ namespace Smash_Forge
                                 }
                             }
                         }
-                        if(Close != null)
+                        if (Close != null)
                         {
                             Close.selectedVerts[index] = 1;
                         }
                     }
                 }
 
-                vertexTool.refresh();
+                VertexTool.vertexListBox.BeginUpdate();
+                VertexTool.vertexListBox.Items.Clear();
+                foreach (TreeNode node in draw)
+                {
+                    if (!(node is ModelContainer)) continue;
+                    ModelContainer con = (ModelContainer)node;
+                    foreach (NUD.Mesh mesh in con.NUD.Nodes)
+                    {
+                        foreach (NUD.Polygon poly in mesh.Nodes)
+                        {
+                            int i = 0;
+                            foreach (NUD.Vertex v in poly.vertices)
+                            {
+                                if (poly.selectedVerts[i++] == 1)
+                                {
+                                    VertexTool.vertexListBox.Items.Add(v);
+                                }
+                            }
+                        }
+                    }
+                }
+                VertexTool.vertexListBox.EndUpdate();
                 CurrentMode = Mode.Normal;
             }
         }

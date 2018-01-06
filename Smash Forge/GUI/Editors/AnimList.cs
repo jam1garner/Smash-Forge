@@ -64,7 +64,7 @@ namespace Smash_Forge
 
                 string AnimName = e.Node.Text;
                 if(AnimName.Length >= 3)
-                    Regex.Match(AnimName, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString().Substring(3);
+                    AnimName = Regex.Match(AnimName, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString().Substring(3);
 
                 Animation running = new Animation(AnimName);
                 running.ReplaceMe((Animation)e.Node);
@@ -92,7 +92,9 @@ namespace Smash_Forge
                             if (n == e.Node)
                                 continue;
                             if (matchAnim.Checked && NodeName.Equals(AnimName))
+                            {
                                 running.Children.Add(n);
+                            }
                         }
                         if (n is MTA)
                         {

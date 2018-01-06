@@ -917,7 +917,7 @@ namespace Smash_Forge
                     continue;
 
                 Bone b = getBone(h.Bone, Skeleton);
-                h.va = Vector3.TransformVector(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
+                h.va = Vector3.TransformPosition(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
 
                 // Draw angle marker
                 /*GL.LineWidth(7f);
@@ -934,7 +934,7 @@ namespace Smash_Forge
                 if (!h.IsSphere())
                 {
                     h.va2 = new Vector3(h.X2, h.Y2, h.Z2);
-                    if (h.Bone != -1) h.va2 = Vector3.TransformVector(h.va2, b.transform.ClearScale());
+                    if (h.Bone != -1) h.va2 = Vector3.TransformPosition(h.va2, b.transform.ClearScale());
                     RenderTools.drawCylinder(h.va, h.va2, h.Size);
                 }
                 else
@@ -958,11 +958,11 @@ namespace Smash_Forge
                         {
 
                             Bone b2 = getBone(h2.Bone, Skeleton);
-                            var va = Vector3.TransformVector(new Vector3(h2.X, h2.Y, h2.Z), b2.transform.ClearScale());
+                            var va = Vector3.TransformPosition(new Vector3(h2.X, h2.Y, h2.Z), b2.transform.ClearScale());
                             if (!h2.IsSphere())
                             {
                                 var va2 = new Vector3(h2.X2, h2.Y2, h2.Z2);
-                                if (h2.Bone != -1) va2 = Vector3.TransformVector(va2, b2.transform.ClearScale());
+                                if (h2.Bone != -1) va2 = Vector3.TransformPosition(va2, b2.transform.ClearScale());
                                 RenderTools.drawCylinder(va, va2, h2.Size);
                             }
                             else

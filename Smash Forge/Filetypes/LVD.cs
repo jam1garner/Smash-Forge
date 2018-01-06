@@ -1372,14 +1372,14 @@ namespace Smash_Forge
 
                 for (int i = 0; i < c.verts.Count - 1; i++)
                 {
-                    Vector3 v1Pos = Vector3.TransformVector(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ + 5), transform);
-                    Vector3 v1Neg = Vector3.TransformVector(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ - 5), transform);
-                    Vector3 v1Zero = Vector3.TransformVector(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ), transform);
-                    Vector3 v2Pos = Vector3.TransformVector(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ + 5), transform);
-                    Vector3 v2Neg = Vector3.TransformVector(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ - 5), transform);
-                    Vector3 v2Zero = Vector3.TransformVector(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ), transform);
+                    Vector3 v1Pos = Vector3.TransformPosition(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ + 5), transform);
+                    Vector3 v1Neg = Vector3.TransformPosition(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ - 5), transform);
+                    Vector3 v1Zero = Vector3.TransformPosition(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ), transform);
+                    Vector3 v2Pos = Vector3.TransformPosition(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ + 5), transform);
+                    Vector3 v2Neg = Vector3.TransformPosition(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ - 5), transform);
+                    Vector3 v2Zero = Vector3.TransformPosition(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ), transform);
 
-                    Vector3 normals = Vector3.TransformVector(new Vector3(c.normals[i].x, c.normals[i].y, 0), transform);
+                    Vector3 normals = Vector3.TransformPosition(new Vector3(c.normals[i].x, c.normals[i].y, 0), transform);
 
                     GL.Begin(PrimitiveType.Quads);
                     if (c.normals.Count > i)
@@ -1467,7 +1467,7 @@ namespace Smash_Forge
                 }
                 for (int i = 0; i < c.cliffs.Count; i++)
                 {
-                    Vector3 pos = c.cliffs[i].useStartPos ? Vector3.TransformVector(new Vector3(c.cliffs[i].startPos.X, c.cliffs[i].startPos.Y, c.cliffs[i].startPos.Z), transform) : Vector3.TransformVector(new Vector3(c.cliffs[i].pos.x,c.cliffs[i].pos.y,0), transform);
+                    Vector3 pos = c.cliffs[i].useStartPos ? Vector3.TransformPosition(new Vector3(c.cliffs[i].startPos.X, c.cliffs[i].startPos.Y, c.cliffs[i].startPos.Z), transform) : Vector3.TransformPosition(new Vector3(c.cliffs[i].pos.x,c.cliffs[i].pos.y,0), transform);
 
                     GL.Color3(Color.White);
                     GL.Begin(PrimitiveType.Lines);
