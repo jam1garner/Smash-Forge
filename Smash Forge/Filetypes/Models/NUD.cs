@@ -16,12 +16,12 @@ namespace Smash_Forge
     {
         public NUD()
         {
-            if (!Runtime.shaders.ContainsKey("nud"))
+            if (!Runtime.shaders.ContainsKey("NUD"))
             {
                 Shader nud = new Shader();
                 nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
                 nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
-                Runtime.shaders.Add("nud", nud);
+                Runtime.shaders.Add("NUD", nud);
             }
 
             if (!Runtime.shaders.ContainsKey("NUD_Debug"))
@@ -32,27 +32,8 @@ namespace Smash_Forge
                 Runtime.shaders.Add("NUD_Debug", debug);
             }
 
-            if (!Runtime.shaders.ContainsKey("NUD_Eff"))
-            {
-                Shader effect = new Shader();
-                effect.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_Eff_vs.txt"));
-                effect.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_Eff_fs.txt"));
-                Runtime.shaders.Add("NUD_Eff", effect);
-            }
-
-            if (!Runtime.shaders.ContainsKey("Point"))
-            {
-                Shader nud = new Shader();
-                nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Point_vs.txt"));
-                nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/Point_fs.txt"));
-                Runtime.shaders.Add("Point", nud);
-            }
-
-            Runtime.shaders["nud"].displayCompilationWarning("nud");
+            Runtime.shaders["NUD"].displayCompilationWarning("NUD");
             Runtime.shaders["NUD_Debug"].displayCompilationWarning("NUD_Debug");
-            Runtime.shaders["NUD_Eff"].displayCompilationWarning("NUD_Eff");
-            Runtime.shaders["Point"].displayCompilationWarning("Point");
-
 
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out ibo_elements);
@@ -196,7 +177,6 @@ namespace Smash_Forge
             DepthSortMeshes();
         }
 
-
         public void Render(VBN vbn, Camera camera)
         {
             if (Runtime.renderBoundingBox)
@@ -205,18 +185,18 @@ namespace Smash_Forge
             }
 
             //Prepare Shader
-            Shader shader = Runtime.shaders["nud"];
+            Shader shader = Runtime.shaders["NUD"];
 
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = Runtime.shaders["NUD_Debug"];
             else
-                shader = Runtime.shaders["nud"];
+                shader = Runtime.shaders["NUD"];
 
             GL.UseProgram(shader.programID);
 
             // Load Bones
             shader.enableAttrib();
-            if (vbn != null)
+            if (vbn != null && !Runtime.useLegacyShaders)
             {
                 Matrix4[] f = vbn.getShaderMatrix();
 
@@ -452,7 +432,6 @@ namespace Smash_Forge
             Material material = p.materials[0];
 
             GL.Uniform1(shader.getAttribute("flags"), material.flags);
-            GL.Uniform1(shader.getAttribute("isTransparent"), p.isTransparent ? 1 : 0);
             GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
 
             // shader uniforms
@@ -463,15 +442,25 @@ namespace Smash_Forge
             SetXMBUniforms(shader, p);
             SetNSCUniform(p, shader);
 
+            p.isTransparent = false;
+            if (material.srcFactor > 0 || material.dstFactor > 0 || material.AlphaFunc > 0 || material.AlphaTest > 0)
+                p.isTransparent = true;
+            GL.Uniform1(shader.getAttribute("isTransparent"), p.isTransparent ? 1 : 0);
+
+
             // vertex shader attributes (UVs, skin weights, etc)
             SetVertexAttributes(p, shader);
 
             // alpha blending
             GL.Enable(EnableCap.Blend);
 
-            GL.BlendFunc(srcFactor.Keys.Contains(material.srcFactor) ? srcFactor[material.srcFactor] : BlendingFactorSrc.SrcAlpha,
-                dstFactor.Keys.Contains(material.dstFactor) ? dstFactor[material.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
-            if (material.srcFactor == 0 && material.dstFactor == 0) GL.Disable(EnableCap.Blend);
+            BlendingFactorSrc blendSrc = srcFactor.Keys.Contains(material.srcFactor) ? srcFactor[material.srcFactor] : BlendingFactorSrc.SrcAlpha;
+            BlendingFactorDest blendDst = dstFactor.Keys.Contains(material.dstFactor) ? dstFactor[material.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha;
+            //GL.BlendFunc(blendSrc, blendDst);
+            GL.BlendFuncSeparate(blendSrc, blendDst, BlendingFactorSrc.One, BlendingFactorDest.One);
+            GL.BlendEquationSeparate(BlendEquationMode.FuncAdd, BlendEquationMode.FuncAdd);
+            if (material.srcFactor == 0 && material.dstFactor == 0)
+                GL.Disable(EnableCap.Blend);
 
             // alpha testing
             GL.Enable(EnableCap.AlphaTest);
@@ -734,26 +723,48 @@ namespace Smash_Forge
             int v = 0; // Yes else if is faster than ternary
             if (mat.diffuse) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasDif"), v);
+
             if (mat.diffuse2) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasDif2"), v);
+
             if (mat.diffuse3) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasDif3"), v);
+
             if (mat.stagemap) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasStage"), v);
+
             if (mat.cubemap) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasCube"), v);
+
             if (mat.aomap) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasAo"), v);
+
             if (mat.normalmap) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasNrm"), v);
+
             if (mat.ramp) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasRamp"), v);
+
             if (mat.dummyramp) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasDummyRamp"), v);
+
             if (mat.useColorGainOffset) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasColorGainOffset"), v);
+
             if (mat.useDiffuseBlend) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("useDiffuseBlend"), v);
+
+            if (mat.spheremap) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("hasSphereMap"), v);
+
+            if (mat.hasBayoHair) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("hasBayoHair"), v);
+
+            if (mat.useReflectionMask) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("useDifRefMask"), v);
+
+            if (mat.softLightBrighten) v = 1; else v = 0;
+            GL.Uniform1(shader.getAttribute("softLightBrighten"), v);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
@@ -986,7 +997,7 @@ namespace Smash_Forge
             GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mat);
             //GL.Uniform4(shader.getAttribute("color"), 1, 1, 1, 1);
 
-            if (vbn != null)
+            if (vbn != null && !Runtime.useLegacyShaders)
             {
                 Matrix4[] f = vbn.getShaderMatrix();
                 
@@ -2254,8 +2265,11 @@ namespace Smash_Forge
             public bool glow = false;
             public bool hasShadow = false;
             public bool useVertexColor = false;
+            public bool useReflectionMask = false;
             public bool useColorGainOffset = false;
+            public bool hasBayoHair = false;
             public bool useDiffuseBlend = false;
+            public bool softLightBrighten = false;
 
             public bool diffuse = false;
             public bool normalmap = false;
@@ -2324,7 +2338,6 @@ namespace Smash_Forge
                 if (glow) t |= (int) TextureFlags.Glow;
                 if (hasShadow) t |= (int) TextureFlags.Shadow;
                 if (dummyramp) t |= (int) TextureFlags.DummyRamp; 
-                if (useColorGainOffset) t |= 0x0C000061;
                 flag = (uint)(((int)flag & 0xFFFFFF00) | t);
 
                 return flag;
@@ -2360,6 +2373,10 @@ namespace Smash_Forge
 
                 // always use vertex color for effect materials for now
                 useVertexColor = useVertexColor || ((flag & 0xF0000000) == 0xB0000000);
+
+                useReflectionMask = (flag & 0xFFFFFF00) == 0xF8820000;
+                hasBayoHair = (flag & 0x00FF0000) == 0x00420000;
+                softLightBrighten = ((flag & 0x00FF0000) == 0x00810000 || (flag & 0xFFFF0000) == 0xFA600000);
             }
 
             public void TestTextures()
@@ -2455,10 +2472,6 @@ namespace Smash_Forge
                         v.weight.Count > 3 ? v.weight[3] : 0),
 
                     };
-
-                    isTransparent = false;
-                    if (materials[0].srcFactor > 0 || materials[0].dstFactor > 0 || materials[0].AlphaFunc > 0 || materials[0].AlphaTest > 0)
-                        isTransparent = true;
 
                     vert.Add(nv);
                 }
