@@ -672,6 +672,9 @@ void main()
     fragColor.a += alphaBlendParams.x;
 
     // alpha override
-    if (renderAlpha != 1)
+    if (renderAlpha != 1 || isTransparent != 1)
         fragColor.a = 1;
+
+    if (fragColor.a == 0)
+        discard;
 }

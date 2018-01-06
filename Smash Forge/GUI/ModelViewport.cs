@@ -1062,8 +1062,6 @@ namespace Smash_Forge
             if (Runtime.drawQuadBlur)
                 DrawQuadBlur();
 
-
-
             // render full screen quad for post processing
             if (Runtime.drawQuadFinalOutput)
                 DrawQuadFinalOutput();*/

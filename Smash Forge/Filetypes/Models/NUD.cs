@@ -16,12 +16,12 @@ namespace Smash_Forge
     {
         public NUD()
         {
-            if (!Runtime.shaders.ContainsKey("nud"))
+            if (!Runtime.shaders.ContainsKey("NUD"))
             {
                 Shader nud = new Shader();
                 nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
                 nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
-                Runtime.shaders.Add("nud", nud);
+                Runtime.shaders.Add("NUD", nud);
             }
 
             if (!Runtime.shaders.ContainsKey("NUD_Debug"))
@@ -32,7 +32,7 @@ namespace Smash_Forge
                 Runtime.shaders.Add("NUD_Debug", debug);
             }
 
-            Runtime.shaders["nud"].displayCompilationWarning("nud");
+            Runtime.shaders["NUD"].displayCompilationWarning("NUD");
             Runtime.shaders["NUD_Debug"].displayCompilationWarning("NUD_Debug");
 
             GL.GenBuffers(1, out vbo_position);
@@ -185,18 +185,18 @@ namespace Smash_Forge
             }
 
             //Prepare Shader
-            Shader shader = Runtime.shaders["nud"];
+            Shader shader = Runtime.shaders["NUD"];
 
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = Runtime.shaders["NUD_Debug"];
             else
-                shader = Runtime.shaders["nud"];
+                shader = Runtime.shaders["NUD"];
 
             GL.UseProgram(shader.programID);
 
             // Load Bones
             shader.enableAttrib();
-            if (vbn != null)
+            if (vbn != null && !Runtime.useLegacyShaders)
             {
                 Matrix4[] f = vbn.getShaderMatrix();
 
@@ -432,7 +432,6 @@ namespace Smash_Forge
             Material material = p.materials[0];
 
             GL.Uniform1(shader.getAttribute("flags"), material.flags);
-            GL.Uniform1(shader.getAttribute("isTransparent"), p.isTransparent ? 1 : 0);
             GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
 
             // shader uniforms
@@ -443,15 +442,25 @@ namespace Smash_Forge
             SetXMBUniforms(shader, p);
             SetNSCUniform(p, shader);
 
+            p.isTransparent = false;
+            if (material.srcFactor > 0 || material.dstFactor > 0 || material.AlphaFunc > 0 || material.AlphaTest > 0)
+                p.isTransparent = true;
+            GL.Uniform1(shader.getAttribute("isTransparent"), p.isTransparent ? 1 : 0);
+
+
             // vertex shader attributes (UVs, skin weights, etc)
             SetVertexAttributes(p, shader);
 
             // alpha blending
             GL.Enable(EnableCap.Blend);
 
-            GL.BlendFunc(srcFactor.Keys.Contains(material.srcFactor) ? srcFactor[material.srcFactor] : BlendingFactorSrc.SrcAlpha,
-                dstFactor.Keys.Contains(material.dstFactor) ? dstFactor[material.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha);
-            if (material.srcFactor == 0 && material.dstFactor == 0) GL.Disable(EnableCap.Blend);
+            BlendingFactorSrc blendSrc = srcFactor.Keys.Contains(material.srcFactor) ? srcFactor[material.srcFactor] : BlendingFactorSrc.SrcAlpha;
+            BlendingFactorDest blendDst = dstFactor.Keys.Contains(material.dstFactor) ? dstFactor[material.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha;
+            //GL.BlendFunc(blendSrc, blendDst);
+            GL.BlendFuncSeparate(blendSrc, blendDst, BlendingFactorSrc.One, BlendingFactorDest.One);
+            GL.BlendEquationSeparate(BlendEquationMode.FuncAdd, BlendEquationMode.FuncAdd);
+            if (material.srcFactor == 0 && material.dstFactor == 0)
+                GL.Disable(EnableCap.Blend);
 
             // alpha testing
             GL.Enable(EnableCap.AlphaTest);
@@ -988,7 +997,7 @@ namespace Smash_Forge
             GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mat);
             //GL.Uniform4(shader.getAttribute("color"), 1, 1, 1, 1);
 
-            if (vbn != null)
+            if (vbn != null && !Runtime.useLegacyShaders)
             {
                 Matrix4[] f = vbn.getShaderMatrix();
                 
@@ -2463,10 +2472,6 @@ namespace Smash_Forge
                         v.weight.Count > 3 ? v.weight[3] : 0),
 
                     };
-
-                    isTransparent = false;
-                    if (materials[0].srcFactor > 0 || materials[0].dstFactor > 0 || materials[0].AlphaFunc > 0 || materials[0].AlphaTest > 0)
-                        isTransparent = true;
 
                     vert.Add(nv);
                 }

@@ -202,7 +202,7 @@ namespace Smash_Forge
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = Runtime.shaders["NUD_Debug"];
             else
-                shader = Runtime.shaders["nud"];
+                shader = Runtime.shaders["NUD"];
             GL.UseProgram(shader.programID);
 
             int renderType = (int)Runtime.renderType;
@@ -255,12 +255,12 @@ namespace Smash_Forge
                     dat_melee.Render(camera.getMVPMatrix());
                 }
 
-                if (NUD != null && Runtime.shaders["nud"].shadersCompiledSuccessfully() && Runtime.shaders["NUD_Debug"].shadersCompiledSuccessfully())
+                if (NUD != null && Runtime.shaders["NUD"].shadersCompiledSuccessfully() && Runtime.shaders["NUD_Debug"].shadersCompiledSuccessfully())
                 {
                     if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                         shader = Runtime.shaders["NUD_Debug"];
                     else
-                        shader = Runtime.shaders["nud"];
+                        shader = Runtime.shaders["NUD"];
 
                     GL.UseProgram(shader.programID);
 

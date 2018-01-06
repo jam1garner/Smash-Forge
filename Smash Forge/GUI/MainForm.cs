@@ -145,32 +145,34 @@ namespace Smash_Forge
 
         private static void SetupShaders()
         {
-            CreateShader("Texture", "Texture_fs.txt", "Texture_vs.txt", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("nud", "NUD_fs.txt", "NUD_vs.txt", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("MBN", "MBN_fs.txt", "MBN_vs.txt", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("DAT", "DAT_fs.txt", "DAT_vs.txt", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("NUD_Debug", "NUD_Debug_fs.txt", "NUD_vs.txt", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("Gradient", "Gradient_fs.txt", "Gradient_vs.txt", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("Quad", "Quad_fs.txt", "Quad_vs.txt", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("Blur", "Blur_fs.txt", "Blur_vs.txt", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("Shadow", "Shadow_fs.txt", "Shadow_vs.txt", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("Point", "Point_fs.txt", "Point_vs.txt", "/lib/Shader/", "/lib/Shader/");
+            // Reset the shaders first so that shaders can be replaced.
+            Runtime.shaders = new Dictionary<string, Shader>();
+            CreateShader("Texture", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("NUD", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("MBN", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("DAT", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("NUD_Debug", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("Gradient", "/lib/Shader/", "/lib/Shader/");
+            CreateShader("Quad", "/lib/Shader/", "/lib/Shader/");
+            CreateShader("Blur", "/lib/Shader/", "/lib/Shader/");
+            CreateShader("Shadow", "/lib/Shader/", "/lib/Shader/");
+            CreateShader("Point", "/lib/Shader/", "/lib/Shader/");
         }
 
-        private static void CreateShader(string name, string frag, string vert, string legacyPath, string normalPath)
+        private static void CreateShader(string name, string legacyPath, string normalPath)
         {
             if (!Runtime.shaders.ContainsKey(name))
             {
                 Shader shader = new Shader();
                 if (Runtime.useLegacyShaders)
                 {
-                    shader.vertexShader(File.ReadAllText(MainForm.executableDir + legacyPath + vert));
-                    shader.fragmentShader(File.ReadAllText(MainForm.executableDir + legacyPath + frag));
+                    shader.vertexShader(File.ReadAllText(MainForm.executableDir + legacyPath + name + "_vs.txt"));
+                    shader.fragmentShader(File.ReadAllText(MainForm.executableDir + legacyPath + name + "_fs.txt"));
                 }
                 else
                 {
-                    shader.vertexShader(File.ReadAllText(MainForm.executableDir + normalPath + vert));
-                    shader.fragmentShader(File.ReadAllText(MainForm.executableDir + normalPath + frag));
+                    shader.vertexShader(File.ReadAllText(MainForm.executableDir + normalPath + name + "_vs.txt"));
+                    shader.fragmentShader(File.ReadAllText(MainForm.executableDir + normalPath + name + "_fs.txt"));
                 }
                 Runtime.shaders.Add(name, shader);
             }
