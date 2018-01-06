@@ -80,7 +80,7 @@ namespace Smash_Forge
                     if (mesh.Text.Length > 5)
                     {
                         string sub = mesh.Text.Substring(0, 5);
-                        if (sub.StartsWith("_") && sub.EndsWith("_") && int.TryParse(sub.Substring(1, 3), out _))
+                        if (sub.StartsWith("_") && sub.EndsWith("_") && int.TryParse(sub.Substring(1, 3), out int a))
                             fixMeshName = DialogResult.Yes == MessageBox.Show("Detected mesh names that start with \"_###_\". Would you like to fix this?\nIt is recommended that you select \"Yes\".", "Mesh Name Fix", MessageBoxButtons.YesNo);
                     }
                 }
