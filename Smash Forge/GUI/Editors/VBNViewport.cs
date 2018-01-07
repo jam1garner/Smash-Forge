@@ -438,8 +438,6 @@ namespace Smash_Forge
 
             SetupFrameBuffersRenderBuffers();
 
-            GetOpenGLSystemInfo();
-
             for (int i = 0; i < Lights.stageDiffuseLightSet.Length; i++)
             {
                 // should properly initialize these eventually
@@ -554,13 +552,6 @@ namespace Smash_Forge
 
             Debug.WriteLine(GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer));
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-        }
-
-        private static void GetOpenGLSystemInfo()
-        {
-            Runtime.renderer = GL.GetString(StringName.Renderer);
-            Runtime.openGLVersion = GL.GetString(StringName.Version);
-            Runtime.GLSLVersion = GL.GetString(StringName.ShadingLanguageVersion);
         }
 
         int cf = 0;
@@ -1878,7 +1869,6 @@ namespace Smash_Forge
         {
             if (e.KeyChar == 'i')
             {
-                ReloadShadersFromFiles();
             }
             if (e.KeyChar == 'r')
             {
@@ -1975,24 +1965,6 @@ namespace Smash_Forge
                 {
                 }
             }
-        }
-
-        private void ReloadShadersFromFiles()
-        {
-            // the shaders will always be present in the lib/Shader folder, so this is safe to do
-            reloadVertFragShaderFromFile("nud", MainForm.executableDir + "/lib/Shader/NUD_vs.txt", MainForm.executableDir + "/lib/Shader/NUD_fs.txt");
-            reloadVertFragShaderFromFile("Texture", MainForm.executableDir + "/lib/Shader/Texture_vs.txt", MainForm.executableDir + "/lib/Shader/Texture_fs.txt");
-            reloadVertFragShaderFromFile("MBN", MainForm.executableDir + "/lib/Shader/MBN_vs.txt", MainForm.executableDir + "/lib/Shader/MBN_fs.txt");
-            reloadVertFragShaderFromFile("DAT", MainForm.executableDir + "/lib/Shader/DAT_vs.txt", MainForm.executableDir + "/lib/Shader/DAT_fs.txt");
-        }
-
-        private void reloadVertFragShaderFromFile(string shaderName, string vertexFilePath, string fragmentFilePath)
-        {
-            GL.DeleteProgram(Runtime.shaders[shaderName].programID);
-            shader = new Shader();
-            shader.vertexShader(File.ReadAllText(vertexFilePath));
-            shader.fragmentShader(File.ReadAllText(fragmentFilePath));
-            Runtime.shaders[shaderName] = shader;
         }
 
         System.Drawing.Point mouseDownPos = new System.Drawing.Point();
