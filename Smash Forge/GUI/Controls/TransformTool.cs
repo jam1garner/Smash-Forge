@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing;
+using System.Diagnostics;
 
 namespace Smash_Forge
 {
@@ -13,110 +14,107 @@ namespace Smash_Forge
     {
         public Bone b;
         public bool hit = false;
+        public float Size = 1.5f;
+
+        Vector2 PrevPoint = new Vector2();
+        public int state = 0;
+
+        bool _hiX = false;
+        bool _hiY = false;
+        bool _hiZ = false;
+
+        public ToolTypes Type = ToolTypes.ROTATION;
+
+        public enum ToolTypes
+        {
+            POSITION,
+            ROTATION,
+            SCALE
+        }
 
         public TransformTool()
         {
         }
 
-        public void Render(Matrix4 view)
+        public void Render(Camera Camera, Ray Ray)
         {
             if (b == null) return;
 
             Matrix4 mat = b.transform;
-            Vector3 center = Vector3.TransformVector(Vector3.Zero, mat);
-            Vector3 camPoint = Vector3.TransformVector(Vector3.Zero, view);
-
-            Matrix4 rot = mat;
-            float Radius = CamDistance(center, camPoint);// / 1 * (Runtime.fov / 45.0f) * 1.0f;
-
-
-
-            Vector3 lineStart = VBNViewport.p1;
-            Vector3 lineEnd = VBNViewport.p2;
-            Vector3 normal = new Vector3(0);
-            Matrix4 invTrasnform = mat.Inverted();
-
+            Vector3 center = Vector3.TransformPosition(Vector3.Zero, mat);
+            Matrix4 invTrasnform = b.transform.ClearScale().Inverted();
             Vector3 point;
-            Console.WriteLine(LineSphereIntersect(VBNViewport.p1, VBNViewport.p2, center, Radius, out point));
-            float Distance = CamDistance(point, center);
-
-            hit = false;
-            bool _hiX = false;
-            bool _hiY = false;
-            bool _hiZ = false;
-            Console.WriteLine(Distance + " " + Radius);
-            if (Math.Abs(Distance - Radius) < (Radius * 3))
+            if (state == 0)
             {
-                hit = true;
-
-                
-                Vector3 angle = Angles(Vector3.TransformVector(point, invTrasnform)) * new Vector3(180f / (float)Math.PI);
-                angle.X = Math.Abs(angle.X);
-                angle.Y = Math.Abs(angle.Y);
-                angle.Z = Math.Abs(angle.Z);
-                //Console.WriteLine(angle.ToString());
-
-                float _axisSnapRange = 7f;
-                if (Math.Abs(angle.Y - 90.0f) <= _axisSnapRange)
-                    _hiX = true;
-                else if (angle.X >= (180.0f - _axisSnapRange) || angle.X <= _axisSnapRange)
-                    _hiY = true;
-                else if (angle.Y >= (180.0f - _axisSnapRange) || angle.Y <= _axisSnapRange)
-                    _hiZ = true;
-            }
-        
-            GL.PushMatrix();
-            GL.MultMatrix(ref mat);
-            
-            GL.Color3(_hiX ? Color.Yellow : Color.Green);
-            GL.LineWidth(2);
-            RenderTools.drawCircleOutline(Vector3.Zero, 2, 25);
-
-            GL.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
-
-            GL.Color3(_hiY ? Color.Yellow : Color.Red);
-            RenderTools.drawCircleOutline(Vector3.Zero, 2, 25);
-
-            GL.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-
-            GL.Color3(_hiZ ? Color.Yellow : Color.Blue);
-            RenderTools.drawCircleOutline(Vector3.Zero, 2, 25);
-            
-            GL.PopMatrix();
-        }
-
-        public static bool LineSphereIntersect(Vector3 start, Vector3 end, Vector3 center, float radius, out Vector3 result)
-        {
-            Vector3 diff = end - start;
-            float a = Vector3.Dot(diff, diff);
-            //center.Normalize();
-
-            if (a > 0.0f)
-            {
-                float b = 2 * Vector3.Dot(diff, start - center);
-                float c = (Vector3.Dot(center, center) + Vector3.Dot(start, start)) - (2 * Vector3.Dot(center, start)) - (radius * radius);
-
-                float magnitude = (b * b) - (4 * a * c);
-                magnitude *= -1;
-
-                if (magnitude >= 0.0f)
+                hit = Ray.LineSphereIntersect(center, Size, out point);
+                if (hit)
                 {
-                    magnitude = (float)Math.Sqrt(magnitude);
-                    a *= 2;
+                    Vector3 angle = Angles(Vector3.TransformPosition(point, invTrasnform)) * new Vector3(180f / (float)Math.PI);
+                    angle.X = Math.Abs(angle.X);
+                    angle.Y = Math.Abs(angle.Y);
+                    angle.Z = Math.Abs(angle.Z);
 
-                    float scale = (-b + magnitude) / a;
-                    float dist2 = (-b - magnitude) / a;
+                    _hiX = false;
+                    _hiY = false;
+                    _hiZ = false;
+                    float _axisSnapRange = 14f;
+                    if (Math.Abs(angle.Y - 90.0f) <= _axisSnapRange)
+                        _hiX = true;
+                    else if (angle.X >= (180.0f - _axisSnapRange) || angle.X <= _axisSnapRange)
+                        _hiY = true;
+                    else if (angle.Y >= (180.0f - _axisSnapRange) || angle.Y <= _axisSnapRange)
+                        _hiZ = true;
+                }
+                if (!_hiX && !_hiZ && !_hiY)
+                    hit = false;
 
-                    if (dist2 < scale)
-                        scale = dist2;
-
-                    result = start + (diff * scale);
-                    return true;
+                if (hit && OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Left))
+                {
+                    PrevPoint = new Vector2(Ray.mouse_x, Ray.mouse_y);
+                    state = 1;
                 }
             }
 
-            result = new Vector3();
-            return false;
+            if (state == 1)
+            {
+                float sx = (Ray.mouse_x - PrevPoint.X) / 100;
+                float sy = (Ray.mouse_y - PrevPoint.Y) / 100;
+                float s = sx+sy;
+                if (_hiX)
+                    b.rot = b.rot * Quaternion.FromAxisAngle(Vector3.UnitX, s);
+                if (_hiY)
+                    b.rot = b.rot * Quaternion.FromAxisAngle(Vector3.UnitY, s);
+                if (_hiZ)
+                    b.rot = b.rot * Quaternion.FromAxisAngle(Vector3.UnitZ, s);
+                b.vbnParent.update();
+                PrevPoint = new Vector2(Ray.mouse_x, Ray.mouse_y);
+
+
+                if (!OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Left))
+                    state = 0;
+            }
+
+            GL.PushMatrix();
+            GL.MultMatrix(ref mat);
+
+            GL.Color4(0.25f, 0.25f, 0.25f, 0.2f);
+            RenderTools.drawSphere(Vector3.Zero, Size, 25);
+
+            GL.Color3(_hiZ ? Color.Yellow : Color.Green);
+            GL.LineWidth(3);
+            RenderTools.drawCircleOutline(Vector3.Zero, Size, 25);
+
+            GL.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
+
+            GL.Color3(_hiX ? Color.Yellow : Color.Red);
+            RenderTools.drawCircleOutline(Vector3.Zero, Size, 25);
+
+            GL.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
+
+            GL.Color3(_hiY ? Color.Yellow : Color.Blue);
+            RenderTools.drawCircleOutline(Vector3.Zero, Size, 25);
+            
+            GL.PopMatrix();
         }
 
         public float CamDistance(Vector3 va, Vector3 vb)
@@ -132,10 +130,11 @@ namespace Smash_Forge
 
         public Vector3 Angles(Vector3 i)
         {
-            i.X = (float)Math.Atan2(i.Y, -i.Z);
-            i.Y = (float)Math.Atan2(-i.Z, i.X);
-            i.Z = (float)Math.Atan2(i.Y, i.X);
-            return i;
+            Vector3 ni = new Vector3();
+            ni.X = (float)Math.Atan2(i.Y, -i.Z);
+            ni.Y = (float)Math.Atan2(-i.Z, i.X);
+            ni.Z = (float)Math.Atan2(i.Y, i.X);
+            return ni;
         }
     }
 }

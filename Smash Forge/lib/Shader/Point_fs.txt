@@ -1,13 +1,10 @@
-#version 330
+#version 150
 
-flat in int selected;
+in vec4 color;
+
+out vec4 fColor;
 
 void main()
 {
-    if(selected == 0)
-        gl_FragColor = vec4(1,1,1,1);
-    else if(selected > 0)
-        gl_FragColor = vec4(1,1,0,1);
-    else
-        gl_FragColor = vec4(1,0,1,1);
+    fColor = color;
 }

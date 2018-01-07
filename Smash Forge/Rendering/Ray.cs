@@ -11,6 +11,8 @@ namespace Smash_Forge
     public class Ray
     {
         public Vector3 p1, p2;
+        private int Width, Height;
+        public float mouse_x, mouse_y;
 
         public Ray(Vector3 p1, Vector3 p2)
         {
@@ -20,8 +22,8 @@ namespace Smash_Forge
 
         public Ray(Camera Camera, GLControl Viewport)
         {
-            float mouse_x = Viewport.PointToClient(Cursor.Position).X;
-            float mouse_y = Viewport.PointToClient(Cursor.Position).Y;
+            mouse_x = Viewport.PointToClient(Cursor.Position).X;
+            mouse_y = Viewport.PointToClient(Cursor.Position).Y;
 
             float x = (2.0f * mouse_x) / Viewport.Width - 1.0f;
             float y = 1.0f - (2.0f * mouse_y) / Viewport.Height;
@@ -30,6 +32,23 @@ namespace Smash_Forge
 
             p1 = va.Xyz;
             p2 = p1 - (va - (va + vb)).Xyz * 100;
+
+            Width = Viewport.Width;
+            Height = Viewport.Height;
+        }
+
+        public void Unproject(Camera camera)
+        {
+            p1 =  (camera.getMVPMatrix().Inverted() * new Vector4(
+                2.0f * (mouse_x / Width) - 1.0f,
+                2.0f * ((Height - mouse_y) / Height) - 1.0f,
+                2.0f * 0 - 1.0f,
+                1.0f)).Xyz;
+            p2 = (camera.getMVPMatrix().Inverted() * new Vector4(
+                2.0f * (mouse_x / Width) - 1.0f,
+                2.0f * ((Height - mouse_y) / Height) - 1.0f,
+                2.0f * 1 - 1.0f,
+                1.0f)).Xyz;
         }
 
         public bool TrySphereHit(Vector3 sphere, float rad, out Vector3 closest)
@@ -87,6 +106,38 @@ namespace Smash_Forge
             return (Math.Pow(sphere.X - closest.X, 2)
                 + Math.Pow(sphere.Y - closest.Y, 2)
                 + Math.Pow(sphere.Z - closest.Z, 2) <= rad * rad);
+        }
+
+        public bool LineSphereIntersect(Vector3 center, float radius, out Vector3 result)
+        {
+            Vector3 diff = p2 - p1;
+            float a = Vector3.Dot(diff, diff) ;
+
+            if (a > 0.0f)
+            {
+                float b = 2 * Vector3.Dot(diff, p1 - center);// diff.Dot(start - center);
+                float c = (Vector3.Dot(center, center) + Vector3.Dot(p1, p1)) - (2 * Vector3.Dot(center, p1)) - (radius * radius);
+
+                float magnitude = (b * b) - (4 * a * c);
+
+                if (magnitude >= 0.0f)
+                {
+                    magnitude = (float)Math.Sqrt(magnitude);
+                    a *= 2;
+
+                    float scale = (-b + magnitude) / a;
+                    float dist2 = (-b - magnitude) / a;
+
+                    if (dist2 < scale)
+                        scale = dist2;
+
+                    result = p1 + (diff * scale);
+                    return true;
+                }
+            }
+
+            result = new Vector3();
+            return false;
         }
     }
 }

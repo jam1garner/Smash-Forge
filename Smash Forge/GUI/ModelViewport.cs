@@ -46,6 +46,7 @@ namespace Smash_Forge
         FrameTimer frameTime = new FrameTimer();
 
         VertexTool VertexTool = new VertexTool();
+        TransformTool TransformTool = new TransformTool();
 
         //Animation
         private VBN TargetVBN;
@@ -165,9 +166,6 @@ namespace Smash_Forge
         public int AnimationSpeed = 60;
         public float Frame = 0;
         public bool isPlaying;
-
-        // controls
-        VertexTool vertexTool = new VertexTool();
 
         // Contents
         //public List<ModelContainer> draw = new List<ModelContainer>();
@@ -298,7 +296,7 @@ namespace Smash_Forge
         private void ModelViewport_Load(object sender, EventArgs e)
         {
             ReadyToRender = true;
-            vertexTool.vp = this;
+            //vertexTool.vp = this;
             //Application.Idle += Application_Idle;
             var timer = new Timer();
             timer.Interval = 1000 / 120;
@@ -364,10 +362,12 @@ namespace Smash_Forge
                 Camera.Update();
             }
             //Mesh Selection Test
-            if(e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left)
             {
                 Ray ray = new Ray(Camera, glViewport);
                 int selectedSize = 0;
+
+                TransformTool.b = null;
 
                 foreach (TreeNode node in draw)
                 {
@@ -377,8 +377,9 @@ namespace Smash_Forge
                     {
                         SortedList<double, Bone> selected = con.GetBoneSelection(ray);
                         selectedSize = selected.Count;
-                        if (selected.Count > dbdistance && MeshList.treeView1.Nodes.Contains(selected.Values.ElementAt(dbdistance)))
-                            MeshList.treeView1.SelectedNode = selected.Values.ElementAt(dbdistance);
+                        if (selected.Count > dbdistance)// && MeshList.treeView1.Nodes.Contains(selected.Values.ElementAt(dbdistance)))
+                            TransformTool.b = (Bone)selected.Values.ElementAt(dbdistance);
+                        break;
                     }
                     if (modeMesh.Checked)
                     {
@@ -969,7 +970,7 @@ namespace Smash_Forge
 
         private void weightToolButton_Click(object sender, EventArgs e)
         {
-            vertexTool.Show();
+            //vertexTool.Show();
         }
 
         #region Rendering
@@ -1029,7 +1030,8 @@ namespace Smash_Forge
             GL.MatrixMode(MatrixMode.Projection);
             if (glViewport.ClientRectangle.Contains(glViewport.PointToClient(Cursor.Position))
              && glViewport.Focused 
-             && CurrentMode == Mode.Normal)
+             && CurrentMode == Mode.Normal
+             && !TransformTool.hit)
             {
                 Camera.Update();
                 //if (cameraPosForm != null && !cameraPosForm.IsDisposed)
@@ -1144,9 +1146,24 @@ namespace Smash_Forge
             //Debug.WriteLine(frameTime.getAverageRenderTime());
 
 
+
+            // Bone Transform Tool
+            if (ViewComboBox.SelectedIndex == 0)
+            {
+                if (modeBone.Checked)
+                {
+                    TransformTool.Render(Camera, new Ray(Camera, glViewport));
+                    if (TransformTool.state == 1)
+                        CurrentMode = Mode.Selection;
+                    else
+                        CurrentMode = Mode.Normal;
+                }
+            }
+                
+
             // Mouse selection
             // -------------------------------------------------------------
-            if(ViewComboBox.SelectedIndex == 1)
+            if (ViewComboBox.SelectedIndex == 1)
             {
                 try
                 {

@@ -43,6 +43,7 @@
             this.modePolygon = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.RenderButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.GIFButton = new System.Windows.Forms.ToolStripButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.animationTrackBar = new System.Windows.Forms.TrackBar();
@@ -55,8 +56,7 @@
             this.beginButton = new System.Windows.Forms.Button();
             this.prevButton = new System.Windows.Forms.Button();
             this.playButton = new System.Windows.Forms.Button();
-            this.glViewport = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(8, 8, 8, 8), 24, 8, 16));
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.glViewport = new OpenTK.GLControl();
             this.toolStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.animationTrackBar)).BeginInit();
@@ -161,7 +161,6 @@
             // 
             this.modeBone.CheckOnClick = true;
             this.modeBone.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.modeBone.Enabled = false;
             this.modeBone.Image = global::Smash_Forge.Properties.Resources.icon_bone;
             this.modeBone.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.modeBone.Name = "modeBone";
@@ -212,6 +211,17 @@
             this.RenderButton.Text = "toolStripButton1";
             this.RenderButton.ToolTipText = "Render Viewport to File";
             this.RenderButton.Click += new System.EventHandler(this.RenderButton_Click);
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton1.Image = global::Smash_Forge.Properties.Resources.strip_render;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(28, 28);
+            this.toolStripButton1.Text = "toolStripButton1";
+            this.toolStripButton1.ToolTipText = "Render Viewport to File (No Alpha)";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // GIFButton
             // 
@@ -372,17 +382,6 @@
             this.glViewport.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseMove);
             this.glViewport.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseUp);
             this.glViewport.Resize += new System.EventHandler(this.glViewport_Resize);
-            // 
-            // toolStripButton1
-            // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton1.Image = global::Smash_Forge.Properties.Resources.strip_render;
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(28, 28);
-            this.toolStripButton1.Text = "toolStripButton1";
-            this.toolStripButton1.ToolTipText = "Render Viewport to File (No Alpha)";
-            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // ModelViewport
             // 
