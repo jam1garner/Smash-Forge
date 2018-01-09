@@ -863,6 +863,10 @@ namespace Smash_Forge
         {
             CaptureScreen(false).Save(MainForm.executableDir + "\\Render.png");
         }
+        
+        private void ModelViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        {
+        }
 
         private void checkSelect()
         {

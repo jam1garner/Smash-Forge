@@ -445,6 +445,7 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ModelViewport_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ModelViewport_FormClosed);
             this.Load += new System.EventHandler(this.ModelViewport_Load);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ModelViewport_KeyPress);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);

@@ -76,14 +76,14 @@
             this.masterpiecesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nESROMInjectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.forgeWikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.glControl1 = new OpenTK.GLControl();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.forgeWikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -468,6 +468,21 @@
             this.cameraToolStripMenuItem.Visible = false;
             this.cameraToolStripMenuItem.Click += new System.EventHandler(this.cameraToolStripMenuItem_Click);
             // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.forgeWikiToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // forgeWikiToolStripMenuItem
+            // 
+            this.forgeWikiToolStripMenuItem.Name = "forgeWikiToolStripMenuItem";
+            this.forgeWikiToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.forgeWikiToolStripMenuItem.Text = "Forge Wiki";
+            this.forgeWikiToolStripMenuItem.Click += new System.EventHandler(this.forgeWikiToolStripMenuItem_Click);
+            // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -533,21 +548,6 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.forgeWikiToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
-            // 
-            // forgeWikiToolStripMenuItem
-            // 
-            this.forgeWikiToolStripMenuItem.Name = "forgeWikiToolStripMenuItem";
-            this.forgeWikiToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.forgeWikiToolStripMenuItem.Text = "Forge Wiki";
-            this.forgeWikiToolStripMenuItem.Click += new System.EventHandler(this.forgeWikiToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AllowDrop = true;
@@ -563,6 +563,7 @@
             this.ForeColor = System.Drawing.Color.Black;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.IsMdiContainer = true;
+            this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

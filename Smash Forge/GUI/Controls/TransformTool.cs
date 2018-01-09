@@ -10,11 +10,69 @@ using System.Diagnostics;
 
 namespace Smash_Forge
 {
+    class DropOutStack<T>
+    {
+        private T[] items;
+        private int top = 0;
+        public int Count
+        {
+            get
+            {
+                return _count;
+            }
+        }
+        private int _count = 0;
+
+        public DropOutStack(int capacity)
+        {
+            items = new T[capacity];
+        }
+
+        public void Push(T item)
+        {
+            items[top] = item;
+            top = (top + 1) % items.Length;
+            _count++;
+            if (_count > 19) _count = 19;
+        }
+        public T Pop()
+        {
+            if (_count == 0) return default(T);
+            top = (items.Length + top - 1) % items.Length;
+            _count--;
+            if (_count < 0) _count = 0;
+            return items[top];
+        }
+    }
+
+    public class Sca
+    {
+        public Vector3 scale;
+        public Sca(Vector3 s)
+        {
+            scale = s;
+        }
+    }
+
     public class TransformTool
     {
-        public Bone b;
+        public Bone b
+        {
+            get
+            {
+                return _b;
+            }
+            set
+            {
+                Undo.Push(_b);
+                _b = value;
+            }
+        }
+        private Bone _b;
         public bool hit = false;
         public float Size = 1.5f;
+
+        DropOutStack<object> Undo = new DropOutStack<object>(20);
 
         Vector2 PrevPoint = new Vector2();
         public int state = 0;
@@ -36,13 +94,53 @@ namespace Smash_Forge
         {
         }
 
+        public void UndoOperation()
+        {
+            object op = Undo.Pop();
+
+            if (op is Bone)
+            {
+                _b = (Bone)op;
+                op = Undo.Pop();
+            }
+
+            if (op is Vector3)
+                _b.pos = (Vector3)op;
+
+            if (op is Quaternion)
+                _b.rot = (Quaternion)op;
+
+            if (op is Sca)
+                _b.sca = ((Sca)op).scale;
+
+            _b.vbnParent.update();
+        }
+
+        bool keydown = false;
         public void Render(Camera Camera, Ray Ray)
         {
+
+            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Z) && OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ControlLeft))
+            {
+                if (keydown == false)
+                    UndoOperation();
+                keydown = true;
+            }
+            else
+                keydown = false;
+
             if (b == null) return;
-            
             if (state == 0 && hit && OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Left))
+            {
                 state = 1;
-            
+                if (Type == ToolTypes.POSITION)
+                    Undo.Push(b.pos);
+                if (Type == ToolTypes.ROTATION)
+                    Undo.Push(new Quaternion(b.rot.Xyz, b.rot.W));
+                if (Type == ToolTypes.SCALE)
+                    Undo.Push(new Sca(b.pos));
+            }
+
             if (state == 1 && !OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Left))
                 state = 0;
 
