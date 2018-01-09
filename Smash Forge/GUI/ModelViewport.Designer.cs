@@ -60,7 +60,7 @@
             this.beginButton = new System.Windows.Forms.Button();
             this.prevButton = new System.Windows.Forms.Button();
             this.playButton = new System.Windows.Forms.Button();
-            this.glViewport = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(8, 8, 8, 8), 24, 8, 16));
+            this.glViewport = new OpenTK.GLControl();
             this.toolStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.animationTrackBar)).BeginInit();
@@ -102,6 +102,7 @@
             this.ViewComboBox.Items.AddRange(new object[] {
             "Model Viewer",
             "Model Editor",
+            "Animation Editor",
             "LVD Editor",
             "ACMD Editor"});
             this.ViewComboBox.Name = "ViewComboBox";
@@ -345,6 +346,7 @@
             this.totalFrame.Name = "totalFrame";
             this.totalFrame.Size = new System.Drawing.Size(54, 20);
             this.totalFrame.TabIndex = 6;
+            this.totalFrame.ValueChanged += new System.EventHandler(this.totalFrame_ValueChanged);
             // 
             // currentFrame
             // 

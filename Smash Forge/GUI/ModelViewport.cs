@@ -84,7 +84,6 @@ namespace Smash_Forge
                 Animation = value;
                 totalFrame.Value = value.FrameCount;
                 animationTrackBar.TickFrequency = 1;
-                animationTrackBar.SetRange(0, value.FrameCount);
                 currentFrame.Value = 1;
                 currentFrame.Value = 0;
             }
@@ -667,6 +666,7 @@ namespace Smash_Forge
             AnimList.Visible = false;
             ACMDEditor.Visible = false;
             VertexTool.Visible = false;
+            totalFrame.Enabled = false;
             switch (ViewComboBox.SelectedIndex)
             {
                 case 0:
@@ -678,10 +678,14 @@ namespace Smash_Forge
                     VertexTool.Visible = true;
                     break;
                 case 2:
+                    AnimList.Visible = true;
+                    totalFrame.Enabled = true;
+                    break;
+                case 3:
                     LVDEditor.Visible = true;
                     LVDList.Visible = true;
                     break;
-                case 3:
+                case 4:
                     AnimList.Visible = true;
                     ACMDEditor.Visible = true;
                     break;
@@ -866,6 +870,22 @@ namespace Smash_Forge
         
         private void ModelViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
+        }
+
+        private void totalFrame_ValueChanged(object sender, EventArgs e)
+        {
+            if (Animation == null) return;
+            if(totalFrame.Value < 1)
+            {
+                totalFrame.Value = 1;
+            }else
+            {
+                if(Animation.Tag is Animation)
+                    ((Animation)Animation.Tag).FrameCount = (int)totalFrame.Value;
+                Animation.FrameCount = (int)totalFrame.Value;
+                animationTrackBar.Value = 0;
+                animationTrackBar.SetRange(0, Animation.FrameCount);
+            }
         }
 
         private void checkSelect()
@@ -1166,7 +1186,7 @@ namespace Smash_Forge
 
 
             // Bone Transform Tool
-            if (ViewComboBox.SelectedIndex == 0)
+            if (ViewComboBox.SelectedIndex == 2)
             {
                 if (modeBone.Checked)
                 {
@@ -1175,6 +1195,32 @@ namespace Smash_Forge
                         CurrentMode = Mode.Selection;
                     else
                         CurrentMode = Mode.Normal;
+                }
+
+                if (TransformTool.HasChanged())
+                {
+                    if(Animation != null && TransformTool.b != null)
+                    {
+                        // get the node group for the current bone in animation
+                        Animation.KeyNode ThisNode = null;
+                        foreach (Animation.KeyNode node in Animation.Bones)
+                        {
+                            if (node.Text.Equals(TransformTool.b.Text))
+                            {
+                                // found
+                                ThisNode = node;
+                                break;
+                            }
+                        }
+                        if(ThisNode == null)
+                        {
+                            ThisNode = new Animation.KeyNode(TransformTool.b.Text);
+                            Animation.Bones.Add(ThisNode);
+                        }
+
+                        // update or add the key frame
+                        ThisNode.SetKeyFromBone((float)currentFrame.Value, TransformTool.b);
+                    }
                 }
             }
                 

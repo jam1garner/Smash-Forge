@@ -199,6 +199,18 @@ namespace Smash_Forge
                 SelectedImageKey = "bone";
             }
 
+            public void SetKeyFromBone(float frame, Bone bone)
+            {
+                Vector3 rot = ANIM.quattoeul(bone.rot);
+                if (rot.X != bone.rotation[0] || rot.Y != bone.rotation[1] || rot.Z != bone.rotation[2])
+                {
+                    XROT.GetKeyFrame(frame).Value = bone.rot.X;
+                    YROT.GetKeyFrame(frame).Value = bone.rot.Y;
+                    ZROT.GetKeyFrame(frame).Value = bone.rot.Z;
+                    WROT.GetKeyFrame(frame).Value = bone.rot.W;
+                }
+            }
+
             public void ExpandNodes()
             {
                 XPOS.Text = "XPOS";
@@ -239,6 +251,33 @@ namespace Smash_Forge
                         if (k.Frame > fc) fc = k.Frame;
                     return fc;
                 } }
+
+            public KeyFrame GetKeyFrame(float frame)
+            {
+                KeyFrame key = null;
+                int i;
+                for(i = 0; i < Keys.Count; i++)
+                {
+                    if(Keys[i].Frame == frame)
+                    {
+                        key = Keys[i];
+                        break;
+                    }
+                    if (Keys[i].Frame > frame)
+                    {
+                        break;
+                    }
+                }
+
+                if(key == null)
+                {
+                    key = new KeyFrame();
+                    key.Frame = frame;
+                    Keys.Insert(i, key);
+                }
+
+                return key;
+            }
 
             public float GetValue(float frame)
             {
@@ -290,6 +329,7 @@ namespace Smash_Forge
             
             public void ExpandNodes()
             {
+                Nodes.Clear();
                 foreach (KeyFrame v in Keys)
                 {
                     Nodes.Add(v.GetNode());

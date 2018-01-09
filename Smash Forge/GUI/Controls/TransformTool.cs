@@ -83,11 +83,23 @@ namespace Smash_Forge
 
         public ToolTypes Type = ToolTypes.POSITION;
 
+        public bool Changed = false;
+
         public enum ToolTypes
         {
             POSITION,
             ROTATION,
             SCALE
+        }
+
+        public bool HasChanged()
+        {
+            if (Changed)
+            {
+                Changed = false;
+                return true;
+            }
+            return false;
         }
 
         public TransformTool()
@@ -114,6 +126,7 @@ namespace Smash_Forge
                 _b.sca = ((Sca)op).scale;
 
             _b.vbnParent.update();
+            Changed = true;
         }
 
         bool keydown = false;
@@ -142,7 +155,10 @@ namespace Smash_Forge
             }
 
             if (state == 1 && !OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Left))
+            {
+                Changed = true;
                 state = 0;
+            }
 
             switch (Type)
             {

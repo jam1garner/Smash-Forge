@@ -28,6 +28,10 @@ namespace Smash_Forge
             import.Click += Import;
             cm.MenuItems.Add(import);
 
+            MenuItem create = new MenuItem("Create New Animation");
+            create.Click += Create;
+            cm.MenuItems.Add(create);
+
             MenuItem remove = new MenuItem("Remove Group");
             remove.Click += Remove;
             cm.MenuItems.Add(remove);
@@ -42,6 +46,11 @@ namespace Smash_Forge
                 Nodes.Clear();
                 Parent.Nodes.Remove(this);
             }
+        }
+
+        public void Create(object sender, EventArgs args)
+        {
+            Nodes.Add(new Animation("New Animation"));
         }
 
         public void Import(object sender, EventArgs args)

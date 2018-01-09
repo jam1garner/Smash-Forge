@@ -63,11 +63,13 @@ namespace Smash_Forge
                 //Runtime.TargetAnimString = e.Node.Text;
 
                 string AnimName = e.Node.Text;
-                if(AnimName.Length >= 3)
-                    AnimName = Regex.Match(AnimName, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString().Substring(3);
+                AnimName = Regex.Match(AnimName, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
+                if (AnimName.Length > 3)
+                    AnimName = AnimName.Substring(3);
 
                 Animation running = new Animation(AnimName);
                 running.ReplaceMe((Animation)e.Node);
+                running.Tag = e.Node;
 
                 List<MTA> display = new List<MTA>();
                 List<MTA> def = new List<MTA>();

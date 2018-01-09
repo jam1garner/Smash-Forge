@@ -16,6 +16,7 @@ namespace Smash_Forge
         public LVD TargetLVD;
         public LVDEditor lvdEditor;
 
+        ContextMenu ElementCM;
         public LVDList()
         {
             InitializeComponent();
@@ -147,6 +148,14 @@ namespace Smash_Forge
                 node.ContextMenu.MenuItems.Add(Add);
             }
 
+            ElementCM = new ContextMenu();
+            MenuItem Delete = new MenuItem("Delete Entry");
+            Delete.Click += delegate
+            {
+                deleteSelected();
+            };
+            ElementCM.MenuItems.Add(Delete);
+
         }
 
         public TreeNode collisionNode = new TreeNode("Collisions");
@@ -177,52 +186,52 @@ namespace Smash_Forge
             {
                 foreach (Collision c in TargetLVD.collisions)
                 {
-                    collisionNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
+                    collisionNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
                 }
 
                 foreach (Spawn c in TargetLVD.spawns)
                 {
-                    spawnNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
+                    spawnNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
                 }
 
                 foreach (Spawn c in TargetLVD.respawns)
                 {
-                    respawnNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
+                    respawnNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
                 }
 
                 foreach (Bounds c in TargetLVD.cameraBounds)
                 {
-                    camNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
+                    camNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
                 }
 
                 foreach (Bounds c in TargetLVD.blastzones)
                 {
-                    deathNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
+                    deathNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
                 }
 
                 foreach (ItemSpawner c in TargetLVD.itemSpawns)
                 {
-                    itemNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
+                    itemNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
                 }
 
                 foreach (GeneralPoint c in TargetLVD.generalPoints)
                 {
-                    pointNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
+                    pointNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
                 }
 
                 foreach (GeneralShape s in TargetLVD.generalShapes)
                 {
-                    shapeNode.Nodes.Add(new TreeNode(s.name) { Tag = s });
+                    shapeNode.Nodes.Add(new TreeNode(s.name) { Tag = s, ContextMenu = ElementCM });
                 }
 
                 foreach (DamageShape s in TargetLVD.damageShapes)
                 {
-                    hurtNode.Nodes.Add(new TreeNode(s.name) { Tag = s });
+                    hurtNode.Nodes.Add(new TreeNode(s.name) { Tag = s, ContextMenu = ElementCM });
                 }
 
                 foreach (EnemyGenerator c in TargetLVD.enemySpawns)
                 {
-                    enemyNode.Nodes.Add(new TreeNode(c.name) { Tag = c });
+                    enemyNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
                 }
             }
         }
