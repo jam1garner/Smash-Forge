@@ -2504,17 +2504,21 @@ namespace Smash_Forge
                     float t1 = v2.uv[0].Y - v1.uv[0].Y;
                     float t2 = v3.uv[0].Y - v1.uv[0].Y;
 
-                    float r = 1.0f;
                     // prevent incorrect tangent calculation from division by 0
+                    float r = 1.0f;
                     float div = (s1 * t2 - s2 * t1);
-                    if (div == 0)
-                        r = 0.0f;
-                    else
+                    if (div != 0)
                         r = 1.0f / div;
                     Vector3 s = new Vector3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
                         (t2 * z1 - t1 * z2) * r);
                     Vector3 t = new Vector3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
                         (s1 * z2 - s2 * z1) * r);
+
+                    // prevent black tangents or bitangents
+                    if (Vector3.Dot(s, new Vector3(1)) == 0.0f)
+                        s = new Vector3(1).Normalized();
+                    if (Vector3.Dot(t, new Vector3(1)) == 0.0f)
+                        t = new Vector3(1).Normalized();
 
                     tan1[f[i]] += s;
                     tan1[f[i + 1]] += s;

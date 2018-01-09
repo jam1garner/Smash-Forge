@@ -38,6 +38,8 @@ namespace Smash_Forge
                 GL.GenBuffers(1, out cubeVAO);
                 GL.GenBuffers(1, out cubeVBO);
             }
+
+            GetOpenGLSystemInfo();
         }
 
         public static object GetValueFromParamFile(ParamFile paramFile, int groupNum, int entryNum, int valNum)
@@ -66,6 +68,13 @@ namespace Smash_Forge
             }
 
             return null;
+        }
+
+        private static void GetOpenGLSystemInfo()
+        {
+            Runtime.renderer = GL.GetString(StringName.Renderer);
+            Runtime.openGLVersion = GL.GetString(StringName.Version);
+            Runtime.GLSLVersion = GL.GetString(StringName.ShadingLanguageVersion);
         }
 
         public static void drawTranslator(Matrix4 view)
