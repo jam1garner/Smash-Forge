@@ -831,6 +831,20 @@ namespace Smash_Forge
             ((ToolStripButton)sender).Checked = true;
         }
 
+        private void viewStripButtonsBone(object sender, EventArgs e)
+        {
+            stripPos.Checked = false;
+            stripRot.Checked = false;
+            stripSca.Checked = false;
+            ((ToolStripButton)sender).Checked = true;
+            if (stripPos.Checked)
+                TransformTool.Type = TransformTool.ToolTypes.POSITION;
+            if (stripRot.Checked)
+                TransformTool.Type = TransformTool.ToolTypes.ROTATION;
+            if (stripSca.Checked)
+                TransformTool.Type = TransformTool.ToolTypes.SCALE;
+        }
+
         #endregion
 
         private void ModelViewport_FormClosing(object sender, FormClosingEventArgs e)

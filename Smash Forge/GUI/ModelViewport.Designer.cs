@@ -42,6 +42,10 @@
             this.modeMesh = new System.Windows.Forms.ToolStripButton();
             this.modePolygon = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.stripPos = new System.Windows.Forms.ToolStripButton();
+            this.stripRot = new System.Windows.Forms.ToolStripButton();
+            this.stripSca = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.RenderButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.GIFButton = new System.Windows.Forms.ToolStripButton();
@@ -56,7 +60,7 @@
             this.beginButton = new System.Windows.Forms.Button();
             this.prevButton = new System.Windows.Forms.Button();
             this.playButton = new System.Windows.Forms.Button();
-            this.glViewport = new OpenTK.GLControl();
+            this.glViewport = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(8, 8, 8, 8), 24, 8, 16));
             this.toolStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.animationTrackBar)).BeginInit();
@@ -80,12 +84,16 @@
             this.modeMesh,
             this.modePolygon,
             this.toolStripSeparator1,
+            this.stripPos,
+            this.stripRot,
+            this.stripSca,
+            this.toolStripSeparator4,
             this.RenderButton,
             this.toolStripButton1,
             this.GIFButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(572, 31);
+            this.toolStrip1.Size = new System.Drawing.Size(662, 31);
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -201,6 +209,46 @@
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
             // 
+            // stripPos
+            // 
+            this.stripPos.Checked = true;
+            this.stripPos.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.stripPos.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.stripPos.Image = global::Smash_Forge.Properties.Resources.strip_pos;
+            this.stripPos.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.stripPos.Name = "stripPos";
+            this.stripPos.Size = new System.Drawing.Size(28, 28);
+            this.stripPos.Text = "toolStripButton2";
+            this.stripPos.ToolTipText = "Position";
+            this.stripPos.Click += new System.EventHandler(this.viewStripButtonsBone);
+            // 
+            // stripRot
+            // 
+            this.stripRot.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.stripRot.Image = global::Smash_Forge.Properties.Resources.strip_rot;
+            this.stripRot.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.stripRot.Name = "stripRot";
+            this.stripRot.Size = new System.Drawing.Size(28, 28);
+            this.stripRot.Text = "toolStripButton3";
+            this.stripRot.ToolTipText = "Rotation";
+            this.stripRot.Click += new System.EventHandler(this.viewStripButtonsBone);
+            // 
+            // stripSca
+            // 
+            this.stripSca.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.stripSca.Image = global::Smash_Forge.Properties.Resources.strip_sca;
+            this.stripSca.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.stripSca.Name = "stripSca";
+            this.stripSca.Size = new System.Drawing.Size(28, 28);
+            this.stripSca.Text = "toolStripButton4";
+            this.stripSca.ToolTipText = "Scale";
+            this.stripSca.Click += new System.EventHandler(this.viewStripButtonsBone);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 31);
+            // 
             // RenderButton
             // 
             this.RenderButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -249,7 +297,7 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.groupBox1.Location = new System.Drawing.Point(0, 348);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(572, 120);
+            this.groupBox1.Size = new System.Drawing.Size(662, 120);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Animation Controls";
@@ -260,7 +308,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.animationTrackBar.Location = new System.Drawing.Point(12, 16);
             this.animationTrackBar.Name = "animationTrackBar";
-            this.animationTrackBar.Size = new System.Drawing.Size(548, 45);
+            this.animationTrackBar.Size = new System.Drawing.Size(638, 45);
             this.animationTrackBar.TabIndex = 9;
             this.animationTrackBar.ValueChanged += new System.EventHandler(this.animationTrackBar_ValueChanged);
             // 
@@ -268,7 +316,7 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(389, 69);
+            this.label2.Location = new System.Drawing.Point(479, 69);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(39, 13);
             this.label2.TabIndex = 8;
@@ -278,7 +326,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(490, 69);
+            this.label1.Location = new System.Drawing.Point(580, 69);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(12, 13);
             this.label1.TabIndex = 7;
@@ -288,7 +336,7 @@
             // 
             this.totalFrame.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.totalFrame.Enabled = false;
-            this.totalFrame.Location = new System.Drawing.Point(512, 67);
+            this.totalFrame.Location = new System.Drawing.Point(602, 67);
             this.totalFrame.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -301,7 +349,7 @@
             // currentFrame
             // 
             this.currentFrame.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.currentFrame.Location = new System.Drawing.Point(430, 67);
+            this.currentFrame.Location = new System.Drawing.Point(520, 67);
             this.currentFrame.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -315,7 +363,7 @@
             // endButton
             // 
             this.endButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.endButton.Location = new System.Drawing.Point(347, 64);
+            this.endButton.Location = new System.Drawing.Point(437, 64);
             this.endButton.Name = "endButton";
             this.endButton.Size = new System.Drawing.Size(38, 45);
             this.endButton.TabIndex = 4;
@@ -326,7 +374,7 @@
             // nextButton
             // 
             this.nextButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.nextButton.Location = new System.Drawing.Point(309, 64);
+            this.nextButton.Location = new System.Drawing.Point(399, 64);
             this.nextButton.Name = "nextButton";
             this.nextButton.Size = new System.Drawing.Size(32, 45);
             this.nextButton.TabIndex = 3;
@@ -361,7 +409,7 @@
             this.playButton.Location = new System.Drawing.Point(90, 64);
             this.playButton.MinimumSize = new System.Drawing.Size(44, 44);
             this.playButton.Name = "playButton";
-            this.playButton.Size = new System.Drawing.Size(213, 44);
+            this.playButton.Size = new System.Drawing.Size(303, 44);
             this.playButton.TabIndex = 0;
             this.playButton.Text = "Play";
             this.playButton.UseVisualStyleBackColor = true;
@@ -373,7 +421,7 @@
             this.glViewport.Dock = System.Windows.Forms.DockStyle.Fill;
             this.glViewport.Location = new System.Drawing.Point(0, 0);
             this.glViewport.Name = "glViewport";
-            this.glViewport.Size = new System.Drawing.Size(572, 468);
+            this.glViewport.Size = new System.Drawing.Size(662, 468);
             this.glViewport.TabIndex = 0;
             this.glViewport.VSync = false;
             this.glViewport.Click += new System.EventHandler(this.glViewport_Click);
@@ -387,7 +435,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(572, 468);
+            this.ClientSize = new System.Drawing.Size(662, 468);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.glViewport);
@@ -439,5 +487,9 @@
         private System.Windows.Forms.ToolStripButton modeMesh;
         private System.Windows.Forms.ToolStripButton modePolygon;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.ToolStripButton stripPos;
+        private System.Windows.Forms.ToolStripButton stripRot;
+        private System.Windows.Forms.ToolStripButton stripSca;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
     }
 }

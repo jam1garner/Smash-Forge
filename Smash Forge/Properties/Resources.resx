@@ -193,4 +193,13 @@
   <data name="icon_number" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\icon_number.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="strip_pos" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\strip_pos.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="strip_rot" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\strip_rot.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="strip_sca" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\strip_sca.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

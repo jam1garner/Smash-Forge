@@ -293,9 +293,39 @@ namespace Smash_Forge.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap strip_pos {
+            get {
+                object obj = ResourceManager.GetObject("strip_pos", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap strip_render {
             get {
                 object obj = ResourceManager.GetObject("strip_render", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap strip_rot {
+            get {
+                object obj = ResourceManager.GetObject("strip_rot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap strip_sca {
+            get {
+                object obj = ResourceManager.GetObject("strip_sca", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
