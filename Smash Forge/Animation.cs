@@ -209,6 +209,18 @@ namespace Smash_Forge
                     ZROT.GetKeyFrame(frame).Value = bone.rot.Z;
                     WROT.GetKeyFrame(frame).Value = bone.rot.W;
                 }
+                if (bone.pos.X != bone.position[0] || bone.pos.Y != bone.position[1] || bone.pos.Z != bone.position[2])
+                {
+                    XPOS.GetKeyFrame(frame).Value = bone.pos.X;
+                    YPOS.GetKeyFrame(frame).Value = bone.pos.Y;
+                    ZPOS.GetKeyFrame(frame).Value = bone.pos.Z;
+                }
+                if (bone.sca.X != bone.scale[0] || bone.sca.Y != bone.scale[1] || bone.sca.Z != bone.scale[2])
+                {
+                    XSCA.GetKeyFrame(frame).Value = bone.sca.X;
+                    YSCA.GetKeyFrame(frame).Value = bone.sca.Y;
+                    ZSCA.GetKeyFrame(frame).Value = bone.sca.Z;
+                }
             }
 
             public void ExpandNodes()
