@@ -37,6 +37,7 @@ uniform int hasCube;
 uniform int hasNrm;
 uniform int hasRamp;
 uniform int hasAo;
+uniform int hasSphereMap;
 uniform int hasDummyRamp;
 uniform int hasColorGainOffset;
 uniform int hasSpecularParams;
@@ -45,6 +46,9 @@ uniform int hasDualNormal;
 uniform int hasSoftLight;
 uniform int hasCustomSoftLight;
 uniform int hasFinalColorGain;
+uniform int useDifRefMask;
+uniform int hasBayoHair;
+uniform int softLightBrighten;
 
 // Da Flags
 uniform uint flags;
@@ -262,9 +266,14 @@ vec3 DummyRampColor(vec3 color){
 
 vec3 SphereMapColor(vec3 N)
 {
-    // Calculate UVs based on view space normals.
-    vec2 sphereTexcoord = vec2(viewNormal.x, (1 - viewNormal.y));
-    return texture(spheremap, sphereTexcoord).xyz;
+    if (hasSphereMap == 1)
+    {
+        // Calculate UVs based on view space normals.
+        vec2 sphereTexcoord = vec2(viewNormal.x, (1 - viewNormal.y));
+        return texture(spheremap, sphereTexcoord).xyz;
+    }
+    else
+        return vec3(0);
 }
 
 vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift) // probably not needed
@@ -357,18 +366,14 @@ vec3 ReflectionPass(vec3 I, vec3 N, vec3 tintColor, vec4 diffuseMap, float aoMap
 	if (hasCube == 1) // cubemaps from model.nut. currently just uses miiverse cubemap
 		reflectionPass += diffuseMap.aaa * stageCubeColor * tintColor * reflectionParams.x;
 
-    // view-based sphere mapping (rosas stars, sonic eyes, etc) replace with proper variable
-	if ((flags & 0x00000010u) == 0x00000010u)
-	{
-		reflectionPass += SphereMapColor(normal.xyz) * reflectionColor.xyz * tintColor;
-	}
-	else // stage cubemaps
-		reflectionPass += reflectionColor.rgb * stageCubeColor * tintColor;
+	reflectionPass += SphereMapColor(normal.xyz) * reflectionColor.xyz * tintColor;
+	reflectionPass += reflectionColor.rgb * stageCubeColor * tintColor;
 
     reflectionPass *= mix(aoMap, 1, aoMixIntensity);
     reflectionPass *= refLightColor;
     reflectionPass *= reflectionIntensity;
-    if ((flags & 0xFFFFFF00u) == 0xF8820000u)
+
+    if (useDifRefMask == 1)
         reflectionPass *= diffuseMap.a;
 
     reflectionPass = pow(reflectionPass, vec3(gamma));
@@ -397,7 +402,7 @@ vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, vec3 tintColor, float aoMap, 
     blinnPhongSpec = pow(blinnPhongSpec, exponent);
 
     // flags based corrections for specular
-    if ((flags & 0x00FF0000u) == 0x00420000u) // bayo hair mats. rework this section
+    if (hasBayoHair == 1) // bayo hair mats. rework this section
         specularPass = BayoHairSpecular(diffuseMap.rgb, I, xComponent, yComponent);
     else if (hasColorGainOffset == 1) // how does specularColorGain work?
         specularPass += specularColor.rgb * blinnPhongSpec * (specularColorGain.rgb);
@@ -499,7 +504,7 @@ vec3 DiffusePass(vec3 N, float aoMap, vec4 diffuseMap)
         diffuseColorFinal = colorOffset.rgb + (vec3(Luminance(diffuseMap.rgb)) * (colorGain.rgb));
         aoMap = diffuseLuminance;
 
-        if ((flags & 0x00420000u) == 0x00420000u) // bayo hair diffuse is weird
+        if (hasBayoHair == 1) // bayo hair diffuse is weird
         {
             diffuseColorFinal = colorOffset.rgb + (diffuseMap.rrr * colorGain.rgb);
             diffuseColorFinal *= alphaBlendParams.w; // #justbayothings
@@ -524,7 +529,7 @@ vec3 DiffusePass(vec3 N, float aoMap, vec4 diffuseMap)
 
     // used with softlightingparams and customSoftLightParams, respectively
     // this could be moved outside the shader
-    if ((flags & 0x00FF0000u) == 0x00810000u || (flags & 0xFFFF0000u) == 0xFA600000u)
+    if (softLightBrighten == 1)
         diffusePass *= 1.5;
 
     // result of ramp calculations isnt saturated enough
