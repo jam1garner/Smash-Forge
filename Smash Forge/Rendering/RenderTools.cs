@@ -121,10 +121,10 @@ namespace Smash_Forge
                 radius = -radius;
 
             if (radius == 0.0f)
-                throw new DivideByZeroException("DrawSphere: Radius cannot be zero.");
+                return;
 
             if (precision == 0)
-                throw new DivideByZeroException("DrawSphere: Precision of 8 or greater is required.");
+                return;
 
             float halfPI = (float)(Math.PI * 0.5);
             float oneThroughPrecision = 1.0f / precision;
@@ -176,10 +176,10 @@ namespace Smash_Forge
                 radius = -radius;
 
             if (radius == 0.0f)
-                throw new DivideByZeroException("DrawSphere: Radius cannot be zero.");
+                return;
 
             if (precision == 0)
-                throw new DivideByZeroException("DrawSphere: Precision of 8 or greater is required.");
+                return;
 
             float halfPI = (float)(Math.PI * 0.5);
             float oneThroughPrecision = 1.0f / precision;
@@ -342,10 +342,10 @@ namespace Smash_Forge
                 radius = -radius;
 
             if (radius == 0.0f)
-                throw new DivideByZeroException("DrawSphere: Radius cannot be zero.");
+                return;
 
             if (precision == 0)
-                throw new DivideByZeroException("DrawSphere: Precision of 8 or greater is required.");
+                return;
 
             float halfPI = (float)(Math.PI * 0.5);
             float oneThroughPrecision = 1.0f / precision;
@@ -396,10 +396,10 @@ namespace Smash_Forge
                 radius = -radius;
 
             if (radius == 0.0f)
-                throw new DivideByZeroException("DrawSphere: Radius cannot be zero.");
+                return;
 
             if (precision == 0)
-                throw new DivideByZeroException("DrawSphere: Precision of 8 or greater is required.");
+                return;
 
             float halfPI = (float)(Math.PI * 0.5);
             float oneThroughPrecision = 1.0f / precision;
