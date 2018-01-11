@@ -80,6 +80,7 @@ namespace Smash_Forge
         public static bool renderHitboxes;
         public static bool renderInterpolatedHitboxes;
         public static bool renderHitboxesColorByKb;
+        public static bool renderHitboxAngles;
         public static bool renderFloor;
         public static bool renderBackGround;
         public static bool renderPath;
@@ -101,6 +102,7 @@ namespace Smash_Forge
         public static int hitboxRenderMode;
         public static int hitboxAlpha;
         public static int hurtboxAlpha;
+        public static Color hitboxAnglesColor;
         public static Color hurtboxColor;
         public static Color hurtboxColorHi;
         public static Color hurtboxColorMed;
@@ -393,6 +395,7 @@ namespace Smash_Forge
                         case "render_interpolated_hitboxes": bool.TryParse(node.InnerText, out renderInterpolatedHitboxes); break;
                         case "render_hitboxes_no_overlap": bool.TryParse(node.InnerText, out renderHitboxesNoOverlap); break;
                         case "render_hitboxes_mode": int.TryParse(node.InnerText, out hitboxRenderMode); break;
+                        case "render_hitbox_angles": bool.TryParse(node.InnerText, out renderHitboxAngles); break;
                         case "render_hurtboxes": bool.TryParse(node.InnerText, out renderHurtboxes); break;
                         case "render_hurtboxes_zone": bool.TryParse(node.InnerText, out renderHurtboxesZone); break;
                         case "render_ECB": bool.TryParse(node.InnerText, out renderECB); break;
@@ -413,6 +416,7 @@ namespace Smash_Forge
                         case "render_indicators": bool.TryParse(node.InnerText, out renderIndicators); break;
                         case "hitbox_alpha": int.TryParse(node.InnerText, out hitboxAlpha); break;
                         case "hurtbox_alpha": int.TryParse(node.InnerText, out hurtboxAlpha); break;
+                        case "hitbox_angles_color": try { Runtime.hitboxAnglesColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
                         case "hurtbox_color": try { Runtime.hurtboxColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
                         case "hurtbox_color_hi": try { Runtime.hurtboxColorHi = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
                         case "hurtbox_color_med": try { Runtime.hurtboxColorMed = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
@@ -598,6 +602,7 @@ namespace Smash_Forge
             renderNode.AppendChild(createNode(doc, "render_interpolated_hitboxes", renderInterpolatedHitboxes.ToString()));
             renderNode.AppendChild(createNode(doc, "render_hitboxes_no_overlap", renderHitboxesNoOverlap.ToString()));
             renderNode.AppendChild(createNode(doc, "render_hitboxes_mode", hitboxRenderMode.ToString()));
+            renderNode.AppendChild(createNode(doc, "render_hitbox_angles", renderHitboxAngles.ToString()));
             renderNode.AppendChild(createNode(doc, "render_special_bubbles", renderSpecialBubbles.ToString()));
             renderNode.AppendChild(createNode(doc, "render_ledge_grabboxes", renderLedgeGrabboxes.ToString()));
             renderNode.AppendChild(createNode(doc, "render_reverse_ledge_grabboxes", renderReverseLedgeGrabboxes.ToString()));
@@ -609,6 +614,7 @@ namespace Smash_Forge
             renderNode.AppendChild(createNode(doc, "hurtbox_color_med", System.Drawing.ColorTranslator.ToHtml(hurtboxColorMed)));
             renderNode.AppendChild(createNode(doc, "hurtbox_color_low", System.Drawing.ColorTranslator.ToHtml(hurtboxColorLow)));
             renderNode.AppendChild(createNode(doc, "hurtbox_color_selected", System.Drawing.ColorTranslator.ToHtml(hurtboxColorSelected)));
+            renderNode.AppendChild(createNode(doc, "hitbox_angles_color", System.Drawing.ColorTranslator.ToHtml(hitboxAnglesColor)));
             renderNode.AppendChild(createNode(doc, "windbox_color", System.Drawing.ColorTranslator.ToHtml(windboxColor)));
             renderNode.AppendChild(createNode(doc, "grabbox_color", System.Drawing.ColorTranslator.ToHtml(grabboxColor)));
             renderNode.AppendChild(createNode(doc, "searchbox_color", System.Drawing.ColorTranslator.ToHtml(searchboxColor)));

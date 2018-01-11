@@ -454,6 +454,7 @@ namespace Smash_Forge
                         newHitbox.X = (float)cmd.Parameters[9];
                         newHitbox.Y = (float)cmd.Parameters[10];
                         newHitbox.Z = (float)cmd.Parameters[11];
+                        newHitbox.FacingRestriction = (int)cmd.Parameters[34];
                         if (cmd.Parameters.Count > 39)
                         {
                             if ((int)cmd.Parameters[39] == 1)
@@ -481,6 +482,7 @@ namespace Smash_Forge
                         newHitbox.X = (float)cmd.Parameters[9];
                         newHitbox.Y = (float)cmd.Parameters[10];
                         newHitbox.Z = (float)cmd.Parameters[11];
+                        newHitbox.FacingRestriction = (int)cmd.Parameters[34];
                         if ((int)cmd.Parameters[39] == 1)
                         {
                             newHitbox.Type = Hitbox.WINDBOX;
