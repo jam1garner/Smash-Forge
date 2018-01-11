@@ -280,9 +280,6 @@ namespace Smash_Forge
             if (mat.ramp) texturesListView.Items.Add("Ramp");
             if (mat.dummyramp) texturesListView.Items.Add("Dummy Ramp");
 
-            while (texturesListView.Items.Count > mat.textures.Count)
-                texturesListView.Items.RemoveAt(1);
-
             propertiesListView.Items.Clear();
             propertiesListView.View = View.List;
             foreach (string s in mat.entries.Keys)
@@ -451,6 +448,10 @@ namespace Smash_Forge
             {
                 materials[current].flags = f;
                 flagsTB.BackColor = Color.White;
+
+                // Clear the texture list to prevent displaying duplicates
+                texturesListView.Clear();
+                FillForm();
             }
             else
                 flagsTB.BackColor = Color.Red;
