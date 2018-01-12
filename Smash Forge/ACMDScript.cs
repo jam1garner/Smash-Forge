@@ -922,12 +922,7 @@ namespace Smash_Forge
                 h.va = Vector3.TransformPosition(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
 
                 // Draw angle marker
-                /*GL.LineWidth(7f);
-                GL.Begin(PrimitiveType.Lines);
-                GL.Color3(Color.Black);
-                GL.Vertex3(va);
-                GL.Vertex3(va + Vector3.Transform(new Vector3(0,0,h.Size), Matrix4.CreateRotationX(-h.Angle * ((float)Math.PI / 180f))));
-                GL.End();*/
+                RenderHitboxAngles(h, Skeleton);
 
                 GL.Color4(h.GetDisplayColor());
 
@@ -993,7 +988,39 @@ namespace Smash_Forge
             }
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
+        }
+        
+        public void RenderHitboxAngles(Hitbox h, VBN vbn)
+        {
+            //Angle marker changes direction depending on conditions:
+            //If hitbox is behind transN bone (as if the person being hit is located at the hitbox center)
+            //If facing-restriction parameter of hitboxes is set to certain values (3 = forward, 4 = backward)
+            float transN_Z = getBone(0, vbn).pos.Z;
+            int facingRestr = h.FacingRestriction;
+            int direction = 1;
 
+            //check facing restriction values first, then check position
+            if (facingRestr == 3)
+                direction = 1;
+            else if (facingRestr == 4)
+                direction = -1;
+            else if (h.va.Z < transN_Z)
+                direction = -1;
+
+            if (h.Angle <= 360)
+            {
+                GL.LineWidth(5f);
+                GL.Begin(PrimitiveType.Lines);
+                GL.Color4(Runtime.hitboxAnglesColor);
+                GL.Vertex3(h.va);
+                if (direction == 1)
+                    GL.Vertex3(h.va + Vector3.Transform(new Vector3(0, 0, h.Size), Matrix3.CreateRotationX(-h.Angle * ((float)Math.PI / 180f))));
+                else
+                    GL.Vertex3(h.va + Vector3.Transform(new Vector3(0, 0, h.Size), Matrix3.CreateRotationX((180 + h.Angle) * ((float)Math.PI / 180f))));
+                GL.End();
+            }
+            //TODO: Add special angle marker for angles > 360 (and maybe a separate one for 361?)
+            //An annular shape is recognizable but can slow down the gif encoder if it's too precise
         }
 
         public static Tuple<int, int> translateScriptBoneId(int boneId)
