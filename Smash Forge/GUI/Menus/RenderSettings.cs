@@ -228,12 +228,16 @@ namespace Smash_Forge.GUI
             else if (Runtime.renderType == Runtime.RenderTypes.SelectedBoneWeights)
             {
                 debug1CB.Text = "Color Ramp";
-                debug1CB.Visible = true;
+                debug1CB.Visible = false;
                 debug2CB.Visible = false;
 
-                radioButton1.Visible = false;
-                radioButton2.Visible = false;
-                radioButton3.Visible = false;
+                radioButton1.Visible = true;
+                radioButton2.Visible = true;
+                radioButton3.Visible = true;
+
+                radioButton1.Text = "BnW";
+                radioButton2.Text = "Color 1";
+                radioButton3.Text = "Color 2";
             }
             else if (Runtime.renderType == Runtime.RenderTypes.Normals)
             {

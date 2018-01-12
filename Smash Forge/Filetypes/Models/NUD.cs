@@ -772,9 +772,14 @@ namespace Smash_Forge
             GL.ActiveTexture(TextureUnit.Texture10);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
             GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
+
             GL.ActiveTexture(TextureUnit.Texture11);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient);
-            GL.Uniform1(shader.getAttribute("boneWeight"), 11);
+            GL.Uniform1(shader.getAttribute("weightRamp1"), 11);
+
+            GL.ActiveTexture(TextureUnit.Texture12);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient2);
+            GL.Uniform1(shader.getAttribute("weightRamp2"), 12);
 
             GL.Uniform1(shader.getAttribute("dif"), 0);
             GL.Uniform1(shader.getAttribute("dif2"), 0);

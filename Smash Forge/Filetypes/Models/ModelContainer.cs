@@ -276,7 +276,8 @@ namespace Smash_Forge
                     GL.Uniform1(shader.getAttribute("shadowMap"), 11);
 
                     GL.Uniform1(shader.getAttribute("renderType"), renderType);
-                    
+                    GL.Uniform1(shader.getAttribute("debugOption"), (int)Runtime.uvChannel);
+
                     GL.Uniform1(shader.getAttribute("elapsedTime"), (DateTime.Now.Second / 60f) * 100);
 
                     GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);

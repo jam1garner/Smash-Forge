@@ -20,6 +20,7 @@ namespace Smash_Forge
         public static int defaultRamp;
         public static int UVTestPattern;
         public static int boneWeightGradient;
+        public static int boneWeightGradient2;
 
         public static int cubeVAO, cubeVBO;
 
@@ -32,7 +33,8 @@ namespace Smash_Forge
                 defaultRamp = NUT.loadImage(Smash_Forge.Properties.Resources._10080000);
                 UVTestPattern = NUT.loadImage(Smash_Forge.Properties.Resources.UVPattern);
                 boneWeightGradient = NUT.loadImage(Smash_Forge.Properties.Resources.boneWeightGradient);
-                
+                boneWeightGradient2 = NUT.loadImage(Smash_Forge.Properties.Resources.boneWeightGradient2);
+
                 defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
 
                 GL.GenBuffers(1, out cubeVAO);
