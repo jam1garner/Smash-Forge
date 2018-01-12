@@ -31,6 +31,9 @@
             System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("test");
             System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label1 = new System.Windows.Forms.Label();
+            this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
+            this.checkBox19 = new System.Windows.Forms.CheckBox();
             this.checkBox23 = new System.Windows.Forms.CheckBox();
             this.checkBox22 = new System.Windows.Forms.CheckBox();
             this.checkBox21 = new System.Windows.Forms.CheckBox();
@@ -146,6 +149,7 @@
             this.useNormCB = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAbsorbColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbReflectColor)).BeginInit();
@@ -174,6 +178,9 @@
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage2.Controls.Add(this.label1);
+            this.tabPage2.Controls.Add(this.pbHitboxAnglesColor);
+            this.tabPage2.Controls.Add(this.checkBox19);
             this.tabPage2.Controls.Add(this.checkBox23);
             this.tabPage2.Controls.Add(this.checkBox22);
             this.tabPage2.Controls.Add(this.checkBox21);
@@ -228,6 +235,34 @@
             this.tabPage2.Size = new System.Drawing.Size(556, 672);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Hit/Hurt boxes";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(393, 295);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(97, 13);
+            this.label1.TabIndex = 75;
+            this.label1.Text = "Hitbox angles color";
+            // 
+            // pbHitboxAnglesColor
+            // 
+            this.pbHitboxAnglesColor.Location = new System.Drawing.Point(533, 295);
+            this.pbHitboxAnglesColor.Name = "pbHitboxAnglesColor";
+            this.pbHitboxAnglesColor.Size = new System.Drawing.Size(16, 16);
+            this.pbHitboxAnglesColor.TabIndex = 74;
+            this.pbHitboxAnglesColor.TabStop = false;
+            this.pbHitboxAnglesColor.Click += new System.EventHandler(this.pbHitboxAnglesColor_Click);
+            // 
+            // checkBox19
+            // 
+            this.checkBox19.AutoSize = true;
+            this.checkBox19.Location = new System.Drawing.Point(211, 29);
+            this.checkBox19.Name = "checkBox19";
+            this.checkBox19.Size = new System.Drawing.Size(129, 17);
+            this.checkBox19.TabIndex = 73;
+            this.checkBox19.Text = "Render Hitbox Angles";
+            this.checkBox19.UseVisualStyleBackColor = true;
             // 
             // checkBox23
             // 
@@ -491,7 +526,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(32, 461);
+            this.label14.Location = new System.Drawing.Point(31, 461);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(87, 13);
             this.label14.TabIndex = 42;
@@ -518,7 +553,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(32, 415);
+            this.label12.Location = new System.Drawing.Point(31, 415);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(73, 13);
             this.label12.TabIndex = 39;
@@ -844,7 +879,7 @@
             this.checkBox11.AutoSize = true;
             this.checkBox11.Location = new System.Drawing.Point(48, 370);
             this.checkBox11.Name = "checkBox11";
-            this.checkBox11.Size = new System.Drawing.Size(133, 17);
+            this.checkBox11.Size = new System.Drawing.Size(193, 17);
             this.checkBox11.TabIndex = 26;
             this.checkBox11.Text = "Render General Shapes and Points";
             this.checkBox11.UseVisualStyleBackColor = true;
@@ -1495,6 +1530,7 @@
             this.Load += new System.EventHandler(this.RenderSettings_Load);
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAbsorbColor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbReflectColor)).EndInit();
@@ -1645,5 +1681,8 @@
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.CheckBox debug2CB;
         private System.Windows.Forms.CheckBox debug1CB;
+        private System.Windows.Forms.CheckBox checkBox19;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.PictureBox pbHitboxAnglesColor;
     }
 }
