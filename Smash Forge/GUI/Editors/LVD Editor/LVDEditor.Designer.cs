@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.lvdEntryGroup = new System.Windows.Forms.GroupBox();
             this.name = new System.Windows.Forms.TextBox();
             this.subname = new System.Windows.Forms.TextBox();
-            this.collisionGroup = new System.Windows.Forms.GroupBox();
             this.button3 = new System.Windows.Forms.Button();
             this.label17 = new System.Windows.Forms.Label();
             this.zStart = new System.Windows.Forms.NumericUpDown();
@@ -41,6 +41,8 @@
             this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.useStartPos = new System.Windows.Forms.CheckBox();
+            this.collisionGroup = new System.Windows.Forms.GroupBox();
             this.yVert = new System.Windows.Forms.NumericUpDown();
             this.xVert = new System.Windows.Forms.NumericUpDown();
             this.lines = new System.Windows.Forms.TreeView();
@@ -62,9 +64,11 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.generalPointShapeBox = new System.Windows.Forms.GroupBox();
+            this.point3dGroup = new System.Windows.Forms.GroupBox();
+            this.label48 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
+            this.pointShapeZ = new System.Windows.Forms.NumericUpDown();
             this.pointShapeY = new System.Windows.Forms.NumericUpDown();
             this.pointShapeX = new System.Windows.Forms.NumericUpDown();
             this.pointGroup = new System.Windows.Forms.GroupBox();
@@ -163,14 +167,16 @@
             this.jobjY = new System.Windows.Forms.NumericUpDown();
             this.jobjX = new System.Windows.Forms.NumericUpDown();
             this.flowLayoutPanel1.SuspendLayout();
-            this.collisionGroup.SuspendLayout();
+            this.lvdEntryGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zStart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.yStart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xStart)).BeginInit();
+            this.collisionGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yVert)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xVert)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.passthroughAngle)).BeginInit();
-            this.generalPointShapeBox.SuspendLayout();
+            this.point3dGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pointShapeZ)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeX)).BeginInit();
             this.pointGroup.SuspendLayout();
@@ -213,10 +219,9 @@
             // 
             // flowLayoutPanel1
             // 
-            this.flowLayoutPanel1.Controls.Add(this.name);
-            this.flowLayoutPanel1.Controls.Add(this.subname);
+            this.flowLayoutPanel1.Controls.Add(this.lvdEntryGroup);
             this.flowLayoutPanel1.Controls.Add(this.collisionGroup);
-            this.flowLayoutPanel1.Controls.Add(this.generalPointShapeBox);
+            this.flowLayoutPanel1.Controls.Add(this.point3dGroup);
             this.flowLayoutPanel1.Controls.Add(this.pointGroup);
             this.flowLayoutPanel1.Controls.Add(this.boundGroup);
             this.flowLayoutPanel1.Controls.Add(this.itemSpawnerGroup);
@@ -232,35 +237,184 @@
             this.flowLayoutPanel1.Size = new System.Drawing.Size(651, 652);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
+            // lvdEntryGroup
+            // 
+            this.lvdEntryGroup.Controls.Add(this.name);
+            this.lvdEntryGroup.Controls.Add(this.subname);
+            this.lvdEntryGroup.Controls.Add(this.button3);
+            this.lvdEntryGroup.Controls.Add(this.label17);
+            this.lvdEntryGroup.Controls.Add(this.zStart);
+            this.lvdEntryGroup.Controls.Add(this.yStart);
+            this.lvdEntryGroup.Controls.Add(this.xStart);
+            this.lvdEntryGroup.Controls.Add(this.label10);
+            this.lvdEntryGroup.Controls.Add(this.label9);
+            this.lvdEntryGroup.Controls.Add(this.label8);
+            this.lvdEntryGroup.Controls.Add(this.label7);
+            this.lvdEntryGroup.Controls.Add(this.useStartPos);
+            this.lvdEntryGroup.Location = new System.Drawing.Point(2, 2);
+            this.lvdEntryGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.lvdEntryGroup.Name = "lvdEntryGroup";
+            this.lvdEntryGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.lvdEntryGroup.Size = new System.Drawing.Size(240, 200);
+            this.lvdEntryGroup.TabIndex = 0;
+            this.lvdEntryGroup.TabStop = false;
+            this.lvdEntryGroup.Text = "LVD Object";
+            // 
             // name
             // 
-            this.name.Location = new System.Drawing.Point(2, 2);
+            this.name.MaxLength = 0x38;
+            this.name.Location = new System.Drawing.Point(10, 20);
             this.name.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.name.Name = "name";
-            this.name.Size = new System.Drawing.Size(209, 20);
+            this.name.Size = new System.Drawing.Size(220, 20);
             this.name.TabIndex = 1;
             this.name.TextChanged += new System.EventHandler(this.nameChange);
             // 
             // subname
             // 
-            this.subname.Location = new System.Drawing.Point(2, 26);
+            this.subname.MaxLength = 0x40;
+            this.subname.Location = new System.Drawing.Point(10, 44);
             this.subname.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.subname.Name = "subname";
-            this.subname.Size = new System.Drawing.Size(209, 20);
+            this.subname.Size = new System.Drawing.Size(220, 20);
             this.subname.TabIndex = 2;
             this.subname.TextChanged += new System.EventHandler(this.nameChange);
             // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(5, 155);
+            this.button3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(140, 24);
+            this.button3.TabIndex = 33;
+            this.button3.Text = "None";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(2, 140);
+            this.label17.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(79, 13);
+            this.label17.TabIndex = 32;
+            this.label17.Text = "Bone to Rig To";
+            // 
+            // zStart
+            // 
+            this.zStart.DecimalPlaces = 4;
+            this.zStart.Location = new System.Drawing.Point(178, 91);
+            this.zStart.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.zStart.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.zStart.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.zStart.Name = "zStart";
+            this.zStart.Size = new System.Drawing.Size(56, 20);
+            this.zStart.TabIndex = 31;
+            this.zStart.ValueChanged += new System.EventHandler(this.changeStart);
+            // 
+            // yStart
+            // 
+            this.yStart.DecimalPlaces = 4;
+            this.yStart.Location = new System.Drawing.Point(100, 91);
+            this.yStart.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.yStart.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.yStart.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.yStart.Name = "yStart";
+            this.yStart.Size = new System.Drawing.Size(56, 20);
+            this.yStart.TabIndex = 30;
+            this.yStart.ValueChanged += new System.EventHandler(this.changeStart);
+            // 
+            // xStart
+            // 
+            this.xStart.DecimalPlaces = 4;
+            this.xStart.Location = new System.Drawing.Point(22, 91);
+            this.xStart.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.xStart.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.xStart.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.xStart.Name = "xStart";
+            this.xStart.Size = new System.Drawing.Size(56, 20);
+            this.xStart.TabIndex = 29;
+            this.xStart.ValueChanged += new System.EventHandler(this.changeStart);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(162, 93);
+            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(14, 13);
+            this.label10.TabIndex = 28;
+            this.label10.Text = "Z";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(84, 93);
+            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(14, 13);
+            this.label9.TabIndex = 27;
+            this.label9.Text = "Y";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 93);
+            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(14, 13);
+            this.label8.TabIndex = 26;
+            this.label8.Text = "X";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(5, 74);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(69, 13);
+            this.label7.TabIndex = 25;
+            this.label7.Text = "Start Position";
+            // 
+            // useStartPos
+            // 
+            this.useStartPos.AutoSize = true;
+            this.useStartPos.Location = new System.Drawing.Point(5, 112);
+            this.useStartPos.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.useStartPos.Name = "useStartPos";
+            this.useStartPos.Size = new System.Drawing.Size(110, 17);
+            this.useStartPos.TabIndex = 10;
+            this.useStartPos.Text = "Use Start Position";
+            this.useStartPos.UseVisualStyleBackColor = true;
+            this.useStartPos.CheckedChanged += new System.EventHandler(this.changeStart);
+            // 
             // collisionGroup
             // 
-            this.collisionGroup.Controls.Add(this.button3);
-            this.collisionGroup.Controls.Add(this.label17);
-            this.collisionGroup.Controls.Add(this.zStart);
-            this.collisionGroup.Controls.Add(this.yStart);
-            this.collisionGroup.Controls.Add(this.xStart);
-            this.collisionGroup.Controls.Add(this.label10);
-            this.collisionGroup.Controls.Add(this.label9);
-            this.collisionGroup.Controls.Add(this.label8);
-            this.collisionGroup.Controls.Add(this.label7);
             this.collisionGroup.Controls.Add(this.yVert);
             this.collisionGroup.Controls.Add(this.xVert);
             this.collisionGroup.Controls.Add(this.lines);
@@ -282,140 +436,19 @@
             this.collisionGroup.Controls.Add(this.button2);
             this.collisionGroup.Controls.Add(this.button1);
             this.collisionGroup.Controls.Add(this.label1);
-            this.collisionGroup.Location = new System.Drawing.Point(2, 50);
+            this.collisionGroup.Location = new System.Drawing.Point(2, 220);
             this.collisionGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.collisionGroup.Name = "collisionGroup";
             this.collisionGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.collisionGroup.Size = new System.Drawing.Size(208, 496);
+            this.collisionGroup.Size = new System.Drawing.Size(240, 450);
             this.collisionGroup.TabIndex = 0;
             this.collisionGroup.TabStop = false;
             this.collisionGroup.Text = "Collision Editing";
             // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(5, 103);
-            this.button3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(140, 24);
-            this.button3.TabIndex = 33;
-            this.button3.Text = "None";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(2, 88);
-            this.label17.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(79, 13);
-            this.label17.TabIndex = 32;
-            this.label17.Text = "Bone to Rig To";
-            // 
-            // zStart
-            // 
-            this.zStart.DecimalPlaces = 3;
-            this.zStart.Location = new System.Drawing.Point(146, 33);
-            this.zStart.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.zStart.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.zStart.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.zStart.Name = "zStart";
-            this.zStart.Size = new System.Drawing.Size(46, 20);
-            this.zStart.TabIndex = 31;
-            this.zStart.ValueChanged += new System.EventHandler(this.changeStart);
-            // 
-            // yStart
-            // 
-            this.yStart.DecimalPlaces = 3;
-            this.yStart.Location = new System.Drawing.Point(84, 33);
-            this.yStart.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.yStart.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.yStart.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.yStart.Name = "yStart";
-            this.yStart.Size = new System.Drawing.Size(46, 20);
-            this.yStart.TabIndex = 30;
-            this.yStart.ValueChanged += new System.EventHandler(this.changeStart);
-            // 
-            // xStart
-            // 
-            this.xStart.DecimalPlaces = 3;
-            this.xStart.Location = new System.Drawing.Point(23, 33);
-            this.xStart.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.xStart.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.xStart.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.xStart.Name = "xStart";
-            this.xStart.Size = new System.Drawing.Size(46, 20);
-            this.xStart.TabIndex = 29;
-            this.xStart.ValueChanged += new System.EventHandler(this.changeStart);
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(131, 36);
-            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(14, 13);
-            this.label10.TabIndex = 28;
-            this.label10.Text = "Z";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(69, 34);
-            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(14, 13);
-            this.label9.TabIndex = 27;
-            this.label9.Text = "Y";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(8, 34);
-            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(14, 13);
-            this.label8.TabIndex = 26;
-            this.label8.Text = "X";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(5, 16);
-            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(69, 13);
-            this.label7.TabIndex = 25;
-            this.label7.Text = "Start Position";
-            // 
             // yVert
             // 
-            this.yVert.DecimalPlaces = 3;
-            this.yVert.Location = new System.Drawing.Point(92, 260);
+            this.yVert.DecimalPlaces = 4;
+            this.yVert.Location = new System.Drawing.Point(100, 196);
             this.yVert.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.yVert.Maximum = new decimal(new int[] {
             1000000000,
@@ -428,14 +461,14 @@
             0,
             -2147483648});
             this.yVert.Name = "yVert";
-            this.yVert.Size = new System.Drawing.Size(50, 20);
+            this.yVert.Size = new System.Drawing.Size(56, 20);
             this.yVert.TabIndex = 24;
             this.yVert.ValueChanged += new System.EventHandler(this.changePos);
             // 
             // xVert
             // 
-            this.xVert.DecimalPlaces = 3;
-            this.xVert.Location = new System.Drawing.Point(22, 260);
+            this.xVert.DecimalPlaces = 4;
+            this.xVert.Location = new System.Drawing.Point(22, 196);
             this.xVert.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.xVert.Maximum = new decimal(new int[] {
             1000000000,
@@ -448,27 +481,27 @@
             0,
             -2147483648});
             this.xVert.Name = "xVert";
-            this.xVert.Size = new System.Drawing.Size(50, 20);
+            this.xVert.Size = new System.Drawing.Size(56, 20);
             this.xVert.TabIndex = 23;
             this.xVert.ValueChanged += new System.EventHandler(this.changePos);
             // 
             // lines
             // 
             this.lines.HideSelection = false;
-            this.lines.Location = new System.Drawing.Point(4, 297);
+            this.lines.Location = new System.Drawing.Point(10, 244);
             this.lines.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.lines.Name = "lines";
-            this.lines.Size = new System.Drawing.Size(195, 103);
+            this.lines.Size = new System.Drawing.Size(220, 103);
             this.lines.TabIndex = 22;
             this.lines.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.lines_AfterSelect);
             // 
             // vertices
             // 
             this.vertices.HideSelection = false;
-            this.vertices.Location = new System.Drawing.Point(4, 148);
+            this.vertices.Location = new System.Drawing.Point(10, 84);
             this.vertices.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.vertices.Name = "vertices";
-            this.vertices.Size = new System.Drawing.Size(195, 103);
+            this.vertices.Size = new System.Drawing.Size(220, 103);
             this.vertices.TabIndex = 21;
             this.vertices.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.vertices_AfterSelect);
             // 
@@ -500,7 +533,7 @@
             "Sand",
             "MasterFortress",
             "Carpet"});
-            this.comboBox1.Location = new System.Drawing.Point(10, 450);
+            this.comboBox1.Location = new System.Drawing.Point(10, 396);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(92, 21);
@@ -510,7 +543,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(7, 434);
+            this.label6.Location = new System.Drawing.Point(7, 380);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(83, 13);
@@ -520,7 +553,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(7, 407);
+            this.label5.Location = new System.Drawing.Point(7, 353);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(96, 13);
@@ -529,7 +562,7 @@
             // 
             // passthroughAngle
             // 
-            this.passthroughAngle.Location = new System.Drawing.Point(111, 405);
+            this.passthroughAngle.Location = new System.Drawing.Point(111, 351);
             this.passthroughAngle.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.passthroughAngle.Maximum = new decimal(new int[] {
             1000000000,
@@ -549,7 +582,7 @@
             // noWallJump
             // 
             this.noWallJump.AutoSize = true;
-            this.noWallJump.Location = new System.Drawing.Point(112, 475);
+            this.noWallJump.Location = new System.Drawing.Point(112, 421);
             this.noWallJump.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.noWallJump.Name = "noWallJump";
             this.noWallJump.Size = new System.Drawing.Size(92, 17);
@@ -561,7 +594,7 @@
             // rightLedge
             // 
             this.rightLedge.AutoSize = true;
-            this.rightLedge.Location = new System.Drawing.Point(112, 454);
+            this.rightLedge.Location = new System.Drawing.Point(112, 400);
             this.rightLedge.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rightLedge.Name = "rightLedge";
             this.rightLedge.Size = new System.Drawing.Size(84, 17);
@@ -573,7 +606,7 @@
             // leftLedge
             // 
             this.leftLedge.AutoSize = true;
-            this.leftLedge.Location = new System.Drawing.Point(112, 433);
+            this.leftLedge.Location = new System.Drawing.Point(112, 379);
             this.leftLedge.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.leftLedge.Name = "leftLedge";
             this.leftLedge.Size = new System.Drawing.Size(77, 17);
@@ -585,19 +618,19 @@
             // flag4
             // 
             this.flag4.AutoSize = true;
-            this.flag4.Location = new System.Drawing.Point(114, 72);
+            this.flag4.Location = new System.Drawing.Point(114, 38);
             this.flag4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.flag4.Name = "flag4";
             this.flag4.Size = new System.Drawing.Size(92, 17);
             this.flag4.TabIndex = 13;
-            this.flag4.Text = "Drop Through";
+            this.flag4.Text = "Drop-Through";
             this.flag4.UseVisualStyleBackColor = true;
             this.flag4.CheckedChanged += new System.EventHandler(this.flagChange);
             // 
             // flag3
             // 
             this.flag3.AutoSize = true;
-            this.flag3.Location = new System.Drawing.Point(5, 72);
+            this.flag3.Location = new System.Drawing.Point(5, 38);
             this.flag3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.flag3.Name = "flag3";
             this.flag3.Size = new System.Drawing.Size(49, 17);
@@ -609,7 +642,7 @@
             // flag2
             // 
             this.flag2.AutoSize = true;
-            this.flag2.Location = new System.Drawing.Point(114, 54);
+            this.flag2.Location = new System.Drawing.Point(114, 20);
             this.flag2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.flag2.Name = "flag2";
             this.flag2.Size = new System.Drawing.Size(83, 17);
@@ -621,19 +654,19 @@
             // flag1
             // 
             this.flag1.AutoSize = true;
-            this.flag1.Location = new System.Drawing.Point(5, 54);
+            this.flag1.Location = new System.Drawing.Point(5, 20);
             this.flag1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.flag1.Name = "flag1";
-            this.flag1.Size = new System.Drawing.Size(110, 17);
+            this.flag1.Size = new System.Drawing.Size(49, 17);
             this.flag1.TabIndex = 10;
-            this.flag1.Text = "Use Start Position";
+            this.flag1.Text = "flag1";
             this.flag1.UseVisualStyleBackColor = true;
             this.flag1.CheckedChanged += new System.EventHandler(this.flagChange);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(82, 283);
+            this.label4.Location = new System.Drawing.Point(82, 229);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(32, 13);
@@ -643,7 +676,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(76, 263);
+            this.label3.Location = new System.Drawing.Point(84, 198);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(14, 13);
@@ -653,7 +686,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(7, 262);
+            this.label2.Location = new System.Drawing.Point(6, 198);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(14, 13);
@@ -662,7 +695,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(159, 128);
+            this.button2.Location = new System.Drawing.Point(159, 64);
             this.button2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(37, 18);
@@ -673,7 +706,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(118, 128);
+            this.button1.Location = new System.Drawing.Point(118, 64);
             this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(37, 18);
@@ -685,33 +718,45 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(69, 131);
+            this.label1.Location = new System.Drawing.Point(69, 66);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(45, 13);
             this.label1.TabIndex = 1;
             this.label1.Text = "Vertices";
             // 
-            // generalPointShapeBox
+            // point3dGroup
             // 
-            this.generalPointShapeBox.Controls.Add(this.label22);
-            this.generalPointShapeBox.Controls.Add(this.label23);
-            this.generalPointShapeBox.Controls.Add(this.pointShapeY);
-            this.generalPointShapeBox.Controls.Add(this.pointShapeX);
-            this.generalPointShapeBox.Location = new System.Drawing.Point(2, 550);
-            this.generalPointShapeBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.generalPointShapeBox.Name = "generalPointShapeBox";
-            this.generalPointShapeBox.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.generalPointShapeBox.Size = new System.Drawing.Size(150, 46);
-            this.generalPointShapeBox.TabIndex = 34;
-            this.generalPointShapeBox.TabStop = false;
-            this.generalPointShapeBox.Text = "Point (Shape)";
-            this.generalPointShapeBox.Visible = false;
+            this.point3dGroup.Controls.Add(this.label48);
+            this.point3dGroup.Controls.Add(this.label22);
+            this.point3dGroup.Controls.Add(this.label23);
+            this.point3dGroup.Controls.Add(this.pointShapeZ);
+            this.point3dGroup.Controls.Add(this.pointShapeY);
+            this.point3dGroup.Controls.Add(this.pointShapeX);
+            this.point3dGroup.Location = new System.Drawing.Point(2, 550);
+            this.point3dGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.point3dGroup.Name = "point3dGroup";
+            this.point3dGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.point3dGroup.Size = new System.Drawing.Size(240, 46);
+            this.point3dGroup.TabIndex = 34;
+            this.point3dGroup.TabStop = false;
+            this.point3dGroup.Text = "3D Point";
+            this.point3dGroup.Visible = false;
+            // 
+            // label48
+            // 
+            this.label48.AutoSize = true;
+            this.label48.Location = new System.Drawing.Point(162, 20);
+            this.label48.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label48.Name = "label48";
+            this.label48.Size = new System.Drawing.Size(14, 13);
+            this.label48.TabIndex = 32;
+            this.label48.Text = "Z";
             // 
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(79, 20);
+            this.label22.Location = new System.Drawing.Point(84, 20);
             this.label22.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(14, 13);
@@ -721,17 +766,37 @@
             // label23
             // 
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(7, 20);
+            this.label23.Location = new System.Drawing.Point(6, 20);
             this.label23.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(14, 13);
             this.label23.TabIndex = 32;
             this.label23.Text = "X";
             // 
+            // pointShapeZ
+            // 
+            this.pointShapeZ.DecimalPlaces = 4;
+            this.pointShapeZ.Location = new System.Drawing.Point(178, 18);
+            this.pointShapeZ.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pointShapeZ.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.pointShapeZ.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.pointShapeZ.Name = "pointShapeZ";
+            this.pointShapeZ.Size = new System.Drawing.Size(56, 20);
+            this.pointShapeZ.TabIndex = 34;
+            this.pointShapeZ.ValueChanged += new System.EventHandler(this.pointShape_ValueChanged);
+            // 
             // pointShapeY
             // 
-            this.pointShapeY.DecimalPlaces = 3;
-            this.pointShapeY.Location = new System.Drawing.Point(97, 18);
+            this.pointShapeY.DecimalPlaces = 4;
+            this.pointShapeY.Location = new System.Drawing.Point(100, 18);
             this.pointShapeY.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pointShapeY.Maximum = new decimal(new int[] {
             1000000000,
@@ -744,14 +809,14 @@
             0,
             -2147483648});
             this.pointShapeY.Name = "pointShapeY";
-            this.pointShapeY.Size = new System.Drawing.Size(50, 20);
+            this.pointShapeY.Size = new System.Drawing.Size(56, 20);
             this.pointShapeY.TabIndex = 33;
             this.pointShapeY.ValueChanged += new System.EventHandler(this.pointShape_ValueChanged);
             // 
             // pointShapeX
             // 
-            this.pointShapeX.DecimalPlaces = 3;
-            this.pointShapeX.Location = new System.Drawing.Point(25, 18);
+            this.pointShapeX.DecimalPlaces = 4;
+            this.pointShapeX.Location = new System.Drawing.Point(22, 18);
             this.pointShapeX.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pointShapeX.Maximum = new decimal(new int[] {
             1000000000,
@@ -764,7 +829,7 @@
             0,
             -2147483648});
             this.pointShapeX.Name = "pointShapeX";
-            this.pointShapeX.Size = new System.Drawing.Size(50, 20);
+            this.pointShapeX.Size = new System.Drawing.Size(56, 20);
             this.pointShapeX.TabIndex = 32;
             this.pointShapeX.ValueChanged += new System.EventHandler(this.pointShape_ValueChanged);
             // 
@@ -778,15 +843,15 @@
             this.pointGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pointGroup.Name = "pointGroup";
             this.pointGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.pointGroup.Size = new System.Drawing.Size(154, 46);
+            this.pointGroup.Size = new System.Drawing.Size(240, 46);
             this.pointGroup.TabIndex = 3;
             this.pointGroup.TabStop = false;
-            this.pointGroup.Text = "Point";
+            this.pointGroup.Text = "2D Point";
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(79, 20);
+            this.label12.Location = new System.Drawing.Point(84, 20);
             this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(14, 13);
@@ -796,7 +861,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(7, 20);
+            this.label11.Location = new System.Drawing.Point(6, 20);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(14, 13);
@@ -805,8 +870,8 @@
             // 
             // yPoint
             // 
-            this.yPoint.DecimalPlaces = 3;
-            this.yPoint.Location = new System.Drawing.Point(97, 18);
+            this.yPoint.DecimalPlaces = 4;
+            this.yPoint.Location = new System.Drawing.Point(100, 18);
             this.yPoint.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.yPoint.Maximum = new decimal(new int[] {
             1000000000,
@@ -819,14 +884,14 @@
             0,
             -2147483648});
             this.yPoint.Name = "yPoint";
-            this.yPoint.Size = new System.Drawing.Size(50, 20);
+            this.yPoint.Size = new System.Drawing.Size(56, 20);
             this.yPoint.TabIndex = 33;
             this.yPoint.ValueChanged += new System.EventHandler(this.pointMoved);
             // 
             // xPoint
             // 
-            this.xPoint.DecimalPlaces = 3;
-            this.xPoint.Location = new System.Drawing.Point(25, 18);
+            this.xPoint.DecimalPlaces = 4;
+            this.xPoint.Location = new System.Drawing.Point(22, 18);
             this.xPoint.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.xPoint.Maximum = new decimal(new int[] {
             1000000000,
@@ -839,7 +904,7 @@
             0,
             -2147483648});
             this.xPoint.Name = "xPoint";
-            this.xPoint.Size = new System.Drawing.Size(50, 20);
+            this.xPoint.Size = new System.Drawing.Size(56, 20);
             this.xPoint.TabIndex = 32;
             this.xPoint.ValueChanged += new System.EventHandler(this.pointMoved);
             // 
@@ -857,7 +922,7 @@
             this.boundGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.boundGroup.Name = "boundGroup";
             this.boundGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.boundGroup.Size = new System.Drawing.Size(160, 67);
+            this.boundGroup.Size = new System.Drawing.Size(240, 67);
             this.boundGroup.TabIndex = 34;
             this.boundGroup.TabStop = false;
             this.boundGroup.Text = "Bounds";
@@ -865,7 +930,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(80, 40);
+            this.label15.Location = new System.Drawing.Point(90, 40);
             this.label15.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(17, 13);
@@ -875,7 +940,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(7, 40);
+            this.label16.Location = new System.Drawing.Point(6, 40);
             this.label16.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(17, 13);
@@ -884,8 +949,8 @@
             // 
             // bottomVal
             // 
-            this.bottomVal.DecimalPlaces = 3;
-            this.bottomVal.Location = new System.Drawing.Point(102, 38);
+            this.bottomVal.DecimalPlaces = 4;
+            this.bottomVal.Location = new System.Drawing.Point(112, 38);
             this.bottomVal.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.bottomVal.Maximum = new decimal(new int[] {
             1000000000,
@@ -898,14 +963,14 @@
             0,
             -2147483648});
             this.bottomVal.Name = "bottomVal";
-            this.bottomVal.Size = new System.Drawing.Size(50, 20);
+            this.bottomVal.Size = new System.Drawing.Size(56, 20);
             this.bottomVal.TabIndex = 37;
             this.bottomVal.ValueChanged += new System.EventHandler(this.boundsChanged);
             // 
             // leftVal
             // 
-            this.leftVal.DecimalPlaces = 3;
-            this.leftVal.Location = new System.Drawing.Point(27, 38);
+            this.leftVal.DecimalPlaces = 4;
+            this.leftVal.Location = new System.Drawing.Point(28, 38);
             this.leftVal.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.leftVal.Maximum = new decimal(new int[] {
             1000000000,
@@ -918,14 +983,14 @@
             0,
             -2147483648});
             this.leftVal.Name = "leftVal";
-            this.leftVal.Size = new System.Drawing.Size(50, 20);
+            this.leftVal.Size = new System.Drawing.Size(56, 20);
             this.leftVal.TabIndex = 36;
             this.leftVal.ValueChanged += new System.EventHandler(this.boundsChanged);
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(80, 20);
+            this.label13.Location = new System.Drawing.Point(90, 20);
             this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(20, 13);
@@ -935,7 +1000,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(7, 20);
+            this.label14.Location = new System.Drawing.Point(6, 20);
             this.label14.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(20, 13);
@@ -944,8 +1009,8 @@
             // 
             // topVal
             // 
-            this.topVal.DecimalPlaces = 3;
-            this.topVal.Location = new System.Drawing.Point(102, 18);
+            this.topVal.DecimalPlaces = 4;
+            this.topVal.Location = new System.Drawing.Point(112, 18);
             this.topVal.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.topVal.Maximum = new decimal(new int[] {
             1000000000,
@@ -958,14 +1023,14 @@
             0,
             -2147483648});
             this.topVal.Name = "topVal";
-            this.topVal.Size = new System.Drawing.Size(50, 20);
+            this.topVal.Size = new System.Drawing.Size(56, 20);
             this.topVal.TabIndex = 33;
             this.topVal.ValueChanged += new System.EventHandler(this.boundsChanged);
             // 
             // rightVal
             // 
-            this.rightVal.DecimalPlaces = 3;
-            this.rightVal.Location = new System.Drawing.Point(27, 18);
+            this.rightVal.DecimalPlaces = 4;
+            this.rightVal.Location = new System.Drawing.Point(28, 18);
             this.rightVal.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rightVal.Maximum = new decimal(new int[] {
             1000000000,
@@ -978,7 +1043,7 @@
             0,
             -2147483648});
             this.rightVal.Name = "rightVal";
-            this.rightVal.Size = new System.Drawing.Size(50, 20);
+            this.rightVal.Size = new System.Drawing.Size(56, 20);
             this.rightVal.TabIndex = 32;
             this.rightVal.ValueChanged += new System.EventHandler(this.boundsChanged);
             // 
@@ -1164,7 +1229,7 @@
             this.rectangleGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rectangleGroup.Name = "rectangleGroup";
             this.rectangleGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.rectangleGroup.Size = new System.Drawing.Size(160, 67);
+            this.rectangleGroup.Size = new System.Drawing.Size(240, 67);
             this.rectangleGroup.TabIndex = 38;
             this.rectangleGroup.TabStop = false;
             this.rectangleGroup.Text = "Rectangle (Shape)";
@@ -1173,7 +1238,7 @@
             // label24
             // 
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(80, 40);
+            this.label24.Location = new System.Drawing.Point(90, 40);
             this.label24.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(17, 13);
@@ -1183,7 +1248,7 @@
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(7, 40);
+            this.label25.Location = new System.Drawing.Point(6, 40);
             this.label25.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(17, 13);
@@ -1192,8 +1257,8 @@
             // 
             // rectLowerY
             // 
-            this.rectLowerY.DecimalPlaces = 3;
-            this.rectLowerY.Location = new System.Drawing.Point(102, 38);
+            this.rectLowerY.DecimalPlaces = 4;
+            this.rectLowerY.Location = new System.Drawing.Point(112, 38);
             this.rectLowerY.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rectLowerY.Maximum = new decimal(new int[] {
             1000000000,
@@ -1206,14 +1271,14 @@
             0,
             -2147483648});
             this.rectLowerY.Name = "rectLowerY";
-            this.rectLowerY.Size = new System.Drawing.Size(50, 20);
+            this.rectLowerY.Size = new System.Drawing.Size(56, 20);
             this.rectLowerY.TabIndex = 37;
             this.rectLowerY.ValueChanged += new System.EventHandler(this.rectValueChanged);
             // 
             // rectLowerX
             // 
-            this.rectLowerX.DecimalPlaces = 3;
-            this.rectLowerX.Location = new System.Drawing.Point(27, 38);
+            this.rectLowerX.DecimalPlaces = 4;
+            this.rectLowerX.Location = new System.Drawing.Point(28, 38);
             this.rectLowerX.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rectLowerX.Maximum = new decimal(new int[] {
             1000000000,
@@ -1226,14 +1291,14 @@
             0,
             -2147483648});
             this.rectLowerX.Name = "rectLowerX";
-            this.rectLowerX.Size = new System.Drawing.Size(50, 20);
+            this.rectLowerX.Size = new System.Drawing.Size(56, 20);
             this.rectLowerX.TabIndex = 36;
             this.rectLowerX.ValueChanged += new System.EventHandler(this.rectValueChanged);
             // 
             // label26
             // 
             this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(80, 20);
+            this.label26.Location = new System.Drawing.Point(90, 20);
             this.label26.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(20, 13);
@@ -1243,7 +1308,7 @@
             // label27
             // 
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(7, 20);
+            this.label27.Location = new System.Drawing.Point(6, 20);
             this.label27.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(20, 13);
@@ -1252,8 +1317,8 @@
             // 
             // rectUpperY
             // 
-            this.rectUpperY.DecimalPlaces = 3;
-            this.rectUpperY.Location = new System.Drawing.Point(102, 18);
+            this.rectUpperY.DecimalPlaces = 4;
+            this.rectUpperY.Location = new System.Drawing.Point(112, 18);
             this.rectUpperY.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rectUpperY.Maximum = new decimal(new int[] {
             1000000000,
@@ -1266,14 +1331,14 @@
             0,
             -2147483648});
             this.rectUpperY.Name = "rectUpperY";
-            this.rectUpperY.Size = new System.Drawing.Size(50, 20);
+            this.rectUpperY.Size = new System.Drawing.Size(56, 20);
             this.rectUpperY.TabIndex = 33;
             this.rectUpperY.ValueChanged += new System.EventHandler(this.rectValueChanged);
             // 
             // rectUpperX
             // 
-            this.rectUpperX.DecimalPlaces = 3;
-            this.rectUpperX.Location = new System.Drawing.Point(27, 18);
+            this.rectUpperX.DecimalPlaces = 4;
+            this.rectUpperX.Location = new System.Drawing.Point(28, 18);
             this.rectUpperX.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rectUpperX.Maximum = new decimal(new int[] {
             1000000000,
@@ -1286,7 +1351,7 @@
             0,
             -2147483648});
             this.rectUpperX.Name = "rectUpperX";
-            this.rectUpperX.Size = new System.Drawing.Size(50, 20);
+            this.rectUpperX.Size = new System.Drawing.Size(56, 20);
             this.rectUpperX.TabIndex = 32;
             this.rectUpperX.ValueChanged += new System.EventHandler(this.rectValueChanged);
             // 
@@ -2116,16 +2181,19 @@
             this.Load += new System.EventHandler(this.LVDEditor_Load);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
-            this.collisionGroup.ResumeLayout(false);
-            this.collisionGroup.PerformLayout();
+            this.lvdEntryGroup.ResumeLayout(false);
+            this.lvdEntryGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zStart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.yStart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xStart)).EndInit();
+            this.collisionGroup.ResumeLayout(false);
+            this.collisionGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yVert)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xVert)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.passthroughAngle)).EndInit();
-            this.generalPointShapeBox.ResumeLayout(false);
-            this.generalPointShapeBox.PerformLayout();
+            this.point3dGroup.ResumeLayout(false);
+            this.point3dGroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pointShapeZ)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeX)).EndInit();
             this.pointGroup.ResumeLayout(false);
@@ -2180,6 +2248,7 @@
         #endregion
 
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.GroupBox lvdEntryGroup;
         private System.Windows.Forms.GroupBox collisionGroup;
         private System.Windows.Forms.TextBox name;
         private System.Windows.Forms.TextBox subname;
@@ -2193,6 +2262,7 @@
         private System.Windows.Forms.CheckBox flag3;
         private System.Windows.Forms.CheckBox flag2;
         private System.Windows.Forms.CheckBox flag1;
+        private System.Windows.Forms.CheckBox useStartPos;
         private System.Windows.Forms.CheckBox noWallJump;
         private System.Windows.Forms.CheckBox rightLedge;
         private System.Windows.Forms.CheckBox leftLedge;
@@ -2240,9 +2310,11 @@
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.GroupBox generalPointShapeBox;
+        private System.Windows.Forms.GroupBox point3dGroup;
+        private System.Windows.Forms.Label label48;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.NumericUpDown pointShapeZ;
         private System.Windows.Forms.NumericUpDown pointShapeY;
         private System.Windows.Forms.NumericUpDown pointShapeX;
         private System.Windows.Forms.GroupBox rectangleGroup;

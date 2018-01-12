@@ -31,15 +31,29 @@ namespace Smash_Forge
             treeView1.Nodes.Add(hurtNode);
             treeView1.Nodes.Add(enemyNode);
 
-            collisionNode.ContextMenu = new ContextMenu();
-            MenuItem AddCollision = new MenuItem("Add New Collision");
-            AddCollision.Click += delegate
+            //---------------------------------------------
             {
-                TargetLVD.collisions.Add(new Collision() { name = "COL_00_NewCollision", subname = "00_NewCollision" });
-                fillList();
-            };
-            collisionNode.ContextMenu.MenuItems.Add(AddCollision);
+                collisionNode.ContextMenu = new ContextMenu();
 
+                MenuItem AddCollision = new MenuItem("Add New Collision");
+                AddCollision.Click += delegate
+                {
+                    TargetLVD.collisions.Add(new Collision() { name = "COL_00_NewCollision", subname = "00_NewCollision" });
+                    fillList();
+                };
+                collisionNode.ContextMenu.MenuItems.Add(AddCollision);
+
+                MenuItem GenCliffs = new MenuItem("Regenerate Cliffs");
+                GenCliffs.Click += delegate
+                {
+                    foreach (Collision c in TargetLVD.collisions)
+                    {
+                        TargetLVD.GenerateCliffs(c);
+                    }
+                    fillList();
+                };
+                collisionNode.ContextMenu.MenuItems.Add(GenCliffs);
+            }
             //---------------------------------------------
             {
                 spawnNode.ContextMenu = new ContextMenu();
@@ -94,7 +108,7 @@ namespace Smash_Forge
                 MenuItem Add = new MenuItem("Add New Item Spawner");
                 Add.Click += delegate
                 {
-                    TargetLVD.itemSpawns.Add(new ItemSpawner() { name = "ITEM_00_NEW", subname = "00_NEW" });
+                    TargetLVD.itemSpawns.Add(new ItemSpawner() { name = "ItemPopup_NEW", subname = "00_Item" });
                     fillList();
                 };
                 node.ContextMenu.MenuItems.Add(Add);
@@ -106,7 +120,7 @@ namespace Smash_Forge
                 MenuItem Add = new MenuItem("Add New General Point");
                 Add.Click += delegate
                 {
-                    TargetLVD.generalPoints.Add(new GeneralPoint() { name = "POINT_00_NEW", subname = "00_NEW" });
+                    TargetLVD.generalPoints.Add(new GeneralPoint() { name = "GeneralPoint3D_NEW", subname = "00_NEW" });
                     fillList();
                 };
                 node.ContextMenu.MenuItems.Add(Add);
@@ -115,37 +129,30 @@ namespace Smash_Forge
             {
                 TreeNode node = shapeNode;
                 node.ContextMenu = new ContextMenu();
-                MenuItem Add = new MenuItem("Add New General Shape (Point)");
-                Add.Click += delegate
+
+                MenuItem AddPoint = new MenuItem("Add New General Shape (Point)");
+                AddPoint.Click += delegate
                 {
-                    TargetLVD.generalShapes.Add(new GeneralShape() { name = "POINT_00_NEW", subname = "00_NEW", type = 1 });
+                    TargetLVD.generalShapes.Add(new GeneralShape() { name = "GeneralPoint_NEW", subname = "00_NEW", type = 1 });
                     fillList();
                 };
-                node.ContextMenu.MenuItems.Add(Add);
-            }
-            //---------------------------------------------
-            {
-                TreeNode node = shapeNode;
-                node.ContextMenu = new ContextMenu();
-                MenuItem Add = new MenuItem("Add New General Shape (Rectangle)");
-                Add.Click += delegate
+                node.ContextMenu.MenuItems.Add(AddPoint);
+
+                MenuItem AddRect = new MenuItem("Add New General Shape (Rectangle)");
+                AddRect.Click += delegate
                 {
-                    TargetLVD.generalShapes.Add(new GeneralShape() { name = "RECT_00_NEW", subname = "00_NEW", type = 3 });
+                    TargetLVD.generalShapes.Add(new GeneralShape() { name = "GeneralRect_NEW", subname = "00_NEW", type = 3 });
                     fillList();
                 };
-                node.ContextMenu.MenuItems.Add(Add);
-            }
-            //---------------------------------------------
-            {
-                TreeNode node = shapeNode;
-                node.ContextMenu = new ContextMenu();
-                MenuItem Add = new MenuItem("Add New General Shape (Path)");
-                Add.Click += delegate
+                node.ContextMenu.MenuItems.Add(AddRect);
+
+                MenuItem AddPath = new MenuItem("Add New General Shape (Path)");
+                AddPath.Click += delegate
                 {
-                    TargetLVD.generalShapes.Add(new GeneralShape() { name = "PATH_00_NEW", subname = "00_NEW", type = 4 });
+                    TargetLVD.generalShapes.Add(new GeneralShape() { name = "GeneralPath_NEW", subname = "00_NEW", type = 4 });
                     fillList();
                 };
-                node.ContextMenu.MenuItems.Add(Add);
+                node.ContextMenu.MenuItems.Add(AddPath);
             }
 
             ElementCM = new ContextMenu();
@@ -184,9 +191,15 @@ namespace Smash_Forge
 
             if(TargetLVD != null)
             {
+                int i = 0;
                 foreach (Collision c in TargetLVD.collisions)
                 {
                     collisionNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
+                    foreach (CollisionCliff d in c.cliffs)
+                    {
+                        collisionNode.Nodes[i].Nodes.Add(new TreeNode(d.name) { Tag = d, ContextMenu = ElementCM });
+                    }
+                    i++;
                 }
 
                 foreach (Spawn c in TargetLVD.spawns)
@@ -219,14 +232,14 @@ namespace Smash_Forge
                     pointNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
                 }
 
-                foreach (GeneralShape s in TargetLVD.generalShapes)
+                foreach (GeneralShape c in TargetLVD.generalShapes)
                 {
-                    shapeNode.Nodes.Add(new TreeNode(s.name) { Tag = s, ContextMenu = ElementCM });
+                    shapeNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
                 }
 
-                foreach (DamageShape s in TargetLVD.damageShapes)
+                foreach (DamageShape c in TargetLVD.damageShapes)
                 {
-                    hurtNode.Nodes.Add(new TreeNode(s.name) { Tag = s, ContextMenu = ElementCM });
+                    hurtNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
                 }
 
                 foreach (EnemyGenerator c in TargetLVD.enemySpawns)
@@ -263,6 +276,8 @@ namespace Smash_Forge
                 }
                 if (entry is Collision)
                     TargetLVD.collisions.Remove((Collision)entry);
+                if (entry is CollisionCliff)
+                    TargetLVD.collisions[treeView1.SelectedNode.Parent.Index].cliffs.Remove((CollisionCliff)entry);
                 if (entry is DamageShape)
                     TargetLVD.damageShapes.Remove((DamageShape)entry);
                 if (entry is EnemyGenerator)
@@ -284,7 +299,7 @@ namespace Smash_Forge
             {
                 DialogResult r =
                         MessageBox.Show(
-                            "Are you sure?\nThis cannot be undone",
+                            "Are you sure you want to delete this entry?\nThis cannot be undone.",
                             "Delete Selected Entry", MessageBoxButtons.YesNo);
                 if (r == DialogResult.Yes)
                 {

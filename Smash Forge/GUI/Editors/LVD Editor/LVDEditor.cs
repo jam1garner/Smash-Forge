@@ -70,36 +70,38 @@ namespace Smash_Forge
 
         public void open(Object obj, TreeNode entryTree)
         {
+            lvdEntryGroup.Visible = false;
             collisionGroup.Visible = false;
             pointGroup.Visible = false;
             boundGroup.Visible = false;
             itemSpawnerGroup.Visible = false;
-            generalPointShapeBox.Visible = false;
+            point3dGroup.Visible = false;
             rectangleGroup.Visible = false;
             pathGroup.Visible = false;
             meleeCollisionGroup.Visible = false;
             if (obj is LVDEntry)
             {
                 LVDEntry entry = (LVDEntry)obj;
+                lvdEntryGroup.Visible = true;
                 currentTreeNode = entryTree;
                 currentEntry = entry;
-                
-                //These need implementation in the gui for all objects, not just collisions
+
                 name.Text = currentEntry.name;
                 subname.Text = currentEntry.subname;
                 xStart.Value = (decimal)currentEntry.startPos[0];
                 yStart.Value = (decimal)currentEntry.startPos[1];
                 zStart.Value = (decimal)currentEntry.startPos[2];
-                flag1.Checked = currentEntry.useStartPos;
+                useStartPos.Checked = currentEntry.useStartPos;
                 string boneNameRigging = currentEntry.BoneName;
                 if (boneNameRigging.Length == 0)
                     boneNameRigging = "None";
                 button3.Text = boneNameRigging;
-                
+
                 if (entry is Collision)
                 {
                     Collision col = (Collision)entry;
                     collisionGroup.Visible = true;
+                    flag1.Checked = col.flag1;
                     flag2.Checked = col.flag2;
                     flag3.Checked = col.flag3;
                     flag4.Checked = col.flag4;
@@ -141,16 +143,23 @@ namespace Smash_Forge
                 }
                 else if (entry is GeneralPoint)
                 {
-                    generalPointShapeBox.Visible = true;
+                    point3dGroup.Visible = true;
                     GeneralPoint p = (GeneralPoint)entry;
                     currentGeneralPoint = p;
                     pointShapeX.Value = (Decimal)p.x;
                     pointShapeY.Value = (Decimal)p.y;
+                    pointShapeZ.Value = (Decimal)p.z;
                 }
                 else if (entry is GeneralShape)
                 {
                     GeneralShape s = (GeneralShape)entry;
-                    if ((s.type == 1) || (s.type == 3))
+                    if (s.type == 1)
+                    {
+                        pointGroup.Visible = true;
+                        xPoint.Value = (decimal)s.x1;
+                        yPoint.Value = (decimal)s.y1;
+                    }
+                    else if (s.type == 3)
                     {
                         rectangleGroup.Visible = true;
                         currentGeneralRect = s;
@@ -221,7 +230,7 @@ namespace Smash_Forge
         private void flagChange(object sender, EventArgs e)
         {
             if(sender == flag1)
-                currentEntry.useStartPos = flag1.Checked;
+                ((Collision)currentEntry).flag1 = flag1.Checked;
             if (sender == flag2)
                 ((Collision)currentEntry).flag2 = flag2.Checked;
             if (sender == flag3)
@@ -267,6 +276,8 @@ namespace Smash_Forge
 
         private void changeStart(object sender, EventArgs e)
         {
+            if (sender == useStartPos)
+                currentEntry.useStartPos = useStartPos.Checked;
             if (sender == xStart)
                 currentEntry.startPos[0] = (float)xStart.Value;
             if (sender == yStart)
@@ -287,6 +298,7 @@ namespace Smash_Forge
 
         private void LVDEditor_Load(object sender, EventArgs e)
         {
+            lvdEntryGroup.Visible = false;
             collisionGroup.Visible = false;
             pointGroup.Visible = false;
             boundGroup.Visible = false;
@@ -294,11 +306,20 @@ namespace Smash_Forge
 
         private void pointMoved(object sender, EventArgs e)
         {
-            if (sender == xPoint)
-                currentPoint.x = (float)xPoint.Value;
-            if (sender == yPoint)
-                currentPoint.y = (float)yPoint.Value;
-            //Console.WriteLine("(" + currentPoint.x + "," + currentPoint.y + ")");
+            if (currentEntry is Spawn)
+            {
+                if (sender == xPoint)
+                    currentPoint.x = (float)xPoint.Value;
+                if (sender == yPoint)
+                    currentPoint.y = (float)yPoint.Value;
+            }
+            else if (currentEntry is GeneralShape)
+            {
+                if (sender == xPoint)
+                    ((GeneralShape)currentEntry).x1 = (float)xPoint.Value;
+                if (sender == yPoint)
+                    ((GeneralShape)currentEntry).y1 = (float)yPoint.Value;
+            }
         }
 
         private void boundsChanged(object sender, EventArgs e)
@@ -493,6 +514,8 @@ namespace Smash_Forge
                 currentGeneralPoint.x = (float)pointShapeX.Value;
             if (sender == pointShapeY)
                 currentGeneralPoint.y = (float)pointShapeY.Value;
+            if (sender == pointShapeZ)
+                currentGeneralPoint.z = (float)pointShapeZ.Value;
         }
 
         private void rectValueChanged(object sender, EventArgs e)
@@ -617,11 +640,12 @@ namespace Smash_Forge
             currentGeneralPath = null;
             name.Text = "";
             subname.Text = "";
+            lvdEntryGroup.Visible = false;
             collisionGroup.Visible = false;
             pointGroup.Visible = false;
             boundGroup.Visible = false;
             itemSpawnerGroup.Visible = false;
-            generalPointShapeBox.Visible = false;
+            point3dGroup.Visible = false;
             rectangleGroup.Visible = false;
             pathGroup.Visible = false;
         }
