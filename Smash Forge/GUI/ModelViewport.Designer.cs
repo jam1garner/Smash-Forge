@@ -99,6 +99,7 @@
             // 
             // ViewComboBox
             // 
+            this.ViewComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ViewComboBox.Items.AddRange(new object[] {
             "Model Viewer",
             "Model Editor",

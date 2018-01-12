@@ -60,7 +60,23 @@ namespace Smash_Forge
 
         public void refresh()
         {
-            
+            Queue<TreeNode> nodes = new Queue<TreeNode>();
+            foreach (TreeNode n in treeView1.Nodes)
+                nodes.Enqueue(n);
+
+            while(nodes.Count > 0)
+            {
+                TreeNode node = nodes.Dequeue();
+
+                if(node is NUD.Polygon)
+                {
+                    if (node.Parent != null)
+                        ((NUD.Polygon)node).Text = "Polygon_" + ((NUD.Mesh)node.Parent).Nodes.IndexOf(node);
+                }
+
+                foreach (TreeNode n in node.Nodes)
+                    nodes.Enqueue(n);
+            }
         }
 
         private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)

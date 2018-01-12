@@ -1759,38 +1759,44 @@ namespace Smash_Forge
 
             if (fileName.EndsWith(".lvd"))
             {
-                if (dockPanel1.ActiveContent is ModelViewport)
+                ModelViewport mvp;
+                if(CheckCurrentViewport(out mvp))
                 {
-                    DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
-                    if (dialogResult == DialogResult.Yes)
-                    {
-                        ((ModelViewport)dockPanel1.ActiveContent).LVD = new LVD(fileName);
-                    }
-                    if (dialogResult == DialogResult.No)
-                    {
-                        ModelViewport mvp = new ModelViewport();
-                        mvp.Text = fileName;
-                        mvp.LVD = new LVD(fileName);
-                        mvp.ViewComboBox.SelectedItem = "LVD Editor";
-                        AddDockedControl(mvp);
-                    }
-                }
-                else
+                    mvp.LVD = new LVD(fileName);
+                }else
                 {
-                    ModelViewport mvp = new ModelViewport();
                     mvp.Text = fileName;
                     mvp.LVD = new LVD(fileName);
-                    mvp.ViewComboBox.SelectedItem = "LVD Editor";
-                    AddDockedControl(mvp);
                 }
-                /*if (Runtime.TargetLVD == null)
-                    Runtime.TargetLVD = new LVD(fileName);
-                else
-                    Runtime.TargetLVD.Read(fileName);
-                lvdList.fillList();*/
-
             }
             
+            if (fileName.EndsWith(".mdl0"))
+            {
+                MDL0Bones mdl0 = new MDL0Bones();
+                BoneTreePanel editor = new BoneTreePanel(mdl0.GetVBN(new FileData(fileName)));
+            }
+            
+            if (fileName.ToLower().EndsWith(".obj"))
+            {
+                OBJ obj = new OBJ();
+                obj.Read(fileName);
+                ModelContainer con = (new ModelContainer() { NUD = obj.toNUD() });
+
+                ModelViewport mvp;
+                if (CheckCurrentViewport(out mvp))
+                {
+                    mvp.draw.Add(con);
+                }
+                else
+                {
+                    mvp.Text = fileName;
+                    mvp.draw.Add(con);
+                }
+            }
+
+            //---------------------------------------------------------
+
+
             if (fileName.EndsWith(".nus3bank"))
             {
                 NUS3BANK nus = new NUS3BANK();
@@ -1895,15 +1901,7 @@ namespace Smash_Forge
                 }
             }
 
-            if (fileName.EndsWith(".mdl0"))
-            {
-                MDL0Bones mdl0 = new MDL0Bones();
-                Runtime.TargetVBN = mdl0.GetVBN(new FileData(fileName));
-
-                resyncTargetVBN();
-            }
-
-            if (fileName.EndsWith(".smd"))
+            /*if (fileName.EndsWith(".smd"))
             {
                 Runtime.TargetVBN = new VBN();
                 SMD.read(fileName, new Animation(fileName), Runtime.TargetVBN);
@@ -1914,7 +1912,7 @@ namespace Smash_Forge
                     m.NUD = SMD.toNUD(fileName);
                     meshList.refresh();
                 }
-            }
+            }*/
 
             if (fileName.ToLower().EndsWith(".dae"))
             {
@@ -1952,18 +1950,6 @@ namespace Smash_Forge
             if (fileName.EndsWith("lightmap.xmb"))
             {
                 Lights.CreateLightMapsFromXMB(new XMBFile(fileName));
-            }
-
-            if (fileName.ToLower().EndsWith(".obj"))
-            {
-                OBJ obj = new OBJ();
-                obj.Read(fileName);
-                ModelContainer con = (new ModelContainer() { NUD = obj.toNUD() });
-                //meshList.refresh();
-
-                ModelViewport mvp = new ModelViewport();
-                mvp.draw.Add(con);
-                AddDockedControl(mvp);
             }
 
             if (fileName.EndsWith(".nud"))
@@ -2013,6 +1999,35 @@ namespace Smash_Forge
             // just set it up already
             if (!fileName.EndsWith(".wrkspc"))
                 project.fillTree();
+        }
+
+        // returns true if importing into active
+        public bool CheckCurrentViewport(out ModelViewport mvp)
+        {
+            mvp = null;
+            if (dockPanel1.ActiveContent is ModelViewport)
+            {
+                DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    mvp = ((ModelViewport)dockPanel1.ActiveContent);
+                    return true;
+                }
+                if (dialogResult == DialogResult.No)
+                {
+                    mvp = new ModelViewport();
+                    mvp.ViewComboBox.SelectedItem = "LVD Editor";
+                    AddDockedControl(mvp);
+                    return false;
+                }
+            }else
+            {
+                mvp = new ModelViewport();
+                mvp.ViewComboBox.SelectedItem = "LVD Editor";
+                AddDockedControl(mvp);
+                return false;
+            }
+            return false;
         }
 
         private ModelContainer resyncTargetVBN()

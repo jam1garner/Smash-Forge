@@ -12,6 +12,11 @@ namespace Smash_Forge
         public JTB()
         {
             Tables = new List<List<short>>();
+
+            Text = "model.jtb";
+            ImageKey = "number";
+            SelectedImageKey = "number";
+            ToolTipText = "The joint index file";
         }
         public JTB(string filename) : this()
         {

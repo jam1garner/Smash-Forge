@@ -2420,6 +2420,7 @@ namespace Smash_Forge
             public Polygon()
             {
                 Checked = true;
+                Text = "Polygon";
                 ImageKey = "polygon";
                 SelectedImageKey = "polygon";
             }
