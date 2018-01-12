@@ -199,6 +199,7 @@ namespace Smash_Forge
         public float X { get; set; }
         public float Y { get; set; }
         public float Z { get; set; }
+        public int FacingRestriction { get; set; }
         public float X2 { get; set; }
         public float Y2 { get; set; }
         public float Z2 { get; set; }

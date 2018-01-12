@@ -46,6 +46,7 @@ namespace Smash_Forge.GUI
             checkBox16.Checked = Runtime.renderInterpolatedHitboxes;
             checkBox17.Checked = Runtime.renderSpecialBubbles;
             checkBox18.Checked = Runtime.renderHitboxesNoOverlap;
+            checkBox19.Checked = Runtime.renderHitboxAngles;
             checkBox21.Checked = Runtime.renderLedgeGrabboxes;
             checkBox22.Checked = Runtime.renderTetherLedgeGrabboxes;
             checkBox23.Checked = Runtime.renderReverseLedgeGrabboxes;
@@ -87,6 +88,7 @@ namespace Smash_Forge.GUI
             pbHurtboxColorMed.BackColor = Runtime.hurtboxColorMed;
             pbHurtboxColorLw.BackColor = Runtime.hurtboxColorLow;
             pbHurtboxColorSelected.BackColor = Runtime.hurtboxColorSelected;
+            pbHitboxAnglesColor.BackColor = Runtime.hitboxAnglesColor;
             pbWindboxColor.BackColor = Runtime.windboxColor;
             pbGrabboxColor.BackColor = Runtime.grabboxColor;
             pbSearchboxColor.BackColor = Runtime.searchboxColor;
@@ -138,6 +140,7 @@ namespace Smash_Forge.GUI
                 Runtime.renderInterpolatedHitboxes = checkBox16.Checked;
                 Runtime.renderSpecialBubbles = checkBox17.Checked;
                 Runtime.renderHitboxesNoOverlap = checkBox18.Checked;
+                Runtime.renderHitboxAngles = checkBox19.Checked;
                 Runtime.renderLedgeGrabboxes = checkBox21.Checked;
                 Runtime.renderTetherLedgeGrabboxes = checkBox22.Checked;
                 Runtime.renderReverseLedgeGrabboxes = checkBox23.Checked;
@@ -813,6 +816,16 @@ namespace Smash_Forge.GUI
         private void debug2CB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.debug2 = debug2CB.Checked;
+        }
+
+        private void pbHitboxAnglesColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.hitboxAnglesColor = Color.FromArgb(0xFF, colorDialog.Color);
+                pbHitboxAnglesColor.BackColor = Runtime.hitboxAnglesColor;
+            }
         }
     }
     

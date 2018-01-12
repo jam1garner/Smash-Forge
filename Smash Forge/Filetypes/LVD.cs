@@ -1077,22 +1077,22 @@ namespace Smash_Forge
                 if (Runtime.renderSpawns)
                 {
                     foreach (Spawn s in spawns)
-                        LVD.DrawSpawn(s, false);
+                        DrawSpawn(s, false);
                 }
 
                 if (Runtime.renderRespawns)
                 {
                     foreach (Spawn s in respawns)
-                        LVD.DrawSpawn(s, true);
+                        DrawSpawn(s, true);
                 }
 
                 if (Runtime.renderGeneralPoints)
                 {
                     foreach (GeneralPoint p in generalPoints)
-                        LVD.DrawPoint(p);
+                        DrawPoint(p);
 
                     foreach (GeneralShape s in generalShapes)
-                        LVD.DrawShape(s);
+                        DrawShape(s);
                 }
 
                 if (Runtime.renderOtherLVDEntries)
@@ -1100,13 +1100,13 @@ namespace Smash_Forge
                     DrawEnemySpawners();
 
                     foreach (DamageShape s in damageShapes)
-                        LVD.DrawShape(s);
+                        DrawShape(s);
 
                     foreach (Bounds b in cameraBounds)
-                        LVD.DrawBounds(b, Color.Blue);
+                        DrawBounds(b, Color.Blue);
 
                     foreach (Bounds b in blastzones)
-                        LVD.DrawBounds(b, Color.Red);
+                        DrawBounds(b, Color.Red);
                 }
             }
 

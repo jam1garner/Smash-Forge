@@ -415,12 +415,14 @@ namespace Smash_Forge
 
         public void Render(Matrix4 view)
         {
-            if (Vertices == null) return;
+            if (Vertices == null)
+                return;
+
             shader = Runtime.shaders["MBN"];
             GL.UseProgram(shader.programID);
 
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderType"), 0);//(int)Runtime.renderType
+            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
             GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
 
             GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref view);
