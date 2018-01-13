@@ -16,8 +16,8 @@ namespace Smash_Forge
     public abstract class LVDEntry
     {
         public abstract string magic { get; }
-        public string name;
-        public string subname;
+        public string name = "";
+        public string subname = "";
         public Vector3 startPos = new Vector3();
         public bool useStartPos = false;
         public int unk1 = 0;
@@ -37,33 +37,33 @@ namespace Smash_Forge
                 return name;
             }
         }
-        
+
         public void read(FileData f)
         {
             f.skip(0xC);
-            
+
             f.skip(1);
             name = f.readString(f.pos(), 0x38);
             f.skip(0x38);
-            
+
             f.skip(1);
             subname = f.readString(f.pos(), 0x40);
             f.skip(0x40);
-            
+
             f.skip(1);
             for (int i = 0; i < 3; i++)
                 startPos[i] = f.readFloat();
             useStartPos = Convert.ToBoolean(f.readByte());
-            
+
             f.skip(1);
             unk1 = f.readInt(); //Some kind of count? Only seen it as 0 so I don't know what it's for
-            
-            //Not sure what this is for, but it seems like an x,y,z followed by a hash
+
+            //Not sure what this is for, but it seems like it could be an x,y,z followed by a hash
             f.skip(1);
             for (int i = 0; i < 3; i++)
                 unk2[i] = f.readFloat();
             unk3 = f.readInt();
-            
+
             f.skip(1);
             boneName = new char[0x40];
             for (int i = 0; i < 0x40; i++)
@@ -72,26 +72,26 @@ namespace Smash_Forge
         public void save(FileOutput f)
         {
             f.writeHex(magic);
-            
+
             f.writeByte(1);
             f.writeString(name.PadRight(0x38, (char)0));
-            
+
             f.writeByte(1);
             f.writeString(subname.PadRight(0x40, (char)0));
-            
+
             f.writeByte(1);
             for (int i = 0; i < 3; i++)
                 f.writeFloat(startPos[i]);
             f.writeFlag(useStartPos);
-            
+
             f.writeByte(1);
             f.writeInt(unk1);
-            
+
             f.writeByte(1);
             foreach (float i in unk2)
                 f.writeFloat(i);
             f.writeInt(unk3);
-            
+
             f.writeByte(1);
             f.writeChars(boneName);
         }
@@ -101,6 +101,13 @@ namespace Smash_Forge
     {
         public float x;
         public float y;
+
+        public Vector2D() {}
+        public Vector2D(float x, float y)
+        {
+            this.x = x;
+            this.y = y;
+        }
     }
     
     public class Point : LVDEntry
@@ -149,58 +156,56 @@ namespace Smash_Forge
     public class CollisionCliff : LVDEntry
     {
         public override string magic { get { return "030401017735BB7500000002"; } }
-        
+
         public Vector2D pos;
-        public Vector2D angle; //Someone figure out what these angles do
-        
+        public float angle; //I don't know what this does exactly, but it's -1 for left and 1 for right
+        public int lineIndex;
+
         public void read(FileData f)
         {
             base.read(f);
-            
+
             f.skip(1);
             pos = new Vector2D();
             pos.x = f.readFloat();
             pos.y = f.readFloat();
-            angle = new Vector2D();
-            angle.x = f.readFloat();
-            angle.y = f.readFloat();
+            angle = f.readFloat();
+            lineIndex = f.readInt();
         }
         public void save(FileOutput f)
         {
             base.save(f);
-            
+
             f.writeByte(1);
             f.writeFloat(pos.x);
             f.writeFloat(pos.y);
-            f.writeFloat(angle.x);
-            f.writeFloat(angle.y);
+            f.writeFloat(angle);
+            f.writeInt(lineIndex);
         }
     }
     
     public class Collision : LVDEntry
     {
         public override string magic { get { return "030401017735BB7500000002"; } }
-        
+
         public List<Vector2D> verts = new List<Vector2D>();
         public List<Vector2D> normals = new List<Vector2D>();
         public List<CollisionCliff> cliffs = new List<CollisionCliff>();
         public List<CollisionMat> materials = new List<CollisionMat>();
+        //Flags: ???, rig collision, ???, drop-through
         public bool flag1 = false, flag2 = false, flag3 = false, flag4 = false;
 
-        public Collision()
-        {
-
-        }
+        public Collision() {}
 
         public void read(FileData f)
         {
             base.read(f);
-            
+
             flag1 = Convert.ToBoolean(f.readByte());
             flag2 = Convert.ToBoolean(f.readByte());
             flag3 = Convert.ToBoolean(f.readByte());
             flag4 = Convert.ToBoolean(f.readByte());
-            
+
             f.skip(1);
             int vertCount = f.readInt();
             for(int i = 0; i < vertCount; i++)
@@ -211,7 +216,7 @@ namespace Smash_Forge
                 temp.y = f.readFloat();
                 verts.Add(temp);
             }
-            
+
             f.skip(1);
             int normalCount = f.readInt();
             for(int i = 0; i < normalCount; i++)
@@ -222,7 +227,7 @@ namespace Smash_Forge
                 temp.y = f.readFloat();
                 normals.Add(temp);
             }
-            
+
             f.skip(1);
             int cliffCount = f.readInt();
             for(int i = 0; i < cliffCount; i++)
@@ -231,7 +236,7 @@ namespace Smash_Forge
                 temp.read(f);
                 cliffs.Add(temp);
             }
-            
+
             f.skip(1);
             int materialCount = f.readInt();
             for(int i = 0; i < materialCount; i++)
@@ -239,7 +244,6 @@ namespace Smash_Forge
                 f.skip(1);
                 CollisionMat temp = new CollisionMat();
                 temp.material = f.read(0xC);//Temporary, will work on fleshing out material more later
-                
                 materials.Add(temp);
             }
 
@@ -252,7 +256,7 @@ namespace Smash_Forge
             f.writeFlag(flag2);
             f.writeFlag(flag3);
             f.writeFlag(flag4);
-            
+
             f.writeByte(1);
             f.writeInt(verts.Count);
             foreach(Vector2D v in verts)
@@ -261,7 +265,7 @@ namespace Smash_Forge
                 f.writeFloat(v.x);
                 f.writeFloat(v.y);
             }
-            
+
             f.writeByte(1);
             f.writeInt(normals.Count);
             foreach (Vector2D n in normals)
@@ -270,14 +274,14 @@ namespace Smash_Forge
                 f.writeFloat(n.x);
                 f.writeFloat(n.y);
             }
-            
+
             f.writeByte(1);
             f.writeInt(cliffs.Count);
             foreach (CollisionCliff c in cliffs)
             {
                 c.save(f);
             }
-            
+
             f.writeByte(1);
             f.writeInt(materials.Count);
             foreach (CollisionMat m in materials)
@@ -291,14 +295,14 @@ namespace Smash_Forge
     public class Spawn : LVDEntry
     {
         public override string magic { get { return "020401017735BB7500000002"; } }
-        
+
         public float x;
         public float y;
-        
+
         public void read(FileData f)
         {
             base.read(f);
-            
+
             f.skip(1);
             x = f.readFloat();
             y = f.readFloat();
@@ -306,26 +310,26 @@ namespace Smash_Forge
         public void save(FileOutput f)
         {
             base.save(f);
-            
+
             f.writeByte(1);
             f.writeFloat(x);
             f.writeFloat(y);
         }
     }
-    
+
     public class Bounds : LVDEntry //For Camera Bounds and Blast Zones
     {
         public override string magic { get { return "020401017735BB7500000002"; } }
-        
+
         public float top;
         public float bottom;
         public float left;
         public float right;
-        
+
         public void read(FileData f)
         {
             base.read(f);
-            
+
             f.skip(1);
             left = f.readFloat();
             right = f.readFloat();
@@ -335,7 +339,7 @@ namespace Smash_Forge
         public void save(FileOutput f)
         {
             base.save(f);
-            
+
             f.writeByte(1);
             f.writeFloat(left);
             f.writeFloat(right);
@@ -347,12 +351,12 @@ namespace Smash_Forge
     public class Section
     {
         public List<Vector2D> points = new List<Vector2D>();
-        
+
         public void read(FileData f)
         {
             f.skip(1);
             f.skip(0x16);// unknown data
-            
+
             f.skip(1);
             points = new List<Vector2D>();
             int vertCount = f.readInt();
@@ -369,7 +373,7 @@ namespace Smash_Forge
         {
             f.writeByte(1);
             f.writeHex("03000000040000000000000000000000000000000001");
-            
+
             f.writeByte(1);
             f.writeInt(points.Count);
             foreach(Vector2D v in points)
@@ -389,10 +393,7 @@ namespace Smash_Forge
         public int id;
         public List<Section> sections = new List<Section>();
 
-        public ItemSpawner()
-        {
-
-        }
+        public ItemSpawner() {}
 
         public void read(FileData f)
         {
@@ -588,8 +589,9 @@ namespace Smash_Forge
             f.writeInt(id);
         }
     }
-    
-    public class GeneralShape : LVDGeneralShape //All objects in the general shapes section are this object type, they are just used differently
+
+    //All objects in the general shapes section have this same structure
+    public class GeneralShape : LVDGeneralShape
     {
         public float x1, y1, x2, y2;
         public List<Vector2D> points = new List<Vector2D>();
@@ -653,10 +655,10 @@ namespace Smash_Forge
         public void read(FileData f)
         {
             base.read(f);
-            
+
             f.skip(1);
             type = f.readInt(); //always 4?
-            
+
             x = f.readFloat();
             y = f.readFloat();
             z = f.readFloat();
@@ -665,10 +667,10 @@ namespace Smash_Forge
         public void save(FileOutput f)
         {
             base.save(f);
-            
+
             f.writeByte(1);
             f.writeInt(type);
-            
+
             f.writeFloat(x);
             f.writeFloat(y);
             f.writeFloat(z);
@@ -719,10 +721,10 @@ namespace Smash_Forge
         public void save(FileOutput f)
         {
             base.save(f);
-            
+
             f.writeByte(1);
             f.writeInt(type);
-            
+
             f.writeFloat(x);
             f.writeFloat(y);
             f.writeFloat(z);
@@ -1003,6 +1005,58 @@ namespace Smash_Forge
             }
 
             return f.getBytes();
+        }
+
+        //Function to automatically add a cliff to every grabbable ledge in a given collision
+        //Works just like the vanilla game would have it
+        public void GenerateCliffs(Collision col)
+        {
+            int[] counts = new int[2];
+            bool[,] lines = new bool[col.materials.Count,2];
+            for (int i = 0; i < col.materials.Count; i++)
+            {
+                lines[i,0] = col.materials[i].getFlag(6);
+                lines[i,1] = col.materials[i].getFlag(7);
+                if (lines[i,0]) counts[0]++;
+                if (lines[i,1]) counts[1]++;
+            }
+
+            string nameSub;
+            if (col.name.Length > 4 && col.name.StartsWith("COL_"))
+                nameSub = col.name.Substring(4, col.name.Length - 4);
+            else
+                nameSub = "Collision";
+
+            col.cliffs = new List<CollisionCliff>();
+            counts[0] = counts[0] > 1 ? 1 : 0;
+            counts[1] = counts[1] > 1 ? 1 : 0;
+            for (int i = 0; i < col.materials.Count; i++)
+            {
+                if (lines[i,0])
+                {
+                    string cliffName = "CLIFF_" + nameSub + "L" + (counts[0] > 0 ? $"{counts[0]++}" : "");
+                    CollisionCliff temp = new CollisionCliff();
+                    temp.name = cliffName;
+                    temp.subname = cliffName.Substring(6, cliffName.Length - 6);
+                    temp.startPos = new Vector3(col.verts[i].x, col.verts[i].y, 0);
+                    temp.pos = new Vector2D(col.verts[i].x, col.verts[i].y);
+                    temp.angle = -1.0f;
+                    temp.lineIndex = i;
+                    col.cliffs.Add(temp);
+                }
+                if (lines[i,1])
+                {
+                    string cliffName = "CLIFF_" + nameSub + "R" + (counts[1] > 0 ? $"{counts[1]++}" : "");
+                    CollisionCliff temp = new CollisionCliff();
+                    temp.name = cliffName;
+                    temp.subname = cliffName.Substring(6, cliffName.Length - 6);
+                    temp.startPos = new Vector3(col.verts[i+1].x, col.verts[i+1].y, 0);
+                    temp.pos = new Vector2D(col.verts[i+1].x, col.verts[i+1].y);
+                    temp.angle = 1.0f;
+                    temp.lineIndex = i;
+                    col.cliffs.Add(temp);
+                }
+            }
         }
 
         #region rendering
@@ -1479,7 +1533,7 @@ namespace Smash_Forge
                     GL.Color3(Color.Blue);
                     GL.Begin(PrimitiveType.Lines);
                     GL.Vertex3(pos);
-                    GL.Vertex3(pos[0] + (c.cliffs[i].angle.x * 10), pos[1] + (c.cliffs[i].angle.y * 10), pos[2]);
+                    GL.Vertex3(pos[0] + (c.cliffs[i].angle * 10), pos[1], pos[2]);
                     GL.End();
 
                     GL.LineWidth(4);
