@@ -1078,10 +1078,18 @@ namespace Smash_Forge
 
         private void updateButton()
         {
-            colorSelect.BackColor = Color.FromArgb(255,
-                Clamp(materials[current].entries[propertiesListView.SelectedItems[0].Text][0] * 255),
-                Clamp(materials[current].entries[propertiesListView.SelectedItems[0].Text][1] * 255),
-                Clamp(materials[current].entries[propertiesListView.SelectedItems[0].Text][2] * 255));
+            try
+            {
+                colorSelect.BackColor = Color.FromArgb(255,
+                    Clamp(materials[current].entries[propertiesListView.SelectedItems[0].Text][0] * 255),
+                    Clamp(materials[current].entries[propertiesListView.SelectedItems[0].Text][1] * 255),
+                    Clamp(materials[current].entries[propertiesListView.SelectedItems[0].Text][2] * 255));
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+
+            }
+
         }
 
         public int Clamp(float i)
