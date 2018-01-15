@@ -431,7 +431,7 @@ namespace Smash_Forge
 
             Material material = p.materials[0];
 
-            GL.Uniform1(shader.getAttribute("flags"), material.flags);
+            GL.Uniform1(shader.getAttribute("flags"), material.Flags);
             GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
 
             // shader uniforms
@@ -581,7 +581,7 @@ namespace Smash_Forge
                 GL.Uniform1(shader.getAttribute("isStage"), 1);
             else
                 GL.Uniform1(shader.getAttribute("isStage"), 0);
-            bool directUVTimeFlags = (p.materials[0].flags & 0x00001900) == 0x00001900; // should probably move elsewhere
+            bool directUVTimeFlags = (p.materials[0].Flags & 0x00001900) == 0x00001900; // should probably move elsewhere
 
             if ((useDirectUVTime && directUVTimeFlags))
                 GL.Uniform1(shader.getAttribute("useDirectUVTime"), 1);
@@ -721,31 +721,31 @@ namespace Smash_Forge
         private static void SetTextureUniforms(Shader shader, Material mat)
         {
             int v = 0; // Yes else if is faster than ternary
-            if (mat.diffuse) v = 1; else v = 0;
+            if (mat.hasDiffuse) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasDif"), v);
 
-            if (mat.diffuse2) v = 1; else v = 0;
+            if (mat.hasDiffuse2) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasDif2"), v);
 
-            if (mat.diffuse3) v = 1; else v = 0;
+            if (mat.hasDiffuse3) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasDif3"), v);
 
-            if (mat.stagemap) v = 1; else v = 0;
+            if (mat.hasStageMap) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasStage"), v);
 
-            if (mat.cubemap) v = 1; else v = 0;
+            if (mat.hasCubeMap) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasCube"), v);
 
-            if (mat.aomap) v = 1; else v = 0;
+            if (mat.hasAoMap) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasAo"), v);
 
-            if (mat.normalmap) v = 1; else v = 0;
+            if (mat.hasNormalMap) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasNrm"), v);
 
-            if (mat.ramp) v = 1; else v = 0;
+            if (mat.hasRamp) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasRamp"), v);
 
-            if (mat.dummyramp) v = 1; else v = 0;
+            if (mat.hasDummyRamp) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasDummyRamp"), v);
 
             if (mat.useColorGainOffset) v = 1; else v = 0;
@@ -754,7 +754,7 @@ namespace Smash_Forge
             if (mat.useDiffuseBlend) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("useDiffuseBlend"), v);
 
-            if (mat.spheremap) v = 1; else v = 0;
+            if (mat.hasSphereMap) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("hasSphereMap"), v);
 
             if (mat.hasBayoHair) v = 1; else v = 0;
@@ -792,7 +792,7 @@ namespace Smash_Forge
 
             int texid = 0;
 
-            if (mat.diffuse && texid < mat.textures.Count)
+            if (mat.hasDiffuse && texid < mat.textures.Count)
             {
                 int hash = mat.textures[texid].hash;
                 if (mat.displayTexId != -1) hash = mat.displayTexId;
@@ -800,55 +800,55 @@ namespace Smash_Forge
                 mat.diffuse1ID = mat.textures[texid].hash;
                 texid++;
             }
-            if (mat.spheremap && texid < mat.textures.Count)
+            if (mat.hasSphereMap && texid < mat.textures.Count)
             {
                 GL.Uniform1(shader.getAttribute("spheremap"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
                 mat.sphereMapID = mat.textures[texid].hash;
                 texid++;
             }
-            if (mat.diffuse2 && texid < mat.textures.Count)
+            if (mat.hasDiffuse2 && texid < mat.textures.Count)
             {
                 GL.Uniform1(shader.getAttribute("dif2"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
                 mat.diffuse2ID = mat.textures[texid].hash;
                 texid++;
             }
-            if (mat.diffuse3 && texid < mat.textures.Count)
+            if (mat.hasDiffuse3 && texid < mat.textures.Count)
             {
                 GL.Uniform1(shader.getAttribute("dif3"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
                 mat.diffuse3ID = mat.textures[texid].hash;
                 texid++;
             }
-            if (mat.stagemap && texid < mat.textures.Count)
+            if (mat.hasStageMap && texid < mat.textures.Count)
             {
                 GL.Uniform1(shader.getAttribute("stagecube"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
                 mat.stageMapID = mat.textures[texid].hash;
                 texid++;
             }
-            if (mat.cubemap && texid < mat.textures.Count)
+            if (mat.hasCubeMap && texid < mat.textures.Count)
             {
                 GL.Uniform1(shader.getAttribute("cube"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
                 mat.cubeMapID = mat.textures[texid].hash;
                 texid++;
             }
-            if (mat.aomap && texid < mat.textures.Count)
+            if (mat.hasAoMap && texid < mat.textures.Count)
             {
                 GL.Uniform1(shader.getAttribute("ao"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
                 mat.aoMapID = mat.textures[texid].hash;
                 texid++;
             }
-            if (mat.normalmap && texid < mat.textures.Count)
+            if (mat.hasNormalMap && texid < mat.textures.Count)
             {
                 GL.Uniform1(shader.getAttribute("normalMap"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
                 mat.normalID = mat.textures[texid].hash;
                 texid++;
             }
-            if (mat.ramp && texid < mat.textures.Count)
+            if (mat.hasRamp && texid < mat.textures.Count)
             {
                 GL.Uniform1(shader.getAttribute("ramp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
                 mat.rampID = mat.textures[texid].hash;
                 texid++;
             }
-            if (mat.dummyramp && texid < mat.textures.Count)
+            if (mat.hasDummyRamp && texid < mat.textures.Count)
             {
                 GL.Uniform1(shader.getAttribute("dummyRamp"), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
                 mat.dummyRampID = mat.textures[texid].hash;
@@ -893,10 +893,10 @@ namespace Smash_Forge
                         mat.anims.Clear();
                         mat.entries.Clear();
 
-                        if (mat.normalmap && useNormalMap)
-                            mat.flags = 0x9601106B;
+                        if (mat.hasNormalMap && useNormalMap)
+                            mat.Flags = 0x9601106B;
                         else
-                            mat.flags = 0x96011069;
+                            mat.Flags = 0x96011069;
 
                         int difTexID = 0;
                         if (preserveDiffuse)
@@ -919,7 +919,7 @@ namespace Smash_Forge
                         NUD.Mat_Texture rim = NUD.Polygon.makeDefault();
                         rim.hash = 0x10080000;
 
-                        if (mat.normalmap)
+                        if (mat.hasNormalMap)
                         {
                             mat.textures.Add(dif);
                             mat.textures.Add(cub);
@@ -1380,7 +1380,7 @@ namespace Smash_Forge
                 Material m = new Material();
                 mats.Add(m);
 
-                m.flags = (uint)d.readInt();
+                m.Flags = (uint)d.readInt();
                 d.skip(4);
 
                 
@@ -2054,7 +2054,7 @@ namespace Smash_Forge
             foreach (Material mat in materials)
             {
                 offs[c++] = d.size();
-                d.writeInt((int)mat.flags);
+                d.writeInt((int)mat.Flags);
                 d.writeInt(0); // padding
                 d.writeShort(mat.srcFactor);
                 d.writeShort(mat.textures.Count);
@@ -2245,14 +2245,20 @@ namespace Smash_Forge
             public Dictionary<string, float[]> anims = new Dictionary<string, float[]>();
             public List<Mat_Texture> textures = new List<Mat_Texture>();
 
-            public uint flags { get
+            private uint flag;
+            public uint Flags
+            {
+                get
                 {
                     return RebuildFlag4thByte();
-                } set
+                }
+                set
                 {
-                    InterpretFlags(value);
-                } }
-            private uint flag;
+                    flag = value;
+                    CheckFlags();
+                }
+            }
+
             public int blendMode = 0;
             public int dstFactor = 0;
             public int srcFactor = 0;
@@ -2276,16 +2282,17 @@ namespace Smash_Forge
             public bool useDiffuseBlend = false;
             public bool softLightBrighten = false;
 
-            public bool diffuse = false;
-            public bool normalmap = false;
-            public bool diffuse2 = false;
-            public bool diffuse3 = false;
-            public bool aomap = false;
-            public bool stagemap = false;
-            public bool cubemap = false;
-            public bool ramp = false;
-            public bool spheremap = false;
-            public bool dummyramp = false;
+            // Texture flags
+            public bool hasDiffuse = false;
+            public bool hasNormalMap = false;
+            public bool hasDiffuse2 = false;
+            public bool hasDiffuse3 = false;
+            public bool hasAoMap = false;
+            public bool hasStageMap = false;
+            public bool hasCubeMap = false;
+            public bool hasRamp = false;
+            public bool hasSphereMap = false;
+            public bool hasDummyRamp = false;
 
             // texture IDs for preserving existing textures
             public int diffuse1ID = 0;
@@ -2299,6 +2306,10 @@ namespace Smash_Forge
             public int stageMapID = (int)DummyTextures.StageMapHigh;
             public int cubeMapID = 0;
 
+            public Material()
+            {
+            }
+
             public Material Clone()
             {
                 Material m = new Material();
@@ -2306,7 +2317,7 @@ namespace Smash_Forge
                 foreach (KeyValuePair<string, float[]> e in entries)
                     m.entries.Add(e.Key, e.Value);
 
-                m.flags = flags;
+                m.Flags = Flags;
                 m.blendMode = blendMode;
                 m.dstFactor = dstFactor;
                 m.srcFactor = srcFactor;
@@ -2328,76 +2339,91 @@ namespace Smash_Forge
                 return m;
             }
 
-            public Material()
-            {
-            }
-
             public uint RebuildFlag4thByte()
             {
-                int t = 0;
-                if (diffuse) t |= (int)TextureFlags.DiffuseMap;
-                if (normalmap) t |= (int)TextureFlags.NormalMap;
-                if (cubemap || ramp) t |= (int)TextureFlags.RampCubeMap;
-                if (stagemap || aomap) t |= (int)TextureFlags.StageAOMap;
-                if (spheremap) t |= (int)TextureFlags.SphereMap;
-                if (glow) t |= (int) TextureFlags.Glow;
-                if (hasShadow) t |= (int) TextureFlags.Shadow;
-                if (dummyramp) t |= (int) TextureFlags.DummyRamp; 
-                flag = (uint)(((int)flag & 0xFFFFFF00) | t);
+                int new4thByte = 0;
+                if (hasDiffuse)
+                    new4thByte |= (int)TextureFlags.DiffuseMap;
+                if (hasNormalMap)
+                    new4thByte |= (int)TextureFlags.NormalMap;
+                if (hasCubeMap || hasRamp)
+                    new4thByte |= (int)TextureFlags.RampCubeMap;
+                if (hasStageMap || hasAoMap)
+                    new4thByte |= (int)TextureFlags.StageAOMap;
+                if (hasSphereMap)
+                    new4thByte |= (int)TextureFlags.SphereMap;
+                if (glow)
+                    new4thByte |= (int) TextureFlags.Glow;
+                if (hasShadow)
+                    new4thByte |= (int) TextureFlags.Shadow;
+                if (hasDummyRamp)
+                    new4thByte |= (int) TextureFlags.DummyRamp; 
+                flag = (uint)(((int)flag & 0xFFFFFF00) | new4thByte);
 
                 return flag;
             }
 
-            public void InterpretFlags(uint flags)
+            private void CheckFlags()
             {
-                // also need to clean this up
-                // set depending on flags
-                this.flag = flags;
-                int flag = ((int)flags) & 0xFF;
-                glow = (flag & (int) TextureFlags.Glow) > 0;
-                hasShadow = (flag & (int) TextureFlags.Shadow) > 0;
-                dummyramp = (flag & (int) TextureFlags.DummyRamp) > 0;
-                spheremap = (flag & (int) TextureFlags.SphereMap) > 0;
-                TestTextures();
-
-                // check lighting channel and 4th byte of flags
-                flag = ((int)flags);
-
-                bool colorGainLightingChannel = (flag & 0x0C000000) == 0x0C000000;
-                bool colorGain2ndByte = ((flag & 0x00FF0000) == 0x00610000 || (flag & 0x00FF0000) == 0x00420000 || (flag & 0x00FF0000) == 0x00440000);
-                bool colorGain4thByte = (flag & 0x000000FF) == 0x00000061;
-
-                useColorGainOffset = colorGainLightingChannel && colorGain2ndByte && colorGain4thByte;
-
-                useDiffuseBlend = (flag & 0xD0090000) == 0xD0090000 || (flag & 0x90005000) == 0x90005000;
-
-                // characters and stages use different values for enabling vertex color
-                useVertexColor = ((flag & 0xFF000000) == 0x94000000) || ((flag & 0xFF000000) == 0x9A000000)
-                    || ((flag & 0xFF000000) == 0x9C000000) 
-                    || ((flag & 0xFF000000) == 0xA2000000) || ((flag & 0xFF000000) == 0xA4000000);
-
-                // always use vertex color for effect materials for now
-                useVertexColor = useVertexColor || ((flag & 0xF0000000) == 0xB0000000);
-
-                useReflectionMask = (flag & 0xFFFFFF00) == 0xF8820000;
-                hasBayoHair = (flag & 0x00FF0000) == 0x00420000;
-                softLightBrighten = ((flag & 0x00FF0000) == 0x00810000 || (flag & 0xFFFF0000) == 0xFA600000);
+                int intFlags = ((int)flag);
+                glow = (intFlags & (int)TextureFlags.Glow) > 0;
+                hasShadow = (intFlags & (int)TextureFlags.Shadow) > 0;
+                CheckMisc(intFlags);
+                CheckTextures(flag);
             }
 
-            public void TestTextures()
+            private void CheckMisc(int matFlags)
             {
-                normalmap = (flag & (int)TextureFlags.NormalMap) > 0;
-                spheremap = (flag & (int)TextureFlags.SphereMap) > 0;
-                aomap = (flag & (int)TextureFlags.StageAOMap) > 0 && !dummyramp;
-                stagemap = (flag & (int)TextureFlags.StageAOMap) > 0 && dummyramp;
-                cubemap = (flag & (int)TextureFlags.RampCubeMap) > 0 && (!dummyramp) && (!spheremap);
-                ramp = (flag & (int) TextureFlags.RampCubeMap) > 0 && dummyramp; 
+                // Some hacky workarounds until I understand flags better.
+                useColorGainOffset = CheckColorGain(flag);
+                useDiffuseBlend = (matFlags & 0xD0090000) == 0xD0090000 || (matFlags & 0x90005000) == 0x90005000;
+                useVertexColor = CheckVertexColor(flag);
+                useReflectionMask = (matFlags & 0xFFFFFF00) == 0xF8820000;
+                hasBayoHair = (matFlags & 0x00FF0000) == 0x00420000;
+                softLightBrighten = ((matFlags & 0x00FF0000) == 0x00810000 || (matFlags & 0xFFFF0000) == 0xFA600000);
+            }
 
-                // effect materials use 4th byte 00 but still have diffuse
-                diffuse = (flag & (int)TextureFlags.DiffuseMap) > 0 || (flag & 0xF0000000) == 0xB0000000;
-                diffuse3 = (flag & 0x00009100) == 0x00009100 || (flag & 0x00009600) == 0x00009600 || (flag & 0x00009900) == 0x00009900; 
-                diffuse2 = (flag & (int)TextureFlags.RampCubeMap) > 0 && (flag & (int)TextureFlags.NormalMap) == 0 
-                    && dummyramp || diffuse3;
+            private bool CheckVertexColor(uint matFlags)
+            {
+                // Characters and stages use different values for enabling vertex color.
+                // Always use vertex color for effect materials for now
+                // Only need to check the left most byte. 
+                byte byte1 = (byte) ((matFlags & 0xFF000000) >> 24);
+                bool vertexColor = (byte1 == 0x94) || (byte1 == 0x9A) || (byte1 == 0x9C) || (byte1 == 0xA2) 
+                    || (byte1 == 0xA4) || (byte1 == 0xB0);
+
+                return vertexColor;
+            }
+
+            private bool CheckColorGain(uint matFlags)
+            {
+                bool hasLightingChannel = (matFlags & 0x0C000000) == 0x0C000000;
+                bool hasByte2 = ((matFlags & 0x00FF0000) == 0x00610000 
+                    || (matFlags & 0x00FF0000) == 0x00420000 || (matFlags & 0x00FF0000) == 0x00440000);
+                bool hasByte4 = (matFlags & 0x000000FF) == 0x00000061;
+
+                return hasLightingChannel && hasByte2 && hasByte4;
+            }
+
+            private void CheckTextures(uint matFlags)
+            {
+                // Effect materials use 4th byte 00 but often still have a diffuse texture.
+                hasDummyRamp = (matFlags & (int)TextureFlags.DummyRamp) > 0;
+
+                hasDiffuse = (matFlags & (int)TextureFlags.DiffuseMap) > 0 || (matFlags & 0xF0000000) == 0xB0000000;
+
+                byte byte3 = (byte)((matFlags & 0x0000FF00) >> 8);
+                hasDiffuse3 = (byte3 & 0x91) == 0x91 || (byte3 & 0x96) == 0x96 || (byte3 & 0x99) == 0x99;
+
+                hasDiffuse2 = (matFlags & (int)TextureFlags.RampCubeMap) > 0 && (matFlags & (int)TextureFlags.NormalMap) == 0
+                    && hasDummyRamp || hasDiffuse3;
+
+                hasNormalMap = (matFlags & (int)TextureFlags.NormalMap) > 0;
+                hasSphereMap = (matFlags & (int)TextureFlags.SphereMap) > 0;
+                hasAoMap = (matFlags & (int)TextureFlags.StageAOMap) > 0 && !hasDummyRamp;
+                hasStageMap = (matFlags & (int)TextureFlags.StageAOMap) > 0 && hasDummyRamp;
+                hasCubeMap = (matFlags & (int)TextureFlags.RampCubeMap) > 0 && (!hasDummyRamp) && (!hasSphereMap);
+                hasRamp = (matFlags & (int) TextureFlags.RampCubeMap) > 0 && hasDummyRamp; 
             }
         }
 
@@ -2629,7 +2655,7 @@ namespace Smash_Forge
             public void setDefaultMaterial()
             {
                 Material mat = new Material();
-                mat.flags = 0x94010161;
+                mat.Flags = 0x94010161;
                 mat.cullMode = 0x0405;
                 mat.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
                 mat.entries.Add("NU_fresnelColor", new float[] { 1, 1, 1, 1 });

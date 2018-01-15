@@ -243,7 +243,7 @@ namespace Smash_Forge
         {
             NUD.Material mat = materials[current];
 
-            flagsTB.Text = mat.flags.ToString("X") + "";
+            flagsTB.Text = mat.Flags.ToString("X") + "";
             srcTB.Text = mat.srcFactor + "";
             dstTB.Text = mat.dstFactor + "";
             AlphaTestComboBox.SelectedItem = AlphaTest[mat.AlphaTest];
@@ -259,26 +259,26 @@ namespace Smash_Forge
             
             shadowCB.Checked = mat.hasShadow;
             GlowCB.Checked = mat.glow;
-            dummy_rampCB.Checked = mat.dummyramp;
-            AOCB.Checked = mat.aomap;
-            diffuseCB.Checked = mat.diffuse;
-            diffuse2CB.Checked = mat.diffuse2;
-            normalCB.Checked = mat.normalmap;
-            sphere_mapCB.Checked = mat.spheremap;
-            cubemapCB.Checked = mat.cubemap;
-            stageMapCB.Checked = mat.stagemap;
-            rampCB.Checked = mat.ramp;
+            dummy_rampCB.Checked = mat.hasDummyRamp;
+            AOCB.Checked = mat.hasAoMap;
+            diffuseCB.Checked = mat.hasDiffuse;
+            diffuse2CB.Checked = mat.hasDiffuse2;
+            normalCB.Checked = mat.hasNormalMap;
+            sphere_mapCB.Checked = mat.hasSphereMap;
+            cubemapCB.Checked = mat.hasCubeMap;
+            stageMapCB.Checked = mat.hasStageMap;
+            rampCB.Checked = mat.hasRamp;
    
-            if (mat.diffuse) texturesListView.Items.Add("Diffuse");
-            if (mat.spheremap) texturesListView.Items.Add("SphereMap");
-            if (mat.diffuse2) texturesListView.Items.Add("Diffuse2");
-            if (mat.diffuse3) texturesListView.Items.Add("Diffuse3");
-            if (mat.stagemap) texturesListView.Items.Add("StageMap");
-            if (mat.cubemap) texturesListView.Items.Add("Cubemap");
-            if (mat.aomap) texturesListView.Items.Add("AO Map");
-            if (mat.normalmap) texturesListView.Items.Add("NormalMap");
-            if (mat.ramp) texturesListView.Items.Add("Ramp");
-            if (mat.dummyramp) texturesListView.Items.Add("Dummy Ramp");
+            if (mat.hasDiffuse) texturesListView.Items.Add("Diffuse");
+            if (mat.hasSphereMap) texturesListView.Items.Add("SphereMap");
+            if (mat.hasDiffuse2) texturesListView.Items.Add("Diffuse2");
+            if (mat.hasDiffuse3) texturesListView.Items.Add("Diffuse3");
+            if (mat.hasStageMap) texturesListView.Items.Add("StageMap");
+            if (mat.hasCubeMap) texturesListView.Items.Add("Cubemap");
+            if (mat.hasAoMap) texturesListView.Items.Add("AO Map");
+            if (mat.hasNormalMap) texturesListView.Items.Add("NormalMap");
+            if (mat.hasRamp) texturesListView.Items.Add("Ramp");
+            if (mat.hasDummyRamp) texturesListView.Items.Add("Dummy Ramp");
 
             propertiesListView.Items.Clear();
             propertiesListView.View = View.List;
@@ -446,7 +446,7 @@ namespace Smash_Forge
             uint f = 0;
             if (uint.TryParse(flagsTB.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f))// && listView1.SelectedIndices.Count > 0
             {
-                materials[current].flags = f;
+                materials[current].Flags = f;
                 flagsTB.BackColor = Color.White;
 
                 // Clear the texture list to prevent displaying duplicates
@@ -865,52 +865,52 @@ namespace Smash_Forge
 
                 // might be a cleaner way to do this
                 int count = 0;
-                if (poly.materials[0].diffuse && count < poly.materials[0].textures.Count)
+                if (poly.materials[0].hasDiffuse && count < poly.materials[0].textures.Count)
                 {
                     poly.materials[0].textures[count].hash = diffuse1ID;
                     count++;
                 }
-                if (poly.materials[0].diffuse2 && count < poly.materials[0].textures.Count)
+                if (poly.materials[0].hasDiffuse2 && count < poly.materials[0].textures.Count)
                 {
                     poly.materials[0].textures[count].hash = diffuse2ID;
                     count++;
                 }
-                if (poly.materials[0].diffuse3 && count < poly.materials[0].textures.Count)
+                if (poly.materials[0].hasDiffuse3 && count < poly.materials[0].textures.Count)
                 {
                     poly.materials[0].textures[count].hash = diffuse3ID;
                     count++;
                 }
-                if (poly.materials[0].stagemap && count < poly.materials[0].textures.Count)
+                if (poly.materials[0].hasStageMap && count < poly.materials[0].textures.Count)
                 {
                     // don't preserve stageMap ID
                     count++;
                 }
-                if (poly.materials[0].cubemap && count < poly.materials[0].textures.Count)
+                if (poly.materials[0].hasCubeMap && count < poly.materials[0].textures.Count)
                 {
                     poly.materials[0].textures[count].hash = cubeMapID;
                     count++;
                 }
-                if (poly.materials[0].spheremap && count < poly.materials[0].textures.Count)
+                if (poly.materials[0].hasSphereMap && count < poly.materials[0].textures.Count)
                 {
                     poly.materials[0].textures[count].hash = sphereMapID;
                     count++;
                 }
-                if (poly.materials[0].aomap && count < poly.materials[0].textures.Count)
+                if (poly.materials[0].hasAoMap && count < poly.materials[0].textures.Count)
                 {
                     poly.materials[0].textures[count].hash = aoMapID;
                     count++;
                 }
-                if (poly.materials[0].normalmap && count < poly.materials[0].textures.Count)
+                if (poly.materials[0].hasNormalMap && count < poly.materials[0].textures.Count)
                 {
                     poly.materials[0].textures[count].hash = normalID;
                     count++;
                 }
-                if (poly.materials[0].ramp && count < poly.materials[0].textures.Count)
+                if (poly.materials[0].hasRamp && count < poly.materials[0].textures.Count)
                 {
                     poly.materials[0].textures[count].hash = rampID;
                     count++;
                 }
-                if (poly.materials[0].dummyramp && count < poly.materials[0].textures.Count)
+                if (poly.materials[0].hasDummyRamp && count < poly.materials[0].textures.Count)
                 {
                     // dummy ramp should almost always be 0x10080000
                     count++;
@@ -1127,7 +1127,7 @@ namespace Smash_Forge
 
         private void sphereMapCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].spheremap = sphereMapCB.Checked;
+            materials[current].hasSphereMap = sphereMapCB.Checked;
             FillForm();
         }
 
@@ -1180,55 +1180,55 @@ namespace Smash_Forge
 
         private void diffuseCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].diffuse = diffuseCB.Checked;
+            materials[current].hasDiffuse = diffuseCB.Checked;
             FillForm();
         }
 
         private void dummy_rampCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].dummyramp = dummy_rampCB.Checked;
+            materials[current].hasDummyRamp = dummy_rampCB.Checked;
             FillForm();
         }
 
         private void diffuse2CB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].diffuse2 = diffuse2CB.Checked;
+            materials[current].hasDiffuse2 = diffuse2CB.Checked;
             FillForm();
         }
 
         private void normalCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].normalmap = normalCB.Checked;
+            materials[current].hasNormalMap = normalCB.Checked;
             FillForm();
         }
 
         private void sphere_mapCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].spheremap = sphere_mapCB.Checked;
+            materials[current].hasSphereMap = sphere_mapCB.Checked;
             FillForm();
         }
 
         private void rampCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].ramp = rampCB.Checked;
+            materials[current].hasRamp = rampCB.Checked;
             FillForm();
         }
 
         private void AOCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].aomap = AOCB.Checked;
+            materials[current].hasAoMap = AOCB.Checked;
             FillForm();
         }
 
         private void stageMapCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].stagemap = stageMapCB.Checked;
+            materials[current].hasStageMap = stageMapCB.Checked;
             FillForm();
         }
 
         private void cubemapCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].cubemap = cubemapCB.Checked;
+            materials[current].hasCubeMap = cubemapCB.Checked;
             FillForm();
         }
 
@@ -1284,7 +1284,7 @@ namespace Smash_Forge
         private void addMaterialButton_Click(object sender, EventArgs e)
         {
             NUD.Material mat = new NUD.Material(); // beginner's mat
-            mat.flags = 0x94010161;
+            mat.Flags = 0x94010161;
             mat.cullMode = 0x0405;
             mat.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
             mat.entries.Add("NU_fresnelColor", new float[] { 1, 1, 1, 1 });

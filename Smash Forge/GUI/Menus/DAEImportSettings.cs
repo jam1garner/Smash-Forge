@@ -120,7 +120,7 @@ namespace Smash_Forge
 
                         NUD.Material m = new NUD.Material();
                         poly.materials.Add(m);
-                        m.flags = 0xA2001001;
+                        m.Flags = 0xA2001001;
                         m.RefAlpha = 128;
                         m.cullMode = 1029;
 

@@ -57,7 +57,7 @@ namespace Smash_Forge
                         XmlNode matnode = doc.CreateElement("material");
                         polynode.AppendChild(matnode);
                         // attributes
-                        { XmlAttribute flags = doc.CreateAttribute("flags"); flags.Value = mat.flags.ToString("x"); matnode.Attributes.Append(flags); }
+                        { XmlAttribute flags = doc.CreateAttribute("flags"); flags.Value = mat.Flags.ToString("x"); matnode.Attributes.Append(flags); }
                         { XmlAttribute a = doc.CreateAttribute("srcFactor"); a.Value = mat.srcFactor.ToString(); matnode.Attributes.Append(a); }
                         { XmlAttribute a = doc.CreateAttribute("dstFactor"); a.Value = mat.dstFactor.ToString(); matnode.Attributes.Append(a); }
                         { XmlAttribute a = doc.CreateAttribute("AlphaFunc"); a.Value = mat.AlphaFunc.ToString(); matnode.Attributes.Append(a); }
@@ -166,7 +166,7 @@ namespace Smash_Forge
                                     {
                                         switch (a.Name)
                                         {
-                                            case "flags": uint f = 0; if (uint.TryParse(a.Value, NumberStyles.HexNumber, null, out f)) { mat.flags = f; }; break;
+                                            case "flags": uint f = 0; if (uint.TryParse(a.Value, NumberStyles.HexNumber, null, out f)) { mat.Flags = f; }; break;
                                             case "srcFactor": int.TryParse(a.Value, out mat.srcFactor); break;
                                             case "dstFactor": int.TryParse(a.Value, out mat.dstFactor); break;
                                             case "AlphaFunc": int.TryParse(a.Value, out mat.AlphaFunc); break;
