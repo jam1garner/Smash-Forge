@@ -191,15 +191,14 @@ namespace Smash_Forge
 
             if(TargetLVD != null)
             {
-                int i = 0;
                 foreach (Collision c in TargetLVD.collisions)
                 {
-                    collisionNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
+                    TreeNode newNode = new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM };
                     foreach (CollisionCliff d in c.cliffs)
                     {
-                        collisionNode.Nodes[i].Nodes.Add(new TreeNode(d.name) { Tag = d, ContextMenu = ElementCM });
+                        newNode.Nodes.Add(new TreeNode(d.name) { Tag = d, ContextMenu = ElementCM });
                     }
-                    i++;
+                    collisionNode.Nodes.Add(newNode);
                 }
 
                 foreach (Spawn c in TargetLVD.spawns)

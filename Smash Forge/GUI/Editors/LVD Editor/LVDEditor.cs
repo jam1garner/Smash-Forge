@@ -72,8 +72,8 @@ namespace Smash_Forge
         {
             lvdEntryGroup.Visible = false;
             collisionGroup.Visible = false;
-            pointGroup.Visible = false;
-            boundGroup.Visible = false;
+            point2dGroup.Visible = false;
+            boundsGroup.Visible = false;
             itemSpawnerGroup.Visible = false;
             point3dGroup.Visible = false;
             rectangleGroup.Visible = false;
@@ -117,14 +117,14 @@ namespace Smash_Forge
                 }
                 else if (entry is Spawn)
                 {
-                    pointGroup.Visible = true;
+                    point2dGroup.Visible = true;
                     currentPoint = (Spawn)entry;
                     xPoint.Value = (decimal)((Spawn)entry).x;
                     yPoint.Value = (decimal)((Spawn)entry).y;
                 }
                 else if (entry is Bounds)
                 {
-                    boundGroup.Visible = true;
+                    boundsGroup.Visible = true;
                     currentBounds = (Bounds)entry;
                     topVal.Value = (decimal)currentBounds.top;
                     rightVal.Value = (decimal)currentBounds.right;
@@ -155,7 +155,7 @@ namespace Smash_Forge
                     GeneralShape s = (GeneralShape)entry;
                     if (s.type == 1)
                     {
-                        pointGroup.Visible = true;
+                        point2dGroup.Visible = true;
                         xPoint.Value = (decimal)s.x1;
                         yPoint.Value = (decimal)s.y1;
                     }
@@ -300,8 +300,8 @@ namespace Smash_Forge
         {
             lvdEntryGroup.Visible = false;
             collisionGroup.Visible = false;
-            pointGroup.Visible = false;
-            boundGroup.Visible = false;
+            point2dGroup.Visible = false;
+            boundsGroup.Visible = false;
         }
 
         private void pointMoved(object sender, EventArgs e)
@@ -642,8 +642,8 @@ namespace Smash_Forge
             subname.Text = "";
             lvdEntryGroup.Visible = false;
             collisionGroup.Visible = false;
-            pointGroup.Visible = false;
-            boundGroup.Visible = false;
+            point2dGroup.Visible = false;
+            boundsGroup.Visible = false;
             itemSpawnerGroup.Visible = false;
             point3dGroup.Visible = false;
             rectangleGroup.Visible = false;
