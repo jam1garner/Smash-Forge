@@ -71,12 +71,12 @@
             this.pointShapeZ = new System.Windows.Forms.NumericUpDown();
             this.pointShapeY = new System.Windows.Forms.NumericUpDown();
             this.pointShapeX = new System.Windows.Forms.NumericUpDown();
-            this.pointGroup = new System.Windows.Forms.GroupBox();
+            this.point2dGroup = new System.Windows.Forms.GroupBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.yPoint = new System.Windows.Forms.NumericUpDown();
             this.xPoint = new System.Windows.Forms.NumericUpDown();
-            this.boundGroup = new System.Windows.Forms.GroupBox();
+            this.boundsGroup = new System.Windows.Forms.GroupBox();
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.bottomVal = new System.Windows.Forms.NumericUpDown();
@@ -179,10 +179,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeZ)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeX)).BeginInit();
-            this.pointGroup.SuspendLayout();
+            this.point2dGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yPoint)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xPoint)).BeginInit();
-            this.boundGroup.SuspendLayout();
+            this.boundsGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bottomVal)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.leftVal)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.topVal)).BeginInit();
@@ -222,19 +222,21 @@
             this.flowLayoutPanel1.Controls.Add(this.lvdEntryGroup);
             this.flowLayoutPanel1.Controls.Add(this.collisionGroup);
             this.flowLayoutPanel1.Controls.Add(this.point3dGroup);
-            this.flowLayoutPanel1.Controls.Add(this.pointGroup);
-            this.flowLayoutPanel1.Controls.Add(this.boundGroup);
+            this.flowLayoutPanel1.Controls.Add(this.point2dGroup);
+            this.flowLayoutPanel1.Controls.Add(this.boundsGroup);
             this.flowLayoutPanel1.Controls.Add(this.itemSpawnerGroup);
             this.flowLayoutPanel1.Controls.Add(this.rectangleGroup);
             this.flowLayoutPanel1.Controls.Add(this.pathGroup);
             this.flowLayoutPanel1.Controls.Add(this.meleeCollisionGroup);
             this.flowLayoutPanel1.Controls.Add(this.groupBox1);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel1.WrapContents = false;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(651, 652);
+            this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(0);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(280, 900);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // lvdEntryGroup
@@ -255,7 +257,7 @@
             this.lvdEntryGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.lvdEntryGroup.Name = "lvdEntryGroup";
             this.lvdEntryGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.lvdEntryGroup.Size = new System.Drawing.Size(240, 200);
+            this.lvdEntryGroup.Size = new System.Drawing.Size(276, 200);
             this.lvdEntryGroup.TabIndex = 0;
             this.lvdEntryGroup.TabStop = false;
             this.lvdEntryGroup.Text = "LVD Object";
@@ -436,11 +438,11 @@
             this.collisionGroup.Controls.Add(this.button2);
             this.collisionGroup.Controls.Add(this.button1);
             this.collisionGroup.Controls.Add(this.label1);
-            this.collisionGroup.Location = new System.Drawing.Point(2, 220);
+            this.collisionGroup.Location = new System.Drawing.Point(2, 206);
             this.collisionGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.collisionGroup.Name = "collisionGroup";
             this.collisionGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.collisionGroup.Size = new System.Drawing.Size(240, 450);
+            this.collisionGroup.Size = new System.Drawing.Size(276, 442);
             this.collisionGroup.TabIndex = 0;
             this.collisionGroup.TabStop = false;
             this.collisionGroup.Text = "Collision Editing";
@@ -737,7 +739,7 @@
             this.point3dGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.point3dGroup.Name = "point3dGroup";
             this.point3dGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.point3dGroup.Size = new System.Drawing.Size(240, 46);
+            this.point3dGroup.Size = new System.Drawing.Size(276, 46);
             this.point3dGroup.TabIndex = 34;
             this.point3dGroup.TabStop = false;
             this.point3dGroup.Text = "3D Point";
@@ -833,20 +835,20 @@
             this.pointShapeX.TabIndex = 32;
             this.pointShapeX.ValueChanged += new System.EventHandler(this.pointShape_ValueChanged);
             // 
-            // pointGroup
+            // point2dGroup
             // 
-            this.pointGroup.Controls.Add(this.label12);
-            this.pointGroup.Controls.Add(this.label11);
-            this.pointGroup.Controls.Add(this.yPoint);
-            this.pointGroup.Controls.Add(this.xPoint);
-            this.pointGroup.Location = new System.Drawing.Point(2, 600);
-            this.pointGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.pointGroup.Name = "pointGroup";
-            this.pointGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.pointGroup.Size = new System.Drawing.Size(240, 46);
-            this.pointGroup.TabIndex = 3;
-            this.pointGroup.TabStop = false;
-            this.pointGroup.Text = "2D Point";
+            this.point2dGroup.Controls.Add(this.label12);
+            this.point2dGroup.Controls.Add(this.label11);
+            this.point2dGroup.Controls.Add(this.yPoint);
+            this.point2dGroup.Controls.Add(this.xPoint);
+            this.point2dGroup.Location = new System.Drawing.Point(2, 600);
+            this.point2dGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.point2dGroup.Name = "point2dGroup";
+            this.point2dGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.point2dGroup.Size = new System.Drawing.Size(276, 46);
+            this.point2dGroup.TabIndex = 3;
+            this.point2dGroup.TabStop = false;
+            this.point2dGroup.Text = "2D Point";
             // 
             // label12
             // 
@@ -908,24 +910,24 @@
             this.xPoint.TabIndex = 32;
             this.xPoint.ValueChanged += new System.EventHandler(this.pointMoved);
             // 
-            // boundGroup
+            // boundsGroup
             // 
-            this.boundGroup.Controls.Add(this.label15);
-            this.boundGroup.Controls.Add(this.label16);
-            this.boundGroup.Controls.Add(this.bottomVal);
-            this.boundGroup.Controls.Add(this.leftVal);
-            this.boundGroup.Controls.Add(this.label13);
-            this.boundGroup.Controls.Add(this.label14);
-            this.boundGroup.Controls.Add(this.topVal);
-            this.boundGroup.Controls.Add(this.rightVal);
-            this.boundGroup.Location = new System.Drawing.Point(215, 2);
-            this.boundGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.boundGroup.Name = "boundGroup";
-            this.boundGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.boundGroup.Size = new System.Drawing.Size(240, 67);
-            this.boundGroup.TabIndex = 34;
-            this.boundGroup.TabStop = false;
-            this.boundGroup.Text = "Bounds";
+            this.boundsGroup.Controls.Add(this.label15);
+            this.boundsGroup.Controls.Add(this.label16);
+            this.boundsGroup.Controls.Add(this.bottomVal);
+            this.boundsGroup.Controls.Add(this.leftVal);
+            this.boundsGroup.Controls.Add(this.label13);
+            this.boundsGroup.Controls.Add(this.label14);
+            this.boundsGroup.Controls.Add(this.topVal);
+            this.boundsGroup.Controls.Add(this.rightVal);
+            this.boundsGroup.Location = new System.Drawing.Point(215, 2);
+            this.boundsGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.boundsGroup.Name = "boundsGroup";
+            this.boundsGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.boundsGroup.Size = new System.Drawing.Size(276, 67);
+            this.boundsGroup.TabIndex = 34;
+            this.boundsGroup.TabStop = false;
+            this.boundsGroup.Text = "Bounds";
             // 
             // label15
             // 
@@ -1065,7 +1067,7 @@
             this.itemSpawnerGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.itemSpawnerGroup.Name = "itemSpawnerGroup";
             this.itemSpawnerGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.itemSpawnerGroup.Size = new System.Drawing.Size(188, 300);
+            this.itemSpawnerGroup.Size = new System.Drawing.Size(276, 300);
             this.itemSpawnerGroup.TabIndex = 35;
             this.itemSpawnerGroup.TabStop = false;
             this.itemSpawnerGroup.Text = "Item Spawner";
@@ -1229,7 +1231,7 @@
             this.rectangleGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rectangleGroup.Name = "rectangleGroup";
             this.rectangleGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.rectangleGroup.Size = new System.Drawing.Size(240, 67);
+            this.rectangleGroup.Size = new System.Drawing.Size(276, 67);
             this.rectangleGroup.TabIndex = 38;
             this.rectangleGroup.TabStop = false;
             this.rectangleGroup.Text = "Rectangle (Shape)";
@@ -1371,7 +1373,7 @@
             this.pathGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pathGroup.Name = "pathGroup";
             this.pathGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.pathGroup.Size = new System.Drawing.Size(188, 166);
+            this.pathGroup.Size = new System.Drawing.Size(276, 166);
             this.pathGroup.TabIndex = 46;
             this.pathGroup.TabStop = false;
             this.pathGroup.Text = "General Path (Shape)";
@@ -2171,7 +2173,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(651, 652);
+            this.ClientSize = new System.Drawing.Size(280, 900);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
@@ -2196,12 +2198,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeZ)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeX)).EndInit();
-            this.pointGroup.ResumeLayout(false);
-            this.pointGroup.PerformLayout();
+            this.point2dGroup.ResumeLayout(false);
+            this.point2dGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yPoint)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xPoint)).EndInit();
-            this.boundGroup.ResumeLayout(false);
-            this.boundGroup.PerformLayout();
+            this.boundsGroup.ResumeLayout(false);
+            this.boundsGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bottomVal)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.leftVal)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.topVal)).EndInit();
@@ -2281,12 +2283,12 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.NumericUpDown yVert;
         private System.Windows.Forms.NumericUpDown xVert;
-        private System.Windows.Forms.GroupBox pointGroup;
+        private System.Windows.Forms.GroupBox point2dGroup;
         private System.Windows.Forms.NumericUpDown yPoint;
         private System.Windows.Forms.NumericUpDown xPoint;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.GroupBox boundGroup;
+        private System.Windows.Forms.GroupBox boundsGroup;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.NumericUpDown topVal;
