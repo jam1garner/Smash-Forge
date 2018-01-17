@@ -792,22 +792,64 @@ namespace Smash_Forge
 
         private void generateTanBitanToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode is NUD)
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            string unsupportedMeshes = "";
+            bool correctVertType = true;
+
+            foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
             {
-                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
+                string meshName = mesh.Text;
+
+                foreach (NUD.Polygon poly in mesh.Nodes)
                 {
-                    foreach (NUD.Polygon poly in mesh.Nodes)
+                    // Don't generate tangents/bitangents if the vertex size doesn't support them.
+                    int vertType = poly.vertSize & 0xF;
+
+                    if (vertType == 3 || vertType == 7)
                     {
                         poly.CalculateTangentBitangent();
                     }
-                }              
+                    else
+                    {
+                        correctVertType = false;
+                        unsupportedMeshes += meshName + ", ";
+                        break;
+                    }
+                }
+            }             
+            
+            if (!correctVertType)
+            {
+                MessageBox.Show("Make sure to select Normals, Tan, Bi-Tan (Half-Float) or \n" +
+                    "Normals, Tan, Bi-Tan (Float) in the DAE import settings. " +
+                    "Tangents/Bitangents cannot be saved for the following meshes: \n \n" +
+                    unsupportedMeshes, "Incorrect Vertex Type");
             }
         }
 
         private void generateTanBitanToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             if (treeView1.SelectedNode is NUD.Polygon)
-                ((NUD.Polygon)treeView1.SelectedNode).CalculateTangentBitangent();
+            {
+                NUD.Polygon p = ((NUD.Polygon)treeView1.SelectedNode);
+
+                // Don't generate tangents/bitangents if the vertex size doesn't support them.
+                int vertType = p.vertSize & 0xF;
+
+                if (vertType == 3 || vertType == 7)
+                {
+                    p.CalculateTangentBitangent();
+                }
+                else
+                {
+                    string meshName = p.Parent.Text;
+                    MessageBox.Show("Tangents/bitangents cannot be saved for the current vertex type. \n" +
+                        "Make sure to select Normals, Tan, Bi-Tan (Half-Float) or \n" +
+                        "Normals, Tan, Bi-Tan (Float) in the DAE import settings.", meshName + ": Incorrect Vertex Type");
+                }
+            }
         }
 
         private void calculateNormalsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -976,9 +1018,24 @@ namespace Smash_Forge
         {
             if (treeView1.SelectedNode is NUD.Mesh)
             {
+                string meshName = treeView1.SelectedNode.Text;
+
                 foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
                 {
-                    poly.CalculateTangentBitangent();
+                    // Don't generate tangents/bitangents if the vertex size doesn't support them.
+                    int vertType = poly.vertSize & 0xF;
+
+                    if (vertType == 3 || vertType == 7)
+                    {
+                        poly.CalculateTangentBitangent();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Tangents/bitangents cannot be saved for the current vertex type. \n" +
+                            "Make sure to select Normals, Tan, Bi-Tan (Half-Float) or \n" +
+                            "Normals, Tan, Bi-Tan (Float) in the DAE import settings.", meshName + ": Incorrect Vertex Type");
+                        break;
+                    }
                 }
             }
         }

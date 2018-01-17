@@ -1907,7 +1907,7 @@ namespace Smash_Forge
         private static void writeVertex(FileOutput d, FileOutput add, Polygon m)
         {
             int weight = m.vertSize >> 4;
-            int nrm = m.vertSize & 0xF;
+            int vertType = m.vertSize & 0xF;
             
             if (weight > 0)
             {
@@ -1919,25 +1919,26 @@ namespace Smash_Forge
             {
                 
                 Vertex v = m.vertices[i];
-                if (nrm < 8)
+                if (vertType < 8)
                 {
                     d.writeFloat(v.pos.X);
                     d.writeFloat(v.pos.Y);
                     d.writeFloat(v.pos.Z);
                 }
                 
-                if(nrm == 0)
+                if(vertType == 0)
                 {
                     d.writeInt(0);
                 }
-                else if (nrm == 1)
+                else if (vertType == 1)
                 {
                     d.writeFloat(v.nrm.X);
                     d.writeFloat(v.nrm.Y);
                     d.writeFloat(v.nrm.Z);
                     d.writeFloat(1);
                     d.writeFloat(1);
-                }else if (nrm == 2)
+                }
+                else if (vertType == 2)
                 {
                     d.writeFloat(v.nrm.X);
                     d.writeFloat(v.nrm.Y);
@@ -1948,14 +1949,14 @@ namespace Smash_Forge
                     d.writeFloat(v.tan.X); d.writeFloat(v.tan.Y); d.writeFloat(v.tan.Z);
                     d.writeFloat(1);
                     d.writeFloat(1);
-                }else if (nrm == 3)
+                }
+                else if (vertType == 3)
                 {
                     d.writeFloat(1);
                     d.writeFloat(v.nrm.X);
                     d.writeFloat(v.nrm.Y);
                     d.writeFloat(v.nrm.Z);
                     d.writeFloat(1);
-                    // bn and tan floats
                     d.writeFloat(m.vertices[i].bitan.X);
                     d.writeFloat(m.vertices[i].bitan.Y);
                     d.writeFloat(m.vertices[i].bitan.Z);
@@ -1965,22 +1966,19 @@ namespace Smash_Forge
                     d.writeFloat(m.vertices[i].tan.Z);
                     d.writeFloat(m.vertices[i].tan.W);
                 }
-                else
-                if (nrm == 6)
+                else if (vertType == 6)
                 {
                     d.writeHalfFloat(v.nrm.X);
                     d.writeHalfFloat(v.nrm.Y);
                     d.writeHalfFloat(v.nrm.Z);
                     d.writeHalfFloat(1);
                 }
-                else
-                if (nrm == 7)
+                else if (vertType == 7)
                 {
                     d.writeHalfFloat(v.nrm.X);
                     d.writeHalfFloat(v.nrm.Y);
                     d.writeHalfFloat(v.nrm.Z);
                     d.writeHalfFloat(1);
-                    // bn and tan half floats
                     d.writeHalfFloat(m.vertices[i].bitan.X);
                     d.writeHalfFloat(m.vertices[i].bitan.Y);
                     d.writeHalfFloat(m.vertices[i].bitan.Z);
@@ -2006,9 +2004,6 @@ namespace Smash_Forge
                         d.writeHalfFloat(m.vertices[i].uv[j].X);
                         d.writeHalfFloat(m.vertices[i].uv[j].Y);
                     }
-
-                    // UV layers
-                    //d.skip(4 * ((m.UVSize >> 4) - 1));
                 }
 
                 if (weight == 1)
