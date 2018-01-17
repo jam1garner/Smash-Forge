@@ -804,7 +804,7 @@ namespace Smash_Forge
                 {
                     foreach (NUD.Polygon poly in mesh.Nodes)
                     {
-                        poly.computeTangentBitangent();
+                        poly.ComputeTangentBitangent();
                     }
                 }              
             }
@@ -813,7 +813,7 @@ namespace Smash_Forge
         private void generateTanBitanToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             if (treeView1.SelectedNode is NUD.Polygon)
-                ((NUD.Polygon)treeView1.SelectedNode).computeTangentBitangent();
+                ((NUD.Polygon)treeView1.SelectedNode).ComputeTangentBitangent();
         }
 
         private void calculateNormalsToolStripMenuItem_Click(object sender, EventArgs e)
