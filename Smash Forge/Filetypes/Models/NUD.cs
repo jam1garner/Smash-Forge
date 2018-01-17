@@ -2397,10 +2397,13 @@ namespace Smash_Forge
 
             private bool CheckColorGain(uint matFlags)
             {
-                bool hasLightingChannel = (matFlags & 0x0C000000) == 0x0C000000;
-                bool hasByte2 = ((matFlags & 0x00FF0000) == 0x00610000 
-                    || (matFlags & 0x00FF0000) == 0x00420000 || (matFlags & 0x00FF0000) == 0x00440000);
-                bool hasByte4 = (matFlags & 0x000000FF) == 0x00000061;
+                byte byte1 = (byte)((matFlags & 0xFF000000) >> 24);
+                byte byte2 = (byte)((matFlags & 0x00FF0000) >> 16);
+                byte byte4 = (byte)((matFlags & 0xFF));
+
+                bool hasLightingChannel = (byte1 & 0x0C) == 0x0C;
+                bool hasByte2 = (byte2 == 0x61) || (byte2== 0x42) || (byte2 == 0x44);
+                bool hasByte4 = (byte4 == 0x61);
 
                 return hasLightingChannel && hasByte2 && hasByte4;
             }
@@ -2482,6 +2485,7 @@ namespace Smash_Forge
 
                 if (faces.Count <= 3)
                     return;
+
                 foreach (Vertex v in vertices)
                 {
                     dVertex nv = new dVertex()
@@ -2502,7 +2506,6 @@ namespace Smash_Forge
                         v.weight.Count > 1 ? v.weight[1] : 0,
                         v.weight.Count > 2 ? v.weight[2] : 0,
                         v.weight.Count > 3 ? v.weight[3] : 0),
-
                     };
 
                     vert.Add(nv);
@@ -2512,11 +2515,12 @@ namespace Smash_Forge
                 selectedVerts = new int[vertdata.Length];
             }
 
-            public void computeTangentBitangent()
+            public void ComputeTangentBitangent()
             {
                 List<int> f = getDisplayFace();
-                Vector3[] tan1 = new Vector3[vertices.Count];
-                Vector3[] tan2 = new Vector3[vertices.Count];
+                Vector3[] tangent = new Vector3[vertices.Count];
+                Vector3[] bitangent = new Vector3[vertices.Count];
+
                 for (int i = 0; i < displayFaceSize; i += 3)
                 {
                     Vertex v1 = vertices[f[i]];
@@ -2536,7 +2540,7 @@ namespace Smash_Forge
                     float t1 = v2.uv[0].Y - v1.uv[0].Y;
                     float t2 = v3.uv[0].Y - v1.uv[0].Y;
 
-                    // prevent incorrect tangent calculation from division by 0
+                    // Prevent incorrect tangent calculation from division by 0.
                     float r = 1.0f;
                     float div = (s1 * t2 - s2 * t1);
                     if (div != 0)
@@ -2546,33 +2550,32 @@ namespace Smash_Forge
                     Vector3 t = new Vector3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
                         (s1 * z2 - s2 * z1) * r);
 
-                    // prevent black tangents or bitangents
+                    // Prevent black tangents or bitangents.
                     if (Vector3.Dot(s, new Vector3(1)) == 0.0f)
                         s = new Vector3(1).Normalized();
                     if (Vector3.Dot(t, new Vector3(1)) == 0.0f)
                         t = new Vector3(1).Normalized();
 
-                    tan1[f[i]] += s;
-                    tan1[f[i + 1]] += s;
-                    tan1[f[i + 2]] += s;
+                    tangent[f[i]] += s;
+                    tangent[f[i + 1]] += s;
+                    tangent[f[i + 2]] += s;
 
-                    tan2[f[i]] += t;
-                    tan2[f[i + 1]] += t;
-                    tan2[f[i + 2]] += t;
+                    bitangent[f[i]] += t;
+                    bitangent[f[i + 1]] += t;
+                    bitangent[f[i + 2]] += t;
                 }
 
                 for (int i = 0; i < vertices.Count; i++)
                 {
                     Vertex v = vertices[i];
-                    Vector3 t = tan1[i];
+                    Vector3 t = tangent[i];
 
-                    // orthogonalize tangent and calculate bitangent from tangent
-                    v.tan = new Vector4(Vector3.Normalize(t - v.nrm * Vector3.Dot(v.nrm, t)), Vector3.Dot(Vector3.Cross(v.nrm, t), tan2[i]) < 0.0f ? -1.0f : 1.0f);
+                    // Orthogonalize tangent and calculate bitangent from tangent.
+                    v.tan = new Vector4(Vector3.Normalize(t - v.nrm * Vector3.Dot(v.nrm, t)), Vector3.Dot(Vector3.Cross(v.nrm, t), bitangent[i]) < 0.0f ? -1.0f : 1.0f);
                     v.bitan = new Vector4(Vector3.Cross(v.tan.Xyz, v.nrm), 1.0f);
                 }
 
                 PreRender();
-
             }
 
             public void SmoothNormals()
@@ -2591,9 +2594,9 @@ namespace Smash_Forge
                     Vertex v3 = vertices[f[i+2]];
                     Vector3 nrm = CalculateNormal(v1,v2,v3);
 
-                    normals[f[i + 0]] += nrm;// * a1;
-                    normals[f[i + 1]] += nrm;// * a2;
-                    normals[f[i + 2]] += nrm;// * a3;
+                    normals[f[i + 0]] += nrm;
+                    normals[f[i + 1]] += nrm;
+                    normals[f[i + 2]] += nrm;
                 }
                 
                 for (int i = 0; i < normals.Length; i++)
@@ -2633,9 +2636,9 @@ namespace Smash_Forge
                     Vertex v3 = vertices[f[i + 2]];
                     Vector3 nrm = CalculateNormal(v1, v2, v3);
 
-                    normals[f[i + 0]] += nrm;// * a1;
-                    normals[f[i + 1]] += nrm;// * a2;
-                    normals[f[i + 2]] += nrm;// * a3;
+                    normals[f[i + 0]] += nrm;
+                    normals[f[i + 1]] += nrm;
+                    normals[f[i + 2]] += nrm;
                 }
 
                 for (int i = 0; i < normals.Length; i++)
@@ -2667,7 +2670,6 @@ namespace Smash_Forge
                 mat.entries.Add("NU_materialHash", new float[] { FileData.toFloat(0x7E538F65), 0, 0, 0 });
                 materials.Add(mat);
 
-                // don't load 10080000 as default diffuse textureID to avoid displaying ramp as diffuse for imports
                 Mat_Texture defaultDif = new Mat_Texture();
                 defaultDif.WrapMode1 = 1;
                 defaultDif.WrapMode2 = 1;
@@ -2675,6 +2677,7 @@ namespace Smash_Forge
                 defaultDif.magFilter = 2;
                 defaultDif.mipDetail = 1;
                 defaultDif.mipDetail = 6;
+                // The default texture looks better than a solid white texture. 
                 defaultDif.hash = 0x10000000;
 
                 mat.textures.Add(defaultDif);
@@ -3007,59 +3010,7 @@ namespace Smash_Forge
 
         public static void computeTangentBitangent(Polygon p)
         {
-            List<int> f = p.getDisplayFace();
-            Vector3[] tan1 = new Vector3[p.vertices.Count];
-            Vector3[] tan2 = new Vector3[p.vertices.Count];
-            for (int i = 0; i < p.displayFaceSize-3; i += 3)
-            {
-                Vertex v1 = p.vertices[f[i]];
-                Vertex v2 = p.vertices[f[i + 1]];
-                Vertex v3 = p.vertices[f[i + 2]];
-
-                float x1 = v2.pos.X - v1.pos.X;
-                float x2 = v3.pos.X - v1.pos.X;
-                float y1 = v2.pos.Y - v1.pos.Y;
-                float y2 = v3.pos.Y - v1.pos.Y;
-                float z1 = v2.pos.Z - v1.pos.Z;
-                float z2 = v3.pos.Z - v1.pos.Z;
-
-                if (v2.uv.Count < 1) break;
-                float s1 = v2.uv[0].X - v1.uv[0].X;
-                float s2 = v3.uv[0].X - v1.uv[0].X;
-                float t1 = v2.uv[0].Y - v1.uv[0].Y;
-                float t2 = v3.uv[0].Y - v1.uv[0].Y;
-
-                float r = 1.0f;
-                // prevent incorrect tangent calculation from division by 0
-                float div = (s1 * t2 - s2 * t1);
-                if (div == 0)
-                    r = 0.0f;
-                else
-                    r = 1.0f / div;
-                Vector3 s = new Vector3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, 
-                    (t2 * z1 - t1 * z2) * r);
-                Vector3 t = new Vector3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, 
-                    (s1 * z2 - s2 * z1) * r);
-
-                tan1[f[i]] += s;
-                tan1[f[i + 1]] += s;
-                tan1[f[i + 2]] += s;
-
-                tan2[f[i]] += t;
-                tan2[f[i + 1]] += t;
-                tan2[f[i + 2]] += t;
-            }
-
-            for (int i = 0; i < p.vertices.Count; i++)
-            {
-                Vertex v = p.vertices[i];
-                Vector3 t = tan1[i];
-
-                // orthogonalize tangent and calculate bitangent from tangent
-                v.tan = new Vector4(Vector3.Normalize(t - v.nrm * Vector3.Dot(v.nrm, t)), Vector3.Dot(Vector3.Cross(v.nrm, t), tan2[i]) < 0.0f ? -1.0f : 1.0f);
-                v.bitan = new Vector4(Vector3.Cross(v.tan.Xyz, v.nrm), 1.0f);
-            }
-
+            p.ComputeTangentBitangent();
         }
 
         #endregion
