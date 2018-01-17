@@ -558,12 +558,6 @@ namespace Smash_Forge
             mm.Show();
         }
 
-        private void smoothNormalsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if(treeView1.SelectedNode is NUD.Polygon)
-                ((NUD.Polygon)treeView1.SelectedNode).SmoothNormals();
-        }
-
         public List<ModelContainer> GetModelContainers()
         {
             List<ModelContainer> models = new List<ModelContainer>();
@@ -804,7 +798,7 @@ namespace Smash_Forge
                 {
                     foreach (NUD.Polygon poly in mesh.Nodes)
                     {
-                        poly.ComputeTangentBitangent();
+                        poly.CalculateTangentBitangent();
                     }
                 }              
             }
@@ -813,7 +807,7 @@ namespace Smash_Forge
         private void generateTanBitanToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             if (treeView1.SelectedNode is NUD.Polygon)
-                ((NUD.Polygon)treeView1.SelectedNode).ComputeTangentBitangent();
+                ((NUD.Polygon)treeView1.SelectedNode).CalculateTangentBitangent();
         }
 
         private void calculateNormalsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -830,20 +824,6 @@ namespace Smash_Forge
                     foreach (NUD.Polygon poly in mesh.Nodes)
                     {
                         poly.CalculateNormals();
-                    }
-                }
-            }
-        }
-
-        private void smoothNormalsToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            if (treeView1.SelectedNode is NUD)
-            {
-                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
-                {
-                    foreach (NUD.Polygon poly in mesh.Nodes)
-                    {
-                        poly.SmoothNormals();
                     }
                 }
             }
@@ -928,6 +908,79 @@ namespace Smash_Forge
         private void generateBoundingBoxesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ((NUD)treeView1.SelectedNode).GenerateBoundingBoxes();
+        }
+
+        private void recalculateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Mesh)
+            {
+                foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+                {
+                    poly.CalculateNormals();
+                }
+            }
+        }
+
+        private void smoothToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Mesh)
+            {
+                foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+                {
+                    poly.SmoothNormals();
+                }
+            }
+        }
+
+        private void recalculateToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Polygon)
+                ((NUD.Polygon)treeView1.SelectedNode).CalculateNormals();
+        }
+
+        private void smoothToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Polygon)
+                ((NUD.Polygon)treeView1.SelectedNode).SmoothNormals();
+        }
+
+        private void smoothToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD)
+            {
+                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
+                {
+                    foreach (NUD.Polygon poly in mesh.Nodes)
+                    {
+                        poly.SmoothNormals();
+                    }
+                }
+            }
+        }
+
+        private void recalculateToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD)
+            {
+                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
+                {
+                    foreach (NUD.Polygon poly in mesh.Nodes)
+                    {
+                        poly.CalculateNormals();
+                    }
+                }
+            }
+        }
+
+        private void generateTanBitanToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Mesh)
+            {
+                foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+                {
+                    poly.CalculateTangentBitangent();
+                }
+            }
         }
     }
 }
