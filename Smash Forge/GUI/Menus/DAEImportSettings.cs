@@ -100,7 +100,7 @@ namespace Smash_Forge
 
                     // We only want to calculate new tangents/bitangents for imports.
                     // Vanilla models have special tangents/bitangents for mirrored normal maps.
-                    poly.ComputeTangentBitangent();
+                    poly.CalculateTangentBitangent();
 
                     poly.vertSize = ((poly.vertSize == 0x6 ? 0 : BoneTypes[(string)comboBox2.SelectedItem])) | (VertTypes[(string)comboBox1.SelectedItem]);
 

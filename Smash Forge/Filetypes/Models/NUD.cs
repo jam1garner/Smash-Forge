@@ -2514,7 +2514,7 @@ namespace Smash_Forge
                 selectedVerts = new int[vertdata.Length];
             }
 
-            public void ComputeTangentBitangent()
+            public void CalculateTangentBitangent()
             {
                 List<int> f = getDisplayFace();
                 Vector3[] tanArray = new Vector3[vertices.Count];
@@ -2533,7 +2533,9 @@ namespace Smash_Forge
                     float z1 = v2.pos.Z - v1.pos.Z;
                     float z2 = v3.pos.Z - v1.pos.Z;
 
-                    if (v2.uv.Count < 1) break;
+                    if (v2.uv.Count < 1)
+                        break;
+
                     float s1 = v2.uv[0].X - v1.uv[0].X;
                     float s2 = v3.uv[0].X - v1.uv[0].X;
                     float t1 = v2.uv[0].Y - v1.uv[0].Y;
@@ -2571,15 +2573,10 @@ namespace Smash_Forge
                     Vector3 newTan = tanArray[i].Normalized();
                     Vector3 newBitan = bitanArray[i].Normalized();
 
-                    // Orthogonalize tangent and calculate bitangent from tangent.
+                    // Orthogonalize tangent to normal and bitangent to normal. 
+                    // Don't calculate bitangent from normal and tangent to prevent flipped bitangents with mirrored normal maps.
                     v.tan = new Vector4(Vector3.Normalize(newTan - v.nrm * Vector3.Dot(v.nrm, newTan)), 1);
-                    //v.bitan = new Vector4(Vector3.Cross(v.tan.Xyz, v.nrm), 1.0f);
-                    v.bitan = new Vector4(Vector3.Normalize(newBitan - v.nrm * Vector3.Dot(v.nrm, newBitan)), 1);
-
-                    // Mirror bitangents horizontally. 
-                    // May need to split vertices for this to work properly.
-                    float flip = ((Vector3.Dot(Vector3.Cross(v.tan.Xyz, v.bitan.Xyz), v.nrm)) < 0.0f) ? -1.0f : 1.0f;
-                    v.tan.W = flip;
+                    v.bitan = new Vector4(Vector3.Normalize(newBitan - v.nrm * Vector3.Dot(v.nrm, newBitan)), 1);             
                     v.bitan *= -1;
                 }
 
@@ -3012,7 +3009,7 @@ namespace Smash_Forge
             foreach (Mesh m in Nodes)
             {
                 foreach (Polygon p in m.Nodes)
-                    p.ComputeTangentBitangent();
+                    p.CalculateTangentBitangent();
             }
         }
 
