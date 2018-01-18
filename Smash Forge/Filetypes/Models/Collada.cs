@@ -10,6 +10,7 @@ using System.IO;
 using OpenTK;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace Smash_Forge
 {
@@ -336,8 +337,12 @@ namespace Smash_Forge
             }
 
             // then image materials and effects
-            n.Optimize();
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            n.OptimizeFileSize();
+            sw.Stop();
             n.PreRender();
+            Debug.WriteLine("Optimize: " + sw.ElapsedMilliseconds / 1000.0);
         }
 
         private static void ReadSemantic(ColladaInput input, NUD.Vertex v, int p, Dictionary<string, ColladaSource> sources)
