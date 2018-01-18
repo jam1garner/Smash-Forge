@@ -3006,12 +3006,17 @@ namespace Smash_Forge
                     {
                         if (v.node.Count > 0 && isSingleBound)
                         {
-                            Debug.WriteLine(v.node.Count);
                             // Can't use single bind if some vertices aren't weighted to the same bone. 
                             if (singleBindBone == -1)
                                 singleBindBone = v.node[0];
-                            // check to see if there is more than 1 bone and break
-                            // shouldn't have to check every bone
+
+                            // Vertices bound to a single bone will have a node.Count of 1.
+                            if (v.node.Count > 1)
+                            {
+                                isSingleBound = false;
+                                break;
+                            }
+                     
                         }
                     }
                 }
