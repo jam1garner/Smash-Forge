@@ -922,7 +922,8 @@ namespace Smash_Forge
                 h.va = Vector3.TransformPosition(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
 
                 // Draw angle marker
-                RenderHitboxAngles(h, Skeleton);
+                if (Runtime.renderHitboxAngles)
+                    RenderHitboxAngles(h, Skeleton);
 
                 GL.Color4(h.GetDisplayColor());
 
@@ -1007,20 +1008,32 @@ namespace Smash_Forge
             else if (h.va.Z < transN_Z)
                 direction = -1;
 
+            GL.LineWidth(5f);
+            GL.Begin(PrimitiveType.Lines);
+            GL.Color4(Runtime.hitboxAnglesColor);
             if (h.Angle <= 360)
             {
-                GL.LineWidth(5f);
-                GL.Begin(PrimitiveType.Lines);
-                GL.Color4(Runtime.hitboxAnglesColor);
+                //draws a straight line segment of the hitbox angle for angles <= 360
                 GL.Vertex3(h.va);
-                if (direction == 1)
-                    GL.Vertex3(h.va + Vector3.Transform(new Vector3(0, 0, h.Size), Matrix3.CreateRotationX(-h.Angle * ((float)Math.PI / 180f))));
-                else
-                    GL.Vertex3(h.va + Vector3.Transform(new Vector3(0, 0, h.Size), Matrix3.CreateRotationX((180 + h.Angle) * ((float)Math.PI / 180f))));
-                GL.End();
+                GL.Vertex3(h.va + Vector3.Transform(new Vector3(0, 0, h.Size), Matrix3.CreateRotationX((float)(90 * (1 - direction) - direction * h.Angle) * ((float)Math.PI / 180f))));
             }
-            //TODO: Add special angle marker for angles > 360 (and maybe a separate one for 361?)
-            //An annular shape is recognizable but can slow down the gif encoder if it's too precise
+            else if (h.Angle == 361)
+            {
+                //draws a "+" sign for 361 angles (Sakurai angles)
+                GL.Vertex3(h.va - new Vector3(0, 0, h.Size / 2));
+                GL.Vertex3(h.va + new Vector3(0, 0, h.Size / 2));
+                GL.Vertex3(h.va - new Vector3(0, h.Size / 2, 0));
+                GL.Vertex3(h.va + new Vector3(0, h.Size / 2, 0));
+            }
+            else
+            {
+                //draws a "x" sign for >361 angles (autolink angles)
+                GL.Vertex3(h.va - Vector3.Transform(new Vector3(0, 0, h.Size / 2), Matrix3.CreateRotationX(45f * (float)Math.PI / 180f)));
+                GL.Vertex3(h.va + Vector3.Transform(new Vector3(0, 0, h.Size / 2), Matrix3.CreateRotationX(45f * (float)Math.PI / 180f)));
+                GL.Vertex3(h.va - Vector3.Transform(new Vector3(0, 0, h.Size / 2), Matrix3.CreateRotationX(-45f * (float)Math.PI / 180f)));
+                GL.Vertex3(h.va + Vector3.Transform(new Vector3(0, 0, h.Size / 2), Matrix3.CreateRotationX(-45f * (float)Math.PI / 180f)));
+            }
+            GL.End();
         }
 
         public static Tuple<int, int> translateScriptBoneId(int boneId)
