@@ -63,10 +63,6 @@ namespace Smash_Forge
             EDITVERT = 1
         }
 
-        public static bool hasCheckedTexShaderCompilation = false;
-        public static bool hasCheckedNUDShaderCompilation = false;
-
-
         public static ViewportModes ViewportMode = ViewportModes.EDITVERT;
 
         public static float RenderLineSize = 2;

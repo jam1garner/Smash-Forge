@@ -44,27 +44,27 @@ namespace Smash_Forge
             GetOpenGLSystemInfo();
         }
 
-        public static object GetValueFromParamFile(ParamFile paramFile, int groupNum, int entryNum, int valNum)
+        public static object GetValueFromParamFile(ParamFile file, int groupIndex, int entryIndex, int valueIndex)
         {
-            if (paramFile.Groups.Count > groupNum)
+            if (groupIndex > file.Groups.Count)
+                return null;
+
+            if ((file.Groups[groupIndex] is ParamGroup))
             {
-                if (!(paramFile.Groups[groupNum] is ParamGroup))
+                int entrySize = ((ParamGroup)file.Groups[groupIndex]).EntrySize;
+                for (int i = 0; i < entrySize; i++)
                 {
-                    int count = 0;
-                    foreach (ParamEntry val in paramFile.Groups[groupNum].Values)
-                    {
-                        if (count == valNum)
-                            return (val.Value);
-                        count++;
-                    }
+                    if (i == valueIndex)
+                        return file.Groups[groupIndex].Values[entrySize * entryIndex + i].Value;
                 }
-                else
+            }
+            else if ((file.Groups[groupIndex] is ParamList))
+            {
+                for (int i = 0; i < file.Groups[groupIndex].Values.Count; i++)
                 {
-                    int entrySize = ((ParamGroup)paramFile.Groups[groupNum]).EntrySize;
-                    for (int index = 0; index < entrySize; index++)
+                    if (i == valueIndex)
                     {
-                        if (index == valNum)
-                            return paramFile.Groups[groupNum].Values[entrySize * entryNum + index].Value;
+                        return file.Groups[groupIndex].Values[i].Value;
                     }
                 }
             }

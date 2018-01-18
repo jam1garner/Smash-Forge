@@ -958,10 +958,9 @@ namespace Smash_Forge
      
             RenderTools.DrawTexturedQuad(texture, 1, 1, true, true, true, false, false, false);
 
-            if (!Runtime.hasCheckedTexShaderCompilation)
+            if (!Runtime.shaders["Texture"].hasCheckedCompilation())
             {
                 Runtime.shaders["Texture"].displayCompilationWarning("Texture");
-                Runtime.hasCheckedTexShaderCompilation = true;
             }
 
             glControl1.SwapBuffers();

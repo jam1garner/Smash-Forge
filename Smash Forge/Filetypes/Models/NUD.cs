@@ -126,22 +126,7 @@ namespace Smash_Forge
         {
             foreach (Mesh m in Nodes)
             {
-                if (m.Text.Contains("SORTBIAS"))
-                {
-                    String sortBias = "";
-                    for (int i = m.Text.IndexOf("SORTBIAS") + 8; i < m.Text.Length; i++)
-                    {
-                        if (m.Text[i] != '_')
-                        {
-                            sortBias += m.Text[i];
-                        }
-                        else
-                            break;
-                    }
-                    int sortBiasValue = 0;
-                    int.TryParse(sortBias, out sortBiasValue);
-                    m.sortBias = sortBiasValue;
-                }
+                m.calculateSortBias();
 
                 if (m.Text.Contains("BILLBOARDYAXIS"))
                 {
@@ -2864,6 +2849,28 @@ namespace Smash_Forge
                 }
                 boundingBox[3] = (float)radius;
                 boundingBox[7] = 0;
+            }
+
+            public void calculateSortBias()
+            {
+                if (!(Text.Contains("SORTBIAS")))
+                    return;
+
+                // Isolate the integer value from the mesh name.
+                string sortBiasText = "";
+                for (int i = Text.IndexOf("SORTBIAS") + 8; i < Text.Length; i++)
+                {
+                    if (Text[i] != '_')
+                    {
+                        sortBiasText += Text[i];
+                    }
+                    else
+                        break;
+                }
+
+                int sortBiasValue = 0;
+                int.TryParse(sortBiasText, out sortBiasValue);
+                this.sortBias = sortBiasValue;              
             }
         }
 
