@@ -1297,7 +1297,9 @@ namespace Smash_Forge
             mat.textures.Add(NUD.Polygon.makeDefault()); // diffuse
             mat.textures.Add(NUD.Polygon.makeDefault()); // dummy ramp
 
-            materials.Add(mat);
+            // Can only have two materials.
+            if (materials.Count < 2)
+                materials.Add(mat);
 
             FillForm();
 
