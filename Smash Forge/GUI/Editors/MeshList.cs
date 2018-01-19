@@ -923,7 +923,8 @@ namespace Smash_Forge
 
         private void importFromDAEToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!(treeView1.SelectedNode is ModelContainer)) return;
+            if (!(treeView1.SelectedNode is ModelContainer))
+                return;
 
             using (OpenFileDialog ofd = new OpenFileDialog())
             {

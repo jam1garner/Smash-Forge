@@ -154,7 +154,7 @@ namespace Smash_Forge
                     n.Nodes.Add(m);
             }
 
-            n.Optimize();
+            n.OptimizeFileSize();
             n.PreRender();
 
             return n;

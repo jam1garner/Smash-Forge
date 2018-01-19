@@ -592,18 +592,6 @@ namespace Smash_Forge
                 }
             }
 
-            Debug.WriteLine(id);
-            Debug.WriteLine(texture_index);
-            Debug.WriteLine(rotX);
-            Debug.WriteLine(rotY);
-            Debug.WriteLine(rotZ);
-            Debug.WriteLine(scaleX);
-            Debug.WriteLine(scaleY);
-            Debug.WriteLine(scaleZ);
-            Debug.WriteLine(posX);
-            Debug.WriteLine(posY);
-            Debug.WriteLine(posZ);
-
             Vector3 position = new Vector3(posX, posY, posZ);
             Vector3 scale = new Vector3(scaleX, scaleY, scaleZ);
 

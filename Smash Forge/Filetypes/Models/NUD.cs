@@ -2115,7 +2115,6 @@ namespace Smash_Forge
             {
                 Nodes.Add(nmesh[n]);
             }
-            PreRender();
         }
         #endregion
 
@@ -2936,75 +2935,109 @@ namespace Smash_Forge
         }
 
     
-        public void Optimize(bool singleBind = false)
+        public void OptimizeFileSize(bool singleBind = false)
         {
-            // to help with duplicates
+            // Remove Duplicates
             MergePoly();
+            MergeDuplicateVertices();
+            OptimizeSingleBind(true);
+        }
 
-            bool isSingleBound;
-            int sbind;
+        private void MergeDuplicateVertices()
+        {
+            // Massive reductions in file size but very slow.
+
             foreach (Mesh m in Nodes)
             {
-                isSingleBound = true;
-                sbind = -1;
                 foreach (Polygon p in m.Nodes)
                 {
-                    List<Vertex> nVert = new List<Vertex>();
-                    List<int> nFace = new List<int>();
+                    List<Vertex> newVertices = new List<Vertex>();
+                    List<int> newFaces = new List<int>();
 
                     foreach (int f in p.faces)
                     {
-                        int pos = -1; // nVert.IndexOf(p.vertices[f]);
+                        int newFaceIndex = -1; 
                         int i = 0;
-                        foreach (Vertex v in nVert)
-                        {
-                            if (v.node.Count > 0 && isSingleBound)
-                            {
-                                if (sbind == -1)
-                                    sbind = p.vertices[f].node[0];
-                                else
-                                if (p.vertices[f].node[0] != sbind)
-                                    isSingleBound = false;
-                            }
 
+                        // Has to loop through all the new vertices each time, which is very slow.
+                        foreach (Vertex v in newVertices)
+                        {
                             if (v.Equals(p.vertices[f]))
                             {
-                                pos = i;
+                                newFaceIndex = i;
                                 break;
                             }
                             else
                                 i++;
                         }
 
-                        if (pos != -1)
+                        bool verticesAreEqual = newFaceIndex != -1;
+                        if (verticesAreEqual)
                         {
-                            nFace.Add(pos);
+                            newFaces.Add(newFaceIndex);
                         }
                         else
                         {
-                            nVert.Add(p.vertices[f]);
-                            nFace.Add(nVert.Count - 1);
+                            newVertices.Add(p.vertices[f]);
+                            newFaces.Add(newVertices.Count - 1);
                         }
                     }
-                    p.vertices = nVert;
-                    p.faces = nFace;
+
+                    p.vertices = newVertices;
+                    p.faces = newFaces;
                     p.displayFaceSize = 0;
                 }
-                if (isSingleBound && singleBind)
-                {
-                    m.boneflag = 0x08; // single bind flag
-                    m.singlebind = (short)sbind; // single bind bone
-                    foreach (Polygon p in m.Nodes)
-                    {
-                        p.polflag = 0;
-                        p.vertSize = p.vertSize & 0x0F;
-                    }
-                }
             }
-            
-            PreRender();
         }
 
+        private void OptimizeSingleBind(bool useSingleBind)
+        {
+            // Use single bind to avoid saving weights.
+            // The space savings are significant but not as much as merging duplicate vertices. 
+
+            foreach (Mesh m in Nodes)
+            {
+                bool isSingleBound = true;
+                int singleBindBone = -1;
+
+                foreach (Polygon p in m.Nodes)
+                {
+                    foreach (Vertex v in p.vertices)
+                    {
+                        if (v.node.Count > 0 && isSingleBound)
+                        {
+                            // Can't use single bind if some vertices aren't weighted to the same bone. 
+                            if (singleBindBone == -1)
+                                singleBindBone = v.node[0];
+
+                            // Vertices bound to a single bone will have a node.Count of 1.
+                            if (v.node.Count > 1)
+                            {
+                                isSingleBound = false;
+                                break;
+                            }
+                     
+                        }
+                    }
+                }
+
+                if (isSingleBound && useSingleBind)
+                {
+                    SingleBindMesh(m, singleBindBone);
+                }
+            }
+        }
+
+        private static void SingleBindMesh(Mesh m, int singleBindBone)
+        {
+            m.boneflag = 0x08;
+            m.singlebind = (short)singleBindBone;
+            foreach (Polygon p in m.Nodes)
+            {
+                p.polflag = 0;
+                p.vertSize = p.vertSize & 0x0F;
+            }
+        }
 
         public void ComputeTangentBitangent()
         {
