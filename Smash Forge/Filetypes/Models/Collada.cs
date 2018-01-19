@@ -336,13 +336,9 @@ namespace Smash_Forge
                 }
             }
 
-            // then image materials and effects
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            // RIP 22mb NUD files. This step is slow though...
             n.OptimizeFileSize();
-            sw.Stop();
             n.PreRender();
-            Debug.WriteLine("Optimize: " + sw.ElapsedMilliseconds / 1000.0);
         }
 
         private static void ReadSemantic(ColladaInput input, NUD.Vertex v, int p, Dictionary<string, ColladaSource> sources)
