@@ -10,6 +10,7 @@ using System.IO;
 using OpenTK;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace Smash_Forge
 {
@@ -335,8 +336,8 @@ namespace Smash_Forge
                 }
             }
 
-            // then image materials and effects
-            n.Optimize();
+            // RIP 22mb NUD files. This step is slow though...
+            n.OptimizeFileSize();
             n.PreRender();
         }
 
