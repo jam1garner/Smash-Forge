@@ -726,7 +726,7 @@ namespace Smash_Forge
                     filename = save.FileName;
                     if (filename.EndsWith(".xml"))
                     {
-                        MaterialXML.exportMaterialAsXML(nud, filename);
+                        MaterialXML.ExportMaterialAsXml(nud, filename);
                     }
                 }
             }
@@ -750,7 +750,7 @@ namespace Smash_Forge
                     {
                         try
                         {
-                            MaterialXML.importMaterialAsXML(nud, filename);
+                            MaterialXML.ImportMaterialAsXml(nud, filename);
                         }
                         catch (MaterialXML.ParamArrayLengthException ex)
                         {
