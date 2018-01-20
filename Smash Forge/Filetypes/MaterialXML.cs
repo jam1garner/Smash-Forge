@@ -68,7 +68,7 @@ namespace Smash_Forge
                 polynode.AppendChild(matnode);
 
                 WriteAttributes(doc, mat, matnode);
-                WriteTextures(doc, mat, matnode);
+                WriteTextureAttributes(doc, mat, matnode);
                 WriteMatParams(doc, mat, matnode);
             }
         }
@@ -115,36 +115,47 @@ namespace Smash_Forge
             }
         }
 
-        private static void WriteTextures(XmlDocument doc, NUD.Material mat, XmlNode matnode)
+        private static void WriteTextureAttributes(XmlDocument doc, NUD.Material mat, XmlNode matnode)
         {
             foreach (NUD.Mat_Texture tex in mat.textures)
             {
                 XmlNode texnode = doc.CreateElement("texture");
-                { XmlAttribute a = doc.CreateAttribute("hash"); a.Value = tex.hash.ToString("x"); texnode.Attributes.Append(a); }
-                { XmlAttribute a = doc.CreateAttribute("wrapmodeS"); a.Value = tex.WrapMode1.ToString("x"); texnode.Attributes.Append(a); }
-                { XmlAttribute a = doc.CreateAttribute("wrapmodeT"); a.Value = tex.WrapMode2.ToString("x"); texnode.Attributes.Append(a); }
-                { XmlAttribute a = doc.CreateAttribute("minfilter"); a.Value = tex.minFilter.ToString("x"); texnode.Attributes.Append(a); }
-                { XmlAttribute a = doc.CreateAttribute("magfilter"); a.Value = tex.magFilter.ToString("x"); texnode.Attributes.Append(a); }
-                { XmlAttribute a = doc.CreateAttribute("mipdetail"); a.Value = tex.mipDetail.ToString("x"); texnode.Attributes.Append(a); }
+
+                AddIntAttribute(doc, "hash", tex.hash, texnode, true);
+                AddIntAttribute(doc, "wrapmodeS", tex.WrapModeS, texnode, true);
+                AddIntAttribute(doc, "wrapmodeT", tex.WrapModeT, texnode, true);
+                AddIntAttribute(doc, "minfilter", tex.minFilter, texnode, true);
+                AddIntAttribute(doc, "magfilter", tex.magFilter, texnode, true);
+                AddIntAttribute(doc, "mipdetail", tex.mipDetail, texnode, true);
+
                 matnode.AppendChild(texnode);
             }
+        }
+
+        private static void AddIntAttribute(XmlDocument doc, string name, int value, XmlNode node, bool useHex)
+        {
+            XmlAttribute a = doc.CreateAttribute(name);
+            if (useHex)
+                a.Value = value.ToString("x");
+            else
+                a.Value = value.ToString();
+
+            node.Attributes.Append(a);
         }
 
         public static void ImportMaterialAsXml(NUD n, string filename)
         {
             // Creates a list of materials and then trys to apply the materials to the polygons. 
-
             int polyCount = CalculatePolygonCount(n);
 
             XmlDocument doc = new XmlDocument();
             doc.Load(filename);
 
+            List<NUD.Material> materialList = new List<NUD.Material>();
+            List<int> matCountForPolyId = new List<int>();
+
             XmlNode main = doc.ChildNodes[0];
 
-            List<NUD.Material> materialList = new List<NUD.Material>();
-            List<int> polygonMatCount = new List<int>();
-
-            // Validate at every step
             foreach (XmlNode meshNode in main.ChildNodes)
             {
                 if (meshNode.Name.Equals("mesh"))
@@ -153,14 +164,14 @@ namespace Smash_Forge
                     {
                         if (polynode.Name.Equals("polygon"))
                         {
-                            polygonMatCount.Add(polynode.ChildNodes.Count);
+                            matCountForPolyId.Add(polynode.ChildNodes.Count);
 
-                            if (polygonMatCount.Count > polyCount)
+                            if (matCountForPolyId.Count > polyCount)
                             {
-                                int countDif = polygonMatCount.Count - polyCount;
+                                int countDif = matCountForPolyId.Count - polyCount;
                                 MessageBox.Show(String.Format("Expected {0} polygons but found {1} in the XML file. " +
                                     "The last {2} polygon(s) will be ignored.",
-                                    polyCount, polygonMatCount.Count, countDif));
+                                    polyCount, matCountForPolyId.Count, countDif));
                             }
 
                             ReadMaterials(materialList, polynode);
@@ -169,7 +180,7 @@ namespace Smash_Forge
                 }
             }
 
-            ApplyMaterials(n, materialList, polygonMatCount);
+            ApplyMaterials(n, materialList, matCountForPolyId);
         }
 
         private static int CalculatePolygonCount(NUD n)
@@ -190,6 +201,7 @@ namespace Smash_Forge
         {
             int matIndex = 0;
             int polyIndex = 0;
+
             foreach (NUD.Mesh m in n.Nodes)
             {
                 foreach (NUD.Polygon p in m.Nodes)
@@ -197,7 +209,10 @@ namespace Smash_Forge
                     p.materials.Clear();
                     for (int i = 0; i < polyMatCount[polyIndex]; i++)
                     {
-                        p.materials.Add(materialList[matIndex]);
+                        if (p.materials.Count < 2)
+                        {
+                            p.materials.Add(materialList[matIndex]);
+                        }
                         matIndex += 1;
                     }
                 
@@ -258,8 +273,8 @@ namespace Smash_Forge
                     switch (a.Name)
                     {
                         case "hash": int f = 0; if (int.TryParse(a.Value, NumberStyles.HexNumber, null, out f)) { tex.hash = f; }; break;
-                        case "wrapmodeS": int.TryParse(a.Value, out tex.WrapMode1); break;
-                        case "wrapmodeT": int.TryParse(a.Value, out tex.WrapMode2); break;
+                        case "wrapmodeS": int.TryParse(a.Value, out tex.WrapModeS); break;
+                        case "wrapmodeT": int.TryParse(a.Value, out tex.WrapModeT); break;
                         case "minfilter": int.TryParse(a.Value, out tex.minFilter); break;
                         case "magfilter": int.TryParse(a.Value, out tex.magFilter); break;
                         case "mipdetail": int.TryParse(a.Value, out tex.mipDetail); break;

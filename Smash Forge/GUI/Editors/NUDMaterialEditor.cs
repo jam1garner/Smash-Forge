@@ -433,8 +433,8 @@ namespace Smash_Forge
             textBox10.Text = tex.hash.ToString("X");
 
             mapModeComboBox.SelectedItem = mapmode[tex.MapMode];
-            wrapXComboBox.SelectedItem = wrapmode[tex.WrapMode1];
-            wrapYComboBox.SelectedItem = wrapmode[tex.WrapMode2];
+            wrapXComboBox.SelectedItem = wrapmode[tex.WrapModeS];
+            wrapYComboBox.SelectedItem = wrapmode[tex.WrapModeT];
             minFilterComboBox.SelectedItem = minfilter[tex.minFilter];
             magFilterComboBox.SelectedItem = magfilter[tex.magFilter];
             mipDetailComboBox.SelectedItem = mip[tex.mipDetail];
@@ -508,7 +508,7 @@ namespace Smash_Forge
                 if (wrapmode[i].Equals(wrapXComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
-                        materials[current].textures[texturesListView.SelectedIndices[0]].WrapMode1 = i;
+                        materials[current].textures[texturesListView.SelectedIndices[0]].WrapModeS = i;
                     break;
                 }
         }
@@ -519,7 +519,7 @@ namespace Smash_Forge
                 if (wrapmode[i].Equals(wrapYComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
-                        materials[current].textures[texturesListView.SelectedIndices[0]].WrapMode2 = i;
+                        materials[current].textures[texturesListView.SelectedIndices[0]].WrapModeT = i;
                     break;
                 }
         }

@@ -1116,8 +1116,8 @@ namespace Smash_Forge
                 if (success)
                 {
                     GL.BindTexture(TextureTarget.Texture2D, texid);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[tex.WrapMode1]);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[tex.WrapMode2]);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[tex.WrapModeS]);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[tex.WrapModeT]);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minfilter[tex.minFilter]);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magfilter[tex.magFilter]);
                     GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 0.0f);
@@ -1388,8 +1388,8 @@ namespace Smash_Forge
                     tex.hash = d.readInt();
                     d.skip(6); // padding?
                     tex.MapMode = d.readShort();
-                    tex.WrapMode1 = d.readByte();
-                    tex.WrapMode2 = d.readByte();
+                    tex.WrapModeS = d.readByte();
+                    tex.WrapModeT = d.readByte();
                     tex.minFilter = d.readByte();
                     tex.magFilter = d.readByte();
                     tex.mipDetail = d.readByte();
@@ -2054,8 +2054,8 @@ namespace Smash_Forge
                     d.writeInt(0);
                     d.writeShort(0);
                     d.writeShort(tex.MapMode);
-                    d.writeByte(tex.WrapMode1);
-                    d.writeByte(tex.WrapMode2);
+                    d.writeByte(tex.WrapModeS);
+                    d.writeByte(tex.WrapModeT);
                     d.writeByte(tex.minFilter);
                     d.writeByte(tex.magFilter);
                     d.writeByte(tex.mipDetail);
@@ -2186,8 +2186,8 @@ namespace Smash_Forge
         {
             public int hash;
             public int MapMode = 0;
-            public int WrapMode1 = 0;
-            public int WrapMode2 = 0;
+            public int WrapModeS = 0;
+            public int WrapModeT = 0;
             public int minFilter = 0;
             public int magFilter = 0;
             public int mipDetail = 0;
@@ -2198,8 +2198,8 @@ namespace Smash_Forge
                 Mat_Texture t = new Mat_Texture();
                 t.hash = hash;
                 t.MapMode = MapMode;
-                t.WrapMode1 = WrapMode1;
-                t.WrapMode2 = WrapMode2;
+                t.WrapModeS = WrapModeS;
+                t.WrapModeT = WrapModeT;
                 t.minFilter = minFilter;
                 t.magFilter = magFilter;
                 t.mipDetail = mipDetail;
@@ -2655,8 +2655,8 @@ namespace Smash_Forge
                 materials.Add(mat);
 
                 Mat_Texture defaultDif = new Mat_Texture();
-                defaultDif.WrapMode1 = 1;
-                defaultDif.WrapMode2 = 1;
+                defaultDif.WrapModeS = 1;
+                defaultDif.WrapModeT = 1;
                 defaultDif.minFilter = 3;
                 defaultDif.magFilter = 2;
                 defaultDif.mipDetail = 1;
@@ -2671,8 +2671,8 @@ namespace Smash_Forge
             public static Mat_Texture makeDefault()
             {
                 Mat_Texture dif = new Mat_Texture();
-                dif.WrapMode1 = 1;
-                dif.WrapMode2 = 1;
+                dif.WrapModeS = 1;
+                dif.WrapModeT = 1;
                 dif.minFilter = 3;
                 dif.magFilter = 2;
                 dif.mipDetail = 1;
