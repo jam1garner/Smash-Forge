@@ -67,22 +67,39 @@ namespace Smash_Forge
                 XmlNode matnode = doc.CreateElement("material");
                 polynode.AppendChild(matnode);
 
-                WriteAttributes(doc, mat, matnode);
+                WriteMatAttributes(doc, mat, matnode);
                 WriteTextureAttributes(doc, mat, matnode);
                 WriteMatParams(doc, mat, matnode);
             }
         }
 
-        private static void WriteAttributes(XmlDocument doc, NUD.Material mat, XmlNode matnode)
+        private static void WriteMatAttributes(XmlDocument doc, NUD.Material mat, XmlNode matNode)
         {
-            { XmlAttribute flags = doc.CreateAttribute("flags"); flags.Value = mat.Flags.ToString("x"); matnode.Attributes.Append(flags); }
-            { XmlAttribute a = doc.CreateAttribute("srcFactor"); a.Value = mat.srcFactor.ToString(); matnode.Attributes.Append(a); }
-            { XmlAttribute a = doc.CreateAttribute("dstFactor"); a.Value = mat.dstFactor.ToString(); matnode.Attributes.Append(a); }
-            { XmlAttribute a = doc.CreateAttribute("AlphaFunc"); a.Value = mat.AlphaFunc.ToString(); matnode.Attributes.Append(a); }
-            { XmlAttribute a = doc.CreateAttribute("AlphaTest"); a.Value = mat.AlphaTest.ToString(); matnode.Attributes.Append(a); }
-            { XmlAttribute a = doc.CreateAttribute("RefAlpha"); a.Value = mat.RefAlpha.ToString(); matnode.Attributes.Append(a); }
-            { XmlAttribute a = doc.CreateAttribute("cullmode"); a.Value = mat.cullMode.ToString("x"); matnode.Attributes.Append(a); }
-            { XmlAttribute a = doc.CreateAttribute("zbuffoff"); a.Value = mat.zBufferOffset.ToString(); matnode.Attributes.Append(a); }
+            AddUintAttribute(doc, "flags", mat.Flags, matNode, true);
+            AddIntAttribute(doc, "srcFactor", mat.srcFactor, matNode, false);
+            AddIntAttribute(doc, "dstFactor", mat.dstFactor, matNode, false);
+            AddIntAttribute(doc, "AlphaFunc", mat.AlphaFunc, matNode, false);
+            AddIntAttribute(doc, "AlphaTest", mat.AlphaTest, matNode, false);
+            AddIntAttribute(doc, "RefAlpha", mat.RefAlpha, matNode, false);
+            AddIntAttribute(doc, "cullmode", mat.cullMode, matNode, true);
+            AddIntAttribute(doc, "zbuffoff", mat.zBufferOffset, matNode, false);
+        }
+
+        private static void WriteTextureAttributes(XmlDocument doc, NUD.Material mat, XmlNode matnode)
+        {
+            foreach (NUD.Mat_Texture tex in mat.textures)
+            {
+                XmlNode texnode = doc.CreateElement("texture");
+
+                AddIntAttribute(doc, "hash", tex.hash, texnode, true);
+                AddIntAttribute(doc, "wrapmodeS", tex.WrapModeS, texnode, true);
+                AddIntAttribute(doc, "wrapmodeT", tex.WrapModeT, texnode, true);
+                AddIntAttribute(doc, "minfilter", tex.minFilter, texnode, true);
+                AddIntAttribute(doc, "magfilter", tex.magFilter, texnode, true);
+                AddIntAttribute(doc, "mipdetail", tex.mipDetail, texnode, true);
+
+                matnode.AppendChild(texnode);
+            }
         }
 
         private static void WriteMatParams(XmlDocument doc, NUD.Material mat, XmlNode matnode)
@@ -115,24 +132,18 @@ namespace Smash_Forge
             }
         }
 
-        private static void WriteTextureAttributes(XmlDocument doc, NUD.Material mat, XmlNode matnode)
+        private static void AddIntAttribute(XmlDocument doc, string name, int value, XmlNode node, bool useHex)
         {
-            foreach (NUD.Mat_Texture tex in mat.textures)
-            {
-                XmlNode texnode = doc.CreateElement("texture");
+            XmlAttribute a = doc.CreateAttribute(name);
+            if (useHex)
+                a.Value = value.ToString("x");
+            else
+                a.Value = value.ToString();
 
-                AddIntAttribute(doc, "hash", tex.hash, texnode, true);
-                AddIntAttribute(doc, "wrapmodeS", tex.WrapModeS, texnode, true);
-                AddIntAttribute(doc, "wrapmodeT", tex.WrapModeT, texnode, true);
-                AddIntAttribute(doc, "minfilter", tex.minFilter, texnode, true);
-                AddIntAttribute(doc, "magfilter", tex.magFilter, texnode, true);
-                AddIntAttribute(doc, "mipdetail", tex.mipDetail, texnode, true);
-
-                matnode.AppendChild(texnode);
-            }
+            node.Attributes.Append(a);
         }
 
-        private static void AddIntAttribute(XmlDocument doc, string name, int value, XmlNode node, bool useHex)
+        private static void AddUintAttribute(XmlDocument doc, string name, uint value, XmlNode node, bool useHex)
         {
             XmlAttribute a = doc.CreateAttribute(name);
             if (useHex)
