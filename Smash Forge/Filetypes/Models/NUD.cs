@@ -420,7 +420,7 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
 
             // shader uniforms
-            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor && (material.useVertexColor) ? 1 : 0);
+            BooleanToIntShaderUniform(shader, Runtime.renderVertColor && material.useVertexColor, "renderVertColor");
             SetTextureUniforms(shader, material);
             SetMaterialPropertyUniforms(shader, material);
             SetLightingUniforms(shader);
@@ -430,10 +430,10 @@ namespace Smash_Forge
             p.isTransparent = false;
             if (material.srcFactor > 0 || material.dstFactor > 0 || material.AlphaFunc > 0 || material.AlphaTest > 0)
                 p.isTransparent = true;
-            GL.Uniform1(shader.getAttribute("isTransparent"), p.isTransparent ? 1 : 0);
 
+            BooleanToIntShaderUniform(shader, p.isTransparent, "isTransparent");
 
-            // vertex shader attributes (UVs, skin weights, etc)
+            // Vertex shader attributes (UVs, skin weights, etc)
             SetVertexAttributes(p, shader);
 
             // alpha blending
@@ -441,7 +441,6 @@ namespace Smash_Forge
 
             BlendingFactorSrc blendSrc = srcFactor.Keys.Contains(material.srcFactor) ? srcFactor[material.srcFactor] : BlendingFactorSrc.SrcAlpha;
             BlendingFactorDest blendDst = dstFactor.Keys.Contains(material.dstFactor) ? dstFactor[material.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha;
-            //GL.BlendFunc(blendSrc, blendDst);
             GL.BlendFuncSeparate(blendSrc, blendDst, BlendingFactorSrc.One, BlendingFactorDest.One);
             GL.BlendEquationSeparate(BlendEquationMode.FuncAdd, BlendEquationMode.FuncAdd);
             if (material.srcFactor == 0 && material.dstFactor == 0)
@@ -535,8 +534,8 @@ namespace Smash_Forge
             // stage light 4
             int index4 = 3 + (4 * lightSetNumber);
             Lights.stageLight4 = Lights.stageDiffuseLightSet[index4];
-            if (Lights.stageDiffuseLightSet[index4].enabled) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("renderStageLight4"), v);
+            BooleanToIntShaderUniform(shader, Lights.stageDiffuseLightSet[index4].enabled, "renderStageLight4");
+
             GL.Uniform3(shader.getAttribute("stageLight4Color"), Lights.stageLight4.difR, Lights.stageLight4.difG, Lights.stageLight4.difB);
 
             GL.Uniform3(shader.getAttribute("stageFogColor"), Lights.stageFogSet[lightSetNumber]);
@@ -646,111 +645,81 @@ namespace Smash_Forge
         private static void SetMaterialPropertyUniforms(Shader shader, Material mat)
         {
             // UV samplers
-            MatPropertyShaderUniform(shader, mat, "NU_colorSamplerUV", 1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_colorSampler2UV", 1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_colorSampler3UV", 1, 1, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_colorSamplerUV",   1, 1, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_colorSampler2UV",  1, 1, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_colorSampler3UV",  1, 1, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV", 1, 1, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_normalSamplerBUV", 1, 1, 0, 0);
 
             // color properties
-            MatPropertyShaderUniform(shader, mat, "NU_aoMinGain", 0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_colorGain", 1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_finalColorGain", 1, 1, 1, 1);
+            MatPropertyShaderUniform(shader, mat, "NU_aoMinGain",       0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_colorGain",       1, 1, 1, 1);
+            MatPropertyShaderUniform(shader, mat, "NU_finalColorGain",  1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_finalColorGain2", 1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_finalColorGain3", 1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_colorOffset", 0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_diffuseColor", 1, 1, 1, 0.5f);
-            MatPropertyShaderUniform(shader, mat, "NU_characterColor", 1, 1, 1, 1);
+            MatPropertyShaderUniform(shader, mat, "NU_colorOffset",     0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_diffuseColor",    1, 1, 1, 0.5f);
+            MatPropertyShaderUniform(shader, mat, "NU_characterColor",  1, 1, 1, 1);
 
-            MatPropertyShaderUniform(shader, mat, "NU_specularColor", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_specularColor",     0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_specularColorGain", 1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_specularParams", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_specularParams",    0, 0, 0, 0);
 
-            MatPropertyShaderUniform(shader, mat, "NU_fresnelColor", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_fresnelColor",  0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_fresnelParams", 0, 0, 0, 0);
 
-            MatPropertyShaderUniform(shader, mat, "NU_reflectionColor", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_reflectionColor",  0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_reflectionParams", 0, 0, 0, 0);
 
-            MatPropertyShaderUniform(shader, mat, "NU_fogColor", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_fogColor",  0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_fogParams", 0, 1, 0, 0);
 
-            MatPropertyShaderUniform(shader, mat, "NU_softLightingParams", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_softLightingParams",    0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_customSoftLightParams", 0, 0, 0, 0);
 
             // misc properties
-            MatPropertyShaderUniform(shader, mat, "NU_normalParams", 1, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_zOffset", 0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_angleFadeParams", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_normalParams",           1, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_zOffset",                0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_angleFadeParams",        0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", 0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_alphaBlendParams", 0, 0, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_alphaBlendParams",       0, 0, 0, 0);
 
             // effect materials
             MatPropertyShaderUniform(shader, mat, "NU_effCombinerColor0", 1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_effCombinerColor1", 1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_effColorGain", 1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_effScaleUV", 1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_effTransUV", 1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_effMaxUV", 1, 1, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_effColorGain",      1, 1, 1, 1);
+            MatPropertyShaderUniform(shader, mat, "NU_effScaleUV",        1, 1, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_effTransUV",        1, 1, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_effMaxUV",          1, 1, 0, 0);
 
             // create some conditionals rather than using different shaders
-            HasMatPropertyShaderUniform(shader, mat, "NU_softLightingParams", "hasSoftLight");
-            HasMatPropertyShaderUniform(shader, mat, "NU_customSoftLightParams", "hasCustomSoftLight");
-            HasMatPropertyShaderUniform(shader, mat, "NU_specularParams", "hasSpecularParams");
+            HasMatPropertyShaderUniform(shader, mat, "NU_softLightingParams",     "hasSoftLight");
+            HasMatPropertyShaderUniform(shader, mat, "NU_customSoftLightParams",  "hasCustomSoftLight");
+            HasMatPropertyShaderUniform(shader, mat, "NU_specularParams",         "hasSpecularParams");
             HasMatPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", "hasDualNormal");
-            HasMatPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV", "hasNrmSamplerAUV");
-            HasMatPropertyShaderUniform(shader, mat, "NU_normalSamplerBUV", "hasNrmSamplerBUV");
-            HasMatPropertyShaderUniform(shader, mat, "NU_finalColorGain", "hasFinalColorGain");
+            HasMatPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV",       "hasNrmSamplerAUV");
+            HasMatPropertyShaderUniform(shader, mat, "NU_normalSamplerBUV",       "hasNrmSamplerBUV");
+            HasMatPropertyShaderUniform(shader, mat, "NU_finalColorGain",         "hasFinalColorGain");
         }
 
         private static void SetTextureUniforms(Shader shader, Material mat)
         {
-            int v = 0; // Yes else if is faster than ternary
-            if (mat.hasDiffuse) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("hasDif"), v);
-
-            if (mat.hasDiffuse2) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("hasDif2"), v);
-
-            if (mat.hasDiffuse3) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("hasDif3"), v);
-
-            if (mat.hasStageMap) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("hasStage"), v);
-
-            if (mat.hasCubeMap) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("hasCube"), v);
-
-            if (mat.hasAoMap) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("hasAo"), v);
-
-            if (mat.hasNormalMap) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("hasNrm"), v);
-
-            if (mat.hasRamp) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("hasRamp"), v);
-
-            if (mat.hasDummyRamp) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("hasDummyRamp"), v);
-
-            if (mat.useColorGainOffset) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("hasColorGainOffset"), v);
-
-            if (mat.useDiffuseBlend) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("useDiffuseBlend"), v);
-
-            if (mat.hasSphereMap) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("hasSphereMap"), v);
-
-            if (mat.hasBayoHair) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("hasBayoHair"), v);
-
-            if (mat.useReflectionMask) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("useDifRefMask"), v);
-
-            if (mat.softLightBrighten) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("softLightBrighten"), v);
-
+            BooleanToIntShaderUniform(shader, mat.hasDiffuse,         "hasDif");
+            BooleanToIntShaderUniform(shader, mat.hasDiffuse2,        "hasDif2");
+            BooleanToIntShaderUniform(shader, mat.hasDiffuse3,        "hasDif3");
+            BooleanToIntShaderUniform(shader, mat.hasStageMap,        "hasStage");
+            BooleanToIntShaderUniform(shader, mat.hasCubeMap,         "hasCube");
+            BooleanToIntShaderUniform(shader, mat.hasAoMap,           "hasAo");
+            BooleanToIntShaderUniform(shader, mat.hasNormalMap,       "hasNrm");
+            BooleanToIntShaderUniform(shader, mat.hasRamp,            "hasRamp");
+            BooleanToIntShaderUniform(shader, mat.hasDummyRamp,       "hasDummyRamp");
+            BooleanToIntShaderUniform(shader, mat.useColorGainOffset, "hasColorGainOffset");
+            BooleanToIntShaderUniform(shader, mat.useDiffuseBlend,    "useDiffuseBlend");
+            BooleanToIntShaderUniform(shader, mat.hasSphereMap,       "hasSphereMap");
+            BooleanToIntShaderUniform(shader, mat.hasBayoHair,        "hasBayoHair");
+            BooleanToIntShaderUniform(shader, mat.useReflectionMask,  "useDifRefMask");
+            BooleanToIntShaderUniform(shader, mat.softLightBrighten,  "softLightBrighten");
+                                              
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
 
@@ -839,6 +808,15 @@ namespace Smash_Forge
                 mat.dummyRampID = mat.textures[texid].hash;
                 texid++;
             }
+        }
+
+        private static void BooleanToIntShaderUniform(Shader shader, bool value, string name)
+        {
+            // Else if is faster than ternary operator. 
+            if (value)
+                GL.Uniform1(shader.getAttribute(name), 1);
+            else
+                GL.Uniform1(shader.getAttribute(name), 0);
         }
 
         private static void MatPropertyShaderUniform(Shader shader, Material mat, string propertyName, float default1,
