@@ -67,10 +67,10 @@ namespace Smash_Forge.GUI
             specularCB.Checked = Runtime.renderSpecular;
             fresnelCB.Checked = Runtime.renderFresnel;
             reflectionCB.Checked = Runtime.renderReflection;
-            ambTB.Text = Runtime.amb_inten + "";
-            difTB.Text = Runtime.dif_inten + "";
-            spcTB.Text = Runtime.spc_inten + "";
-            frsTB.Text = Runtime.frs_inten + "";
+            ambTB.Text = Runtime.ambInten + "";
+            difTB.Text = Runtime.difInten + "";
+            spcTB.Text = Runtime.spcInten + "";
+            frsTB.Text = Runtime.frsInten + "";
             refTB.Text = Runtime.ref_inten + "";
 
             RendererLabel.Text = "Renderer: " + Runtime.renderer;
@@ -358,7 +358,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(difTB.Text, out i))
             {
                 difTB.BackColor = Color.White;
-                Runtime.dif_inten = i;
+                Runtime.difInten = i;
             }
             else
                 difTB.BackColor = Color.Red;
@@ -370,7 +370,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(spcTB.Text, out i))
             {
                 spcTB.BackColor = Color.White;
-                Runtime.spc_inten = i;
+                Runtime.spcInten = i;
             }
             else
                 spcTB.BackColor = Color.Red;
@@ -382,7 +382,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(frsTB.Text, out i))
             {
                 frsTB.BackColor = Color.White;
-                Runtime.frs_inten = i;
+                Runtime.frsInten = i;
             }
             else
                 frsTB.BackColor = Color.Red;
@@ -394,7 +394,7 @@ namespace Smash_Forge.GUI
             if (float.TryParse(ambTB.Text, out i))
             {
                 ambTB.BackColor = Color.White;
-                Runtime.amb_inten = i;
+                Runtime.ambInten = i;
             }
             else
                 ambTB.BackColor = Color.Red;

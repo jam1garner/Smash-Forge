@@ -1140,7 +1140,6 @@ namespace Smash_Forge
                     if (m is ModelContainer)
                         ((ModelContainer)m).RenderPoints(Camera);
 
-
             //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
             /*// render gaussian blur stuff

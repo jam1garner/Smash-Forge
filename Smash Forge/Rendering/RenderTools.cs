@@ -1408,6 +1408,32 @@ namespace Smash_Forge
             GL.End();
         }
 
+        public static void SetupFixedFunctionRendering()
+        {
+            GL.UseProgram(0);
+
+            GL.Enable(EnableCap.LineSmooth); // This is Optional 
+            GL.Enable(EnableCap.Normalize);  // This is critical to have
+            GL.Enable(EnableCap.RescaleNormal);
+
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal);
+
+            GL.Enable(EnableCap.AlphaTest);
+            GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
+
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Front);
+
+            GL.Enable(EnableCap.LineSmooth);
+
+            GL.Enable(EnableCap.StencilTest);
+            GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
+        }
+
         #region FileRendering
 
         public static void DrawBones(List<ModelContainer> con)

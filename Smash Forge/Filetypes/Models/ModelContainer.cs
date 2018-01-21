@@ -4,6 +4,9 @@ using SALT.Graphics;
 using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
+using System.Drawing;
+using System.Diagnostics;
+
 
 namespace Smash_Forge
 {
@@ -289,9 +292,92 @@ namespace Smash_Forge
                         Runtime.renderModel = false;
                     }
 
-                    NUD.Render(VBN, camera);                    
+                    NUD.Render(VBN, camera);
+
+                    // try drawing some UV stuff
+                    RenderTools.SetupFixedFunctionRendering();
+                    foreach (NUD.Mesh m in NUD.Nodes)
+                    {
+                        foreach (NUD.Polygon p in m.Nodes)
+                        {
+                            if (p.IsSelected)
+                            {
+                                List<int> f = p.getDisplayFace();
+
+                                for (int i = 0; i < p.displayFaceSize; i += 3)
+                                {
+                                    NUD.Vertex v1 = p.vertices[f[i]];
+                                    NUD.Vertex v2 = p.vertices[f[i + 1]];
+                                    NUD.Vertex v3 = p.vertices[f[i + 2]];
+
+                                    Vector4 test = new Vector4(0, 2, 2, 0);
+
+                                    DrawUVTriangle(v1, v2, v3, camera.getRenderWidth(), camera.getRenderHeight(), test);
+                                }
+                            }
+                        }
+                    }
                 }
             }
+        }
+
+        private static void DrawUVTriangle(NUD.Vertex v1, NUD.Vertex v2, NUD.Vertex v3, int width, int height, Vector4 test)
+        {
+            GL.Color3(Color.Red);
+            GL.LineWidth(1f);
+
+            // No shaders
+            GL.UseProgram(0);
+
+            // Go to 2D
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.PushMatrix();
+            GL.LoadIdentity();
+            //GL.Ortho(0, 1, 1, 0, 0, 1);
+            GL.Ortho(test.X, test.Y, test.Z, test.W, 0, 1);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.PushMatrix();
+            GL.LoadIdentity();
+
+            Debug.WriteLine(width + " " + height);
+
+            // Allow transparency
+            GL.Enable(EnableCap.Blend);
+
+            // Draw over everything
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex2(v1.uv[0]);
+            GL.Vertex2(v2.uv[0]);
+            GL.End();
+
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex2(v2.uv[0]);
+            GL.Vertex2(v3.uv[0]);
+            GL.End();
+
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex2(v3.uv[0]);
+            GL.Vertex2(v1.uv[0]);
+            GL.End();
+
+            // Draw Grid
+            // Horizontal
+            GL.Color3(Color.White);
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex2(-5, 1);
+            GL.Vertex2(5, 1);
+            GL.End();
+
+            // Vertical
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex2(1, -5);
+            GL.Vertex2(1, 5);
+            GL.End();
         }
 
         public void RenderPoints(Camera camera)
@@ -346,10 +432,10 @@ namespace Smash_Forge
 
             GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.renderNormalMap ? 1 : 0);
 
-            GL.Uniform1(shader.getAttribute("ambientIntensity"), Runtime.amb_inten);
-            GL.Uniform1(shader.getAttribute("diffuseIntensity"), Runtime.dif_inten);
-            GL.Uniform1(shader.getAttribute("specularIntensity"), Runtime.spc_inten);
-            GL.Uniform1(shader.getAttribute("fresnelIntensity"), Runtime.frs_inten);
+            GL.Uniform1(shader.getAttribute("ambientIntensity"), Runtime.ambInten);
+            GL.Uniform1(shader.getAttribute("diffuseIntensity"), Runtime.difInten);
+            GL.Uniform1(shader.getAttribute("specularIntensity"), Runtime.spcInten);
+            GL.Uniform1(shader.getAttribute("fresnelIntensity"), Runtime.frsInten);
             GL.Uniform1(shader.getAttribute("reflectionIntensity"), Runtime.ref_inten);
 
             GL.Uniform1(shader.getAttribute("zScale"), Runtime.zScale);
