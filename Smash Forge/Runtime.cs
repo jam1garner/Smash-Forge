@@ -184,15 +184,17 @@ namespace Smash_Forge
         public static bool renderSpecular = true;
         public static bool renderReflection = true;
 
-        public static float dif_inten = 1.00f;
-        public static float spc_inten = 1.00f;
-        public static float frs_inten = 1.00f;
+        public static float difInten = 1.00f;
+        public static float spcInten = 1.00f;
+        public static float frsInten = 1.00f;
         public static float ref_inten = 1.00f;
-        public static float amb_inten = 1.00f;
+        public static float ambInten = 1.00f;
         public static float model_scale = 1f;
         public static float zScale = 1.0f;
 
         public static int selectedBoneIndex = -1;
+
+        public static bool drawUv = false;
 
         public static float specular_hue = 360.0f;
         public static float specular_saturation = 0.0f;
@@ -555,19 +557,19 @@ namespace Smash_Forge
                 XmlNode node = doc.CreateElement("diffuse");
                 renderNode.AppendChild(node);
                 node.AppendChild(createNode(doc, "enabled", renderDiffuse.ToString()));
-                node.AppendChild(createNode(doc, "intensity", dif_inten.ToString()));
+                node.AppendChild(createNode(doc, "intensity", difInten.ToString()));
             }
             {
                 XmlNode node = doc.CreateElement("specular");
                 renderNode.AppendChild(node);
                 node.AppendChild(createNode(doc, "enabled", renderSpecular.ToString()));
-                node.AppendChild(createNode(doc, "intensity", spc_inten.ToString()));
+                node.AppendChild(createNode(doc, "intensity", spcInten.ToString()));
             }
             {
                 XmlNode node = doc.CreateElement("fresnel");
                 renderNode.AppendChild(node);
                 node.AppendChild(createNode(doc, "enabled", renderFresnel.ToString()));
-                node.AppendChild(createNode(doc, "intensity", frs_inten.ToString()));
+                node.AppendChild(createNode(doc, "intensity", frsInten.ToString()));
             }
             {
                 XmlNode node = doc.CreateElement("reflection");
@@ -578,7 +580,7 @@ namespace Smash_Forge
             {
                 XmlNode node = doc.CreateElement("ambient");
                 renderNode.AppendChild(node);
-                node.AppendChild(createNode(doc, "intensity", amb_inten.ToString()));
+                node.AppendChild(createNode(doc, "intensity", ambInten.ToString()));
             }
 
             {

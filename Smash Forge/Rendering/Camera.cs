@@ -86,6 +86,17 @@ namespace Smash_Forge
             renderHeight = height;
         }
 
+        public int getRenderHeight()
+        {
+            return renderHeight;
+        }
+
+        public int getRenderWidth()
+        {
+            return renderWidth;
+        }
+
+
         public float getRotX()
         {
             return cameraXRotation;

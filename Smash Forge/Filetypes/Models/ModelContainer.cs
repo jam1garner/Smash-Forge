@@ -4,6 +4,9 @@ using SALT.Graphics;
 using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
+using System.Drawing;
+using System.Diagnostics;
+
 
 namespace Smash_Forge
 {
@@ -289,7 +292,7 @@ namespace Smash_Forge
                         Runtime.renderModel = false;
                     }
 
-                    NUD.Render(VBN, camera);                    
+                    NUD.Render(VBN, camera);
                 }
             }
         }
@@ -346,10 +349,10 @@ namespace Smash_Forge
 
             GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.renderNormalMap ? 1 : 0);
 
-            GL.Uniform1(shader.getAttribute("ambientIntensity"), Runtime.amb_inten);
-            GL.Uniform1(shader.getAttribute("diffuseIntensity"), Runtime.dif_inten);
-            GL.Uniform1(shader.getAttribute("specularIntensity"), Runtime.spc_inten);
-            GL.Uniform1(shader.getAttribute("fresnelIntensity"), Runtime.frs_inten);
+            GL.Uniform1(shader.getAttribute("ambientIntensity"), Runtime.ambInten);
+            GL.Uniform1(shader.getAttribute("diffuseIntensity"), Runtime.difInten);
+            GL.Uniform1(shader.getAttribute("specularIntensity"), Runtime.spcInten);
+            GL.Uniform1(shader.getAttribute("fresnelIntensity"), Runtime.frsInten);
             GL.Uniform1(shader.getAttribute("reflectionIntensity"), Runtime.ref_inten);
 
             GL.Uniform1(shader.getAttribute("zScale"), Runtime.zScale);

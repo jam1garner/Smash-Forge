@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
@@ -148,6 +148,7 @@
             this.reflectionCB = new System.Windows.Forms.CheckBox();
             this.useNormCB = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.drawUvCB = new System.Windows.Forms.CheckBox();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -659,8 +660,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem7,
-            listViewItem8});
+            listViewItem3,
+            listViewItem4});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -837,6 +838,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.drawUvCB);
             this.groupBox2.Controls.Add(this.areaLightBoundingBoxCB);
             this.groupBox2.Controls.Add(this.checkBox11);
             this.groupBox2.Controls.Add(this.checkBox1);
@@ -1518,6 +1520,17 @@
             this.tabControl1.Size = new System.Drawing.Size(564, 698);
             this.tabControl1.TabIndex = 17;
             // 
+            // drawUvCB
+            // 
+            this.drawUvCB.AutoSize = true;
+            this.drawUvCB.Location = new System.Drawing.Point(16, 415);
+            this.drawUvCB.Name = "drawUvCB";
+            this.drawUvCB.Size = new System.Drawing.Size(143, 17);
+            this.drawUvCB.TabIndex = 28;
+            this.drawUvCB.Text = "Draw UVs (Experimental)";
+            this.drawUvCB.UseVisualStyleBackColor = true;
+            this.drawUvCB.CheckedChanged += new System.EventHandler(this.drawUvCB_CheckedChanged);
+            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1684,5 +1697,6 @@
         private System.Windows.Forms.CheckBox checkBox19;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox pbHitboxAnglesColor;
+        private System.Windows.Forms.CheckBox drawUvCB;
     }
 }
