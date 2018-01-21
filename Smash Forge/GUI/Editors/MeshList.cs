@@ -795,61 +795,29 @@ namespace Smash_Forge
             if (!(treeView1.SelectedNode is NUD))
                 return;
 
-            string unsupportedMeshes = "";
-            bool correctVertType = true;
+            var messageBox = MessageBox.Show("If the vertex type does not support tangents/bitangents, \n" +
+                "the vertex type will be changed to Normals, Tan, Bi-Tan (Float). \n" +
+                "This will increase the file size.", treeView1.SelectedNode.Text, MessageBoxButtons.OKCancel);
 
-            foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
+            if (messageBox == DialogResult.OK)
             {
-                string meshName = mesh.Text;
-
-                foreach (NUD.Polygon poly in mesh.Nodes)
+                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
                 {
-                    // Don't generate tangents/bitangents if the vertex size doesn't support them.
-                    int vertType = poly.vertSize & 0xF;
-
-                    if (vertType == 3 || vertType == 7)
+                    foreach (NUD.Polygon poly in mesh.Nodes)
                     {
-                        poly.CalculateTangentBitangent();
-                    }
-                    else
-                    {
-                        correctVertType = false;
-                        unsupportedMeshes += meshName + ", ";
-                        break;
+                        GenerateTanBitanAndFixVertType(poly);
                     }
                 }
-            }             
-            
-            if (!correctVertType)
-            {
-                MessageBox.Show("Make sure to select Normals, Tan, Bi-Tan (Half-Float) or \n" +
-                    "Normals, Tan, Bi-Tan (Float) in the DAE import settings. " +
-                    "Tangents/Bitangents cannot be saved for the following meshes: \n \n" +
-                    unsupportedMeshes, "Incorrect Vertex Type");
             }
         }
 
         private void generateTanBitanToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode is NUD.Polygon)
-            {
-                NUD.Polygon p = ((NUD.Polygon)treeView1.SelectedNode);
-
-                // Don't generate tangents/bitangents if the vertex size doesn't support them.
-                int vertType = p.vertSize & 0xF;
-
-                if (vertType == 3 || vertType == 7)
-                {
-                    p.CalculateTangentBitangent();
-                }
-                else
-                {
-                    string meshName = p.Parent.Text;
-                    MessageBox.Show("Tangents/bitangents cannot be saved for the current vertex type. \n" +
-                        "Make sure to select Normals, Tan, Bi-Tan (Half-Float) or \n" +
-                        "Normals, Tan, Bi-Tan (Float) in the DAE import settings.", meshName + ": Incorrect Vertex Type");
-                }
-            }
+            if (!(treeView1.SelectedNode is NUD.Polygon))
+                return;
+            
+            NUD.Polygon poly = ((NUD.Polygon)treeView1.SelectedNode);
+            GenerateTanBitanAndFixVertType(poly);         
         }
 
         private void calculateNormalsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1021,24 +989,32 @@ namespace Smash_Forge
             {
                 string meshName = treeView1.SelectedNode.Text;
 
-                foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
-                {
-                    // Don't generate tangents/bitangents if the vertex size doesn't support them.
-                    int vertType = poly.vertSize & 0xF;
+                var messageBox = MessageBox.Show("If the vertex type does not support tangents/bitangents, \n" +
+                    "the vertex type will be changed to Normals, Tan, Bi-Tan (Float). \n" +
+                    "This will increase the file size.", meshName, MessageBoxButtons.OKCancel);
 
-                    if (vertType == 3 || vertType == 7)
+                if (messageBox == DialogResult.OK)
+                {
+                    foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
                     {
-                        poly.CalculateTangentBitangent();
+                        GenerateTanBitanAndFixVertType(poly);
                     }
-                    else
-                    {
-                        MessageBox.Show("Tangents/bitangents cannot be saved for the current vertex type. \n" +
-                            "Make sure to select Normals, Tan, Bi-Tan (Half-Float) or \n" +
-                            "Normals, Tan, Bi-Tan (Float) in the DAE import settings.", meshName + ": Incorrect Vertex Type");
-                        break;
-                    }
-                }
+                }    
             }
+        }
+
+        private static void GenerateTanBitanAndFixVertType(NUD.Polygon poly)
+        {
+            int vertType = poly.vertSize & 0xF;
+            if (!(vertType == 3 || vertType == 7))
+            {
+                // Change the vert type to normals, tan, bitan (float)
+                poly.vertSize = (poly.vertSize & 0xF0);
+                poly.vertSize |= 7;
+            }
+
+            // This already checks for the appropriate vertex type. 
+            poly.CalculateTangentBitangent();
         }
     }
 }

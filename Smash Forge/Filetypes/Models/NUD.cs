@@ -2473,6 +2473,12 @@ namespace Smash_Forge
 
             public void CalculateTangentBitangent()
             {
+                // Don't generate tangents if the vertex format doesn't support them. 
+                int vertType = vertSize & 0xF;
+                Debug.WriteLine(vertType);
+                if (!(vertType == 3 || vertType == 7))
+                    return;
+
                 List<int> f = getDisplayFace();
                 Vector3[] tanArray = new Vector3[vertices.Count];
                 Vector3[] bitanArray = new Vector3[vertices.Count];
