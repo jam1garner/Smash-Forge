@@ -2477,11 +2477,36 @@ namespace Smash_Forge
                 Vector3[] tanArray = new Vector3[vertices.Count];
                 Vector3[] bitanArray = new Vector3[vertices.Count];
 
+                CalculateTanBitanArrays(f, tanArray, bitanArray);
+                ApplyTanBitan(tanArray, bitanArray);
+                PreRender();
+            }
+
+            private void ApplyTanBitan(Vector3[] tanArray, Vector3[] bitanArray)
+            {
+                for (int i = 0; i < vertices.Count; i++)
+                {
+                    Vertex v = vertices[i];
+                    Vector3 newTan = tanArray[i].Normalized();
+                    Vector3 newBitan = bitanArray[i].Normalized();
+
+                    // The tangent and bitangent should be orthogonal to the normal. 
+                    // Bitangents are not calculated with a cross product to prevent flipped shading with mirrored normal maps.
+                    // Orthogonalizing the bitangent to the tangent removes some artifacts from this approach. 
+                    v.tan = new Vector4(Vector3.Normalize(newTan - v.nrm * Vector3.Dot(v.nrm, newTan)), 1);
+                    v.bitan = new Vector4(Vector3.Normalize(newBitan - v.nrm * Vector3.Dot(v.nrm, newBitan)), 1);
+                    v.bitan = new Vector4(Vector3.Normalize(v.bitan.Xyz - v.tan.Xyz * Vector3.Dot(v.bitan.Xyz, v.tan.Xyz)), 1);
+                    v.bitan *= -1;
+                }
+            }
+
+            private void CalculateTanBitanArrays(List<int> faces, Vector3[] tanArray, Vector3[] bitanArray)
+            {
                 for (int i = 0; i < displayFaceSize; i += 3)
                 {
-                    Vertex v1 = vertices[f[i]];
-                    Vertex v2 = vertices[f[i + 1]];
-                    Vertex v3 = vertices[f[i + 2]];
+                    Vertex v1 = vertices[faces[i]];
+                    Vertex v2 = vertices[faces[i + 1]];
+                    Vertex v3 = vertices[faces[i + 2]];
 
                     float x1 = v2.pos.X - v1.pos.X;
                     float x2 = v3.pos.X - v1.pos.X;
@@ -2515,29 +2540,14 @@ namespace Smash_Forge
                     if (Vector3.Dot(t, new Vector3(1)) == 0.0f)
                         t = new Vector3(1).Normalized();
 
-                    tanArray[f[i]] += s;
-                    tanArray[f[i + 1]] += s;
-                    tanArray[f[i + 2]] += s;
+                    tanArray[faces[i]] += s;
+                    tanArray[faces[i + 1]] += s;
+                    tanArray[faces[i + 2]] += s;
 
-                    bitanArray[f[i]] += t;
-                    bitanArray[f[i + 1]] += t;
-                    bitanArray[f[i + 2]] += t;
+                    bitanArray[faces[i]] += t;
+                    bitanArray[faces[i + 1]] += t;
+                    bitanArray[faces[i + 2]] += t;
                 }
-
-                for (int i = 0; i < vertices.Count; i++)
-                {
-                    Vertex v = vertices[i];
-                    Vector3 newTan = tanArray[i].Normalized();
-                    Vector3 newBitan = bitanArray[i].Normalized();
-
-                    // Orthogonalize tangent to normal and bitangent to normal. 
-                    // Don't calculate bitangent from normal and tangent to prevent flipped bitangents with mirrored normal maps.
-                    v.tan = new Vector4(Vector3.Normalize(newTan - v.nrm * Vector3.Dot(v.nrm, newTan)), 1);
-                    v.bitan = new Vector4(Vector3.Normalize(newBitan - v.nrm * Vector3.Dot(v.nrm, newBitan)), 1);             
-                    v.bitan *= -1;
-                }
-
-                PreRender();
             }
 
             public void SmoothNormals()
