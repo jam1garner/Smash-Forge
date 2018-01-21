@@ -59,6 +59,7 @@ namespace Smash_Forge.GUI
             wireframeCB.Enabled = checkBox1.Checked;
             modelSelectCB.Enabled = checkBox1.Checked;
             renderFogCB.Checked = Runtime.renderFog;
+            drawUvCB.Checked = Runtime.drawUv;
 
             UpdateDebugButtonsFromRenderType();
 
@@ -830,6 +831,11 @@ namespace Smash_Forge.GUI
                 Runtime.hitboxAnglesColor = Color.FromArgb(0xFF, colorDialog.Color);
                 pbHitboxAnglesColor.BackColor = Runtime.hitboxAnglesColor;
             }
+        }
+
+        private void drawUvCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.drawUv = drawUvCB.Checked;
         }
     }
     

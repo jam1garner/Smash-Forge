@@ -1048,7 +1048,8 @@ namespace Smash_Forge
                     NUT_Texture tex = ((NUT_Texture)MeshList.treeView1.SelectedNode);
                     RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height, true, true, true, true, false, false);
 
-                    DrawUvsForSelectedTexture(tex);
+                    if (Runtime.drawUv)
+                        DrawUvsForSelectedTexture(tex);
 
                     glViewport.SwapBuffers();
                     return;

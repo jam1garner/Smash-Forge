@@ -194,6 +194,8 @@ namespace Smash_Forge
 
         public static int selectedBoneIndex = -1;
 
+        public static bool drawUv = false;
+
         public static float specular_hue = 360.0f;
         public static float specular_saturation = 0.0f;
         public static float specular_intensity = 0.75f;
