@@ -18,6 +18,7 @@ using System.Drawing.Imaging;
 using Gif.Components;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace Smash_Forge
 {
@@ -27,7 +28,7 @@ namespace Smash_Forge
         bool ReadyToRender = false;
 
         // View controls
-        Camera Camera = new Camera();
+        Camera camera = new Camera();
         public Matrix4 lightMatrix, lightProjection;
         public GUI.Menus.CameraSettings cameraPosForm = null;
 
@@ -176,7 +177,7 @@ namespace Smash_Forge
         public ModelViewport()
         {
             InitializeComponent();
-            Camera = new Camera();
+            camera = new Camera();
             FilePath = "";
             Text = "Model Viewport";
 
@@ -356,14 +357,14 @@ namespace Smash_Forge
                 GL.LoadIdentity();
                 GL.Viewport(glViewport.ClientRectangle);
 
-                Camera.setRenderWidth(glViewport.Width);
-                Camera.setRenderHeight(glViewport.Height);
-                Camera.Update();
+                camera.setRenderWidth(glViewport.Width);
+                camera.setRenderHeight(glViewport.Height);
+                camera.Update();
             }
             //Mesh Selection Test
             if (e.Button == MouseButtons.Left)
             {
-                Ray ray = new Ray(Camera, glViewport);
+                Ray ray = new Ray(camera, glViewport);
                 int selectedSize = 0;
 
                 TransformTool.b = null;
@@ -400,7 +401,7 @@ namespace Smash_Forge
         public void CalculateLightSource()
         {
             Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, Runtime.renderDepth, out lightProjection);
-            Matrix4 lightView = Matrix4.LookAt(Vector3.TransformVector(Vector3.Zero, Camera.getMVPMatrix()).Normalized(),
+            Matrix4 lightView = Matrix4.LookAt(Vector3.TransformVector(Vector3.Zero, camera.getMVPMatrix()).Normalized(),
                 new Vector3(0),
                 new Vector3(0, 1, 0));
             lightMatrix = lightProjection * lightView;
@@ -408,7 +409,7 @@ namespace Smash_Forge
 
         private Vector3 getScreenPoint(Vector3 pos)
         {
-            Vector4 n = Vector4.Transform(new Vector4(pos, 1), Camera.getMVPMatrix());
+            Vector4 n = Vector4.Transform(new Vector4(pos, 1), camera.getMVPMatrix());
             n.X /= n.W;
             n.Y /= n.W;
             n.Z /= n.W;
@@ -422,9 +423,9 @@ namespace Smash_Forge
                 GL.LoadIdentity();
                 GL.Viewport(glViewport.ClientRectangle);
 
-                Camera.setRenderWidth(glViewport.Width);
-                Camera.setRenderHeight(glViewport.Height);
-                Camera.Update();
+                camera.setRenderWidth(glViewport.Width);
+                camera.setRenderHeight(glViewport.Height);
+                camera.Update();
             }
         }
 
@@ -538,10 +539,10 @@ namespace Smash_Forge
 
         private void ResetCamera_Click(object sender, EventArgs e)
         {
-            Camera.setPosition(new Vector3(0, 10, -80));
-            Camera.setRotX(0);
-            Camera.setRotY(0);
-            Camera.Update();
+            camera.setPosition(new Vector3(0, 10, -80));
+            camera.setRotX(0);
+            camera.setRotY(0);
+            camera.Update();
         }
 
         #endregion
@@ -646,14 +647,14 @@ namespace Smash_Forge
 
         private void CameraSettings_Click(object sender, EventArgs e)
         {
-            cameraPosForm = new GUI.Menus.CameraSettings(Camera);
+            cameraPosForm = new GUI.Menus.CameraSettings(camera);
             cameraPosForm.ShowDialog();
         }
 
         private void glViewport_MouseMove(object sender, MouseEventArgs e)
         {
             if(CurrentMode != Mode.Selection)
-                Camera.Update();
+                camera.Update();
         }
 
         #region Controls
@@ -928,7 +929,7 @@ namespace Smash_Forge
                 {
                     // single vertex
                     // Selects the closest vertex
-                    Ray r = RenderTools.createRay(Camera.getMVPMatrix(), GetMouseOnViewport());
+                    Ray r = RenderTools.createRay(camera.getMVPMatrix(), GetMouseOnViewport());
                     Vector3 close = Vector3.Zero;
                     foreach (TreeNode node in draw)
                     {
@@ -1013,7 +1014,6 @@ namespace Smash_Forge
 
         #region Rendering
 
-
         private void Render(object sender, PaintEventArgs e)
         {
             if (!ReadyToRender)
@@ -1047,6 +1047,19 @@ namespace Smash_Forge
                     GL.PopAttrib();
                     NUT_Texture tex = ((NUT_Texture)MeshList.treeView1.SelectedNode);
                     RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height, true, true, true, true, false, true);
+
+                    foreach (TreeNode node in MeshList.treeView1.Nodes)
+                    {
+                        if (!(node is ModelContainer))
+                            continue;
+                        ModelContainer m = (ModelContainer)node;
+
+                        int textureHash = 0;
+                        int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
+                        RenderTools.DrawUv(camera, m.NUD, textureHash);
+                    }
+
+
                     glViewport.SwapBuffers();
                     return;
                 }
@@ -1071,20 +1084,20 @@ namespace Smash_Forge
              && CurrentMode == Mode.Normal
              && !TransformTool.hit)
             {
-                Camera.Update();
+                camera.Update();
                 //if (cameraPosForm != null && !cameraPosForm.IsDisposed)
                 //    cameraPosForm.updatePosition();
             }
             try
             {
                 if (OpenTK.Input.Mouse.GetState() != null)
-                    Camera.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
+                    camera.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
             } catch
             {
 
             }
 
-            Matrix4 matrix = Camera.getMVPMatrix();
+            Matrix4 matrix = camera.getMVPMatrix();
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref matrix);
 
@@ -1106,7 +1119,7 @@ namespace Smash_Forge
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
 
                 foreach (ModelContainer m in draw)
-                    m.RenderShadow(Camera, 0, Matrix4.Zero, Camera.getMVPMatrix());
+                    m.RenderShadow(camera, 0, Matrix4.Zero, camera.getMVPMatrix());
 
                 // reset matrices and viewport for model rendering again
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -1133,12 +1146,12 @@ namespace Smash_Forge
             if (Runtime.renderModel || Runtime.renderModelWireframe)
                 foreach (TreeNode m in draw)
                     if(m is ModelContainer)
-                        ((ModelContainer)m).Render(Camera, 0, Matrix4.Zero, Camera.getMVPMatrix());
+                        ((ModelContainer)m).Render(camera, 0, Matrix4.Zero, camera.getMVPMatrix());
 
             if (ViewComboBox.SelectedIndex == 1)
                 foreach (TreeNode m in draw)
                     if (m is ModelContainer)
-                        ((ModelContainer)m).RenderPoints(Camera);
+                        ((ModelContainer)m).RenderPoints(camera);
 
             //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
@@ -1189,7 +1202,7 @@ namespace Smash_Forge
             {
                 if (modeBone.Checked)
                 {
-                    TransformTool.Render(Camera, new Ray(Camera, glViewport));
+                    TransformTool.Render(camera, new Ray(camera, glViewport));
                     if (TransformTool.state == 1)
                         CurrentMode = Mode.Selection;
                     else

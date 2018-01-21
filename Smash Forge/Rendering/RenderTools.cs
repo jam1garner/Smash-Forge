@@ -968,6 +968,120 @@ namespace Smash_Forge
             GL.Enable(EnableCap.DepthTest);
         }
 
+        public static void DrawUv(Camera camera, NUD nud, int selectedTextureHash)
+        {
+            // try drawing some UV stuff
+            foreach (NUD.Mesh m in nud.Nodes)
+            {
+                foreach (NUD.Polygon p in m.Nodes)
+                {
+                    // draw all models using this texture
+                    bool containsTex = false;
+                    foreach (NUD.Mat_Texture matTex in p.materials[0].textures)
+                    {
+                        if (selectedTextureHash == matTex.hash)
+                        {
+                            containsTex = true;
+                            break;
+                        }                       
+                    }
+
+                    if (!containsTex)
+                        break;
+
+                    List<int> f = p.getDisplayFace();
+
+                    for (int i = 0; i < p.displayFaceSize; i += 3)
+                    {
+                        NUD.Vertex v1 = p.vertices[f[i]];
+                        NUD.Vertex v2 = p.vertices[f[i + 1]];
+                        NUD.Vertex v3 = p.vertices[f[i + 2]];
+
+                        DrawUVTriangle(v1, v2, v3, camera.getRenderWidth(), camera.getRenderHeight());
+                    }
+                    
+                }
+            }
+        }
+
+        private static void DrawUVTriangle(NUD.Vertex v1, NUD.Vertex v2, NUD.Vertex v3, int width, int height)
+        {
+            // No shaders
+            GL.UseProgram(0);
+
+            float bounds = 1;
+            Vector2 scaleUv = new Vector2(width, height);
+
+            // Go to 2D
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.PushMatrix();
+            GL.LoadIdentity();
+            GL.Ortho(0, width, height, 0, 0, 1);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.PushMatrix();
+            GL.LoadIdentity();
+
+            GL.Color3(Color.Green);
+            GL.PointSize(10);
+            GL.Begin(PrimitiveType.Points);
+            GL.Vertex2(0, height);
+            GL.End();
+
+            GL.Color3(Color.Red);
+            GL.LineWidth(1f);
+
+            // Allow transparency
+            GL.Enable(EnableCap.Blend);
+
+            // Draw over everything
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            if (v1.uv[0].Y < 0)
+                Debug.WriteLine(v1.uv[0].Y);
+
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex2(v1.uv[0] * scaleUv);
+            GL.Vertex2(v2.uv[0] * scaleUv);
+            GL.End();
+
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex2(v2.uv[0] * scaleUv);
+            GL.Vertex2(v3.uv[0] * scaleUv);
+            GL.End();
+
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex2(v3.uv[0] * scaleUv);
+            GL.Vertex2(v1.uv[0] * scaleUv);
+            GL.End();
+
+            // Draw Grid
+            // Horizontal
+            GL.Color3(Color.White);
+
+            int horizontalCount = 4;
+            for (int i = 0; i < horizontalCount * bounds; i++)
+            {
+                GL.Begin(PrimitiveType.Lines);
+                GL.Vertex2(new Vector2(-bounds, (1.0f / horizontalCount) * i) * scaleUv);
+                GL.Vertex2(new Vector2(bounds, (1.0f / horizontalCount) * i) * scaleUv);
+                GL.End();
+            }
+
+            // Vertical
+            int verticalCount = 4;
+            for (int i = 0; i < verticalCount * bounds; i++)
+            {
+                GL.Begin(PrimitiveType.Lines);
+                GL.Vertex2(new Vector2((1.0f / verticalCount) * i, -bounds) * scaleUv);
+                GL.Vertex2(new Vector2((1.0f / verticalCount) * i, bounds) * scaleUv);
+                GL.End();
+            }
+
+        }
+
+
         public static void RenderBackground()
         {
             if (Runtime.floorStyle == Runtime.FloorStyle.Textured || Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
