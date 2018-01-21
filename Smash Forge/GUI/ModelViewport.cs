@@ -1046,19 +1046,9 @@ namespace Smash_Forge
                 {
                     GL.PopAttrib();
                     NUT_Texture tex = ((NUT_Texture)MeshList.treeView1.SelectedNode);
-                    RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height, true, true, true, true, false, true);
+                    RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height, true, true, true, true, false, false);
 
-                    foreach (TreeNode node in MeshList.treeView1.Nodes)
-                    {
-                        if (!(node is ModelContainer))
-                            continue;
-                        ModelContainer m = (ModelContainer)node;
-
-                        int textureHash = 0;
-                        int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
-                        RenderTools.DrawUv(camera, m.NUD, textureHash);
-                    }
-
+                    DrawUvsForSelectedTexture(tex);
 
                     glViewport.SwapBuffers();
                     return;
@@ -1305,6 +1295,21 @@ namespace Smash_Forge
 
             GL.PopAttrib();
             glViewport.SwapBuffers();
+        }
+
+        private void DrawUvsForSelectedTexture(NUT_Texture tex)
+        {
+            foreach (TreeNode node in MeshList.treeView1.Nodes)
+            {
+                if (!(node is ModelContainer))
+                    continue;
+
+                ModelContainer m = (ModelContainer)node;
+
+                int textureHash = 0;
+                int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
+                RenderTools.DrawUv(camera, m.NUD, textureHash, 4, Color.Red, 1, Color.White);
+            }
         }
 
         private static void SetupFixedFunctionRendering()
