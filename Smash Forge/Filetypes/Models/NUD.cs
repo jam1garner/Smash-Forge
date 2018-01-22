@@ -963,9 +963,11 @@ namespace Smash_Forge
             GL.UseProgram(shader.programID);
             Matrix4 mat = cam.getMVPMatrix();
             GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mat);
-            //GL.Uniform4(shader.getAttribute("color"), 1, 1, 1, 1);
 
-            if (vbn != null && !Runtime.useLegacyShaders)
+            //**************************************************************************************
+            //**************************************************************************************
+            // Using the buffer twice causes the NUD rendering to crash, so I've disabled it for now. 
+            if (false && vbn != null && !Runtime.useLegacyShaders)
             {
                 Matrix4[] f = vbn.getShaderMatrix();
                 
@@ -985,6 +987,9 @@ namespace Smash_Forge
                     GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
                 }
             }
+            //**************************************************************************************
+            //**************************************************************************************
+
 
             if (type == PrimitiveType.Points)
             {
