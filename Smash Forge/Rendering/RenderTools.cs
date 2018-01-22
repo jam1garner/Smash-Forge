@@ -44,27 +44,27 @@ namespace Smash_Forge
             GetOpenGLSystemInfo();
         }
 
-        public static object GetValueFromParamFile(ParamFile paramFile, int groupNum, int entryNum, int valNum)
+        public static object GetValueFromParamFile(ParamFile file, int groupIndex, int entryIndex, int valueIndex)
         {
-            if (paramFile.Groups.Count > groupNum)
+            if (groupIndex > file.Groups.Count)
+                return null;
+
+            if ((file.Groups[groupIndex] is ParamGroup))
             {
-                if (!(paramFile.Groups[groupNum] is ParamGroup))
+                int entrySize = ((ParamGroup)file.Groups[groupIndex]).EntrySize;
+                for (int i = 0; i < entrySize; i++)
                 {
-                    int count = 0;
-                    foreach (ParamEntry val in paramFile.Groups[groupNum].Values)
-                    {
-                        if (count == valNum)
-                            return (val.Value);
-                        count++;
-                    }
+                    if (i == valueIndex)
+                        return file.Groups[groupIndex].Values[entrySize * entryIndex + i].Value;
                 }
-                else
+            }
+            else if ((file.Groups[groupIndex] is ParamList))
+            {
+                for (int i = 0; i < file.Groups[groupIndex].Values.Count; i++)
                 {
-                    int entrySize = ((ParamGroup)paramFile.Groups[groupNum]).EntrySize;
-                    for (int index = 0; index < entrySize; index++)
+                    if (i == valueIndex)
                     {
-                        if (index == valNum)
-                            return paramFile.Groups[groupNum].Values[entrySize * entryNum + index].Value;
+                        return file.Groups[groupIndex].Values[i].Value;
                     }
                 }
             }
@@ -968,6 +968,119 @@ namespace Smash_Forge
             GL.Enable(EnableCap.DepthTest);
         }
 
+        public static void DrawUv(Camera camera, NUD nud, int texHash, int divisions, Color uvColor, float lineWidth, Color gridColor)
+        {
+            foreach (NUD.Mesh m in nud.Nodes)
+            {
+                foreach (NUD.Polygon p in m.Nodes)
+                {
+                    // Draw UVs for all models using this texture.
+                    // TODO: previously selected model or select multiple models.
+                    bool containsTexture = PolyContainsTextureHash(texHash, p);
+
+                    if (containsTexture)
+                    {
+                        List<int> f = p.getDisplayFace();
+
+                        for (int i = 0; i < p.displayFaceSize; i += 3)
+                        {
+                            NUD.Vertex v1 = p.vertices[f[i]];
+                            NUD.Vertex v2 = p.vertices[f[i + 1]];
+                            NUD.Vertex v3 = p.vertices[f[i + 2]];
+
+                            DrawUVTriangleAndGrid(v1, v2, v3, divisions, uvColor, lineWidth, gridColor);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static bool PolyContainsTextureHash(int selectedTextureHash, NUD.Polygon poly)
+        {
+            foreach (NUD.Material material in poly.materials)
+            {
+                foreach (NUD.Mat_Texture matTex in material.textures)
+                {
+                    if (selectedTextureHash == matTex.hash)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static void DrawUVTriangleAndGrid(NUD.Vertex v1, NUD.Vertex v2, NUD.Vertex v3, int divisions, Color uvColor, float lineWidth, Color gridColor)
+        {
+            // No shaders
+            GL.UseProgram(0);
+
+            float bounds = 1;
+            Vector2 scaleUv = new Vector2(1, 1);
+
+            // Go to 2D
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.PushMatrix();
+            GL.LoadIdentity();
+            GL.Ortho(0, 1, 1, 0, 0, 1);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.PushMatrix();
+            GL.LoadIdentity();
+
+            GL.LineWidth(lineWidth);
+
+            // Draw over everything
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            if (v1.uv[0].Y < 0)
+                Debug.WriteLine(v1.uv[0].Y);
+
+
+            GL.Color3(uvColor);
+
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex2(v1.uv[0] * scaleUv);
+            GL.Vertex2(v2.uv[0] * scaleUv);
+            GL.End();
+
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex2(v2.uv[0] * scaleUv);
+            GL.Vertex2(v3.uv[0] * scaleUv);
+            GL.End();
+
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex2(v3.uv[0] * scaleUv);
+            GL.Vertex2(v1.uv[0] * scaleUv);
+            GL.End();
+
+            // Draw Grid
+            GL.Color3(gridColor);
+            // Horizontal
+            GL.Color3(Color.White);
+
+            int horizontalCount = divisions;
+            for (int i = 0; i < horizontalCount * bounds; i++)
+            {
+                GL.Begin(PrimitiveType.Lines);
+                GL.Vertex2(new Vector2(-bounds, (1.0f / horizontalCount) * i) * scaleUv);
+                GL.Vertex2(new Vector2(bounds, (1.0f / horizontalCount) * i) * scaleUv);
+                GL.End();
+            }
+
+            // Vertical
+            int verticalCount = divisions;
+            for (int i = 0; i < verticalCount * bounds; i++)
+            {
+                GL.Begin(PrimitiveType.Lines);
+                GL.Vertex2(new Vector2((1.0f / verticalCount) * i, -bounds) * scaleUv);
+                GL.Vertex2(new Vector2((1.0f / verticalCount) * i, bounds) * scaleUv);
+                GL.End();
+            }
+
+        }
+
+
         public static void RenderBackground()
         {
             if (Runtime.floorStyle == Runtime.FloorStyle.Textured || Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
@@ -1406,6 +1519,32 @@ namespace Smash_Forge
             }
 
             GL.End();
+        }
+
+        public static void SetupFixedFunctionRendering()
+        {
+            GL.UseProgram(0);
+
+            GL.Enable(EnableCap.LineSmooth); // This is Optional 
+            GL.Enable(EnableCap.Normalize);  // This is critical to have
+            GL.Enable(EnableCap.RescaleNormal);
+
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal);
+
+            GL.Enable(EnableCap.AlphaTest);
+            GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
+
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Front);
+
+            GL.Enable(EnableCap.LineSmooth);
+
+            GL.Enable(EnableCap.StencilTest);
+            GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
         }
 
         #region FileRendering

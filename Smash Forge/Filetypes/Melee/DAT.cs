@@ -691,15 +691,15 @@ namespace Smash_Forge
                 polygon.materials[0].cullMode = 2;
                 switch (data.material.texture.wrap_s)
                 {
-                    case 0: polygon.materials[0].textures[0].WrapMode1 = 3; break;
-                    case 1: polygon.materials[0].textures[0].WrapMode1 = 1; break;
-                    case 2: polygon.materials[0].textures[0].WrapMode1 = 2; break;
+                    case 0: polygon.materials[0].textures[0].WrapModeS = 3; break;
+                    case 1: polygon.materials[0].textures[0].WrapModeS = 1; break;
+                    case 2: polygon.materials[0].textures[0].WrapModeS = 2; break;
                 }
                 switch (data.material.texture.wrap_t)
                 {
-                    case 0: polygon.materials[0].textures[0].WrapMode2 = 3; break;
-                    case 1: polygon.materials[0].textures[0].WrapMode2 = 1; break;
-                    case 2: polygon.materials[0].textures[0].WrapMode2 = 2; break;
+                    case 0: polygon.materials[0].textures[0].WrapModeT = 3; break;
+                    case 1: polygon.materials[0].textures[0].WrapModeT = 1; break;
+                    case 2: polygon.materials[0].textures[0].WrapModeT = 2; break;
                 }
                 List<Vertex> usedVertices = new List<Vertex>();
 

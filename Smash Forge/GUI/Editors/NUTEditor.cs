@@ -47,7 +47,6 @@ namespace Smash_Forge
             fw.Changed += new FileSystemEventHandler(OnChanged);
             fw.Filter = "";
             
-
             MenuItem replace = new MenuItem("Replace");
             replace.Click += replaceToolStripMenuItem_Click;
             TextureMenu.MenuItems.Add(replace);
@@ -59,8 +58,6 @@ namespace Smash_Forge
             MenuItem remove = new MenuItem("Remove");
             remove.Click += RemoveToolStripMenuItem1_Click_1;
             TextureMenu.MenuItems.Add(remove);
-
-
 
             MenuItem import = new MenuItem("Import New Texture");
             import.Click += importToolStripMenuItem_Click;
@@ -185,7 +182,9 @@ namespace Smash_Forge
 
         private void RenderTexture()
         {
-            if (!_loaded || glControl1 == null) return;
+            if (!_loaded || glControl1 == null)
+                return;
+
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -213,21 +212,20 @@ namespace Smash_Forge
 
             glControl1.SwapBuffers();
 
-            if (!Runtime.hasCheckedTexShaderCompilation)
+            if (!Runtime.shaders["Texture"].hasCheckedCompilation())
             {
                 Runtime.shaders["Texture"].displayCompilationWarning("Texture");
-                Runtime.hasCheckedTexShaderCompilation = true;
             }
         }
 
-
-#region obselete
+    // Some of these functions are still used...
+    #region obselete
         private void openNUTToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter = "Namco Universal Texture (.nut)|*.nut|" +
-                             "All files(*.*)|*.*";
+                                "All files(*.*)|*.*";
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
@@ -245,7 +243,7 @@ namespace Smash_Forge
             using (var sfd = new SaveFileDialog())
             {
                 sfd.Filter = "Namco Universal Texture (.nut)|*.nut|" +
-                             "All Files (*.*)|*.*";
+                                "All Files (*.*)|*.*";
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
@@ -274,10 +272,10 @@ namespace Smash_Forge
                 NUT_Texture tex = (NUT_Texture)(textureList.SelectedItem);
                 if (tex.type == PixelInternalFormat.Rgba)
                     sfd.Filter = "Portable Networks Graphic (.png)|*.png|" +
-                                 "All files(*.*)|*.*";
+                                    "All files(*.*)|*.*";
                 else
                     sfd.Filter = "Direct Draw Surface (.dds)|*.dds|" +
-                                 "All files(*.*)|*.*";
+                                    "All files(*.*)|*.*";
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {

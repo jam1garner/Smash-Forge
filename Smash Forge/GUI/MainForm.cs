@@ -1927,7 +1927,11 @@ namespace Smash_Forge
                     // load vbn
                     con.VBN = m.getVBN();
 
+                    Stopwatch sw = new Stopwatch();
+                    sw.Start();
                     Collada.DAEtoNUD(fileName, con, m.checkBox5.Checked);
+                    Debug.WriteLine("DAEtoNUD: " + sw.ElapsedMilliseconds / 1000.0);
+                    sw.Stop();
                     //Runtime.ModelContainers.Add(con);
                     ModelViewport mvp = new ModelViewport();
                     mvp.draw.Add(con);
@@ -1938,6 +1942,7 @@ namespace Smash_Forge
 
                     // apply settings
                     m.Apply(con.NUD);
+           
                     con.NUD.MergePoly();
 
                     //meshList.refresh();

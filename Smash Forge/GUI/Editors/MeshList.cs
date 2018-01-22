@@ -558,12 +558,6 @@ namespace Smash_Forge
             mm.Show();
         }
 
-        private void smoothNormalsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if(treeView1.SelectedNode is NUD.Polygon)
-                ((NUD.Polygon)treeView1.SelectedNode).SmoothNormals();
-        }
-
         public List<ModelContainer> GetModelContainers()
         {
             List<ModelContainer> models = new List<ModelContainer>();
@@ -732,7 +726,7 @@ namespace Smash_Forge
                     filename = save.FileName;
                     if (filename.EndsWith(".xml"))
                     {
-                        MaterialXML.exportMaterialAsXML(nud, filename);
+                        MaterialXML.ExportMaterialAsXml(nud, filename);
                     }
                 }
             }
@@ -756,7 +750,7 @@ namespace Smash_Forge
                     {
                         try
                         {
-                            MaterialXML.importMaterialAsXML(nud, filename);
+                            MaterialXML.ImportMaterialAsXml(nud, filename);
                         }
                         catch (MaterialXML.ParamArrayLengthException ex)
                         {
@@ -798,22 +792,32 @@ namespace Smash_Forge
 
         private void generateTanBitanToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode is NUD)
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            var messageBox = MessageBox.Show("If the vertex type does not support tangents/bitangents, \n" +
+                "the vertex type will be changed to Normals, Tan, Bi-Tan (Float). \n" +
+                "This will increase the file size.", treeView1.SelectedNode.Text, MessageBoxButtons.OKCancel);
+
+            if (messageBox == DialogResult.OK)
             {
                 foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
                 {
                     foreach (NUD.Polygon poly in mesh.Nodes)
                     {
-                        poly.ComputeTangentBitangent();
+                        GenerateTanBitanAndFixVertType(poly);
                     }
-                }              
+                }
             }
         }
 
         private void generateTanBitanToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode is NUD.Polygon)
-                ((NUD.Polygon)treeView1.SelectedNode).ComputeTangentBitangent();
+            if (!(treeView1.SelectedNode is NUD.Polygon))
+                return;
+            
+            NUD.Polygon poly = ((NUD.Polygon)treeView1.SelectedNode);
+            GenerateTanBitanAndFixVertType(poly);         
         }
 
         private void calculateNormalsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -830,20 +834,6 @@ namespace Smash_Forge
                     foreach (NUD.Polygon poly in mesh.Nodes)
                     {
                         poly.CalculateNormals();
-                    }
-                }
-            }
-        }
-
-        private void smoothNormalsToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            if (treeView1.SelectedNode is NUD)
-            {
-                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
-                {
-                    foreach (NUD.Polygon poly in mesh.Nodes)
-                    {
-                        poly.SmoothNormals();
                     }
                 }
             }
@@ -901,7 +891,8 @@ namespace Smash_Forge
 
         private void importFromDAEToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!(treeView1.SelectedNode is ModelContainer)) return;
+            if (!(treeView1.SelectedNode is ModelContainer))
+                return;
 
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
@@ -928,6 +919,102 @@ namespace Smash_Forge
         private void generateBoundingBoxesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ((NUD)treeView1.SelectedNode).GenerateBoundingBoxes();
+        }
+
+        private void recalculateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Mesh)
+            {
+                foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+                {
+                    poly.CalculateNormals();
+                }
+            }
+        }
+
+        private void smoothToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Mesh)
+            {
+                foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+                {
+                    poly.SmoothNormals();
+                }
+            }
+        }
+
+        private void recalculateToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Polygon)
+                ((NUD.Polygon)treeView1.SelectedNode).CalculateNormals();
+        }
+
+        private void smoothToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Polygon)
+                ((NUD.Polygon)treeView1.SelectedNode).SmoothNormals();
+        }
+
+        private void smoothToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD)
+            {
+                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
+                {
+                    foreach (NUD.Polygon poly in mesh.Nodes)
+                    {
+                        poly.SmoothNormals();
+                    }
+                }
+            }
+        }
+
+        private void recalculateToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD)
+            {
+                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
+                {
+                    foreach (NUD.Polygon poly in mesh.Nodes)
+                    {
+                        poly.CalculateNormals();
+                    }
+                }
+            }
+        }
+
+        private void generateTanBitanToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode is NUD.Mesh)
+            {
+                string meshName = treeView1.SelectedNode.Text;
+
+                var messageBox = MessageBox.Show("If the vertex type does not support tangents/bitangents, \n" +
+                    "the vertex type will be changed to Normals, Tan, Bi-Tan (Float). \n" +
+                    "This will increase the file size.", meshName, MessageBoxButtons.OKCancel);
+
+                if (messageBox == DialogResult.OK)
+                {
+                    foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+                    {
+                        GenerateTanBitanAndFixVertType(poly);
+                    }
+                }    
+            }
+        }
+
+        private static void GenerateTanBitanAndFixVertType(NUD.Polygon poly)
+        {
+            int vertType = poly.vertSize & 0xF;
+            if (!(vertType == 3 || vertType == 7))
+            {
+                // Change the vert type to normals, tan, bitan (float)
+                poly.vertSize = (poly.vertSize & 0xF0);
+                poly.vertSize |= 7;
+            }
+
+            // This already checks for the appropriate vertex type. 
+            poly.CalculateTangentBitangent();
         }
     }
 }

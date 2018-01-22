@@ -15,7 +15,7 @@ namespace Smash_Forge
 		int vsID;
 		int fsID;
 
-        private bool hasCheckedCompilation = false;
+        private bool checkedCompilation = false;
         private StringBuilder errorLog = new StringBuilder();
 
 		Dictionary<string, int> attributes = new Dictionary<string, int>();
@@ -29,6 +29,11 @@ namespace Smash_Forge
             errorLog.AppendLine("Renderer: " + GL.GetString(StringName.Renderer));
             errorLog.AppendLine("OpenGL Version: " + GL.GetString(StringName.Version));
             errorLog.AppendLine("GLSL Version: " + GL.GetString(StringName.ShadingLanguageVersion));
+        }
+
+        public bool hasCheckedCompilation()
+        {
+            return checkedCompilation;
         }
 
 		public int getAttribute(string s){
@@ -161,32 +166,30 @@ namespace Smash_Forge
 
         public void displayCompilationWarning(string shaderName)
         {
-            if (!hasCheckedCompilation)
+            if (checkedCompilation)
+                return;
+
+            int compileStatusVS;
+            GL.GetShader(vsID, ShaderParameter.CompileStatus, out compileStatusVS);
+            if (compileStatusVS == 0)
             {
-                int compileStatusVS;
-                GL.GetShader(vsID, ShaderParameter.CompileStatus, out compileStatusVS);
-                if (compileStatusVS == 0)
-                {
-                    MessageBox.Show("The " + shaderName
-                          + " vertex shader failed to compile. Check that your system supports OpenGL 3.30. Enable legacy shading in the config for OpenGL 2.10." +
-                          " Please export a shader error log and " +
-                          "upload it when reporting rendering issues.", "Shader Compilation Error");
-                }
-
-                int compileStatusFS;
-                GL.GetShader(fsID, ShaderParameter.CompileStatus, out compileStatusFS);
-                if (compileStatusFS == 0)
-                {
-                    MessageBox.Show("The " + shaderName
-                  + " fragment shader failed to compile. Check that your system supports OpenGL 3.30. Enable legacy shading in the config for OpenGL 2.10." +
-                  " Please export a shader error log and " +
-                  "upload it when reporting rendering issues.", "Shader Compilation Error");
-                }
-
-                hasCheckedCompilation = true;
+                MessageBox.Show("The " + shaderName
+                        + " vertex shader failed to compile. Check that your system supports OpenGL 3.30. Enable legacy shading in the config for OpenGL 2.10." +
+                        " Please export a shader error log and " +
+                        "upload it when reporting rendering issues.", "Shader Compilation Error");
             }
 
-          
+            int compileStatusFS;
+            GL.GetShader(fsID, ShaderParameter.CompileStatus, out compileStatusFS);
+            if (compileStatusFS == 0)
+            {
+                MessageBox.Show("The " + shaderName
+                + " fragment shader failed to compile. Check that your system supports OpenGL 3.30. Enable legacy shading in the config for OpenGL 2.10." +
+                " Please export a shader error log and " +
+                "upload it when reporting rendering issues.", "Shader Compilation Error");
+            }
+
+            checkedCompilation = true;      
         }
 	}
 }
