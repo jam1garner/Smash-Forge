@@ -64,6 +64,15 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.cliffGroup = new System.Windows.Forms.GroupBox();
+            this.label52 = new System.Windows.Forms.Label();
+            this.label51 = new System.Windows.Forms.Label();
+            this.label50 = new System.Windows.Forms.Label();
+            this.label49 = new System.Windows.Forms.Label();
+            this.cliffLineIndex = new System.Windows.Forms.NumericUpDown();
+            this.cliffAngle = new System.Windows.Forms.NumericUpDown();
+            this.cliffPosY = new System.Windows.Forms.NumericUpDown();
+            this.cliffPosX = new System.Windows.Forms.NumericUpDown();
             this.point3dGroup = new System.Windows.Forms.GroupBox();
             this.label48 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
@@ -175,6 +184,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.yVert)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xVert)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.passthroughAngle)).BeginInit();
+            this.cliffGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.cliffLineIndex)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cliffAngle)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cliffPosY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cliffPosX)).BeginInit();
             this.point3dGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeZ)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeY)).BeginInit();
@@ -221,6 +235,7 @@
             // 
             this.flowLayoutPanel1.Controls.Add(this.lvdEntryGroup);
             this.flowLayoutPanel1.Controls.Add(this.collisionGroup);
+            this.flowLayoutPanel1.Controls.Add(this.cliffGroup);
             this.flowLayoutPanel1.Controls.Add(this.point3dGroup);
             this.flowLayoutPanel1.Controls.Add(this.point2dGroup);
             this.flowLayoutPanel1.Controls.Add(this.boundsGroup);
@@ -726,6 +741,138 @@
             this.label1.Size = new System.Drawing.Size(45, 13);
             this.label1.TabIndex = 1;
             this.label1.Text = "Vertices";
+            // 
+            // cliffGroup
+            // 
+            this.cliffGroup.Controls.Add(this.label52);
+            this.cliffGroup.Controls.Add(this.label51);
+            this.cliffGroup.Controls.Add(this.label50);
+            this.cliffGroup.Controls.Add(this.label49);
+            this.cliffGroup.Controls.Add(this.cliffLineIndex);
+            this.cliffGroup.Controls.Add(this.cliffAngle);
+            this.cliffGroup.Controls.Add(this.cliffPosY);
+            this.cliffGroup.Controls.Add(this.cliffPosX);
+            this.cliffGroup.Location = new System.Drawing.Point(2, 550);
+            this.cliffGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cliffGroup.Name = "cliffGroup";
+            this.cliffGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cliffGroup.Size = new System.Drawing.Size(276, 97);
+            this.cliffGroup.TabIndex = 34;
+            this.cliffGroup.TabStop = false;
+            this.cliffGroup.Text = "Collision Cliff";
+            this.cliffGroup.Visible = false;
+            // 
+            // label52
+            // 
+            this.label52.AutoSize = true;
+            this.label52.Location = new System.Drawing.Point(6, 75);
+            this.label52.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label52.Name = "label52";
+            this.label52.Size = new System.Drawing.Size(14, 13);
+            this.label52.TabIndex = 32;
+            this.label52.Text = "Line";
+            // 
+            // label51
+            // 
+            this.label51.AutoSize = true;
+            this.label51.Location = new System.Drawing.Point(6, 50);
+            this.label51.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label51.Name = "label51";
+            this.label51.Size = new System.Drawing.Size(14, 13);
+            this.label51.TabIndex = 32;
+            this.label51.Text = "Angle";
+            // 
+            // label50
+            // 
+            this.label50.AutoSize = true;
+            this.label50.Location = new System.Drawing.Point(84, 20);
+            this.label50.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label50.Name = "label50";
+            this.label50.Size = new System.Drawing.Size(14, 13);
+            this.label50.TabIndex = 32;
+            this.label50.Text = "Y";
+            // 
+            // label49
+            // 
+            this.label49.AutoSize = true;
+            this.label49.Location = new System.Drawing.Point(6, 20);
+            this.label49.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label49.Name = "label49";
+            this.label49.Size = new System.Drawing.Size(14, 13);
+            this.label49.TabIndex = 32;
+            this.label49.Text = "X";
+            // 
+            // cliffLineIndex
+            // 
+            this.cliffLineIndex.DecimalPlaces = 0;
+            this.cliffLineIndex.Location = new System.Drawing.Point(40, 73);
+            this.cliffLineIndex.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cliffLineIndex.Maximum = 1;
+            this.cliffLineIndex.Minimum = 1;
+            this.cliffLineIndex.Name = "cliffLineIndex";
+            this.cliffLineIndex.Size = new System.Drawing.Size(36, 20);
+            this.cliffLineIndex.TabIndex = 34;
+            this.cliffLineIndex.ValueChanged += new System.EventHandler(this.cliff_ValueChanged);
+            // 
+            // cliffAngle
+            // 
+            this.cliffAngle.DecimalPlaces = 4;
+            this.cliffAngle.Location = new System.Drawing.Point(40, 48);
+            this.cliffAngle.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cliffAngle.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.cliffAngle.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.cliffAngle.Name = "cliffAngle";
+            this.cliffAngle.Size = new System.Drawing.Size(56, 20);
+            this.cliffAngle.TabIndex = 34;
+            this.cliffAngle.ValueChanged += new System.EventHandler(this.cliff_ValueChanged);
+            // 
+            // cliffPosY
+            // 
+            this.cliffPosY.DecimalPlaces = 4;
+            this.cliffPosY.Location = new System.Drawing.Point(100, 18);
+            this.cliffPosY.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cliffPosY.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.cliffPosY.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.cliffPosY.Name = "cliffPosY";
+            this.cliffPosY.Size = new System.Drawing.Size(56, 20);
+            this.cliffPosY.TabIndex = 33;
+            this.cliffPosY.ValueChanged += new System.EventHandler(this.cliff_ValueChanged);
+            // 
+            // cliffPosX
+            // 
+            this.cliffPosX.DecimalPlaces = 4;
+            this.cliffPosX.Location = new System.Drawing.Point(22, 18);
+            this.cliffPosX.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cliffPosX.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.cliffPosX.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.cliffPosX.Name = "cliffPosX";
+            this.cliffPosX.Size = new System.Drawing.Size(56, 20);
+            this.cliffPosX.TabIndex = 32;
+            this.cliffPosX.ValueChanged += new System.EventHandler(this.cliff_ValueChanged);
             // 
             // point3dGroup
             // 
@@ -2193,6 +2340,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.yVert)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xVert)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.passthroughAngle)).EndInit();
+            this.cliffGroup.ResumeLayout(false);
+            this.cliffGroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.cliffLineIndex)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cliffAngle)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cliffPosY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cliffPosX)).EndInit();
             this.point3dGroup.ResumeLayout(false);
             this.point3dGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeZ)).EndInit();
@@ -2312,6 +2465,15 @@
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.GroupBox cliffGroup;
+        private System.Windows.Forms.Label label52;
+        private System.Windows.Forms.Label label51;
+        private System.Windows.Forms.Label label50;
+        private System.Windows.Forms.Label label49;
+        private System.Windows.Forms.NumericUpDown cliffLineIndex;
+        private System.Windows.Forms.NumericUpDown cliffAngle;
+        private System.Windows.Forms.NumericUpDown cliffPosY;
+        private System.Windows.Forms.NumericUpDown cliffPosX;
         private System.Windows.Forms.GroupBox point3dGroup;
         private System.Windows.Forms.Label label48;
         private System.Windows.Forms.Label label22;
