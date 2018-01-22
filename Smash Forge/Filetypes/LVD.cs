@@ -1227,8 +1227,9 @@ namespace Smash_Forge
                 sPos = new Vector3(0, 0, 0);
                 s = (LVDShape)obj;
             }
-            else if (obj is GeneralShape g)
+            else if (obj is GeneralShape)
             {
+                GeneralShape g = (GeneralShape)obj;
                 useStartPos = g.useStartPos;
                 if (useStartPos)
                     sPos = g.startPos;
