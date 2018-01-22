@@ -568,7 +568,7 @@ namespace Smash_Forge
                 currentMat.setFlag(6, true);
                 currentMat.setFlag(7, true);
             }
-            currentMat.setPhysics(link.material);
+            currentMat.physics = link.material;
             c.materials.Add(currentMat);
         }
 

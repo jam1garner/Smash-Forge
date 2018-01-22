@@ -48,7 +48,7 @@ namespace Smash_Forge
                 {
                     foreach (Collision c in TargetLVD.collisions)
                     {
-                        TargetLVD.GenerateCliffs(c);
+                        LVD.GenerateCliffs(c);
                     }
                     fillList();
                 };
@@ -115,18 +115,6 @@ namespace Smash_Forge
             }
             //---------------------------------------------
             {
-                TreeNode node = pointNode;
-                node.ContextMenu = new ContextMenu();
-                MenuItem Add = new MenuItem("Add New General Point");
-                Add.Click += delegate
-                {
-                    TargetLVD.generalPoints.Add(new GeneralPoint() { name = "GeneralPoint3D_NEW", subname = "00_NEW" });
-                    fillList();
-                };
-                node.ContextMenu.MenuItems.Add(Add);
-            }
-            //---------------------------------------------
-            {
                 TreeNode node = shapeNode;
                 node.ContextMenu = new ContextMenu();
 
@@ -153,6 +141,51 @@ namespace Smash_Forge
                     fillList();
                 };
                 node.ContextMenu.MenuItems.Add(AddPath);
+            }
+            //---------------------------------------------
+            {
+                TreeNode node = pointNode;
+                node.ContextMenu = new ContextMenu();
+                MenuItem Add = new MenuItem("Add New General Point");
+                Add.Click += delegate
+                {
+                    TargetLVD.generalPoints.Add(new GeneralPoint() { name = "GeneralPoint3D_NEW", subname = "00_NEW" });
+                    fillList();
+                };
+                node.ContextMenu.MenuItems.Add(Add);
+            }
+            //---------------------------------------------
+            {
+                TreeNode node = hurtNode;
+                node.ContextMenu = new ContextMenu();
+
+                MenuItem AddSphere = new MenuItem("Add New Damage Sphere");
+                AddSphere.Click += delegate
+                {
+                    TargetLVD.damageShapes.Add(new DamageShape() { name = "DamageeSphere_00_NEW", subname = "00_NEW", type = 2 });
+                    fillList();
+                };
+                node.ContextMenu.MenuItems.Add(AddSphere);
+
+                MenuItem AddCapsule = new MenuItem("Add New Damage Capsule");
+                AddCapsule.Click += delegate
+                {
+                    TargetLVD.damageShapes.Add(new DamageShape() { name = "DamageeCapsule_00_NEW", subname = "00_NEW", type = 3 });
+                    fillList();
+                };
+                node.ContextMenu.MenuItems.Add(AddCapsule);
+            }
+            //---------------------------------------------
+            {
+                TreeNode node = enemyNode;
+                node.ContextMenu = new ContextMenu();
+                MenuItem Add = new MenuItem("Add New Enemy Spawner");
+                Add.Click += delegate
+                {
+                    TargetLVD.enemySpawns.Add(new EnemyGenerator() { name = "EnemyGenerator_NEW", subname = "00_NEW" });
+                    fillList();
+                };
+                node.ContextMenu.MenuItems.Add(Add);
             }
 
             ElementCM = new ContextMenu();
@@ -258,38 +291,46 @@ namespace Smash_Forge
             }
         }
 
+        public void deleteNode(TreeNode treeNode)
+        {
+            if (!(treeNode.Tag is LVDEntry))
+                return;
+            LVDEntry entry = (LVDEntry)treeNode.Tag;
+
+            if (entry is Collision)
+                TargetLVD.collisions.Remove((Collision)entry);
+            if (entry is CollisionCliff)
+                TargetLVD.collisions[treeView1.SelectedNode.Parent.Index].cliffs.Remove((CollisionCliff)entry);
+            if (entry is Spawn)
+            {
+                TargetLVD.respawns.Remove((Spawn)entry);
+                TargetLVD.spawns.Remove((Spawn)entry);
+            }
+            if (entry is Bounds)
+            {
+                TargetLVD.blastzones.Remove((Bounds)entry);
+                TargetLVD.cameraBounds.Remove((Bounds)entry);
+            }
+            if (entry is DamageShape)
+                TargetLVD.damageShapes.Remove((DamageShape)entry);
+            if (entry is EnemyGenerator)
+                TargetLVD.enemySpawns.Remove((EnemyGenerator)entry);
+            if (entry is GeneralShape)
+                TargetLVD.generalShapes.Remove((GeneralShape)entry);
+            if (entry is ItemSpawner)
+                TargetLVD.itemSpawns.Remove((ItemSpawner)entry);
+            if (entry is GeneralPoint)
+                TargetLVD.generalPoints.Remove((GeneralPoint)entry);
+
+            treeView1.Nodes.Remove(treeNode);
+        }
+
         public void deleteSelected()
         {
-            if(treeView1.SelectedNode.Tag is LVDEntry)
-            {
-                LVDEntry entry = (LVDEntry)treeView1.SelectedNode.Tag;
-                if (entry is Bounds)
-                {
-                    TargetLVD.blastzones.Remove((Bounds)entry);
-                    TargetLVD.cameraBounds.Remove((Bounds)entry);
-                }
-                if (entry is Spawn)
-                {
-                    TargetLVD.respawns.Remove((Spawn)entry);
-                    TargetLVD.spawns.Remove((Spawn)entry);
-                }
-                if (entry is Collision)
-                    TargetLVD.collisions.Remove((Collision)entry);
-                if (entry is CollisionCliff)
-                    TargetLVD.collisions[treeView1.SelectedNode.Parent.Index].cliffs.Remove((CollisionCliff)entry);
-                if (entry is DamageShape)
-                    TargetLVD.damageShapes.Remove((DamageShape)entry);
-                if (entry is EnemyGenerator)
-                    TargetLVD.enemySpawns.Remove((EnemyGenerator)entry);
-                if (entry is GeneralShape)
-                    TargetLVD.generalShapes.Remove((GeneralShape)entry);
-                if (entry is ItemSpawner)
-                    TargetLVD.itemSpawns.Remove((ItemSpawner)entry);
-                if (entry is GeneralPoint)
-                    TargetLVD.generalPoints.Remove((GeneralPoint)entry);
+            if (treeView1.SelectedNode == null || !(treeView1.SelectedNode.Tag is LVDEntry))
+                return;
 
-                treeView1.Nodes.Remove(treeView1.SelectedNode);
-            }
+            deleteNode(treeView1.SelectedNode);
         }
 
         private void treeView1_KeyPress(object sender, KeyPressEventArgs e)

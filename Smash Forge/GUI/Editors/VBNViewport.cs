@@ -1106,10 +1106,11 @@ namespace Smash_Forge
 
                 if (Runtime.renderOtherLVDEntries)
                 {
-                    Runtime.TargetLVD.DrawEnemySpawners();
+                    foreach (EnemyGenerator e in Runtime.TargetLVD.enemySpawns)
+                        LVD.DrawEnemyGenerator(e);
 
                     foreach (DamageShape s in Runtime.TargetLVD.damageShapes)
-                        LVD.DrawShape(s);
+                        LVD.DrawDamageShape(s);
 
                     foreach (Bounds b in Runtime.TargetLVD.cameraBounds)
                         LVD.DrawBounds(b, Color.Blue);
