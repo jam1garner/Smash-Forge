@@ -463,6 +463,7 @@
     <Compile Include="Rendering\FrameTimer.cs" />
     <Compile Include="Rendering\Lights.cs" />
     <Compile Include="Rendering\Ray.cs" />
+    <Compile Include="Rendering\ShaderTools.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Controls\MeshMover.resx">

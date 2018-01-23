@@ -1643,7 +1643,7 @@ namespace Smash_Forge
         }
 
         public static void DrawTexturedQuad(int texture, int width, int height, bool renderR = true, bool renderG = true, bool renderB = true, 
-            bool renderAlpha = false, bool alphaOverride = false, bool preserveAspectRatio = false)      
+            bool renderAlpha = false, bool alphaOverride = false, bool preserveAspectRatio = false)
         {
             // draw RGB and alpha channels of texture to screen quad
             Shader shader = Runtime.shaders["Texture"];
@@ -1657,18 +1657,25 @@ namespace Smash_Forge
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
             GL.Uniform1(shader.getAttribute("image"), 0);
 
-            GL.Uniform1(shader.getAttribute("renderR"), renderR ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderG"), renderG ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderB"), renderB ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderAlpha"), renderAlpha ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("alphaOverride"), alphaOverride ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("preserveAspectRatio"), preserveAspectRatio ? 1 : 0);
-            float aspectRatio = (float) width / (float) height;
+            ShaderTools.BoolToIntShaderUniform(shader, renderR,     "renderR");
+            ShaderTools.BoolToIntShaderUniform(shader, renderG,     "renderG");
+            ShaderTools.BoolToIntShaderUniform(shader, renderB,     "renderB");
+            ShaderTools.BoolToIntShaderUniform(shader, renderAlpha, "renderAlpha");
+
+            ShaderTools.BoolToIntShaderUniform(shader, alphaOverride, "alphaOverride");
+            ShaderTools.BoolToIntShaderUniform(shader, preserveAspectRatio, "preserveAspectRatio");
+
+            float aspectRatio = (float)width / (float)height;
             GL.Uniform1(shader.getAttribute("width"), width);
             GL.Uniform1(shader.getAttribute("height"), height);
 
-            // draw full screen "quad" (big triangle)
-            float[] vertices = 
+            // Draw full screen "quad" (big triangle)
+            DrawScreenTriangle(shader);
+        }
+
+        private static void DrawScreenTriangle(Shader shader)
+        {
+            float[] vertices =
             {
                 -1f, -1f, 0.0f,
                  3f, -1f, 0.0f,
