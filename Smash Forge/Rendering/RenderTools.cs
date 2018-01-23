@@ -1642,8 +1642,8 @@ namespace Smash_Forge
             GL.BindVertexArray(0);
         }
 
-        public static void DrawTexturedQuad(int texture, int width, int height, bool renderR, bool renderG, bool renderB, 
-            bool renderAlpha, bool alphaOverride, bool preserveAspectRatio)      
+        public static void DrawTexturedQuad(int texture, int width, int height, bool renderR = true, bool renderG = true, bool renderB = true, 
+            bool renderAlpha = false, bool alphaOverride = false, bool preserveAspectRatio = false)      
         {
             // draw RGB and alpha channels of texture to screen quad
             Shader shader = Runtime.shaders["Texture"];

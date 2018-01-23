@@ -1019,46 +1019,36 @@ namespace Smash_Forge
             if (!ReadyToRender)
                 return;
 
+            // Setup viewport. 
             glViewport.MakeCurrent();
-
             GL.LoadIdentity();
             GL.Viewport(glViewport.ClientRectangle);
 
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
-            // clear the gf buffer
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
             
-            // use fixed function pipeline for drawing background and floor grid
+            // Use fixed function pipeline for drawing background and floor grid
             GL.UseProgram(0);
 
+            // Return early to avoid rendering other stuff. 
             if (MeshList.treeView1.SelectedNode != null)
             {
                 if (MeshList.treeView1.SelectedNode is BCH_Texture)
                 {
-                    GL.PopAttrib();
-                    BCH_Texture tex = ((BCH_Texture)MeshList.treeView1.SelectedNode);
-                    RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, true, true, true, false, true);
-                    glViewport.SwapBuffers();
+                    DrawBchTex();
                     return;
                 }
                 if (MeshList.treeView1.SelectedNode is NUT_Texture)
                 {
-                    GL.PopAttrib();
-                    NUT_Texture tex = ((NUT_Texture)MeshList.treeView1.SelectedNode);
-                    RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height, true, true, true, true, false, false);
-
-                    if (Runtime.drawUv)
-                        DrawUvsForSelectedTexture(tex);
-
-                    glViewport.SwapBuffers();
+                    DrawNutTexAndUvs();
                     return;
                 }
             }
 
             if (Runtime.renderBackGround)
             {
-                // background uses different matrices
+                // Background uses different matrices
                 GL.MatrixMode(MatrixMode.Modelview);
                 GL.LoadIdentity();
                 GL.MatrixMode(MatrixMode.Projection);
@@ -1070,15 +1060,13 @@ namespace Smash_Forge
             // Camera Update
             // -------------------------------------------------------------
             GL.MatrixMode(MatrixMode.Projection);
-            if (glViewport.ClientRectangle.Contains(glViewport.PointToClient(Cursor.Position))
-             && glViewport.Focused 
-             && CurrentMode == Mode.Normal
-             && !TransformTool.hit)
-            {
+
+            bool shouldUpdateCam = glViewport.ClientRectangle.Contains(glViewport.PointToClient(Cursor.Position))
+                && glViewport.Focused && (CurrentMode == Mode.Normal) && !TransformTool.hit;
+
+            if (shouldUpdateCam)
                 camera.Update();
-                //if (cameraPosForm != null && !cameraPosForm.IsDisposed)
-                //    cameraPosForm.updatePosition();
-            }
+            
             try
             {
                 if (OpenTK.Input.Mouse.GetState() != null)
@@ -1092,34 +1080,13 @@ namespace Smash_Forge
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref matrix);
 
-            // Floor
-            // -------------------------------------------------------------
             if (Runtime.renderFloor)
                 RenderTools.drawFloor();
 
-            // Shadows
-            // -------------------------------------------------------------
-            if (Runtime.drawModelShadow)
-            {
-                CalculateLightSource();
-                // update light matrix and setup shadowmap rendering
-                GL.MatrixMode(MatrixMode.Modelview);
-                GL.LoadMatrix(ref lightMatrix);
-                GL.Enable(EnableCap.DepthTest);
-                GL.Viewport(0, 0, sw, sh);
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
-
-                foreach (ModelContainer m in draw)
-                    m.RenderShadow(camera, 0, Matrix4.Zero, camera.getMVPMatrix());
-
-                // reset matrices and viewport for model rendering again
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                GL.LoadMatrix(ref matrix);
-                GL.Viewport(glViewport.ClientRectangle);
-            }
-
-            // render models into hdr buffer
-            // -------------------------------------------------------------
+            if (Runtime.drawModelShadow)           
+                DrawModelShadow(matrix);
+            
+            // Allow disabling depth testing for experimental 2D rendering. 
             if (Runtime.useDepthTest)
             {
                 GL.Enable(EnableCap.DepthTest);
@@ -1132,8 +1099,6 @@ namespace Smash_Forge
             GL.Enable(EnableCap.DepthTest);
 
             // Models
-            // -------------------------------------------------------------
-            //frameTime.Start();
             if (Runtime.renderModel || Runtime.renderModelWireframe)
                 foreach (TreeNode m in draw)
                     if(m is ModelContainer)
@@ -1144,26 +1109,12 @@ namespace Smash_Forge
                     if (m is ModelContainer)
                         ((ModelContainer)m).RenderPoints(camera);
 
-            //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-
-            /*// render gaussian blur stuff
-            if (Runtime.drawQuadBlur)
-                DrawQuadBlur();
-
-            // render full screen quad for post processing
-            if (Runtime.drawQuadFinalOutput)
-                DrawQuadFinalOutput();*/
-
             // use fixed function pipeline again for area lights, lvd, bones, hitboxes, etc
             SetupFixedFunctionRendering();
 
-            /*// draw path.bin
-            if (Runtime.renderPath)
-                DrawPathDisplay();
-
             // area light bounding boxes should intersect stage geometry and not render on top
             if (Runtime.drawAreaLightBoundingBoxes)
-                DrawAreaLightBoundingBoxes();*/
+                DrawAreaLightBoundingBoxes();
 
             // clear depth buffer so stuff will render on top of the models
             GL.Clear(ClearBufferMask.DepthBufferBit);
@@ -1184,9 +1135,6 @@ namespace Smash_Forge
 
             if (ACMDScript!=null && draw.Count > 0 && (draw[0] is ModelContainer))
                 ACMDScript.Render(((ModelContainer)draw[0]).GetVBN());
-            //Debug.WriteLine(frameTime.getAverageRenderTime());
-
-
 
             // Bone Transform Tool
             if (ViewComboBox.SelectedIndex == 2)
@@ -1296,6 +1244,56 @@ namespace Smash_Forge
 
             GL.PopAttrib();
             glViewport.SwapBuffers();
+        }
+
+        private void DrawNutTexAndUvs()
+        {
+            GL.PopAttrib();
+            NUT_Texture tex = ((NUT_Texture)MeshList.treeView1.SelectedNode);
+            RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height);
+
+            if (Runtime.drawUv)
+                DrawUvsForSelectedTexture(tex);
+
+            glViewport.SwapBuffers();
+        }
+
+        private void DrawBchTex()
+        {
+            GL.PopAttrib();
+            BCH_Texture tex = ((BCH_Texture)MeshList.treeView1.SelectedNode);
+            RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
+            glViewport.SwapBuffers();
+        }
+
+        private void DrawAreaLightBoundingBoxes()
+        {
+            foreach (AreaLight light in Lights.areaLights)
+            {
+                Color color = Color.White;
+
+                RenderTools.drawRectangularPrismWireframe(new Vector3(light.positionX, light.positionY, light.positionZ),
+                    light.scaleX, light.scaleY, light.scaleZ, color);
+            }
+        }
+
+        private void DrawModelShadow(Matrix4 matrix)
+        {
+            CalculateLightSource();
+            // update light matrix and setup shadowmap rendering
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref lightMatrix);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Viewport(0, 0, sw, sh);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
+
+            foreach (ModelContainer m in draw)
+                m.RenderShadow(camera, 0, Matrix4.Zero, camera.getMVPMatrix());
+
+            // reset matrices and viewport for model rendering again
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.LoadMatrix(ref matrix);
+            GL.Viewport(glViewport.ClientRectangle);
         }
 
         private void DrawUvsForSelectedTexture(NUT_Texture tex)
