@@ -11,6 +11,22 @@ namespace Smash_Forge
 {
     class ShaderTools
     {
+        public static void SetupShaders()
+        {
+            // Reset the shaders first so that shaders can be replaced.
+            Runtime.shaders = new Dictionary<string, Shader>();
+            CreateShader("Texture", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("NUD", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("MBN", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("DAT", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("NUD_Debug", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("Gradient", "/lib/Shader/", "/lib/Shader/");
+            CreateShader("Quad", "/lib/Shader/", "/lib/Shader/");
+            CreateShader("Blur", "/lib/Shader/", "/lib/Shader/");
+            CreateShader("Shadow", "/lib/Shader/", "/lib/Shader/");
+            CreateShader("Point", "/lib/Shader/", "/lib/Shader/");
+        }
+
         public static void CreateShader(string name, string legacyPath, string normalPath)
         {
             if (!Runtime.shaders.ContainsKey(name))
