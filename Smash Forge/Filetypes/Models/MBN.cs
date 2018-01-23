@@ -68,10 +68,7 @@ namespace Smash_Forge
 
             if (!Runtime.shaders.ContainsKey("MBN"))
             {
-                Shader mbn = new Shader();
-                mbn.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_vs.txt"));
-                mbn.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_fs.txt"));
-                Runtime.shaders.Add("MBN", mbn);
+                ShaderTools.CreateShader("MBN", "/lib/Shader/Legacy/", "/lib/Shader/");
             }
 
             Runtime.shaders["MBN"].displayCompilationWarning("MBN");

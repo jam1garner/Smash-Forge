@@ -74,10 +74,7 @@ namespace Smash_Forge
 
             if (!Runtime.shaders.ContainsKey("DAT"))
             {
-                Shader DAT = new Shader();
-                DAT.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_vs.txt"));
-                DAT.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_fs.txt"));
-                Runtime.shaders.Add("DAT", DAT);
+                ShaderTools.CreateShader("DAT", "/lib/Shader/Legacy/", "/lib/Shader/");
             }
 
             Runtime.shaders["DAT"].displayCompilationWarning("DAT");

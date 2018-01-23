@@ -12,11 +12,14 @@ namespace Smash_Forge
 	public class Shader
 	{
 		public int programID;
-		int vsID;
-		int fsID;
+		private int vsID;
+		private int fsID;
 
         private bool checkedCompilation = false;
         private StringBuilder errorLog = new StringBuilder();
+
+        private string vertFilePath = "";
+        private string fragFilePath = "";
 
 		Dictionary<string, int> attributes = new Dictionary<string, int>();
 
@@ -29,6 +32,16 @@ namespace Smash_Forge
             errorLog.AppendLine("Renderer: " + GL.GetString(StringName.Renderer));
             errorLog.AppendLine("OpenGL Version: " + GL.GetString(StringName.Version));
             errorLog.AppendLine("GLSL Version: " + GL.GetString(StringName.ShadingLanguageVersion));
+        }
+
+        public string getVertPath()
+        {
+            return vertFilePath;
+        }
+
+        public string getFragPath()
+        {
+            return fragFilePath;
         }
 
         public bool hasCheckedCompilation()
@@ -117,26 +130,26 @@ namespace Smash_Forge
             }
         }
 
-        public void vertexShader(string shaderText){
+        public void vertexShader(string filePath){
+            string shaderText = File.ReadAllText(filePath);
             loadShader(shaderText, ShaderType.VertexShader, programID, out vsID);
 			GL.LinkProgram (programID);
-            errorLog.AppendLine("Vertex Shader");
             LoadAttributes(shaderText);
+
+            errorLog.AppendLine("Vertex Shader");
             string error = GL.GetProgramInfoLog(programID);
             errorLog.AppendLine(error);
-            Console.WriteLine(error);
         }
 
-		public void fragmentShader(string shaderText){
+		public void fragmentShader(string filePath){
+            string shaderText = File.ReadAllText(filePath);
 			loadShader(shaderText, ShaderType.FragmentShader, programID, out fsID);
 			GL.LinkProgram (programID);
-            errorLog.AppendLine("Fragment Shader");
             LoadAttributes(shaderText, true);
+
+            errorLog.AppendLine("Fragment Shader");
             string error = GL.GetProgramInfoLog(programID);
             errorLog.AppendLine(error);
-            Console.WriteLine(error);
-
-
         }
 
         void loadShader(string shaderText, ShaderType type, int program, out int address)
