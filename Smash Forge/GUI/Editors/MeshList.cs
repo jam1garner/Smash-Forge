@@ -951,50 +951,49 @@ namespace Smash_Forge
 
         private void smoothToolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode is NUD)
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
             {
-                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
+                foreach (NUD.Polygon poly in mesh.Nodes)
                 {
-                    foreach (NUD.Polygon poly in mesh.Nodes)
-                    {
-                        poly.SmoothNormals();
-                    }
+                    poly.SmoothNormals();
                 }
-            }
+            }  
         }
 
         private void recalculateToolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode is NUD)
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
             {
-                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
+                foreach (NUD.Polygon poly in mesh.Nodes)
                 {
-                    foreach (NUD.Polygon poly in mesh.Nodes)
-                    {
-                        poly.CalculateNormals();
-                    }
+                    poly.CalculateNormals();
                 }
             }
         }
 
         private void generateTanBitanToolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode is NUD.Mesh)
+            if (!(treeView1.SelectedNode is NUD.Mesh))
+                return;
+            
+            string meshName = treeView1.SelectedNode.Text;
+            var messageBox = MessageBox.Show("If the vertex type does not support tangents/bitangents, \n" +
+                "the vertex type will be changed to Normals, Tan, Bi-Tan (Float). \n" +
+                "This will increase the file size.", meshName, MessageBoxButtons.OKCancel);
+
+            if (messageBox == DialogResult.OK)
             {
-                string meshName = treeView1.SelectedNode.Text;
-
-                var messageBox = MessageBox.Show("If the vertex type does not support tangents/bitangents, \n" +
-                    "the vertex type will be changed to Normals, Tan, Bi-Tan (Float). \n" +
-                    "This will increase the file size.", meshName, MessageBoxButtons.OKCancel);
-
-                if (messageBox == DialogResult.OK)
+                foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
                 {
-                    foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
-                    {
-                        GenerateTanBitanAndFixVertType(poly);
-                    }
-                }    
-            }
+                    GenerateTanBitanAndFixVertType(poly);
+                }
+            }               
         }
 
         private static void GenerateTanBitanAndFixVertType(NUD.Polygon poly)
@@ -1009,6 +1008,30 @@ namespace Smash_Forge
 
             // This already checks for the appropriate vertex type. 
             poly.CalculateTangentBitangent();
+        }
+
+        private void setToWhiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Polygon))
+                return;
+
+            NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+            p.SetVertexColor(new OpenTK.Vector4(127, 127, 127, 255));
+        }
+
+        private void selectColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Polygon))
+                return;
+
+            // Use a dialog so the color isn't set until the color editor is closed. 
+            ColorEditor colorEditor = new ColorEditor(new OpenTK.Vector4(1));
+            colorEditor.ShowDialog();
+
+            // Remap the color from 1.0 being white to 128 being white.
+            OpenTK.Vector4 newVertColor = colorEditor.GetColor() * 128;
+            NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+            p.SetVertexColor(newVertColor);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Smash_Forge.GUI.Menus
 {
-    partial class LightColorEditor
+    partial class ColorEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -79,7 +79,7 @@
             this.groupBox1.Size = new System.Drawing.Size(319, 303);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Light Color";
+            this.groupBox1.Text = "Color";
             // 
             // colorTempTrackBar
             // 
@@ -165,7 +165,7 @@
             // blueTrackBar
             // 
             this.blueTrackBar.Location = new System.Drawing.Point(123, 183);
-            this.blueTrackBar.Maximum = 255;
+            this.blueTrackBar.Maximum = 100;
             this.blueTrackBar.Name = "blueTrackBar";
             this.blueTrackBar.Size = new System.Drawing.Size(176, 25);
             this.blueTrackBar.TabIndex = 24;
@@ -175,7 +175,7 @@
             // greenTrackBar
             // 
             this.greenTrackBar.Location = new System.Drawing.Point(123, 153);
-            this.greenTrackBar.Maximum = 255;
+            this.greenTrackBar.Maximum = 100;
             this.greenTrackBar.Name = "greenTrackBar";
             this.greenTrackBar.Size = new System.Drawing.Size(176, 24);
             this.greenTrackBar.TabIndex = 23;
@@ -331,7 +331,7 @@
             // 
             this.redTrackBar.LargeChange = 250;
             this.redTrackBar.Location = new System.Drawing.Point(123, 123);
-            this.redTrackBar.Maximum = 255;
+            this.redTrackBar.Maximum = 100;
             this.redTrackBar.Name = "redTrackBar";
             this.redTrackBar.Size = new System.Drawing.Size(176, 24);
             this.redTrackBar.TabIndex = 10;
@@ -366,13 +366,14 @@
             this.blueTB.TabIndex = 22;
             this.blueTB.TextChanged += new System.EventHandler(this.blueTB_TextChanged);
             // 
-            // LightColorEditor
+            // ColorEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(339, 324);
             this.Controls.Add(this.groupBox1);
-            this.Name = "LightColorEditor";
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Name = "ColorEditor";
             this.Text = "ColorEditor";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
