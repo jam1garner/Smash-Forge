@@ -46,7 +46,7 @@ namespace Smash_Forge.GUI
             checkBox16.Checked = Runtime.renderInterpolatedHitboxes;
             checkBox17.Checked = Runtime.renderSpecialBubbles;
             checkBox18.Checked = Runtime.renderHitboxesNoOverlap;
-            checkBox19.Checked = Runtime.renderHitboxAngles;
+            hitboxAnglesCB.Checked = Runtime.renderHitboxAngles;
             checkBox21.Checked = Runtime.renderLedgeGrabboxes;
             checkBox22.Checked = Runtime.renderTetherLedgeGrabboxes;
             checkBox23.Checked = Runtime.renderReverseLedgeGrabboxes;
@@ -141,7 +141,7 @@ namespace Smash_Forge.GUI
                 Runtime.renderInterpolatedHitboxes = checkBox16.Checked;
                 Runtime.renderSpecialBubbles = checkBox17.Checked;
                 Runtime.renderHitboxesNoOverlap = checkBox18.Checked;
-                Runtime.renderHitboxAngles = checkBox19.Checked;
+                Runtime.renderHitboxAngles = hitboxAnglesCB.Checked;
                 Runtime.renderLedgeGrabboxes = checkBox21.Checked;
                 Runtime.renderTetherLedgeGrabboxes = checkBox22.Checked;
                 Runtime.renderReverseLedgeGrabboxes = checkBox23.Checked;
