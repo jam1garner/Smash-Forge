@@ -427,30 +427,24 @@ namespace Smash_Forge
 
         private void singleBindToBoneToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            /*if(mc.vbn.bones == null)
-            {
-                MessageBox.Show("No Skeleton Found");
-                return;
-            }*/
             NUD.Mesh mesh = (NUD.Mesh)treeView1.SelectedNode;
-            char[] d = "None".ToCharArray();
-            LVDEditor.StringWrapper str = new LVDEditor.StringWrapper() { data = d };
-            foreach (TreeNode node in treeView1.Nodes)
-            {
-                if(node is ModelContainer)
-                {
-                    ModelContainer mc = (ModelContainer)node;
-                    if (treeView1.SelectedNode.Parent == mc.NUD)
-                        if (mc.VBN.bones.Count > mesh.singlebind && mesh.singlebind != -1)
-                            str = new LVDEditor.StringWrapper() { data = mc.VBN.bones[mesh.singlebind].Text.ToCharArray() };
-                }
-            }
 
-            BoneRiggingSelector brs = new BoneRiggingSelector(str) { ModelContainers = GetModelContainers() };
+            //The ModelContainer that contains the NUD that contains this mesh (SelectedNode)
+            ModelContainer parentModel = (ModelContainer)treeView1.SelectedNode.Parent.Parent;
+
+            short boneIndex = -1;
+            if (mesh.singlebind < parentModel.VBN.bones.Count)
+                boneIndex = mesh.singlebind;
+
+            BoneRiggingSelector brs = new BoneRiggingSelector(boneIndex);
+            brs.ModelContainers.Add(parentModel);
             brs.ShowDialog();
             if (!brs.Cancelled)
             {
-                mesh.boneflag = 8;
+                if (brs.SelectedNone)
+                    mesh.boneflag = 0;
+                else
+                    mesh.boneflag = 8;
                 mesh.singlebind = brs.boneIndex;
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {

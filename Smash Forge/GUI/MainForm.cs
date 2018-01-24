@@ -2008,7 +2008,15 @@ namespace Smash_Forge
                 project.fillTree();
         }
 
-        // returns true if importing into active
+        public ModelViewport GetActiveViewport()
+        {
+            if (dockPanel1.ActiveContent is ModelViewport)
+                return (ModelViewport)dockPanel1.ActiveContent;
+            else
+                return null;
+        }
+
+        // returns true if importing into active viewport
         public bool CheckCurrentViewport(out ModelViewport mvp)
         {
             mvp = null;

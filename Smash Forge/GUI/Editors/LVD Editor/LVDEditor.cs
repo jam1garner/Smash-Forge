@@ -16,11 +16,6 @@ namespace Smash_Forge
     {
         public LVD LVD;
 
-        public class StringWrapper
-        {
-            public char[] data;
-        } 
-
         public LVDEditor()
         {
             InitializeComponent();
@@ -93,7 +88,7 @@ namespace Smash_Forge
                 yStart.Value = (decimal)currentEntry.startPos[1];
                 zStart.Value = (decimal)currentEntry.startPos[2];
                 useStartPos.Checked = currentEntry.useStartPos;
-                string boneNameRigging = currentEntry.BoneName;
+                string boneNameRigging = currentEntry.boneName;
                 if (boneNameRigging.Length == 0)
                     boneNameRigging = "None";
                 button3.Text = boneNameRigging;
@@ -433,14 +428,16 @@ namespace Smash_Forge
                 lines.Nodes[i].Text = $"Line {i + 1}";
         }
 
+        //Open bone selector for object rigging
         private void button3_Click(object sender, EventArgs e)
         {
-            //Open bone selector for collision rigging
-            StringWrapper str = new StringWrapper() { data = currentEntry.boneName };
-            BoneRiggingSelector bs = new BoneRiggingSelector(str);
-            bs.ShowDialog();
-            currentEntry.boneName = str.data;
-            string boneNameRigging = currentEntry.BoneName;
+            BoneRiggingSelector brs = new BoneRiggingSelector(currentEntry.boneName);
+            brs.ModelContainers = MainForm.Instance.GetActiveViewport().MeshList.GetModelContainers();
+            brs.ShowDialog();
+            if (!brs.Cancelled)
+                currentEntry.boneName = brs.currentValue;
+
+            string boneNameRigging = currentEntry.boneName;
             if (boneNameRigging.Length == 0)
                 boneNameRigging = "None";
             button3.Text = boneNameRigging;

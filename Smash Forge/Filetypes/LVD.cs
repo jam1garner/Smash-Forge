@@ -16,26 +16,41 @@ namespace Smash_Forge
     public abstract class LVDEntry
     {
         public abstract string magic { get; }
-        public string name = "";
-        public string subname = "";
+        private string _name = new string(new char[0x38]);
+        private string _subname = new string(new char[0x40]);
         public Vector3 startPos = new Vector3();
         public bool useStartPos = false;
         public int unk1 = 0;
         public float[] unk2 = new float[3];
         public int unk3 = unchecked((int)0xFFFFFFFF);
-        public char[] boneName = new char[0x40];
+        private string _boneName = new string(new char[0x40]);
 
-        public string BoneName
+        private static string getString(string baseStr, int maxLength)
         {
-            get
-            {
-                string name = "";
-                foreach (char b in boneName)
-                    if (b != (char)0)
-                        name += b;
-                    else break;
-                return name;
-            }
+            int length = baseStr.IndexOf((char)0);
+            if (length == -1)
+                length = maxLength;
+            return baseStr.Substring(0, length);
+        }
+        private static string setString(string baseStr, int maxLength)
+        {
+            return baseStr.PadRight(maxLength, (char)0).Substring(0, maxLength);
+        }
+
+        public string name
+        {
+            get {return getString(_name, 0x38);}
+            set {_name = setString(value, 0x38);}
+        }
+        public string subname
+        {
+            get {return getString(_subname, 0x40);}
+            set {_subname = setString(value, 0x40);}
+        }
+        public string boneName
+        {
+            get {return getString(_boneName, 0x40);}
+            set {_boneName = setString(value, 0x40);}
         }
 
         public void read(FileData f)
@@ -43,11 +58,11 @@ namespace Smash_Forge
             f.skip(0xC);
 
             f.skip(1);
-            name = f.readString(f.pos(), 0x38);
+            _name = f.readString(f.pos(), 0x38);
             f.skip(0x38);
 
             f.skip(1);
-            subname = f.readString(f.pos(), 0x40);
+            _subname = f.readString(f.pos(), 0x40);
             f.skip(0x40);
 
             f.skip(1);
@@ -66,19 +81,18 @@ namespace Smash_Forge
             unk3 = f.readInt();
 
             f.skip(1);
-            boneName = new char[0x40];
-            for (int i = 0; i < 0x40; i++)
-                boneName[i] = (char)f.readByte();
+            _boneName = f.readString(f.pos(), 0x40);
+            f.skip(0x40);
         }
         public void save(FileOutput f)
         {
             f.writeHex(magic);
 
             f.writeByte(1);
-            f.writeString(name.PadRight(0x38, (char)0));
+            f.writeString(_name);
 
             f.writeByte(1);
-            f.writeString(subname.PadRight(0x40, (char)0));
+            f.writeString(_subname);
 
             f.writeByte(1);
             for (int i = 0; i < 3; i++)
@@ -94,7 +108,7 @@ namespace Smash_Forge
             f.writeInt(unk3);
 
             f.writeByte(1);
-            f.writeChars(boneName);
+            f.writeString(_boneName);
         }
     }
 
@@ -1459,7 +1473,7 @@ namespace Smash_Forge
                             {
                                 foreach (Bone b in m.VBN.bones)
                                 {
-                                    if (b.Text.Equals(c.BoneName))
+                                    if (b.Text.Equals(c.boneName))
                                     {
                                         riggedBone = b;
                                     }

@@ -60,7 +60,8 @@ namespace Smash_Forge
                 MenuItem Add = new MenuItem("Add New Spawn");
                 Add.Click += delegate
                 {
-                    TargetLVD.spawns.Add(new Spawn() { name = "START_00_NEW", subname = "00_NEW" });
+                    string newNum = (TargetLVD.spawns.Count + 1).ToString().PadLeft(2, '0');
+                    TargetLVD.spawns.Add(new Spawn() { name = "START_00_P" + newNum, subname = "00_P" + newNum });
                     fillList();
                 };
                 spawnNode.ContextMenu.MenuItems.Add(Add);
@@ -72,7 +73,8 @@ namespace Smash_Forge
                 MenuItem Add = new MenuItem("Add New Respawn");
                 Add.Click += delegate
                 {
-                    TargetLVD.respawns.Add(new Spawn() { name = "RESTART_00_NEW", subname = "00_NEW" });
+                    string newNum = (TargetLVD.respawns.Count + 1).ToString().PadLeft(2, '0');
+                    TargetLVD.respawns.Add(new Spawn() { name = "RESTART_00_P" + newNum, subname = "00_P" + newNum });
                     fillList();
                 };
                 node.ContextMenu.MenuItems.Add(Add);
@@ -84,7 +86,7 @@ namespace Smash_Forge
                 MenuItem Add = new MenuItem("Add New Camera Bounds");
                 Add.Click += delegate
                 {
-                    TargetLVD.cameraBounds.Add(new Bounds() { name = "CAMERA_00_NEW", subname = "00_NEW" });
+                    TargetLVD.cameraBounds.Add(new Bounds() { name = "CAMERA_00", subname = "00" });
                     fillList();
                 };
                 node.ContextMenu.MenuItems.Add(Add);
@@ -96,7 +98,7 @@ namespace Smash_Forge
                 MenuItem Add = new MenuItem("Add New Blastzones");
                 Add.Click += delegate
                 {
-                    TargetLVD.blastzones.Add(new Bounds() { name = "DEATH_00_NEW", subname = "00_NEW" });
+                    TargetLVD.blastzones.Add(new Bounds() { name = "DEATH_00", subname = "00" });
                     fillList();
                 };
                 node.ContextMenu.MenuItems.Add(Add);
