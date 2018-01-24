@@ -18,18 +18,12 @@ namespace Smash_Forge
         {
             if (!Runtime.shaders.ContainsKey("NUD"))
             {
-                Shader nud = new Shader();
-                nud.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
-                nud.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_fs.txt"));
-                Runtime.shaders.Add("NUD", nud);
+                ShaderTools.CreateShader("NUD", "/lib/Shader/Legacy/", "/lib/Shader/");
             }
 
             if (!Runtime.shaders.ContainsKey("NUD_Debug"))
             {
-                Shader debug = new Shader();
-                debug.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_vs.txt"));
-                debug.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/NUD_Debug_fs.txt"));
-                Runtime.shaders.Add("NUD_Debug", debug);
+                ShaderTools.CreateShader("NUD_Debug", "/lib/Shader/Legacy/", "/lib/Shader/");
             }
 
             Runtime.shaders["NUD"].displayCompilationWarning("NUD");
@@ -420,7 +414,7 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
 
             // shader uniforms
-            BooleanToIntShaderUniform(shader, Runtime.renderVertColor && material.useVertexColor, "renderVertColor");
+            ShaderTools.BoolToIntShaderUniform(shader, Runtime.renderVertColor && material.useVertexColor, "renderVertColor");
             SetTextureUniforms(shader, material);
             SetMaterialPropertyUniforms(shader, material);
             SetLightingUniforms(shader);
@@ -431,7 +425,7 @@ namespace Smash_Forge
             if (material.srcFactor > 0 || material.dstFactor > 0 || material.AlphaFunc > 0 || material.AlphaTest > 0)
                 p.isTransparent = true;
 
-            BooleanToIntShaderUniform(shader, p.isTransparent, "isTransparent");
+            ShaderTools.BoolToIntShaderUniform(shader, p.isTransparent, "isTransparent");
 
             // Vertex shader attributes (UVs, skin weights, etc)
             SetVertexAttributes(p, shader);
@@ -534,7 +528,7 @@ namespace Smash_Forge
             // stage light 4
             int index4 = 3 + (4 * lightSetNumber);
             Lights.stageLight4 = Lights.stageDiffuseLightSet[index4];
-            BooleanToIntShaderUniform(shader, Lights.stageDiffuseLightSet[index4].enabled, "renderStageLight4");
+            ShaderTools.BoolToIntShaderUniform(shader, Lights.stageDiffuseLightSet[index4].enabled, "renderStageLight4");
 
             GL.Uniform3(shader.getAttribute("stageLight4Color"), Lights.stageLight4.difR, Lights.stageLight4.difG, Lights.stageLight4.difB);
 
@@ -704,21 +698,21 @@ namespace Smash_Forge
 
         private static void SetTextureUniforms(Shader shader, Material mat)
         {
-            BooleanToIntShaderUniform(shader, mat.hasDiffuse,         "hasDif");
-            BooleanToIntShaderUniform(shader, mat.hasDiffuse2,        "hasDif2");
-            BooleanToIntShaderUniform(shader, mat.hasDiffuse3,        "hasDif3");
-            BooleanToIntShaderUniform(shader, mat.hasStageMap,        "hasStage");
-            BooleanToIntShaderUniform(shader, mat.hasCubeMap,         "hasCube");
-            BooleanToIntShaderUniform(shader, mat.hasAoMap,           "hasAo");
-            BooleanToIntShaderUniform(shader, mat.hasNormalMap,       "hasNrm");
-            BooleanToIntShaderUniform(shader, mat.hasRamp,            "hasRamp");
-            BooleanToIntShaderUniform(shader, mat.hasDummyRamp,       "hasDummyRamp");
-            BooleanToIntShaderUniform(shader, mat.useColorGainOffset, "hasColorGainOffset");
-            BooleanToIntShaderUniform(shader, mat.useDiffuseBlend,    "useDiffuseBlend");
-            BooleanToIntShaderUniform(shader, mat.hasSphereMap,       "hasSphereMap");
-            BooleanToIntShaderUniform(shader, mat.hasBayoHair,        "hasBayoHair");
-            BooleanToIntShaderUniform(shader, mat.useReflectionMask,  "useDifRefMask");
-            BooleanToIntShaderUniform(shader, mat.softLightBrighten,  "softLightBrighten");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse,         "hasDif");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse2,        "hasDif2");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse3,        "hasDif3");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasStageMap,        "hasStage");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasCubeMap,         "hasCube");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasAoMap,           "hasAo");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasNormalMap,       "hasNrm");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasRamp,            "hasRamp");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasDummyRamp,       "hasDummyRamp");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.useColorGainOffset, "hasColorGainOffset");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.useDiffuseBlend,    "useDiffuseBlend");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasSphereMap,       "hasSphereMap");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasBayoHair,        "hasBayoHair");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.useReflectionMask,  "useDifRefMask");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.softLightBrighten,  "softLightBrighten");
                                               
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
@@ -808,15 +802,6 @@ namespace Smash_Forge
                 mat.dummyRampID = mat.textures[texid].hash;
                 texid++;
             }
-        }
-
-        private static void BooleanToIntShaderUniform(Shader shader, bool value, string name)
-        {
-            // Else if is faster than ternary operator. 
-            if (value)
-                GL.Uniform1(shader.getAttribute(name), 1);
-            else
-                GL.Uniform1(shader.getAttribute(name), 0);
         }
 
         private static void MatPropertyShaderUniform(Shader shader, Material mat, string propertyName, float default1,
@@ -963,9 +948,11 @@ namespace Smash_Forge
             GL.UseProgram(shader.programID);
             Matrix4 mat = cam.getMVPMatrix();
             GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mat);
-            //GL.Uniform4(shader.getAttribute("color"), 1, 1, 1, 1);
 
-            if (vbn != null && !Runtime.useLegacyShaders)
+            //**************************************************************************************
+            //**************************************************************************************
+            // Using the buffer twice causes the NUD rendering to crash, so I've disabled it for now. 
+            if (false && vbn != null && !Runtime.useLegacyShaders)
             {
                 Matrix4[] f = vbn.getShaderMatrix();
                 
@@ -985,6 +972,9 @@ namespace Smash_Forge
                     GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
                 }
             }
+            //**************************************************************************************
+            //**************************************************************************************
+
 
             if (type == PrimitiveType.Points)
             {

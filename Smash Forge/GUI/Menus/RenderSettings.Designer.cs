@@ -33,7 +33,7 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
-            this.checkBox19 = new System.Windows.Forms.CheckBox();
+            this.hitboxAnglesCB = new System.Windows.Forms.CheckBox();
             this.checkBox23 = new System.Windows.Forms.CheckBox();
             this.checkBox22 = new System.Windows.Forms.CheckBox();
             this.checkBox21 = new System.Windows.Forms.CheckBox();
@@ -92,6 +92,7 @@
             this.RendererLabel = new System.Windows.Forms.Label();
             this.OpenGLVersionLabel = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.drawUvCB = new System.Windows.Forms.CheckBox();
             this.areaLightBoundingBoxCB = new System.Windows.Forms.CheckBox();
             this.checkBox11 = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
@@ -148,7 +149,6 @@
             this.reflectionCB = new System.Windows.Forms.CheckBox();
             this.useNormCB = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.drawUvCB = new System.Windows.Forms.CheckBox();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -181,7 +181,7 @@
             this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
             this.tabPage2.Controls.Add(this.label1);
             this.tabPage2.Controls.Add(this.pbHitboxAnglesColor);
-            this.tabPage2.Controls.Add(this.checkBox19);
+            this.tabPage2.Controls.Add(this.hitboxAnglesCB);
             this.tabPage2.Controls.Add(this.checkBox23);
             this.tabPage2.Controls.Add(this.checkBox22);
             this.tabPage2.Controls.Add(this.checkBox21);
@@ -255,15 +255,16 @@
             this.pbHitboxAnglesColor.TabStop = false;
             this.pbHitboxAnglesColor.Click += new System.EventHandler(this.pbHitboxAnglesColor_Click);
             // 
-            // checkBox19
+            // hitboxAnglesCB
             // 
-            this.checkBox19.AutoSize = true;
-            this.checkBox19.Location = new System.Drawing.Point(211, 29);
-            this.checkBox19.Name = "checkBox19";
-            this.checkBox19.Size = new System.Drawing.Size(129, 17);
-            this.checkBox19.TabIndex = 73;
-            this.checkBox19.Text = "Render Hitbox Angles";
-            this.checkBox19.UseVisualStyleBackColor = true;
+            this.hitboxAnglesCB.AutoSize = true;
+            this.hitboxAnglesCB.Location = new System.Drawing.Point(211, 29);
+            this.hitboxAnglesCB.Name = "hitboxAnglesCB";
+            this.hitboxAnglesCB.Size = new System.Drawing.Size(129, 17);
+            this.hitboxAnglesCB.TabIndex = 73;
+            this.hitboxAnglesCB.Text = "Render Hitbox Angles";
+            this.hitboxAnglesCB.UseVisualStyleBackColor = true;
+            this.hitboxAnglesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // checkBox23
             // 
@@ -862,6 +863,17 @@
             this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Display Settings";
+            // 
+            // drawUvCB
+            // 
+            this.drawUvCB.AutoSize = true;
+            this.drawUvCB.Location = new System.Drawing.Point(16, 415);
+            this.drawUvCB.Name = "drawUvCB";
+            this.drawUvCB.Size = new System.Drawing.Size(143, 17);
+            this.drawUvCB.TabIndex = 28;
+            this.drawUvCB.Text = "Draw UVs (Experimental)";
+            this.drawUvCB.UseVisualStyleBackColor = true;
+            this.drawUvCB.CheckedChanged += new System.EventHandler(this.drawUvCB_CheckedChanged);
             // 
             // areaLightBoundingBoxCB
             // 
@@ -1520,17 +1532,6 @@
             this.tabControl1.Size = new System.Drawing.Size(564, 698);
             this.tabControl1.TabIndex = 17;
             // 
-            // drawUvCB
-            // 
-            this.drawUvCB.AutoSize = true;
-            this.drawUvCB.Location = new System.Drawing.Point(16, 415);
-            this.drawUvCB.Name = "drawUvCB";
-            this.drawUvCB.Size = new System.Drawing.Size(143, 17);
-            this.drawUvCB.TabIndex = 28;
-            this.drawUvCB.Text = "Draw UVs (Experimental)";
-            this.drawUvCB.UseVisualStyleBackColor = true;
-            this.drawUvCB.CheckedChanged += new System.EventHandler(this.drawUvCB_CheckedChanged);
-            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1694,7 +1695,7 @@
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.CheckBox debug2CB;
         private System.Windows.Forms.CheckBox debug1CB;
-        private System.Windows.Forms.CheckBox checkBox19;
+        private System.Windows.Forms.CheckBox hitboxAnglesCB;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox pbHitboxAnglesColor;
         private System.Windows.Forms.CheckBox drawUvCB;

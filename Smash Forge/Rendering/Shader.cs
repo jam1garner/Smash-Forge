@@ -12,23 +12,37 @@ namespace Smash_Forge
 	public class Shader
 	{
 		public int programID;
-		int vsID;
-		int fsID;
+		private int vsID;
+		private int fsID;
 
         private bool checkedCompilation = false;
         private StringBuilder errorLog = new StringBuilder();
+
+        private string vertFilePath = "";
+        private string fragFilePath = "";
 
 		Dictionary<string, int> attributes = new Dictionary<string, int>();
 
 		public Shader ()
 		{
 			programID = GL.CreateProgram();
+
             errorLog.AppendLine("Program ID: " + programID);
             errorLog.AppendLine("MaxUniformBlockSize: " + GL.GetInteger(GetPName.MaxUniformBlockSize));
             errorLog.AppendLine("Vendor: " + GL.GetString(StringName.Vendor));
             errorLog.AppendLine("Renderer: " + GL.GetString(StringName.Renderer));
             errorLog.AppendLine("OpenGL Version: " + GL.GetString(StringName.Version));
             errorLog.AppendLine("GLSL Version: " + GL.GetString(StringName.ShadingLanguageVersion));
+        }
+
+        public string getVertPath()
+        {
+            return vertFilePath;
+        }
+
+        public string getFragPath()
+        {
+            return fragFilePath;
         }
 
         public bool hasCheckedCompilation()
@@ -117,26 +131,28 @@ namespace Smash_Forge
             }
         }
 
-        public void vertexShader(string shaderText){
+        public void vertexShader(string filePath){
+            string shaderText = File.ReadAllText(filePath);
+            vertFilePath = filePath;
             loadShader(shaderText, ShaderType.VertexShader, programID, out vsID);
 			GL.LinkProgram (programID);
-            errorLog.AppendLine("Vertex Shader");
             LoadAttributes(shaderText);
+
+            errorLog.AppendLine("Vertex Shader");
             string error = GL.GetProgramInfoLog(programID);
             errorLog.AppendLine(error);
-            Console.WriteLine(error);
         }
 
-		public void fragmentShader(string shaderText){
+		public void fragmentShader(string filePath){
+            string shaderText = File.ReadAllText(filePath);
+            fragFilePath = filePath;
 			loadShader(shaderText, ShaderType.FragmentShader, programID, out fsID);
 			GL.LinkProgram (programID);
-            errorLog.AppendLine("Fragment Shader");
             LoadAttributes(shaderText, true);
+
+            errorLog.AppendLine("Fragment Shader");
             string error = GL.GetProgramInfoLog(programID);
             errorLog.AppendLine(error);
-            Console.WriteLine(error);
-
-
         }
 
         void loadShader(string shaderText, ShaderType type, int program, out int address)
@@ -151,8 +167,8 @@ namespace Smash_Forge
 
         public bool shadersCompiledSuccessfully()
         {
-            // make sure the shaders were compiled correctly
-            // don't try to render if the shaders have errors to avoid crashes
+            // Make sure the shaders were compiled correctly.
+            // Don't try to render if the shaders have errors to avoid crashes.
             int compileStatusVS;
             GL.GetShader(vsID, ShaderParameter.CompileStatus, out compileStatusVS);
 
@@ -174,9 +190,9 @@ namespace Smash_Forge
             if (compileStatusVS == 0)
             {
                 MessageBox.Show("The " + shaderName
-                        + " vertex shader failed to compile. Check that your system supports OpenGL 3.30. Enable legacy shading in the config for OpenGL 2.10." +
-                        " Please export a shader error log and " +
-                        "upload it when reporting rendering issues.", "Shader Compilation Error");
+                    + " vertex shader failed to compile. Check that your system supports OpenGL 3.30. Enable legacy shading in the config for OpenGL 2.10." +
+                    " Please export a shader error log and " +
+                    "upload it when reporting rendering issues.", "Shader Compilation Error");
             }
 
             int compileStatusFS;
@@ -184,9 +200,9 @@ namespace Smash_Forge
             if (compileStatusFS == 0)
             {
                 MessageBox.Show("The " + shaderName
-                + " fragment shader failed to compile. Check that your system supports OpenGL 3.30. Enable legacy shading in the config for OpenGL 2.10." +
-                " Please export a shader error log and " +
-                "upload it when reporting rendering issues.", "Shader Compilation Error");
+                    + " fragment shader failed to compile. Check that your system supports OpenGL 3.30. Enable legacy shading in the config for OpenGL 2.10." +
+                    " Please export a shader error log and " +
+                    "upload it when reporting rendering issues.", "Shader Compilation Error");
             }
 
             checkedCompilation = true;      

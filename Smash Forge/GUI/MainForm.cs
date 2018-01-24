@@ -74,9 +74,6 @@ namespace Smash_Forge
             //foreach (var vp in viewports)
             //    AddDockedControl(vp);
 
-            //if (Smash_Forge.Update.Downloaded)
-            //    MainForm.Instance.pictureBox1.Image = Resources.Resources.sexy_green_down_arrow;
-
             System.Windows.Forms.Application.Idle += AppIdle;
 
             //animationsWindowToolStripMenuItem.Checked =
@@ -135,49 +132,11 @@ namespace Smash_Forge
             Runtime.renderReverseLedgeGrabboxes = false;
             Runtime.paramDir = "";
 
-            //viewportWindowToolStripMenuItem.Checked = true;
             openFiles();
 
             Runtime.StartupFromConfig(MainForm.executableDir + "\\config.xml");
 
-            SetupShaders();
-
-            //RenderTools.Setup();
-        }
-
-        private static void SetupShaders()
-        {
-            // Reset the shaders first so that shaders can be replaced.
-            Runtime.shaders = new Dictionary<string, Shader>();
-            CreateShader("Texture", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("NUD", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("MBN", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("DAT", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("NUD_Debug", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("Gradient", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("Quad", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("Blur", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("Shadow", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("Point", "/lib/Shader/", "/lib/Shader/");
-        }
-
-        private static void CreateShader(string name, string legacyPath, string normalPath)
-        {
-            if (!Runtime.shaders.ContainsKey(name))
-            {
-                Shader shader = new Shader();
-                if (Runtime.useLegacyShaders)
-                {
-                    shader.vertexShader(File.ReadAllText(MainForm.executableDir + legacyPath + name + "_vs.txt"));
-                    shader.fragmentShader(File.ReadAllText(MainForm.executableDir + legacyPath + name + "_fs.txt"));
-                }
-                else
-                {
-                    shader.vertexShader(File.ReadAllText(MainForm.executableDir + normalPath + name + "_vs.txt"));
-                    shader.fragmentShader(File.ReadAllText(MainForm.executableDir + normalPath + name + "_fs.txt"));
-                }
-                Runtime.shaders.Add(name, shader);
-            }
+            ShaderTools.SetupShaders();
         }
 
         public void openFiles()
@@ -405,14 +364,8 @@ namespace Smash_Forge
                 {
                     filename = save.FileName;
                     saveFile(filename);
-                    //OMO.createOMO (anim, vbn, "C:\\Users\\ploaj_000\\Desktop\\WebGL\\test_outut.omo", -1, -1);
                 }
             }
-        }
-
-        public static void DAEReadSemantic(int p, Dictionary<string, string> semantic)
-        {
-
         }
 
         private ModelViewport openNud(string filename, string name = "", ModelViewport mvp = null)
@@ -2370,7 +2323,7 @@ namespace Smash_Forge
 
         private void reloadShadersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SetupShaders();
+            ShaderTools.SetupShaders();
         }
 
         private void open3DSCharacterToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2386,7 +2339,6 @@ namespace Smash_Forge
                     MainForm.Instance.Progress.ControlBox = false;
                     MainForm.Instance.Progress.Message = ("Please Wait... Opening Character");
                     MainForm.Instance.Progress.Show();*/
-
 
                     string fighterName = new DirectoryInfo(ofd.SelectedPath).Name;
 
