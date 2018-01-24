@@ -105,7 +105,8 @@
             "Model Editor",
             "Animation Editor",
             "LVD Editor",
-            "ACMD Editor"});
+            "ACMD Editor",
+            "Clean"});
             this.ViewComboBox.Name = "ViewComboBox";
             this.ViewComboBox.Size = new System.Drawing.Size(121, 31);
             this.ViewComboBox.ToolTipText = "The current view for the Viewport";
