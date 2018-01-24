@@ -49,7 +49,7 @@ namespace Smash_Forge.GUI.Menus
 
         private void hueTB_TextChanged(object sender, EventArgs e)
         {
-            hue = TryParseFloatFromTextBox(hueTB);
+            hue = GuiTools.TryParseTBFloat(colorXTB);
             UpdateValuesFromHsv();
         }
 
@@ -63,48 +63,15 @@ namespace Smash_Forge.GUI.Menus
 
         }
 
-        private void colorTempTB_TextChanged(object sender, EventArgs e)
-        {
-            float i = 0;
-            if (float.TryParse(colorTempTB.Text, out i))
-            {
-                colorTempTB.BackColor = Color.White;
-            }
-            else
-                colorTempTB.BackColor = Color.Red;
-        }
-
         private void redTB_TextChanged(object sender, EventArgs e) // fix type casting
         {
-            R = TryParseFloatFromTextBox(redTB);
-            UpdateValuesFromRgb();
-        }
-
-        private void greenTB_TextChanged(object sender, EventArgs e)
-        {
-            G = TryParseFloatFromTextBox(greenTB);
-            UpdateValuesFromRgb();
-        }
-
-        private void blueTB_TextChanged(object sender, EventArgs e)
-        {
-            B = TryParseFloatFromTextBox(blueTB);
+            R = GuiTools.TryParseTBFloat(colorWTB);
             UpdateValuesFromRgb();
         }
 
         private void redTrackBar_Scroll(object sender, EventArgs e)
         {
-            redTB.Text = GetTextValueFromTrackBar(redTrackBar, maxRgb);
-        }
-
-        private void greenTrackBar_Scroll(object sender, EventArgs e)
-        {
-            greenTB.Text = GetTextValueFromTrackBar(greenTrackBar, maxRgb);
-        }
-
-        private void blueTrackBar_Scroll(object sender, EventArgs e)
-        {
-            blueTB.Text = GetTextValueFromTrackBar(blueTrackBar, maxRgb);
+            colorWTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarW, maxRgb);
         }
 
         private void colorTrackBar_Scroll(object sender, EventArgs e)
@@ -141,80 +108,65 @@ namespace Smash_Forge.GUI.Menus
 
         private void UpdateColorTrackBars()
         {
-            UpdateTrackBarFromValue(R, redTrackBar, 0, maxRgb);
-            UpdateTrackBarFromValue(G, greenTrackBar, 0, maxRgb);
-            UpdateTrackBarFromValue(B, blueTrackBar, 0, maxRgb);
-            UpdateTrackBarFromValue(hue, hueTrackBar, 0, maxHue);
-            UpdateTrackBarFromValue(saturation, satTrackBar, 0, maxSat);
-            UpdateTrackBarFromValue(value, valueTrackBar, 0, maxValue);
+            GuiTools.UpdateTrackBarFromValue(R, colorTrackBarW, 0, maxRgb);
+            //UpdateTrackBarFromValue(G, greenTrackBar, 0, maxRgb);
+            //UpdateTrackBarFromValue(B, blueTrackBar, 0, maxRgb);
+            GuiTools.UpdateTrackBarFromValue(hue, colorTrackBarX, 0, maxHue);
+            GuiTools.UpdateTrackBarFromValue(saturation, colorTrackBarY, 0, maxSat);
+            GuiTools.UpdateTrackBarFromValue(value, colorTrackBarZ, 0, maxValue);
         }
 
         private void UpdateColorText()
         {
-            redTB.Text = R.ToString();
-            greenTB.Text = G.ToString();
-            blueTB.Text = B.ToString();
-            hueTB.Text = hue.ToString();
-            satTB.Text = saturation.ToString();
-            valueTB.Text = value.ToString();
-            colorTempTB.Text = colorTemp.ToString();
+            colorWTB.Text = R.ToString();
+            //greenTB.Text = G.ToString();
+            //blueTB.Text = B.ToString();
+            colorXTB.Text = hue.ToString();
+            colorYTB.Text = saturation.ToString();
+            colorZTB.Text = value.ToString();
+            //colorTempTB.Text = colorTemp.ToString();
         }
 
         private void hueTrackBar_Scroll(object sender, EventArgs e)
         {
-            hueTB.Text = GetTextValueFromTrackBar(hueTrackBar, maxHue);
+            colorXTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarX, maxHue);
         }
 
         private void satTrackBar_Scroll(object sender, EventArgs e)
         {
-            satTB.Text = GetTextValueFromTrackBar(satTrackBar, maxSat);
+            colorYTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarY, maxSat);
         }
 
         private void valueTrackBar_Scroll(object sender, EventArgs e)
         {
-            valueTB.Text = GetTextValueFromTrackBar(valueTrackBar, maxValue);
+            colorZTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarZ, maxValue);
         }
 
         private void satTB_TextChanged(object sender, EventArgs e)
         {
-            saturation = TryParseFloatFromTextBox(satTB);
+            saturation = GuiTools.TryParseTBFloat(colorYTB);
             UpdateValuesFromHsv();
         }
 
         private void valueTB_TextChanged(object sender, EventArgs e)
         {
-            value = TryParseFloatFromTextBox(valueTB);
+            value = GuiTools.TryParseTBFloat(colorZTB);
             UpdateValuesFromHsv();
         }
 
-        private string GetTextValueFromTrackBar(TrackBar trackBar, float maximum)
+        private void editModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            float newValue = ((float)trackBar.Value / trackBar.Maximum) * maximum;
-            return newValue.ToString();
-        }
-
-        private void UpdateTrackBarFromValue(float value, TrackBar trackBar, float minValue, float maxValue)
-        {
-            // Values outside the displayable range of the trackbar are set to the
-            // trackbar's min or max value. 
-            int newSliderValue = (int)(value * trackBar.Maximum / maxValue);
-            newSliderValue = Math.Min(newSliderValue, trackBar.Maximum);
-            newSliderValue = Math.Max(newSliderValue, trackBar.Minimum);
-            trackBar.Value = newSliderValue;
-        }
-
-        private float TryParseFloatFromTextBox(TextBox textBox)
-        {
-            float result = 0;
-            if (float.TryParse(textBox.Text, out result))
+            switch (editModeComboBox.SelectedItem.ToString())
             {
-                saturation = result;
-                textBox.BackColor = Color.White;
+                default:
+                    break;
+                case "RGB":
+                    break;
+                case "HSV":
+                    break;
+                case "Temperature (K)":
+                    break;
             }
-            else
-                textBox.BackColor = Color.Red;
-
-            return result;
         }
     }
 }
