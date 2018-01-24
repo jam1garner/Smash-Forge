@@ -21,9 +21,12 @@ namespace Smash_Forge.GUI.Menus
         float G = 1.0f;
         float B = 1.0f;
         float colorTemp = 6500.0f; // color temperature in Kelvin
-        float maxRgb = 5;
-        float maxHue = 360;
-        float maxValue = 5;
+
+        const float maxRgb = 5;
+        const float maxHue = 360;
+        const float maxValue = 5;
+        const float maxSat = 1;
+        const float maxTemp = 10000;
 
         Vector4 color;
 
@@ -35,20 +38,7 @@ namespace Smash_Forge.GUI.Menus
             B = color.Z;
             ColorTools.RGB2HSV(R, G, B, out hue, out saturation, out value);
 
-            colorTempTB.Text = colorTemp + "";
-            redTB.Text = R + "";
-            greenTB.Text = G + "";
-            blueTB.Text = B + "";
-            hueTB.Text = hue + "";
-            satTB.Text = saturation + "";
-            valueTB.Text = value + "";
-
-            redTrackBar.Value = (int)(R * redTrackBar.Maximum);
-            greenTrackBar.Value = (int)(G * greenTrackBar.Maximum);
-            blueTrackBar.Value = (int)(B * blueTrackBar.Maximum);
-            hueTrackBar.Value = (int)(hue);
-            colorTempTrackBar.Value = (int)colorTemp;
-
+            UpdateColorText();
             this.color = color;
         }
 
@@ -68,7 +58,7 @@ namespace Smash_Forge.GUI.Menus
             else
                 hueTB.BackColor = Color.Red;
 
-            UpdateColors();
+            UpdateValuesFromHsv();
         }
 
         private void useColorTempCB_CheckedChanged(object sender, EventArgs e)
@@ -97,10 +87,13 @@ namespace Smash_Forge.GUI.Menus
             float i = 0;
             if (float.TryParse(redTB.Text, out i))
             {
+                R = i;
                 redTB.BackColor = Color.White;
             }
             else
                 redTB.BackColor = Color.Red;
+
+            UpdateValuesFromRgb();
         }
 
         private void greenTB_TextChanged(object sender, EventArgs e)
@@ -108,6 +101,7 @@ namespace Smash_Forge.GUI.Menus
             float i = 0;
             if (float.TryParse(greenTB.Text, out i))
             {
+                G = i;
                 greenTB.BackColor = Color.White;
             }
             else
@@ -119,6 +113,7 @@ namespace Smash_Forge.GUI.Menus
             float i = 0;
             if (float.TryParse(blueTB.Text, out i))
             {
+                B = i;
                 blueTB.BackColor = Color.White;
             }
             else
@@ -146,36 +141,29 @@ namespace Smash_Forge.GUI.Menus
 
         }
 
-        private void updateColorFromRGB() // update HSV values and button color
+        private void UpdateValuesFromRgb()
         {
             ColorTools.RGB2HSV(R, G, B, out hue, out saturation, out value);
-            redTB.Text = R.ToString();
-            greenTB.Text = G.ToString();
-            blueTB.Text = B.ToString();
-            hueTB.Text = hue.ToString();
-            satTB.Text = saturation.ToString();
-            valueTB.Text = value.ToString();
-
-            redTrackBar.Value = (int)(R * redTrackBar.Maximum);
-            greenTrackBar.Value = (int)(G * greenTrackBar.Maximum);
-            blueTrackBar.Value = (int)(B * blueTrackBar.Maximum);
-            hueTrackBar.Value = (int)(hue);
-
-            colorButton.BackColor = Color.FromArgb(255, ColorTools.Float2RGBClamp(R), ColorTools.Float2RGBClamp(G), ColorTools.Float2RGBClamp(B));
+            UpdateColorText();
+            UpdateColorTrackBars();
+            UpdateButtonColor();
         }
 
-        private void UpdateColors() // update values and button color
+        private void UpdateValuesFromHsv()
         {
             ColorTools.HSV2RGB(hue, saturation, value, out R, out G, out B);
-            UpdateColorFromRGB();
             UpdateColorText();
+            UpdateColorTrackBars();
+            UpdateButtonColor();
+        }
 
-            redTrackBar.Value = (int)(R * redTrackBar.Maximum);
-            greenTrackBar.Value = (int)(G * greenTrackBar.Maximum);
-            blueTrackBar.Value = (int)(B * blueTrackBar.Maximum);
-            hueTrackBar.Value = (int)(hue);
-
-            colorButton.BackColor = Color.FromArgb(255, ColorTools.Float2RGBClamp(R), ColorTools.Float2RGBClamp(G), ColorTools.Float2RGBClamp(B));
+        private void UpdateValuesFromTemp()
+        {
+            ColorTools.ColorTemp2RGB(colorTemp, out R, out G, out B);
+            UpdateValuesFromRgb();
+            UpdateColorText();
+            UpdateColorTrackBars();
+            UpdateButtonColor();
         }
 
         private void UpdateTextValues()
@@ -188,30 +176,17 @@ namespace Smash_Forge.GUI.Menus
             valueTB.Text = value.ToString();
         }
 
-        private void UpdateColorFromRGB()
+        private void UpdateButtonColor()
         {
-            color.X = R;
-            color.Y = G;
-            color.Z = B;
-            color.W = 1.0f;
-        }
-
-        private void UpdateColorFromTemp() // update values and button color
-        {
-            ColorTools.ColorTemp2RGB(colorTemp, out R, out G, out B);
-            UpdateColorFromRGB();
-            UpdateColorText();
-            UpdateTrackBarValues();
-
             colorButton.BackColor = Color.FromArgb(255, ColorTools.Float2RGBClamp(R), ColorTools.Float2RGBClamp(G), ColorTools.Float2RGBClamp(B));
         }
 
-        private void UpdateTrackBarValues()
+        private void UpdateColorTrackBars()
         {
-            UpdateTrackBarFromValue(R, redTrackBar, maxRgb);
-            UpdateTrackBarFromValue(G, greenTrackBar, maxRgb);
-            UpdateTrackBarFromValue(B, blueTrackBar, maxRgb);
-            UpdateTrackBarFromValue(hue, hueTrackBar, maxHue);
+            UpdateTrackBarFromValue(R, redTrackBar, 0, maxRgb);
+            UpdateTrackBarFromValue(G, greenTrackBar, 0, maxRgb);
+            UpdateTrackBarFromValue(B, blueTrackBar, 0, maxRgb);
+            UpdateTrackBarFromValue(hue, hueTrackBar, 0, maxHue);
         }
 
         private void UpdateColorText()
@@ -227,17 +202,23 @@ namespace Smash_Forge.GUI.Menus
 
         private void hueTrackBar_Scroll(object sender, EventArgs e)
         {
-
+            hueTB.Text = GetTextValueFromTrackBar(hueTrackBar, 360);
         }
 
         private void satTrackBar_Scroll(object sender, EventArgs e)
         {
+            satTB.Text = GetTextValueFromTrackBar(satTrackBar, 1);
+        }
 
+        private string GetTextValueFromTrackBar(TrackBar trackBar, float maximum)
+        {
+            float newValue = ((float)trackBar.Value / trackBar.Maximum) * maximum;
+            return newValue.ToString();
         }
 
         private void valueTrackBar_Scroll(object sender, EventArgs e)
         {
-
+            valueTB.Text = GetTextValueFromTrackBar(valueTrackBar, maxValue);
         }
 
         private void valueTB_TextChanged(object sender, EventArgs e)
@@ -245,18 +226,41 @@ namespace Smash_Forge.GUI.Menus
             float i = 0;
             if (float.TryParse(valueTB.Text, out i))
             {
+                value = i;
                 valueTB.BackColor = Color.White;
             }
             else
                 valueTB.BackColor = Color.Red;
         }
 
-        private void UpdateTrackBarFromValue(float value, TrackBar trackBar, float maxValue)
+        private void UpdateTrackBarFromValue(float value, TrackBar trackBar, float minValue, float maxValue)
         {
+            // Values outside the displayable range of the trackbar are set to the
+            // trackbar's min or max value. 
             int newSliderValue = (int)(value * trackBar.Maximum / maxValue);
             newSliderValue = Math.Min(newSliderValue, trackBar.Maximum);
-            newSliderValue = Math.Max(newSliderValue, 0);
+            newSliderValue = Math.Max(newSliderValue, trackBar.Minimum);
             trackBar.Value = newSliderValue;
+        }
+
+        private void satTB_TextChanged(object sender, EventArgs e)
+        {
+            saturation = TryParseFloatFromTextBox(satTB);
+            UpdateValuesFromHsv();
+        }
+
+        private float TryParseFloatFromTextBox(TextBox textBox)
+        {
+            float result = 0;
+            if (float.TryParse(textBox.Text, out result))
+            {
+                saturation = result;
+                textBox.BackColor = Color.White;
+            }
+            else
+                textBox.BackColor = Color.Red;
+
+            return result;
         }
     }
 }
