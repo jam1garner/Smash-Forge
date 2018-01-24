@@ -21,10 +21,12 @@ namespace Smash_Forge
 
         private void Clicked(object sender, EventArgs e)
         {
-            LVDEditor.StringWrapper name = new LVDEditor.StringWrapper() { data = new char[0x40] };
-            if (bone != null)
-                name.data = bone.Text.ToCharArray();
-            BoneRiggingSelector brs = new BoneRiggingSelector(name);
+            BoneRiggingSelector brs;
+            if (bone == null)
+                brs = new BoneRiggingSelector();
+            else
+                brs = new BoneRiggingSelector(bone.Text);
+
             brs.ModelContainers.Add(new ModelContainer() { VBN = vbn});
             brs.CurrentBone = bone;
             brs.ShowDialog();

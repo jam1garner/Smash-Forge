@@ -234,8 +234,9 @@ namespace Smash_Forge
 			string str2 = "";
 			for (int i = p; i < p + size; i++)
 			{
-				if ((b[i] & 0xFF) != 0x00)
-					str2 += (char)(b[i] & 0xFF);
+				str2 += (char)(b[i] & 0xFF);
+				/*if ((b[i] & 0xFF) != 0x00)
+					str2 += (char)(b[i] & 0xFF);*/
 			}
 			return str2;
 		}
