@@ -668,27 +668,38 @@ namespace Smash_Forge
             ACMDEditor.Visible = false;
             VertexTool.Visible = false;
             totalFrame.Enabled = false;
-            switch (ViewComboBox.SelectedIndex)
+
+            // Use a string so the order of the items can be changed later. 
+            switch (ViewComboBox.SelectedItem.ToString())
             {
-                case 0:
+                case "Model Viewer":
                     MeshList.Visible = true;
                     AnimList.Visible = true;
                     break;
-                case 1:
+                case "Model Editor":
                     MeshList.Visible = true;
                     VertexTool.Visible = true;
                     break;
-                case 2:
+                case "Animation Editor":
                     AnimList.Visible = true;
                     totalFrame.Enabled = true;
                     break;
-                case 3:
+                case "LVD Editor":
                     LVDEditor.Visible = true;
                     LVDList.Visible = true;
                     break;
-                case 4:
+                case "ACMD Editor":
                     AnimList.Visible = true;
                     ACMDEditor.Visible = true;
+                    break;
+                case "Clean":
+                    LVDEditor.Visible = false;
+                    LVDList.Visible = false;
+                    MeshList.Visible = false;
+                    AnimList.Visible = false;
+                    ACMDEditor.Visible = false;
+                    VertexTool.Visible = false;
+                    totalFrame.Enabled = false;
                     break;
             }
         }
