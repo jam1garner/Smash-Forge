@@ -1033,5 +1033,47 @@ namespace Smash_Forge
             NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
             p.SetVertexColor(newVertColor);
         }
+
+        private void tangentsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Polygon))
+                return;
+
+            NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+            foreach (NUD.Vertex v in p.vertices)
+            {
+                OpenTK.Vector3 newTan = v.tan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
+                v.col = new OpenTK.Vector4(newTan * 128, 255);
+            }
+            p.PreRender();
+        }
+
+        private void bitangentsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Polygon))
+                return;
+
+            NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+            foreach (NUD.Vertex v in p.vertices)
+            {
+                OpenTK.Vector3 newBitan = v.bitan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
+                v.col = new OpenTK.Vector4(newBitan * 128, 255);
+            }
+            p.PreRender();
+        }
+
+        private void normalsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Polygon))
+                return;
+
+            NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+            foreach (NUD.Vertex v in p.vertices)
+            {
+                OpenTK.Vector3 newNrm = v.nrm * 0.5f + new OpenTK.Vector3(0.5f);
+                v.col = new OpenTK.Vector4(newNrm * 128, 255);
+            }
+            p.PreRender();
+        }
     }
 }

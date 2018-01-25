@@ -2488,6 +2488,7 @@ namespace Smash_Forge
                 PreRender();
             }
 
+
             private void ApplyTanBitan(Vector3[] tanArray, Vector3[] bitanArray)
             {
                 for (int i = 0; i < vertices.Count; i++)
