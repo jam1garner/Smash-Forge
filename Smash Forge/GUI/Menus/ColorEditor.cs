@@ -22,9 +22,9 @@ namespace Smash_Forge.GUI.Menus
         float B = 1.0f;
         float colorTemp = 6500.0f;
 
-        const float maxRgb = 5;
+        const float maxRgb = 2;
         const float maxHue = 360;
-        const float maxValue = 5;
+        const float maxValue = 2;
         const float maxSat = 1;
         const float maxTemp = 10000;
 
@@ -39,12 +39,17 @@ namespace Smash_Forge.GUI.Menus
             B = color.Z;
             ColorTools.RGB2HSV(R, G, B, out hue, out saturation, out value);
             modeComboBox.SelectedIndex = 0;
-            UpdateColorText();
+            colorXTB.Text = R.ToString();
+            colorYTB.Text = G.ToString();
+            colorZTB.Text = G.ToString();
             this.color = color;
         }
 
         public Vector4 GetColor()
         {
+            color.X = R;
+            color.Y = G;
+            color.Z = B;
             return color;
         }
 
@@ -166,27 +171,49 @@ namespace Smash_Forge.GUI.Menus
             */
         }
 
-        private void UpdateColorText()
-        {
-            colorXTB.Text = hue.ToString();
-            colorYTB.Text = saturation.ToString();
-            colorZTB.Text = value.ToString();
-            colorWTB.Text = R.ToString();
-        }
-
         private void colorTrackBarX_Scroll(object sender, EventArgs e)
         {
-            //colorXTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarX, maxHue);
+            switch (modeComboBox.SelectedItem.ToString())
+            {
+                default:
+                    break;
+                case "RGB":
+                    colorXTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarX, maxRgb);
+                    break;
+                case "HSV":
+                    colorXTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarX, maxHue); 
+                    break;
+            }
         }
 
         private void colorTrackBarY_Scroll(object sender, EventArgs e)
         {
-            //colorYTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarY, maxSat);
+            switch (modeComboBox.SelectedItem.ToString())
+            {
+                default:
+                    break;
+                case "RGB":
+                    colorYTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarY, maxRgb);
+                    break;
+                case "HSV":
+                    colorYTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarY, maxSat);
+                    break;
+            }
         }
 
         private void colorTrackBarZ_Scroll(object sender, EventArgs e)
         {
-            //colorZTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarZ, maxValue);
+            switch (modeComboBox.SelectedItem.ToString())
+            {
+                default:
+                    break;
+                case "RGB":
+                    colorZTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarZ, maxRgb);
+                    break;
+                case "HSV":
+                    colorZTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarZ, maxValue);
+                    break;
+            }
         }
 
         private void editModeComboBox_SelectedIndexChanged(object sender, EventArgs e)

@@ -21,6 +21,7 @@ namespace Smash_Forge
         {
             // Values outside the displayable range of the trackbar are set to the
             // trackbar's min or max value. 
+            // The trackbar's maximum only defines the precision. 
             int newSliderValue = (int)(value * trackBar.Maximum / maxValue);
             newSliderValue = Math.Min(newSliderValue, trackBar.Maximum);
             newSliderValue = Math.Max(newSliderValue, trackBar.Minimum);

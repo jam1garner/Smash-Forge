@@ -226,18 +226,19 @@
             // 
             this.colorTrackBarX.Location = new System.Drawing.Point(246, 74);
             this.colorTrackBarX.Margin = new System.Windows.Forms.Padding(6);
-            this.colorTrackBarX.Maximum = 360;
+            this.colorTrackBarX.Maximum = 255;
             this.colorTrackBarX.Name = "colorTrackBarX";
             this.colorTrackBarX.Size = new System.Drawing.Size(352, 56);
             this.colorTrackBarX.TabIndex = 7;
             this.colorTrackBarX.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.colorTrackBarX.Value = 360;
+            this.colorTrackBarX.Value = 255;
             this.colorTrackBarX.Scroll += new System.EventHandler(this.colorTrackBarX_Scroll);
             // 
             // colorTrackBarY
             // 
             this.colorTrackBarY.Location = new System.Drawing.Point(246, 142);
             this.colorTrackBarY.Margin = new System.Windows.Forms.Padding(6);
+            this.colorTrackBarY.Maximum = 255;
             this.colorTrackBarY.Name = "colorTrackBarY";
             this.colorTrackBarY.Size = new System.Drawing.Size(352, 56);
             this.colorTrackBarY.TabIndex = 8;
@@ -248,6 +249,7 @@
             // 
             this.colorTrackBarZ.Location = new System.Drawing.Point(246, 210);
             this.colorTrackBarZ.Margin = new System.Windows.Forms.Padding(6);
+            this.colorTrackBarZ.Maximum = 255;
             this.colorTrackBarZ.Name = "colorTrackBarZ";
             this.colorTrackBarZ.Size = new System.Drawing.Size(352, 56);
             this.colorTrackBarZ.TabIndex = 9;
@@ -259,7 +261,7 @@
             this.colorTrackBarW.LargeChange = 250;
             this.colorTrackBarW.Location = new System.Drawing.Point(246, 278);
             this.colorTrackBarW.Margin = new System.Windows.Forms.Padding(6);
-            this.colorTrackBarW.Maximum = 100;
+            this.colorTrackBarW.Maximum = 255;
             this.colorTrackBarW.Name = "colorTrackBarW";
             this.colorTrackBarW.Size = new System.Drawing.Size(352, 60);
             this.colorTrackBarW.TabIndex = 10;
