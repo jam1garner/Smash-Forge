@@ -20,7 +20,7 @@ namespace Smash_Forge.GUI.Menus
         float R = 1.0f;
         float G = 1.0f;
         float B = 1.0f;
-        float colorTemp = 6500.0f; // color temperature in Kelvin
+        float colorTemp = 6500.0f;
 
         const float maxRgb = 5;
         const float maxHue = 360;
@@ -33,11 +33,12 @@ namespace Smash_Forge.GUI.Menus
         public ColorEditor(Vector4 color)
         {
             InitializeComponent();
+
             R = color.X;
             G = color.Y;
             B = color.Z;
             ColorTools.RGB2HSV(R, G, B, out hue, out saturation, out value);
-
+            modeComboBox.SelectedIndex = 0;
             UpdateColorText();
             this.color = color;
         }
@@ -47,11 +48,60 @@ namespace Smash_Forge.GUI.Menus
             return color;
         }
 
-        private void hueTB_TextChanged(object sender, EventArgs e)
+        private void colorXTB_TextChanged(object sender, EventArgs e)
         {
-            hue = GuiTools.TryParseTBFloat(colorXTB);
-            UpdateValuesFromHsv();
+            float newValue = GuiTools.TryParseTBFloat(colorXTB);
+            switch (modeComboBox.SelectedItem.ToString())
+            {
+                default:
+                    break;
+                case "RGB":
+                    R = newValue;
+                    UpdateValuesFromRgb();
+                    break;
+                case "HSV":
+                    hue = newValue;
+                    UpdateValuesFromHsv();
+                    break;
+            }
         }
+
+        private void colorYTB_TextChanged(object sender, EventArgs e)
+        {
+            float newValue = GuiTools.TryParseTBFloat(colorYTB);
+            switch (modeComboBox.SelectedItem.ToString())
+            {
+                default:
+                    break;
+                case "RGB":
+                    G = newValue;
+                    UpdateValuesFromRgb();
+                    break;
+                case "HSV":
+                    saturation = newValue;
+                    UpdateValuesFromHsv();
+                    break;
+            }
+        }
+
+        private void colorZTB_TextChanged(object sender, EventArgs e)
+        {
+            float newValue = GuiTools.TryParseTBFloat(colorZTB);
+            switch (modeComboBox.SelectedItem.ToString())
+            {
+                default:
+                    break;
+                case "RGB":
+                    B = newValue;
+                    UpdateValuesFromRgb();
+                    break;
+                case "HSV":
+                    value = newValue;
+                    UpdateValuesFromHsv();
+                    break;
+            }
+        }
+
 
         private void useColorTempCB_CheckedChanged(object sender, EventArgs e)
         {
@@ -63,7 +113,7 @@ namespace Smash_Forge.GUI.Menus
 
         }
 
-        private void redTB_TextChanged(object sender, EventArgs e) // fix type casting
+        private void colorWTB_TextChanged(object sender, EventArgs e) 
         {
             R = GuiTools.TryParseTBFloat(colorWTB);
             UpdateValuesFromRgb();
@@ -108,63 +158,97 @@ namespace Smash_Forge.GUI.Menus
 
         private void UpdateColorTrackBars()
         {
-            GuiTools.UpdateTrackBarFromValue(R, colorTrackBarW, 0, maxRgb);
-            //UpdateTrackBarFromValue(G, greenTrackBar, 0, maxRgb);
-            //UpdateTrackBarFromValue(B, blueTrackBar, 0, maxRgb);
+            /*
             GuiTools.UpdateTrackBarFromValue(hue, colorTrackBarX, 0, maxHue);
             GuiTools.UpdateTrackBarFromValue(saturation, colorTrackBarY, 0, maxSat);
             GuiTools.UpdateTrackBarFromValue(value, colorTrackBarZ, 0, maxValue);
+            GuiTools.UpdateTrackBarFromValue(R, colorTrackBarW, 0, maxRgb);
+            */
         }
 
         private void UpdateColorText()
         {
-            colorWTB.Text = R.ToString();
-            //greenTB.Text = G.ToString();
-            //blueTB.Text = B.ToString();
             colorXTB.Text = hue.ToString();
             colorYTB.Text = saturation.ToString();
             colorZTB.Text = value.ToString();
-            //colorTempTB.Text = colorTemp.ToString();
+            colorWTB.Text = R.ToString();
         }
 
-        private void hueTrackBar_Scroll(object sender, EventArgs e)
+        private void colorTrackBarX_Scroll(object sender, EventArgs e)
         {
-            colorXTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarX, maxHue);
+            //colorXTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarX, maxHue);
         }
 
-        private void satTrackBar_Scroll(object sender, EventArgs e)
+        private void colorTrackBarY_Scroll(object sender, EventArgs e)
         {
-            colorYTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarY, maxSat);
+            //colorYTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarY, maxSat);
         }
 
-        private void valueTrackBar_Scroll(object sender, EventArgs e)
+        private void colorTrackBarZ_Scroll(object sender, EventArgs e)
         {
-            colorZTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarZ, maxValue);
-        }
-
-        private void satTB_TextChanged(object sender, EventArgs e)
-        {
-            saturation = GuiTools.TryParseTBFloat(colorYTB);
-            UpdateValuesFromHsv();
-        }
-
-        private void valueTB_TextChanged(object sender, EventArgs e)
-        {
-            value = GuiTools.TryParseTBFloat(colorZTB);
-            UpdateValuesFromHsv();
+            //colorZTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarZ, maxValue);
         }
 
         private void editModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            switch (editModeComboBox.SelectedItem.ToString())
+            switch (modeComboBox.SelectedItem.ToString())
             {
                 default:
                     break;
                 case "RGB":
+                    colorXTB.Text = R.ToString();
+                    colorYTB.Text = G.ToString();
+                    colorZTB.Text = B.ToString();
+                    colorLabelX.Text = "Red";
+                    colorLabelY.Text = "Green";
+                    colorLabelZ.Text = "Blue";
+                    colorLabelX.Visible = true;
+                    colorLabelY.Visible = true;
+                    colorLabelZ.Visible = true;
+                    colorLabelW.Visible = false;
+                    colorTrackBarX.Visible = true;
+                    colorTrackBarY.Visible = true;
+                    colorTrackBarZ.Visible = true;
+                    colorTrackBarW.Visible = false;
+                    colorXTB.Visible = true;
+                    colorYTB.Visible = true;
+                    colorZTB.Visible = true;
+                    colorWTB.Visible = false;
                     break;
                 case "HSV":
+                    colorXTB.Text = hue.ToString();
+                    colorYTB.Text = saturation.ToString();
+                    colorZTB.Text = value.ToString();
+                    colorLabelX.Text = "Hue";
+                    colorLabelY.Text = "Saturation";
+                    colorLabelZ.Text = "Value";
+                    colorLabelX.Visible = true;
+                    colorLabelY.Visible = true;
+                    colorLabelZ.Visible = true;
+                    colorLabelW.Visible = false;
+                    colorTrackBarX.Visible = true;
+                    colorTrackBarY.Visible = true;
+                    colorTrackBarZ.Visible = true;
+                    colorTrackBarW.Visible = false;
+                    colorXTB.Visible = true;
+                    colorYTB.Visible = true;
+                    colorZTB.Visible = true;
+                    colorWTB.Visible = false;
                     break;
                 case "Temperature (K)":
+                    colorLabelX.Text = "Temp";
+                    colorLabelX.Visible = true;
+                    colorLabelY.Visible = false;
+                    colorLabelZ.Visible = false;
+                    colorLabelW.Visible = false;
+                    colorTrackBarX.Visible = true;
+                    colorTrackBarY.Visible = false;
+                    colorTrackBarZ.Visible = false;
+                    colorTrackBarW.Visible = false;
+                    colorXTB.Visible = true;
+                    colorYTB.Visible = false;
+                    colorZTB.Visible = false;
+                    colorWTB.Visible = false;
                     break;
             }
         }

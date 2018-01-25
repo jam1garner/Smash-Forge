@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.modeComboBox = new System.Windows.Forms.ComboBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.colorWTB = new System.Windows.Forms.TextBox();
             this.colorZTB = new System.Windows.Forms.TextBox();
@@ -44,8 +46,6 @@
             this.colorTrackBarZ = new System.Windows.Forms.TrackBar();
             this.colorTrackBarW = new System.Windows.Forms.TrackBar();
             this.colorXTB = new System.Windows.Forms.TextBox();
-            this.editModeComboBox = new System.Windows.Forms.ComboBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.colorTrackBarX)).BeginInit();
@@ -57,16 +57,39 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.editModeComboBox);
+            this.groupBox1.Controls.Add(this.modeComboBox);
             this.groupBox1.Controls.Add(this.tableLayoutPanel1);
             this.groupBox1.Location = new System.Drawing.Point(15, 15);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(6);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(6);
             this.groupBox1.Size = new System.Drawing.Size(638, 457);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Color";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(18, 44);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(166, 25);
+            this.label6.TabIndex = 7;
+            this.label6.Text = "Color Edit Mode";
+            // 
+            // modeComboBox
+            // 
+            this.modeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.modeComboBox.FormattingEnabled = true;
+            this.modeComboBox.Items.AddRange(new object[] {
+            "RGB",
+            "HSV",
+            "Temperature (K)"});
+            this.modeComboBox.Location = new System.Drawing.Point(258, 41);
+            this.modeComboBox.Name = "modeComboBox";
+            this.modeComboBox.Size = new System.Drawing.Size(352, 33);
+            this.modeComboBox.TabIndex = 6;
+            this.modeComboBox.SelectedIndexChanged += new System.EventHandler(this.editModeComboBox_SelectedIndexChanged);
             // 
             // tableLayoutPanel1
             // 
@@ -89,7 +112,7 @@
             this.tableLayoutPanel1.Controls.Add(this.colorTrackBarW, 2, 4);
             this.tableLayoutPanel1.Controls.Add(this.colorXTB, 1, 1);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 97);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(6);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 5;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
@@ -104,31 +127,31 @@
             // 
             this.colorWTB.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.colorWTB.Location = new System.Drawing.Point(138, 292);
-            this.colorWTB.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.colorWTB.Margin = new System.Windows.Forms.Padding(6);
             this.colorWTB.Name = "colorWTB";
             this.colorWTB.Size = new System.Drawing.Size(92, 31);
             this.colorWTB.TabIndex = 20;
-            this.colorWTB.TextChanged += new System.EventHandler(this.redTB_TextChanged);
+            this.colorWTB.TextChanged += new System.EventHandler(this.colorWTB_TextChanged);
             // 
             // colorZTB
             // 
             this.colorZTB.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.colorZTB.Location = new System.Drawing.Point(138, 222);
-            this.colorZTB.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.colorZTB.Margin = new System.Windows.Forms.Padding(6);
             this.colorZTB.Name = "colorZTB";
             this.colorZTB.Size = new System.Drawing.Size(92, 31);
             this.colorZTB.TabIndex = 19;
-            this.colorZTB.TextChanged += new System.EventHandler(this.valueTB_TextChanged);
+            this.colorZTB.TextChanged += new System.EventHandler(this.colorZTB_TextChanged);
             // 
             // colorYTB
             // 
             this.colorYTB.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.colorYTB.Location = new System.Drawing.Point(138, 154);
-            this.colorYTB.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.colorYTB.Margin = new System.Windows.Forms.Padding(6);
             this.colorYTB.Name = "colorYTB";
             this.colorYTB.Size = new System.Drawing.Size(92, 31);
             this.colorYTB.TabIndex = 18;
-            this.colorYTB.TextChanged += new System.EventHandler(this.satTB_TextChanged);
+            this.colorYTB.TextChanged += new System.EventHandler(this.colorYTB_TextChanged);
             // 
             // label1
             // 
@@ -179,10 +202,12 @@
             // 
             // colorButton
             // 
+            this.colorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+            this.colorButton.Enabled = false;
             this.colorButton.Location = new System.Drawing.Point(138, 6);
-            this.colorButton.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.colorButton.Margin = new System.Windows.Forms.Padding(6);
             this.colorButton.Name = "colorButton";
-            this.colorButton.Size = new System.Drawing.Size(96, 44);
+            this.colorButton.Size = new System.Drawing.Size(96, 56);
             this.colorButton.TabIndex = 5;
             this.colorButton.UseVisualStyleBackColor = true;
             // 
@@ -200,40 +225,40 @@
             // colorTrackBarX
             // 
             this.colorTrackBarX.Location = new System.Drawing.Point(246, 74);
-            this.colorTrackBarX.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.colorTrackBarX.Margin = new System.Windows.Forms.Padding(6);
             this.colorTrackBarX.Maximum = 360;
             this.colorTrackBarX.Name = "colorTrackBarX";
             this.colorTrackBarX.Size = new System.Drawing.Size(352, 56);
             this.colorTrackBarX.TabIndex = 7;
             this.colorTrackBarX.TickStyle = System.Windows.Forms.TickStyle.None;
             this.colorTrackBarX.Value = 360;
-            this.colorTrackBarX.Scroll += new System.EventHandler(this.hueTrackBar_Scroll);
+            this.colorTrackBarX.Scroll += new System.EventHandler(this.colorTrackBarX_Scroll);
             // 
             // colorTrackBarY
             // 
             this.colorTrackBarY.Location = new System.Drawing.Point(246, 142);
-            this.colorTrackBarY.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.colorTrackBarY.Margin = new System.Windows.Forms.Padding(6);
             this.colorTrackBarY.Name = "colorTrackBarY";
             this.colorTrackBarY.Size = new System.Drawing.Size(352, 56);
             this.colorTrackBarY.TabIndex = 8;
             this.colorTrackBarY.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.colorTrackBarY.Scroll += new System.EventHandler(this.satTrackBar_Scroll);
+            this.colorTrackBarY.Scroll += new System.EventHandler(this.colorTrackBarY_Scroll);
             // 
             // colorTrackBarZ
             // 
             this.colorTrackBarZ.Location = new System.Drawing.Point(246, 210);
-            this.colorTrackBarZ.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.colorTrackBarZ.Margin = new System.Windows.Forms.Padding(6);
             this.colorTrackBarZ.Name = "colorTrackBarZ";
             this.colorTrackBarZ.Size = new System.Drawing.Size(352, 56);
             this.colorTrackBarZ.TabIndex = 9;
             this.colorTrackBarZ.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.colorTrackBarZ.Scroll += new System.EventHandler(this.valueTrackBar_Scroll);
+            this.colorTrackBarZ.Scroll += new System.EventHandler(this.colorTrackBarZ_Scroll);
             // 
             // colorTrackBarW
             // 
             this.colorTrackBarW.LargeChange = 250;
             this.colorTrackBarW.Location = new System.Drawing.Point(246, 278);
-            this.colorTrackBarW.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.colorTrackBarW.Margin = new System.Windows.Forms.Padding(6);
             this.colorTrackBarW.Maximum = 100;
             this.colorTrackBarW.Name = "colorTrackBarW";
             this.colorTrackBarW.Size = new System.Drawing.Size(352, 60);
@@ -245,33 +270,11 @@
             // 
             this.colorXTB.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.colorXTB.Location = new System.Drawing.Point(138, 86);
-            this.colorXTB.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.colorXTB.Margin = new System.Windows.Forms.Padding(6);
             this.colorXTB.Name = "colorXTB";
             this.colorXTB.Size = new System.Drawing.Size(92, 31);
             this.colorXTB.TabIndex = 17;
-            this.colorXTB.TextChanged += new System.EventHandler(this.hueTB_TextChanged);
-            // 
-            // editModeComboBox
-            // 
-            this.editModeComboBox.FormattingEnabled = true;
-            this.editModeComboBox.Items.AddRange(new object[] {
-            "RGB",
-            "HSV",
-            "Temperature (K)"});
-            this.editModeComboBox.Location = new System.Drawing.Point(258, 41);
-            this.editModeComboBox.Name = "editModeComboBox";
-            this.editModeComboBox.Size = new System.Drawing.Size(328, 33);
-            this.editModeComboBox.TabIndex = 6;
-            this.editModeComboBox.SelectedIndexChanged += new System.EventHandler(this.editModeComboBox_SelectedIndexChanged);
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(18, 44);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(166, 25);
-            this.label6.TabIndex = 7;
-            this.label6.Text = "Color Edit Mode";
+            this.colorXTB.TextChanged += new System.EventHandler(this.colorXTB_TextChanged);
             // 
             // ColorEditor
             // 
@@ -280,7 +283,7 @@
             this.ClientSize = new System.Drawing.Size(672, 483);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.Margin = new System.Windows.Forms.Padding(6);
             this.Name = "ColorEditor";
             this.Text = "ColorEditor";
             this.groupBox1.ResumeLayout(false);
@@ -314,6 +317,6 @@
         private System.Windows.Forms.TrackBar colorTrackBarW;
         private System.Windows.Forms.TextBox colorXTB;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.ComboBox editModeComboBox;
+        private System.Windows.Forms.ComboBox modeComboBox;
     }
 }

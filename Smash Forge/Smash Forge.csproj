@@ -345,6 +345,7 @@
     <Compile Include="GUI\GIFEncoder\LZWEncoder.cs" />
     <Compile Include="GUI\GIFEncoder\NeuQuant.cs" />
     <Compile Include="GUI\GIFEncoder\UnsafeBuffer.cs" />
+    <Compile Include="GUI\GuiTools.cs" />
     <Compile Include="GUI\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
