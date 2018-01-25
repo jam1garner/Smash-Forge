@@ -564,8 +564,7 @@ namespace Smash_Forge
             if (propertiesListView.SelectedIndices.Count > 0)
                 matPropertyNameTB.Text = materials[current].entries.Keys.ElementAt(propertiesListView.SelectedIndices[0]);
             if (matPropertyNameTB.Text.Equals("NU_materialHash"))
-            {
-                
+            {          
                 param1TB.Text = BitConverter.ToInt32(BitConverter.GetBytes(materials[current].entries[matPropertyNameTB.Text][0]), 0).ToString("X");
                 param2TB.Text = materials[current].entries[matPropertyNameTB.Text][1] + "";
                 param3TB.Text = materials[current].entries[matPropertyNameTB.Text][2] + "";
@@ -584,8 +583,7 @@ namespace Smash_Forge
         {
             if (matPropertyNameTB.Text.Equals("NU_materialHash"))
             {
-                int f = -1;
-                int.TryParse(param1TB.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f);
+                int f = GuiTools.TryParseTBInt(param1TB, true);
                 if (f != -1 && propertiesListView.SelectedItems.Count > 0)
                     materials[current].entries[propertiesListView.SelectedItems[0].Text][0] = BitConverter.ToSingle(BitConverter.GetBytes(f), 0);
             }

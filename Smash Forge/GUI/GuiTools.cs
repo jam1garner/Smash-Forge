@@ -5,16 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Globalization;
+
 
 
 namespace Smash_Forge
 {
     class GuiTools
     {
-        public static string GetTextValueFromTrackBar(TrackBar trackBar, float maximum)
+        public static float GetTrackBarValue(TrackBar trackBar, float maximum)
         {
-            float newValue = ((float)trackBar.Value / trackBar.Maximum) * maximum;
-            return newValue.ToString();
+            return ((float)trackBar.Value / trackBar.Maximum) * maximum;
         }
 
         public static void UpdateTrackBarFromValue(float value, TrackBar trackBar, float minValue, float maxValue)
@@ -35,6 +36,20 @@ namespace Smash_Forge
                 textBox.BackColor = Color.White;
             else
                 textBox.BackColor = Color.Red;
+
+            return result;
+        }
+
+        public static int TryParseTBInt(TextBox textBox, bool useHex = false)
+        {
+            int result = -1;
+            if (useHex)
+            {
+                int.TryParse(textBox.Text, NumberStyles.HexNumber, 
+                    CultureInfo.CurrentCulture, out result);
+            }
+            else
+                int.TryParse(textBox.Text, out result);
 
             return result;
         }

@@ -27,6 +27,7 @@ namespace Smash_Forge.GUI.Menus
         const float maxValue = 2;
         const float maxSat = 1;
         const float maxTemp = 10000;
+        string numFormat = "0.000";
 
         Vector4 color;
 
@@ -39,9 +40,9 @@ namespace Smash_Forge.GUI.Menus
             B = color.Z;
             ColorTools.RGB2HSV(R, G, B, out hue, out saturation, out value);
             modeComboBox.SelectedIndex = 0;
-            colorXTB.Text = R.ToString();
-            colorYTB.Text = G.ToString();
-            colorZTB.Text = G.ToString();
+            colorXTB.Text = R.ToString(numFormat);
+            colorYTB.Text = G.ToString(numFormat);
+            colorZTB.Text = G.ToString(numFormat);
             this.color = color;
         }
 
@@ -126,7 +127,7 @@ namespace Smash_Forge.GUI.Menus
 
         private void redTrackBar_Scroll(object sender, EventArgs e)
         {
-            colorWTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarW, maxRgb);
+            colorWTB.Text = GuiTools.GetTrackBarValue(colorTrackBarW, maxRgb).ToString(numFormat);
         }
 
         private void colorTrackBar_Scroll(object sender, EventArgs e)
@@ -163,12 +164,21 @@ namespace Smash_Forge.GUI.Menus
 
         private void UpdateColorTrackBars()
         {
-            /*
-            GuiTools.UpdateTrackBarFromValue(hue, colorTrackBarX, 0, maxHue);
-            GuiTools.UpdateTrackBarFromValue(saturation, colorTrackBarY, 0, maxSat);
-            GuiTools.UpdateTrackBarFromValue(value, colorTrackBarZ, 0, maxValue);
-            GuiTools.UpdateTrackBarFromValue(R, colorTrackBarW, 0, maxRgb);
-            */
+            switch (modeComboBox.SelectedItem.ToString())
+            {
+                default:
+                    break;
+                case "RGB":
+                    GuiTools.UpdateTrackBarFromValue(R, colorTrackBarX, 0, maxRgb);
+                    GuiTools.UpdateTrackBarFromValue(G, colorTrackBarY, 0, maxRgb);
+                    GuiTools.UpdateTrackBarFromValue(B, colorTrackBarZ, 0, maxRgb);
+                    break;
+                case "HSV":
+                    GuiTools.UpdateTrackBarFromValue(hue, colorTrackBarX, 0, maxHue);
+                    GuiTools.UpdateTrackBarFromValue(saturation, colorTrackBarY, 0, maxSat);
+                    GuiTools.UpdateTrackBarFromValue(value, colorTrackBarZ, 0, maxValue);
+                    break;
+            }         
         }
 
         private void colorTrackBarX_Scroll(object sender, EventArgs e)
@@ -178,10 +188,10 @@ namespace Smash_Forge.GUI.Menus
                 default:
                     break;
                 case "RGB":
-                    colorXTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarX, maxRgb);
+                    colorXTB.Text = GuiTools.GetTrackBarValue(colorTrackBarX, maxRgb).ToString(numFormat);
                     break;
                 case "HSV":
-                    colorXTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarX, maxHue); 
+                    colorXTB.Text = GuiTools.GetTrackBarValue(colorTrackBarX, maxHue).ToString(numFormat); 
                     break;
             }
         }
@@ -193,10 +203,10 @@ namespace Smash_Forge.GUI.Menus
                 default:
                     break;
                 case "RGB":
-                    colorYTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarY, maxRgb);
+                    colorYTB.Text = GuiTools.GetTrackBarValue(colorTrackBarY, maxRgb).ToString(numFormat);
                     break;
                 case "HSV":
-                    colorYTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarY, maxSat);
+                    colorYTB.Text = GuiTools.GetTrackBarValue(colorTrackBarY, maxSat).ToString(numFormat);
                     break;
             }
         }
@@ -208,10 +218,10 @@ namespace Smash_Forge.GUI.Menus
                 default:
                     break;
                 case "RGB":
-                    colorZTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarZ, maxRgb);
+                    colorZTB.Text = GuiTools.GetTrackBarValue(colorTrackBarZ, maxRgb).ToString(numFormat);
                     break;
                 case "HSV":
-                    colorZTB.Text = GuiTools.GetTextValueFromTrackBar(colorTrackBarZ, maxValue);
+                    colorZTB.Text = GuiTools.GetTrackBarValue(colorTrackBarZ, maxValue).ToString(numFormat);
                     break;
             }
         }
@@ -223,9 +233,9 @@ namespace Smash_Forge.GUI.Menus
                 default:
                     break;
                 case "RGB":
-                    colorXTB.Text = R.ToString();
-                    colorYTB.Text = G.ToString();
-                    colorZTB.Text = B.ToString();
+                    colorXTB.Text = R.ToString(numFormat);
+                    colorYTB.Text = G.ToString(numFormat);
+                    colorZTB.Text = B.ToString(numFormat);
                     colorLabelX.Text = "Red";
                     colorLabelY.Text = "Green";
                     colorLabelZ.Text = "Blue";
@@ -243,9 +253,9 @@ namespace Smash_Forge.GUI.Menus
                     colorWTB.Visible = false;
                     break;
                 case "HSV":
-                    colorXTB.Text = hue.ToString();
-                    colorYTB.Text = saturation.ToString();
-                    colorZTB.Text = value.ToString();
+                    colorXTB.Text = hue.ToString(numFormat);
+                    colorYTB.Text = saturation.ToString(numFormat);
+                    colorZTB.Text = value.ToString(numFormat);
                     colorLabelX.Text = "Hue";
                     colorLabelY.Text = "Saturation";
                     colorLabelZ.Text = "Value";
