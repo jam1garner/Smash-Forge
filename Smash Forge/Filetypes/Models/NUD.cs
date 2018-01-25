@@ -2478,6 +2478,16 @@ namespace Smash_Forge
                 PreRender();
             }
 
+            public void SetVertexColor(Vector4 color)
+            {
+                // (127, 127, 127, 255) is white.
+                foreach (Vertex v in vertices)
+                {
+                    v.col = color;
+                }
+                PreRender();
+            }
+
             private void ApplyTanBitan(Vector3[] tanArray, Vector3[] bitanArray)
             {
                 for (int i = 0; i < vertices.Count; i++)
