@@ -29,9 +29,9 @@ namespace Smash_Forge.GUI.Menus
         const float maxTemp = 10000;
         string numFormat = "0.000";
 
-        Vector4 color;
+        Vector3 color;
 
-        public ColorEditor(Vector4 color)
+        public ColorEditor(Vector3 color)
         {
             InitializeComponent();
 
@@ -46,7 +46,7 @@ namespace Smash_Forge.GUI.Menus
             this.color = color;
         }
 
-        public Vector4 GetColor()
+        public Vector3 GetColor()
         {
             color.X = R;
             color.Y = G;
