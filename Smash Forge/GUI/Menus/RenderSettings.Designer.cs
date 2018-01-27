@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
@@ -661,8 +661,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem3,
-            listViewItem4});
+            listViewItem1,
+            listViewItem2});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -1227,7 +1227,6 @@
             this.renderModeComboBox.Name = "renderModeComboBox";
             this.renderModeComboBox.Size = new System.Drawing.Size(164, 21);
             this.renderModeComboBox.TabIndex = 16;
-            this.renderModeComboBox.SelectedIndexChanged += new System.EventHandler(this.checkBox6_CheckedChanged);
             this.renderModeComboBox.SelectionChangeCommitted += new System.EventHandler(this.renderMode_SelectionChangeCommitted);
             // 
             // debugModeLabel

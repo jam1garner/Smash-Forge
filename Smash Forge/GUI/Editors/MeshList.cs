@@ -1028,8 +1028,8 @@ namespace Smash_Forge
             ColorEditor colorEditor = new ColorEditor(new OpenTK.Vector3(1));
             colorEditor.ShowDialog();
 
-            // Remap the color from 1.0 being white to 128 being white.
-            OpenTK.Vector3 newVertColor = colorEditor.GetColor() * 128;
+            // Remap the color from 1.0 being white to 127 being white.
+            OpenTK.Vector3 newVertColor = colorEditor.GetColor() * 127;
             NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
             p.SetVertexColor(new OpenTK.Vector4(newVertColor, 255));
         }
@@ -1043,7 +1043,7 @@ namespace Smash_Forge
             foreach (NUD.Vertex v in p.vertices)
             {
                 OpenTK.Vector3 newTan = v.tan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
-                v.col = new OpenTK.Vector4(newTan * 128, 255);
+                v.col = new OpenTK.Vector4(newTan * 127, 255);
             }
             p.PreRender();
         }
@@ -1057,7 +1057,7 @@ namespace Smash_Forge
             foreach (NUD.Vertex v in p.vertices)
             {
                 OpenTK.Vector3 newBitan = v.bitan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
-                v.col = new OpenTK.Vector4(newBitan * 128, 255);
+                v.col = new OpenTK.Vector4(newBitan * 127, 255);
             }
             p.PreRender();
         }
@@ -1071,7 +1071,7 @@ namespace Smash_Forge
             foreach (NUD.Vertex v in p.vertices)
             {
                 OpenTK.Vector3 newNrm = v.nrm * 0.5f + new OpenTK.Vector3(0.5f);
-                v.col = new OpenTK.Vector4(newNrm * 128, 255);
+                v.col = new OpenTK.Vector4(newNrm * 127, 255);
             }
             p.PreRender();
         }
@@ -1084,7 +1084,7 @@ namespace Smash_Forge
             NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
             foreach (NUD.Vertex v in p.vertices)
             {
-                v.col = new OpenTK.Vector4(v.uv[0].X * 128, v.uv[0].Y * 128, 128, 255);
+                v.col = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 255);
             }
             p.PreRender();
         }
@@ -1096,7 +1096,7 @@ namespace Smash_Forge
      
             foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
             {
-                poly.SetVertexColor(new OpenTK.Vector4(128, 128, 128, 255));
+                poly.SetVertexColor(new OpenTK.Vector4(127, 127, 127, 255));
             }
         }
 
@@ -1109,8 +1109,8 @@ namespace Smash_Forge
             ColorEditor colorEditor = new ColorEditor(new OpenTK.Vector3(1));
             colorEditor.ShowDialog();
 
-            // Remap the color from 1.0 being white to 128 being white.
-            OpenTK.Vector3 newVertColor = colorEditor.GetColor() * 128;
+            // Remap the color from 1.0 being white to 127 being white.
+            OpenTK.Vector3 newVertColor = colorEditor.GetColor() * 127;
 
             foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
             {
@@ -1128,7 +1128,7 @@ namespace Smash_Forge
                 foreach (NUD.Vertex v in poly.vertices)
                 {
                     OpenTK.Vector3 newTan = v.tan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
-                    v.col = new OpenTK.Vector4(newTan * 128, 255);
+                    v.col = new OpenTK.Vector4(newTan * 127, 255);
                 }
                 poly.PreRender();
             }
@@ -1144,7 +1144,7 @@ namespace Smash_Forge
                 foreach (NUD.Vertex v in poly.vertices)
                 {
                     OpenTK.Vector3 newBitan = v.bitan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
-                    v.col = new OpenTK.Vector4(newBitan * 128, 255);
+                    v.col = new OpenTK.Vector4(newBitan * 127, 255);
                 }
                 poly.PreRender();
             }
@@ -1160,7 +1160,7 @@ namespace Smash_Forge
                 foreach (NUD.Vertex v in poly.vertices)
                 {
                     OpenTK.Vector3 newNrm = v.nrm * 0.5f + new OpenTK.Vector3(0.5f);
-                    v.col = new OpenTK.Vector4(newNrm * 128, 255);
+                    v.col = new OpenTK.Vector4(newNrm * 127, 255);
                 }
                 poly.PreRender();
             }
@@ -1175,9 +1175,131 @@ namespace Smash_Forge
             {
                 foreach (NUD.Vertex v in poly.vertices)
                 {
-                    v.col = new OpenTK.Vector4(v.uv[0].X * 128, v.uv[0].Y * 128, 128, 255);
+                    v.col = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 255);
                 }
                 poly.PreRender();
+            }
+        }
+
+        private void tangentsToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            NUD n = (NUD)treeView1.SelectedNode;
+
+            foreach (NUD.Mesh m in n.Nodes)
+            {
+                foreach (NUD.Polygon p in m.Nodes)
+                {
+                    foreach (NUD.Vertex v in p.vertices)
+                    {
+                        OpenTK.Vector3 newTan = v.tan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
+                        v.col = new OpenTK.Vector4(newTan * 127, 255);
+                    }
+                    p.PreRender();
+                }
+            }
+        }
+
+        private void bitangentsToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            NUD n = (NUD)treeView1.SelectedNode;
+
+            foreach (NUD.Mesh m in n.Nodes)
+            {
+                foreach (NUD.Polygon p in m.Nodes)
+                {
+                    foreach (NUD.Vertex v in p.vertices)
+                    {
+                        OpenTK.Vector3 newBitan = v.bitan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
+                        v.col = new OpenTK.Vector4(newBitan * 127, 255);
+                    }
+                    p.PreRender();
+                }
+            }
+        }
+
+        private void setToWhiteToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            NUD n = (NUD)treeView1.SelectedNode;
+
+            foreach (NUD.Mesh m in n.Nodes)
+            {
+                foreach (NUD.Polygon p in m.Nodes)
+                {
+                    p.SetVertexColor(new OpenTK.Vector4(127, 127, 127, 255));
+                }
+            }
+        }
+
+        private void normalsToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            NUD n = (NUD)treeView1.SelectedNode;
+
+            foreach (NUD.Mesh m in n.Nodes)
+            {
+                foreach (NUD.Polygon p in m.Nodes)
+                {
+                    foreach (NUD.Vertex v in p.vertices)
+                    {
+                        OpenTK.Vector3 newNrm = v.nrm * 0.5f + new OpenTK.Vector3(0.5f);
+                        v.col = new OpenTK.Vector4(newNrm * 127, 255);
+                    }
+                    p.PreRender();
+                }
+            }
+        }
+
+        private void uVsToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            NUD n = (NUD)treeView1.SelectedNode;
+
+            foreach (NUD.Mesh m in n.Nodes)
+            {
+                foreach (NUD.Polygon p in m.Nodes)
+                {
+                    foreach (NUD.Vertex v in p.vertices)
+                    {
+                        v.col = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 255);
+                    }
+                    p.PreRender();
+                }
+            }
+        }
+
+        private void selectColorToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            NUD n = (NUD)treeView1.SelectedNode;
+
+            // Use a dialog so the color isn't set until the color editor is closed. 
+            ColorEditor colorEditor = new ColorEditor(new OpenTK.Vector3(1));
+            colorEditor.ShowDialog();
+
+            // Remap the color from 1.0 being white to 127 being white.
+            OpenTK.Vector3 newVertColor = colorEditor.GetColor() * 127;
+
+            foreach (NUD.Mesh m in n.Nodes)
+            {
+                foreach (NUD.Polygon p in m.Nodes)
+                {
+                    p.SetVertexColor(new OpenTK.Vector4(newVertColor, 255));
+                }
             }
         }
     }
