@@ -114,7 +114,7 @@ namespace Smash_Forge
                     //Use stage material
                     if (stagematCB.Checked)
                     {
-                        NUD.Mat_Texture tex = poly.materials[0].textures[0];
+                        NUD.MatTexture tex = poly.materials[0].textures[0];
                         poly.materials[0].textures.Clear();
                         poly.materials.Clear();
 

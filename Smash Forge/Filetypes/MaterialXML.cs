@@ -87,7 +87,7 @@ namespace Smash_Forge
 
         private static void WriteTextureAttributes(XmlDocument doc, NUD.Material mat, XmlNode matnode)
         {
-            foreach (NUD.Mat_Texture tex in mat.textures)
+            foreach (NUD.MatTexture tex in mat.textures)
             {
                 XmlNode texnode = doc.CreateElement("texture");
 
@@ -276,7 +276,7 @@ namespace Smash_Forge
         {
             if (matNode.Name.Equals("texture"))
             {
-                NUD.Mat_Texture tex = new NUD.Mat_Texture();
+                NUD.MatTexture tex = new NUD.MatTexture();
                 mat.textures.Add(tex);
 
                 foreach (XmlAttribute a in matNode.Attributes)

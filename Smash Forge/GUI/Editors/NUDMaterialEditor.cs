@@ -429,7 +429,7 @@ namespace Smash_Forge
                 MessageBox.Show("Texture doesn't exist");
                 return;
             }
-            NUD.Mat_Texture tex = materials[current].textures[index];
+            NUD.MatTexture tex = materials[current].textures[index];
             textBox10.Text = tex.hash.ToString("X");
 
             mapModeComboBox.SelectedItem = mapmode[tex.MapMode];
@@ -765,7 +765,7 @@ namespace Smash_Forge
         {
             if (materials[current].textures.Count < 4)
             {
-                materials[current].textures.Add(NUD.Polygon.makeDefault());
+                materials[current].textures.Add(NUD.MatTexture.getDefault());
                 FillForm();
             }
         }
@@ -1034,7 +1034,7 @@ namespace Smash_Forge
         {
             if(materials[current].textures.Count < 4)
             {
-                materials[current].textures.Add(NUD.Polygon.makeDefault());
+                materials[current].textures.Add(NUD.MatTexture.getDefault());
                 FillForm();
             }
         }
@@ -1292,8 +1292,8 @@ namespace Smash_Forge
             mat.entries.Add("NU_alphaBlendParams", new float[] { 0, 0, 0, 0 });
             mat.entries.Add("NU_materialHash", new float[] { FileData.toFloat(0x7E538F65), 0, 0, 0 });
 
-            mat.textures.Add(NUD.Polygon.makeDefault()); // diffuse
-            mat.textures.Add(NUD.Polygon.makeDefault()); // dummy ramp
+            mat.textures.Add(NUD.MatTexture.getDefault()); // diffuse
+            mat.textures.Add(NUD.MatTexture.getDefault()); // dummy ramp
 
             // Can only have two materials.
             if (materials.Count < 2)

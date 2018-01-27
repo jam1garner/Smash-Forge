@@ -999,7 +999,7 @@ namespace Smash_Forge
         {
             foreach (NUD.Material material in poly.materials)
             {
-                foreach (NUD.Mat_Texture matTex in material.textures)
+                foreach (NUD.MatTexture matTex in material.textures)
                 {
                     if (selectedTextureHash == matTex.hash)
                         return true;
