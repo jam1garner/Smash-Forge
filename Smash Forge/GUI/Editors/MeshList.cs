@@ -1025,13 +1025,13 @@ namespace Smash_Forge
                 return;
 
             // Use a dialog so the color isn't set until the color editor is closed. 
-            ColorEditor colorEditor = new ColorEditor(new OpenTK.Vector4(1));
+            ColorEditor colorEditor = new ColorEditor(new OpenTK.Vector3(1));
             colorEditor.ShowDialog();
 
             // Remap the color from 1.0 being white to 128 being white.
-            OpenTK.Vector4 newVertColor = colorEditor.GetColor() * 128;
+            OpenTK.Vector3 newVertColor = colorEditor.GetColor() * 128;
             NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
-            p.SetVertexColor(newVertColor);
+            p.SetVertexColor(new OpenTK.Vector4(newVertColor, 255));
         }
 
         private void tangentsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1074,6 +1074,111 @@ namespace Smash_Forge
                 v.col = new OpenTK.Vector4(newNrm * 128, 255);
             }
             p.PreRender();
+        }
+
+        private void uVsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Polygon))
+                return;
+
+            NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+            foreach (NUD.Vertex v in p.vertices)
+            {
+                v.col = new OpenTK.Vector4(v.uv[0].X * 128, v.uv[0].Y * 128, 128, 255);
+            }
+            p.PreRender();
+        }
+
+        private void setToWhiteToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Mesh))
+                return;
+     
+            foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+            {
+                poly.SetVertexColor(new OpenTK.Vector4(128, 128, 128, 255));
+            }
+        }
+
+        private void selectColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Mesh))
+                return;
+
+            // Use a dialog so the color isn't set until the color editor is closed. 
+            ColorEditor colorEditor = new ColorEditor(new OpenTK.Vector3(1));
+            colorEditor.ShowDialog();
+
+            // Remap the color from 1.0 being white to 128 being white.
+            OpenTK.Vector3 newVertColor = colorEditor.GetColor() * 128;
+
+            foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+            {
+                poly.SetVertexColor(new OpenTK.Vector4(newVertColor, 255));
+            }
+        }
+
+        private void tangentsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Mesh))
+                return;
+
+            foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+            {
+                foreach (NUD.Vertex v in poly.vertices)
+                {
+                    OpenTK.Vector3 newTan = v.tan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
+                    v.col = new OpenTK.Vector4(newTan * 128, 255);
+                }
+                poly.PreRender();
+            }
+        }
+
+        private void bitangentsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Mesh))
+                return;
+
+            foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+            {
+                foreach (NUD.Vertex v in poly.vertices)
+                {
+                    OpenTK.Vector3 newBitan = v.bitan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
+                    v.col = new OpenTK.Vector4(newBitan * 128, 255);
+                }
+                poly.PreRender();
+            }
+        }
+
+        private void normalsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Mesh))
+                return;
+
+            foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+            {
+                foreach (NUD.Vertex v in poly.vertices)
+                {
+                    OpenTK.Vector3 newNrm = v.nrm * 0.5f + new OpenTK.Vector3(0.5f);
+                    v.col = new OpenTK.Vector4(newNrm * 128, 255);
+                }
+                poly.PreRender();
+            }
+        }
+
+        private void uVsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Mesh))
+                return;
+
+            foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+            {
+                foreach (NUD.Vertex v in poly.vertices)
+                {
+                    v.col = new OpenTK.Vector4(v.uv[0].X * 128, v.uv[0].Y * 128, 128, 255);
+                }
+                poly.PreRender();
+            }
         }
     }
 }

@@ -54,6 +54,8 @@
             this.selectColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setToTangentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tangentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bitangentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.normalsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.meshContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mergeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aboveToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -89,8 +91,15 @@
             this.belowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.bitangentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.normalsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.vertexColorToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.setToWhiteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectColorToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.setToAttributeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tangentsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.bitangentsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.normalsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.uVsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uVsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
             this.meshContextMenu.SuspendLayout();
@@ -167,7 +176,7 @@
             this.detachToolStripMenuItem,
             this.vertexColorToolStripMenuItem});
             this.polyContextMenu.Name = "polyContextMenu";
-            this.polyContextMenu.Size = new System.Drawing.Size(183, 286);
+            this.polyContextMenu.Size = new System.Drawing.Size(183, 264);
             this.polyContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // editMaterialToolStripMenuItem
@@ -301,7 +310,8 @@
             this.setToTangentsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tangentsToolStripMenuItem,
             this.bitangentsToolStripMenuItem,
-            this.normalsToolStripMenuItem});
+            this.normalsToolStripMenuItem,
+            this.uVsToolStripMenuItem1});
             this.setToTangentsToolStripMenuItem.Name = "setToTangentsToolStripMenuItem";
             this.setToTangentsToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.setToTangentsToolStripMenuItem.Text = "Set to Attribute";
@@ -313,6 +323,20 @@
             this.tangentsToolStripMenuItem.Text = "Tangents";
             this.tangentsToolStripMenuItem.Click += new System.EventHandler(this.tangentsToolStripMenuItem_Click);
             // 
+            // bitangentsToolStripMenuItem
+            // 
+            this.bitangentsToolStripMenuItem.Name = "bitangentsToolStripMenuItem";
+            this.bitangentsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.bitangentsToolStripMenuItem.Text = "Bitangents";
+            this.bitangentsToolStripMenuItem.Click += new System.EventHandler(this.bitangentsToolStripMenuItem_Click);
+            // 
+            // normalsToolStripMenuItem
+            // 
+            this.normalsToolStripMenuItem.Name = "normalsToolStripMenuItem";
+            this.normalsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.normalsToolStripMenuItem.Text = "Normals";
+            this.normalsToolStripMenuItem.Click += new System.EventHandler(this.normalsToolStripMenuItem_Click);
+            // 
             // meshContextMenu
             // 
             this.meshContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -323,9 +347,10 @@
             this.deleteToolStripMenuItem1,
             this.toolStripSeparator6,
             this.calculateNormalsToolStripMenuItem1,
-            this.generateTanBitanToolStripMenuItem2});
+            this.generateTanBitanToolStripMenuItem2,
+            this.vertexColorToolStripMenuItem1});
             this.meshContextMenu.Name = "meshContextMenu";
-            this.meshContextMenu.Size = new System.Drawing.Size(178, 148);
+            this.meshContextMenu.Size = new System.Drawing.Size(178, 192);
             // 
             // mergeToolStripMenuItem1
             // 
@@ -587,19 +612,75 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model List";
             // 
-            // bitangentsToolStripMenuItem
+            // vertexColorToolStripMenuItem1
             // 
-            this.bitangentsToolStripMenuItem.Name = "bitangentsToolStripMenuItem";
-            this.bitangentsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.bitangentsToolStripMenuItem.Text = "Bitangents";
-            this.bitangentsToolStripMenuItem.Click += new System.EventHandler(this.bitangentsToolStripMenuItem_Click);
+            this.vertexColorToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.setToWhiteToolStripMenuItem1,
+            this.selectColorToolStripMenuItem1,
+            this.setToAttributeToolStripMenuItem});
+            this.vertexColorToolStripMenuItem1.Name = "vertexColorToolStripMenuItem1";
+            this.vertexColorToolStripMenuItem1.Size = new System.Drawing.Size(177, 22);
+            this.vertexColorToolStripMenuItem1.Text = "Vertex Color";
             // 
-            // normalsToolStripMenuItem
+            // setToWhiteToolStripMenuItem1
             // 
-            this.normalsToolStripMenuItem.Name = "normalsToolStripMenuItem";
-            this.normalsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.normalsToolStripMenuItem.Text = "Normals";
-            this.normalsToolStripMenuItem.Click += new System.EventHandler(this.normalsToolStripMenuItem_Click);
+            this.setToWhiteToolStripMenuItem1.Name = "setToWhiteToolStripMenuItem1";
+            this.setToWhiteToolStripMenuItem1.Size = new System.Drawing.Size(154, 22);
+            this.setToWhiteToolStripMenuItem1.Text = "Set to White";
+            this.setToWhiteToolStripMenuItem1.Click += new System.EventHandler(this.setToWhiteToolStripMenuItem1_Click);
+            // 
+            // selectColorToolStripMenuItem1
+            // 
+            this.selectColorToolStripMenuItem1.Name = "selectColorToolStripMenuItem1";
+            this.selectColorToolStripMenuItem1.Size = new System.Drawing.Size(154, 22);
+            this.selectColorToolStripMenuItem1.Text = "Select Color";
+            this.selectColorToolStripMenuItem1.Click += new System.EventHandler(this.selectColorToolStripMenuItem1_Click);
+            // 
+            // setToAttributeToolStripMenuItem
+            // 
+            this.setToAttributeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tangentsToolStripMenuItem1,
+            this.bitangentsToolStripMenuItem1,
+            this.normalsToolStripMenuItem1,
+            this.uVsToolStripMenuItem});
+            this.setToAttributeToolStripMenuItem.Name = "setToAttributeToolStripMenuItem";
+            this.setToAttributeToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.setToAttributeToolStripMenuItem.Text = "Set to Attribute";
+            // 
+            // tangentsToolStripMenuItem1
+            // 
+            this.tangentsToolStripMenuItem1.Name = "tangentsToolStripMenuItem1";
+            this.tangentsToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.tangentsToolStripMenuItem1.Text = "Tangents";
+            this.tangentsToolStripMenuItem1.Click += new System.EventHandler(this.tangentsToolStripMenuItem1_Click);
+            // 
+            // bitangentsToolStripMenuItem1
+            // 
+            this.bitangentsToolStripMenuItem1.Name = "bitangentsToolStripMenuItem1";
+            this.bitangentsToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.bitangentsToolStripMenuItem1.Text = "Bitangents";
+            this.bitangentsToolStripMenuItem1.Click += new System.EventHandler(this.bitangentsToolStripMenuItem1_Click);
+            // 
+            // normalsToolStripMenuItem1
+            // 
+            this.normalsToolStripMenuItem1.Name = "normalsToolStripMenuItem1";
+            this.normalsToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.normalsToolStripMenuItem1.Text = "Normals";
+            this.normalsToolStripMenuItem1.Click += new System.EventHandler(this.normalsToolStripMenuItem1_Click);
+            // 
+            // uVsToolStripMenuItem
+            // 
+            this.uVsToolStripMenuItem.Name = "uVsToolStripMenuItem";
+            this.uVsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.uVsToolStripMenuItem.Text = "UVs";
+            this.uVsToolStripMenuItem.Click += new System.EventHandler(this.uVsToolStripMenuItem_Click);
+            // 
+            // uVsToolStripMenuItem1
+            // 
+            this.uVsToolStripMenuItem1.Name = "uVsToolStripMenuItem1";
+            this.uVsToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.uVsToolStripMenuItem1.Text = "UVs";
+            this.uVsToolStripMenuItem1.Click += new System.EventHandler(this.uVsToolStripMenuItem1_Click);
             // 
             // MeshList
             // 
@@ -688,5 +769,14 @@
         private System.Windows.Forms.ToolStripMenuItem tangentsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem bitangentsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem normalsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem uVsToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem vertexColorToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem setToWhiteToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem selectColorToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem setToAttributeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tangentsToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem bitangentsToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem normalsToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem uVsToolStripMenuItem;
     }
 }
