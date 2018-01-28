@@ -1882,7 +1882,7 @@ namespace Smash_Forge
 
                     Stopwatch sw = new Stopwatch();
                     sw.Start();
-                    Collada.DAEtoNUD(fileName, con, m.checkBox5.Checked);
+                    Collada.DaetoNud(fileName, con, m.checkBox5.Checked);
                     Debug.WriteLine("DAEtoNUD: " + sw.ElapsedMilliseconds / 1000.0);
                     sw.Stop();
                     //Runtime.ModelContainers.Add(con);

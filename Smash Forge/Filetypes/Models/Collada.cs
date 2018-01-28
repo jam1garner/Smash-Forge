@@ -27,75 +27,24 @@ namespace Smash_Forge
 
         }
 
-        public static void DAEtoNUD(string fname, ModelContainer con, bool importTexture = false)
+        public static void DaetoNud(string fileName, ModelContainer container, bool importTexture = false)
         {
             Collada dae = new Collada();
-            dae.Read(fname);
+            dae.Read(fileName);
 
             NUD n = new NUD();
-            con.NUD = n;
+            container.NUD = n;
 
             NUT thisNut = new NUT();
-            con.NUT = thisNut;
+            container.NUT = thisNut;
             Runtime.TextureContainers.Add(thisNut);
 
-            // next will be nodes then controllers
-            // craft vbn :>
-            // find joint node
-            foreach (ColladaNode node in dae.scene.nodes)
-            {
-                if (node.type.Equals("JOINT") && con.VBN == null)
-                {
-                    // joint tree
-
-                    VBN vbn = new VBN();
-                    con.VBN = vbn;
-
-                    List<ColladaNode> parenttrack = new List<ColladaNode>();
-                    Queue<ColladaNode> nodes = new Queue<ColladaNode>();
-                    nodes.Enqueue(node);
-
-                    while (nodes.Count > 0)
-                    {
-                        ColladaNode bo = nodes.Dequeue();
-                        parenttrack.Add(bo);
-                        foreach (ColladaNode child in bo.children)
-                            nodes.Enqueue(child);
-
-                        Bone bone = new Smash_Forge.Bone(vbn);
-                        vbn.bones.Add(bone);
-                        bone.Text = bo.name;
-                        bone.parentIndex = parenttrack.IndexOf(bo.parent);
-                        bone.position = new float[3];
-                        bone.rotation = new float[3];
-                        bone.scale = new float[3];
-                        bone.position[0] = bo.pos.X;
-                        bone.position[1] = bo.pos.Y;
-                        bone.position[2] = bo.pos.Z;
-                        bone.rotation[0] = bo.rot.X;
-                        bone.rotation[1] = bo.rot.Y;
-                        bone.rotation[2] = bo.rot.Z;
-                        bone.scale[0] = bo.sca.X;
-                        bone.scale[1] = bo.sca.X;
-                        bone.scale[2] = bo.sca.X;
-                        //bone.children = new List<int>();
-
-                        //if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex > -1)
-                        //    vbn.bones[bone.parentIndex].children.Add(parenttrack.IndexOf(bo));
-                    }
-
-                    vbn.reset();
-                    vbn.update();
-                }
-                if (node.type.Equals("NODE"))
-                {
-                }
-            }
+            CreateBones(container, dae);
 
             //grab all that material data so we can apply images later
             Dictionary<string, ColladaImages> images = new Dictionary<string, ColladaImages>();
             foreach (var image in dae.library_images)
-                if(!images.ContainsKey(image.id))
+                if (!images.ContainsKey(image.id))
                     images.Add(image.id, image);
             Dictionary<string, ColladaEffects> effects = new Dictionary<string, ColladaEffects>();
             foreach (var efc in dae.library_effects)
@@ -125,43 +74,7 @@ namespace Smash_Forge
                 vertices.Add(skin.source, verts);
                 bindMatrix.Add(skin.source, skin.mat);
 
-                int v = 0;
-                for (int i = 0; i < skin.weights.count; i++)
-                {
-                    //basically, I need to find all verts that use this position and apply that.........
-
-                    int count = skin.weights.vcount[i];
-                    if (count > 4)
-                    {
-                        MessageBox.Show("Error: More than 4 weights detected!");
-                        return;
-                    }
-
-                    NUD.Vertex vert = new NUD.Vertex();
-                    verts.Add(vert);
-
-                    for (int j = 0; j < count; j++)
-                    {
-                        foreach (ColladaInput input in skin.weights.inputs)
-                        {
-                            switch (input.semantic)
-                            {
-                                case SemanticType.JOINT:
-                                    string bname = sources[input.source].data[skin.weights.v[v]];
-                                    if (bname.StartsWith("_"))
-                                        bname = bname.Substring(6, bname.Length - 6);
-                                    int index = con.VBN.boneIndex(bname);
-                                    vert.node.Add(index);
-                                    break;
-                                case SemanticType.WEIGHT:
-                                    float weight = float.Parse(sources[input.source].data[skin.weights.v[v]]);
-                                    vert.weight.Add(weight);
-                                    break;
-                            }
-                            v++;
-                        }
-                    }
-                }
+                SkinVerts(container, skin, sources, verts);
             }
 
 
@@ -181,9 +94,9 @@ namespace Smash_Forge
                 }
 
                 NUD.Mesh nmesh = new NUD.Mesh();
-                Matrix4 nodeTrans = Matrix4.CreateScale(1,1,1);
+                Matrix4 nodeTrans = Matrix4.CreateScale(1, 1, 1);
                 ColladaNode cnode = null;
-                foreach(ColladaNode node in dae.scene.nodes)
+                foreach (ColladaNode node in dae.scene.nodes)
                 {
                     if (node.geom_id.Equals(geom.id))
                     {
@@ -223,22 +136,23 @@ namespace Smash_Forge
                                 images.TryGetValue(eff.source.Substring(1, eff.source.Length - 1), out img);
                             if (img != null)
                                 existingTextures.TryGetValue(img.initref, out tempTex);
-                            
+
                             if (texturemap.ContainsKey(img.initref))
                             {
                                 tempTex = texturemap[img.initref];
-                            }else
-                            if (tempTex == null && img != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fname), img.initref))))
+                            }
+                            else
+                            if (tempTex == null && img != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))))
                             {
                                 NUT_Texture tex = null;
                                 if (img.initref.ToLower().EndsWith(".dds"))
                                 {
-                                    DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fname), img.initref))));
+                                    DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))));
                                     tex = dds.toNUT_Texture();
                                 }
                                 if (img.initref.ToLower().EndsWith(".png"))
                                 {
-                                    tex = NUTEditor.fromPNG(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fname), img.initref)), 1);
+                                    tex = NUTEditor.fromPNG(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref)), 1);
                                 }
                                 if (tex == null) continue;
                                 texturemap.Add(img.initref, tex);
@@ -271,7 +185,6 @@ namespace Smash_Forge
                             {
                                 if (vertices.ContainsKey("#" + geom.id))
                                 {
-                                    //Console.WriteLine(vertices["#" + geom.id].Count + " " + i + " " + p.p[maxoffset * i]);
                                     v.node.AddRange(vertices["#" + geom.id][p.p[maxoffset * i]].node);
                                     v.weight.AddRange(vertices["#" + geom.id][p.p[maxoffset * i]].weight);
                                 }
@@ -285,7 +198,7 @@ namespace Smash_Forge
                         if (input.semantic == SemanticType.VERTEX)
                         {
                             v = new NUD.Vertex();
-                            
+
                             npoly.vertices.Add(v);
                             npoly.faces.Add(npoly.vertices.IndexOf(v));
                             foreach (ColladaInput vinput in mesh.vertices.inputs)
@@ -296,7 +209,6 @@ namespace Smash_Forge
                                     {
                                         if (vertices.ContainsKey("#" + geom.id))
                                         {
-                                            //Console.WriteLine(vertices["#" + geom.id].Count + " " + i + " " + p.p[maxoffset * i]);
                                             v.node.AddRange(vertices["#" + geom.id][p.p[maxoffset * i]].node);
                                             v.weight.AddRange(vertices["#" + geom.id][p.p[maxoffset * i]].weight);
                                         }
@@ -341,6 +253,100 @@ namespace Smash_Forge
             n.PreRender();
         }
 
+        private static void SkinVerts(ModelContainer con, ColladaSkin skin, Dictionary<string, ColladaSource> sources, List<NUD.Vertex> verts)
+        {
+            int v = 0;
+            for (int i = 0; i < skin.weights.count; i++)
+            {
+                //basically, I need to find all verts that use this position and apply that.........
+
+                int count = skin.weights.vcount[i];
+                if (count > 4)
+                {
+                    MessageBox.Show("Error: More than 4 weights detected!");
+                    return;
+                }
+
+                NUD.Vertex newVertex = new NUD.Vertex();
+
+                for (int j = 0; j < count; j++)
+                {
+                    foreach (ColladaInput input in skin.weights.inputs)
+                    {
+                        switch (input.semantic)
+                        {
+                            case SemanticType.JOINT:
+                                string bname = sources[input.source].data[skin.weights.v[v]];
+                                if (bname.StartsWith("_"))
+                                    bname = bname.Substring(6, bname.Length - 6);
+                                int index = con.VBN.boneIndex(bname);
+                                newVertex.node.Add(index);
+                                break;
+                            case SemanticType.WEIGHT:
+                                float weight = float.Parse(sources[input.source].data[skin.weights.v[v]]);
+                                newVertex.weight.Add(weight);
+                                break;
+                        }
+                        v++;
+                    }
+                }
+
+                verts.Add(newVertex);
+            }
+        }
+
+        private static void CreateBones(ModelContainer con, Collada dae)
+        {
+            // next will be nodes then controllers
+            // craft vbn :>
+            // find joint node
+            foreach (ColladaNode node in dae.scene.nodes)
+            {
+                if (node.type.Equals("JOINT") && con.VBN == null)
+                {
+                    // joint tree
+
+                    VBN vbn = new VBN();
+                    con.VBN = vbn;
+
+                    List<ColladaNode> parenttrack = new List<ColladaNode>();
+                    Queue<ColladaNode> nodes = new Queue<ColladaNode>();
+                    nodes.Enqueue(node);
+
+                    while (nodes.Count > 0)
+                    {
+                        ColladaNode bo = nodes.Dequeue();
+                        parenttrack.Add(bo);
+                        foreach (ColladaNode child in bo.children)
+                            nodes.Enqueue(child);
+
+                        Bone bone = new Smash_Forge.Bone(vbn);
+                        vbn.bones.Add(bone);
+                        bone.Text = bo.name;
+                        bone.parentIndex = parenttrack.IndexOf(bo.parent);
+                        bone.position = new float[3];
+                        bone.rotation = new float[3];
+                        bone.scale = new float[3];
+                        bone.position[0] = bo.pos.X;
+                        bone.position[1] = bo.pos.Y;
+                        bone.position[2] = bo.pos.Z;
+                        bone.rotation[0] = bo.rot.X;
+                        bone.rotation[1] = bo.rot.Y;
+                        bone.rotation[2] = bo.rot.Z;
+                        bone.scale[0] = bo.sca.X;
+                        bone.scale[1] = bo.sca.X;
+                        bone.scale[2] = bo.sca.X;
+                    }
+
+                    vbn.reset();
+                    vbn.update();
+                }
+                if (node.type.Equals("NODE"))
+                {
+                }
+            }
+        }
+
         private static void ReadSemantic(ColladaInput input, NUD.Vertex v, int p, Dictionary<string, ColladaSource> sources)
         {
             switch (input.semantic)
@@ -362,6 +368,7 @@ namespace Smash_Forge
                     v.uv.Add(tx);
                     break;
                 case SemanticType.COLOR:
+                    // Vertex colors are stored as integers [0,255]. (127,127,127) is white.
                     v.col.X = float.Parse(sources[input.source].data[p * sources[input.source].stride + 0]) * 255;
                     v.col.Y = float.Parse(sources[input.source].data[p * sources[input.source].stride + 1]) * 255;
                     v.col.Z = float.Parse(sources[input.source].data[p * sources[input.source].stride + 2]) * 255;
@@ -371,277 +378,6 @@ namespace Smash_Forge
             }
         }
 
-        public static void DAEtoNUDOld(string fname, ModelContainer con)
-        {
-            COLLADA model = COLLADA.Load(fname);
-
-            NUD n = new NUD();
-            //if (con.vbn == null)
-            //    return;
-            VBN vbn = con.VBN;
-            con.NUD = n;
-
-            // Iterate on libraries
-            foreach (var item in model.Items)
-            {
-                var geometries = item as library_geometries;
-                if (geometries != null)
-                {
-                    // Iterate on geomerty in library_geometries 
-                    foreach (var geom in geometries.geometry)
-                    {
-                        var mesh = geom.Item as mesh;
-                        if (mesh == null)
-                            continue;
-
-                        NUD.Mesh n_mesh = new NUD.Mesh();
-                        n.Nodes.Add(n_mesh);
-                        n_mesh.Text = geom.name;
-
-                        Dictionary<string, double[]> sources = new Dictionary<string, double[]>();
-                        Dictionary<string, string> vertex = new Dictionary<string, string>();
-                        Dictionary<string, string> semantic = new Dictionary<string, string>();
-
-                        // Dump source[] for geom
-                        foreach (var source in mesh.source)
-                        {
-                            var float_array = source.Item as float_array;
-                            if (float_array == null)
-                                continue;
-                            sources.Add(source.id, float_array.Values);
-                        }
-                        {
-                            var inputs = mesh.vertices.input;
-                            foreach (var input in inputs)
-                            {
-                                vertex.Add(input.semantic, input.source);
-                            }
-                        }
-                        // Dump Items[] for geom
-                        foreach (var meshItem in mesh.Items)
-                        {
-                            if (meshItem is vertices)
-                            {
-                                var vertices = meshItem as vertices;
-                                var inputs = vertices.input;
-                                foreach (var input in inputs)
-                                    vertex.Add(input.semantic, input.source);
-                            }
-                            else if (meshItem is triangles)
-                            {
-                                var triangles = meshItem as triangles;
-                                var inputs = triangles.input;
-
-                                foreach (var input in inputs)
-                                    semantic.Add(input.semantic, input.source);
-
-                                NUD.Polygon poly = new NUD.Polygon();
-                                poly.setDefaultMaterial();
-                                n_mesh.Nodes.Add(poly);
-                                string[] ps = triangles.p.StartsWith(" ") ? triangles.p.Substring(1).Split(' ') : triangles.p.Split(' ');
-                                for (int i = 0; i < ps.Length;)
-                                {
-                                    //poly.faces.Add(int.Parse(ps[i]));
-                                    int p = int.Parse(ps[i]);
-                                    /*}
-                                    poly.faces.Add(int.Parse(ps[i]));
-                                        if (int.Parse(ps[i]) > vCount)
-                                            vCount = int.Parse(ps[i]);
-                                    for (int i = 0; i < vCount + 1; i++)
-                                    {*/
-                                    NUD.Vertex v = new NUD.Vertex();
-
-                                    // iterate semantics
-                                    foreach (string s in semantic.Keys)
-                                    {
-                                        string src;
-                                        double[] bank;
-                                        semantic.TryGetValue(s, out src);
-                                        src = src.Replace("#", "");
-                                        sources.TryGetValue(src, out bank);
-                                        switch (s)
-                                        {
-                                            case "VERTEX":
-                                                {
-                                                    poly.faces.Add(p);
-                                                    //poly.AddVertex(v);
-                                                    while (poly.vertices.Count <= p)
-                                                        poly.AddVertex(new NUD.Vertex());
-                                                    poly.vertices[p] = v;
-                                                    foreach (string s2 in vertex.Keys)
-                                                    {
-                                                        string vsrc;
-                                                        vertex.TryGetValue(s2, out vsrc);
-                                                        vsrc = vsrc.Replace("#", "");
-                                                        //Console.WriteLine(vsrc);
-                                                        sources.TryGetValue(vsrc, out bank);
-                                                        switch (s2)
-                                                        {
-                                                            case "POSITION":
-                                                                v.pos.X = (float)bank[p * 3 + 0];
-                                                                v.pos.Y = (float)bank[p * 3 + 1];
-                                                                v.pos.Z = (float)bank[p * 3 + 2];
-                                                                break;
-                                                            case "NORMAL":
-                                                                v.nrm.X = (float)bank[p * 3 + 0];
-                                                                v.nrm.Y = (float)bank[p * 3 + 1];
-                                                                v.nrm.Z = (float)bank[p * 3 + 2];
-                                                                break;
-                                                            case "COLOR":
-                                                                v.col.X = (float)bank[p * 4 + 0] * 255;
-                                                                v.col.Y = (float)bank[p * 4 + 1] * 255;
-                                                                v.col.Z = (float)bank[p * 4 + 2] * 255;
-                                                                v.col.W = (float)bank[p * 4 + 3] * 127;
-                                                                break;
-                                                            case "TEXCOORD":
-                                                                v.uv.Add(new OpenTK.Vector2((float)bank[p * 2 + 0], (float)bank[p * 2 + 1]));
-                                                                break;
-                                                        }
-                                                    }
-                                                    break;
-                                                }
-                                            case "POSITION":
-                                                v.pos.X = (float)bank[p * 3 + 0];
-                                                v.pos.Y = (float)bank[p * 3 + 1];
-                                                v.pos.Z = (float)bank[p * 3 + 2];
-                                                break;
-                                            case "NORMAL":
-                                                v.nrm.X = (float)bank[p * 3 + 0];
-                                                v.nrm.Y = (float)bank[p * 3 + 1];
-                                                v.nrm.Z = (float)bank[p * 3 + 2];
-                                                break;
-                                            case "COLOR":
-                                                v.col.X = (float)bank[p * 4 + 0] * 255;
-                                                v.col.Y = (float)bank[p * 4 + 1] * 255;
-                                                v.col.Z = (float)bank[p * 4 + 2] * 255;
-                                                v.col.W = (float)bank[p * 4 + 3] * 127;
-                                                break;
-                                            case "TEXCOORD":
-                                                // correct them
-                                                v.uv.Add(new OpenTK.Vector2((float)bank[p * 2 + 0], (float)bank[p * 2 + 1]));
-                                                break;
-                                        }
-                                        i++;
-                                        if (i >= ps.Length) break;
-                                        p = int.Parse(ps[i]);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                var controllers = item as library_controllers;
-                if (controllers != null && vbn != null)
-                {
-                    int cid = 0;
-                    // Iterate on controllers in library_controllers 
-                    foreach (var cont in controllers.controller)
-                    {
-                        var control = cont as controller;
-                        //if (control == null)
-                        //    continue;
-
-                        var skin = control.Item as skin;
-
-                        string[] boneNames = null;
-                        Dictionary<string, double[]> sources = new Dictionary<string, double[]>();
-                        Dictionary<string, string> semantic = new Dictionary<string, string>();
-
-                        // Dump source[] for geom
-                        foreach (var source in skin.source)
-                        {
-                            var float_array = source.Item as float_array;
-                            if (float_array != null)
-                            {
-                                sources.Add(source.id, float_array.Values);
-                            }
-                            var name_array = source.Item as Name_array;
-                            if (name_array != null)
-                            {
-                                boneNames = name_array._Text_.Split(' ');
-                            }
-                        }
-                        {
-                            var inputs = skin.joints.input;
-                            foreach (var input in inputs)
-                            {
-                                if (input.semantic.Equals(""))
-                                    semantic.Add(input.semantic, input.source);
-                            }
-                        }
-                        // Dump Items[] for geom
-                        NUD.Mesh m = (NUD.Mesh)n.Nodes[cid];
-                        List<NUD.Vertex> v = ((NUD.Polygon)m.Nodes[0]).vertices;
-                        string[] vcount = skin.vertex_weights.vcount.Split(' ');
-                        string[] vi = skin.vertex_weights.v.Split(' ');
-                        int pos = 0;
-
-                        List<string> bname = new List<string>();
-                        for (int i = 0; i < (int)skin.vertex_weights.count; i++)
-                        {
-                            NUD.Vertex vert = v[i];
-
-                            for (int j = 0; j < int.Parse(vcount[i]); j++)
-                                foreach (var sem in skin.vertex_weights.input)
-                                {
-                                    switch (sem.semantic)
-                                    {
-                                        case "JOINT":
-                                            // find joint name in vbn
-                                            int ind = int.Parse(vi[pos]);
-                                            int index = vbn.boneIndex(boneNames[ind]);
-                                            vert.node.Add(index == -1 ? 0 : index);
-                                            if (index == -1)
-                                                if (!bname.Contains(boneNames[ind]))
-                                                    bname.Add(boneNames[ind]);
-                                            break;
-                                        case "WEIGHT":
-                                            // find weight int weight list
-                                            double[] weight;
-                                            sources.TryGetValue(sem.source.Replace("#", ""), out weight);
-                                            float w = (int)Math.Round(weight[int.Parse(vi[pos])] * 0xFF);
-                                            w /= 0xFF;
-                                            //Console.WriteLine(w + " " + weight[int.Parse(vi[pos])]);
-                                            vert.weight.Add((float)weight[int.Parse(vi[pos])]);
-                                            if (vert.weight.Count > 4)
-                                                Console.WriteLine("Weight Error");
-                                            break;
-                                    }
-                                    pos++;
-                                }
-
-                        }
-                        cid++;
-                        foreach (string nam in bname)
-                        {
-                            Console.WriteLine("No match " + nam);
-                        }
-                    }
-                }
-            }
-
-            foreach (NUD.Mesh mesh in n.Nodes)
-            {
-                foreach (NUD.Polygon poly in mesh.Nodes)
-                {
-                    poly.vertSize = 0x16;
-
-                    if (vbn == null)
-                        poly.vertSize = 0x06;
-
-                    foreach (NUD.Vertex v in poly.vertices)
-                    {
-                        v.node.Add(-1);
-                        v.weight.Add(0);
-                    }
-                }
-            }
-            n.MergePoly();
-            n.PreRender();
-            n.ComputeTangentBitangent();
-        }
-        
         public static void SaveBoneNodes(Collada dae, Bone b, VBN vbn, ColladaNode parent)
         {
             ColladaNode node = new ColladaNode();
@@ -1331,9 +1067,6 @@ namespace Smash_Forge
 
             foreach (XmlNode node in colnode.ChildNodes)
             {
-                /*if (f.Name.Equals("asset", true))
-                    ParseAsset();*/
-                Console.WriteLine(node.Name);
                 if (node.Name.Equals("library_images"))
                     ParseImages(node);
                 else if (node.Name.Equals("library_materials"))
@@ -1951,11 +1684,6 @@ namespace Smash_Forge
                     node.AppendChild(src);
                 }
 
-                /*XmlNode inst = doc.CreateElement("instance_image");
-                inst.Attributes.Append(createAttribute(doc, "url", url));
-                node.AppendChild(inst);*/
-
-
                 parent.AppendChild(node);
             }
         }
@@ -2302,10 +2030,6 @@ namespace Smash_Forge
                     {
                         string[] data = node.InnerText.Trim().Replace("\n", " ").Split(' ');
                         rot = new Vector3(float.Parse(data[0]), float.Parse(data[1]), float.Parse(data[2]));
-                    }
-                    else
-                    {
-                        Console.WriteLine(node.Name);
                     }
                 }
             }

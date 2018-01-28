@@ -112,7 +112,7 @@ namespace Smash_Forge
                             // load vbn
                             con.VBN = skeleton;
 
-                            Collada.DAEtoNUD(f, con, m.checkBox5.Checked);
+                            Collada.DaetoNud(f, con, m.checkBox5.Checked);
                             
                             // apply settings
                             m.Apply(con.NUD);
