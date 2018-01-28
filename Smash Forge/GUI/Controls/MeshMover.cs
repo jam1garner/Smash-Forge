@@ -44,15 +44,27 @@ namespace Smash_Forge
             {
                 foreach (NUD.Vertex v in p.vertices)
                 {
+                    // Rotate the mesh normals as well to preserve proper normal direction.
                     switch (type)
                     {
                         case 1: v.pos.X += move; break;
                         case 2: v.pos.Y += move; break;
                         case 3: v.pos.Z += move; break;
-                        case 4: v.pos = Vector3.TransformVector(v.pos, Matrix4.CreateRotationX(move * ((float)Math.PI / 180))); break;
-                        case 5: v.pos = Vector3.TransformVector(v.pos, Matrix4.CreateRotationY(move * ((float)Math.PI / 180))); break;
-                        case 6: v.pos = Vector3.TransformVector(v.pos, Matrix4.CreateRotationZ(move * ((float)Math.PI / 180))); break;
-                        case 7: v.pos = Vector3.Multiply(v.pos, move); break;
+                        case 4:
+                            v.pos = Vector3.TransformVector(v.pos, Matrix4.CreateRotationX(move * ((float)Math.PI / 180)));
+                            v.nrm = Vector3.TransformVector(v.nrm, Matrix4.CreateRotationX(move * ((float)Math.PI / 180))).Normalized();
+                            break;
+                        case 5:
+                            v.pos = Vector3.TransformVector(v.pos, Matrix4.CreateRotationY(move * ((float)Math.PI / 180)));
+                            v.nrm = Vector3.TransformVector(v.nrm, Matrix4.CreateRotationY(move * ((float)Math.PI / 180))).Normalized();
+                            break;
+                        case 6:
+                            v.pos = Vector3.TransformVector(v.pos, Matrix4.CreateRotationZ(move * ((float)Math.PI / 180)));
+                            v.nrm = Vector3.TransformVector(v.nrm, Matrix4.CreateRotationZ(move * ((float)Math.PI / 180))).Normalized();
+                            break;
+                        case 7:
+                            v.pos = Vector3.Multiply(v.pos, move);
+                            break;
                     }
                     
                 }
