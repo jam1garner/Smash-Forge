@@ -38,6 +38,7 @@ uniform vec4 normalSamplerBUV;
 uniform mat4 mvpMatrix;
 uniform mat4 nscMatrix;
 uniform mat4 modelViewMatrix;
+uniform mat4 sphereMapMatrix;
 
 uniform uint flags;
 uniform float zScale;
@@ -161,6 +162,6 @@ void main()
 	if(vBone.x != -1.0)
 		normal = normalize((skinNRM(vNormal.xyz, ivec4(vBone))).xyz);
 
-    viewNormal = mat3(modelViewMatrix) * normal.xyz;
+    viewNormal = mat3(sphereMapMatrix) * normal.xyz;
     viewNormal = viewNormal * 0.5 + 0.5;
 }

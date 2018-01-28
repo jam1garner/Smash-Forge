@@ -215,9 +215,15 @@ namespace Smash_Forge
 
             // Perform the calculations here to reduce render times in shader
             Matrix4 modelViewMatrix = camera.getModelViewMatrix();
-            modelViewMatrix.Invert();
-            modelViewMatrix.Transpose();
+            Matrix4 sphereMapMatrix = modelViewMatrix;
+            sphereMapMatrix.Invert();
+            sphereMapMatrix.Transpose();
             GL.UniformMatrix4(shader.getAttribute("modelViewMatrix"), false, ref modelViewMatrix);
+            GL.UniformMatrix4(shader.getAttribute("sphereMapMatrix"), false, ref sphereMapMatrix);
+
+            Matrix4 rotationMatrix = camera.getRotationMatrix();
+            GL.UniformMatrix4(shader.getAttribute("rotationMatrix"), false, ref rotationMatrix);
+
 
             #region MBN Uniforms
 

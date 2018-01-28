@@ -49,6 +49,7 @@ uniform int hasFinalColorGain;
 uniform int useDifRefMask;
 uniform int hasBayoHair;
 uniform int softLightBrighten;
+uniform int hasUniverseParam;
 
 // Da Flags
 uniform uint flags;
@@ -155,6 +156,9 @@ uniform int colorOverride;
 
 uniform mat4 mvpMatrix;
 uniform mat4 modelViewMatrix;
+uniform mat4 sphereMapMatrix;
+uniform mat4 rotationMatrix;
+
 
 uniform sampler2D shadowMap;
 
@@ -489,8 +493,8 @@ vec3 DiffusePass(vec3 N, float aoMap, vec4 diffuseMap)
 {
     vec3 diffusePass = vec3(0);
 
-
-    return CalculateUniverseColor(8);
+    if (hasUniverseParam == 1)
+        return CalculateUniverseColor(8);
 
     // lambertian shading
     float halfLambert = dot(difLightDirection, N) * 0.5 + 0.5;
@@ -681,7 +685,9 @@ void main()
     if (renderVertColor == 1 || hasFinalColorGain == 1)
         fragColor *= min(vertexColor, vec4(1));
 
-    fragColor.rgb *= effColorGain.rgb;
+    // Universe mats are weird...
+    if (hasUniverseParam != 1)
+        fragColor.rgb *= effColorGain.rgb;
 
     // correct alpha
     fragColor.a *= finalColorGain.a;
