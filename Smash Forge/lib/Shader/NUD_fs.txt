@@ -154,6 +154,7 @@ uniform vec3 stageFogColor;
 uniform int colorOverride;
 
 uniform mat4 mvpMatrix;
+uniform mat4 modelViewMatrix;
 
 uniform sampler2D shadowMap;
 
@@ -168,6 +169,8 @@ struct StageLight
 };
 
 uniform StageLight stageLights[4];
+
+uniform vec3 cameraPosition;
 
 // Constants
 #define gamma 2.2
@@ -437,6 +440,18 @@ vec3 CalculateFog(vec3 inputColor)
         return inputColor;
 }
 
+vec3 CalculateUniverseColor(float param)
+{
+    // Account for camera position and rotation for projection.
+    vec3 projVec = normalize(objectPosition.xyz - cameraPosition.xyz);
+    projVec = mat3(modelViewMatrix) * projVec;
+    // Cheap approximations of trig functions.
+    float uCoord = projVec.x * 0.5 + 0.5;
+    float vCoord = projVec.y * 0.5 + 0.5;
+    return texture(dif, vec2(uCoord * param, vCoord)).rgb;
+}
+
+
 vec3 CalculateLighting(vec3 N, float halfLambert, float halfLambert2, float halfLambert3)
 {
     vec3 lighting = vec3(1);
@@ -473,6 +488,9 @@ vec3 CalculateLighting(vec3 N, float halfLambert, float halfLambert2, float half
 vec3 DiffusePass(vec3 N, float aoMap, vec4 diffuseMap)
 {
     vec3 diffusePass = vec3(0);
+
+
+    return CalculateUniverseColor(8);
 
     // lambertian shading
     float halfLambert = dot(difLightDirection, N) * 0.5 + 0.5;
