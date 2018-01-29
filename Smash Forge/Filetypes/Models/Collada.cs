@@ -22,11 +22,6 @@ namespace Smash_Forge
 
         }
 
-        public void CreateMesh(string name)
-        {
-
-        }
-
         public static void DaetoNud(string fileName, ModelContainer container, bool importTexture = false)
         {
             Collada dae = new Collada();
@@ -83,7 +78,7 @@ namespace Smash_Forge
             foreach (ColladaGeometry geom in dae.library_geometries)
             {
                 ColladaMesh mesh = geom.mesh;
-                ColladaPolygons p = mesh.polygons[0];
+                ColladaPolygons colladaPoly = mesh.polygons[0];
 
                 // first create vertices?
 
@@ -113,12 +108,11 @@ namespace Smash_Forge
                 npoly.setDefaultMaterial();
                 nmesh.Nodes.Add(npoly);
 
-                int i = 0;
-                while (i < p.p.Length)
+                for (int i = 0; i < colladaPoly.p.Length; i++)
                 {
                     if (importTexture)
                     {
-                        if (p.type == ColladaPrimitiveType.triangles)
+                        if (colladaPoly.type == ColladaPrimitiveType.triangles)
                         {
                             NUT_Texture tempTex = null;
                             ColladaMaterials mat = null;
@@ -126,7 +120,7 @@ namespace Smash_Forge
                             ColladaImages img = null;
                             string matId = null;
 
-                            dae.scene.MaterialIds.TryGetValue(p.materialid, out matId);
+                            dae.scene.MaterialIds.TryGetValue(colladaPoly.materialid, out matId);
 
                             if (matId != null && matId[0] == '#')
                                 materials.TryGetValue(matId.Substring(1, matId.Length - 1), out mat);
@@ -154,7 +148,8 @@ namespace Smash_Forge
                                 {
                                     tex = NUTEditor.fromPNG(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref)), 1);
                                 }
-                                if (tex == null) continue;
+                                if (tex == null)
+                                    continue;
                                 texturemap.Add(img.initref, tex);
                                 tex.HASHID = 0x40FFFF00;
                                 while (NUT.texIdUsed(tex.HASHID))
@@ -173,11 +168,11 @@ namespace Smash_Forge
 
                     NUD.Vertex v = new NUD.Vertex();
                     int maxoffset = 0;
-                    foreach (ColladaInput input in p.inputs)
+                    foreach (ColladaInput input in colladaPoly.inputs)
                         if (input.offset > maxoffset) maxoffset = input.offset;
                     maxoffset += 1;
-                    if (i * maxoffset >= p.p.Length) break;
-                    foreach (ColladaInput input in p.inputs)
+                    if (i * maxoffset >= colladaPoly.p.Length) break;
+                    foreach (ColladaInput input in colladaPoly.inputs)
                     {
                         if (input.semantic == SemanticType.POSITION)
                         {
@@ -185,8 +180,8 @@ namespace Smash_Forge
                             {
                                 if (vertices.ContainsKey("#" + geom.id))
                                 {
-                                    v.node.AddRange(vertices["#" + geom.id][p.p[maxoffset * i]].node);
-                                    v.weight.AddRange(vertices["#" + geom.id][p.p[maxoffset * i]].weight);
+                                    v.node.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].node);
+                                    v.weight.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].weight);
                                 }
                             }
                             else
@@ -209,8 +204,8 @@ namespace Smash_Forge
                                     {
                                         if (vertices.ContainsKey("#" + geom.id))
                                         {
-                                            v.node.AddRange(vertices["#" + geom.id][p.p[maxoffset * i]].node);
-                                            v.weight.AddRange(vertices["#" + geom.id][p.p[maxoffset * i]].weight);
+                                            v.node.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].node);
+                                            v.weight.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].weight);
                                         }
                                     }
                                     else
@@ -219,13 +214,12 @@ namespace Smash_Forge
                                         v.weight.Add(1);
                                     }
                                 }
-                                ReadSemantic(vinput, v, p.p[maxoffset * i], sources);
+                                ReadSemantic(vinput, v, colladaPoly.p[maxoffset * i], sources);
                             }
                         }
                         else
-                            ReadSemantic(input, v, p.p[(maxoffset * i) + input.offset], sources);
+                            ReadSemantic(input, v, colladaPoly.p[(maxoffset * i) + input.offset], sources);
                     }
-                    i++;
 
                     v.pos = Vector3.TransformPosition(v.pos, nodeTrans);
                     if (v.nrm != null)
@@ -233,24 +227,30 @@ namespace Smash_Forge
 
                     if (dae.library_controllers.Count > 0)
                     {
-                        if (!bindMatrix.ContainsKey("#" + geom.id)) continue;
+                        if (!bindMatrix.ContainsKey("#" + geom.id))
+                            continue;
                         v.pos = Vector3.TransformPosition(v.pos, bindMatrix["#" + geom.id]);
                         if (v.nrm != null)
                             v.nrm = Vector3.TransformNormal(v.nrm, bindMatrix["#" + geom.id]);
                     }
                 }
 
-                // Don't add more than 2 materials to a polygon.
-                while (npoly.materials.Count < npoly.vertices[0].uv.Count && npoly.materials.Count < 2)
-                {
-                    NUD.Material material = NUD.Material.getDefault();
-                    npoly.materials.Add(material);
-                }
+                AddMaterialsForEachUvChannel(npoly);
             }
 
             // RIP 22mb NUD files. This step is slow though...
             n.OptimizeFileSize();
             n.PreRender();
+        }
+
+        private static void AddMaterialsForEachUvChannel(NUD.Polygon npoly)
+        {
+            // Don't add more than 2 materials to a polygon.
+            while (npoly.materials.Count < npoly.vertices[0].uv.Count && npoly.materials.Count < 2)
+            {
+                NUD.Material material = NUD.Material.getDefault();
+                npoly.materials.Add(material);
+            }
         }
 
         private static void SkinVerts(ModelContainer con, ColladaSkin skin, Dictionary<string, ColladaSource> sources, List<NUD.Vertex> verts)
@@ -320,7 +320,7 @@ namespace Smash_Forge
                         foreach (ColladaNode child in bo.children)
                             nodes.Enqueue(child);
 
-                        Bone bone = new Smash_Forge.Bone(vbn);
+                        Bone bone = new Bone(vbn);
                         vbn.bones.Add(bone);
                         bone.Text = bo.name;
                         bone.parentIndex = parenttrack.IndexOf(bo.parent);
@@ -333,16 +333,13 @@ namespace Smash_Forge
                         bone.rotation[0] = bo.rot.X;
                         bone.rotation[1] = bo.rot.Y;
                         bone.rotation[2] = bo.rot.Z;
-                        bone.scale[0] = bo.sca.X;
-                        bone.scale[1] = bo.sca.X;
-                        bone.scale[2] = bo.sca.X;
+                        bone.scale[0] = bo.scale.X;
+                        bone.scale[1] = bo.scale.X;
+                        bone.scale[2] = bo.scale.X;
                     }
 
                     vbn.reset();
                     vbn.update();
-                }
-                if (node.type.Equals("NODE"))
-                {
                 }
             }
         }
@@ -389,9 +386,9 @@ namespace Smash_Forge
             node.id = node.name + "_id";
             node.type = "JOINT";
             node.pos = new Vector3(b.position[0], b.position[1], b.position[2]);
-            node.sca = new Vector3(b.scale[0], b.scale[1], b.scale[2]);
+            node.scale = new Vector3(b.scale[0], b.scale[1], b.scale[2]);
             node.rot = new Vector3(b.rotation[0], b.rotation[1], b.rotation[2]);
-            node.mat = Matrix4.CreateScale(node.sca) * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(node.rot.X, node.rot.Y, node.rot.Z)) * Matrix4.CreateTranslation(node.pos);
+            node.mat = Matrix4.CreateScale(node.scale) * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(node.rot.X, node.rot.Y, node.rot.Z)) * Matrix4.CreateTranslation(node.pos);
             foreach (var bone in b.GetChildren())
                 SaveBoneNodes(dae, bone, vbn, node);
         }
@@ -516,7 +513,6 @@ namespace Smash_Forge
                     ColladaSource src = new ColladaSource();
                     geom.mesh.sources.Add(src);
                     src.id = geom.name + "_pos";
-                    //src.name = mesh.name + "src1";
                     vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.POSITION });
                     List<string> d = new List<string>();
                     foreach (DAT.Vertex v in usedVertices)
@@ -534,7 +530,6 @@ namespace Smash_Forge
                     ColladaSource src = new ColladaSource();
                     geom.mesh.sources.Add(src);
                     src.id = geom.name + "_nrm";
-                    //src.name = mesh.name + "src1";
                     vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.NORMAL });
                     List<string> d = new List<string>();
                     foreach (DAT.Vertex v in usedVertices)
@@ -909,7 +904,7 @@ namespace Smash_Forge
                         else
                         {
                             Bone b = new Bone(new VBN());
-                            d.Add(b.invert.M11 + " " + b.invert.M21 + " " + b.invert.M31 + " " + b.invert.M41 + " "
+                            d.Add(    b.invert.M11 + " " + b.invert.M21 + " " + b.invert.M31 + " " + b.invert.M41 + " "
                                     + b.invert.M12 + " " + b.invert.M22 + " " + b.invert.M32 + " " + b.invert.M42 + " "
                                     + b.invert.M13 + " " + b.invert.M23 + " " + b.invert.M33 + " " + b.invert.M43 + " "
                                     + b.invert.M14 + " " + b.invert.M24 + " " + b.invert.M34 + " " + b.invert.M44);
@@ -1944,7 +1939,9 @@ namespace Smash_Forge
             public List<ColladaNode> children = new List<ColladaNode>();
 
             public Matrix4 mat = Matrix4.CreateScale(1,1,1);
-            public Vector3 pos = new Vector3(), sca = new Vector3(), rot = new Vector3();
+            public Vector3 pos = new Vector3();
+            public Vector3 scale = new Vector3();
+            public Vector3 rot = new Vector3();
 
             // material
             public string materialSymbol, materialTarget;
@@ -1979,7 +1976,7 @@ namespace Smash_Forge
                         mat.M41 = float.Parse(data[12]); mat.M42 = float.Parse(data[13]); mat.M43 = float.Parse(data[14]); mat.M44 = float.Parse(data[15]);
                         
                         pos = new Vector3(mat.M14, mat.M24, mat.M34);
-                        sca = mat.ExtractScale();
+                        scale = mat.ExtractScale();
 
                         mat.ClearScale();
                         mat.ClearTranslation();
@@ -2024,7 +2021,7 @@ namespace Smash_Forge
                     else if (node.Name.Equals("scale"))
                     {
                         string[] data = node.InnerText.Trim().Replace("\n", " ").Split(' ');
-                        sca = new Vector3(float.Parse(data[0]), float.Parse(data[1]), float.Parse(data[2]));
+                        scale = new Vector3(float.Parse(data[0]), float.Parse(data[1]), float.Parse(data[2]));
                     }
                     else if (node.Name.Equals("rotate"))
                     {
