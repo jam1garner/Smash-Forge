@@ -59,7 +59,7 @@
             this.loadPresetButton = new System.Windows.Forms.Button();
             this.addMatPropertyButton = new System.Windows.Forms.Button();
             this.matPropertyComboBox = new System.Windows.Forms.ComboBox();
-            this.glControl1 = new OpenTK.GLControl();
+            this.texRgbGlControl = new OpenTK.GLControl();
             this.colorSelect = new System.Windows.Forms.Button();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -73,7 +73,7 @@
             this.param1TrackBar = new System.Windows.Forms.TrackBar();
             this.descriptionLabel = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.glControl2 = new OpenTK.GLControl();
+            this.texAlphaGlControl = new OpenTK.GLControl();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.cubemapCB = new System.Windows.Forms.CheckBox();
             this.stageMapCB = new System.Windows.Forms.CheckBox();
@@ -470,14 +470,14 @@
             // 
             // glControl1
             // 
-            this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(6, 19);
-            this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(130, 130);
-            this.glControl1.TabIndex = 23;
-            this.glControl1.VSync = false;
-            this.glControl1.Click += new System.EventHandler(this.glControl1_Click);
-            this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
+            this.texRgbGlControl.BackColor = System.Drawing.Color.Black;
+            this.texRgbGlControl.Location = new System.Drawing.Point(6, 19);
+            this.texRgbGlControl.Name = "glControl1";
+            this.texRgbGlControl.Size = new System.Drawing.Size(130, 130);
+            this.texRgbGlControl.TabIndex = 23;
+            this.texRgbGlControl.VSync = false;
+            this.texRgbGlControl.Click += new System.EventHandler(this.glControl1_Click);
+            this.texRgbGlControl.Paint += new System.Windows.Forms.PaintEventHandler(this.texRgbGlControl_Paint);
             // 
             // colorSelect
             // 
@@ -620,10 +620,10 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.glControl2);
+            this.groupBox2.Controls.Add(this.texAlphaGlControl);
             this.groupBox2.Controls.Add(this.groupBox7);
             this.groupBox2.Controls.Add(this.texturesListView);
-            this.groupBox2.Controls.Add(this.glControl1);
+            this.groupBox2.Controls.Add(this.texRgbGlControl);
             this.groupBox2.Controls.Add(this.tableLayoutPanel2);
             this.groupBox2.Controls.Add(this.label10);
             this.groupBox2.Controls.Add(this.textBox10);
@@ -637,13 +637,13 @@
             // 
             // glControl2
             // 
-            this.glControl2.BackColor = System.Drawing.Color.Black;
-            this.glControl2.Location = new System.Drawing.Point(151, 19);
-            this.glControl2.Name = "glControl2";
-            this.glControl2.Size = new System.Drawing.Size(130, 130);
-            this.glControl2.TabIndex = 25;
-            this.glControl2.VSync = false;
-            this.glControl2.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl2_Paint);
+            this.texAlphaGlControl.BackColor = System.Drawing.Color.Black;
+            this.texAlphaGlControl.Location = new System.Drawing.Point(151, 19);
+            this.texAlphaGlControl.Name = "glControl2";
+            this.texAlphaGlControl.Size = new System.Drawing.Size(130, 130);
+            this.texAlphaGlControl.TabIndex = 25;
+            this.texAlphaGlControl.VSync = false;
+            this.texAlphaGlControl.Paint += new System.Windows.Forms.PaintEventHandler(this.texAlphaGlControl_Paint);
             // 
             // groupBox7
             // 
@@ -1345,7 +1345,7 @@
         private System.Windows.Forms.Button loadPresetButton;
         private System.Windows.Forms.Button addMatPropertyButton;
         private System.Windows.Forms.ComboBox matPropertyComboBox;
-        private OpenTK.GLControl glControl1;
+        private OpenTK.GLControl texRgbGlControl;
         private System.Windows.Forms.Button colorSelect;
         private System.Windows.Forms.ColorDialog colorDialog1;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -1363,7 +1363,7 @@
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.TextBox param4TB;
         private System.Windows.Forms.TableLayoutPanel paramGB;
-        private OpenTK.GLControl glControl2;
+        private OpenTK.GLControl texAlphaGlControl;
         private System.Windows.Forms.CheckBox cubemapCB;
         private System.Windows.Forms.CheckBox stageMapCB;
         private System.Windows.Forms.CheckBox dummy_rampCB;

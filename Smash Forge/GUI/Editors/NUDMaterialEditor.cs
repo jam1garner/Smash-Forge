@@ -23,39 +23,20 @@ namespace Smash_Forge
         int current = 0;
         public static Dictionary<string, MatParam> propList;
 
-        public void trackchange(object sender, EventArgs e)
-        {
-            Console.WriteLine(((TrackBar)sender).Value);
-        }
 
         public class MatParam
         {
             public string name = "";
             public string description = "";
-            public string[] ps = new string[4];
+            public string[] paramLabels = new string[4];
 
-            // users can still manually enter a value higher than max
+            // Users can still manually enter a value higher than max.
             public float max1 = 100.0f;
             public float max2 = 100.0f;
             public float max3 = 100.0f;
             public float max4 = 100.0f;
 
             public bool useTrackBar = true;
-            public List<string> op1, op2, op3, op4;
-            public Control control1 = null;
-            public Control control2 = null;
-            public Control control3 = null;
-            public Control control4 = null;
-
-            public MatParam()
-            {
-            }
-            public void trackchange(object sender, EventArgs e)
-            {
-                Console.WriteLine(((TrackBar)sender).Value);
-            }
-
-   
         }
 
         public static Dictionary<int, string> dstFactor = new Dictionary<int, string>(){
@@ -64,7 +45,7 @@ namespace Smash_Forge
                     { 0x02, "One"},
                     { 0x03, "InverseSourceAlpha + SubtractTrue"},
                     { 0x04, "Dummy"},
-                };//{ 0x101f, "Invisible"}
+                };
 
         public static Dictionary<int, string> srcFactor = new Dictionary<int, string>(){
                     { 0x00, "Nothing"},
@@ -75,7 +56,7 @@ namespace Smash_Forge
                     { 0x07, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + ObjectDraw"},
                     { 0x32, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + MultiplyBy2"},
                     { 0x33, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + MultiplyBy1"}
-                };//{ 0x101f, "Invisible"}
+                };
 
         public static Dictionary<int, string> cullmode = new Dictionary<int, string>(){
                     { 0x0000, "Cull None"},
@@ -160,10 +141,10 @@ namespace Smash_Forge
                                 case "[Param]": if (!matParam.name.Equals("") && !propList.ContainsKey(matParam.name)) propList.Add(matParam.name, matParam); matParam = new MatParam(); break;
                                 case "name": matParam.name = args[1]; Console.WriteLine(matParam.name); break;
                                 case "description": matParam.description = args[1]; break;
-                                case "param1": matParam.ps[0] = args[1]; break;
-                                case "param2": matParam.ps[1] = args[1]; break;
-                                case "param3": matParam.ps[2] = args[1]; break;
-                                case "param4": matParam.ps[3] = args[1]; break;
+                                case "param1": matParam.paramLabels[0] = args[1]; break;
+                                case "param2": matParam.paramLabels[1] = args[1]; break;
+                                case "param3": matParam.paramLabels[2] = args[1]; break;
+                                case "param4": matParam.paramLabels[3] = args[1]; break;
                                 case "max1": float.TryParse(args[1], out matParam.max1); break;
                                 case "max2": float.TryParse(args[1], out matParam.max2); break;
                                 case "max3": float.TryParse(args[1], out matParam.max3); break;
@@ -191,7 +172,7 @@ namespace Smash_Forge
 
         private void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
-            if(glControl1 != null)
+            if(texRgbGlControl != null)
                 RenderTexture();
         }
 
@@ -439,7 +420,7 @@ namespace Smash_Forge
             magFilterComboBox.SelectedItem = magfilter[tex.magFilter];
             mipDetailComboBox.SelectedItem = mip[tex.mipDetail];
             RenderTexture();
-            RenderTextureAlpha();
+            RenderTexture(true);
         }
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
@@ -695,34 +676,26 @@ namespace Smash_Forge
         // property change
         private void matPropertyTB_TextChanged(object sender, EventArgs e)
         {
-            MatParam labels = null;
-            propList.TryGetValue(matPropertyNameTB.Text, out labels);
+            MatParam matParams = null;
+            propList.TryGetValue(matPropertyNameTB.Text, out matParams);
             descriptionLabel.Text = "Description:\n";
             tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 0));
             tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 1));
             tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 2));
             tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 3));
-            if (labels != null)
+            if (matParams != null)
             {
-                descriptionLabel.Text += labels.description;
-                label20.Text = labels.ps[0].Equals("") ? "Param1" : labels.ps[0];
-                label21.Text = labels.ps[1].Equals("") ? "Param2" : labels.ps[1];
-                label22.Text = labels.ps[2].Equals("") ? "Param3" : labels.ps[2];
-                label23.Text = labels.ps[3].Equals("") ? "Param4" : labels.ps[3];
-                if(labels.control1 != null)
-                    paramGB.Controls.Add(labels.control1, 2, 0);
-                if (labels.control2 != null)
-                    paramGB.Controls.Add(labels.control2, 2, 1);
-                if (labels.control3 != null)
-                    paramGB.Controls.Add(labels.control3, 2, 2);
-                if (labels.control4 != null)
-                    paramGB.Controls.Add(labels.control4, 2, 3);
+                descriptionLabel.Text += matParams.description;
+                label20.Text = matParams.paramLabels[0].Equals("") ? "Param1" : matParams.paramLabels[0];
+                label21.Text = matParams.paramLabels[1].Equals("") ? "Param2" : matParams.paramLabels[1];
+                label22.Text = matParams.paramLabels[2].Equals("") ? "Param3" : matParams.paramLabels[2];
+                label23.Text = matParams.paramLabels[3].Equals("") ? "Param4" : matParams.paramLabels[3];
 
                 // not all material properties need a trackbar
-                param1TrackBar.Enabled = labels.useTrackBar;
-                param2TrackBar.Enabled = labels.useTrackBar;
-                param3TrackBar.Enabled = labels.useTrackBar;
-                param4TrackBar.Enabled = labels.useTrackBar;
+                param1TrackBar.Enabled = matParams.useTrackBar;
+                param2TrackBar.Enabled = matParams.useTrackBar;
+                param3TrackBar.Enabled = matParams.useTrackBar;
+                param4TrackBar.Enabled = matParams.useTrackBar;
             } else
             {
                 label20.Text = "Param1";
@@ -923,22 +896,12 @@ namespace Smash_Forge
        
         }
 
-        private void RenderTexture()
+        private void RenderTexture(bool justRenderAlpha = false)
         {
-            if (!tabControl1.SelectedTab.Text.Equals("Textures")) return;
+            if (!tabControl1.SelectedTab.Text.Equals("Textures"))
+                return;
 
-            glControl1.MakeCurrent();
-            GL.Viewport(glControl1.ClientRectangle);
-            GL.ClearColor(Color.White);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
-
-            GL.Enable(EnableCap.Texture2D);
-
+            // Get the selected NUT texture.
             NUT_Texture tex = null;
             int texture = 0;
             if (materials[current].entries.ContainsKey("NU_materialHash") && texturesListView.SelectedIndices.Count > 0)
@@ -953,68 +916,27 @@ namespace Smash_Forge
                         break;
                     }
             }
-     
-            RenderTools.DrawTexturedQuad(texture, 1, 1, true, true, true, false, false, false);
+
+            if (justRenderAlpha)
+            {
+                texAlphaGlControl.MakeCurrent();
+                GL.Viewport(texAlphaGlControl.ClientRectangle);
+                RenderTools.DrawTexturedQuad(texture, 1, 1, false, false, false, true, true, false);
+                texAlphaGlControl.SwapBuffers();
+            }
+            else
+            {
+                texRgbGlControl.MakeCurrent();
+                GL.Viewport(texRgbGlControl.ClientRectangle);
+                RenderTools.DrawTexturedQuad(texture, 1, 1, true, true, true, false, false, false);
+                texRgbGlControl.SwapBuffers();
+            }
 
             if (!Runtime.shaders["Texture"].hasCheckedCompilation())
             {
                 Runtime.shaders["Texture"].displayCompilationWarning("Texture");
             }
-
-            glControl1.SwapBuffers();
         }
-
-
-        private void RenderTextureAlpha()
-        {
-            if (!tabControl1.SelectedTab.Text.Equals("Textures")) return;
-            glControl2.MakeCurrent();
-            GL.Viewport(glControl2.ClientRectangle);
-            GL.ClearColor(Color.White);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
-
-            GL.Enable(EnableCap.Texture2D);
-
-            NUT_Texture tex = null;
-            int texture = 0;
-            if (materials[current].entries.ContainsKey("NU_materialHash") && texturesListView.SelectedIndices.Count > 0)
-            {
-                int hash = materials[current].textures[texturesListView.SelectedIndices[0]].hash;
-
-                foreach (NUT n in Runtime.TextureContainers)
-                    if (n.draw.ContainsKey(hash))
-                    {
-                        n.getTextureByID(hash, out tex);
-                        texture = n.draw[hash];
-                        break;
-                    }
-            }
-            float h = 1f, w = 1f;
-            if (tex != null)
-            {
-                float texureRatioW = tex.Width / tex.Height;
-                float widthPre = texureRatioW * glControl2.Height;
-                w = glControl2.Width / widthPre;
-                if (texureRatioW > glControl2.AspectRatio)
-                {
-                    w = 1f;
-                    float texureRatioH = tex.Height / tex.Width;
-                    float HeightPre = texureRatioH * glControl2.Width;
-                    h = glControl2.Height / HeightPre;
-                }
-            }
-            if (float.IsInfinity(h)) h = 1;
-            Console.WriteLine(w + " " + h);
-
-            RenderTools.DrawTexturedQuad(texture, 1, 1, false, false, false, true, true, false);
-            glControl2.SwapBuffers();
-        }
-
 
         private void glControl1_Click(object sender, EventArgs e)
         {
@@ -1150,16 +1072,15 @@ namespace Smash_Forge
         {
         }
 
-        private void glControl1_Paint(object sender, PaintEventArgs e)
+        private void texRgbGlControl_Paint(object sender, PaintEventArgs e)
         {
 
             RenderTexture();
         }
 
-        private void glControl2_Paint(object sender, PaintEventArgs e)
+        private void texAlphaGlControl_Paint(object sender, PaintEventArgs e)
         {
-
-            RenderTextureAlpha();
+            RenderTexture(true);
         }
 
         private void listView2_KeyDown(object sender, KeyEventArgs e)
