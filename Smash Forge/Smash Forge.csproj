@@ -345,6 +345,7 @@
     <Compile Include="GUI\GIFEncoder\LZWEncoder.cs" />
     <Compile Include="GUI\GIFEncoder\NeuQuant.cs" />
     <Compile Include="GUI\GIFEncoder\UnsafeBuffer.cs" />
+    <Compile Include="GUI\GuiTools.cs" />
     <Compile Include="GUI\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -376,11 +377,11 @@
     <Compile Include="GUI\Menus\CameraSettings.Designer.cs">
       <DependentUpon>CameraSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Menus\LightColorEditor.cs">
+    <Compile Include="GUI\Menus\ColorEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Menus\LightColorEditor.Designer.cs">
-      <DependentUpon>LightColorEditor.cs</DependentUpon>
+    <Compile Include="GUI\Menus\ColorEditor.Designer.cs">
+      <DependentUpon>ColorEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Menus\MakeMetal.cs">
       <SubType>Form</SubType>
@@ -590,8 +591,8 @@
     <EmbeddedResource Include="GUI\Menus\CameraSettings.resx">
       <DependentUpon>CameraSettings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Menus\LightColorEditor.resx">
-      <DependentUpon>LightColorEditor.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Menus\ColorEditor.resx">
+      <DependentUpon>ColorEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\MakeMetal.resx">
       <DependentUpon>MakeMetal.cs</DependentUpon>

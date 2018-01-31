@@ -421,6 +421,9 @@ namespace Smash_Forge
             SetXMBUniforms(shader, p);
             SetNSCUniform(p, shader);
 
+            // Used for NU_universe material projection coords. 
+            GL.Uniform3(shader.getAttribute("cameraPosition"), camera.getPosition());
+         
             p.isTransparent = false;
             if (material.srcFactor > 0 || material.dstFactor > 0 || material.AlphaFunc > 0 || material.AlphaTest > 0)
                 p.isTransparent = true;
@@ -694,6 +697,7 @@ namespace Smash_Forge
             HasMatPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV",       "hasNrmSamplerAUV");
             HasMatPropertyShaderUniform(shader, mat, "NU_normalSamplerBUV",       "hasNrmSamplerBUV");
             HasMatPropertyShaderUniform(shader, mat, "NU_finalColorGain",         "hasFinalColorGain");
+            HasMatPropertyShaderUniform(shader, mat, "NU_effUniverseParam",       "hasUniverseParam");
         }
 
         private static void SetTextureUniforms(Shader shader, Material mat)
@@ -2477,6 +2481,17 @@ namespace Smash_Forge
                 ApplyTanBitan(tanArray, bitanArray);
                 PreRender();
             }
+
+            public void SetVertexColor(Vector4 color)
+            {
+                // (127, 127, 127, 255) is white.
+                foreach (Vertex v in vertices)
+                {
+                    v.col = color;
+                }
+                PreRender();
+            }
+
 
             private void ApplyTanBitan(Vector3[] tanArray, Vector3[] bitanArray)
             {

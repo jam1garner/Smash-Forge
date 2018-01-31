@@ -328,11 +328,13 @@ namespace Smash_Forge
                     }
                 }
 
-                while (npoly.materials.Count < npoly.vertices[0].uv.Count)
+                // Don't add more than 2 materials to a polygon.
+                while (npoly.materials.Count < npoly.vertices[0].uv.Count && npoly.materials.Count < 2)
                 {
                     NUD.Polygon nd = new NUD.Polygon();
                     nd.setDefaultMaterial();
                     npoly.materials.Add(nd.materials[0]);
+                    Debug.WriteLine(npoly.materials.Count);
                 }
             }
 

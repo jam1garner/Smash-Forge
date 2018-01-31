@@ -951,50 +951,49 @@ namespace Smash_Forge
 
         private void smoothToolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode is NUD)
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
             {
-                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
+                foreach (NUD.Polygon poly in mesh.Nodes)
                 {
-                    foreach (NUD.Polygon poly in mesh.Nodes)
-                    {
-                        poly.SmoothNormals();
-                    }
+                    poly.SmoothNormals();
                 }
-            }
+            }  
         }
 
         private void recalculateToolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode is NUD)
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
             {
-                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
+                foreach (NUD.Polygon poly in mesh.Nodes)
                 {
-                    foreach (NUD.Polygon poly in mesh.Nodes)
-                    {
-                        poly.CalculateNormals();
-                    }
+                    poly.CalculateNormals();
                 }
             }
         }
 
         private void generateTanBitanToolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode is NUD.Mesh)
+            if (!(treeView1.SelectedNode is NUD.Mesh))
+                return;
+            
+            string meshName = treeView1.SelectedNode.Text;
+            var messageBox = MessageBox.Show("If the vertex type does not support tangents/bitangents, \n" +
+                "the vertex type will be changed to Normals, Tan, Bi-Tan (Float). \n" +
+                "This will increase the file size.", meshName, MessageBoxButtons.OKCancel);
+
+            if (messageBox == DialogResult.OK)
             {
-                string meshName = treeView1.SelectedNode.Text;
-
-                var messageBox = MessageBox.Show("If the vertex type does not support tangents/bitangents, \n" +
-                    "the vertex type will be changed to Normals, Tan, Bi-Tan (Float). \n" +
-                    "This will increase the file size.", meshName, MessageBoxButtons.OKCancel);
-
-                if (messageBox == DialogResult.OK)
+                foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
                 {
-                    foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
-                    {
-                        GenerateTanBitanAndFixVertType(poly);
-                    }
-                }    
-            }
+                    GenerateTanBitanAndFixVertType(poly);
+                }
+            }               
         }
 
         private static void GenerateTanBitanAndFixVertType(NUD.Polygon poly)
@@ -1009,6 +1008,299 @@ namespace Smash_Forge
 
             // This already checks for the appropriate vertex type. 
             poly.CalculateTangentBitangent();
+        }
+
+        private void setToWhiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Polygon))
+                return;
+
+            NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+            p.SetVertexColor(new OpenTK.Vector4(127, 127, 127, 255));
+        }
+
+        private void selectColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Polygon))
+                return;
+
+            // Use a dialog so the color isn't set until the color editor is closed. 
+            ColorEditor colorEditor = new ColorEditor(new OpenTK.Vector3(1));
+            colorEditor.ShowDialog();
+
+            // Remap the color from 1.0 being white to 127 being white.
+            OpenTK.Vector3 newVertColor = colorEditor.GetColor() * 127;
+            NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+            p.SetVertexColor(new OpenTK.Vector4(newVertColor, 255));
+        }
+
+        private void tangentsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Polygon))
+                return;
+
+            NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+            foreach (NUD.Vertex v in p.vertices)
+            {
+                OpenTK.Vector3 newTan = v.tan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
+                v.col = new OpenTK.Vector4(newTan * 127, 255);
+            }
+            p.PreRender();
+        }
+
+        private void bitangentsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Polygon))
+                return;
+
+            NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+            foreach (NUD.Vertex v in p.vertices)
+            {
+                OpenTK.Vector3 newBitan = v.bitan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
+                v.col = new OpenTK.Vector4(newBitan * 127, 255);
+            }
+            p.PreRender();
+        }
+
+        private void normalsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Polygon))
+                return;
+
+            NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+            foreach (NUD.Vertex v in p.vertices)
+            {
+                OpenTK.Vector3 newNrm = v.nrm * 0.5f + new OpenTK.Vector3(0.5f);
+                v.col = new OpenTK.Vector4(newNrm * 127, 255);
+            }
+            p.PreRender();
+        }
+
+        private void uVsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Polygon))
+                return;
+
+            NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+            foreach (NUD.Vertex v in p.vertices)
+            {
+                v.col = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 255);
+            }
+            p.PreRender();
+        }
+
+        private void setToWhiteToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Mesh))
+                return;
+     
+            foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+            {
+                poly.SetVertexColor(new OpenTK.Vector4(127, 127, 127, 255));
+            }
+        }
+
+        private void selectColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Mesh))
+                return;
+
+            // Use a dialog so the color isn't set until the color editor is closed. 
+            ColorEditor colorEditor = new ColorEditor(new OpenTK.Vector3(1));
+            colorEditor.ShowDialog();
+
+            // Remap the color from 1.0 being white to 127 being white.
+            OpenTK.Vector3 newVertColor = colorEditor.GetColor() * 127;
+
+            foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+            {
+                poly.SetVertexColor(new OpenTK.Vector4(newVertColor, 255));
+            }
+        }
+
+        private void tangentsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Mesh))
+                return;
+
+            foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+            {
+                foreach (NUD.Vertex v in poly.vertices)
+                {
+                    OpenTK.Vector3 newTan = v.tan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
+                    v.col = new OpenTK.Vector4(newTan * 127, 255);
+                }
+                poly.PreRender();
+            }
+        }
+
+        private void bitangentsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Mesh))
+                return;
+
+            foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+            {
+                foreach (NUD.Vertex v in poly.vertices)
+                {
+                    OpenTK.Vector3 newBitan = v.bitan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
+                    v.col = new OpenTK.Vector4(newBitan * 127, 255);
+                }
+                poly.PreRender();
+            }
+        }
+
+        private void normalsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Mesh))
+                return;
+
+            foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+            {
+                foreach (NUD.Vertex v in poly.vertices)
+                {
+                    OpenTK.Vector3 newNrm = v.nrm * 0.5f + new OpenTK.Vector3(0.5f);
+                    v.col = new OpenTK.Vector4(newNrm * 127, 255);
+                }
+                poly.PreRender();
+            }
+        }
+
+        private void uVsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD.Mesh))
+                return;
+
+            foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+            {
+                foreach (NUD.Vertex v in poly.vertices)
+                {
+                    v.col = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 255);
+                }
+                poly.PreRender();
+            }
+        }
+
+        private void tangentsToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            NUD n = (NUD)treeView1.SelectedNode;
+
+            foreach (NUD.Mesh m in n.Nodes)
+            {
+                foreach (NUD.Polygon p in m.Nodes)
+                {
+                    foreach (NUD.Vertex v in p.vertices)
+                    {
+                        OpenTK.Vector3 newTan = v.tan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
+                        v.col = new OpenTK.Vector4(newTan * 127, 255);
+                    }
+                    p.PreRender();
+                }
+            }
+        }
+
+        private void bitangentsToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            NUD n = (NUD)treeView1.SelectedNode;
+
+            foreach (NUD.Mesh m in n.Nodes)
+            {
+                foreach (NUD.Polygon p in m.Nodes)
+                {
+                    foreach (NUD.Vertex v in p.vertices)
+                    {
+                        OpenTK.Vector3 newBitan = v.bitan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
+                        v.col = new OpenTK.Vector4(newBitan * 127, 255);
+                    }
+                    p.PreRender();
+                }
+            }
+        }
+
+        private void setToWhiteToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            NUD n = (NUD)treeView1.SelectedNode;
+
+            foreach (NUD.Mesh m in n.Nodes)
+            {
+                foreach (NUD.Polygon p in m.Nodes)
+                {
+                    p.SetVertexColor(new OpenTK.Vector4(127, 127, 127, 255));
+                }
+            }
+        }
+
+        private void normalsToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            NUD n = (NUD)treeView1.SelectedNode;
+
+            foreach (NUD.Mesh m in n.Nodes)
+            {
+                foreach (NUD.Polygon p in m.Nodes)
+                {
+                    foreach (NUD.Vertex v in p.vertices)
+                    {
+                        OpenTK.Vector3 newNrm = v.nrm * 0.5f + new OpenTK.Vector3(0.5f);
+                        v.col = new OpenTK.Vector4(newNrm * 127, 255);
+                    }
+                    p.PreRender();
+                }
+            }
+        }
+
+        private void uVsToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            NUD n = (NUD)treeView1.SelectedNode;
+
+            foreach (NUD.Mesh m in n.Nodes)
+            {
+                foreach (NUD.Polygon p in m.Nodes)
+                {
+                    foreach (NUD.Vertex v in p.vertices)
+                    {
+                        v.col = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 255);
+                    }
+                    p.PreRender();
+                }
+            }
+        }
+
+        private void selectColorToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            NUD n = (NUD)treeView1.SelectedNode;
+
+            // Use a dialog so the color isn't set until the color editor is closed. 
+            ColorEditor colorEditor = new ColorEditor(new OpenTK.Vector3(1));
+            colorEditor.ShowDialog();
+
+            // Remap the color from 1.0 being white to 127 being white.
+            OpenTK.Vector3 newVertColor = colorEditor.GetColor() * 127;
+
+            foreach (NUD.Mesh m in n.Nodes)
+            {
+                foreach (NUD.Polygon p in m.Nodes)
+                {
+                    p.SetVertexColor(new OpenTK.Vector4(newVertColor, 255));
+                }
+            }
         }
     }
 }

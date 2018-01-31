@@ -198,68 +198,80 @@ namespace Smash_Forge.GUI
         private void renderMode_SelectionChangeCommitted(object sender, EventArgs e)
         {
             Runtime.renderType = (Runtime.RenderTypes)renderModeComboBox.SelectedIndex;
-
             UpdateDebugButtonsFromRenderType();
-
         }
 
         private void UpdateDebugButtonsFromRenderType()
         {
             ShowHideDebugButtonsFromRenderType();
 
-            if (Runtime.renderType == Runtime.RenderTypes.UVCoords || Runtime.renderType == Runtime.RenderTypes.UVTestPattern)
+            // Reuse the same buttons to control different settings for each render mode.
+            switch (Runtime.renderType)
             {
-                debug1CB.Visible = false;
-                debug2CB.Visible = false;
+                default:
+                    debug1CB.Visible = false;
+                    debug2CB.Visible = false;
 
-                radioButton1.Visible = true;
-                radioButton2.Visible = true;
-                radioButton3.Visible = true;
+                    radioButton1.Visible = false;
+                    radioButton2.Visible = false;
+                    radioButton3.Visible = false;
+                    break;
+                case Runtime.RenderTypes.UVTestPattern:
+                    debug1CB.Visible = false;
+                    debug2CB.Visible = false;
+
+                    radioButton1.Visible = true;
+                    radioButton2.Visible = true;
+                    radioButton3.Visible = true;
+                    break;
+                case Runtime.RenderTypes.UVCoords:
+                    debug1CB.Visible = false;
+                    debug2CB.Visible = false;
+
+                    radioButton1.Visible = true;
+                    radioButton2.Visible = true;
+                    radioButton3.Visible = true;
+                    break;
+                case Runtime.RenderTypes.AmbientOcclusion:
+                    debug1CB.Text = "aoMinGain";
+                    debug1CB.Visible = true;
+                    debug2CB.Visible = false;
+
+                    radioButton1.Visible = false;
+                    radioButton2.Visible = false;
+                    radioButton3.Visible = false;
+                    break;
+                case Runtime.RenderTypes.SelectedBoneWeights:
+                    debug1CB.Text = "Color Ramp";
+                    debug1CB.Visible = false;
+                    debug2CB.Visible = false;
+
+                    radioButton1.Visible = true;
+                    radioButton2.Visible = true;
+                    radioButton3.Visible = true;
+
+                    radioButton1.Text = "BnW";
+                    radioButton2.Text = "Color 1";
+                    radioButton3.Text = "Color 2";
+                    break;
+                case Runtime.RenderTypes.Normals:
+                    debug1CB.Visible = false;
+                    debug2CB.Visible = false;
+
+                    radioButton1.Visible = false;
+                    radioButton2.Visible = false;
+                    radioButton3.Visible = false;
+                    break;
+                case Runtime.RenderTypes.VertColor:
+                    debug1CB.Text = "Divide by 2";
+                    debug1CB.Visible = true;
+                    debug2CB.Visible = false;
+
+                    radioButton1.Visible = false;
+                    radioButton2.Visible = false;
+                    radioButton3.Visible = false;
+                    break;
             }
-            else if (Runtime.renderType == Runtime.RenderTypes.AmbientOcclusion)
-            {
-                debug1CB.Text = "aoMinGain";
-                debug1CB.Visible = true;
-                debug2CB.Visible = false;
-
-                radioButton1.Visible = false;
-                radioButton2.Visible = false;
-                radioButton3.Visible = false;
-            }
-            else if (Runtime.renderType == Runtime.RenderTypes.SelectedBoneWeights)
-            {
-                debug1CB.Text = "Color Ramp";
-                debug1CB.Visible = false;
-                debug2CB.Visible = false;
-
-                radioButton1.Visible = true;
-                radioButton2.Visible = true;
-                radioButton3.Visible = true;
-
-                radioButton1.Text = "BnW";
-                radioButton2.Text = "Color 1";
-                radioButton3.Text = "Color 2";
-            }
-            else if (Runtime.renderType == Runtime.RenderTypes.Normals)
-            {
-                debug1CB.Visible = false;
-                debug2CB.Visible = false;
-
-                radioButton1.Visible = false;
-                radioButton2.Visible = false;
-                radioButton3.Visible = false;
-            }
-            else
-            {
-                debug1CB.Visible = false;
-                debug2CB.Visible = false;
-
-                radioButton1.Visible = false;
-                radioButton2.Visible = false;
-                radioButton3.Visible = false;
-            }
-
-
         }
 
         private void ShowHideDebugButtonsFromRenderType()

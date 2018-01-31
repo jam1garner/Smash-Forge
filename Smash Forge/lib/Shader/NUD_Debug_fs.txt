@@ -372,7 +372,16 @@ void main()
     else if (renderType == 4) // normal map
         resultingColor.rgb = texture(normalMap, normaltexCoord).rgb;
     else if (renderType == 5) // vertexColor
+    {
+        // The default range is [0,128].
+        // Conversion from [0, 128] to [0, 1] is done prior to shader.
+        // This allows values in range [0,2]
         resultingColor.rgb = vertexColor.rgb;
+        if (debug1 == 1)
+        {
+            resultingColor.rgb = vertexColor.rgb * 0.5;
+        }
+    }
     else if (renderType == 6) // ambient occlusion
     {
         resultingColor.rgb = texture(normalMap, texCoord).aaa;
