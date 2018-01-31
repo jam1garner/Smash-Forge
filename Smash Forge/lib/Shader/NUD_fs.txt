@@ -87,6 +87,7 @@ uniform vec4 dualNormalScrollParams;
 uniform vec4 alphaBlendParams;
 uniform vec4 softLightingParams;
 uniform vec4 customSoftLightParams;
+uniform vec4 effUniverseParam;
 
 // render settings
 uniform int renderDiffuse;
@@ -494,7 +495,7 @@ vec3 DiffusePass(vec3 N, float aoMap, vec4 diffuseMap)
     vec3 diffusePass = vec3(0);
 
     if (hasUniverseParam == 1)
-        return CalculateUniverseColor(8);
+        return CalculateUniverseColor(effUniverseParam.x);
 
     // lambertian shading
     float halfLambert = dot(difLightDirection, N) * 0.5 + 0.5;

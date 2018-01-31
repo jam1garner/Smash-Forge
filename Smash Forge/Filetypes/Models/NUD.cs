@@ -688,8 +688,9 @@ namespace Smash_Forge
             MatPropertyShaderUniform(shader, mat, "NU_effScaleUV",        1, 1, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_effTransUV",        1, 1, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_effMaxUV",          1, 1, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_effUniverseParam",  1, 0, 0, 0);
 
-            // create some conditionals rather than using different shaders
+            // Create some conditionals rather than using different shaders.
             HasMatPropertyShaderUniform(shader, mat, "NU_softLightingParams",     "hasSoftLight");
             HasMatPropertyShaderUniform(shader, mat, "NU_customSoftLightParams",  "hasCustomSoftLight");
             HasMatPropertyShaderUniform(shader, mat, "NU_specularParams",         "hasSpecularParams");
