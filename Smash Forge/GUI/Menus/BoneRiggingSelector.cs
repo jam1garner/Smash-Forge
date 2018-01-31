@@ -64,7 +64,10 @@ namespace Smash_Forge
                 foreach (TreeNode node in treeView1.Nodes)
                 {
                     if (node.Text == currentValue)
+                    {
                         treeView1.SelectedNode = node;
+                        break;
+                    }
                 }
                 if (treeView1.SelectedNode == null)
                 {
@@ -84,6 +87,8 @@ namespace Smash_Forge
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
+            if (currentValue == textBox1.Text)
+                return;
             currentValue = String.Copy(textBox1.Text);
             CurrentBone = null;
             boneIndex = -1;

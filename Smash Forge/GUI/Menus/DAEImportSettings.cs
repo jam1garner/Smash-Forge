@@ -134,15 +134,15 @@ namespace Smash_Forge
 
                     foreach (NUD.Vertex v in poly.vertices)
                     {
-                        //Scroll UVs V by -1
-                        if (checkBox2.Checked)
-                            for (int i = 0; i < v.uv.Count; i++)
-                                v.uv[i] = new Vector2(v.uv[i].X, v.uv[i].Y + 1);
-
                         //Flip UVs
                         if (flipUVCB.Checked)
                             for (int i = 0; i < v.uv.Count; i++)
                                 v.uv[i] = new Vector2(v.uv[i].X, 1 - v.uv[i].Y);
+
+                        //Scroll UVs V by -1
+                        if (checkBox2.Checked)
+                            for (int i = 0; i < v.uv.Count; i++)
+                                v.uv[i] = new Vector2(v.uv[i].X, v.uv[i].Y + 1);
 
                         //Halve vertex colors
                         if (vertColorDivCB.Checked)

@@ -404,17 +404,16 @@ namespace Smash_Forge
                 int entryNum = treeView1.SelectedNode.Index;
                 int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
                 for (int j = 0; j < entrySize; j++)
-                {
-                    ParamEntry temp = new ParamEntry(p.Groups[groupNum].Values[entrySize * entryNum + j].Value, p.Groups[groupNum].Values[entrySize * entryNum + j].Type);
-                    p.Groups[groupNum].Values.Add(temp);
-                }
+                    p.Groups[groupNum].Add(new ParamEntry(p.Groups[groupNum].Values[entrySize * entryNum + j].Value, p.Groups[groupNum].Values[entrySize * entryNum + j].Type));
+
                 ((ParamGroup)p.Groups[groupNum]).EntryCount++;
+                ((ParamGroup)p.Groups[groupNum]).Chunk();
                 TreeNode temp2 = new TreeNode();
                 temp2.Text = getEntryName(groupNum, ((ParamGroup)p.Groups[groupNum]).EntryCount - 1);
                 treeView1.SelectedNode.Parent.Nodes.Add(temp2);
                 fillTable(groupNum, ((ParamGroup)p.Groups[groupNum]).EntryCount - 1);
                 treeView1.SelectedNode = treeView1.SelectedNode.Parent.LastNode;
-               
+                Edited = true;
             }
         }
 
@@ -429,9 +428,11 @@ namespace Smash_Forge
                     p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum);
                 
                 ((ParamGroup)p.Groups[groupNum]).EntryCount--;
+                ((ParamGroup)p.Groups[groupNum]).Chunk();
                 TreeNode temp2 = treeView1.SelectedNode;
                 treeView1.SelectedNode = temp2.Parent.PrevNode;
                 treeView1.Nodes.Remove(temp2);
+                Edited = true;
             }
         }
 
