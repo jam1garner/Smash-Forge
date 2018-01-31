@@ -559,7 +559,7 @@ namespace Smash_Forge
                 {
                     materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][0] = f;
 
-                    // udpate trackbar. should clean this up later
+                    // Update trackbar.
                     MatParam labels = null;
                     propList.TryGetValue(matPropertyNameTB.Text, out labels);
                     float max = 1;
@@ -568,14 +568,10 @@ namespace Smash_Forge
                         max = labels.max1;
                     }
 
-                    // clamp slider value to maximum value
-                    int newSliderValue = (int)((f * (float)param1TrackBar.Maximum) / max);
-                    newSliderValue = Math.Min(newSliderValue, param1TrackBar.Maximum);
-                    newSliderValue = Math.Max(newSliderValue, 0);
-                    param1TrackBar.Value = newSliderValue;
+                    GuiTools.UpdateTrackBarFromValue(f, param1TrackBar, 0, max);
                 }
             }
-            updateButton();
+            UpdateButtonColor();
         }
 
         private void param2TB_TextChanged(object sender, EventArgs e)
@@ -586,7 +582,7 @@ namespace Smash_Forge
             {
                 materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][1] = f;
 
-                // udpate trackbar
+                // update trackbar
                 MatParam labels = null;
                 propList.TryGetValue(matPropertyNameTB.Text, out labels);
                 float max = 1;
@@ -595,13 +591,9 @@ namespace Smash_Forge
                     max = labels.max2;
                 }
 
-                // clamp slider values. values outside range can still be entered in text box
-                int newSliderValue = (int)((f * (float)param2TrackBar.Maximum) / max);
-                newSliderValue = Math.Min(newSliderValue, param2TrackBar.Maximum);
-                newSliderValue = Math.Max(newSliderValue, 0);
-                param2TrackBar.Value = newSliderValue;
+                GuiTools.UpdateTrackBarFromValue(f, param2TrackBar, 0, max);
             }
-            updateButton();
+            UpdateButtonColor();
         }
 
         private void param3TB_TextChanged(object sender, EventArgs e)
@@ -612,7 +604,7 @@ namespace Smash_Forge
             {
                 materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][2] = f;
 
-                // udpate trackbar
+                // update trackbar
                 MatParam labels = null;
                 propList.TryGetValue(matPropertyNameTB.Text, out labels);
                 float max = 1;
@@ -621,13 +613,9 @@ namespace Smash_Forge
                     max = labels.max3;
                 }
 
-                // clamp slider values. values outside range can still be entered in text box
-                int newSliderValue = (int)((f * (float)param2TrackBar.Maximum) / max);
-                newSliderValue = Math.Min(newSliderValue, param3TrackBar.Maximum);
-                newSliderValue = Math.Max(newSliderValue, 0);
-                param3TrackBar.Value = newSliderValue;
+                GuiTools.UpdateTrackBarFromValue(f, param3TrackBar, 0, max);
             }
-            updateButton();
+            UpdateButtonColor();
         }
 
         private void param4TB_TextChanged(object sender, EventArgs e)
@@ -636,9 +624,11 @@ namespace Smash_Forge
             float.TryParse(param4TB.Text, out f);
             if (f != -1 && propertiesListView.SelectedItems.Count > 0)
             {
-                materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][3] = f;
+                // Set the param value for the selected property.
+                string matPropertyKey = propertiesListView.SelectedItems[0].Text;
+                materials[currentMatIndex].entries[matPropertyKey][3] = f;
 
-                // udpate trackbar
+                // Update trackbar
                 MatParam labels = null;
                 propList.TryGetValue(matPropertyNameTB.Text, out labels);
                 float max = 1;
@@ -647,11 +637,7 @@ namespace Smash_Forge
                     max = labels.max4;
                 }
 
-                // clamp slider values. values outside range can still be entered in text box
-                int newSliderValue = (int)((f * (float)param4TrackBar.Maximum) / max);
-                newSliderValue = Math.Min(newSliderValue, param3TrackBar.Maximum);
-                newSliderValue = Math.Max(newSliderValue, 0);
-                param4TrackBar.Value = newSliderValue;
+                GuiTools.UpdateTrackBarFromValue(f, param4TrackBar, 0, max);
             }
         }
         #endregion
@@ -674,12 +660,13 @@ namespace Smash_Forge
                 param3Label.Text = matParams.paramLabels[2].Equals("") ? "Param3" : matParams.paramLabels[2];
                 param4Label.Text = matParams.paramLabels[3].Equals("") ? "Param4" : matParams.paramLabels[3];
 
-                // not all material properties need a trackbar
+                // Not all material properties need a trackbar (Ex: NU_materialHash).
                 param1TrackBar.Enabled = matParams.useTrackBar;
                 param2TrackBar.Enabled = matParams.useTrackBar;
                 param3TrackBar.Enabled = matParams.useTrackBar;
                 param4TrackBar.Enabled = matParams.useTrackBar;
-            } else
+            }
+            else
             {
                 param1Label.Text = "Param1";
                 param2Label.Text = "Param2";
@@ -688,10 +675,10 @@ namespace Smash_Forge
             }
         }
 
-        private void comboBox7_SelectedIndexChanged(object sender, EventArgs e)
+        private void matPropertyComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Prevent adding duplicate material properties.
             addMatPropertyButton.Enabled = true;
-
             if (materials[currentMatIndex].entries.ContainsKey(matPropertyComboBox.Text))
             {
                 addMatPropertyButton.Enabled = false;
@@ -705,15 +692,6 @@ namespace Smash_Forge
                 materials[currentMatIndex].entries.Add(matPropertyComboBox.Text, new float[] { 0, 0, 0, 0 });
                 FillForm();
                 addMatPropertyButton.Enabled = false;
-            }
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-            if(propertiesListView.SelectedItems.Count > 0)
-            {
-                materials[currentMatIndex].entries.Remove(propertiesListView.SelectedItems[0].Text);
-                FillForm();
             }
         }
 
@@ -736,7 +714,7 @@ namespace Smash_Forge
         }
 
         //Saving Mat
-        private void button1_Click(object sender, EventArgs e)
+        private void savePresetButton_Click(object sender, EventArgs e)
         {
             using (var sfd = new SaveFileDialog())
             {
@@ -781,7 +759,7 @@ namespace Smash_Forge
         }
 
         // Loading Mat
-        private void button2_Click(object sender, EventArgs e)
+        private void loadPresetButton_Click(object sender, EventArgs e)
         {
             MaterialSelector matSelector = new MaterialSelector();
             matSelector.ShowDialog();
@@ -921,29 +899,6 @@ namespace Smash_Forge
             }
         }
 
-        private void glControl1_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void button4_Click_1(object sender, EventArgs e)
-        {
-            if (!matPropertyComboBox.Text.Equals(""))
-            {
-                if(!materials[currentMatIndex].entries.ContainsKey(matPropertyComboBox.Text))
-                    materials[currentMatIndex].entries.Add(matPropertyComboBox.Text, new float[] { 0,0,0,0 });
-                FillForm();
-            }
-        }
-
-        private void button3_Click_1(object sender, EventArgs e)
-        {
-            if(materials[currentMatIndex].textures.Count < 4)
-            {
-                materials[currentMatIndex].textures.Add(NUD.MatTexture.getDefault());
-                FillForm();
-            }
-        }
-
         private void listView1_KeyPress(object sender, KeyPressEventArgs e)
         {
             if(e.KeyChar == 'd' && texturesListView.SelectedIndices.Count > 0)
@@ -973,19 +928,15 @@ namespace Smash_Forge
             RenderTexture();
         }
 
-        private void tableLayoutPanel2_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void updateButton()
+        private void UpdateButtonColor()
         {
             try
             {
+                string selectedMatPropKey = propertiesListView.SelectedItems[0].Text;
                 colorSelect.BackColor = Color.FromArgb(255,
-                    ColorTools.FloatToIntClamp(materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][0]),
-                    ColorTools.FloatToIntClamp(materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][1]),
-                    ColorTools.FloatToIntClamp(materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][2]));
+                    ColorTools.FloatToIntClamp(materials[currentMatIndex].entries[selectedMatPropKey][0]),
+                    ColorTools.FloatToIntClamp(materials[currentMatIndex].entries[selectedMatPropKey][1]),
+                    ColorTools.FloatToIntClamp(materials[currentMatIndex].entries[selectedMatPropKey][2]));
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -1039,10 +990,6 @@ namespace Smash_Forge
         {
             RenderTexture();
             FillForm();
-        }
-
-        private void NUDMaterialEditor_Paint(object sender, PaintEventArgs e)
-        {
         }
 
         private void texRgbGlControl_Paint(object sender, PaintEventArgs e)

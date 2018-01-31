@@ -217,7 +217,6 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Size = new System.Drawing.Size(293, 86);
             this.tableLayoutPanel2.TabIndex = 11;
-            this.tableLayoutPanel2.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel2_Paint);
             // 
             // magFilterComboBox
             // 
@@ -437,7 +436,7 @@
             this.savePresetButton.TabIndex = 15;
             this.savePresetButton.Text = "Save Preset";
             this.savePresetButton.UseVisualStyleBackColor = true;
-            this.savePresetButton.Click += new System.EventHandler(this.button1_Click);
+            this.savePresetButton.Click += new System.EventHandler(this.savePresetButton_Click);
             // 
             // loadPresetButton
             // 
@@ -447,7 +446,7 @@
             this.loadPresetButton.TabIndex = 16;
             this.loadPresetButton.Text = "Load Preset";
             this.loadPresetButton.UseVisualStyleBackColor = true;
-            this.loadPresetButton.Click += new System.EventHandler(this.button2_Click);
+            this.loadPresetButton.Click += new System.EventHandler(this.loadPresetButton_Click);
             // 
             // addMatPropertyButton
             // 
@@ -466,7 +465,7 @@
             this.matPropertyComboBox.Name = "matPropertyComboBox";
             this.matPropertyComboBox.Size = new System.Drawing.Size(177, 21);
             this.matPropertyComboBox.TabIndex = 21;
-            this.matPropertyComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox7_SelectedIndexChanged);
+            this.matPropertyComboBox.SelectedIndexChanged += new System.EventHandler(this.matPropertyComboBox_SelectedIndexChanged);
             // 
             // texRgbGlControl
             // 
@@ -476,7 +475,6 @@
             this.texRgbGlControl.Size = new System.Drawing.Size(130, 130);
             this.texRgbGlControl.TabIndex = 23;
             this.texRgbGlControl.VSync = false;
-            this.texRgbGlControl.Click += new System.EventHandler(this.glControl1_Click);
             this.texRgbGlControl.Paint += new System.Windows.Forms.PaintEventHandler(this.texRgbGlControl_Paint);
             // 
             // colorSelect
@@ -912,11 +910,11 @@
             this.label4.TabIndex = 6;
             this.label4.Text = "AlphaTest";
             // 
-            // AlphaTestComboBox
+            // alphaTestComboBox
             // 
             this.alphaTestComboBox.FormattingEnabled = true;
             this.alphaTestComboBox.Location = new System.Drawing.Point(128, 3);
-            this.alphaTestComboBox.Name = "AlphaTestComboBox";
+            this.alphaTestComboBox.Name = "alphaTestComboBox";
             this.alphaTestComboBox.Size = new System.Drawing.Size(137, 21);
             this.alphaTestComboBox.TabIndex = 16;
             this.alphaTestComboBox.SelectedIndexChanged += new System.EventHandler(this.alphaTestComboBox_SelectedIndexChanged);
@@ -1269,7 +1267,6 @@
             this.TabText = "Material";
             this.Text = "NUDMaterialEditor";
             this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.NUDMaterialEditor_Scroll);
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.NUDMaterialEditor_Paint);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
