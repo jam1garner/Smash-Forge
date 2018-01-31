@@ -13,6 +13,7 @@ using System.IO;
 using OpenTK.Graphics.OpenGL;
 using System.Timers;
 using System.Windows.Input;
+using System.Diagnostics;
 
 namespace Smash_Forge
 {
@@ -20,9 +21,8 @@ namespace Smash_Forge
     {
         public NUD.Polygon poly;
         public List<NUD.Material> materials;
-        int current = 0;
+        int currentMatIndex = 0;
         public static Dictionary<string, MatParam> propList;
-
 
         public class MatParam
         {
@@ -31,10 +31,10 @@ namespace Smash_Forge
             public string[] paramLabels = new string[4];
 
             // Users can still manually enter a value higher than max.
-            public float max1 = 100.0f;
-            public float max2 = 100.0f;
-            public float max3 = 100.0f;
-            public float max4 = 100.0f;
+            public float max1 = 10.0f;
+            public float max2 = 10.0f;
+            public float max3 = 10.0f;
+            public float max4 = 10.0f;
 
             public bool useTrackBar = true;
         }
@@ -161,15 +161,6 @@ namespace Smash_Forge
             }
         }
 
-        private void NUDMaterialEditor_Load(object sender, EventArgs e)
-        {
-        }
-
-        private void UpdateTrackBarFromParam(MatParam param)
-        {
-        
-        }
-
         private void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
             if(texRgbGlControl != null)
@@ -178,11 +169,7 @@ namespace Smash_Forge
 
         public void Init()
         {
-            matsComboBox.Items.Clear();
-            for (int i = 0; i < materials.Count; i++)
-            {
-                matsComboBox.Items.Add("Material_" + i);
-            }
+            UpdateMatComboBox();
 
             tableLayoutPanel2.Enabled = false;
 
@@ -200,7 +187,7 @@ namespace Smash_Forge
                 foreach (int i in cullmode.Keys)
                     cullModeComboBox.Items.Add(cullmode[i]);
                 foreach (int i in AlphaTest.Keys)
-                    AlphaTestComboBox.Items.Add(AlphaTest[i]);
+                    alphaTestComboBox.Items.Add(AlphaTest[i]);
                 foreach (int i in AlphaFunc.Keys)
                     AlphaFuncComboBox.Items.Add(AlphaFunc[i]);
 
@@ -220,24 +207,30 @@ namespace Smash_Forge
             }
         }
 
+        private void UpdateMatComboBox()
+        {
+            matsComboBox.Items.Clear();
+            for (int i = 0; i < materials.Count; i++)
+            {
+                matsComboBox.Items.Add("Material_" + i);
+            }
+        }
+
         public void FillForm()
         {
-            NUD.Material mat = materials[current];
+            NUD.Material mat = materials[currentMatIndex];
 
-            flagsTB.Text = mat.Flags.ToString("X") + "";
-            srcTB.Text = mat.srcFactor + "";
-            dstTB.Text = mat.dstFactor + "";
-            AlphaTestComboBox.SelectedItem = AlphaTest[mat.AlphaTest];
+            alphaTestComboBox.SelectedItem = AlphaTest[mat.AlphaTest];
             AlphaFuncComboBox.SelectedItem = AlphaFunc[mat.AlphaFunc];
 
+            flagsTB.Text = mat.Flags.ToString("X");
+
+            srcTB.Text = mat.srcFactor + "";
+            dstTB.Text = mat.dstFactor + "";
             refAlphaTB.Text = mat.RefAlpha + "";
             cullModeTB.Text = mat.cullMode + "";
             zBufferTB.Text = mat.zBufferOffset + "";
-
-            mysteryCB.Checked = mat.unkownWater != 0;
-
-            texturesListView.Items.Clear();
-            
+           
             shadowCB.Checked = mat.hasShadow;
             GlowCB.Checked = mat.glow;
             dummy_rampCB.Checked = mat.hasDummyRamp;
@@ -249,7 +242,10 @@ namespace Smash_Forge
             cubemapCB.Checked = mat.hasCubeMap;
             stageMapCB.Checked = mat.hasStageMap;
             rampCB.Checked = mat.hasRamp;
-   
+            mysteryCB.Checked = mat.unkownWater != 0;
+
+            texturesListView.Items.Clear();
+
             if (mat.hasDiffuse) texturesListView.Items.Add("Diffuse");
             if (mat.hasSphereMap) texturesListView.Items.Add("SphereMap");
             if (mat.hasDiffuse2) texturesListView.Items.Add("Diffuse2");
@@ -263,9 +259,9 @@ namespace Smash_Forge
 
             propertiesListView.Items.Clear();
             propertiesListView.View = View.List;
-            foreach (string s in mat.entries.Keys)
+            foreach (string propertyName in mat.entries.Keys)
             {
-                propertiesListView.Items.Add(s);
+                propertiesListView.Items.Add(propertyName);
             }
             if(propertiesListView.Items.Count > 0)
                 propertiesListView.SelectedIndices.Add(0);
@@ -273,13 +269,12 @@ namespace Smash_Forge
         
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            current = matsComboBox.SelectedIndex;
+            currentMatIndex = matsComboBox.SelectedIndex;
             FillForm();
-            matsComboBox.SelectedIndex = current;
+            matsComboBox.SelectedIndex = currentMatIndex;
         }
 
-        #region DST
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        private void srcComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             foreach (int i in srcFactor.Keys)
                 if (srcFactor[i].Equals(srcComboBox.SelectedItem))
@@ -289,14 +284,12 @@ namespace Smash_Forge
                 }
         }
 
-        private void textBox3_TextChanged(object sender, EventArgs e)
+        private void srcTB_TextChanged(object sender, EventArgs e)
         {
-            setValue(srcTB, srcComboBox, srcFactor, out materials[current].srcFactor);
+            setValue(srcTB, srcComboBox, srcFactor, out materials[currentMatIndex].srcFactor);
         }
-        #endregion
 
-        #region SRC
-        private void comboBox3_SelectedIndexChanged_1(object sender, EventArgs e)
+        private void dstComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             foreach (int i in dstFactor.Keys)
                 if (dstFactor[i].Equals(dstComboBox.SelectedItem))
@@ -306,11 +299,10 @@ namespace Smash_Forge
                 }
         }
 
-        private void textBox4_TextChanged_1(object sender, EventArgs e)
+        private void dstTB_TextChanged(object sender, EventArgs e)
         {
-            setValue(dstTB, dstComboBox, dstFactor, out materials[current].dstFactor);
+            setValue(dstTB, dstComboBox, dstFactor, out materials[currentMatIndex].dstFactor);
         }
-        #endregion
 
         public void setValue(TextBox tb, ComboBox cb, Dictionary<int, string> dict, out int n)
         {
@@ -327,8 +319,7 @@ namespace Smash_Forge
                 tb.Text = "0";
         }
 
-        #region CULL
-        private void comboBox6_SelectionChangeCommitted(object sender, EventArgs e)
+        private void cullModeComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
             foreach (int i in cullmode.Keys)
                 if (cullmode[i].Equals(cullModeComboBox.SelectedItem))
@@ -338,26 +329,24 @@ namespace Smash_Forge
                 }
         }
 
-        private void textBox7_TextChanged(object sender, EventArgs e)
+        private void cullModeTB_TextChanged(object sender, EventArgs e)
         {
-            setValue(cullModeTB, cullModeComboBox, cullmode, out materials[current].cullMode);
+            setValue(cullModeTB, cullModeComboBox, cullmode, out materials[currentMatIndex].cullMode);
         }
-        #endregion
 
-        #region alpha function
-        private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
+        private void alphaTestComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             foreach (int i in AlphaTest.Keys)
-                if (AlphaTest[i].Equals(AlphaTestComboBox.SelectedItem))
+                if (AlphaTest[i].Equals(alphaTestComboBox.SelectedItem))
                 {
                     alphaTestTB.Text = i + "";
                     break;
                 }
         }
 
-        private void textBox5_TextChanged(object sender, EventArgs e)
+        private void alphaTestTB_TextChanged(object sender, EventArgs e)
         {
-            int.TryParse(alphaTestTB.Text, out materials[current].AlphaTest);
+            int.TryParse(alphaTestTB.Text, out materials[currentMatIndex].AlphaTest);
         }
         
         private void AlphaFuncCB_SelectedIndexChanged(object sender, EventArgs e)
@@ -368,50 +357,45 @@ namespace Smash_Forge
                 {
                     Console.WriteLine(AlphaFunc[i] + " " + i);
                     alphaFuncTB.Text = i + "";
-                    materials[current].AlphaFunc = i;
+                    materials[currentMatIndex].AlphaFunc = i;
                     break;
                 }
         }
         
-        private void textBox2_TextChanged(object sender, EventArgs e)
+        private void alphaFuncTB_TextChanged(object sender, EventArgs e)
         {
-            int.TryParse(alphaFuncTB.Text, out materials[current].AlphaFunc);
+            int.TryParse(alphaFuncTB.Text, out materials[currentMatIndex].AlphaFunc);
         }
 
-
-
-        #endregion
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void mysteryCB_CheckedChanged(object sender, EventArgs e)
         {
             if (mysteryCB.Checked)
-                materials[current].unkownWater = 0x3A83126f;
+                materials[currentMatIndex].unkownWater = 0x3A83126f;
             else
-                materials[current].unkownWater = 0; ;
+                materials[currentMatIndex].unkownWater = 0; ;
         }
 
-        #region Textures
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        private void texturesListView_SelectedIndexChanged(object sender, EventArgs e)
         {
             int index = 0;
             if (texturesListView.SelectedItems.Count > 0)
             {
                 index = texturesListView.Items.IndexOf(texturesListView.SelectedItems[0]);
                 tableLayoutPanel2.Enabled = true;
-                textBox10.Enabled = true;
+                textureIDTB.Enabled = true;
             }
             else
             {
                 tableLayoutPanel2.Enabled = false;
-                textBox10.Enabled = false;
+                textureIDTB.Enabled = false;
             }
-            if(index >= materials[current].textures.Count)
+            if(index >= materials[currentMatIndex].textures.Count)
             {
                 MessageBox.Show("Texture doesn't exist");
                 return;
             }
-            NUD.MatTexture tex = materials[current].textures[index];
-            textBox10.Text = tex.hash.ToString("X");
+            NUD.MatTexture tex = materials[currentMatIndex].textures[index];
+            textureIDTB.Text = tex.hash.ToString("X");
 
             mapModeComboBox.SelectedItem = mapmode[tex.MapMode];
             wrapXComboBox.SelectedItem = wrapmode[tex.WrapModeS];
@@ -422,12 +406,12 @@ namespace Smash_Forge
             RenderTexture();
             RenderTexture(true);
         }
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void flagsTB_TextChanged(object sender, EventArgs e)
         {
             uint f = 0;
             if (uint.TryParse(flagsTB.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f))// && listView1.SelectedIndices.Count > 0
             {
-                materials[current].Flags = f;
+                materials[currentMatIndex].Flags = f;
                 flagsTB.BackColor = Color.White;
 
                 // Clear the texture list to prevent displaying duplicates
@@ -441,9 +425,9 @@ namespace Smash_Forge
         private void textBox10_TextChanged(object sender, EventArgs e)
         {
             int f = -1;
-            int.TryParse(textBox10.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f);
+            int.TryParse(textureIDTB.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f);
             if (f != -1 && texturesListView.SelectedIndices.Count > 0)
-                materials[current].textures[texturesListView.SelectedIndices[0]].hash = f;
+                materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].hash = f;
         }
 
         private void textBox6_TextChanged(object sender, EventArgs e)
@@ -452,7 +436,7 @@ namespace Smash_Forge
             int.TryParse(refAlphaTB.Text, out n);
             if (n != -1)
             {
-                materials[current].RefAlpha = n;
+                materials[currentMatIndex].RefAlpha = n;
             } else
             {
                 refAlphaTB.Text = "0";
@@ -465,7 +449,7 @@ namespace Smash_Forge
             int.TryParse(zBufferTB.Text, out n);
             if (n != -1)
             {
-                materials[current].zBufferOffset = n;
+                materials[currentMatIndex].zBufferOffset = n;
             }
             else
             {
@@ -478,7 +462,7 @@ namespace Smash_Forge
             foreach (int i in mapmode.Keys)
                 if (mapmode[i].Equals(mapModeComboBox.SelectedItem))
                 {
-                    materials[current].textures[texturesListView.SelectedIndices[0]].MapMode = i;
+                    materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].MapMode = i;
                     break;
                 }
         }
@@ -489,7 +473,7 @@ namespace Smash_Forge
                 if (wrapmode[i].Equals(wrapXComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
-                        materials[current].textures[texturesListView.SelectedIndices[0]].WrapModeS = i;
+                        materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].WrapModeS = i;
                     break;
                 }
         }
@@ -500,7 +484,7 @@ namespace Smash_Forge
                 if (wrapmode[i].Equals(wrapYComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
-                        materials[current].textures[texturesListView.SelectedIndices[0]].WrapModeT = i;
+                        materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].WrapModeT = i;
                     break;
                 }
         }
@@ -511,7 +495,7 @@ namespace Smash_Forge
                 if (minfilter[i].Equals(minFilterComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
-                        materials[current].textures[texturesListView.SelectedIndices[0]].minFilter = i;
+                        materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].minFilter = i;
                     break;
                 }
         }
@@ -522,7 +506,7 @@ namespace Smash_Forge
                 if (magfilter[i].Equals(magFilterComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
-                        materials[current].textures[texturesListView.SelectedIndices[0]].magFilter = i;
+                        materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].magFilter = i;
                     break;
                 }
         }
@@ -533,30 +517,29 @@ namespace Smash_Forge
                 if (mip[i].Equals(mipDetailComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
-                        materials[current].textures[texturesListView.SelectedIndices[0]].mipDetail = i;
+                        materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].mipDetail = i;
                     break;
                 }
         }
-        #endregion
 
         #region Properties
         private void listView2_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (propertiesListView.SelectedIndices.Count > 0)
-                matPropertyNameTB.Text = materials[current].entries.Keys.ElementAt(propertiesListView.SelectedIndices[0]);
+                matPropertyNameTB.Text = materials[currentMatIndex].entries.Keys.ElementAt(propertiesListView.SelectedIndices[0]);
             if (matPropertyNameTB.Text.Equals("NU_materialHash"))
             {          
-                param1TB.Text = BitConverter.ToInt32(BitConverter.GetBytes(materials[current].entries[matPropertyNameTB.Text][0]), 0).ToString("X");
-                param2TB.Text = materials[current].entries[matPropertyNameTB.Text][1] + "";
-                param3TB.Text = materials[current].entries[matPropertyNameTB.Text][2] + "";
-                param4TB.Text = materials[current].entries[matPropertyNameTB.Text][3] + "";
+                param1TB.Text = BitConverter.ToInt32(BitConverter.GetBytes(materials[currentMatIndex].entries[matPropertyNameTB.Text][0]), 0).ToString("X");
+                param2TB.Text = materials[currentMatIndex].entries[matPropertyNameTB.Text][1] + "";
+                param3TB.Text = materials[currentMatIndex].entries[matPropertyNameTB.Text][2] + "";
+                param4TB.Text = materials[currentMatIndex].entries[matPropertyNameTB.Text][3] + "";
             }
             else
             {
-                param1TB.Text = materials[current].entries[matPropertyNameTB.Text][0] + "";
-                param2TB.Text = materials[current].entries[matPropertyNameTB.Text][1] + "";
-                param3TB.Text = materials[current].entries[matPropertyNameTB.Text][2] + "";
-                param4TB.Text = materials[current].entries[matPropertyNameTB.Text][3] + "";
+                param1TB.Text = materials[currentMatIndex].entries[matPropertyNameTB.Text][0] + "";
+                param2TB.Text = materials[currentMatIndex].entries[matPropertyNameTB.Text][1] + "";
+                param3TB.Text = materials[currentMatIndex].entries[matPropertyNameTB.Text][2] + "";
+                param4TB.Text = materials[currentMatIndex].entries[matPropertyNameTB.Text][3] + "";
             }
         }
 
@@ -566,7 +549,7 @@ namespace Smash_Forge
             {
                 int f = GuiTools.TryParseTBInt(param1TB, true);
                 if (f != -1 && propertiesListView.SelectedItems.Count > 0)
-                    materials[current].entries[propertiesListView.SelectedItems[0].Text][0] = BitConverter.ToSingle(BitConverter.GetBytes(f), 0);
+                    materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][0] = BitConverter.ToSingle(BitConverter.GetBytes(f), 0);
             }
             else
             {
@@ -574,7 +557,7 @@ namespace Smash_Forge
                 float.TryParse(param1TB.Text, out f);
                 if (f != -1 && propertiesListView.SelectedItems.Count > 0)
                 {
-                    materials[current].entries[propertiesListView.SelectedItems[0].Text][0] = f;
+                    materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][0] = f;
 
                     // udpate trackbar. should clean this up later
                     MatParam labels = null;
@@ -601,7 +584,7 @@ namespace Smash_Forge
             float.TryParse(param2TB.Text, out f);
             if (f != -1 && propertiesListView.SelectedItems.Count > 0)
             {
-                materials[current].entries[propertiesListView.SelectedItems[0].Text][1] = f;
+                materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][1] = f;
 
                 // udpate trackbar
                 MatParam labels = null;
@@ -627,7 +610,7 @@ namespace Smash_Forge
             float.TryParse(param3TB.Text, out f);
             if (f != -1 && propertiesListView.SelectedItems.Count > 0)
             {
-                materials[current].entries[propertiesListView.SelectedItems[0].Text][2] = f;
+                materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][2] = f;
 
                 // udpate trackbar
                 MatParam labels = null;
@@ -653,7 +636,7 @@ namespace Smash_Forge
             float.TryParse(param4TB.Text, out f);
             if (f != -1 && propertiesListView.SelectedItems.Count > 0)
             {
-                materials[current].entries[propertiesListView.SelectedItems[0].Text][3] = f;
+                materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][3] = f;
 
                 // udpate trackbar
                 MatParam labels = null;
@@ -686,10 +669,10 @@ namespace Smash_Forge
             if (matParams != null)
             {
                 descriptionLabel.Text += matParams.description;
-                label20.Text = matParams.paramLabels[0].Equals("") ? "Param1" : matParams.paramLabels[0];
-                label21.Text = matParams.paramLabels[1].Equals("") ? "Param2" : matParams.paramLabels[1];
-                label22.Text = matParams.paramLabels[2].Equals("") ? "Param3" : matParams.paramLabels[2];
-                label23.Text = matParams.paramLabels[3].Equals("") ? "Param4" : matParams.paramLabels[3];
+                param1Label.Text = matParams.paramLabels[0].Equals("") ? "Param1" : matParams.paramLabels[0];
+                param2Label.Text = matParams.paramLabels[1].Equals("") ? "Param2" : matParams.paramLabels[1];
+                param3Label.Text = matParams.paramLabels[2].Equals("") ? "Param3" : matParams.paramLabels[2];
+                param4Label.Text = matParams.paramLabels[3].Equals("") ? "Param4" : matParams.paramLabels[3];
 
                 // not all material properties need a trackbar
                 param1TrackBar.Enabled = matParams.useTrackBar;
@@ -698,10 +681,10 @@ namespace Smash_Forge
                 param4TrackBar.Enabled = matParams.useTrackBar;
             } else
             {
-                label20.Text = "Param1";
-                label21.Text = "Param2";
-                label22.Text = "Param3";
-                label23.Text = "Param4";
+                param1Label.Text = "Param1";
+                param2Label.Text = "Param2";
+                param3Label.Text = "Param3";
+                param4Label.Text = "Param4";
             }
         }
 
@@ -709,17 +692,17 @@ namespace Smash_Forge
         {
             addMatPropertyButton.Enabled = true;
 
-            if (materials[current].entries.ContainsKey(matPropertyComboBox.Text))
+            if (materials[currentMatIndex].entries.ContainsKey(matPropertyComboBox.Text))
             {
                 addMatPropertyButton.Enabled = false;
             }
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void addMatPropertyButton_Click(object sender, EventArgs e)
         {
             if (!matPropertyComboBox.Text.Equals(""))
             {
-                materials[current].entries.Add(matPropertyComboBox.Text, new float[] { 0, 0, 0, 0 });
+                materials[currentMatIndex].entries.Add(matPropertyComboBox.Text, new float[] { 0, 0, 0, 0 });
                 FillForm();
                 addMatPropertyButton.Enabled = false;
             }
@@ -729,25 +712,25 @@ namespace Smash_Forge
         {
             if(propertiesListView.SelectedItems.Count > 0)
             {
-                materials[current].entries.Remove(propertiesListView.SelectedItems[0].Text);
+                materials[currentMatIndex].entries.Remove(propertiesListView.SelectedItems[0].Text);
                 FillForm();
             }
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            if (materials[current].textures.Count < 4)
+            if (materials[currentMatIndex].textures.Count < 4)
             {
-                materials[current].textures.Add(NUD.MatTexture.getDefault());
+                materials[currentMatIndex].textures.Add(NUD.MatTexture.getDefault());
                 FillForm();
             }
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
-            if (texturesListView.SelectedItems.Count > 0 && materials[current].textures.Count > 1)
+            if (texturesListView.SelectedItems.Count > 0 && materials[currentMatIndex].textures.Count > 1)
             {
-                materials[current].textures.RemoveAt(texturesListView.Items.IndexOf(texturesListView.SelectedItems[0]));
+                materials[currentMatIndex].textures.RemoveAt(texturesListView.Items.IndexOf(texturesListView.SelectedItems[0]));
                 FillForm();
             }
         }
@@ -889,7 +872,7 @@ namespace Smash_Forge
 
                 materials = poly.materials;
                 Console.WriteLine(materials.Count);
-                current = 0;
+                currentMatIndex = 0;
                 Init();
                 FillForm();
             }
@@ -904,9 +887,9 @@ namespace Smash_Forge
             // Get the selected NUT texture.
             NUT_Texture tex = null;
             int texture = 0;
-            if (materials[current].entries.ContainsKey("NU_materialHash") && texturesListView.SelectedIndices.Count > 0)
+            if (materials[currentMatIndex].entries.ContainsKey("NU_materialHash") && texturesListView.SelectedIndices.Count > 0)
             {
-                int hash = materials[current].textures[texturesListView.SelectedIndices[0]].hash;
+                int hash = materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].hash;
 
                 foreach (NUT n in Runtime.TextureContainers)
                     if (n.draw.ContainsKey(hash))
@@ -946,17 +929,17 @@ namespace Smash_Forge
         {
             if (!matPropertyComboBox.Text.Equals(""))
             {
-                if(!materials[current].entries.ContainsKey(matPropertyComboBox.Text))
-                    materials[current].entries.Add(matPropertyComboBox.Text, new float[] { 0,0,0,0 });
+                if(!materials[currentMatIndex].entries.ContainsKey(matPropertyComboBox.Text))
+                    materials[currentMatIndex].entries.Add(matPropertyComboBox.Text, new float[] { 0,0,0,0 });
                 FillForm();
             }
         }
 
         private void button3_Click_1(object sender, EventArgs e)
         {
-            if(materials[current].textures.Count < 4)
+            if(materials[currentMatIndex].textures.Count < 4)
             {
-                materials[current].textures.Add(NUD.MatTexture.getDefault());
+                materials[currentMatIndex].textures.Add(NUD.MatTexture.getDefault());
                 FillForm();
             }
         }
@@ -965,9 +948,9 @@ namespace Smash_Forge
         {
             if(e.KeyChar == 'd' && texturesListView.SelectedIndices.Count > 0)
             {
-                if(materials[current].textures.Count > 1)
+                if(materials[currentMatIndex].textures.Count > 1)
                 {
-                    materials[current].textures.RemoveAt(texturesListView.SelectedIndices[0]);
+                    materials[currentMatIndex].textures.RemoveAt(texturesListView.SelectedIndices[0]);
                     FillForm();
                 }
             }
@@ -977,9 +960,9 @@ namespace Smash_Forge
         {
             if ((e.KeyChar == 'd') && propertiesListView.SelectedIndices.Count > 0)
             {
-                if (materials[current].entries.Count > 1)
+                if (materials[currentMatIndex].entries.Count > 1)
                 {
-                    materials[current].entries.Remove(propertiesListView.SelectedItems[0].Text);
+                    materials[currentMatIndex].entries.Remove(propertiesListView.SelectedItems[0].Text);
                     FillForm();
                 }
             }
@@ -1000,24 +983,14 @@ namespace Smash_Forge
             try
             {
                 colorSelect.BackColor = Color.FromArgb(255,
-                    Clamp(materials[current].entries[propertiesListView.SelectedItems[0].Text][0] * 255),
-                    Clamp(materials[current].entries[propertiesListView.SelectedItems[0].Text][1] * 255),
-                    Clamp(materials[current].entries[propertiesListView.SelectedItems[0].Text][2] * 255));
+                    ColorTools.FloatToIntClamp(materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][0]),
+                    ColorTools.FloatToIntClamp(materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][1]),
+                    ColorTools.FloatToIntClamp(materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][2]));
             }
             catch (ArgumentOutOfRangeException)
             {
 
             }
-
-        }
-
-        public int Clamp(float i)
-        {
-            if (i > 255)
-                return 255;
-            if (i < 0)
-                return 0;
-            return (int)i;
         }
 
         private void colorSelect_Click(object sender, EventArgs e)
@@ -1025,10 +998,10 @@ namespace Smash_Forge
             colorDialog1.Color = colorSelect.BackColor;
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
+                // Convert the colors to float.
                 param1TB.Text = colorDialog1.Color.R / 255f + "";
                 param2TB.Text = colorDialog1.Color.G / 255f + "";
                 param3TB.Text = colorDialog1.Color.B / 255f + "";
-                
             }
         }
 
@@ -1036,9 +1009,9 @@ namespace Smash_Forge
         {
             if ((e.KeyCode == Keys.Delete) && propertiesListView.SelectedIndices.Count > 0)
             {
-                if (materials[current].textures.Count > 1)
+                if (materials[currentMatIndex].textures.Count > 1)
                 {
-                    materials[current].entries.Remove(propertiesListView.SelectedItems[0].Text);
+                    materials[currentMatIndex].entries.Remove(propertiesListView.SelectedItems[0].Text);
                     FillForm();
                 }
             }
@@ -1046,19 +1019,19 @@ namespace Smash_Forge
 
         private void sphereMapCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].hasSphereMap = sphereMapCB.Checked;
+            materials[currentMatIndex].hasSphereMap = sphereMapCB.Checked;
             FillForm();
         }
 
         private void shadowCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].hasShadow = shadowCB.Checked;
+            materials[currentMatIndex].hasShadow = shadowCB.Checked;
             FillForm();
         }
 
         private void GlowCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].glow = GlowCB.Checked;
+            materials[currentMatIndex].glow = GlowCB.Checked;
             FillForm();
         }
 
@@ -1087,7 +1060,7 @@ namespace Smash_Forge
         {
             if(e.KeyCode == Keys.Delete)
             {
-                NUD.Material mat = materials[current];
+                NUD.Material mat = materials[currentMatIndex];
                 foreach (var property in propertiesListView.SelectedItems)
                 {
                     mat.entries.Remove(property.ToString());
@@ -1098,55 +1071,55 @@ namespace Smash_Forge
 
         private void diffuseCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].hasDiffuse = diffuseCB.Checked;
+            materials[currentMatIndex].hasDiffuse = diffuseCB.Checked;
             FillForm();
         }
 
         private void dummy_rampCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].hasDummyRamp = dummy_rampCB.Checked;
+            materials[currentMatIndex].hasDummyRamp = dummy_rampCB.Checked;
             FillForm();
         }
 
         private void diffuse2CB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].hasDiffuse2 = diffuse2CB.Checked;
+            materials[currentMatIndex].hasDiffuse2 = diffuse2CB.Checked;
             FillForm();
         }
 
         private void normalCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].hasNormalMap = normalCB.Checked;
+            materials[currentMatIndex].hasNormalMap = normalCB.Checked;
             FillForm();
         }
 
         private void sphere_mapCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].hasSphereMap = sphere_mapCB.Checked;
+            materials[currentMatIndex].hasSphereMap = sphere_mapCB.Checked;
             FillForm();
         }
 
         private void rampCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].hasRamp = rampCB.Checked;
+            materials[currentMatIndex].hasRamp = rampCB.Checked;
             FillForm();
         }
 
         private void AOCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].hasAoMap = AOCB.Checked;
+            materials[currentMatIndex].hasAoMap = AOCB.Checked;
             FillForm();
         }
 
         private void stageMapCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].hasStageMap = stageMapCB.Checked;
+            materials[currentMatIndex].hasStageMap = stageMapCB.Checked;
             FillForm();
         }
 
         private void cubemapCB_CheckedChanged(object sender, EventArgs e)
         {
-            materials[current].hasCubeMap = cubemapCB.Checked;
+            materials[currentMatIndex].hasCubeMap = cubemapCB.Checked;
             FillForm();
         }
 
@@ -1157,7 +1130,7 @@ namespace Smash_Forge
             
             if (labels != null)
             {
-                param1TB.Text = ((float)param1TrackBar.Value * labels.max1 / (float)param1TrackBar.Maximum) + "";
+                param1TB.Text = GuiTools.GetTrackBarValue(param1TrackBar, labels.max1).ToString();
             }
         }
 
@@ -1168,7 +1141,7 @@ namespace Smash_Forge
 
             if (labels != null)
             {
-                param2TB.Text = ((float)param2TrackBar.Value * labels.max2 / (float)param2TrackBar.Maximum) + "";
+                param2TB.Text = GuiTools.GetTrackBarValue(param2TrackBar, labels.max2).ToString();
             }
         }
 
@@ -1179,7 +1152,7 @@ namespace Smash_Forge
 
             if (labels != null)
             {
-                param3TB.Text = ((float)param3TrackBar.Value * labels.max3 / (float)param3TrackBar.Maximum) + "";
+                param3TB.Text = GuiTools.GetTrackBarValue(param3TrackBar, labels.max3).ToString();
             }
         }
 
@@ -1190,43 +1163,18 @@ namespace Smash_Forge
 
             if (labels != null)
             {
-                param4TB.Text = ((float)param4TrackBar.Value * labels.max4 / (float)param4TrackBar.Maximum) + "";
+                param4TB.Text = GuiTools.GetTrackBarValue(param4TrackBar, labels.max4).ToString();
             }
-        }
-
-        private void textBox9_TextChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void addMaterialButton_Click(object sender, EventArgs e)
         {
-            NUD.Material mat = new NUD.Material(); // beginner's mat
-            mat.Flags = 0x94010161;
-            mat.cullMode = 0x0405;
-            mat.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
-            mat.entries.Add("NU_fresnelColor", new float[] { 1, 1, 1, 1 });
-            mat.entries.Add("NU_blinkColor", new float[] { 0, 0, 0, 0 });
-            mat.entries.Add("NU_aoMinGain", new float[] { 0, 0, 0, 0 });
-            mat.entries.Add("NU_lightMapColorOffset", new float[] { 0, 0, 0, 0 });
-            mat.entries.Add("NU_fresnelParams", new float[] { 1, 0, 0, 0 });
-            mat.entries.Add("NU_alphaBlendParams", new float[] { 0, 0, 0, 0 });
-            mat.entries.Add("NU_materialHash", new float[] { FileData.toFloat(0x7E538F65), 0, 0, 0 });
-
-            mat.textures.Add(NUD.MatTexture.getDefault()); // diffuse
-            mat.textures.Add(NUD.MatTexture.getDefault()); // dummy ramp
-
             // Can only have two materials.
             if (materials.Count < 2)
-                materials.Add(mat);
+                materials.Add(NUD.Material.getDefault());
 
             FillForm();
-
-            matsComboBox.Items.Clear();
-            for (int i = 0; i < materials.Count; i++)
-            {
-                matsComboBox.Items.Add("Material_" + i);
-            }
+            UpdateMatComboBox();
         }
     }
 }
