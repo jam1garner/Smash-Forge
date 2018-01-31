@@ -860,15 +860,17 @@ namespace Smash_Forge
                         mat.textures.Clear();
                         mat.displayTexId = -1;
 
-                        NUD.Mat_Texture dif = NUD.Polygon.makeDefault();
-                        dif.hash = difTexID; // preserve diffuse tex ID
-                        NUD.Mat_Texture cub = NUD.Polygon.makeDefault();
+                        // Preserve diffuse tex ID.
+                        MatTexture dif = MatTexture.getDefault();
+                        dif.hash = difTexID; 
+                        MatTexture cub = MatTexture.getDefault();
                         cub.hash = 0x10102000;
 
-                        NUD.Mat_Texture nrm = NUD.Polygon.makeDefault();
-                        nrm.hash = mat.normalID; // preserve normal map tex ID. should work for all common texture flags
+                        // Preserve normal map tex ID. should work for all common texture flags.
+                        MatTexture nrm = MatTexture.getDefault();
+                        nrm.hash = mat.normalID; 
 
-                        NUD.Mat_Texture rim = NUD.Polygon.makeDefault();
+                        MatTexture rim = MatTexture.getDefault();
                         rim.hash = 0x10080000;
 
                         if (mat.hasNormalMap)
@@ -1054,7 +1056,7 @@ namespace Smash_Forge
                     { 0x02, TextureMagFilter.Linear}
         };
 
-        public static int BindTexture(NUD.Mat_Texture tex, int hash, int loc)
+        public static int BindTexture(NUD.MatTexture tex, int hash, int loc)
         {
             if (hash == (int) DummyTextures.StageMapLow)
             {
@@ -1356,7 +1358,7 @@ namespace Smash_Forge
 
                 for (int i = 0; i < propCount; i++)
                 {
-                    Mat_Texture tex = new Mat_Texture();
+                    MatTexture tex = new MatTexture();
                     tex.hash = d.readInt();
                     d.skip(6); // padding?
                     tex.MapMode = d.readShort();
@@ -2020,7 +2022,7 @@ namespace Smash_Forge
                 d.writeInt(mat.unkownWater); 
                 d.writeInt(mat.zBufferOffset); 
 
-                foreach (Mat_Texture tex in mat.textures)
+                foreach (MatTexture tex in mat.textures)
                 {
                     d.writeInt(tex.hash);
                     d.writeInt(0);
@@ -2153,8 +2155,7 @@ namespace Smash_Forge
             }
         }
 
-
-        public class Mat_Texture
+        public class MatTexture
         {
             public int hash;
             public int MapMode = 0;
@@ -2165,9 +2166,9 @@ namespace Smash_Forge
             public int mipDetail = 0;
             public int unknown = 0;
 
-            public Mat_Texture Clone()
+            public MatTexture Clone()
             {
-                Mat_Texture t = new Mat_Texture();
+                MatTexture t = new MatTexture();
                 t.hash = hash;
                 t.MapMode = MapMode;
                 t.WrapModeS = WrapModeS;
@@ -2177,6 +2178,19 @@ namespace Smash_Forge
                 t.mipDetail = mipDetail;
                 t.unknown = unknown;
                 return t;
+            }
+
+            public static MatTexture getDefault()
+            {
+                MatTexture defaultTex = new MatTexture();
+                defaultTex.WrapModeS = 1;
+                defaultTex.WrapModeT = 1;
+                defaultTex.minFilter = 3;
+                defaultTex.magFilter = 2;
+                defaultTex.mipDetail = 1;
+                defaultTex.mipDetail = 6;
+                defaultTex.hash = (int)DummyTextures.DummyRamp;
+                return defaultTex;
             }
         }
 
@@ -2194,7 +2208,7 @@ namespace Smash_Forge
         {
             public Dictionary<string, float[]> entries = new Dictionary<string, float[]>();
             public Dictionary<string, float[]> anims = new Dictionary<string, float[]>();
-            public List<Mat_Texture> textures = new List<Mat_Texture>();
+            public List<MatTexture> textures = new List<MatTexture>();
 
             private uint flag;
             public uint Flags
@@ -2259,6 +2273,7 @@ namespace Smash_Forge
 
             public Material()
             {
+
             }
 
             public Material Clone()
@@ -2282,12 +2297,41 @@ namespace Smash_Forge
                 m.unkownWater = 0;
                 m.zBufferOffset = 0;
 
-                foreach(Mat_Texture t in textures)
+                foreach(MatTexture t in textures)
                 {
                     m.textures.Add(t.Clone());
                 }
 
                 return m;
+            }
+
+            public static Material getDefault()
+            {
+                Material material = new Material();
+                material.Flags = 0x94010161;
+                material.cullMode = 0x0405;
+                material.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
+                material.entries.Add("NU_fresnelColor", new float[] { 1, 1, 1, 1 });
+                material.entries.Add("NU_blinkColor", new float[] { 0, 0, 0, 0 });
+                material.entries.Add("NU_aoMinGain", new float[] { 0, 0, 0, 0 });
+                material.entries.Add("NU_lightMapColorOffset", new float[] { 0, 0, 0, 0 });
+                material.entries.Add("NU_fresnelParams", new float[] { 1, 0, 0, 0 });
+                material.entries.Add("NU_alphaBlendParams", new float[] { 0, 0, 0, 0 });
+                material.entries.Add("NU_materialHash", new float[] { FileData.toFloat(0x7E538F65), 0, 0, 0 });
+
+                MatTexture defaultDif = new MatTexture();
+                defaultDif.WrapModeS = 1;
+                defaultDif.WrapModeT = 1;
+                defaultDif.minFilter = 3;
+                defaultDif.magFilter = 2;
+                defaultDif.mipDetail = 1;
+                defaultDif.mipDetail = 6;
+                // The default texture looks better than a solid white texture. 
+                defaultDif.hash = 0x10000000;
+
+                material.textures.Add(defaultDif);
+                material.textures.Add(MatTexture.getDefault());
+                return material;
             }
 
             public uint RebuildFlag4thByte()
@@ -2444,7 +2488,7 @@ namespace Smash_Forge
                         nrm = v.nrm,
                         tan = v.tan.Xyz,
                         bit = v.bitan.Xyz,
-                        col = v.col / 0x7F,
+                        col = v.col / 127,
                         uv = v.uv.Count > 0 ? v.uv[0] : new Vector2(0, 0),
                         uv2 = v.uv.Count > 1 ? v.uv[1] : new Vector2(0, 0),
                         uv3 = v.uv.Count > 2 ? v.uv[2] : new Vector2(0, 0),
@@ -2640,44 +2684,15 @@ namespace Smash_Forge
 
             public void setDefaultMaterial()
             {
-                Material mat = new Material();
-                mat.Flags = 0x94010161;
-                mat.cullMode = 0x0405;
-                mat.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
-                mat.entries.Add("NU_fresnelColor", new float[] { 1, 1, 1, 1 });
-                mat.entries.Add("NU_blinkColor", new float[] { 0, 0, 0, 0 });
-                mat.entries.Add("NU_aoMinGain", new float[] { 0, 0, 0, 0 });
-                mat.entries.Add("NU_lightMapColorOffset", new float[] { 0, 0, 0, 0 });
-                mat.entries.Add("NU_fresnelParams", new float[] { 1, 0, 0, 0 });
-                mat.entries.Add("NU_alphaBlendParams", new float[] { 0, 0, 0, 0 });
-                mat.entries.Add("NU_materialHash", new float[] { FileData.toFloat(0x7E538F65), 0, 0, 0 });
+                Material mat = Material.getDefault();
                 materials.Add(mat);
 
-                Mat_Texture defaultDif = new Mat_Texture();
-                defaultDif.WrapModeS = 1;
-                defaultDif.WrapModeT = 1;
-                defaultDif.minFilter = 3;
-                defaultDif.magFilter = 2;
-                defaultDif.mipDetail = 1;
-                defaultDif.mipDetail = 6;
+                MatTexture defaultDif = MatTexture.getDefault();
                 // The default texture looks better than a solid white texture. 
                 defaultDif.hash = 0x10000000;
 
                 mat.textures.Add(defaultDif);
-                mat.textures.Add(makeDefault());
-            }
-
-            public static Mat_Texture makeDefault()
-            {
-                Mat_Texture dif = new Mat_Texture();
-                dif.WrapModeS = 1;
-                dif.WrapModeT = 1;
-                dif.minFilter = 3;
-                dif.magFilter = 2;
-                dif.mipDetail = 1;
-                dif.mipDetail = 6;
-                dif.hash = (int) DummyTextures.DummyRamp;
-                return dif;
+                mat.textures.Add(MatTexture.getDefault());
             }
 
             public List<int> getDisplayFace()

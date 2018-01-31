@@ -900,7 +900,7 @@ namespace Smash_Forge
                         
                         con.VBN = m.getVBN();
 
-                        Collada.DAEtoNUD(ofd.FileName, con, m.checkBox5.Checked);
+                        Collada.DaetoNud(ofd.FileName, con, m.checkBox5.Checked);
 
                         // apply settings
                         m.Apply(con.NUD);
