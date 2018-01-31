@@ -422,12 +422,16 @@ namespace Smash_Forge
                 flagsTB.BackColor = Color.Red;
         }
 
-        private void textBox10_TextChanged(object sender, EventArgs e)
+        private void textureIDTB_TextChanged(object sender, EventArgs e)
         {
             int f = -1;
             int.TryParse(textureIDTB.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f);
             if (f != -1 && texturesListView.SelectedIndices.Count > 0)
                 materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].hash = f;
+
+            // Update the texture color channels.
+            RenderTexture();
+            RenderTexture(true);
         }
 
         private void textBox6_TextChanged(object sender, EventArgs e)
@@ -990,11 +994,13 @@ namespace Smash_Forge
         {
             RenderTexture();
             FillForm();
+
+            // Nothing is currently selected, so don't display the tex ID.
+            textureIDTB.Text = "";
         }
 
         private void texRgbGlControl_Paint(object sender, PaintEventArgs e)
         {
-
             RenderTexture();
         }
 

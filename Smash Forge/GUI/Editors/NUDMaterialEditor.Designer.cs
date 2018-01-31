@@ -158,6 +158,7 @@
             // 
             // matsComboBox
             // 
+            this.matsComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.matsComboBox.FormattingEnabled = true;
             this.matsComboBox.Location = new System.Drawing.Point(59, 41);
             this.matsComboBox.Name = "matsComboBox";
@@ -341,7 +342,7 @@
             this.textureIDTB.Name = "textureIDTB";
             this.textureIDTB.Size = new System.Drawing.Size(80, 20);
             this.textureIDTB.TabIndex = 17;
-            this.textureIDTB.TextChanged += new System.EventHandler(this.textBox10_TextChanged);
+            this.textureIDTB.TextChanged += new System.EventHandler(this.textureIDTB_TextChanged);
             // 
             // propertiesListView
             // 
@@ -460,6 +461,7 @@
             // 
             // matPropertyComboBox
             // 
+            this.matPropertyComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.matPropertyComboBox.FormattingEnabled = true;
             this.matPropertyComboBox.Location = new System.Drawing.Point(53, 159);
             this.matPropertyComboBox.Name = "matPropertyComboBox";
