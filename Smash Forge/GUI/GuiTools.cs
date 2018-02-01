@@ -29,12 +29,13 @@ namespace Smash_Forge
             trackBar.Value = newSliderValue;
         }
 
-        public static float TryParseTBFloat(TextBox textBox)
+        public static float TryParseTBFloat(TextBox textBox, bool changeTextBoxColor = true)
         {
+            // Set the textbox backcolor to red for invalid values.
             float result = 0;
             if (float.TryParse(textBox.Text, out result))
                 textBox.BackColor = Color.White;
-            else
+            else if (changeTextBoxColor)
                 textBox.BackColor = Color.Red;
 
             return result;
