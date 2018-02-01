@@ -12,6 +12,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SALT.PARAMS;
 using System.Diagnostics;
+using Smash_Forge.Rendering.Lights;
 
 namespace Smash_Forge.GUI.Editors
 {
@@ -60,7 +61,7 @@ namespace Smash_Forge.GUI.Editors
                 TreeNode[] children = new TreeNode[4];
                 for (int lightIndex = 0; lightIndex < 4; lightIndex++)
                 {
-                    DirectionalLight currentLight = Lights.stageDiffuseLightSet[(groupIndex * 4) + lightIndex];
+                    DirectionalLight currentLight = LightTools.stageDiffuseLightSet[(groupIndex * 4) + lightIndex];
                     string number = lightIndex.ToString();
                     children[lightIndex] = new TreeNode(number) { Tag = currentLight };
                     children[lightIndex].Checked = currentLight.enabled;
@@ -75,7 +76,7 @@ namespace Smash_Forge.GUI.Editors
 
         private void InitLightMapListBox()
         {
-            foreach (LightMap lightMap in Lights.lightMaps)
+            foreach (LightMap lightMap in LightTools.lightMaps)
             {
                 lightmapListBox.Items.Add(lightMap);
             }
@@ -83,7 +84,7 @@ namespace Smash_Forge.GUI.Editors
 
         private void InitAreaLightListBox()
         {
-            foreach (AreaLight light in Lights.areaLights)
+            foreach (AreaLight light in LightTools.areaLights)
             {
                 areaLightListBox.Items.Add(light);
             }
@@ -91,10 +92,10 @@ namespace Smash_Forge.GUI.Editors
 
         private void InitCharLightListBox()
         {
-            charLightsListBox.Items.Add(Lights.diffuseLight);
-            charLightsListBox.Items.Add(Lights.diffuseLight2);
-            charLightsListBox.Items.Add(Lights.diffuseLight3);
-            charLightsListBox.Items.Add(Lights.fresnelLight);
+            charLightsListBox.Items.Add(LightTools.diffuseLight);
+            charLightsListBox.Items.Add(LightTools.diffuseLight2);
+            charLightsListBox.Items.Add(LightTools.diffuseLight3);
+            charLightsListBox.Items.Add(LightTools.fresnelLight);
         }
 
         private void openLightSetButton_Click(object sender, EventArgs e)
@@ -108,7 +109,7 @@ namespace Smash_Forge.GUI.Editors
                     if (ofd.FileName.EndsWith("light_set_param.bin"))
                     {
                         Runtime.lightSetParam = new ParamFile(ofd.FileName);
-                        Lights.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                        LightTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
                     }
                 }
             }
@@ -122,15 +123,15 @@ namespace Smash_Forge.GUI.Editors
                 default:
                     break;
                 case "Diffuse":
-                    selectedCharDiffuseLight = Lights.diffuseLight;
+                    selectedCharDiffuseLight = LightTools.diffuseLight;
                     charColor2GroupBox.Enabled = true;
                     break;
                 case "Diffuse2":
-                    selectedCharDiffuseLight = Lights.diffuseLight2;
+                    selectedCharDiffuseLight = LightTools.diffuseLight2;
                     charColor2GroupBox.Enabled = false;
                     break;
                 case "Diffuse3":
-                    selectedCharDiffuseLight = Lights.diffuseLight3;
+                    selectedCharDiffuseLight = LightTools.diffuseLight3;
                     charColor2GroupBox.Enabled = false;
                     break;
                 case "Fresnel":
@@ -147,8 +148,8 @@ namespace Smash_Forge.GUI.Editors
             {
                 charColor1GroupBox.Text = "Fresnel Sky Color";
                 charColor2GroupBox.Text = "Fresnel Ground Color";
-                RenderCharacterLightColor(new Vector3(Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB),
-                    new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
+                RenderCharacterLightColor(new Vector3(LightTools.fresnelLight.skyR, LightTools.fresnelLight.skyG, LightTools.fresnelLight.skyB),
+                    new Vector3(LightTools.fresnelLight.groundR, LightTools.fresnelLight.groundG, LightTools.fresnelLight.groundB));
                 UpdateCharFresnelValues();
             }
             else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString().Contains("Diffuse"))
@@ -164,12 +165,12 @@ namespace Smash_Forge.GUI.Editors
 
         private void UpdateCharFresnelValues()
         {
-            charColor1XTB.Text = Lights.fresnelLight.skyHue + "";
-            charColor1YTB.Text = Lights.fresnelLight.skySaturation + "";
-            charColor1ZTB.Text = Lights.fresnelLight.skyIntensity + "";
-            charColor2XTB.Text = Lights.fresnelLight.groundHue + "";
-            charColor2YTB.Text = Lights.fresnelLight.groundSaturation + "";
-            charColor2ZTB.Text = Lights.fresnelLight.groundIntensity + "";
+            charColor1XTB.Text = LightTools.fresnelLight.skyHue + "";
+            charColor1YTB.Text = LightTools.fresnelLight.skySaturation + "";
+            charColor1ZTB.Text = LightTools.fresnelLight.skyIntensity + "";
+            charColor2XTB.Text = LightTools.fresnelLight.groundHue + "";
+            charColor2YTB.Text = LightTools.fresnelLight.groundSaturation + "";
+            charColor2ZTB.Text = LightTools.fresnelLight.groundIntensity + "";
         }
 
         private void UpdateCharDiffuseValues()
@@ -328,9 +329,9 @@ namespace Smash_Forge.GUI.Editors
             if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
             {
                 Debug.WriteLine("render char");
-                Lights.fresnelLight.setSkyHue(value);
-                RenderCharacterLightColor(new Vector3(Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB),
-                    new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
+                LightTools.fresnelLight.setSkyHue(value);
+                RenderCharacterLightColor(new Vector3(LightTools.fresnelLight.skyR, LightTools.fresnelLight.skyG, LightTools.fresnelLight.skyB),
+                    new Vector3(LightTools.fresnelLight.groundR, LightTools.fresnelLight.groundG, LightTools.fresnelLight.groundB));
             }
             else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString().Contains("Diffuse"))
             {
@@ -347,9 +348,9 @@ namespace Smash_Forge.GUI.Editors
             float value = GuiTools.TryParseTBFloat(charColor1YTB);
             if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
             {
-                Lights.fresnelLight.setSkySaturation(value);
-                RenderCharacterLightColor(new Vector3(Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB),
-                    new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
+                LightTools.fresnelLight.setSkySaturation(value);
+                RenderCharacterLightColor(new Vector3(LightTools.fresnelLight.skyR, LightTools.fresnelLight.skyG, LightTools.fresnelLight.skyB),
+                    new Vector3(LightTools.fresnelLight.groundR, LightTools.fresnelLight.groundG, LightTools.fresnelLight.groundB));
             }
             else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString().Contains("Diffuse"))
             {
@@ -365,9 +366,9 @@ namespace Smash_Forge.GUI.Editors
             float value = GuiTools.TryParseTBFloat(charColor1ZTB);
             if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
             {
-                Lights.fresnelLight.setSkyIntensity(value);
-                RenderCharacterLightColor(new Vector3(Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB),
-                    new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
+                LightTools.fresnelLight.setSkyIntensity(value);
+                RenderCharacterLightColor(new Vector3(LightTools.fresnelLight.skyR, LightTools.fresnelLight.skyG, LightTools.fresnelLight.skyB),
+                    new Vector3(LightTools.fresnelLight.groundR, LightTools.fresnelLight.groundG, LightTools.fresnelLight.groundB));
             }
             else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString().Contains("Diffuse"))
             {
@@ -384,15 +385,15 @@ namespace Smash_Forge.GUI.Editors
             float value = GuiTools.TryParseTBFloat(charColor2XTB);
             if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
             {
-                Lights.fresnelLight.setGroundHue(value);
-                RenderCharacterLightColor(new Vector3(Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB),
-                    new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
+                LightTools.fresnelLight.setGroundHue(value);
+                RenderCharacterLightColor(new Vector3(LightTools.fresnelLight.skyR, LightTools.fresnelLight.skyG, LightTools.fresnelLight.skyB),
+                    new Vector3(LightTools.fresnelLight.groundR, LightTools.fresnelLight.groundG, LightTools.fresnelLight.groundB));
             }
             else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
             {
-                Lights.diffuseLight.setAmbHue(value);
-                RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
-                    new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
+                LightTools.diffuseLight.setAmbHue(value);
+                RenderCharacterLightColor(new Vector3(LightTools.diffuseLight.difR, LightTools.diffuseLight.difG, LightTools.diffuseLight.difB),
+                    new Vector3(LightTools.diffuseLight.ambR, LightTools.diffuseLight.ambG, LightTools.diffuseLight.ambB));
             }
 
             UpdateSliderFromValue(value, charColor2XTrackBar, 360.0f);
@@ -403,15 +404,15 @@ namespace Smash_Forge.GUI.Editors
             float value = GuiTools.TryParseTBFloat(charColor2YTB);
             if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
             {
-                Lights.fresnelLight.setGroundSaturation(value);
-                RenderCharacterLightColor(new Vector3(Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB),
-                    new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
+                LightTools.fresnelLight.setGroundSaturation(value);
+                RenderCharacterLightColor(new Vector3(LightTools.fresnelLight.skyR, LightTools.fresnelLight.skyG, LightTools.fresnelLight.skyB),
+                    new Vector3(LightTools.fresnelLight.groundR, LightTools.fresnelLight.groundG, LightTools.fresnelLight.groundB));
             }
             else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
             {
-                Lights.diffuseLight.setAmbSaturation(value);
-                RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
-                    new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
+                LightTools.diffuseLight.setAmbSaturation(value);
+                RenderCharacterLightColor(new Vector3(LightTools.diffuseLight.difR, LightTools.diffuseLight.difG, LightTools.diffuseLight.difB),
+                    new Vector3(LightTools.diffuseLight.ambR, LightTools.diffuseLight.ambG, LightTools.diffuseLight.ambB));
             }
 
             UpdateSliderFromValue(value, charColor2YTrackBar, 1.0f);
@@ -422,15 +423,15 @@ namespace Smash_Forge.GUI.Editors
             float value = GuiTools.TryParseTBFloat(charColor2ZTB);
             if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
             {
-                Lights.fresnelLight.setGroundIntensity(value);
-                RenderCharacterLightColor(new Vector3(Lights.fresnelLight.skyR, Lights.fresnelLight.skyG, Lights.fresnelLight.skyB),
-                    new Vector3(Lights.fresnelLight.groundR, Lights.fresnelLight.groundG, Lights.fresnelLight.groundB));
+                LightTools.fresnelLight.setGroundIntensity(value);
+                RenderCharacterLightColor(new Vector3(LightTools.fresnelLight.skyR, LightTools.fresnelLight.skyG, LightTools.fresnelLight.skyB),
+                    new Vector3(LightTools.fresnelLight.groundR, LightTools.fresnelLight.groundG, LightTools.fresnelLight.groundB));
             }
             else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Diffuse")
             {
-                Lights.diffuseLight.setAmbIntensity(value);
-                RenderCharacterLightColor(new Vector3(Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB),
-                    new Vector3(Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB));
+                LightTools.diffuseLight.setAmbIntensity(value);
+                RenderCharacterLightColor(new Vector3(LightTools.diffuseLight.difR, LightTools.diffuseLight.difG, LightTools.diffuseLight.difB),
+                    new Vector3(LightTools.diffuseLight.ambR, LightTools.diffuseLight.ambG, LightTools.diffuseLight.ambB));
             }
 
             UpdateSliderFromValue(value, charColor2ZTrackBar, 1);

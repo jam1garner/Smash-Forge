@@ -20,6 +20,7 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Gif.Components;
+using Smash_Forge.Rendering.Lights;
 
 namespace Smash_Forge
 {
@@ -438,17 +439,17 @@ namespace Smash_Forge
 
             SetupFrameBuffersRenderBuffers();
 
-            for (int i = 0; i < Lights.stageDiffuseLightSet.Length; i++)
+            for (int i = 0; i < LightTools.stageDiffuseLightSet.Length; i++)
             {
                 // should properly initialize these eventually
-                Lights.stageDiffuseLightSet[i] = new DirectionalLight();
-                Lights.stageDiffuseLightSet[i].id = "Stage " + i;
+                LightTools.stageDiffuseLightSet[i] = new DirectionalLight();
+                LightTools.stageDiffuseLightSet[i].id = "Stage " + i;
             }
 
-            for (int i = 0; i < Lights.stageFogSet.Length; i++)
+            for (int i = 0; i < LightTools.stageFogSet.Length; i++)
             {
                 // should properly initialize these eventually
-                Lights.stageFogSet[i] = new Vector3(0);
+                LightTools.stageFogSet[i] = new Vector3(0);
             }
 
             Debug.WriteLine(GL.GetError());
@@ -571,7 +572,7 @@ namespace Smash_Forge
                 new Vector3(0, 1, 0));
             lightMatrix = lightProjection * lightView;
             //lightMatrix = Matrix4.CreateTranslation(width, -height, zoom)
-            // * lightProjection * Matrix4.CreateRotationY(Lights.diffuseLight.rotY) * Matrix4.CreateRotationX(Lights.diffuseLight.rotX);
+            // * lightProjection * Matrix4.CreateRotationY(LightTools.diffuseLight.rotY) * Matrix4.CreateRotationX(LightTools.diffuseLight.rotX);
         }
 
         public void Render()
@@ -745,11 +746,11 @@ namespace Smash_Forge
             Vector3 p2 = new Vector3(0.0f, 5.0f, 0.0f);
 
             // set color to light color
-            int r = (int)(Lights.diffuseLight.difR * 255);
+            int r = (int)(LightTools.diffuseLight.difR * 255);
             r = ColorTools.ClampInt(r);
-            int g = (int)(Lights.diffuseLight.difG * 255);
+            int g = (int)(LightTools.diffuseLight.difG * 255);
             g = ColorTools.ClampInt(g);
-            int b = (int)(Lights.diffuseLight.difG * 255);
+            int b = (int)(LightTools.diffuseLight.difG * 255);
             b = ColorTools.ClampInt(b);
             GL.Color4(Color.FromArgb(255, r, g, b));
 
@@ -864,7 +865,7 @@ namespace Smash_Forge
 
         private static void DrawAreaLightBoundingBoxes()
         {
-            foreach (AreaLight light in Lights.areaLights)
+            foreach (AreaLight light in LightTools.areaLights)
             {
                 Color color = Color.White;
 

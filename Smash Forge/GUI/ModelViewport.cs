@@ -19,6 +19,7 @@ using Gif.Components;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using Smash_Forge.Rendering.Lights;
 
 namespace Smash_Forge
 {
@@ -303,17 +304,17 @@ namespace Smash_Forge
             timer.Tick += new EventHandler(Application_Idle);
             timer.Start();
 
-            for (int i = 0; i < Lights.stageDiffuseLightSet.Length; i++)
+            for (int i = 0; i < LightTools.stageDiffuseLightSet.Length; i++)
             {
                 // should properly initialize these eventually
-                Lights.stageDiffuseLightSet[i] = new DirectionalLight();
-                Lights.stageDiffuseLightSet[i].id = "Stage " + i;
+                LightTools.stageDiffuseLightSet[i] = new DirectionalLight();
+                LightTools.stageDiffuseLightSet[i].id = "Stage " + i;
             }
 
-            for (int i = 0; i < Lights.stageFogSet.Length; i++)
+            for (int i = 0; i < LightTools.stageFogSet.Length; i++)
             {
                 // should properly initialize these eventually
-                Lights.stageFogSet[i] = new Vector3(0);
+                LightTools.stageFogSet[i] = new Vector3(0);
             }
         }
 
@@ -1279,7 +1280,7 @@ namespace Smash_Forge
 
         private void DrawAreaLightBoundingBoxes()
         {
-            foreach (AreaLight light in Lights.areaLights)
+            foreach (AreaLight light in LightTools.areaLights)
             {
                 Color color = Color.White;
 

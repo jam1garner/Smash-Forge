@@ -9,6 +9,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK;
 using System.Windows.Forms;
 using SALT.Graphics;
+using Smash_Forge.Rendering.Lights;
 
 namespace Smash_Forge
 {
@@ -508,34 +509,34 @@ namespace Smash_Forge
         {
             // stage light 1
             int index1 = 0 + (4 * lightSetNumber);
-            Lights.stageLight1 = Lights.stageDiffuseLightSet[index1];
+            LightTools.stageLight1 = LightTools.stageDiffuseLightSet[index1];
             int v = 0;
-            if (Lights.stageDiffuseLightSet[index1].enabled) v = 1; else v = 0;
+            if (LightTools.stageDiffuseLightSet[index1].enabled) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("renderStageLight1"), v);
-            GL.Uniform3(shader.getAttribute("stageLight1Color"), Lights.stageLight1.difR, Lights.stageLight1.difG, Lights.stageLight1.difB);
+            GL.Uniform3(shader.getAttribute("stageLight1Color"), LightTools.stageLight1.difR, LightTools.stageLight1.difG, LightTools.stageLight1.difB);
 
             // stage light 2
             int index2 = 1 + (4 * lightSetNumber);
-            Lights.stageLight2 = Lights.stageDiffuseLightSet[index2];
-            if (Lights.stageDiffuseLightSet[index2].enabled) v = 1; else v = 0;
+            LightTools.stageLight2 = LightTools.stageDiffuseLightSet[index2];
+            if (LightTools.stageDiffuseLightSet[index2].enabled) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("renderStageLight2"), v);
-            GL.Uniform3(shader.getAttribute("stageLight2Color"), Lights.stageLight2.difR, Lights.stageLight2.difG, Lights.stageLight2.difB);
+            GL.Uniform3(shader.getAttribute("stageLight2Color"), LightTools.stageLight2.difR, LightTools.stageLight2.difG, LightTools.stageLight2.difB);
 
             // stage light 3
             int index3 = 2 + (4 * lightSetNumber);
-            Lights.stageLight3 = Lights.stageDiffuseLightSet[index3];
-            if (Lights.stageDiffuseLightSet[index3].enabled) v = 1; else v = 0;
+            LightTools.stageLight3 = LightTools.stageDiffuseLightSet[index3];
+            if (LightTools.stageDiffuseLightSet[index3].enabled) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("renderStageLight3"), v);
-            GL.Uniform3(shader.getAttribute("stageLight3Color"), Lights.stageLight3.difR, Lights.stageLight3.difG, Lights.stageLight3.difB);
+            GL.Uniform3(shader.getAttribute("stageLight3Color"), LightTools.stageLight3.difR, LightTools.stageLight3.difG, LightTools.stageLight3.difB);
 
             // stage light 4
             int index4 = 3 + (4 * lightSetNumber);
-            Lights.stageLight4 = Lights.stageDiffuseLightSet[index4];
-            ShaderTools.BoolToIntShaderUniform(shader, Lights.stageDiffuseLightSet[index4].enabled, "renderStageLight4");
+            LightTools.stageLight4 = LightTools.stageDiffuseLightSet[index4];
+            ShaderTools.BoolToIntShaderUniform(shader, LightTools.stageDiffuseLightSet[index4].enabled, "renderStageLight4");
 
-            GL.Uniform3(shader.getAttribute("stageLight4Color"), Lights.stageLight4.difR, Lights.stageLight4.difG, Lights.stageLight4.difB);
+            GL.Uniform3(shader.getAttribute("stageLight4Color"), LightTools.stageLight4.difR, LightTools.stageLight4.difG, LightTools.stageLight4.difB);
 
-            GL.Uniform3(shader.getAttribute("stageFogColor"), Lights.stageFogSet[lightSetNumber]);
+            GL.Uniform3(shader.getAttribute("stageFogColor"), LightTools.stageFogSet[lightSetNumber]);
         }
 
         private static void SetNSCUniform(Polygon p, Shader shader)
