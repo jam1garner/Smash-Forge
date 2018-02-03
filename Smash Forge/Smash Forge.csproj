@@ -459,10 +459,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\AreaLight.cs" />
     <Compile Include="Rendering\Camera.cs" />
     <Compile Include="Rendering\ColorTools.cs" />
+    <Compile Include="Rendering\DirectionalLight.cs" />
     <Compile Include="Rendering\FrameTimer.cs" />
-    <Compile Include="Rendering\Lights.cs" />
+    <Compile Include="Rendering\HemisphereFresnel.cs" />
+    <Compile Include="Rendering\LightMap.cs" />
+    <Compile Include="Rendering\LightTools.cs" />
     <Compile Include="Rendering\Ray.cs" />
     <Compile Include="Rendering\ShaderTools.cs" />
     <Compile Include="Updates.cs" />

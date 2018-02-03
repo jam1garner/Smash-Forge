@@ -29,7 +29,7 @@ namespace Smash_Forge
         public static List<NUT> TextureContainers = new List<NUT>();
         public static List<NUS3BANK> SoundContainers = new List<NUS3BANK>();
 
-        public static Dictionary<string, AreaLight> areaLights = new Dictionary<string, AreaLight>();
+        public static Dictionary<string, Rendering.Lights.AreaLight> areaLights = new Dictionary<string, Rendering.Lights.AreaLight>();
 
         public static SortedList<string, FileBase> OpenedFiles { get; set; }
 

@@ -21,6 +21,7 @@ using OpenTK.Graphics.OpenGL;
 using System.ComponentModel;
 using OpenTK;
 using OpenTK.Graphics;
+using Smash_Forge.Rendering.Lights;
 
 namespace Smash_Forge
 {
@@ -749,8 +750,8 @@ namespace Smash_Forge
             hurtboxList.refresh();
             Runtime.Animnames.Clear();
             Runtime.clearMoveset();
-            Lights.areaLights.Clear();
-            Lights.lightMaps.Clear();
+            LightTools.areaLights.Clear();
+            LightTools.lightMaps.Clear();
             animList.treeView1.Nodes.Clear();
 
             //Close all Editors
@@ -1120,17 +1121,17 @@ namespace Smash_Forge
                             {
                                 // should this always replace existing settings?
                                 Runtime.lightSetParam = new ParamFile(fileName);
-                                Lights.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                                LightTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
                             }
 
                             if (fileName.EndsWith("area_light.xmb"))
                             {
-                                Lights.CreateAreaLightsFromXMB(new XMBFile(fileName));
+                                LightTools.CreateAreaLightsFromXMB(new XMBFile(fileName));
                             }
 
                             if (fileName.EndsWith("lightmap.xmb"))
                             {
-                                Lights.CreateLightMapsFromXMB(new XMBFile(fileName));
+                                LightTools.CreateLightMapsFromXMB(new XMBFile(fileName));
                             }
                         }
                     }
@@ -1818,7 +1819,7 @@ namespace Smash_Forge
                     if (fileName.EndsWith("light_set_param.bin"))
                     {
                         Runtime.lightSetParam = new ParamFile(fileName);
-                        Lights.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                        LightTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
                     }
 
                     if (fileName.EndsWith("stprm.bin"))
@@ -1904,12 +1905,12 @@ namespace Smash_Forge
 
             if (fileName.EndsWith("area_light.xmb"))
             {
-                Lights.CreateAreaLightsFromXMB(new XMBFile(fileName));
+                LightTools.CreateAreaLightsFromXMB(new XMBFile(fileName));
             }
 
             if (fileName.EndsWith("lightmap.xmb"))
             {
-                Lights.CreateLightMapsFromXMB(new XMBFile(fileName));
+                LightTools.CreateLightMapsFromXMB(new XMBFile(fileName));
             }
 
             if (fileName.EndsWith(".nud"))

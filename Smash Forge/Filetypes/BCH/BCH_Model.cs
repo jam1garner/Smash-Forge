@@ -424,8 +424,8 @@ namespace Smash_Forge
 
             GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref view);
 
-            GL.Uniform3(shader.getAttribute("difLightColor"), Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB);
-            GL.Uniform3(shader.getAttribute("ambLightColor"), Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB);
+            GL.Uniform3(shader.getAttribute("difLightColor"), Rendering.Lights.LightTools.diffuseLight.difR, Rendering.Lights.LightTools.diffuseLight.difG, Rendering.Lights.LightTools.diffuseLight.difB);
+            GL.Uniform3(shader.getAttribute("ambLightColor"), Rendering.Lights.LightTools.diffuseLight.ambR, Rendering.Lights.LightTools.diffuseLight.ambG, Rendering.Lights.LightTools.diffuseLight.ambB);
 
             GL.ActiveTexture(TextureUnit.Texture10);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);

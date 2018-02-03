@@ -1637,9 +1637,7 @@ namespace Smash_Forge
             GL.Uniform3(shader.getAttribute("topColor"), topR, topG, topB);
             GL.Uniform3(shader.getAttribute("bottomColor"), bottomR, bottomG, bottomB);
 
-            GL.Disable(EnableCap.DepthTest);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3); // draw full screen "quad" (big triangle)
-            GL.BindVertexArray(0);
+            DrawScreenTriangle(shader);          
         }
 
         public static void DrawTexturedQuad(int texture, int width, int height, bool renderR = true, bool renderG = true, bool renderB = true, 
