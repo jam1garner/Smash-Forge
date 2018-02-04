@@ -863,30 +863,32 @@ namespace Smash_Forge
                         mat.displayTexId = -1;
 
                         // Preserve diffuse tex ID.
-                        MatTexture dif = MatTexture.getDefault();
-                        dif.hash = difTexID; 
-                        MatTexture cub = MatTexture.getDefault();
-                        cub.hash = 0x10102000;
+                        MatTexture diffuse = MatTexture.getDefault();
+                        diffuse.hash = difTexID; 
+                        MatTexture cube = MatTexture.getDefault();
+                        cube.hash = 0x10102000;
 
                         // Preserve normal map tex ID. should work for all common texture flags.
-                        MatTexture nrm = MatTexture.getDefault();
-                        nrm.hash = mat.normalID; 
+                        MatTexture normal = MatTexture.getDefault();
+                        normal.hash = mat.normalID; 
 
-                        MatTexture rim = MatTexture.getDefault();
-                        rim.hash = 0x10080000;
+                        MatTexture dummyRamp = MatTexture.getDefault();
+                        dummyRamp.hash = 0x10080000;
 
                         if (mat.hasNormalMap)
                         {
-                            mat.textures.Add(dif);
-                            mat.textures.Add(cub);
-                            mat.textures.Add(nrm);
-                            mat.textures.Add(rim);
+                            mat.textures.Add(diffuse);
+                            mat.textures.Add(cube);
+                            mat.textures.Add(normal);
+                            mat.textures.Add(dummyRamp);
                         }
                         else
-                            mat.textures.Add(dif);
+                        {
+                            mat.textures.Add(diffuse);
+                            mat.textures.Add(cube);
+                            mat.textures.Add(dummyRamp);
+                        }
 
-                        mat.textures.Add(cub);
-                        mat.textures.Add(rim);
 
                         // add material properties
                         mat.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
