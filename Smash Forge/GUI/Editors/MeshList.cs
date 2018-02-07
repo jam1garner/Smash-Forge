@@ -892,18 +892,18 @@ namespace Smash_Forge
             {
                 if(ofd.ShowDialog() == DialogResult.OK)
                 {
-                    DAEImportSettings m = new DAEImportSettings();
-                    m.ShowDialog();
-                    if (m.exitStatus == DAEImportSettings.Opened)
+                    DAEImportSettings daeImport = new DAEImportSettings();
+                    daeImport.ShowDialog();
+                    if (daeImport.exitStatus == DAEImportSettings.ExitStatus.Opened)
                     {
                         ModelContainer con = (ModelContainer)treeView1.SelectedNode;
                         
-                        con.VBN = m.getVBN();
+                        con.VBN = daeImport.getVBN();
 
-                        Collada.DaetoNud(ofd.FileName, con, m.checkBox5.Checked);
+                        Collada.DaetoNud(ofd.FileName, con, daeImport.importTexCB.Checked);
 
                         // apply settings
-                        m.Apply(con.NUD);
+                        daeImport.Apply(con.NUD);
                         con.NUD.MergePoly();
                     }
                 }

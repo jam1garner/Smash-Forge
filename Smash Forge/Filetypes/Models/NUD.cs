@@ -2307,7 +2307,7 @@ namespace Smash_Forge
                 return m;
             }
 
-            public static Material getDefault()
+            public static Material GetDefault()
             {
                 Material material = new Material();
                 material.Flags = 0x94010161;
@@ -2333,6 +2333,25 @@ namespace Smash_Forge
 
                 material.textures.Add(defaultDif);
                 material.textures.Add(MatTexture.getDefault());
+                return material;
+            }
+
+            public static Material GetStageDefault()
+            {
+                Material material = new Material();
+                material.Flags = 0xA2001001;
+                material.RefAlpha = 128;
+                material.cullMode = 1029;
+
+                // Display a default texture rather than a dummy texture.
+                MatTexture tex = MatTexture.getDefault();
+                tex.hash = 0;
+                material.textures.Clear();
+                material.textures.Add(MatTexture.getDefault());
+
+                material.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
+                material.entries.Add("NU_diffuseColor", new float[] { 1, 1, 1, 0.5f });
+                material.entries.Add("NU_materialHash", new float[] { BitConverter.ToSingle(new byte[] { 0x12, 0xEE, 0x2A, 0x1B }, 0), 0, 0, 0 });
                 return material;
             }
 
@@ -2686,7 +2705,7 @@ namespace Smash_Forge
 
             public void setDefaultMaterial()
             {
-                Material mat = Material.getDefault();
+                Material mat = Material.GetDefault();
                 materials.Add(mat);
 
                 MatTexture defaultDif = MatTexture.getDefault();

@@ -248,7 +248,7 @@ namespace Smash_Forge
             // Don't add more than 2 materials to a polygon.
             while (npoly.materials.Count < npoly.vertices[0].uv.Count && npoly.materials.Count < 2)
             {
-                NUD.Material material = NUD.Material.getDefault();
+                NUD.Material material = NUD.Material.GetDefault();
                 npoly.materials.Add(material);
             }
         }

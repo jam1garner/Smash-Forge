@@ -103,19 +103,19 @@ namespace Smash_Forge
                 {
                     if (f.ToLower().EndsWith(".dae"))
                     {
-                        DAEImportSettings m = new DAEImportSettings();
-                        m.ShowDialog();
-                        if (m.exitStatus == DAEImportSettings.Opened)
+                        DAEImportSettings daeImport = new DAEImportSettings();
+                        daeImport.ShowDialog();
+                        if (daeImport.exitStatus == DAEImportSettings.ExitStatus.Opened)
                         {
                             ModelContainer con = new ModelContainer();
 
                             // load vbn
                             con.VBN = skeleton;
 
-                            Collada.DaetoNud(f, con, m.checkBox5.Checked);
+                            Collada.DaetoNud(f, con, daeImport.importTexCB.Checked);
                             
                             // apply settings
-                            m.Apply(con.NUD);
+                            daeImport.Apply(con.NUD);
                             con.NUD.MergePoly();
                             CreateFromNUD(con.NUD);
                         }

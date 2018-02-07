@@ -1124,7 +1124,7 @@ namespace Smash_Forge
         {
             // Can only have two materials.
             if (materials.Count < 2)
-                materials.Add(NUD.Material.getDefault());
+                materials.Add(NUD.Material.GetDefault());
 
             FillForm();
             UpdateMatComboBox();

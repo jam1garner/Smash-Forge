@@ -15,13 +15,16 @@ namespace Smash_Forge
     public partial class DAEImportSettings : Form
     {
 
-        public string fname;
+        public string fileName;
 
-        public static int Running = 0;
-        public static int Opened = 1;
-        public static int Cancelled = 2;
+        public enum ExitStatus
+        {
+            Running = 0,
+            Opened = 1,
+            Cancelled = 2
+        }
 
-        public int exitStatus = 0; //0 - not done, 1 - one is selected, 2 - cancelled
+        public ExitStatus exitStatus = ExitStatus.Running; 
 
         public Dictionary<string, int> BoneTypes = new Dictionary<string, int>()
         {
@@ -43,27 +46,27 @@ namespace Smash_Forge
         public DAEImportSettings()
         {
             InitializeComponent();
-            populate();
+            Populate();
         }
         
-        public void populate()
+        public void Populate()
         {
             foreach (string key in VertTypes.Keys)
-                comboBox1.Items.Add(key);
+                vertTypeComboBox.Items.Add(key);
 
             foreach (string key in BoneTypes.Keys)
-                comboBox2.Items.Add(key);
+                boneTypeComboBox.Items.Add(key);
 
-            comboBox1.SelectedIndex = 2;
-            comboBox2.SelectedIndex = 1;
+            vertTypeComboBox.SelectedIndex = 2;
+            boneTypeComboBox.SelectedIndex = 1;
         }
 
         public void Apply(NUD nud)
         {
             nud.GenerateBoundingBoxes();
-            Matrix4 rot = Matrix4.CreateRotationX(0.5f * (float)Math.PI);
-            float sc = 1f;
-            bool hasScale = float.TryParse(scaleTB.Text, out sc);
+            Matrix4 rotXBy90 = Matrix4.CreateRotationX(0.5f * (float)Math.PI);
+            float scale = 1f;
+            bool hasScale = float.TryParse(scaleTB.Text, out scale);
 
             bool checkedMeshName = false;
             bool fixMeshName = false;
@@ -72,7 +75,7 @@ namespace Smash_Forge
 
             foreach (NUD.Mesh mesh in nud.Nodes)
             {
-                if (BoneTypes[(string)comboBox2.SelectedItem] == BoneTypes["No Bones"])
+                if (BoneTypes[(string)boneTypeComboBox.SelectedItem] == BoneTypes["No Bones"])
                     mesh.boneflag = 0;
 
                 if (!checkedMeshName)
@@ -92,77 +95,60 @@ namespace Smash_Forge
 
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {
-                    if (BoneTypes[(string)comboBox2.SelectedItem] == BoneTypes["No Bones"])
+                    if (BoneTypes[(string)boneTypeComboBox.SelectedItem] == BoneTypes["No Bones"])
                         poly.polflag = 0;
 
-                    //Smooth normals
-                    if (smoothCB.Checked)
+                    if (smoothNrmCB.Checked)
                         poly.SmoothNormals();
 
                     // Set the vertex size before tangent/bitangent calculations.
-                    poly.vertSize = ((poly.vertSize == 0x6 ? 0 : BoneTypes[(string)comboBox2.SelectedItem])) | (VertTypes[(string)comboBox1.SelectedItem]);
-
+                    poly.vertSize = ((poly.vertSize == 0x6 ? 0 : BoneTypes[(string)boneTypeComboBox.SelectedItem])) | (VertTypes[(string)vertTypeComboBox.SelectedItem]);
                     poly.CalculateTangentBitangent();          
 
                     if (!warning && poly.vertSize == 0x27)
                     {
-                        MessageBox.Show("Using \"" + (string)comboBox2.SelectedItem + "\" and \"" + (string)comboBox1.SelectedItem + "\" can make shadows not appear in-game.",
+                        MessageBox.Show("Using \"" + (string)boneTypeComboBox.SelectedItem + "\" and \"" + (string)vertTypeComboBox.SelectedItem + "\" can make shadows not appear in-game.",
                             "Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         warning = true;
                     }
 
-                    //Use stage material
-                    if (stagematCB.Checked)
+                    if (stageMatCB.Checked)
                     {
-                        NUD.MatTexture tex = poly.materials[0].textures[0];
-                        poly.materials[0].textures.Clear();
                         poly.materials.Clear();
-
-                        NUD.Material m = new NUD.Material();
-                        poly.materials.Add(m);
-                        m.Flags = 0xA2001001;
-                        m.RefAlpha = 128;
-                        m.cullMode = 1029;
-
-                        m.textures.Clear();
-                        m.textures.Add(tex);
-
-                        m.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
-                        m.entries.Add("NU_diffuseColor", new float[] { 1, 1, 1, 0.5f });
-                        m.entries.Add("NU_materialHash", new float[] { BitConverter.ToSingle(new byte[] { 0x12, 0xEE, 0x2A, 0x1B }, 0), 0, 0, 0 });
+                        poly.materials.Add(NUD.Material.GetStageDefault());
                     }
 
                     foreach (NUD.Vertex v in poly.vertices)
                     {
                         //Scroll UVs V by -1
-                        if (checkBox2.Checked)
+                        if (transUvVerticalCB.Checked)
                             for (int i = 0; i < v.uv.Count; i++)
                                 v.uv[i] = new Vector2(v.uv[i].X, v.uv[i].Y + 1);
 
-                        //Flip UVs
+                        // Flip UVs
                         if (flipUVCB.Checked)
                             for (int i = 0; i < v.uv.Count; i++)
                                 v.uv[i] = new Vector2(v.uv[i].X, 1 - v.uv[i].Y);
 
-                        //Halve vertex colors
+                        // Halve vertex colors
                         if (vertColorDivCB.Checked)
                             for (int i = 0; i < 3; i++)
                                 v.col[i] = v.col[i] / 2;
 
-                        //Ignore vertex colors
+                        // Set vertex colors to white. 
                         if (vertcolorCB.Checked)
-                            v.col = new Vector4(0x7F, 0x7F, 0x7F, 0xFF);
+                            v.col = new Vector4(127, 127, 127, 255);
 
-                        //Rotate 90 degrees
-                        if (checkBox4.Checked)
+                        // Rotate 90 degrees.
+                        if (rotate90CB.Checked)
                         {
-                            v.pos = Vector3.TransformPosition(v.pos, rot);
-                            v.nrm = Vector3.TransformNormal(v.nrm, rot);
+                            v.pos = Vector3.TransformPosition(v.pos, rotXBy90);
+                            v.nrm = Vector3.TransformNormal(v.nrm, rotXBy90);
                         }
 
-                        //Scale
-                        if (sc != 1f)
-                            v.pos = Vector3.Multiply(v.pos, sc);
+                        // Scale.
+                        if (scale != 1f)
+                            v.pos = Vector3.Multiply(v.pos, scale);
                     }
                 }
             }
@@ -181,43 +167,28 @@ namespace Smash_Forge
 
         private void closeButton(object sender, EventArgs e)
         {
-            exitStatus = Cancelled;
+            exitStatus = ExitStatus.Cancelled;
             Close();
         }
 
-        private void MaterialSelector_Load(object sender, EventArgs e)
-        {
-            populate();
-        }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button1_Click(object sender, EventArgs e)
+        private void importButton_Click(object sender, EventArgs e)
         {
             if (vbnFileLabel.Text.Equals(""))
             {
                 DialogResult dialogResult = MessageBox.Show("You are not using a VBN to import.\nDo you want to generate one?", "Warning", MessageBoxButtons.OKCancel);
                 if (dialogResult == DialogResult.OK)
                 {
-                    exitStatus = Opened;
+                    exitStatus = ExitStatus.Opened;
                     Close();
                 }
             }else
             {
-                exitStatus = Opened;
+                exitStatus = ExitStatus.Opened;
                 Close();
             }
         }
 
-        private void checkBox5_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void vbnButton_Click(object sender, EventArgs e)
+        private void openVbnButton_Click(object sender, EventArgs e)
         {
             using (var ofd = new OpenFileDialog() { Filter = "Visual Bone Namco (.vbn)|*.vbn|All Files (*.*)|*.*" })
             {
@@ -226,11 +197,6 @@ namespace Smash_Forge
                     vbnFileLabel.Text = ofd.FileName;
                 }
             }
-        }
-
-        private void vertColorDivCB_CheckedChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }
