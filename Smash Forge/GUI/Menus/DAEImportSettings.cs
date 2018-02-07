@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
+using System.Diagnostics;
 
 namespace Smash_Forge
 {
@@ -98,11 +99,10 @@ namespace Smash_Forge
                     if (smoothCB.Checked)
                         poly.SmoothNormals();
 
-                    // We only want to calculate new tangents/bitangents for imports.
-                    // Vanilla models have special tangents/bitangents for mirrored normal maps.
-                    poly.CalculateTangentBitangent();
-
+                    // Set the vertex size before tangent/bitangent calculations.
                     poly.vertSize = ((poly.vertSize == 0x6 ? 0 : BoneTypes[(string)comboBox2.SelectedItem])) | (VertTypes[(string)comboBox1.SelectedItem]);
+
+                    poly.CalculateTangentBitangent();          
 
                     if (!warning && poly.vertSize == 0x27)
                     {
@@ -166,8 +166,6 @@ namespace Smash_Forge
                     }
                 }
             }
-
-            //if (VertTypes[(string)comboBox1.SelectedItem] == 3 || VertTypes[(string)comboBox1.SelectedItem] == 7)
 
             nud.PreRender();
 

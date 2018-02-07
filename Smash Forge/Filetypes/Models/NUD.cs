@@ -46,7 +46,6 @@ namespace Smash_Forge
             PreRender();
         }
 
-        // gl buffer objects
         int vbo_position;
         int ibo_elements;
         int ubo_bones;
@@ -57,7 +56,6 @@ namespace Smash_Forge
         public int type = SMASH;
         public int boneCount = 0;
         public bool hasBones = false;
-        //public List<Mesh> Nodes = new List<Mesh>();
         List<Mesh> depthSortedMeshes = new List<Mesh>();
         public float[] boundingBox = new float[4];
 
@@ -1867,21 +1865,21 @@ namespace Smash_Forge
             }
         }
 
-        private static void writeVertex(FileOutput d, FileOutput add, Polygon m)
+        private static void writeVertex(FileOutput d, FileOutput add, Polygon poly)
         {
-            int weight = m.vertSize >> 4;
-            int vertType = m.vertSize & 0xF;
+            int weight = poly.vertSize >> 4;
+            int vertType = poly.vertSize & 0xF;
             
             if (weight > 0)
             {
-                writeUV(d, m);
+                writeUV(d, poly);
                 d = add;
             }
 
-            for (int i = 0; i < m.vertices.Count; i++)
+            for (int i = 0; i < poly.vertices.Count; i++)
             {
                 
-                Vertex v = m.vertices[i];
+                Vertex v = poly.vertices[i];
                 if (vertType < 8)
                 {
                     d.writeFloat(v.pos.X);
@@ -1920,14 +1918,14 @@ namespace Smash_Forge
                     d.writeFloat(v.nrm.Y);
                     d.writeFloat(v.nrm.Z);
                     d.writeFloat(1);
-                    d.writeFloat(m.vertices[i].bitan.X);
-                    d.writeFloat(m.vertices[i].bitan.Y);
-                    d.writeFloat(m.vertices[i].bitan.Z);
-                    d.writeFloat(m.vertices[i].bitan.W);
-                    d.writeFloat(m.vertices[i].tan.X);
-                    d.writeFloat(m.vertices[i].tan.Y);
-                    d.writeFloat(m.vertices[i].tan.Z);
-                    d.writeFloat(m.vertices[i].tan.W);
+                    d.writeFloat(poly.vertices[i].bitan.X);
+                    d.writeFloat(poly.vertices[i].bitan.Y);
+                    d.writeFloat(poly.vertices[i].bitan.Z);
+                    d.writeFloat(poly.vertices[i].bitan.W);
+                    d.writeFloat(poly.vertices[i].tan.X);
+                    d.writeFloat(poly.vertices[i].tan.Y);
+                    d.writeFloat(poly.vertices[i].tan.Z);
+                    d.writeFloat(poly.vertices[i].tan.W);
                 }
                 else if (vertType == 6)
                 {
@@ -1942,30 +1940,30 @@ namespace Smash_Forge
                     d.writeHalfFloat(v.nrm.Y);
                     d.writeHalfFloat(v.nrm.Z);
                     d.writeHalfFloat(1);
-                    d.writeHalfFloat(m.vertices[i].bitan.X);
-                    d.writeHalfFloat(m.vertices[i].bitan.Y);
-                    d.writeHalfFloat(m.vertices[i].bitan.Z);
-                    d.writeHalfFloat(m.vertices[i].bitan.W);
-                    d.writeHalfFloat(m.vertices[i].tan.X);
-                    d.writeHalfFloat(m.vertices[i].tan.Y);
-                    d.writeHalfFloat(m.vertices[i].tan.Z);
-                    d.writeHalfFloat(m.vertices[i].tan.W);
+                    d.writeHalfFloat(poly.vertices[i].bitan.X);
+                    d.writeHalfFloat(poly.vertices[i].bitan.Y);
+                    d.writeHalfFloat(poly.vertices[i].bitan.Z);
+                    d.writeHalfFloat(poly.vertices[i].bitan.W);
+                    d.writeHalfFloat(poly.vertices[i].tan.X);
+                    d.writeHalfFloat(poly.vertices[i].tan.Y);
+                    d.writeHalfFloat(poly.vertices[i].tan.Z);
+                    d.writeHalfFloat(poly.vertices[i].tan.W);
                 }
 
                 if (weight == 0)
                 {
-                    if (m.UVSize >= 18)
+                    if (poly.UVSize >= 18)
                     {
-                        d.writeByte((int)m.vertices[i].col.X);
-                        d.writeByte((int)m.vertices[i].col.Y);
-                        d.writeByte((int)m.vertices[i].col.Z);
-                        d.writeByte((int)m.vertices[i].col.W);
+                        d.writeByte((int)poly.vertices[i].col.X);
+                        d.writeByte((int)poly.vertices[i].col.Y);
+                        d.writeByte((int)poly.vertices[i].col.Z);
+                        d.writeByte((int)poly.vertices[i].col.W);
                     }
 
-                    for (int j = 0; j < m.vertices[i].uv.Count; j++)
+                    for (int j = 0; j < poly.vertices[i].uv.Count; j++)
                     {
-                        d.writeHalfFloat(m.vertices[i].uv[j].X);
-                        d.writeHalfFloat(m.vertices[i].uv[j].Y);
+                        d.writeHalfFloat(poly.vertices[i].uv[j].X);
+                        d.writeHalfFloat(poly.vertices[i].uv[j].Y);
                     }
                 }
 
@@ -2515,9 +2513,8 @@ namespace Smash_Forge
 
             public void CalculateTangentBitangent()
             {
-                // Don't generate tangents if the vertex format doesn't support them. 
+                // Don't generate tangents and bitangents if the vertex format doesn't support them. 
                 int vertType = vertSize & 0xF;
-                Debug.WriteLine(vertType);
                 if (!(vertType == 3 || vertType == 7))
                     return;
 
@@ -2530,12 +2527,12 @@ namespace Smash_Forge
                 PreRender();
             }
 
-            public void SetVertexColor(Vector4 color)
+            public void SetVertexColor(Vector4 intColor)
             {
                 // (127, 127, 127, 255) is white.
                 foreach (Vertex v in vertices)
                 {
-                    v.col = color;
+                    v.col = intColor;
                 }
                 PreRender();
             }
@@ -2546,12 +2543,13 @@ namespace Smash_Forge
                 for (int i = 0; i < vertices.Count; i++)
                 {
                     Vertex v = vertices[i];
-                    Vector3 newTan = tanArray[i].Normalized();
-                    Vector3 newBitan = bitanArray[i].Normalized();
+                    Vector3 newTan = tanArray[i];
+                    Vector3 newBitan = bitanArray[i];
 
                     // The tangent and bitangent should be orthogonal to the normal. 
-                    // Bitangents are not calculated with a cross product to prevent flipped shading with mirrored normal maps.
-                    // Orthogonalizing the bitangent to the tangent removes some artifacts from this approach. 
+                    // Bitangents are not calculated with a cross product 
+                    // to prevent flipped shading  with mirrored normal maps.
+                    // Orthogonalizing the bitangent to the tangent removes some artifacts. 
                     v.tan = new Vector4(Vector3.Normalize(newTan - v.nrm * Vector3.Dot(v.nrm, newTan)), 1);
                     v.bitan = new Vector4(Vector3.Normalize(newBitan - v.nrm * Vector3.Dot(v.nrm, newBitan)), 1);
                     v.bitan = new Vector4(Vector3.Normalize(v.bitan.Xyz - v.tan.Xyz * Vector3.Dot(v.bitan.Xyz, v.tan.Xyz)), 1);
