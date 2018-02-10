@@ -20,7 +20,7 @@ namespace Smash_Forge.Rendering.Lights
         public static DirectionalLight diffuseLight3 = new DirectionalLight(0, 0, 1, 0, 0, 0.75f, 0, 0, 0, "Diffuse3");
 
         // still not sure what controls this yet
-        public static DirectionalLight specularLight = new DirectionalLight();
+        public static DirectionalLight specularLight = new DirectionalLight(0, 0, 0.0f, 0, 0, 0, 0, 0, 0, "Specular");
 
         // hemisphere fresnel from light_set_param.bin
         public static HemisphereFresnel fresnelLight = new HemisphereFresnel(0, 0, 0, 0, 0, 1, 0, 0, "Fresnel");

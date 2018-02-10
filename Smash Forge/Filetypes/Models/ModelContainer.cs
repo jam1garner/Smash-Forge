@@ -356,11 +356,11 @@ namespace Smash_Forge
 
             GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.renderNormalMap ? 1 : 0);
 
-            GL.Uniform1(shader.getAttribute("ambientIntensity"), Runtime.ambInten);
-            GL.Uniform1(shader.getAttribute("diffuseIntensity"), Runtime.difInten);
-            GL.Uniform1(shader.getAttribute("specularIntensity"), Runtime.spcInten);
-            GL.Uniform1(shader.getAttribute("fresnelIntensity"), Runtime.frsInten);
-            GL.Uniform1(shader.getAttribute("reflectionIntensity"), Runtime.ref_inten);
+            GL.Uniform1(shader.getAttribute("ambientIntensity"), Runtime.ambItensity);
+            GL.Uniform1(shader.getAttribute("diffuseIntensity"), Runtime.difIntensity);
+            GL.Uniform1(shader.getAttribute("specularIntensity"), Runtime.spcIntentensity);
+            GL.Uniform1(shader.getAttribute("fresnelIntensity"), Runtime.frsIntensity);
+            GL.Uniform1(shader.getAttribute("reflectionIntensity"), Runtime.refIntensity);
 
             GL.Uniform1(shader.getAttribute("zScale"), Runtime.zScale);
 
@@ -393,7 +393,7 @@ namespace Smash_Forge
 
             // reflection color for characters & stages
             float refR, refG, refB = 1.0f;
-            ColorTools.HSV2RGB(Runtime.reflection_hue, Runtime.reflection_saturation, Runtime.reflection_intensity, out refR, out refG, out refB);
+            ColorTools.HSV2RGB(Runtime.reflectionHue, Runtime.reflectionSaturation, Runtime.reflectionIntensity, out refR, out refG, out refB);
             GL.Uniform3(shader.getAttribute("refLightColor"), refR, refG, refB);
 
             // character diffuse lights
@@ -407,10 +407,10 @@ namespace Smash_Forge
             GL.Uniform3(shader.getAttribute("ambLightColor3"), LightTools.diffuseLight3.ambR, LightTools.diffuseLight3.ambG, LightTools.diffuseLight3.ambB);
 
             // character specular light
-            LightTools.specularLight.setColorFromHSV(Runtime.specular_hue, Runtime.specular_saturation, Runtime.specular_intensity);
-            LightTools.specularLight.setDirectionFromXYZAngles(Runtime.specular_rotX, Runtime.specular_rotY, Runtime.specular_rotZ);
+            LightTools.specularLight.setColorFromHSV(Runtime.specularHue, Runtime.specularSaturation, Runtime.specularIntensity);
+            LightTools.specularLight.setDirectionFromXYZAngles(Runtime.specularRotX, Runtime.specularRotY, Runtime.specularRotZ);
             GL.Uniform3(shader.getAttribute("specLightColor"), LightTools.specularLight.difR, LightTools.specularLight.difG, LightTools.specularLight.difB);
-
+            
             // stage fog
             GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
 

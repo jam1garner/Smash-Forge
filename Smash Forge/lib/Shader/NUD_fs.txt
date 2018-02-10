@@ -206,13 +206,10 @@ float Luminance(vec3 rgb)
     return dot(rgb, W);
 }
 
-vec3 CalculateTintColor(vec3 inputColor, float colorAlpha)
+vec3 CalculateTintColor(vec3 diffuseColor, float tintAmount)
 {
-    float intensity = colorAlpha * 0.4;
-    vec3 inputHSV = RGB2HSV(inputColor);
-    float outSaturation = min((inputHSV.y * intensity), 1); // cant have color with saturation > 1
-    vec3 outColorTint = HSV2RGB(vec3(inputHSV.x, outSaturation, 1));
-    return outColorTint;
+    // Approximation of overlay blend mode.
+    return mix(vec3(1), (diffuseColor * 2), min(tintAmount * 0.5, 1));
 }
 
 float ShadowCalculation(vec4 fragPosLightSpace)
@@ -415,11 +412,12 @@ vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, vec3 tintColor, float aoMap, 
     else if (hasColorGainOffset == 1) // how does specularColorGain work?
         specularPass += specularColor.rgb * blinnPhongSpec * (specularColorGain.rgb);
     else if ((flags & 0x00E10000u) == 0x00E10000u) // not sure how this works. specular works differently for eye mats
-        specularPass += specularColor.rgb * blinnPhongSpec * tintColor * 0;
+        specularPass += specularColor.rgb * blinnPhongSpec * 0;
     else // default
-        specularPass += specularColor.rgb * blinnPhongSpec * tintColor;
+        specularPass += specularColor.rgb * blinnPhongSpec;
 
     specularPass *= mix(aoMap, 1, aoMixIntensity);
+    specularPass *= tintColor;
     specularPass *= specLightColor;
     specularPass *= specularIntensity;
 
@@ -676,7 +674,7 @@ void main()
             diffuseMapTotal.rgb *= difAO.rgb;
     }
 
-    // Material lighting done in sm4sh shader
+    // Material lighting done in SmashShader
     float aoMap = texture(normalMap, texCoord).a;
     if (hasColorGainOffset == 1)
         aoMap = Luminance(texture(dif, texCoord).rgb);

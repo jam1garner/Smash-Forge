@@ -184,11 +184,11 @@ namespace Smash_Forge
         public static bool renderSpecular = true;
         public static bool renderReflection = true;
 
-        public static float difInten = 1.00f;
-        public static float spcInten = 1.00f;
-        public static float frsInten = 1.00f;
-        public static float ref_inten = 1.00f;
-        public static float ambInten = 1.00f;
+        public static float difIntensity = 1.00f;
+        public static float spcIntentensity = 1.00f;
+        public static float frsIntensity = 1.00f;
+        public static float refIntensity = 1.00f;
+        public static float ambItensity = 1.00f;
         public static float model_scale = 1f;
         public static float zScale = 1.0f;
 
@@ -196,16 +196,16 @@ namespace Smash_Forge
 
         public static bool drawUv = false;
 
-        public static float specular_hue = 360.0f;
-        public static float specular_saturation = 0.0f;
-        public static float specular_intensity = 0.75f;
-        public static float specular_rotX = 0.0f;
-        public static float specular_rotY = 0.0f;
-        public static float specular_rotZ = 0.0f;
+        public static float specularHue = 360.0f;
+        public static float specularSaturation = 0.0f;
+        public static float specularIntensity = 0.675f;
+        public static float specularRotX = 0.0f;
+        public static float specularRotY = 0.0f;
+        public static float specularRotZ = 0.0f;
 
-        public static float reflection_hue = 360.0f;
-        public static float reflection_saturation = 0.0f;
-        public static float reflection_intensity = 1.0f;
+        public static float reflectionHue = 360.0f;
+        public static float reflectionSaturation = 0.0f;
+        public static float reflectionIntensity = 1.0f;
 
         public static bool renderStageLight1 = true;
         public static bool renderStageLight2 = true;
@@ -557,30 +557,30 @@ namespace Smash_Forge
                 XmlNode node = doc.CreateElement("diffuse");
                 renderNode.AppendChild(node);
                 node.AppendChild(createNode(doc, "enabled", renderDiffuse.ToString()));
-                node.AppendChild(createNode(doc, "intensity", difInten.ToString()));
+                node.AppendChild(createNode(doc, "intensity", difIntensity.ToString()));
             }
             {
                 XmlNode node = doc.CreateElement("specular");
                 renderNode.AppendChild(node);
                 node.AppendChild(createNode(doc, "enabled", renderSpecular.ToString()));
-                node.AppendChild(createNode(doc, "intensity", spcInten.ToString()));
+                node.AppendChild(createNode(doc, "intensity", spcIntentensity.ToString()));
             }
             {
                 XmlNode node = doc.CreateElement("fresnel");
                 renderNode.AppendChild(node);
                 node.AppendChild(createNode(doc, "enabled", renderFresnel.ToString()));
-                node.AppendChild(createNode(doc, "intensity", frsInten.ToString()));
+                node.AppendChild(createNode(doc, "intensity", frsIntensity.ToString()));
             }
             {
                 XmlNode node = doc.CreateElement("reflection");
                 renderNode.AppendChild(node);
                 node.AppendChild(createNode(doc, "enabled", renderReflection.ToString()));
-                node.AppendChild(createNode(doc, "intensity", ref_inten.ToString()));
+                node.AppendChild(createNode(doc, "intensity", refIntensity.ToString()));
             }
             {
                 XmlNode node = doc.CreateElement("ambient");
                 renderNode.AppendChild(node);
-                node.AppendChild(createNode(doc, "intensity", ambInten.ToString()));
+                node.AppendChild(createNode(doc, "intensity", ambItensity.ToString()));
             }
 
             {
