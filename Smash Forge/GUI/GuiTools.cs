@@ -41,16 +41,22 @@ namespace Smash_Forge
             return result;
         }
 
-        public static int TryParseTBInt(TextBox textBox, bool useHex = false)
+        public static int TryParseTBInt(TextBox textBox, bool useHex = false, bool changeTextBoxColor = true)
         {
+            // Returns -1 on failure. 
             int result = -1;
-            if (useHex)
+            if (useHex && int.TryParse(textBox.Text, NumberStyles.HexNumber, 
+                CultureInfo.CurrentCulture, out result))
             {
-                int.TryParse(textBox.Text, NumberStyles.HexNumber, 
-                    CultureInfo.CurrentCulture, out result);
+                textBox.BackColor = Color.White;
             }
-            else
-                int.TryParse(textBox.Text, out result);
+            else if (int.TryParse(textBox.Text, out result))
+            {
+                textBox.BackColor = Color.White;
+            } else if (changeTextBoxColor)
+            {
+                textBox.BackColor = Color.Red;
+            }
 
             return result;
         }
