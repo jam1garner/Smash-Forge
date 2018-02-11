@@ -28,13 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MakeMetal));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
             this.difIDTextBox = new System.Windows.Forms.TextBox();
             this.useDifTexCB = new System.Windows.Forms.CheckBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.nrmGroupBox = new System.Windows.Forms.GroupBox();
+            this.noNrmradioButton = new System.Windows.Forms.RadioButton();
+            this.preserveNrmradioButton = new System.Windows.Forms.RadioButton();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.Property4W = new System.Windows.Forms.TextBox();
@@ -58,10 +59,14 @@
             this.label5 = new System.Windows.Forms.Label();
             this.Property1X = new System.Windows.Forms.TextBox();
             this.Apply = new System.Windows.Forms.Button();
+            this.stageGroupBox = new System.Windows.Forms.GroupBox();
+            this.lowResradioButton = new System.Windows.Forms.RadioButton();
+            this.highResradioButton = new System.Windows.Forms.RadioButton();
             this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
+            this.nrmGroupBox.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.stageGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -69,9 +74,9 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.difIDTextBox);
             this.groupBox1.Controls.Add(this.useDifTexCB);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
+            this.groupBox1.Location = new System.Drawing.Point(8, 8);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(268, 84);
+            this.groupBox1.Size = new System.Drawing.Size(286, 84);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Diffuse Map";
@@ -107,47 +112,47 @@
             this.useDifTexCB.UseVisualStyleBackColor = true;
             this.useDifTexCB.CheckedChanged += new System.EventHandler(this.useDifTexCB_CheckedChanged);
             // 
-            // groupBox2
+            // nrmGroupBox
             // 
-            this.groupBox2.Controls.Add(this.radioButton2);
-            this.groupBox2.Controls.Add(this.radioButton1);
-            this.groupBox2.Location = new System.Drawing.Point(13, 103);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(267, 78);
-            this.groupBox2.TabIndex = 1;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Normal Map";
+            this.nrmGroupBox.Controls.Add(this.noNrmradioButton);
+            this.nrmGroupBox.Controls.Add(this.preserveNrmradioButton);
+            this.nrmGroupBox.Location = new System.Drawing.Point(8, 98);
+            this.nrmGroupBox.Name = "nrmGroupBox";
+            this.nrmGroupBox.Size = new System.Drawing.Size(286, 78);
+            this.nrmGroupBox.TabIndex = 1;
+            this.nrmGroupBox.TabStop = false;
+            this.nrmGroupBox.Text = "Normal Map";
             // 
-            // radioButton2
+            // noNrmradioButton
             // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(21, 45);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(104, 17);
-            this.radioButton2.TabIndex = 1;
-            this.radioButton2.Text = "No Normal Maps";
-            this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
+            this.noNrmradioButton.AutoSize = true;
+            this.noNrmradioButton.Location = new System.Drawing.Point(21, 45);
+            this.noNrmradioButton.Name = "noNrmradioButton";
+            this.noNrmradioButton.Size = new System.Drawing.Size(104, 17);
+            this.noNrmradioButton.TabIndex = 1;
+            this.noNrmradioButton.Text = "No Normal Maps";
+            this.noNrmradioButton.UseVisualStyleBackColor = true;
+            this.noNrmradioButton.CheckedChanged += new System.EventHandler(this.noNrmradioButton_CheckedChanged);
             // 
-            // radioButton1
+            // preserveNrmradioButton
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Checked = true;
-            this.radioButton1.Location = new System.Drawing.Point(21, 22);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(166, 17);
-            this.radioButton1.TabIndex = 0;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "Preserve Existing Normal Map";
-            this.radioButton1.UseVisualStyleBackColor = true;
-            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            this.preserveNrmradioButton.AutoSize = true;
+            this.preserveNrmradioButton.Checked = true;
+            this.preserveNrmradioButton.Location = new System.Drawing.Point(21, 22);
+            this.preserveNrmradioButton.Name = "preserveNrmradioButton";
+            this.preserveNrmradioButton.Size = new System.Drawing.Size(166, 17);
+            this.preserveNrmradioButton.TabIndex = 0;
+            this.preserveNrmradioButton.TabStop = true;
+            this.preserveNrmradioButton.Text = "Preserve Existing Normal Map";
+            this.preserveNrmradioButton.UseVisualStyleBackColor = true;
+            this.preserveNrmradioButton.CheckedChanged += new System.EventHandler(this.prserveNrmRadioButton_CheckedChanged);
             // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.tableLayoutPanel1);
-            this.groupBox3.Location = new System.Drawing.Point(13, 187);
+            this.groupBox3.Location = new System.Drawing.Point(8, 267);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(267, 169);
+            this.groupBox3.Size = new System.Drawing.Size(286, 169);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Material Properties";
@@ -187,13 +192,13 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(256, 138);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(266, 138);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // Property4W
             // 
             this.Property4W.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Property4W.Location = new System.Drawing.Point(219, 110);
+            this.Property4W.Location = new System.Drawing.Point(227, 110);
             this.Property4W.Name = "Property4W";
             this.Property4W.Size = new System.Drawing.Size(34, 20);
             this.Property4W.TabIndex = 19;
@@ -203,7 +208,7 @@
             // Property4Z
             // 
             this.Property4Z.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Property4Z.Location = new System.Drawing.Point(181, 110);
+            this.Property4Z.Location = new System.Drawing.Point(187, 110);
             this.Property4Z.Name = "Property4Z";
             this.Property4Z.Size = new System.Drawing.Size(32, 20);
             this.Property4Z.TabIndex = 18;
@@ -213,7 +218,7 @@
             // Property4Y
             // 
             this.Property4Y.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Property4Y.Location = new System.Drawing.Point(143, 110);
+            this.Property4Y.Location = new System.Drawing.Point(148, 110);
             this.Property4Y.Name = "Property4Y";
             this.Property4Y.Size = new System.Drawing.Size(32, 20);
             this.Property4Y.TabIndex = 17;
@@ -223,17 +228,17 @@
             // Property4X
             // 
             this.Property4X.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Property4X.Location = new System.Drawing.Point(105, 110);
+            this.Property4X.Location = new System.Drawing.Point(109, 110);
             this.Property4X.Name = "Property4X";
             this.Property4X.Size = new System.Drawing.Size(32, 20);
             this.Property4X.TabIndex = 16;
             this.Property4X.Text = "0.3";
-            this.Property4X.TextChanged += new System.EventHandler(this.textBox14_TextChanged);
+            this.Property4X.TextChanged += new System.EventHandler(this.property4X_TextChanged);
             // 
             // Property3W
             // 
             this.Property3W.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Property3W.Location = new System.Drawing.Point(219, 75);
+            this.Property3W.Location = new System.Drawing.Point(227, 75);
             this.Property3W.Name = "Property3W";
             this.Property3W.Size = new System.Drawing.Size(34, 20);
             this.Property3W.TabIndex = 15;
@@ -243,7 +248,7 @@
             // Property3Z
             // 
             this.Property3Z.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Property3Z.Location = new System.Drawing.Point(181, 75);
+            this.Property3Z.Location = new System.Drawing.Point(187, 75);
             this.Property3Z.Name = "Property3Z";
             this.Property3Z.Size = new System.Drawing.Size(32, 20);
             this.Property3Z.TabIndex = 14;
@@ -253,7 +258,7 @@
             // Property3Y
             // 
             this.Property3Y.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Property3Y.Location = new System.Drawing.Point(143, 75);
+            this.Property3Y.Location = new System.Drawing.Point(148, 75);
             this.Property3Y.Name = "Property3Y";
             this.Property3Y.Size = new System.Drawing.Size(32, 20);
             this.Property3Y.TabIndex = 13;
@@ -263,7 +268,7 @@
             // Property3X
             // 
             this.Property3X.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Property3X.Location = new System.Drawing.Point(105, 75);
+            this.Property3X.Location = new System.Drawing.Point(109, 75);
             this.Property3X.Name = "Property3X";
             this.Property3X.Size = new System.Drawing.Size(32, 20);
             this.Property3X.TabIndex = 12;
@@ -273,7 +278,7 @@
             // Property2W
             // 
             this.Property2W.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Property2W.Location = new System.Drawing.Point(219, 41);
+            this.Property2W.Location = new System.Drawing.Point(227, 41);
             this.Property2W.Name = "Property2W";
             this.Property2W.Size = new System.Drawing.Size(34, 20);
             this.Property2W.TabIndex = 11;
@@ -283,7 +288,7 @@
             // Property2Z
             // 
             this.Property2Z.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Property2Z.Location = new System.Drawing.Point(181, 41);
+            this.Property2Z.Location = new System.Drawing.Point(187, 41);
             this.Property2Z.Name = "Property2Z";
             this.Property2Z.Size = new System.Drawing.Size(32, 20);
             this.Property2Z.TabIndex = 10;
@@ -293,7 +298,7 @@
             // Property2Y
             // 
             this.Property2Y.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Property2Y.Location = new System.Drawing.Point(143, 41);
+            this.Property2Y.Location = new System.Drawing.Point(148, 41);
             this.Property2Y.Name = "Property2Y";
             this.Property2Y.Size = new System.Drawing.Size(32, 20);
             this.Property2Y.TabIndex = 9;
@@ -303,7 +308,7 @@
             // Property2X
             // 
             this.Property2X.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Property2X.Location = new System.Drawing.Point(105, 41);
+            this.Property2X.Location = new System.Drawing.Point(109, 41);
             this.Property2X.Name = "Property2X";
             this.Property2X.Size = new System.Drawing.Size(32, 20);
             this.Property2X.TabIndex = 8;
@@ -313,7 +318,7 @@
             // Property1W
             // 
             this.Property1W.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Property1W.Location = new System.Drawing.Point(219, 7);
+            this.Property1W.Location = new System.Drawing.Point(227, 7);
             this.Property1W.Name = "Property1W";
             this.Property1W.Size = new System.Drawing.Size(34, 20);
             this.Property1W.TabIndex = 7;
@@ -323,7 +328,7 @@
             // Property1Z
             // 
             this.Property1Z.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Property1Z.Location = new System.Drawing.Point(181, 7);
+            this.Property1Z.Location = new System.Drawing.Point(187, 7);
             this.Property1Z.Name = "Property1Z";
             this.Property1Z.Size = new System.Drawing.Size(32, 20);
             this.Property1Z.TabIndex = 6;
@@ -333,7 +338,7 @@
             // Property1Y
             // 
             this.Property1Y.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Property1Y.Location = new System.Drawing.Point(143, 7);
+            this.Property1Y.Location = new System.Drawing.Point(148, 7);
             this.Property1Y.Name = "Property1Y";
             this.Property1Y.Size = new System.Drawing.Size(32, 20);
             this.Property1Y.TabIndex = 5;
@@ -383,7 +388,7 @@
             // Property1X
             // 
             this.Property1X.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Property1X.Location = new System.Drawing.Point(105, 7);
+            this.Property1X.Location = new System.Drawing.Point(109, 7);
             this.Property1X.Name = "Property1X";
             this.Property1X.Size = new System.Drawing.Size(32, 20);
             this.Property1X.TabIndex = 4;
@@ -392,7 +397,7 @@
             // 
             // Apply
             // 
-            this.Apply.Location = new System.Drawing.Point(96, 362);
+            this.Apply.Location = new System.Drawing.Point(100, 442);
             this.Apply.Name = "Apply";
             this.Apply.Size = new System.Drawing.Size(98, 29);
             this.Apply.TabIndex = 4;
@@ -400,25 +405,64 @@
             this.Apply.UseVisualStyleBackColor = true;
             this.Apply.Click += new System.EventHandler(this.Apply_Click);
             // 
+            // stageGroupBox
+            // 
+            this.stageGroupBox.Controls.Add(this.lowResradioButton);
+            this.stageGroupBox.Controls.Add(this.highResradioButton);
+            this.stageGroupBox.Location = new System.Drawing.Point(8, 183);
+            this.stageGroupBox.Name = "stageGroupBox";
+            this.stageGroupBox.Size = new System.Drawing.Size(286, 78);
+            this.stageGroupBox.TabIndex = 5;
+            this.stageGroupBox.TabStop = false;
+            this.stageGroupBox.Text = "Stage Cube Map";
+            // 
+            // lowResradioButton
+            // 
+            this.lowResradioButton.AutoSize = true;
+            this.lowResradioButton.Location = new System.Drawing.Point(21, 45);
+            this.lowResradioButton.Name = "lowResradioButton";
+            this.lowResradioButton.Size = new System.Drawing.Size(114, 17);
+            this.lowResradioButton.TabIndex = 1;
+            this.lowResradioButton.Text = "Rough (10101000)";
+            this.lowResradioButton.UseVisualStyleBackColor = true;
+            this.lowResradioButton.CheckedChanged += new System.EventHandler(this.lowResradioButton_CheckedChanged);
+            // 
+            // highResradioButton
+            // 
+            this.highResradioButton.AutoSize = true;
+            this.highResradioButton.Checked = true;
+            this.highResradioButton.Location = new System.Drawing.Point(21, 22);
+            this.highResradioButton.Name = "highResradioButton";
+            this.highResradioButton.Size = new System.Drawing.Size(113, 17);
+            this.highResradioButton.TabIndex = 0;
+            this.highResradioButton.TabStop = true;
+            this.highResradioButton.Text = "Glossy (10102000)";
+            this.highResradioButton.UseVisualStyleBackColor = true;
+            this.highResradioButton.CheckedChanged += new System.EventHandler(this.highResradioButton_CheckedChanged);
+            // 
             // MakeMetal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(291, 401);
+            this.ClientSize = new System.Drawing.Size(304, 482);
+            this.Controls.Add(this.stageGroupBox);
             this.Controls.Add(this.Apply);
             this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.nrmGroupBox);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MakeMetal";
             this.Text = "Make Metal";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            this.nrmGroupBox.ResumeLayout(false);
+            this.nrmGroupBox.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.stageGroupBox.ResumeLayout(false);
+            this.stageGroupBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -429,9 +473,9 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox difIDTextBox;
         private System.Windows.Forms.CheckBox useDifTexCB;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.RadioButton radioButton2;
-        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.GroupBox nrmGroupBox;
+        private System.Windows.Forms.RadioButton noNrmradioButton;
+        private System.Windows.Forms.RadioButton preserveNrmradioButton;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Button Apply;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
@@ -455,5 +499,8 @@
         private System.Windows.Forms.TextBox Property1Z;
         private System.Windows.Forms.TextBox Property1Y;
         private System.Windows.Forms.TextBox Property1X;
+        private System.Windows.Forms.GroupBox stageGroupBox;
+        private System.Windows.Forms.RadioButton lowResradioButton;
+        private System.Windows.Forms.RadioButton highResradioButton;
     }
 }
