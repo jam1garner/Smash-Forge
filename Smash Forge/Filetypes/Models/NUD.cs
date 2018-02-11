@@ -830,7 +830,7 @@ namespace Smash_Forge
             }
         }
 
-        public void MakeMetal(int newDiffuseID, bool preserveDiffuse, bool useNormalMap, float[] minGain, float[] refColor, float[] fresParams, float[] fresColor)
+        public void MakeMetal(int newDifTexId, int newCubeTexId, float[] minGain, float[] refColor, float[] fresParams, float[] fresColor, bool preserveDiffuse = false, bool preserveNrmMap = true)
         {
             foreach (Mesh mesh in Nodes)
             {
@@ -838,23 +838,25 @@ namespace Smash_Forge
                 {
                     foreach (Material mat in poly.materials)
                     {
-                        float hash = -1f;
+                        float materialHash = -1f;
                         if (mat.entries.ContainsKey("NU_materialHash"))
-                            hash = mat.entries["NU_materialHash"][0];
+                            materialHash = mat.entries["NU_materialHash"][0];
 
                         mat.anims.Clear();
                         mat.entries.Clear();
 
-                        if (mat.hasNormalMap && useNormalMap)
+                        // Don't add normal maps to materials that don't use one. 
+                        if (mat.hasNormalMap && preserveNrmMap)
                             mat.Flags = 0x9601106B;
                         else
                             mat.Flags = 0x96011069;
 
+                        // The texture ID used for diffuse later. 
                         int difTexID = 0;
                         if (preserveDiffuse)
                             difTexID = mat.diffuse1ID;
                         else
-                            difTexID = newDiffuseID;
+                            difTexID = newDifTexId;
 
                         // add all the textures
                         mat.textures.Clear();
@@ -863,8 +865,9 @@ namespace Smash_Forge
                         // Preserve diffuse tex ID.
                         MatTexture diffuse = MatTexture.getDefault();
                         diffuse.hash = difTexID; 
+
                         MatTexture cube = MatTexture.getDefault();
-                        cube.hash = 0x10102000;
+                        cube.hash = newCubeTexId;
 
                         // Preserve normal map tex ID. should work for all common texture flags.
                         MatTexture normal = MatTexture.getDefault();
@@ -885,8 +888,7 @@ namespace Smash_Forge
                             mat.textures.Add(diffuse);
                             mat.textures.Add(cube);
                             mat.textures.Add(dummyRamp);
-                        }
-
+                        }                   
 
                         // add material properties
                         mat.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
@@ -897,7 +899,7 @@ namespace Smash_Forge
                         mat.entries.Add("NU_lightMapColorOffset", new float[] { 0f, 0f, 0f, 0 });
                         mat.entries.Add("NU_fresnelParams", fresParams);
                         mat.entries.Add("NU_alphaBlendParams", new float[] { 0f, 0f, 0f, 0 });
-                        mat.entries.Add("NU_materialHash", new float[] { hash, 0f, 0f, 0 });
+                        mat.entries.Add("NU_materialHash", new float[] { materialHash, 0f, 0f, 0 });
                     }
                 }
             }

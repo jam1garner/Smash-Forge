@@ -31,7 +31,7 @@ namespace Smash_Forge
 
         public static float TryParseTBFloat(TextBox textBox, bool changeTextBoxColor = true)
         {
-            // Set the textbox backcolor to red for invalid values.
+            // Sets the textbox backcolor to red for invalid values.
             float result = 0;
             if (float.TryParse(textBox.Text, out result))
                 textBox.BackColor = Color.White;
@@ -43,10 +43,9 @@ namespace Smash_Forge
 
         public static int TryParseTBInt(TextBox textBox, bool useHex = false, bool changeTextBoxColor = true)
         {
-            // Returns -1 on failure. 
+            // Returns -1 on failure. Sets the textbox backcolor to red for invalid values.
             int result = -1;
-            if (useHex && int.TryParse(textBox.Text, NumberStyles.HexNumber, 
-                CultureInfo.CurrentCulture, out result))
+            if (useHex && int.TryParse(textBox.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out result))
             {
                 textBox.BackColor = Color.White;
             }

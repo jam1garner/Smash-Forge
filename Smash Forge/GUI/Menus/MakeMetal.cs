@@ -17,7 +17,9 @@ namespace Smash_Forge.GUI.Menus
     {
         private NUD nud;
 
-        private int difTexID = 0x40000001;
+        private int difTexId = 0x40000001;
+        private int cubeTexId = 0x10102000;
+
         private bool preserveNormalMap = true;
         private bool preserveDiffuse = false;
 
@@ -34,7 +36,7 @@ namespace Smash_Forge.GUI.Menus
 
         private void Apply_Click(object sender, EventArgs e)
         {
-            nud.MakeMetal(difTexID, preserveDiffuse, preserveNormalMap, minGain, refColor, fresParams, fresColor);
+            nud.MakeMetal(difTexId, cubeTexId, minGain, refColor, fresParams, fresColor, preserveDiffuse, preserveNormalMap);
         }
 
         private void useDifTexCB_CheckedChanged(object sender, EventArgs e)
@@ -56,7 +58,7 @@ namespace Smash_Forge.GUI.Menus
 
         private void difIDTextBox_TextChanged(object sender, EventArgs e)
         {
-            difTexID = GuiTools.TryParseTBInt(difIDTextBox, true, true);
+            difTexId = GuiTools.TryParseTBInt(difIDTextBox, true, true);
         }
 
         private void Property1X_TextChanged(object sender, EventArgs e)
@@ -137,6 +139,16 @@ namespace Smash_Forge.GUI.Menus
         private void Property4W_TextChanged(object sender, EventArgs e)
         {
             minGain[3] = GuiTools.TryParseTBFloat(Property4W);
+        }
+
+        private void highResradioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            cubeTexId = 0x10102000;
+        }
+
+        private void lowResradioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            cubeTexId = 0x10101000;
         }
     }
 }
