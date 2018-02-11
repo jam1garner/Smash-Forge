@@ -477,8 +477,7 @@ vec3 CalculateLighting(vec3 N, float halfLambert, float halfLambert2, float half
     {
         lighting = vec3(0);
         lighting += mix(ambLightColor * ambientIntensity, difLightColor * diffuseIntensity, halfLambert);
-        lighting += mix(ambLight2Color * ambientIntensity, difLight2Color * diffuseIntensity, halfLambert2);
-        lighting += mix(ambLight3Color * ambientIntensity, difLight3Color * diffuseIntensity, halfLambert3);
+        // lighting += mix(ambLight3Color * ambientIntensity, difLight3Color * diffuseIntensity, halfLambert3);
     }
 
     // flags for "no lighting"
@@ -513,7 +512,6 @@ vec3 DiffusePass(vec3 N, float aoMap, vec4 diffuseMap)
     aoBlend.rgb = HSV2RGB(vec3(c1.x, c2.y, c1.z));
     float aoMixIntensity = aoMinGain.a;
 
-
     if (useDiffuseBlend == 1) // aomingain but no ao map (mainly for trophies)
     {
         aoMap = Luminance(diffuseMap.rgb); // should this use color? party ball item is not saturated enough
@@ -537,9 +535,17 @@ vec3 DiffusePass(vec3 N, float aoMap, vec4 diffuseMap)
         diffuseColorFinal = diffuseMap.rgb * aoBlend * diffuseColor.rgb;
     }
 
-    // stage lighting
+    // Stage lighting
     vec3 lighting = CalculateLighting(N, halfLambert, halfLambert2, halfLambert3);
+
+    // Dummy ramp calculations.
+    float rampIntensity = 0.75;
+    vec3 rampTotal = (0.2 * RampColor(vec3(halfLambert))) + (0.75 * DummyRampColor(vec3(halfLambert)));
+    vec3 rampAdd = mix(vec3(0), rampTotal, halfLambert);
+
     diffusePass = diffuseColorFinal * lighting;
+    diffusePass += diffusePass * min(rampAdd, vec3(1));
+
 
     vec3 softLightDif = diffuseColorFinal * difLightColor;
     vec3 softLightAmb = diffuseColorFinal * ambLightColor;
@@ -552,10 +558,6 @@ vec3 DiffusePass(vec3 N, float aoMap, vec4 diffuseMap)
     // this could be moved outside the shader
     if (softLightBrighten == 1)
         diffusePass *= 1.5;
-
-    // result of ramp calculations isnt saturated enough
-    vec3 rampContribution = 0.25 * (RampColor(vec3(halfLambert)) + DummyRampColor(vec3(halfLambert))) * diffuseColorFinal;
-    diffusePass = ScreenBlend(diffusePass, rampContribution) * diffuseIntensity;
 
     diffusePass = pow(diffusePass, vec3(gamma));
     return diffusePass;
