@@ -3012,6 +3012,8 @@ namespace Smash_Forge
         {
             // Massive reductions in file size but very slow.
 
+            int MAX_BANK = 50; //  for speeding this up a little with some loss...
+
             foreach (Mesh m in Nodes)
             {
                 foreach (Polygon p in m.Nodes)
@@ -3019,13 +3021,14 @@ namespace Smash_Forge
                     List<Vertex> newVertices = new List<Vertex>();
                     List<int> newFaces = new List<int>();
 
+                    List<Vertex> vbank = new List<Vertex>(); // only check oast 50 verts - may miss far apart ones but is faster
                     foreach (int f in p.faces)
                     {
                         int newFaceIndex = -1; 
                         int i = 0;
 
                         // Has to loop through all the new vertices each time, which is very slow.
-                        foreach (Vertex v in newVertices)
+                        foreach (Vertex v in vbank)
                         {
                             if (v.Equals(p.vertices[f]))
                             {
@@ -3043,10 +3046,16 @@ namespace Smash_Forge
                         }
                         else
                         {
-                            newVertices.Add(p.vertices[f]);
-                            newFaces.Add(newVertices.Count - 1);
+                            vbank.Add(p.vertices[f]);
+                            newFaces.Add(newVertices.Count + vbank.Count - 1);
+                        }
+                        if(vbank.Count > MAX_BANK)
+                        {
+                            newVertices.AddRange(vbank);
+                            vbank.Clear();
                         }
                     }
+                    newVertices.AddRange(vbank);
 
                     p.vertices = newVertices;
                     p.faces = newFaces;
@@ -3073,7 +3082,14 @@ namespace Smash_Forge
                         {
                             // Can't use single bind if some vertices aren't weighted to the same bone. 
                             if (singleBindBone == -1)
+                            {
                                 singleBindBone = v.node[0];
+                            }
+                            else if(singleBindBone != v.node[0])
+                            {
+                                isSingleBound = false;
+                                break;
+                            }
 
                             // Vertices bound to a single bone will have a node.Count of 1.
                             if (v.node.Count > 1)

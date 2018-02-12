@@ -662,8 +662,8 @@ namespace Smash_Forge
 
         private void glViewport_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if(CurrentMode != Mode.Selection && !freezeCamera)
-                Camera.Update();
+            if (CurrentMode != Mode.Selection && !freezeCamera)
+                camera.Update();
         }
 
         #region Controls
@@ -1089,7 +1089,7 @@ namespace Smash_Forge
              && (CurrentMode == Mode.Normal || (CurrentMode == Mode.Photoshoot && !freezeCamera))
              && !TransformTool.hit)
             {
-                Camera.Update();
+                camera.Update();
                 //if (cameraPosForm != null && !cameraPosForm.IsDisposed)
                 //    cameraPosForm.updatePosition();
             }
