@@ -876,33 +876,6 @@ namespace Smash_Forge
             Matrix4 mat = cam.getMVPMatrix();
             GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mat);
 
-            //**************************************************************************************
-            //**************************************************************************************
-            // Using the buffer twice causes the NUD rendering to crash, so I've disabled it for now. 
-            if (false && vbn != null && !Runtime.useLegacyShaders)
-            {
-                Matrix4[] f = vbn.getShaderMatrix();
-                
-                int boneCount = vbn.bones.Count;
-                int dataSize = boneCount * Vector4.SizeInBytes * 4;
-
-                GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
-                GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
-                GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-
-                var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
-                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
-
-                if (f.Length > 0)
-                {
-                    GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
-                    GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
-                }
-            }
-            //**************************************************************************************
-            //**************************************************************************************
-
-
             if (type == PrimitiveType.Points)
             {
                 GL.Uniform3(shader.getAttribute("col1"), 0f, 0f, 1f);
@@ -1518,12 +1491,6 @@ namespace Smash_Forge
                         for (int j = 0; j < (p.UVSize >> 4); j++)
                             v[i].uv.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
                     }
-
-
-                    //d.skip(4 * ((p.UVSize >> 4) - 1));
-
-                    // UV layers
-                    //d.skip(4 * ((p.UVSize >> 4) - 1));
                 }
 
                 if (weight == 1)
@@ -2233,17 +2200,7 @@ namespace Smash_Forge
                 material.entries.Add("NU_alphaBlendParams", new float[] { 0, 0, 0, 0 });
                 material.entries.Add("NU_materialHash", new float[] { FileData.toFloat(0x7E538F65), 0, 0, 0 });
 
-                MatTexture defaultDif = new MatTexture();
-                defaultDif.WrapModeS = 1;
-                defaultDif.WrapModeT = 1;
-                defaultDif.minFilter = 3;
-                defaultDif.magFilter = 2;
-                defaultDif.mipDetail = 1;
-                defaultDif.mipDetail = 6;
-                // The default texture looks better than a solid white texture. 
-                defaultDif.hash = 0x10000000;
-
-                material.textures.Add(defaultDif);
+                material.textures.Add(new MatTexture(0x10000000));
                 material.textures.Add(MatTexture.getDefault());
                 return material;
             }
@@ -2256,10 +2213,7 @@ namespace Smash_Forge
                 material.cullMode = 1029;
 
                 // Display a default texture rather than a dummy texture.
-                MatTexture tex = MatTexture.getDefault();
-                tex.hash = 0;
-                material.textures.Clear();
-                material.textures.Add(MatTexture.getDefault());
+                material.textures.Add(new MatTexture(0));
 
                 material.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
                 material.entries.Add("NU_diffuseColor", new float[] { 1, 1, 1, 0.5f });
@@ -2671,16 +2625,11 @@ namespace Smash_Forge
                 return Vector3.Cross(U, V).Normalized();
             }
 
-            public void setDefaultMaterial()
+            public void AddDefaultMaterial()
             {
                 Material mat = Material.GetDefault();
                 materials.Add(mat);
-
-                MatTexture defaultDif = MatTexture.getDefault();
-                // The default texture looks better than a solid white texture. 
-                defaultDif.hash = 0x10000000;
-
-                mat.textures.Add(defaultDif);
+                mat.textures.Add(new MatTexture(0x10000000));
                 mat.textures.Add(MatTexture.getDefault());
             }
 
@@ -2743,7 +2692,14 @@ namespace Smash_Forge
         // but you can just use the mesh class without polygons
         public class Mesh : TreeNode
         {
-            public int boneflag = 4; // 0 not rigged 4 rigged 8 singlebind
+            public enum BoneFlags
+            {
+                NotRigged = 0,
+                Rigged = 4,
+                SingleBind = 8
+            }
+
+            public int boneflag = (int)BoneFlags.Rigged; 
             public short singlebind = -1;
             public int sortBias = 0;
             public bool billboardY = false;
@@ -2786,7 +2742,7 @@ namespace Smash_Forge
                     break;
                 }
 
-                if (vertCount == 0) //No vertices
+                if (vertCount == 0)
                     return;
 
                 //Calculate average and min/max
@@ -2872,7 +2828,7 @@ namespace Smash_Forge
 
                 int sortBiasValue = 0;
                 int.TryParse(sortBiasText, out sortBiasValue);
-                this.sortBias = sortBiasValue;              
+                sortBias = sortBiasValue;              
             }
         }
 
@@ -2932,12 +2888,9 @@ namespace Smash_Forge
             }
             m.vertices = vertBank;
 
-            //Console.WriteLine(m.vertices.Count + " " + m.descript.Count);
-
             return m;
         }
 
-    
         public void OptimizeFileSize(bool singleBind = false)
         {
             // Remove Duplicates
@@ -3033,7 +2986,7 @@ namespace Smash_Forge
 
         private static void SingleBindMesh(Mesh m, int singleBindBone)
         {
-            m.boneflag = 0x08;
+            m.boneflag = (int)Mesh.BoneFlags.SingleBind;
             m.singlebind = (short)singleBindBone;
             foreach (Polygon p in m.Nodes)
             {
