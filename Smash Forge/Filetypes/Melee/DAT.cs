@@ -74,10 +74,7 @@ namespace Smash_Forge
 
             if (!Runtime.shaders.ContainsKey("DAT"))
             {
-                Shader DAT = new Shader();
-                DAT.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_vs.txt"));
-                DAT.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/DAT_fs.txt"));
-                Runtime.shaders.Add("DAT", DAT);
+                ShaderTools.CreateShader("DAT", "/lib/Shader/Legacy/", "/lib/Shader/");
             }
 
             Runtime.shaders["DAT"].displayCompilationWarning("DAT");
@@ -568,7 +565,7 @@ namespace Smash_Forge
                 currentMat.setFlag(6, true);
                 currentMat.setFlag(7, true);
             }
-            currentMat.setPhysics(link.material);
+            currentMat.physics = link.material;
             c.materials.Add(currentMat);
         }
 
@@ -691,15 +688,15 @@ namespace Smash_Forge
                 polygon.materials[0].cullMode = 2;
                 switch (data.material.texture.wrap_s)
                 {
-                    case 0: polygon.materials[0].textures[0].WrapMode1 = 3; break;
-                    case 1: polygon.materials[0].textures[0].WrapMode1 = 1; break;
-                    case 2: polygon.materials[0].textures[0].WrapMode1 = 2; break;
+                    case 0: polygon.materials[0].textures[0].WrapModeS = 3; break;
+                    case 1: polygon.materials[0].textures[0].WrapModeS = 1; break;
+                    case 2: polygon.materials[0].textures[0].WrapModeS = 2; break;
                 }
                 switch (data.material.texture.wrap_t)
                 {
-                    case 0: polygon.materials[0].textures[0].WrapMode2 = 3; break;
-                    case 1: polygon.materials[0].textures[0].WrapMode2 = 1; break;
-                    case 2: polygon.materials[0].textures[0].WrapMode2 = 2; break;
+                    case 0: polygon.materials[0].textures[0].WrapModeT = 3; break;
+                    case 1: polygon.materials[0].textures[0].WrapModeT = 1; break;
+                    case 2: polygon.materials[0].textures[0].WrapModeT = 2; break;
                 }
                 List<Vertex> usedVertices = new List<Vertex>();
 

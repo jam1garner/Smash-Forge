@@ -70,10 +70,7 @@ namespace Smash_Forge
 
             if (!Runtime.shaders.ContainsKey("MBN"))
             {
-                Shader mbn = new Shader();
-                mbn.vertexShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_vs.txt"));
-                mbn.fragmentShader(File.ReadAllText(MainForm.executableDir + "/lib/Shader/MBN_fs.txt"));
-                Runtime.shaders.Add("MBN", mbn);
+                ShaderTools.CreateShader("MBN", "/lib/Shader/Legacy/", "/lib/Shader/");
             }
 
             Runtime.shaders["MBN"].displayCompilationWarning("MBN");
@@ -106,19 +103,19 @@ namespace Smash_Forge
                 {
                     if (f.ToLower().EndsWith(".dae"))
                     {
-                        DAEImportSettings m = new DAEImportSettings();
-                        m.ShowDialog();
-                        if (m.exitStatus == DAEImportSettings.Opened)
+                        DAEImportSettings daeImport = new DAEImportSettings();
+                        daeImport.ShowDialog();
+                        if (daeImport.exitStatus == DAEImportSettings.ExitStatus.Opened)
                         {
                             ModelContainer con = new ModelContainer();
 
                             // load vbn
                             con.VBN = skeleton;
 
-                            Collada.DAEtoNUD(f, con, m.checkBox5.Checked);
+                            Collada.DaetoNud(f, con, daeImport.importTexCB.Checked);
                             
                             // apply settings
-                            m.Apply(con.NUD);
+                            daeImport.Apply(con.NUD);
                             con.NUD.MergePoly();
                             CreateFromNUD(con.NUD);
                         }
@@ -427,8 +424,8 @@ namespace Smash_Forge
 
             GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref view);
 
-            GL.Uniform3(shader.getAttribute("difLightColor"), Lights.diffuseLight.difR, Lights.diffuseLight.difG, Lights.diffuseLight.difB);
-            GL.Uniform3(shader.getAttribute("ambLightColor"), Lights.diffuseLight.ambR, Lights.diffuseLight.ambG, Lights.diffuseLight.ambB);
+            GL.Uniform3(shader.getAttribute("difLightColor"), Rendering.Lights.LightTools.diffuseLight.difR, Rendering.Lights.LightTools.diffuseLight.difG, Rendering.Lights.LightTools.diffuseLight.difB);
+            GL.Uniform3(shader.getAttribute("ambLightColor"), Rendering.Lights.LightTools.diffuseLight.ambR, Rendering.Lights.LightTools.diffuseLight.ambG, Rendering.Lights.LightTools.diffuseLight.ambB);
 
             GL.ActiveTexture(TextureUnit.Texture10);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);

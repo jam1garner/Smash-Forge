@@ -37,6 +37,7 @@ uniform vec4 normalSamplerBUV;
 
 uniform mat4 mvpMatrix;
 uniform mat4 nscMatrix;
+uniform mat4 modelViewMatrix;
 uniform mat4 sphereMapMatrix;
 
 uniform uint flags;

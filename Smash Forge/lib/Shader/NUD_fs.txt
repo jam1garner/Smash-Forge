@@ -49,6 +49,7 @@ uniform int hasFinalColorGain;
 uniform int useDifRefMask;
 uniform int hasBayoHair;
 uniform int softLightBrighten;
+uniform int hasUniverseParam;
 
 // Da Flags
 uniform uint flags;
@@ -86,6 +87,7 @@ uniform vec4 dualNormalScrollParams;
 uniform vec4 alphaBlendParams;
 uniform vec4 softLightingParams;
 uniform vec4 customSoftLightParams;
+uniform vec4 effUniverseParam;
 
 // render settings
 uniform int renderDiffuse;
@@ -154,6 +156,10 @@ uniform vec3 stageFogColor;
 uniform int colorOverride;
 
 uniform mat4 mvpMatrix;
+uniform mat4 modelViewMatrix;
+uniform mat4 sphereMapMatrix;
+uniform mat4 rotationMatrix;
+
 
 uniform sampler2D shadowMap;
 
@@ -168,6 +174,8 @@ struct StageLight
 };
 
 uniform StageLight stageLights[4];
+
+uniform vec3 cameraPosition;
 
 // Constants
 #define gamma 2.2
@@ -198,13 +206,10 @@ float Luminance(vec3 rgb)
     return dot(rgb, W);
 }
 
-vec3 CalculateTintColor(vec3 inputColor, float colorAlpha)
+vec3 CalculateTintColor(vec3 diffuseColor, float tintAmount)
 {
-    float intensity = colorAlpha * 0.4;
-    vec3 inputHSV = RGB2HSV(inputColor);
-    float outSaturation = min((inputHSV.y * intensity), 1); // cant have color with saturation > 1
-    vec3 outColorTint = HSV2RGB(vec3(inputHSV.x, outSaturation, 1));
-    return outColorTint;
+    // Approximation of overlay blend mode.
+    return mix(vec3(1), (diffuseColor * 2), min(tintAmount * 0.5, 1));
 }
 
 float ShadowCalculation(vec4 fragPosLightSpace)
@@ -407,11 +412,12 @@ vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, vec3 tintColor, float aoMap, 
     else if (hasColorGainOffset == 1) // how does specularColorGain work?
         specularPass += specularColor.rgb * blinnPhongSpec * (specularColorGain.rgb);
     else if ((flags & 0x00E10000u) == 0x00E10000u) // not sure how this works. specular works differently for eye mats
-        specularPass += specularColor.rgb * blinnPhongSpec * tintColor * 0;
+        specularPass += specularColor.rgb * blinnPhongSpec * 0;
     else // default
-        specularPass += specularColor.rgb * blinnPhongSpec * tintColor;
+        specularPass += specularColor.rgb * blinnPhongSpec;
 
     specularPass *= mix(aoMap, 1, aoMixIntensity);
+    specularPass *= tintColor;
     specularPass *= specLightColor;
     specularPass *= specularIntensity;
 
@@ -436,6 +442,18 @@ vec3 CalculateFog(vec3 inputColor)
     else
         return inputColor;
 }
+
+vec3 CalculateUniverseColor(float param)
+{
+    // Account for camera position and rotation for projection.
+    vec3 projVec = normalize(objectPosition.xyz - cameraPosition.xyz);
+    projVec = mat3(modelViewMatrix) * projVec;
+    // Cheap approximations of trig functions.
+    float uCoord = projVec.x * 0.5 + 0.5;
+    float vCoord = projVec.y * 0.5 + 0.5;
+    return texture(dif, vec2(uCoord * param, 1- vCoord)).rgb;
+}
+
 
 vec3 CalculateLighting(vec3 N, float halfLambert, float halfLambert2, float halfLambert3)
 {
@@ -473,6 +491,9 @@ vec3 CalculateLighting(vec3 N, float halfLambert, float halfLambert2, float half
 vec3 DiffusePass(vec3 N, float aoMap, vec4 diffuseMap)
 {
     vec3 diffusePass = vec3(0);
+
+    if (hasUniverseParam == 1)
+        return CalculateUniverseColor(effUniverseParam.x);
 
     // lambertian shading
     float halfLambert = dot(difLightDirection, N) * 0.5 + 0.5;
@@ -653,7 +674,7 @@ void main()
             diffuseMapTotal.rgb *= difAO.rgb;
     }
 
-    // Material lighting done in sm4sh shader
+    // Material lighting done in SmashShader
     float aoMap = texture(normalMap, texCoord).a;
     if (hasColorGainOffset == 1)
         aoMap = Luminance(texture(dif, texCoord).rgb);
@@ -663,7 +684,9 @@ void main()
     if (renderVertColor == 1 || hasFinalColorGain == 1)
         fragColor *= min(vertexColor, vec4(1));
 
-    fragColor.rgb *= effColorGain.rgb;
+    // Universe mats are weird...
+    if (hasUniverseParam != 1)
+        fragColor.rgb *= effColorGain.rgb;
 
     // correct alpha
     fragColor.a *= finalColorGain.a;

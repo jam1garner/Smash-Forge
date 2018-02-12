@@ -25,6 +25,9 @@ namespace Smash_Forge
         private Matrix4 projectionMatrix = Matrix4.Identity;
         private Matrix4 billboardMatrix = Matrix4.Identity;
         private Matrix4 billboardYMatrix = Matrix4.Identity;
+        private Matrix4 rotation = Matrix4.Identity;
+        private Matrix4 translation = Matrix4.Identity;
+        private Matrix4 perspFov = Matrix4.Identity;
 
         private float zoomMultiplier = Runtime.zoomModifierScale; 
         private float zoomSpeed = Runtime.zoomspeed;
@@ -86,6 +89,17 @@ namespace Smash_Forge
             renderHeight = height;
         }
 
+        public int getRenderHeight()
+        {
+            return renderHeight;
+        }
+
+        public int getRenderWidth()
+        {
+            return renderWidth;
+        }
+
+
         public float getRotX()
         {
             return cameraXRotation;
@@ -114,6 +128,11 @@ namespace Smash_Forge
         public Matrix4 getBillboardYMatrix()
         {
             return billboardYMatrix;
+        }
+
+        public Matrix4 getRotationMatrix()
+        {
+            return rotation;
         }
 
         public void Update()
@@ -166,14 +185,14 @@ namespace Smash_Forge
 
         private void UpdateMatrices()
         {
-            Matrix4 translation = Matrix4.CreateTranslation(position.X, -position.Y, position.Z);
-            Matrix4 rotation = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation);
-            Matrix4 perspFOV = Matrix4.CreatePerspectiveFieldOfView(fov, renderWidth / (float)renderHeight, 1.0f, RenderDepth);
+            translation = Matrix4.CreateTranslation(position.X, -position.Y, position.Z);
+            rotation = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation);
+            perspFov = Matrix4.CreatePerspectiveFieldOfView(fov, renderWidth / (float)renderHeight, 1.0f, RenderDepth);
 
             modelViewMatrix = rotation * translation;
-            mvpMatrix = modelViewMatrix * perspFOV;
-            billboardMatrix = translation * perspFOV;
-            billboardYMatrix = Matrix4.CreateRotationX(cameraXRotation) * translation * perspFOV;
+            mvpMatrix = modelViewMatrix * perspFov;
+            billboardMatrix = translation * perspFov;
+            billboardYMatrix = Matrix4.CreateRotationX(cameraXRotation) * translation * perspFov;
         }
 
         public void TrackMouse()

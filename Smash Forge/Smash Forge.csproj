@@ -345,6 +345,7 @@
     <Compile Include="GUI\GIFEncoder\LZWEncoder.cs" />
     <Compile Include="GUI\GIFEncoder\NeuQuant.cs" />
     <Compile Include="GUI\GIFEncoder\UnsafeBuffer.cs" />
+    <Compile Include="GUI\GuiTools.cs" />
     <Compile Include="GUI\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -376,11 +377,11 @@
     <Compile Include="GUI\Menus\CameraSettings.Designer.cs">
       <DependentUpon>CameraSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Menus\LightColorEditor.cs">
+    <Compile Include="GUI\Menus\ColorEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Menus\LightColorEditor.Designer.cs">
-      <DependentUpon>LightColorEditor.cs</DependentUpon>
+    <Compile Include="GUI\Menus\ColorEditor.Designer.cs">
+      <DependentUpon>ColorEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Menus\MakeMetal.cs">
       <SubType>Form</SubType>
@@ -458,11 +459,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\AreaLight.cs" />
     <Compile Include="Rendering\Camera.cs" />
     <Compile Include="Rendering\ColorTools.cs" />
+    <Compile Include="Rendering\DirectionalLight.cs" />
     <Compile Include="Rendering\FrameTimer.cs" />
-    <Compile Include="Rendering\Lights.cs" />
+    <Compile Include="Rendering\HemisphereFresnel.cs" />
+    <Compile Include="Rendering\LightMap.cs" />
+    <Compile Include="Rendering\LightTools.cs" />
     <Compile Include="Rendering\Ray.cs" />
+    <Compile Include="Rendering\ShaderTools.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Controls\MeshMover.resx">
@@ -589,8 +595,8 @@
     <EmbeddedResource Include="GUI\Menus\CameraSettings.resx">
       <DependentUpon>CameraSettings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Menus\LightColorEditor.resx">
-      <DependentUpon>LightColorEditor.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Menus\ColorEditor.resx">
+      <DependentUpon>ColorEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\MakeMetal.resx">
       <DependentUpon>MakeMetal.cs</DependentUpon>
@@ -777,6 +783,9 @@
     <None Include="param_labels\fighter_param_vl_mario.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="param_labels\fighter_param_vl_pikachu.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="param_labels\fighter_param_vl_xxx.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -880,6 +889,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\ui_button_sequence.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="param_labels\ui_challenger_battle_db_cafe.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\ui_character_db.ini">
@@ -1025,9 +1037,6 @@
     <None Include="Preview Images\Mat08 [Material Colored Hair].png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Preview Images\Mat09 [Satin].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Preview Images\Character.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -1097,9 +1106,19 @@
     <None Include="lib\Shader\Legacy\NUD_Debug_vs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Preview Images\Mat05 [Metal Ganon Armor].png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Preview Images\Mat09 [Satin Material].png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Preview Images\Mat11 [JoeTE Glow].png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Resources\10080000.png" />
     <None Include="Resources\boneWeightGradient.png" />
     <None Include="Resources\Flat Folder icon.png" />
+    <None Include="Resources\boneWeightGradient2.png" />
     <Content Include="Resources\forge.ico" />
     <Content Include="lib\FITC.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

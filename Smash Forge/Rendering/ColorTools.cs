@@ -199,14 +199,14 @@ namespace Smash_Forge
                 return i;
         }
 
-        public static float ClampFloat(float i) // Restricts RGB values to 0.0 to 1.0
+        public static float ClampFloat(float f) // Restricts RGB values to 0.0 to 1.0
         {
-            if (i > 1.0f)
+            if (f > 1.0f)
                 return 1.0f;
-            if (i < 0.0f)
+            if (f < 0.0f)
                 return 0.0f;
             else
-                return i;
+                return f;
         }
 
         public static Color invertColor(Color color)
@@ -214,18 +214,17 @@ namespace Smash_Forge
             return Color.FromArgb(color.A, 255 - color.R, 255 - color.G, 255 - color.B);
         }
 
-        public static int Float2RGBClamp(float i)
+        public static int FloatToIntClamp(float f)
         {
-            // converts input color to int and restricts values to 0 to 255
-            // useful for setting colors of form UI stuff
-
-            i *= 255;
-            i = (int)i;
-            if (i > 255)
+            // Converts input color to int and restricts values to 0 to 255.
+            // Useful for setting colors of GUI stuff.
+            f *= 255;
+            f = (int)f;
+            if (f > 255)
                 return 255;
-            if (i < 0)
+            if (f < 0)
                 return 0;
-            return (int)i;
+            return (int)f;
         }
     }
 }

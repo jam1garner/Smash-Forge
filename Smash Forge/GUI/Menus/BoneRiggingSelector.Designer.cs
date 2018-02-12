@@ -38,6 +38,7 @@
             // 
             // treeView1
             // 
+            this.treeView1.HideSelection = false;
             this.treeView1.Location = new System.Drawing.Point(12, 12);
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(344, 335);
@@ -46,6 +47,7 @@
             // 
             // textBox1
             // 
+            this.textBox1.MaxLength = 0x40;
             this.textBox1.Location = new System.Drawing.Point(12, 353);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(344, 20);

@@ -23,7 +23,7 @@ void main()
 {
     vec3 displayNormal = normal * 0.5 + 0.5;
 
-    vec4 alpha = texture(tex, texcoord*uvscale).aaaa;
+    vec4 alpha = texture(tex, texcoord * uvscale).aaaa;
     fragColor = vec4 ((vertexColor * alpha * texture(tex, texcoord*uvscale)).xyz, alpha.a * vertexColor.w);
 
     vec4 diffuseColor = texture(tex, texcoord * uvscale).rgba;

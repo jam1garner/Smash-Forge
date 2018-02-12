@@ -12,100 +12,120 @@ namespace Smash_Forge
 {
     public partial class BoneRiggingSelector : Form
     {
-        public BoneRiggingSelector(LVDEditor.StringWrapper s)
-        {
-            InitializeComponent();
-            str = s;
-            initialValue = str.data;
-            textBox1.Text = charsToString(initialValue);
-            currentValue = initialValue;
-        }
-
-        private static string charsToString(char[] c)
-        {
-            string boneNameRigging = "";
-            foreach (char b in c)
-                if (b != (char)0)
-                    boneNameRigging += b;
-            return boneNameRigging;
-        }
-
-        public LVDEditor.StringWrapper str;
-        public char[] initialValue;
-        public char[] currentValue;
-        public short boneIndex = -1;
-        public bool Cancelled = false;
-        public bool SelectedNone = false;
+        public string currentValue = "";
         public Bone CurrentBone = null;
-
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            textBox1.Text = e.Node.Text;
-            currentValue = e.Node.Text.ToArray();
-            List<char> newValue = new List<char>(currentValue);
-            while (newValue.Count < 0x40)
-                newValue.Add((char)0);
-            currentValue = newValue.ToArray();
-            CurrentBone = (Bone) ((object[]) e.Node.Tag)[1];
-            boneIndex = (short)((VBN)((object[]) e.Node.Tag)[0]).bones.IndexOf(CurrentBone);
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            str.data = initialValue;
-            Cancelled = true;
-            Close();
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            str.data = currentValue;
-            if (str.data.Length != 0x40)
-                throw new IndexOutOfRangeException("Wrong number of characters in bone name\nSomething must have gone terribly wrong");
-            Close();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            str.data = new char[0x40];
-            boneIndex = -1;
-            CurrentBone = null;
-            SelectedNone = true;
-            Close();
-        }
+        public short boneIndex = -1;
 
         public List<ModelContainer> ModelContainers = new List<ModelContainer>();
+
+        public bool Cancelled = false;
+        public bool SelectedNone = false;
+
+        public BoneRiggingSelector()
+        {
+            InitializeComponent();
+        }
+        public BoneRiggingSelector(string s) : this()
+        {
+            currentValue = String.Copy(s);
+        }
+        public BoneRiggingSelector(short i) : this()
+        {
+            boneIndex = i;
+        }
+
         private void BoneRiggingSelector_Load(object sender, EventArgs e)
         {
-            //List<ModelContainer> m = Runtime.ModelContainers;
-            //Console.WriteLine($"Model Count: {Runtime.ModelContainers.Count}");
             treeView1.Nodes.Clear();
             List<VBN> alreadyUsedVbns = new List<VBN>();
-            foreach(ModelContainer model in ModelContainers)
+            foreach (ModelContainer model in ModelContainers)
             {
-                if (!alreadyUsedVbns.Contains(model.VBN) && model.VBN != null)
+                if (model.VBN == null || alreadyUsedVbns.Contains(model.VBN))
+                    continue;
+
+                alreadyUsedVbns.Add(model.VBN);
+                foreach (Bone b in model.VBN.bones)
                 {
-                    alreadyUsedVbns.Add(model.VBN);
-                    foreach (Bone b in model.VBN.bones)
-                    {
-                        object[] objs = { model.VBN, b };
-                        TreeNode temp = new TreeNode(b.Text) {Tag = objs};
-                        treeView1.Nodes.Add(temp);
-                        if (str.data == b.Text.ToCharArray())
-                            treeView1.SelectedNode = temp;
-                    }
+                    object[] objs = { model.VBN, b };
+                    TreeNode temp = new TreeNode(b.Text) {Tag = objs};
+                    treeView1.Nodes.Add(temp);
+                }
+            }
+
+            //Set the initial selection based on if bone index, bone name, or neither, was provided and matches one in the list.
+            //I'd like to have no node selected if neither was provided or matches one in the list,
+            //but the treeview automatically selects the first node on initialization if the selection is null and the list of nodes isn't empty.
+            treeView1.SelectedNode = null;
+            textBox1.Text = "";
+            if (boneIndex > -1 && boneIndex < treeView1.Nodes.Count)
+                treeView1.SelectedNode = treeView1.Nodes[boneIndex];
+            else if (!String.IsNullOrEmpty(currentValue))
+            {
+                foreach (TreeNode node in treeView1.Nodes)
+                {
+                    if (node.Text == currentValue)
+                        treeView1.SelectedNode = node;
+                }
+                if (treeView1.SelectedNode == null)
+                {
+                    textBox1.Text = String.Copy(currentValue);
                 }
             }
         }
 
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            currentValue = String.Copy(e.Node.Text);
+            textBox1.Text = String.Copy(currentValue);
+            CurrentBone = (Bone) ((object[]) e.Node.Tag)[1];
+            boneIndex = (short)((VBN)((object[]) e.Node.Tag)[0]).bones.IndexOf(CurrentBone);
+        }
+
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            List<char> newValue = new List<char>();
-            foreach (char c in textBox1.Text)
-                newValue.Add(c);
-            while (newValue.Count < 0x40)
-                newValue.Add((char)0);
-            currentValue = newValue.ToArray();
+            currentValue = String.Copy(textBox1.Text);
+            CurrentBone = null;
+            boneIndex = -1;
+
+            treeView1.SelectedNode = null;
+            foreach (TreeNode node in treeView1.Nodes)
+            {
+                if (node.Text == currentValue)
+                {
+                    //This will trigger AfterSelect
+                    treeView1.SelectedNode = node;
+                    break;
+                }
+            }
         }
+
+        //Button: Cancel
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Cancelled = true;
+            Close();
+        }
+
+        //Button: Select Bone
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (currentValue.Length > 0x40)
+                throw new IndexOutOfRangeException("Wrong number of characters in bone name\nSomething must have gone terribly wrong");
+            currentValue = currentValue.PadRight(0x40, (char)0);
+            Close();
+        }
+
+        //Button: No Bone
+        private void button1_Click(object sender, EventArgs e)
+        {
+            currentValue = new string(new char[0x40]);
+            CurrentBone = null;
+            boneIndex = -1;
+
+            SelectedNone = true;
+            Close();
+        }
+
     }
 }

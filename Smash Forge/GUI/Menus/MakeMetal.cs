@@ -17,7 +17,9 @@ namespace Smash_Forge.GUI.Menus
     {
         private NUD nud;
 
-        private int difTexID = 0x40000001;
+        private int difTexId = 0x40000001;
+        private int cubeTexId = 0x10102000;
+
         private bool preserveNormalMap = true;
         private bool preserveDiffuse = false;
 
@@ -34,7 +36,7 @@ namespace Smash_Forge.GUI.Menus
 
         private void Apply_Click(object sender, EventArgs e)
         {
-            nud.MakeMetal(difTexID, preserveDiffuse, preserveNormalMap, minGain, refColor, fresParams, fresColor);
+            nud.MakeMetal(difTexId, cubeTexId, minGain, refColor, fresParams, fresColor, preserveDiffuse, preserveNormalMap);
         }
 
         private void useDifTexCB_CheckedChanged(object sender, EventArgs e)
@@ -44,218 +46,109 @@ namespace Smash_Forge.GUI.Menus
             label1.Enabled = useDifTexCB.Checked;
         }
 
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        private void prserveNrmRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             preserveNormalMap = true;
         }
 
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        private void noNrmradioButton_CheckedChanged(object sender, EventArgs e)
         {
             preserveNormalMap = false;
         }
 
         private void difIDTextBox_TextChanged(object sender, EventArgs e)
         {
-            int f = 0;
-            if (int.TryParse(difIDTextBox.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f))
-            {
-                difTexID = f;
-                difIDTextBox.BackColor = Color.White;
-            }
-            else
-                difIDTextBox.BackColor = Color.Red;
+            difTexId = GuiTools.TryParseTBInt(difIDTextBox, true, true);
         }
 
         private void Property1X_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(Property1X.Text, out i))
-            {
-                Property1X.BackColor = Color.White;
-                refColor[0] = i;
-            }
-            else
-                Property1X.BackColor = Color.Red;
+            refColor[0] = GuiTools.TryParseTBFloat(Property1X);
         }
 
         private void Property1Y_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(Property1Y.Text, out i))
-            {
-                Property1Y.BackColor = Color.White;
-                refColor[1] = i;
-            }
-            else
-                Property1Y.BackColor = Color.Red;
+            refColor[1] = GuiTools.TryParseTBFloat(Property1Y);
         }
 
         private void Property1Z_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(Property1Z.Text, out i))
-            {
-                Property1Z.BackColor = Color.White;
-                refColor[2] = i;
-            }
-            else
-                Property1Z.BackColor = Color.Red;
+            refColor[2] = GuiTools.TryParseTBFloat(Property1Z);
         }
 
         private void Property1W_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(Property1W.Text, out i))
-            {
-                Property1W.BackColor = Color.White;
-                refColor[3] = i;
-            }
-            else
-                Property1W.BackColor = Color.Red;
+            refColor[3] = GuiTools.TryParseTBFloat(Property1W);
         }
 
         private void Property2X_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(Property2X.Text, out i))
-            {
-                Property2X.BackColor = Color.White;
-                fresColor[0] = i;
-            }
-            else
-                Property2X.BackColor = Color.Red;
+            fresColor[0] = GuiTools.TryParseTBFloat(Property2X);
         }
 
         private void Property2Y_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(Property2Y.Text, out i))
-            {
-                Property2Y.BackColor = Color.White;
-                fresColor[1] = i;
-            }
-            else
-                Property2Y.BackColor = Color.Red;
+            fresColor[1] = GuiTools.TryParseTBFloat(Property2Y);
         }
 
         private void Property2Z_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(Property2Z.Text, out i))
-            {
-                Property2Z.BackColor = Color.White;
-                fresColor[2] = i;
-            }
-            else
-                Property2Z.BackColor = Color.Red;
+            fresColor[2] = GuiTools.TryParseTBFloat(Property2Z);
         }
 
         private void Property2W_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(Property2W.Text, out i))
-            {
-                Property2W.BackColor = Color.White;
-                fresColor[3] = i;
-            }
-            else
-                Property2W.BackColor = Color.Red;
+            fresColor[3] = GuiTools.TryParseTBFloat(Property2W);
         }
 
         private void Property3X_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(Property3X.Text, out i))
-            {
-                Property3X.BackColor = Color.White;
-                fresParams[0] = i;
-            }
-            else
-                Property3X.BackColor = Color.Red;
+            fresParams[0] = GuiTools.TryParseTBFloat(Property3X);
         }
 
         private void Property3Y_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(Property3Y.Text, out i))
-            {
-                Property3Y.BackColor = Color.White;
-                fresParams[1] = i;
-            }
-            else
-                Property3Y.BackColor = Color.Red;
+            fresParams[1] = GuiTools.TryParseTBFloat(Property3Y);
         }
 
         private void Property3Z_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(Property3Z.Text, out i))
-            {
-                Property3Z.BackColor = Color.White;
-                fresParams[2] = i;
-            }
-            else
-                Property3Z.BackColor = Color.Red;
+            fresParams[2] = GuiTools.TryParseTBFloat(Property3Z);
         }
 
         private void Property3W_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(Property3W.Text, out i))
-            {
-                Property3W.BackColor = Color.White;
-                fresParams[3] = i;
-            }
-            else
-                Property3W.BackColor = Color.Red;
+            fresParams[3] = GuiTools.TryParseTBFloat(Property3W);
         }
 
-        private void textBox14_TextChanged(object sender, EventArgs e)
+        private void property4X_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(Property4X.Text, out i))
-            {
-                Property4X.BackColor = Color.White;
-                minGain[0] = i;
-            }
-            else
-                Property4X.BackColor = Color.Red;
+            minGain[0] = GuiTools.TryParseTBFloat(Property4X);
         }
 
         private void Property4Y_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(Property4Y.Text, out i))
-            {
-                Property4Y.BackColor = Color.White;
-                minGain[1] = i;
-            }
-            else
-                Property4Y.BackColor = Color.Red;
+            minGain[1] = GuiTools.TryParseTBFloat(Property4Y);
         }
 
         private void Property4Z_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(Property4Z.Text, out i))
-            {
-                Property4Z.BackColor = Color.White;
-                minGain[2] = i;
-            }
-            else
-                Property4Z.BackColor = Color.Red;
+            minGain[2] = GuiTools.TryParseTBFloat(Property4Z);
         }
 
         private void Property4W_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(Property4W.Text, out i))
-            {
-                Property4W.BackColor = Color.White;
-                minGain[3] = i;
-            }
-            else
-                Property4W.BackColor = Color.Red;
+            minGain[3] = GuiTools.TryParseTBFloat(Property4W);
+        }
+
+        private void highResradioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            cubeTexId = 0x10102000;
+        }
+
+        private void lowResradioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            cubeTexId = 0x10101000;
         }
     }
 }

@@ -45,11 +45,11 @@
             this.label16 = new System.Windows.Forms.Label();
             this.mipDetailComboBox = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
-            this.textBox10 = new System.Windows.Forms.TextBox();
+            this.textureIDTB = new System.Windows.Forms.TextBox();
             this.propertiesListView = new System.Windows.Forms.ListView();
-            this.label22 = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
+            this.param3Label = new System.Windows.Forms.Label();
+            this.param2Label = new System.Windows.Forms.Label();
+            this.param1Label = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.param1TB = new System.Windows.Forms.TextBox();
             this.param2TB = new System.Windows.Forms.TextBox();
@@ -59,7 +59,7 @@
             this.loadPresetButton = new System.Windows.Forms.Button();
             this.addMatPropertyButton = new System.Windows.Forms.Button();
             this.matPropertyComboBox = new System.Windows.Forms.ComboBox();
-            this.glControl1 = new OpenTK.GLControl();
+            this.texRgbGlControl = new OpenTK.GLControl();
             this.colorSelect = new System.Windows.Forms.Button();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -69,11 +69,11 @@
             this.param3TrackBar = new System.Windows.Forms.TrackBar();
             this.param2TrackBar = new System.Windows.Forms.TrackBar();
             this.param4TB = new System.Windows.Forms.TextBox();
-            this.label23 = new System.Windows.Forms.Label();
+            this.param4Label = new System.Windows.Forms.Label();
             this.param1TrackBar = new System.Windows.Forms.TrackBar();
             this.descriptionLabel = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.glControl2 = new OpenTK.GLControl();
+            this.texAlphaGlControl = new OpenTK.GLControl();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.cubemapCB = new System.Windows.Forms.CheckBox();
             this.stageMapCB = new System.Windows.Forms.CheckBox();
@@ -97,7 +97,7 @@
             this.AlphaFuncComboBox = new System.Windows.Forms.ComboBox();
             this.alphaFuncTB = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.AlphaTestComboBox = new System.Windows.Forms.ComboBox();
+            this.alphaTestComboBox = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
@@ -158,6 +158,7 @@
             // 
             // matsComboBox
             // 
+            this.matsComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.matsComboBox.FormattingEnabled = true;
             this.matsComboBox.Location = new System.Drawing.Point(59, 41);
             this.matsComboBox.Name = "matsComboBox";
@@ -183,7 +184,7 @@
             this.texturesListView.Size = new System.Drawing.Size(186, 91);
             this.texturesListView.TabIndex = 3;
             this.texturesListView.UseCompatibleStateImageBehavior = false;
-            this.texturesListView.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            this.texturesListView.SelectedIndexChanged += new System.EventHandler(this.texturesListView_SelectedIndexChanged);
             this.texturesListView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listView1_KeyPress);
             // 
             // tableLayoutPanel2
@@ -217,7 +218,6 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Size = new System.Drawing.Size(293, 86);
             this.tableLayoutPanel2.TabIndex = 11;
-            this.tableLayoutPanel2.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel2_Paint);
             // 
             // magFilterComboBox
             // 
@@ -336,13 +336,13 @@
             this.label10.TabIndex = 12;
             this.label10.Text = "Texture ID";
             // 
-            // textBox10
+            // textureIDTB
             // 
-            this.textBox10.Location = new System.Drawing.Point(198, 174);
-            this.textBox10.Name = "textBox10";
-            this.textBox10.Size = new System.Drawing.Size(80, 20);
-            this.textBox10.TabIndex = 17;
-            this.textBox10.TextChanged += new System.EventHandler(this.textBox10_TextChanged);
+            this.textureIDTB.Location = new System.Drawing.Point(198, 174);
+            this.textureIDTB.Name = "textureIDTB";
+            this.textureIDTB.Size = new System.Drawing.Size(80, 20);
+            this.textureIDTB.TabIndex = 17;
+            this.textureIDTB.TextChanged += new System.EventHandler(this.textureIDTB_TextChanged);
             // 
             // propertiesListView
             // 
@@ -360,32 +360,32 @@
             this.propertiesListView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listView2_KeyPress);
             this.propertiesListView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listView2_KeyUp);
             // 
-            // label22
+            // param3Label
             // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(3, 54);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(43, 13);
-            this.label22.TabIndex = 15;
-            this.label22.Text = "Param3";
+            this.param3Label.AutoSize = true;
+            this.param3Label.Location = new System.Drawing.Point(3, 54);
+            this.param3Label.Name = "param3Label";
+            this.param3Label.Size = new System.Drawing.Size(43, 13);
+            this.param3Label.TabIndex = 15;
+            this.param3Label.Text = "Param3";
             // 
-            // label21
+            // param2Label
             // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(3, 27);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(43, 13);
-            this.label21.TabIndex = 15;
-            this.label21.Text = "Param2";
+            this.param2Label.AutoSize = true;
+            this.param2Label.Location = new System.Drawing.Point(3, 27);
+            this.param2Label.Name = "param2Label";
+            this.param2Label.Size = new System.Drawing.Size(43, 13);
+            this.param2Label.TabIndex = 15;
+            this.param2Label.Text = "Param2";
             // 
-            // label20
+            // param1Label
             // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(3, 0);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(43, 13);
-            this.label20.TabIndex = 15;
-            this.label20.Text = "Param1";
+            this.param1Label.AutoSize = true;
+            this.param1Label.Location = new System.Drawing.Point(3, 0);
+            this.param1Label.Name = "param1Label";
+            this.param1Label.Size = new System.Drawing.Size(43, 13);
+            this.param1Label.TabIndex = 15;
+            this.param1Label.Text = "Param1";
             // 
             // label19
             // 
@@ -437,7 +437,7 @@
             this.savePresetButton.TabIndex = 15;
             this.savePresetButton.Text = "Save Preset";
             this.savePresetButton.UseVisualStyleBackColor = true;
-            this.savePresetButton.Click += new System.EventHandler(this.button1_Click);
+            this.savePresetButton.Click += new System.EventHandler(this.savePresetButton_Click);
             // 
             // loadPresetButton
             // 
@@ -447,7 +447,7 @@
             this.loadPresetButton.TabIndex = 16;
             this.loadPresetButton.Text = "Load Preset";
             this.loadPresetButton.UseVisualStyleBackColor = true;
-            this.loadPresetButton.Click += new System.EventHandler(this.button2_Click);
+            this.loadPresetButton.Click += new System.EventHandler(this.loadPresetButton_Click);
             // 
             // addMatPropertyButton
             // 
@@ -457,27 +457,27 @@
             this.addMatPropertyButton.TabIndex = 20;
             this.addMatPropertyButton.Text = "+";
             this.addMatPropertyButton.UseVisualStyleBackColor = true;
-            this.addMatPropertyButton.Click += new System.EventHandler(this.button4_Click);
+            this.addMatPropertyButton.Click += new System.EventHandler(this.addMatPropertyButton_Click);
             // 
             // matPropertyComboBox
             // 
+            this.matPropertyComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.matPropertyComboBox.FormattingEnabled = true;
             this.matPropertyComboBox.Location = new System.Drawing.Point(53, 159);
             this.matPropertyComboBox.Name = "matPropertyComboBox";
             this.matPropertyComboBox.Size = new System.Drawing.Size(177, 21);
             this.matPropertyComboBox.TabIndex = 21;
-            this.matPropertyComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox7_SelectedIndexChanged);
+            this.matPropertyComboBox.SelectedIndexChanged += new System.EventHandler(this.matPropertyComboBox_SelectedIndexChanged);
             // 
-            // glControl1
+            // texRgbGlControl
             // 
-            this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(6, 19);
-            this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(130, 130);
-            this.glControl1.TabIndex = 23;
-            this.glControl1.VSync = false;
-            this.glControl1.Click += new System.EventHandler(this.glControl1_Click);
-            this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
+            this.texRgbGlControl.BackColor = System.Drawing.Color.Black;
+            this.texRgbGlControl.Location = new System.Drawing.Point(6, 19);
+            this.texRgbGlControl.Name = "texRgbGlControl";
+            this.texRgbGlControl.Size = new System.Drawing.Size(130, 130);
+            this.texRgbGlControl.TabIndex = 23;
+            this.texRgbGlControl.VSync = false;
+            this.texRgbGlControl.Paint += new System.Windows.Forms.PaintEventHandler(this.texRgbGlControl_Paint);
             // 
             // colorSelect
             // 
@@ -535,10 +535,10 @@
             this.paramGB.Controls.Add(this.param3TB, 1, 2);
             this.paramGB.Controls.Add(this.param2TB, 1, 1);
             this.paramGB.Controls.Add(this.param1TB, 1, 0);
-            this.paramGB.Controls.Add(this.label23, 0, 3);
-            this.paramGB.Controls.Add(this.label20, 0, 0);
-            this.paramGB.Controls.Add(this.label22, 0, 2);
-            this.paramGB.Controls.Add(this.label21, 0, 1);
+            this.paramGB.Controls.Add(this.param4Label, 0, 3);
+            this.paramGB.Controls.Add(this.param1Label, 0, 0);
+            this.paramGB.Controls.Add(this.param3Label, 0, 2);
+            this.paramGB.Controls.Add(this.param2Label, 0, 1);
             this.paramGB.Controls.Add(this.param1TrackBar, 2, 0);
             this.paramGB.Location = new System.Drawing.Point(5, 39);
             this.paramGB.Name = "paramGB";
@@ -588,14 +588,14 @@
             this.param4TB.TabIndex = 20;
             this.param4TB.TextChanged += new System.EventHandler(this.param4TB_TextChanged);
             // 
-            // label23
+            // param4Label
             // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(3, 81);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(43, 13);
-            this.label23.TabIndex = 15;
-            this.label23.Text = "Param4";
+            this.param4Label.AutoSize = true;
+            this.param4Label.Location = new System.Drawing.Point(3, 81);
+            this.param4Label.Name = "param4Label";
+            this.param4Label.Size = new System.Drawing.Size(43, 13);
+            this.param4Label.TabIndex = 15;
+            this.param4Label.Text = "Param4";
             // 
             // param1TrackBar
             // 
@@ -620,13 +620,13 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.glControl2);
+            this.groupBox2.Controls.Add(this.texAlphaGlControl);
             this.groupBox2.Controls.Add(this.groupBox7);
             this.groupBox2.Controls.Add(this.texturesListView);
-            this.groupBox2.Controls.Add(this.glControl1);
+            this.groupBox2.Controls.Add(this.texRgbGlControl);
             this.groupBox2.Controls.Add(this.tableLayoutPanel2);
             this.groupBox2.Controls.Add(this.label10);
-            this.groupBox2.Controls.Add(this.textBox10);
+            this.groupBox2.Controls.Add(this.textureIDTB);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(3, 3);
             this.groupBox2.Name = "groupBox2";
@@ -635,15 +635,15 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Textures";
             // 
-            // glControl2
+            // texAlphaGlControl
             // 
-            this.glControl2.BackColor = System.Drawing.Color.Black;
-            this.glControl2.Location = new System.Drawing.Point(151, 19);
-            this.glControl2.Name = "glControl2";
-            this.glControl2.Size = new System.Drawing.Size(130, 130);
-            this.glControl2.TabIndex = 25;
-            this.glControl2.VSync = false;
-            this.glControl2.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl2_Paint);
+            this.texAlphaGlControl.BackColor = System.Drawing.Color.Black;
+            this.texAlphaGlControl.Location = new System.Drawing.Point(151, 19);
+            this.texAlphaGlControl.Name = "texAlphaGlControl";
+            this.texAlphaGlControl.Size = new System.Drawing.Size(130, 130);
+            this.texAlphaGlControl.TabIndex = 25;
+            this.texAlphaGlControl.VSync = false;
+            this.texAlphaGlControl.Paint += new System.Windows.Forms.PaintEventHandler(this.texAlphaGlControl_Paint);
             // 
             // groupBox7
             // 
@@ -848,7 +848,7 @@
             this.tableLayoutPanel5.Controls.Add(this.AlphaFuncComboBox, 2, 1);
             this.tableLayoutPanel5.Controls.Add(this.alphaFuncTB, 1, 1);
             this.tableLayoutPanel5.Controls.Add(this.label4, 0, 0);
-            this.tableLayoutPanel5.Controls.Add(this.AlphaTestComboBox, 2, 0);
+            this.tableLayoutPanel5.Controls.Add(this.alphaTestComboBox, 2, 0);
             this.tableLayoutPanel5.Controls.Add(this.label9, 0, 1);
             this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 17);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
@@ -866,7 +866,7 @@
             this.alphaTestTB.Name = "alphaTestTB";
             this.alphaTestTB.Size = new System.Drawing.Size(55, 20);
             this.alphaTestTB.TabIndex = 15;
-            this.alphaTestTB.TextChanged += new System.EventHandler(this.textBox5_TextChanged);
+            this.alphaTestTB.TextChanged += new System.EventHandler(this.alphaTestTB_TextChanged);
             // 
             // label5
             // 
@@ -901,7 +901,7 @@
             this.alphaFuncTB.Name = "alphaFuncTB";
             this.alphaFuncTB.Size = new System.Drawing.Size(55, 20);
             this.alphaFuncTB.TabIndex = 21;
-            this.alphaFuncTB.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            this.alphaFuncTB.TextChanged += new System.EventHandler(this.alphaFuncTB_TextChanged);
             // 
             // label4
             // 
@@ -912,14 +912,14 @@
             this.label4.TabIndex = 6;
             this.label4.Text = "AlphaTest";
             // 
-            // AlphaTestComboBox
+            // alphaTestComboBox
             // 
-            this.AlphaTestComboBox.FormattingEnabled = true;
-            this.AlphaTestComboBox.Location = new System.Drawing.Point(128, 3);
-            this.AlphaTestComboBox.Name = "AlphaTestComboBox";
-            this.AlphaTestComboBox.Size = new System.Drawing.Size(137, 21);
-            this.AlphaTestComboBox.TabIndex = 16;
-            this.AlphaTestComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox4_SelectedIndexChanged);
+            this.alphaTestComboBox.FormattingEnabled = true;
+            this.alphaTestComboBox.Location = new System.Drawing.Point(128, 3);
+            this.alphaTestComboBox.Name = "alphaTestComboBox";
+            this.alphaTestComboBox.Size = new System.Drawing.Size(137, 21);
+            this.alphaTestComboBox.TabIndex = 16;
+            this.alphaTestComboBox.SelectedIndexChanged += new System.EventHandler(this.alphaTestComboBox_SelectedIndexChanged);
             // 
             // label9
             // 
@@ -991,7 +991,7 @@
             this.cullModeTB.Name = "cullModeTB";
             this.cullModeTB.Size = new System.Drawing.Size(55, 20);
             this.cullModeTB.TabIndex = 15;
-            this.cullModeTB.TextChanged += new System.EventHandler(this.textBox7_TextChanged);
+            this.cullModeTB.TextChanged += new System.EventHandler(this.cullModeTB_TextChanged);
             // 
             // cullModeComboBox
             // 
@@ -1000,7 +1000,7 @@
             this.cullModeComboBox.Name = "cullModeComboBox";
             this.cullModeComboBox.Size = new System.Drawing.Size(121, 21);
             this.cullModeComboBox.TabIndex = 18;
-            this.cullModeComboBox.SelectionChangeCommitted += new System.EventHandler(this.comboBox6_SelectionChangeCommitted);
+            this.cullModeComboBox.SelectionChangeCommitted += new System.EventHandler(this.cullModeComboBox_SelectionChangeCommitted);
             // 
             // groupBox6
             // 
@@ -1042,7 +1042,7 @@
             this.dstTB.Name = "dstTB";
             this.dstTB.Size = new System.Drawing.Size(55, 20);
             this.dstTB.TabIndex = 15;
-            this.dstTB.TextChanged += new System.EventHandler(this.textBox4_TextChanged_1);
+            this.dstTB.TextChanged += new System.EventHandler(this.dstTB_TextChanged);
             // 
             // srcTB
             // 
@@ -1050,7 +1050,7 @@
             this.srcTB.Name = "srcTB";
             this.srcTB.Size = new System.Drawing.Size(55, 20);
             this.srcTB.TabIndex = 15;
-            this.srcTB.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
+            this.srcTB.TextChanged += new System.EventHandler(this.srcTB_TextChanged);
             // 
             // srcComboBox
             // 
@@ -1059,7 +1059,7 @@
             this.srcComboBox.Name = "srcComboBox";
             this.srcComboBox.Size = new System.Drawing.Size(137, 21);
             this.srcComboBox.TabIndex = 15;
-            this.srcComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
+            this.srcComboBox.SelectedIndexChanged += new System.EventHandler(this.srcComboBox_SelectedIndexChanged);
             // 
             // label3
             // 
@@ -1086,7 +1086,7 @@
             this.dstComboBox.Name = "dstComboBox";
             this.dstComboBox.Size = new System.Drawing.Size(137, 21);
             this.dstComboBox.TabIndex = 15;
-            this.dstComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox3_SelectedIndexChanged_1);
+            this.dstComboBox.SelectedIndexChanged += new System.EventHandler(this.dstComboBox_SelectedIndexChanged);
             // 
             // groupBox5
             // 
@@ -1123,7 +1123,7 @@
             this.mysteryCB.TabIndex = 9;
             this.mysteryCB.Text = "Mystery";
             this.mysteryCB.UseVisualStyleBackColor = true;
-            this.mysteryCB.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.mysteryCB.CheckedChanged += new System.EventHandler(this.mysteryCB_CheckedChanged);
             // 
             // GlowCB
             // 
@@ -1208,7 +1208,7 @@
             this.flagsTB.Name = "flagsTB";
             this.flagsTB.Size = new System.Drawing.Size(121, 20);
             this.flagsTB.TabIndex = 15;
-            this.flagsTB.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.flagsTB.TextChanged += new System.EventHandler(this.flagsTB_TextChanged);
             // 
             // tabPage2
             // 
@@ -1268,9 +1268,7 @@
             this.Name = "NUDMaterialEditor";
             this.TabText = "Material";
             this.Text = "NUDMaterialEditor";
-            this.Load += new System.EventHandler(this.NUDMaterialEditor_Load);
             this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.NUDMaterialEditor_Scroll);
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.NUDMaterialEditor_Paint);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -1327,16 +1325,16 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ListView propertiesListView;
         private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.Label param1Label;
+        private System.Windows.Forms.Label param3Label;
+        private System.Windows.Forms.Label param2Label;
         private System.Windows.Forms.ComboBox mipDetailComboBox;
         private System.Windows.Forms.ComboBox magFilterComboBox;
         private System.Windows.Forms.ComboBox minFilterComboBox;
         private System.Windows.Forms.ComboBox wrapXComboBox;
         private System.Windows.Forms.ComboBox mapModeComboBox;
         private System.Windows.Forms.ComboBox wrapYComboBox;
-        private System.Windows.Forms.TextBox textBox10;
+        private System.Windows.Forms.TextBox textureIDTB;
         private System.Windows.Forms.TextBox matPropertyNameTB;
         private System.Windows.Forms.TextBox param1TB;
         private System.Windows.Forms.TextBox param2TB;
@@ -1345,7 +1343,7 @@
         private System.Windows.Forms.Button loadPresetButton;
         private System.Windows.Forms.Button addMatPropertyButton;
         private System.Windows.Forms.ComboBox matPropertyComboBox;
-        private OpenTK.GLControl glControl1;
+        private OpenTK.GLControl texRgbGlControl;
         private System.Windows.Forms.Button colorSelect;
         private System.Windows.Forms.ColorDialog colorDialog1;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -1360,10 +1358,10 @@
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.Label descriptionLabel;
-        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.Label param4Label;
         private System.Windows.Forms.TextBox param4TB;
         private System.Windows.Forms.TableLayoutPanel paramGB;
-        private OpenTK.GLControl glControl2;
+        private OpenTK.GLControl texAlphaGlControl;
         private System.Windows.Forms.CheckBox cubemapCB;
         private System.Windows.Forms.CheckBox stageMapCB;
         private System.Windows.Forms.CheckBox dummy_rampCB;
@@ -1385,7 +1383,7 @@
         private System.Windows.Forms.ComboBox srcComboBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox AlphaTestComboBox;
+        private System.Windows.Forms.ComboBox alphaTestComboBox;
         private System.Windows.Forms.TextBox zBufferTB;
         private System.Windows.Forms.ComboBox cullModeComboBox;
         private System.Windows.Forms.TextBox refAlphaTB;

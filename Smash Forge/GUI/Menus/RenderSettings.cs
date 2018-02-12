@@ -16,138 +16,140 @@ namespace Smash_Forge.GUI
     {
         private bool disableRuntimeUpdates;
         private List<Color> hitboxColors;
-        List<string> areaLightIDList = new List<string>();
-
 
         public RenderSettings()
         {
             InitializeComponent();
-
             disableRuntimeUpdates = true;
-            nudHitboxAlpha.Value = Runtime.hitboxAlpha;
-            nudHurtboxAlpha.Value = Runtime.hurtboxAlpha;
 
-            checkBox1.Checked = Runtime.renderModel;
-            checkBox2.Checked = Runtime.renderBones;
-            checkBox3.Checked = Runtime.renderPath;
-            checkBox4.Checked = Runtime.renderHitboxes;
-            checkBox5.Checked = Runtime.renderFloor;
-            backgroundCB.Checked = Runtime.renderBackGround;
-            checkBox6.Checked = Runtime.renderLVD;
-            checkBox7.Checked = Runtime.renderCollisions;
-            checkBox8.Checked = Runtime.renderSpawns;
-            checkBox9.Checked = Runtime.renderRespawns;
-            checkBox10.Checked = Runtime.renderItemSpawners;
-            checkBox11.Checked = Runtime.renderGeneralPoints;
-            checkBox12.Checked = Runtime.renderCollisionNormals;
-            checkBox13.Checked = Runtime.renderHurtboxes;
-            checkBox14.Checked = Runtime.renderHurtboxesZone;
-            checkBox15.Checked = Runtime.renderECB;
-            checkBox16.Checked = Runtime.renderInterpolatedHitboxes;
-            checkBox17.Checked = Runtime.renderSpecialBubbles;
-            checkBox18.Checked = Runtime.renderHitboxesNoOverlap;
-            checkBox19.Checked = Runtime.renderHitboxAngles;
-            checkBox21.Checked = Runtime.renderLedgeGrabboxes;
-            checkBox22.Checked = Runtime.renderTetherLedgeGrabboxes;
-            checkBox23.Checked = Runtime.renderReverseLedgeGrabboxes;
-            swagViewing.Checked = Runtime.renderSwag;
-            materialLightingCB.Checked = Runtime.renderMaterialLighting;
-            useNormCB.Checked = Runtime.renderNormalMap;
-            boundingCB.Checked = Runtime.renderBoundingBox;
-            wireframeCB.Checked = Runtime.renderModelWireframe;
-            modelSelectCB.Checked = Runtime.renderModelSelection;
-            wireframeCB.Enabled = checkBox1.Checked;
-            modelSelectCB.Enabled = checkBox1.Checked;
-            renderFogCB.Checked = Runtime.renderFog;
-
-            UpdateDebugButtonsFromRenderType();
-
-            cameraLightCB.Checked = Runtime.cameraLight;
-            diffuseCB.Checked = Runtime.renderDiffuse;
-            specularCB.Checked = Runtime.renderSpecular;
-            fresnelCB.Checked = Runtime.renderFresnel;
-            reflectionCB.Checked = Runtime.renderReflection;
-            ambTB.Text = Runtime.amb_inten + "";
-            difTB.Text = Runtime.dif_inten + "";
-            spcTB.Text = Runtime.spc_inten + "";
-            frsTB.Text = Runtime.frs_inten + "";
-            refTB.Text = Runtime.ref_inten + "";
-
+            // Misc Settings
+            renderFloorCB.Checked = Runtime.renderFloor;
+            renderBackgroundCB.Checked = Runtime.renderBackGround;
+            renderCameraPathCB.Checked = Runtime.renderPath;
+            drawUvCB.Checked = Runtime.drawUv;
+            textParamDir.Text = Runtime.paramDir;
             RendererLabel.Text = "Renderer: " + Runtime.renderer;
             OpenGLVersionLabel.Text = "OpenGL Version: " + Runtime.GLSLVersion;
 
-            depthTestCB.Checked = Runtime.useDepthTest;
-            zScaleTB.Text = Runtime.zScale + "";
+            // Bone settings
+            renderBonesCB.Checked = Runtime.renderBones;
+            showSwagDataCB.Checked = Runtime.renderSwag;
 
-            renderAlphaCB.Checked = Runtime.renderAlpha;
-            vertColorCB.Checked = Runtime.renderVertColor;
-            renderModeComboBox.SelectedIndex = (int)Runtime.renderType;
+            // Model Settings
+            renderModelCB.Checked = Runtime.renderModel;
+            boundingCB.Checked = Runtime.renderBoundingBox;
+            wireframeCB.Checked = Runtime.renderModelWireframe;
+            modelSelectCB.Checked = Runtime.renderModelSelection;
+            wireframeCB.Enabled = renderModelCB.Checked;
+            modelSelectCB.Enabled = renderModelCB.Checked;
 
+            // Hitbox Settings
+            renderHitboxesCB.Checked = Runtime.renderHitboxes;
+            nudHitboxAlpha.Value = Runtime.hitboxAlpha;
+            pbHitboxAnglesColor.BackColor = Runtime.hitboxAnglesColor;
+
+            // Hurtbox Settings
+            renderHurtboxesCB.Checked = Runtime.renderHurtboxes;
+            renderHurtboxZonesCB.Checked = Runtime.renderHurtboxesZone;
+            nudHurtboxAlpha.Value = Runtime.hurtboxAlpha;
             pbHurtboxColor.BackColor = Runtime.hurtboxColor;
             pbHurtboxColorHi.BackColor = Runtime.hurtboxColorHi;
             pbHurtboxColorMed.BackColor = Runtime.hurtboxColorMed;
             pbHurtboxColorLw.BackColor = Runtime.hurtboxColorLow;
             pbHurtboxColorSelected.BackColor = Runtime.hurtboxColorSelected;
-            pbHitboxAnglesColor.BackColor = Runtime.hitboxAnglesColor;
+
+            // Misc Hitbox/Hurtbox Settings
+            renderEnvCollisionBoxCB.Checked = Runtime.renderECB;
+            renderInterpHitboxCB.Checked = Runtime.renderInterpolatedHitboxes;
+            renderSpecialBubblesCB.Checked = Runtime.renderSpecialBubbles;
+            renderPriorityTopCB.Checked = Runtime.renderHitboxesNoOverlap;
+            hitboxAnglesCB.Checked = Runtime.renderHitboxAngles;
+            renderLedgeGrabCB.Checked = Runtime.renderLedgeGrabboxes;
+            renderTetherLedgeCB.Checked = Runtime.renderTetherLedgeGrabboxes;
+            renderReverseLedgeGrabCB.Checked = Runtime.renderReverseLedgeGrabboxes;
             pbWindboxColor.BackColor = Runtime.windboxColor;
             pbGrabboxColor.BackColor = Runtime.grabboxColor;
             pbSearchboxColor.BackColor = Runtime.searchboxColor;
-
             pbCounterColor.BackColor = Runtime.counterBubbleColor;
             pbReflectColor.BackColor = Runtime.reflectBubbleColor;
             pbAbsorbColor.BackColor = Runtime.absorbBubbleColor;
             pbShieldColor.BackColor = Runtime.shieldBubbleColor;
 
-            textParamDir.Text = Runtime.paramDir;
+            // LVD Settings
+            renderLvdCB.Checked = Runtime.renderLVD;
+            renderCollisionsCB.Checked = Runtime.renderCollisions;
+            renderSpawnsCB.Checked = Runtime.renderSpawns;
+            renderRespawnsCB.Checked = Runtime.renderRespawns;
+            renderItemSpawnersCB.Checked = Runtime.renderItemSpawners;
+            renderGeneralShapesCB.Checked = Runtime.renderGeneralPoints;
+            renderPassthroughCB.Checked = Runtime.renderCollisionNormals;
+
+            // Material Lighting Settings
+            materialLightingCB.Checked = Runtime.renderMaterialLighting;
+            useNormCB.Checked = Runtime.renderNormalMap;
+            renderFogCB.Checked = Runtime.renderFog;
+            cameraLightCB.Checked = Runtime.cameraLight;
+            diffuseCB.Checked = Runtime.renderDiffuse;
+            specularCB.Checked = Runtime.renderSpecular;
+            fresnelCB.Checked = Runtime.renderFresnel;
+            reflectionCB.Checked = Runtime.renderReflection;
+            ambTB.Text = Runtime.ambItensity + "";
+            difTB.Text = Runtime.difIntensity + "";
+            spcTB.Text = Runtime.spcIntentensity + "";
+            frsTB.Text = Runtime.frsIntensity + "";
+            refTB.Text = Runtime.refIntensity + "";
+            depthTestCB.Checked = Runtime.useDepthTest;
+            zScaleTB.Text = Runtime.zScale + "";
+            renderAlphaCB.Checked = Runtime.renderAlpha;
+            vertColorCB.Checked = Runtime.renderVertColor;
+            renderModeComboBox.SelectedIndex = (int)Runtime.renderType;
+            UpdateDebugButtonsFromRenderType();
+
             disableRuntimeUpdates = false;
-
-
-
-
         }
 
         private void checkBox6_CheckedChanged(object sender, EventArgs e)
         {
             //Disable all the checkboxes for LVD
             checkChanged();
-            checkBox7.Enabled = checkBox6.Checked;
-            checkBox8.Enabled = checkBox6.Checked;
-            checkBox9.Enabled = checkBox6.Checked;
-            checkBox10.Enabled = checkBox6.Checked;
-            checkBox11.Enabled = checkBox6.Checked;
-            checkBox12.Enabled = checkBox6.Checked && checkBox7.Checked;
+            renderCollisionsCB.Enabled = renderLvdCB.Checked;
+            renderSpawnsCB.Enabled = renderLvdCB.Checked;
+            renderRespawnsCB.Enabled = renderLvdCB.Checked;
+            renderItemSpawnersCB.Enabled = renderLvdCB.Checked;
+            renderGeneralShapesCB.Enabled = renderLvdCB.Checked;
+            renderPassthroughCB.Enabled = renderLvdCB.Checked && renderCollisionsCB.Checked;
         }
 
         private void checkChanged()
         {
             if (!disableRuntimeUpdates)
             {
-                Runtime.renderModel = checkBox1.Checked;
-                Runtime.renderBones = checkBox2.Checked;
-                Runtime.renderHitboxes = checkBox4.Checked;
-                Runtime.renderPath = checkBox3.Checked;
-                Runtime.renderFloor = checkBox5.Checked;
-                Runtime.renderLVD = checkBox6.Checked;
-                Runtime.renderCollisions = checkBox7.Checked;
-                Runtime.renderSpawns = checkBox8.Checked;
-                Runtime.renderRespawns = checkBox9.Checked;
-                Runtime.renderItemSpawners = checkBox10.Checked;
-                Runtime.renderGeneralPoints = checkBox11.Checked;
-                Runtime.renderCollisionNormals = checkBox12.Checked;
-                Runtime.renderHurtboxes = checkBox13.Checked;
-                Runtime.renderHurtboxesZone = checkBox14.Checked;
-                Runtime.renderECB = checkBox15.Checked;
-                Runtime.renderInterpolatedHitboxes = checkBox16.Checked;
-                Runtime.renderSpecialBubbles = checkBox17.Checked;
-                Runtime.renderHitboxesNoOverlap = checkBox18.Checked;
-                Runtime.renderHitboxAngles = checkBox19.Checked;
-                Runtime.renderLedgeGrabboxes = checkBox21.Checked;
-                Runtime.renderTetherLedgeGrabboxes = checkBox22.Checked;
-                Runtime.renderReverseLedgeGrabboxes = checkBox23.Checked;
+                Runtime.renderModel = renderModelCB.Checked;
+                Runtime.renderBones = renderBonesCB.Checked;
+                Runtime.renderHitboxes = renderHitboxesCB.Checked;
+                Runtime.renderPath = renderCameraPathCB.Checked;
+                Runtime.renderFloor = renderFloorCB.Checked;
+                Runtime.renderLVD = renderLvdCB.Checked;
+                Runtime.renderCollisions = renderCollisionsCB.Checked;
+                Runtime.renderSpawns = renderSpawnsCB.Checked;
+                Runtime.renderRespawns = renderRespawnsCB.Checked;
+                Runtime.renderItemSpawners = renderItemSpawnersCB.Checked;
+                Runtime.renderGeneralPoints = renderGeneralShapesCB.Checked;
+                Runtime.renderCollisionNormals = renderPassthroughCB.Checked;
+                Runtime.renderHurtboxes = renderHurtboxesCB.Checked;
+                Runtime.renderHurtboxesZone = renderHurtboxZonesCB.Checked;
+                Runtime.renderECB = renderEnvCollisionBoxCB.Checked;
+                Runtime.renderInterpolatedHitboxes = renderInterpHitboxCB.Checked;
+                Runtime.renderSpecialBubbles = renderSpecialBubblesCB.Checked;
+                Runtime.renderHitboxesNoOverlap = renderPriorityTopCB.Checked;
+                Runtime.renderHitboxAngles = hitboxAnglesCB.Checked;
+                Runtime.renderLedgeGrabboxes = renderLedgeGrabCB.Checked;
+                Runtime.renderTetherLedgeGrabboxes = renderTetherLedgeCB.Checked;
+                Runtime.renderReverseLedgeGrabboxes = renderReverseLedgeGrabCB.Checked;
             }
-            checkBox12.Enabled = checkBox6.Checked && checkBox7.Checked;
-            wireframeCB.Enabled = checkBox1.Checked;
-            modelSelectCB.Enabled = checkBox1.Checked;
+            renderPassthroughCB.Enabled = renderLvdCB.Checked && renderCollisionsCB.Checked;
+            wireframeCB.Enabled = renderModelCB.Checked;
+            modelSelectCB.Enabled = renderModelCB.Checked;
         }
 
         private void checkChanged(object sender, EventArgs e)
@@ -197,64 +199,80 @@ namespace Smash_Forge.GUI
         private void renderMode_SelectionChangeCommitted(object sender, EventArgs e)
         {
             Runtime.renderType = (Runtime.RenderTypes)renderModeComboBox.SelectedIndex;
-
             UpdateDebugButtonsFromRenderType();
-
         }
 
         private void UpdateDebugButtonsFromRenderType()
         {
             ShowHideDebugButtonsFromRenderType();
 
-            if (Runtime.renderType == Runtime.RenderTypes.UVCoords || Runtime.renderType == Runtime.RenderTypes.UVTestPattern)
+            // Reuse the same buttons to control different settings for each render mode.
+            switch (Runtime.renderType)
             {
-                debug1CB.Visible = false;
-                debug2CB.Visible = false;
+                default:
+                    debug1CB.Visible = false;
+                    debug2CB.Visible = false;
 
-                radioButton1.Visible = true;
-                radioButton2.Visible = true;
-                radioButton3.Visible = true;
+                    radioButton1.Visible = false;
+                    radioButton2.Visible = false;
+                    radioButton3.Visible = false;
+                    break;
+                case Runtime.RenderTypes.UVTestPattern:
+                    debug1CB.Visible = false;
+                    debug2CB.Visible = false;
+
+                    radioButton1.Visible = true;
+                    radioButton2.Visible = true;
+                    radioButton3.Visible = true;
+                    break;
+                case Runtime.RenderTypes.UVCoords:
+                    debug1CB.Visible = false;
+                    debug2CB.Visible = false;
+
+                    radioButton1.Visible = true;
+                    radioButton2.Visible = true;
+                    radioButton3.Visible = true;
+                    break;
+                case Runtime.RenderTypes.AmbientOcclusion:
+                    debug1CB.Text = "aoMinGain";
+                    debug1CB.Visible = true;
+                    debug2CB.Visible = false;
+
+                    radioButton1.Visible = false;
+                    radioButton2.Visible = false;
+                    radioButton3.Visible = false;
+                    break;
+                case Runtime.RenderTypes.SelectedBoneWeights:
+                    debug1CB.Text = "Color Ramp";
+                    debug1CB.Visible = false;
+                    debug2CB.Visible = false;
+
+                    radioButton1.Visible = true;
+                    radioButton2.Visible = true;
+                    radioButton3.Visible = true;
+
+                    radioButton1.Text = "BnW";
+                    radioButton2.Text = "Color 1";
+                    radioButton3.Text = "Color 2";
+                    break;
+                case Runtime.RenderTypes.Normals:
+                    debug1CB.Visible = false;
+                    debug2CB.Visible = false;
+
+                    radioButton1.Visible = false;
+                    radioButton2.Visible = false;
+                    radioButton3.Visible = false;
+                    break;
+                case Runtime.RenderTypes.VertColor:
+                    debug1CB.Text = "Divide by 2";
+                    debug1CB.Visible = true;
+                    debug2CB.Visible = false;
+
+                    radioButton1.Visible = false;
+                    radioButton2.Visible = false;
+                    radioButton3.Visible = false;
+                    break;
             }
-            else if (Runtime.renderType == Runtime.RenderTypes.AmbientOcclusion)
-            {
-                debug1CB.Text = "aoMinGain";
-                debug1CB.Visible = true;
-                debug2CB.Visible = false;
-
-                radioButton1.Visible = false;
-                radioButton2.Visible = false;
-                radioButton3.Visible = false;
-            }
-            else if (Runtime.renderType == Runtime.RenderTypes.SelectedBoneWeights)
-            {
-                debug1CB.Text = "Color Ramp";
-                debug1CB.Visible = true;
-                debug2CB.Visible = false;
-
-                radioButton1.Visible = false;
-                radioButton2.Visible = false;
-                radioButton3.Visible = false;
-            }
-            else if (Runtime.renderType == Runtime.RenderTypes.Normals)
-            {
-                debug1CB.Visible = false;
-                debug2CB.Visible = false;
-
-                radioButton1.Visible = false;
-                radioButton2.Visible = false;
-                radioButton3.Visible = false;
-            }
-            else
-            {
-                debug1CB.Visible = false;
-                debug2CB.Visible = false;
-
-                radioButton1.Visible = false;
-                radioButton2.Visible = false;
-                radioButton3.Visible = false;
-            }
-
-
         }
 
         private void ShowHideDebugButtonsFromRenderType()
@@ -275,7 +293,7 @@ namespace Smash_Forge.GUI
 
         private void swagViewing_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.renderSwag = swagViewing.Checked;
+            Runtime.renderSwag = showSwagDataCB.Checked;
         }
 
         private void lightCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -325,7 +343,7 @@ namespace Smash_Forge.GUI
 
         private void backgroundCB_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.renderBackGround = backgroundCB.Checked;
+            Runtime.renderBackGround = renderBackgroundCB.Checked;
         }
 
         private void boundingCB_CheckedChanged(object sender, EventArgs e)
@@ -350,62 +368,27 @@ namespace Smash_Forge.GUI
 
         private void difTB_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(difTB.Text, out i))
-            {
-                difTB.BackColor = Color.White;
-                Runtime.dif_inten = i;
-            }
-            else
-                difTB.BackColor = Color.Red;
+            Runtime.difIntensity = GuiTools.TryParseTBFloat(difTB);
         }
 
         private void spcTB_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(spcTB.Text, out i))
-            {
-                spcTB.BackColor = Color.White;
-                Runtime.spc_inten = i;
-            }
-            else
-                spcTB.BackColor = Color.Red;
+            Runtime.spcIntentensity = GuiTools.TryParseTBFloat(spcTB);
         }
 
         private void frsTB_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(frsTB.Text, out i))
-            {
-                frsTB.BackColor = Color.White;
-                Runtime.frs_inten = i;
-            }
-            else
-                frsTB.BackColor = Color.Red;
+            Runtime.frsIntensity = GuiTools.TryParseTBFloat(frsTB);
         }
 
         private void ambTB_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(ambTB.Text, out i))
-            {
-                ambTB.BackColor = Color.White;
-                Runtime.amb_inten = i;
-            }
-            else
-                ambTB.BackColor = Color.Red;
+            Runtime.ambItensity = GuiTools.TryParseTBFloat(ambTB);
         }
 
         private void refTB_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(refTB.Text, out i))
-            {
-                refTB.BackColor = Color.White;
-                Runtime.ref_inten = i;
-            }
-            else
-                refTB.BackColor = Color.Red;
+            Runtime.refIntensity = GuiTools.TryParseTBFloat(refTB);
         }
 
         private void modelscaleTB_TextChanged(object sender, EventArgs e)
@@ -413,14 +396,7 @@ namespace Smash_Forge.GUI
             if (disableRuntimeUpdates)
                 return;
 
-            float i = 0;
-            if (float.TryParse(modelscaleTB.Text, out i))
-            {
-                modelscaleTB.BackColor = Color.White;
-                Runtime.model_scale = i;
-            }
-            else
-                modelscaleTB.BackColor = Color.Red;
+            Runtime.model_scale = GuiTools.TryParseTBFloat(modelscaleTB);
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -546,35 +522,6 @@ namespace Smash_Forge.GUI
             }
         }
 
-        private void label35_Click(object sender, EventArgs e)
-        {
-
-        }
-
-      
-        private void label33_Click(object sender, EventArgs e)
-        {
-
-        }
-
-       
-        private void label47_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        public int Clamp(float i)
-        {
-            i *= 255;
-            i = (int)i;
-            if (i > 255)
-                return 255;
-            if (i < 0)
-                return 0;
-            return (int)i;
-        }
-
-
         private void pbWindboxColor_Click(object sender, EventArgs e)
         {
             ColorDialog colorDialog = new ColorDialog();
@@ -612,47 +559,7 @@ namespace Smash_Forge.GUI
 
         private void zScaleTB_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(zScaleTB.Text, out i))
-            {
-                zScaleTB.BackColor = Color.White;
-                Runtime.zScale = i;
-            }
-            else
-                zScaleTB.BackColor = Color.Red;
-        }
-
-        private void difColorButton_Click(object sender, EventArgs e)
-        {           
-            /*
-            if (colorForm == null || colorForm.IsDisposed)
-                colorForm = new LightColorEditor(VBNViewport.diffuseLight);
-            colorForm.Show();*/
-        }
-
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-    
-        }
-
-
-
-
-        private void textBox10_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-      
-
-        private void depthSlider_Scroll(object sender, EventArgs e)
-        {
-
-        }
-
-        private void fovLabel_Click(object sender, EventArgs e)
-        {
-
+            Runtime.zScale = GuiTools.TryParseTBFloat(zScaleTB);
         }
 
         private void pbCounterColor_Click(object sender, EventArgs e)
@@ -827,6 +734,10 @@ namespace Smash_Forge.GUI
                 pbHitboxAnglesColor.BackColor = Runtime.hitboxAnglesColor;
             }
         }
+
+        private void drawUvCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.drawUv = drawUvCB.Checked;
+        }
     }
-    
 }

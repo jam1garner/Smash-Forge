@@ -16,11 +16,6 @@ namespace Smash_Forge
     {
         public LVD LVD;
 
-        public class StringWrapper
-        {
-            public char[] data;
-        } 
-
         public LVDEditor()
         {
             InitializeComponent();
@@ -33,7 +28,7 @@ namespace Smash_Forge
         private TreeNode currentTreeNode;
         private Spawn currentPoint;
         private Bounds currentBounds;
-        private Section currentItemSection;
+        private LVDShape currentItemSection;
         private GeneralPoint currentGeneralPoint;
         private GeneralShape currentGeneralRect;
         private GeneralShape currentGeneralPath;
@@ -70,36 +65,39 @@ namespace Smash_Forge
 
         public void open(Object obj, TreeNode entryTree)
         {
+            lvdEntryGroup.Visible = false;
             collisionGroup.Visible = false;
-            pointGroup.Visible = false;
-            boundGroup.Visible = false;
+            cliffGroup.Visible = false;
+            point2dGroup.Visible = false;
+            boundsGroup.Visible = false;
             itemSpawnerGroup.Visible = false;
-            generalPointShapeBox.Visible = false;
+            point3dGroup.Visible = false;
             rectangleGroup.Visible = false;
             pathGroup.Visible = false;
             meleeCollisionGroup.Visible = false;
             if (obj is LVDEntry)
             {
                 LVDEntry entry = (LVDEntry)obj;
+                lvdEntryGroup.Visible = true;
                 currentTreeNode = entryTree;
                 currentEntry = entry;
-                
-                //These need implementation in the gui for all objects, not just collisions
+
                 name.Text = currentEntry.name;
                 subname.Text = currentEntry.subname;
                 xStart.Value = (decimal)currentEntry.startPos[0];
                 yStart.Value = (decimal)currentEntry.startPos[1];
                 zStart.Value = (decimal)currentEntry.startPos[2];
-                flag1.Checked = currentEntry.useStartPos;
-                string boneNameRigging = currentEntry.BoneName;
+                useStartPos.Checked = currentEntry.useStartPos;
+                string boneNameRigging = currentEntry.boneName;
                 if (boneNameRigging.Length == 0)
                     boneNameRigging = "None";
                 button3.Text = boneNameRigging;
-                
+
                 if (entry is Collision)
                 {
                     Collision col = (Collision)entry;
                     collisionGroup.Visible = true;
+                    flag1.Checked = col.flag1;
                     flag2.Checked = col.flag2;
                     flag3.Checked = col.flag3;
                     flag4.Checked = col.flag4;
@@ -113,16 +111,27 @@ namespace Smash_Forge
                         lines.Nodes.Add(new TreeNode($"Line {i + 1}") { Tag = temp });
                     }
                 }
+                else if (entry is CollisionCliff)
+                {
+                    CollisionCliff cliff = (CollisionCliff)entry;
+                    cliffGroup.Visible = true;
+
+                    cliffPosX.Value = (decimal)cliff.pos.x;
+                    cliffPosY.Value = (decimal)cliff.pos.y;
+                    cliffAngle.Value = (decimal)cliff.angle;
+                    cliffLineIndex.Maximum = ((Collision)currentTreeNode.Parent.Tag).materials.Count;
+                    cliffLineIndex.Value = cliff.lineIndex + 1;
+                }
                 else if (entry is Spawn)
                 {
-                    pointGroup.Visible = true;
+                    point2dGroup.Visible = true;
                     currentPoint = (Spawn)entry;
                     xPoint.Value = (decimal)((Spawn)entry).x;
                     yPoint.Value = (decimal)((Spawn)entry).y;
                 }
                 else if (entry is Bounds)
                 {
-                    boundGroup.Visible = true;
+                    boundsGroup.Visible = true;
                     currentBounds = (Bounds)entry;
                     topVal.Value = (decimal)currentBounds.top;
                     rightVal.Value = (decimal)currentBounds.right;
@@ -135,22 +144,29 @@ namespace Smash_Forge
                     ItemSpawner spawner = (ItemSpawner)entry;
                     treeView1.Nodes.Clear();
                     int i = 1;
-                    foreach (Section section in spawner.sections)
+                    foreach (LVDShape section in spawner.sections)
                         treeView1.Nodes.Add(new TreeNode($"Section {i++}") { Tag = section });
 
                 }
                 else if (entry is GeneralPoint)
                 {
-                    generalPointShapeBox.Visible = true;
+                    point3dGroup.Visible = true;
                     GeneralPoint p = (GeneralPoint)entry;
                     currentGeneralPoint = p;
                     pointShapeX.Value = (Decimal)p.x;
                     pointShapeY.Value = (Decimal)p.y;
+                    pointShapeZ.Value = (Decimal)p.z;
                 }
                 else if (entry is GeneralShape)
                 {
                     GeneralShape s = (GeneralShape)entry;
-                    if ((s.type == 1) || (s.type == 3))
+                    if (s.type == 1)
+                    {
+                        point2dGroup.Visible = true;
+                        xPoint.Value = (decimal)s.x1;
+                        yPoint.Value = (decimal)s.y1;
+                    }
+                    else if (s.type == 3)
                     {
                         rectangleGroup.Visible = true;
                         currentGeneralRect = s;
@@ -214,14 +230,14 @@ namespace Smash_Forge
             leftLedge.Checked = currentMat.getFlag(6);
             rightLedge.Checked = currentMat.getFlag(7);
             noWallJump.Checked = currentMat.getFlag(4);
-            comboBox1.Text = Enum.GetName(typeof(materialTypes), currentMat.getPhysics());
+            comboBox1.Text = Enum.GetName(typeof(materialTypes), currentMat.physics);
             passthroughAngle.Value = (decimal)(Math.Atan2(currentNormal.y, currentNormal.x) * 180.0 / Math.PI);
         }
 
         private void flagChange(object sender, EventArgs e)
         {
             if(sender == flag1)
-                currentEntry.useStartPos = flag1.Checked;
+                ((Collision)currentEntry).flag1 = flag1.Checked;
             if (sender == flag2)
                 ((Collision)currentEntry).flag2 = flag2.Checked;
             if (sender == flag3)
@@ -262,11 +278,13 @@ namespace Smash_Forge
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-             currentMat.setPhysics((byte)Enum.Parse(typeof(materialTypes), comboBox1.Text));
+             currentMat.physics = ((byte)Enum.Parse(typeof(materialTypes), comboBox1.Text));
         }
 
         private void changeStart(object sender, EventArgs e)
         {
+            if (sender == useStartPos)
+                currentEntry.useStartPos = useStartPos.Checked;
             if (sender == xStart)
                 currentEntry.startPos[0] = (float)xStart.Value;
             if (sender == yStart)
@@ -287,18 +305,42 @@ namespace Smash_Forge
 
         private void LVDEditor_Load(object sender, EventArgs e)
         {
+            lvdEntryGroup.Visible = false;
             collisionGroup.Visible = false;
-            pointGroup.Visible = false;
-            boundGroup.Visible = false;
+            point2dGroup.Visible = false;
+            boundsGroup.Visible = false;
+        }
+
+        private void cliff_ValueChanged(object sender, EventArgs e)
+        {
+            CollisionCliff cliff = (CollisionCliff)currentEntry;
+
+            if (sender == cliffPosX)
+                cliff.pos.x = (float)cliffPosX.Value;
+            if (sender == cliffPosY)
+                cliff.pos.y = (float)cliffPosY.Value;
+            if (sender == cliffAngle)
+                cliff.angle = (float)cliffAngle.Value;
+            if (sender == cliffLineIndex)
+                cliff.lineIndex = (int)cliffLineIndex.Value - 1;
         }
 
         private void pointMoved(object sender, EventArgs e)
         {
-            if (sender == xPoint)
-                currentPoint.x = (float)xPoint.Value;
-            if (sender == yPoint)
-                currentPoint.y = (float)yPoint.Value;
-            //Console.WriteLine("(" + currentPoint.x + "," + currentPoint.y + ")");
+            if (currentEntry is Spawn)
+            {
+                if (sender == xPoint)
+                    currentPoint.x = (float)xPoint.Value;
+                if (sender == yPoint)
+                    currentPoint.y = (float)yPoint.Value;
+            }
+            else if (currentEntry is GeneralShape)
+            {
+                if (sender == xPoint)
+                    ((GeneralShape)currentEntry).x1 = (float)xPoint.Value;
+                if (sender == yPoint)
+                    ((GeneralShape)currentEntry).y1 = (float)yPoint.Value;
+            }
         }
 
         private void boundsChanged(object sender, EventArgs e)
@@ -315,39 +357,28 @@ namespace Smash_Forge
 
         private void addVert(object sender, EventArgs e)
         {
-            if(vertices.SelectedNode == null || (vertices.SelectedNode != null && vertices.SelectedNode.Index == vertices.Nodes.Count - 1))
-            {
-                Vector2D newVert;
-                if (vertices.SelectedNode != null)
-                    newVert = new Vector2D() { x = currentVert.x, y = currentVert.y };
-                else
-                    newVert = new Vector2D();
-                ((Collision)currentEntry).verts.Add(newVert);
-                TreeNode newNode = new TreeNode("New Vertex") { Tag = newVert };
-                vertices.Nodes.Add(newNode);
-                vertices.SelectedNode = newNode;
-                if (((Collision)currentEntry).verts.Count > ((Collision)currentEntry).normals.Count + 1)
-                {
-                    CollisionMat newMat = new CollisionMat();
-                    object[] t = { new Vector2D() { x = 1, y = 0 }, new CollisionMat() };
-                    ((Collision)currentEntry).materials.Add((CollisionMat)t[1]);
-                    ((Collision)currentEntry).normals.Add((Vector2D)t[0]);
-                    lines.Nodes.Add(new TreeNode("New line") { Tag = t });
-                }
-            }
+            Collision col = (Collision)currentEntry;
+            int index = (vertices.SelectedNode == null) ? col.verts.Count : vertices.SelectedNode.Index + 1;
+
+            Vector2D newVert;
+            if (vertices.SelectedNode == null)
+                newVert = new Vector2D();
             else
+                newVert = new Vector2D(currentVert.x, currentVert.y);
+            col.verts.Insert(index, newVert);
+
+            TreeNode newNode = new TreeNode("New Vertex") { Tag = newVert };
+            vertices.Nodes.Insert(index, newNode);
+            if (vertices.SelectedNode == null)
+                vertices.SelectedNode = newNode;
+
+            index--;
+            if (col.verts.Count > col.normals.Count + 1)
             {
-                Vector2D newVert = new Vector2D() { x = currentVert.x, y = currentVert.y };
-                ((Collision)currentEntry).verts.Insert(vertices.SelectedNode.Index, newVert);
-                vertices.Nodes.Insert(vertices.SelectedNode.Index, new TreeNode("New Vertex") { Tag = newVert });
-                
-                if (((Collision)currentEntry).verts.Count > ((Collision)currentEntry).normals.Count + 1)
-                {
-                    object[] t = { new Vector2D() { x = 1, y = 0 }, new CollisionMat() };
-                    ((Collision)currentEntry).materials.Insert(vertices.SelectedNode.Index, (CollisionMat)t[1]);
-                    ((Collision)currentEntry).normals.Insert(vertices.SelectedNode.Index, (Vector2D)t[0]);
-                    lines.Nodes.Insert(vertices.SelectedNode.Index, new TreeNode("New line") { Tag = t });
-                }
+                object[] temp = { new Vector2D(1, 0), new CollisionMat() };
+                col.normals.Insert(index, (Vector2D)temp[0]);
+                col.materials.Insert(index, (CollisionMat)temp[1]);
+                lines.Nodes.Insert(index, new TreeNode("New Line") { Tag = temp });
             }
 
             renumber();
@@ -355,27 +386,35 @@ namespace Smash_Forge
 
         private void removeVert(object sender, EventArgs e)
         {
-            ((Collision)currentEntry).verts.RemoveAt(vertices.SelectedNode.Index);
-            vertices.Nodes.RemoveAt(vertices.SelectedNode.Index);
+            Collision col = (Collision)currentEntry;
+            int vertCount = col.verts.Count;
+            if (vertCount == 0)
+                return;
+            int index = (vertices.SelectedNode == null) ? col.verts.Count - 1 : vertices.SelectedNode.Index;
 
-            if (((Collision)currentEntry).verts.Count - 1 == vertices.SelectedNode.Index && ((Collision)currentEntry).normals.Count != 0)
-            {
-                ((Collision)currentEntry).normals.RemoveAt(vertices.SelectedNode.Index - 1);
-            }
-            else if (((Collision)currentEntry).verts.Count - 1 != vertices.SelectedNode.Index)
-            {
-                ((Collision)currentEntry).normals.RemoveAt(vertices.SelectedNode.Index);
-            }
+            col.verts.RemoveAt(index);
+            vertices.Nodes.RemoveAt(index);
 
-            if (((Collision)currentEntry).verts.Count - 1 == vertices.SelectedNode.Index && ((Collision)currentEntry).materials.Count != 0)
+            index = (index == vertCount - 1) ? index - 1 : index;
+            if (col.normals.Count > 0)
+                col.normals.RemoveAt(index);
+            if (col.materials.Count > 0)
+                col.materials.RemoveAt(index);
+            if (lines.Nodes.Count > 0)
+                lines.Nodes.RemoveAt(index);
+
+            for (int i = 0; i < col.cliffs.Count; i++)
             {
-                ((Collision)currentEntry).materials.RemoveAt(vertices.SelectedNode.Index - 1);
-                lines.Nodes.RemoveAt(vertices.SelectedNode.Index - 1);
-            }   
-            else if (((Collision)currentEntry).verts.Count - 1 != vertices.SelectedNode.Index)
-            {
-                ((Collision)currentEntry).materials.RemoveAt(vertices.SelectedNode.Index);
-                lines.Nodes.RemoveAt(vertices.SelectedNode.Index);
+                if (col.cliffs[i].lineIndex == index)
+                {
+                    col.cliffs.RemoveAt(i);
+                    currentTreeNode.Nodes.RemoveAt(i);
+                    continue;
+                }
+                if (col.cliffs[i].lineIndex > index)
+                    col.cliffs[i].lineIndex--;
+                while (col.cliffs[i].lineIndex >= col.materials.Count && col.cliffs[i].lineIndex > 0)
+                    col.cliffs[i].lineIndex--;
             }
 
             renumber();
@@ -389,14 +428,16 @@ namespace Smash_Forge
                 lines.Nodes[i].Text = $"Line {i + 1}";
         }
 
+        //Open bone selector for object rigging
         private void button3_Click(object sender, EventArgs e)
         {
-            //Open bone selector for collision rigging
-            StringWrapper str = new StringWrapper() { data = currentEntry.boneName };
-            BoneRiggingSelector bs = new BoneRiggingSelector(str);
-            bs.ShowDialog();
-            currentEntry.boneName = str.data;
-            string boneNameRigging = currentEntry.BoneName;
+            BoneRiggingSelector brs = new BoneRiggingSelector(currentEntry.boneName);
+            brs.ModelContainers = MainForm.Instance.GetActiveViewport().MeshList.GetModelContainers();
+            brs.ShowDialog();
+            if (!brs.Cancelled)
+                currentEntry.boneName = brs.currentValue;
+
+            string boneNameRigging = currentEntry.boneName;
             if (boneNameRigging.Length == 0)
                 boneNameRigging = "None";
             button3.Text = boneNameRigging;
@@ -405,7 +446,7 @@ namespace Smash_Forge
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
             //selecting something in the sections tab of the item spawner editor
-            Section section = (Section)e.Node.Tag;
+            LVDShape section = (LVDShape)e.Node.Tag;
             treeView2.Nodes.Clear();
             currentItemSection = section;
             int i = 1;
@@ -423,7 +464,7 @@ namespace Smash_Forge
         private void button5_Click(object sender, EventArgs e)
         {
             //Add section
-            Section section = new Section();
+            LVDShape section = new LVDShape(4);
             
             TreeNode node = new TreeNode($"Section {treeView1.Nodes.Count + 1}") { Tag = section };
             ((ItemSpawner)currentEntry).sections.Add(section);
@@ -433,7 +474,7 @@ namespace Smash_Forge
         private void button4_Click(object sender, EventArgs e)
         {
             //remove section
-            Section section = (Section)treeView1.SelectedNode.Tag;
+            LVDShape section = (LVDShape)treeView1.SelectedNode.Tag;
             TreeNode node = treeView1.SelectedNode;
             ((ItemSpawner)currentEntry).sections.Remove(section);
             treeView1.Nodes.Remove(node);
@@ -493,6 +534,8 @@ namespace Smash_Forge
                 currentGeneralPoint.x = (float)pointShapeX.Value;
             if (sender == pointShapeY)
                 currentGeneralPoint.y = (float)pointShapeY.Value;
+            if (sender == pointShapeZ)
+                currentGeneralPoint.z = (float)pointShapeZ.Value;
         }
 
         private void rectValueChanged(object sender, EventArgs e)
@@ -617,11 +660,13 @@ namespace Smash_Forge
             currentGeneralPath = null;
             name.Text = "";
             subname.Text = "";
+            lvdEntryGroup.Visible = false;
             collisionGroup.Visible = false;
-            pointGroup.Visible = false;
-            boundGroup.Visible = false;
+            cliffGroup.Visible = false;
+            point2dGroup.Visible = false;
+            boundsGroup.Visible = false;
             itemSpawnerGroup.Visible = false;
-            generalPointShapeBox.Visible = false;
+            point3dGroup.Visible = false;
             rectangleGroup.Visible = false;
             pathGroup.Visible = false;
         }

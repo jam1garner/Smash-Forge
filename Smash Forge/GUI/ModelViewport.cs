@@ -18,6 +18,8 @@ using System.Drawing.Imaging;
 using Gif.Components;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Globalization;
+using Smash_Forge.Rendering.Lights;
 using OpenTK.Input;
 
 namespace Smash_Forge
@@ -28,7 +30,7 @@ namespace Smash_Forge
         bool ReadyToRender = false;
 
         // View controls
-        Camera Camera = new Camera();
+        Camera camera = new Camera();
         public Matrix4 lightMatrix, lightProjection;
         public GUI.Menus.CameraSettings cameraPosForm = null;
 
@@ -184,7 +186,7 @@ namespace Smash_Forge
         public ModelViewport()
         {
             InitializeComponent();
-            Camera = new Camera();
+            camera = new Camera();
             FilePath = "";
             Text = "Model Viewport";
 
@@ -310,17 +312,17 @@ namespace Smash_Forge
             timer.Tick += new EventHandler(Application_Idle);
             timer.Start();
 
-            for (int i = 0; i < Lights.stageDiffuseLightSet.Length; i++)
+            for (int i = 0; i < LightTools.stageDiffuseLightSet.Length; i++)
             {
                 // should properly initialize these eventually
-                Lights.stageDiffuseLightSet[i] = new DirectionalLight();
-                Lights.stageDiffuseLightSet[i].id = "Stage " + i;
+                LightTools.stageDiffuseLightSet[i] = new DirectionalLight();
+                LightTools.stageDiffuseLightSet[i].id = "Stage " + i;
             }
 
-            for (int i = 0; i < Lights.stageFogSet.Length; i++)
+            for (int i = 0; i < LightTools.stageFogSet.Length; i++)
             {
                 // should properly initialize these eventually
-                Lights.stageFogSet[i] = new Vector3(0);
+                LightTools.stageFogSet[i] = new Vector3(0);
             }
         }
 
@@ -364,14 +366,14 @@ namespace Smash_Forge
                 GL.LoadIdentity();
                 GL.Viewport(glViewport.ClientRectangle);
 
-                Camera.setRenderWidth(glViewport.Width);
-                Camera.setRenderHeight(glViewport.Height);
-                Camera.Update();
+                camera.setRenderWidth(glViewport.Width);
+                camera.setRenderHeight(glViewport.Height);
+                camera.Update();
             }
             //Mesh Selection Test
             if (e.Button == MouseButtons.Left)
             {
-                Ray ray = new Ray(Camera, glViewport);
+                Ray ray = new Ray(camera, glViewport);
                 int selectedSize = 0;
 
                 TransformTool.b = null;
@@ -408,7 +410,7 @@ namespace Smash_Forge
         public void CalculateLightSource()
         {
             Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, Runtime.renderDepth, out lightProjection);
-            Matrix4 lightView = Matrix4.LookAt(Vector3.TransformVector(Vector3.Zero, Camera.getMVPMatrix()).Normalized(),
+            Matrix4 lightView = Matrix4.LookAt(Vector3.TransformVector(Vector3.Zero, camera.getMVPMatrix()).Normalized(),
                 new Vector3(0),
                 new Vector3(0, 1, 0));
             lightMatrix = lightProjection * lightView;
@@ -416,7 +418,7 @@ namespace Smash_Forge
 
         private Vector3 getScreenPoint(Vector3 pos)
         {
-            Vector4 n = Vector4.Transform(new Vector4(pos, 1), Camera.getMVPMatrix());
+            Vector4 n = Vector4.Transform(new Vector4(pos, 1), camera.getMVPMatrix());
             n.X /= n.W;
             n.Y /= n.W;
             n.Z /= n.W;
@@ -430,9 +432,9 @@ namespace Smash_Forge
                 GL.LoadIdentity();
                 GL.Viewport(glViewport.ClientRectangle);
 
-                Camera.setRenderWidth(glViewport.Width);
-                Camera.setRenderHeight(glViewport.Height);
-                Camera.Update();
+                camera.setRenderWidth(glViewport.Width);
+                camera.setRenderHeight(glViewport.Height);
+                camera.Update();
             }
         }
 
@@ -546,10 +548,10 @@ namespace Smash_Forge
 
         private void ResetCamera_Click(object sender, EventArgs e)
         {
-            Camera.setPosition(new Vector3(0, 10, -80));
-            Camera.setRotX(0);
-            Camera.setRotY(0);
-            Camera.Update();
+            camera.setPosition(new Vector3(0, 10, -80));
+            camera.setRotX(0);
+            camera.setRotY(0);
+            camera.Update();
         }
 
         #endregion
@@ -654,7 +656,7 @@ namespace Smash_Forge
 
         private void CameraSettings_Click(object sender, EventArgs e)
         {
-            cameraPosForm = new GUI.Menus.CameraSettings(Camera);
+            cameraPosForm = new GUI.Menus.CameraSettings(camera);
             cameraPosForm.ShowDialog();
         }
 
@@ -680,27 +682,37 @@ namespace Smash_Forge
         private void ViewComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             HideAll();
-            switch (ViewComboBox.SelectedIndex)
+            // Use a string so the order of the items can be changed later. 
+            switch (ViewComboBox.SelectedItem.ToString())
             {
-                case 0:
+                case "Model Viewer":
                     MeshList.Visible = true;
                     AnimList.Visible = true;
                     break;
-                case 1:
+                case "Model Editor":
                     MeshList.Visible = true;
                     VertexTool.Visible = true;
                     break;
-                case 2:
+                case "Animation Editor":
                     AnimList.Visible = true;
                     totalFrame.Enabled = true;
                     break;
-                case 3:
+                case "LVD Editor":
                     LVDEditor.Visible = true;
                     LVDList.Visible = true;
                     break;
-                case 4:
+                case "ACMD Editor":
                     AnimList.Visible = true;
                     ACMDEditor.Visible = true;
+                    break;
+                case "Clean":
+                    LVDEditor.Visible = false;
+                    LVDList.Visible = false;
+                    MeshList.Visible = false;
+                    AnimList.Visible = false;
+                    ACMDEditor.Visible = false;
+                    VertexTool.Visible = false;
+                    totalFrame.Enabled = false;
                     break;
             }
         }
@@ -941,7 +953,7 @@ namespace Smash_Forge
                 {
                     // single vertex
                     // Selects the closest vertex
-                    Ray r = RenderTools.createRay(Camera.getMVPMatrix(), GetMouseOnViewport());
+                    Ray r = RenderTools.createRay(camera.getMVPMatrix(), GetMouseOnViewport());
                     Vector3 close = Vector3.Zero;
                     foreach (TreeNode node in draw)
                     {
@@ -1026,48 +1038,41 @@ namespace Smash_Forge
 
         #region Rendering
 
-
         private void Render(object sender, PaintEventArgs e)
         {
             if (!ReadyToRender)
                 return;
 
+            // Setup viewport. 
             glViewport.MakeCurrent();
-
             GL.LoadIdentity();
             GL.Viewport(glViewport.ClientRectangle);
 
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
-            // clear the gf buffer
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
             
-            // use fixed function pipeline for drawing background and floor grid
+            // Use fixed function pipeline for drawing background and floor grid
             GL.UseProgram(0);
 
+            // Return early to avoid rendering other stuff. 
             if (MeshList.treeView1.SelectedNode != null)
             {
                 if (MeshList.treeView1.SelectedNode is BCH_Texture)
                 {
-                    GL.PopAttrib();
-                    BCH_Texture tex = ((BCH_Texture)MeshList.treeView1.SelectedNode);
-                    RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, true, true, true, false, true);
-                    glViewport.SwapBuffers();
+                    DrawBchTex();
                     return;
                 }
                 if (MeshList.treeView1.SelectedNode is NUT_Texture)
                 {
-                    GL.PopAttrib();
-                    NUT_Texture tex = ((NUT_Texture)MeshList.treeView1.SelectedNode);
-                    RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height, true, true, true, true, false, true);
-                    glViewport.SwapBuffers();
+                    DrawNutTexAndUvs();
                     return;
                 }
             }
 
             if (Runtime.renderBackGround)
             {
-                // background uses different matrices
+                // Background uses different matrices
                 GL.MatrixMode(MatrixMode.Modelview);
                 GL.LoadIdentity();
                 GL.MatrixMode(MatrixMode.Projection);
@@ -1091,44 +1096,23 @@ namespace Smash_Forge
             try
             {
                 if (OpenTK.Input.Mouse.GetState() != null)
-                    Camera.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
+                    camera.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
             } catch
             {
 
             }
 
-            Matrix4 matrix = Camera.getMVPMatrix();
+            Matrix4 matrix = camera.getMVPMatrix();
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref matrix);
 
-            // Floor
-            // -------------------------------------------------------------
             if (Runtime.renderFloor)
                 RenderTools.drawFloor();
 
-            // Shadows
-            // -------------------------------------------------------------
-            if (Runtime.drawModelShadow)
-            {
-                CalculateLightSource();
-                // update light matrix and setup shadowmap rendering
-                GL.MatrixMode(MatrixMode.Modelview);
-                GL.LoadMatrix(ref lightMatrix);
-                GL.Enable(EnableCap.DepthTest);
-                GL.Viewport(0, 0, sw, sh);
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
-
-                foreach (ModelContainer m in draw)
-                    m.RenderShadow(Camera, 0, Matrix4.Zero, Camera.getMVPMatrix());
-
-                // reset matrices and viewport for model rendering again
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                GL.LoadMatrix(ref matrix);
-                GL.Viewport(glViewport.ClientRectangle);
-            }
-
-            // render models into hdr buffer
-            // -------------------------------------------------------------
+            if (Runtime.drawModelShadow)           
+                DrawModelShadow(matrix);
+            
+            // Allow disabling depth testing for experimental 2D rendering. 
             if (Runtime.useDepthTest)
             {
                 GL.Enable(EnableCap.DepthTest);
@@ -1141,39 +1125,22 @@ namespace Smash_Forge
             GL.Enable(EnableCap.DepthTest);
 
             // Models
-            // -------------------------------------------------------------
-            //frameTime.Start();
             if (Runtime.renderModel || Runtime.renderModelWireframe)
                 foreach (TreeNode m in draw)
                     if(m is ModelContainer)
-                        ((ModelContainer)m).Render(Camera, 0, Matrix4.Zero, Camera.getMVPMatrix());
+                        ((ModelContainer)m).Render(camera, 0, Matrix4.Zero, camera.getMVPMatrix());
 
             if (ViewComboBox.SelectedIndex == 1)
                 foreach (TreeNode m in draw)
                     if (m is ModelContainer)
-                        ((ModelContainer)m).RenderPoints(Camera);
-
-
-            //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-
-            /*// render gaussian blur stuff
-            if (Runtime.drawQuadBlur)
-                DrawQuadBlur();
-
-            // render full screen quad for post processing
-            if (Runtime.drawQuadFinalOutput)
-                DrawQuadFinalOutput();*/
+                        ((ModelContainer)m).RenderPoints(camera);
 
             // use fixed function pipeline again for area lights, lvd, bones, hitboxes, etc
             SetupFixedFunctionRendering();
 
-            /*// draw path.bin
-            if (Runtime.renderPath)
-                DrawPathDisplay();
-
             // area light bounding boxes should intersect stage geometry and not render on top
             if (Runtime.drawAreaLightBoundingBoxes)
-                DrawAreaLightBoundingBoxes();*/
+                DrawAreaLightBoundingBoxes();
 
             // clear depth buffer so stuff will render on top of the models
             GL.Clear(ClearBufferMask.DepthBufferBit);
@@ -1194,16 +1161,13 @@ namespace Smash_Forge
 
             if (ACMDScript!=null && draw.Count > 0 && (draw[0] is ModelContainer))
                 ACMDScript.Render(((ModelContainer)draw[0]).GetVBN());
-            //Debug.WriteLine(frameTime.getAverageRenderTime());
-
-
 
             // Bone Transform Tool
             if (ViewComboBox.SelectedIndex == 2)
             {
                 if (modeBone.Checked)
                 {
-                    TransformTool.Render(Camera, new Ray(Camera, glViewport));
+                    TransformTool.Render(camera, new Ray(camera, glViewport));
                     if (TransformTool.state == 1)
                         CurrentMode = Mode.Selection;
                     else
@@ -1306,6 +1270,71 @@ namespace Smash_Forge
 
             GL.PopAttrib();
             glViewport.SwapBuffers();
+        }
+
+        private void DrawNutTexAndUvs()
+        {
+            GL.PopAttrib();
+            NUT_Texture tex = ((NUT_Texture)MeshList.treeView1.SelectedNode);
+            RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height);
+
+            if (Runtime.drawUv)
+                DrawUvsForSelectedTexture(tex);
+
+            glViewport.SwapBuffers();
+        }
+
+        private void DrawBchTex()
+        {
+            GL.PopAttrib();
+            BCH_Texture tex = ((BCH_Texture)MeshList.treeView1.SelectedNode);
+            RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
+            glViewport.SwapBuffers();
+        }
+
+        private void DrawAreaLightBoundingBoxes()
+        {
+            foreach (AreaLight light in LightTools.areaLights)
+            {
+                Color color = Color.White;
+
+                RenderTools.drawRectangularPrismWireframe(new Vector3(light.positionX, light.positionY, light.positionZ),
+                    light.scaleX, light.scaleY, light.scaleZ, color);
+            }
+        }
+
+        private void DrawModelShadow(Matrix4 matrix)
+        {
+            CalculateLightSource();
+            // update light matrix and setup shadowmap rendering
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref lightMatrix);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Viewport(0, 0, sw, sh);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
+
+            foreach (ModelContainer m in draw)
+                m.RenderShadow(camera, 0, Matrix4.Zero, camera.getMVPMatrix());
+
+            // reset matrices and viewport for model rendering again
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.LoadMatrix(ref matrix);
+            GL.Viewport(glViewport.ClientRectangle);
+        }
+
+        private void DrawUvsForSelectedTexture(NUT_Texture tex)
+        {
+            foreach (TreeNode node in MeshList.treeView1.Nodes)
+            {
+                if (!(node is ModelContainer))
+                    continue;
+
+                ModelContainer m = (ModelContainer)node;
+
+                int textureHash = 0;
+                int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
+                RenderTools.DrawUv(camera, m.NUD, textureHash, 4, Color.Red, 1, Color.White);
+            }
         }
 
         private static void SetupFixedFunctionRendering()

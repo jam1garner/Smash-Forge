@@ -21,6 +21,7 @@ using OpenTK.Graphics.OpenGL;
 using System.ComponentModel;
 using OpenTK;
 using OpenTK.Graphics;
+using Smash_Forge.Rendering.Lights;
 
 namespace Smash_Forge
 {
@@ -73,9 +74,6 @@ namespace Smash_Forge
             Runtime.renderDepth = 100000.0f;
             //foreach (var vp in viewports)
             //    AddDockedControl(vp);
-
-            //if (Smash_Forge.Update.Downloaded)
-            //    MainForm.Instance.pictureBox1.Image = Resources.Resources.sexy_green_down_arrow;
 
             System.Windows.Forms.Application.Idle += AppIdle;
 
@@ -135,49 +133,11 @@ namespace Smash_Forge
             Runtime.renderReverseLedgeGrabboxes = false;
             Runtime.paramDir = "";
 
-            //viewportWindowToolStripMenuItem.Checked = true;
             openFiles();
 
             Runtime.StartupFromConfig(MainForm.executableDir + "\\config.xml");
 
-            SetupShaders();
-
-            //RenderTools.Setup();
-        }
-
-        private static void SetupShaders()
-        {
-            // Reset the shaders first so that shaders can be replaced.
-            Runtime.shaders = new Dictionary<string, Shader>();
-            CreateShader("Texture", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("NUD", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("MBN", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("DAT", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("NUD_Debug", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("Gradient", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("Quad", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("Blur", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("Shadow", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("Point", "/lib/Shader/", "/lib/Shader/");
-        }
-
-        private static void CreateShader(string name, string legacyPath, string normalPath)
-        {
-            if (!Runtime.shaders.ContainsKey(name))
-            {
-                Shader shader = new Shader();
-                if (Runtime.useLegacyShaders)
-                {
-                    shader.vertexShader(File.ReadAllText(MainForm.executableDir + legacyPath + name + "_vs.txt"));
-                    shader.fragmentShader(File.ReadAllText(MainForm.executableDir + legacyPath + name + "_fs.txt"));
-                }
-                else
-                {
-                    shader.vertexShader(File.ReadAllText(MainForm.executableDir + normalPath + name + "_vs.txt"));
-                    shader.fragmentShader(File.ReadAllText(MainForm.executableDir + normalPath + name + "_fs.txt"));
-                }
-                Runtime.shaders.Add(name, shader);
-            }
+            ShaderTools.SetupShaders();
         }
 
         public void openFiles()
@@ -417,14 +377,8 @@ namespace Smash_Forge
                 {
                     filename = save.FileName;
                     saveFile(filename);
-                    //OMO.createOMO (anim, vbn, "C:\\Users\\ploaj_000\\Desktop\\WebGL\\test_outut.omo", -1, -1);
                 }
             }
-        }
-
-        public static void DAEReadSemantic(int p, Dictionary<string, string> semantic)
-        {
-
         }
 
         private ModelViewport openNud(string filename, string name = "", ModelViewport mvp = null)
@@ -808,8 +762,8 @@ namespace Smash_Forge
             hurtboxList.refresh();
             Runtime.Animnames.Clear();
             Runtime.clearMoveset();
-            Lights.areaLights.Clear();
-            Lights.lightMaps.Clear();
+            LightTools.areaLights.Clear();
+            LightTools.lightMaps.Clear();
             animList.treeView1.Nodes.Clear();
 
             //Close all Editors
@@ -1179,17 +1133,17 @@ namespace Smash_Forge
                             {
                                 // should this always replace existing settings?
                                 Runtime.lightSetParam = new ParamFile(fileName);
-                                Lights.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                                LightTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
                             }
 
                             if (fileName.EndsWith("area_light.xmb"))
                             {
-                                Lights.CreateAreaLightsFromXMB(new XMBFile(fileName));
+                                LightTools.CreateAreaLightsFromXMB(new XMBFile(fileName));
                             }
 
                             if (fileName.EndsWith("lightmap.xmb"))
                             {
-                                Lights.CreateLightMapsFromXMB(new XMBFile(fileName));
+                                LightTools.CreateLightMapsFromXMB(new XMBFile(fileName));
                             }
                         }
                     }
@@ -1877,7 +1831,7 @@ namespace Smash_Forge
                     if (fileName.EndsWith("light_set_param.bin"))
                     {
                         Runtime.lightSetParam = new ParamFile(fileName);
-                        Lights.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                        LightTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
                     }
 
                     if (fileName.EndsWith("stprm.bin"))
@@ -1930,16 +1884,20 @@ namespace Smash_Forge
 
             if (fileName.ToLower().EndsWith(".dae"))
             {
-                DAEImportSettings m = new DAEImportSettings();
-                m.ShowDialog();
-                if (m.exitStatus == DAEImportSettings.Opened)
+                DAEImportSettings daeImport = new DAEImportSettings();
+                daeImport.ShowDialog();
+                if (daeImport.exitStatus == DAEImportSettings.ExitStatus.Opened)
                 {
                     ModelContainer con = new ModelContainer();
 
                     // load vbn
-                    con.VBN = m.getVBN();
+                    con.VBN = daeImport.getVBN();
 
-                    Collada.DAEtoNUD(fileName, con, m.checkBox5.Checked);
+                    Stopwatch sw = new Stopwatch();
+                    sw.Start();
+                    Collada.DaetoNud(fileName, con, daeImport.importTexCB.Checked);
+                    Debug.WriteLine("DAEtoNUD: " + sw.ElapsedMilliseconds / 1000.0);
+                    sw.Stop();
                     //Runtime.ModelContainers.Add(con);
                     ModelViewport mvp = new ModelViewport();
                     mvp.draw.Add(con);
@@ -1949,7 +1907,8 @@ namespace Smash_Forge
                     //resyncTargetVBN();
 
                     // apply settings
-                    m.Apply(con.NUD);
+                    daeImport.Apply(con.NUD);
+           
                     con.NUD.MergePoly();
 
                     //meshList.refresh();
@@ -1958,12 +1917,12 @@ namespace Smash_Forge
 
             if (fileName.EndsWith("area_light.xmb"))
             {
-                Lights.CreateAreaLightsFromXMB(new XMBFile(fileName));
+                LightTools.CreateAreaLightsFromXMB(new XMBFile(fileName));
             }
 
             if (fileName.EndsWith("lightmap.xmb"))
             {
-                Lights.CreateLightMapsFromXMB(new XMBFile(fileName));
+                LightTools.CreateLightMapsFromXMB(new XMBFile(fileName));
             }
 
             if (fileName.EndsWith(".nud"))
@@ -2015,7 +1974,15 @@ namespace Smash_Forge
                 project.fillTree();
         }
 
-        // returns true if importing into active
+        public ModelViewport GetActiveViewport()
+        {
+            if (dockPanel1.ActiveContent is ModelViewport)
+                return (ModelViewport)dockPanel1.ActiveContent;
+            else
+                return null;
+        }
+
+        // returns true if importing into active viewport
         public bool CheckCurrentViewport(out ModelViewport mvp)
         {
             mvp = null;
@@ -2369,7 +2336,7 @@ namespace Smash_Forge
 
         private void reloadShadersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SetupShaders();
+            ShaderTools.SetupShaders();
         }
 
         private void open3DSCharacterToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2385,7 +2352,6 @@ namespace Smash_Forge
                     MainForm.Instance.Progress.ControlBox = false;
                     MainForm.Instance.Progress.Message = ("Please Wait... Opening Character");
                     MainForm.Instance.Progress.Show();*/
-
 
                     string fighterName = new DirectoryInfo(ofd.SelectedPath).Name;
 
