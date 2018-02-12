@@ -18,6 +18,7 @@ using System.Drawing.Imaging;
 using Gif.Components;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using OpenTK.Input;
 
 namespace Smash_Forge
 {
@@ -172,6 +173,13 @@ namespace Smash_Forge
         public MeshList MeshList = new MeshList();
         public AnimListPanel AnimList = new AnimListPanel();
         public TreeNodeCollection draw;
+
+        // Photoshoot
+        public bool freezeCamera = false;
+        public int ShootX = 0;
+        public int ShootY = 0;
+        public int ShootWidth = 50;
+        public int ShootHeight = 50;
 
         public ModelViewport()
         {
@@ -348,7 +356,7 @@ namespace Smash_Forge
 
         int dbdistance = 0;
         System.Drawing.Point _LastPoint;
-        private void glViewport_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void glViewport_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (ReadyToRender && glViewport != null)
             {
@@ -650,15 +658,15 @@ namespace Smash_Forge
             cameraPosForm.ShowDialog();
         }
 
-        private void glViewport_MouseMove(object sender, MouseEventArgs e)
+        private void glViewport_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if(CurrentMode != Mode.Selection)
+            if(CurrentMode != Mode.Selection && !freezeCamera)
                 Camera.Update();
         }
 
         #region Controls
 
-        private void ViewComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        public void HideAll()
         {
             LVDEditor.Visible = false;
             LVDList.Visible = false;
@@ -667,6 +675,11 @@ namespace Smash_Forge
             ACMDEditor.Visible = false;
             VertexTool.Visible = false;
             totalFrame.Enabled = false;
+        }
+
+        private void ViewComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            HideAll();
             switch (ViewComboBox.SelectedIndex)
             {
                 case 0:
@@ -1001,7 +1014,7 @@ namespace Smash_Forge
             
         }
 
-        private void glViewport_MouseUp(object sender, MouseEventArgs e)
+        private void glViewport_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             //checkSelect();
         }
@@ -1068,7 +1081,7 @@ namespace Smash_Forge
             GL.MatrixMode(MatrixMode.Projection);
             if (glViewport.ClientRectangle.Contains(glViewport.PointToClient(Cursor.Position))
              && glViewport.Focused 
-             && CurrentMode == Mode.Normal
+             && (CurrentMode == Mode.Normal || (CurrentMode == Mode.Photoshoot && !freezeCamera))
              && !TransformTool.hit)
             {
                 Camera.Update();
@@ -1278,18 +1291,18 @@ namespace Smash_Forge
 
             }
 
-            /*if (CurrentMode == Mode.Photoshoot)
+            if (CurrentMode == Mode.Photoshoot)
             {
                 freezeCamera = false;
                 if (Keyboard.GetState().IsKeyDown(Key.W) && Mouse.GetState().IsButtonDown(MouseButton.Left))
                 {
-                    shootX = this.PointToClient(Cursor.Position).X;
-                    shootY = this.PointToClient(Cursor.Position).Y;
+                    ShootX = glViewport.PointToClient(Cursor.Position).X;
+                    ShootY = glViewport.PointToClient(Cursor.Position).Y;
                     freezeCamera = true;
                 }
                 // Hold on to your pants, boys
-                RenderTools.DrawPhotoshoot(glViewport, shootX, shootY, shootWidth, shootHeight);
-            }*/
+                RenderTools.DrawPhotoshoot(glViewport, ShootX, ShootY, ShootWidth, ShootHeight);
+            }
 
             GL.PopAttrib();
             glViewport.SwapBuffers();

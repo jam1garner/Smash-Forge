@@ -198,8 +198,8 @@ namespace Smash_Forge
                 else if (file.Equals("--preview"))
                 {
                     Text = "Meteor Preview";
-                    superCleanPreset(new object(), new EventArgs());
-                    meshList.Show();
+                    //superCleanPreset(new object(), new EventArgs());
+                    //meshList.Show();
                     NUT chr_00_nut = null, chr_11_nut = null, chr_13_nut = null, stock_90_nut = null;
                     string chr_00_loc = null, chr_11_loc = null, chr_13_loc = null, stock_90_loc = null;
                     String nud = null, nut, vbn;
@@ -256,6 +256,7 @@ namespace Smash_Forge
                     uiPreview.ShowHint = DockState.DockRight;
                     dockPanel1.DockRightPortion = 270;
                     AddDockedControl(uiPreview);
+
                     i += 4;
                 }
                 else
@@ -290,6 +291,17 @@ namespace Smash_Forge
             }
             else if(content != null && dockPanel1 != null)
                 content.Show(dockPanel1);
+        }
+
+        public Control GetModelViewport()
+        {
+            foreach (Control c in dockPanel1.Contents)
+            {
+
+                if (c is ModelViewport)
+                    return c;
+            }
+            return null;
         }
 
         private void RegenPanels()
