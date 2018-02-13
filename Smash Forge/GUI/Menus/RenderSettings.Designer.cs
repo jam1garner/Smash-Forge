@@ -34,10 +34,10 @@
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
             this.hitboxAnglesCB = new System.Windows.Forms.CheckBox();
-            this.checkBox23 = new System.Windows.Forms.CheckBox();
-            this.checkBox22 = new System.Windows.Forms.CheckBox();
-            this.checkBox21 = new System.Windows.Forms.CheckBox();
-            this.checkBox17 = new System.Windows.Forms.CheckBox();
+            this.renderReverseLedgeGrabCB = new System.Windows.Forms.CheckBox();
+            this.renderTetherLedgeCB = new System.Windows.Forms.CheckBox();
+            this.renderLedgeGrabCB = new System.Windows.Forms.CheckBox();
+            this.renderSpecialBubblesCB = new System.Windows.Forms.CheckBox();
             this.label80 = new System.Windows.Forms.Label();
             this.label81 = new System.Windows.Forms.Label();
             this.pbShieldColor = new System.Windows.Forms.PictureBox();
@@ -73,16 +73,16 @@
             this.btnAddColor = new System.Windows.Forms.Button();
             this.btnColorDown = new System.Windows.Forms.Button();
             this.btnColorUp = new System.Windows.Forms.Button();
-            this.checkBox18 = new System.Windows.Forms.CheckBox();
+            this.renderPriorityTopCB = new System.Windows.Forms.CheckBox();
             this.listViewKbColors = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label10 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.checkBox4 = new System.Windows.Forms.CheckBox();
-            this.checkBox13 = new System.Windows.Forms.CheckBox();
-            this.checkBox15 = new System.Windows.Forms.CheckBox();
-            this.checkBox14 = new System.Windows.Forms.CheckBox();
-            this.checkBox16 = new System.Windows.Forms.CheckBox();
+            this.renderHitboxesCB = new System.Windows.Forms.CheckBox();
+            this.renderHurtboxesCB = new System.Windows.Forms.CheckBox();
+            this.renderEnvCollisionBoxCB = new System.Windows.Forms.CheckBox();
+            this.renderHurtboxZonesCB = new System.Windows.Forms.CheckBox();
+            this.renderInterpHitboxCB = new System.Windows.Forms.CheckBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.zScaleTB = new System.Windows.Forms.TextBox();
@@ -94,22 +94,22 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.drawUvCB = new System.Windows.Forms.CheckBox();
             this.areaLightBoundingBoxCB = new System.Windows.Forms.CheckBox();
-            this.checkBox11 = new System.Windows.Forms.CheckBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.checkBox7 = new System.Windows.Forms.CheckBox();
-            this.checkBox6 = new System.Windows.Forms.CheckBox();
+            this.renderGeneralShapesCB = new System.Windows.Forms.CheckBox();
+            this.renderModelCB = new System.Windows.Forms.CheckBox();
+            this.renderCollisionsCB = new System.Windows.Forms.CheckBox();
+            this.renderLvdCB = new System.Windows.Forms.CheckBox();
             this.wireframeCB = new System.Windows.Forms.CheckBox();
-            this.checkBox8 = new System.Windows.Forms.CheckBox();
+            this.renderSpawnsCB = new System.Windows.Forms.CheckBox();
             this.modelSelectCB = new System.Windows.Forms.CheckBox();
-            this.checkBox5 = new System.Windows.Forms.CheckBox();
+            this.renderFloorCB = new System.Windows.Forms.CheckBox();
             this.boundingCB = new System.Windows.Forms.CheckBox();
-            this.swagViewing = new System.Windows.Forms.CheckBox();
-            this.backgroundCB = new System.Windows.Forms.CheckBox();
-            this.checkBox9 = new System.Windows.Forms.CheckBox();
-            this.checkBox12 = new System.Windows.Forms.CheckBox();
-            this.checkBox10 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.showSwagDataCB = new System.Windows.Forms.CheckBox();
+            this.renderBackgroundCB = new System.Windows.Forms.CheckBox();
+            this.renderRespawnsCB = new System.Windows.Forms.CheckBox();
+            this.renderPassthroughCB = new System.Windows.Forms.CheckBox();
+            this.renderItemSpawnersCB = new System.Windows.Forms.CheckBox();
+            this.renderBonesCB = new System.Windows.Forms.CheckBox();
+            this.renderCameraPathCB = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.radioButton3 = new System.Windows.Forms.RadioButton();
@@ -182,10 +182,10 @@
             this.tabPage2.Controls.Add(this.label1);
             this.tabPage2.Controls.Add(this.pbHitboxAnglesColor);
             this.tabPage2.Controls.Add(this.hitboxAnglesCB);
-            this.tabPage2.Controls.Add(this.checkBox23);
-            this.tabPage2.Controls.Add(this.checkBox22);
-            this.tabPage2.Controls.Add(this.checkBox21);
-            this.tabPage2.Controls.Add(this.checkBox17);
+            this.tabPage2.Controls.Add(this.renderReverseLedgeGrabCB);
+            this.tabPage2.Controls.Add(this.renderTetherLedgeCB);
+            this.tabPage2.Controls.Add(this.renderLedgeGrabCB);
+            this.tabPage2.Controls.Add(this.renderSpecialBubblesCB);
             this.tabPage2.Controls.Add(this.label80);
             this.tabPage2.Controls.Add(this.label81);
             this.tabPage2.Controls.Add(this.pbShieldColor);
@@ -221,15 +221,15 @@
             this.tabPage2.Controls.Add(this.btnAddColor);
             this.tabPage2.Controls.Add(this.btnColorDown);
             this.tabPage2.Controls.Add(this.btnColorUp);
-            this.tabPage2.Controls.Add(this.checkBox18);
+            this.tabPage2.Controls.Add(this.renderPriorityTopCB);
             this.tabPage2.Controls.Add(this.listViewKbColors);
             this.tabPage2.Controls.Add(this.label10);
             this.tabPage2.Controls.Add(this.comboBox1);
-            this.tabPage2.Controls.Add(this.checkBox4);
-            this.tabPage2.Controls.Add(this.checkBox13);
-            this.tabPage2.Controls.Add(this.checkBox15);
-            this.tabPage2.Controls.Add(this.checkBox14);
-            this.tabPage2.Controls.Add(this.checkBox16);
+            this.tabPage2.Controls.Add(this.renderHitboxesCB);
+            this.tabPage2.Controls.Add(this.renderHurtboxesCB);
+            this.tabPage2.Controls.Add(this.renderEnvCollisionBoxCB);
+            this.tabPage2.Controls.Add(this.renderHurtboxZonesCB);
+            this.tabPage2.Controls.Add(this.renderInterpHitboxCB);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -266,49 +266,49 @@
             this.hitboxAnglesCB.UseVisualStyleBackColor = true;
             this.hitboxAnglesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
-            // checkBox23
+            // renderReverseLedgeGrabCB
             // 
-            this.checkBox23.AutoSize = true;
-            this.checkBox23.Location = new System.Drawing.Point(3, 596);
-            this.checkBox23.Name = "checkBox23";
-            this.checkBox23.Size = new System.Drawing.Size(191, 17);
-            this.checkBox23.TabIndex = 72;
-            this.checkBox23.Text = "Render Reverse Ledge Grabboxes";
-            this.checkBox23.UseVisualStyleBackColor = true;
-            this.checkBox23.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderReverseLedgeGrabCB.AutoSize = true;
+            this.renderReverseLedgeGrabCB.Location = new System.Drawing.Point(3, 596);
+            this.renderReverseLedgeGrabCB.Name = "renderReverseLedgeGrabCB";
+            this.renderReverseLedgeGrabCB.Size = new System.Drawing.Size(191, 17);
+            this.renderReverseLedgeGrabCB.TabIndex = 72;
+            this.renderReverseLedgeGrabCB.Text = "Render Reverse Ledge Grabboxes";
+            this.renderReverseLedgeGrabCB.UseVisualStyleBackColor = true;
+            this.renderReverseLedgeGrabCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
-            // checkBox22
+            // renderTetherLedgeCB
             // 
-            this.checkBox22.AutoSize = true;
-            this.checkBox22.Location = new System.Drawing.Point(3, 618);
-            this.checkBox22.Name = "checkBox22";
-            this.checkBox22.Size = new System.Drawing.Size(182, 17);
-            this.checkBox22.TabIndex = 71;
-            this.checkBox22.Text = "Render Tether Ledge Grabboxes";
-            this.checkBox22.UseVisualStyleBackColor = true;
-            this.checkBox22.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderTetherLedgeCB.AutoSize = true;
+            this.renderTetherLedgeCB.Location = new System.Drawing.Point(3, 618);
+            this.renderTetherLedgeCB.Name = "renderTetherLedgeCB";
+            this.renderTetherLedgeCB.Size = new System.Drawing.Size(182, 17);
+            this.renderTetherLedgeCB.TabIndex = 71;
+            this.renderTetherLedgeCB.Text = "Render Tether Ledge Grabboxes";
+            this.renderTetherLedgeCB.UseVisualStyleBackColor = true;
+            this.renderTetherLedgeCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
-            // checkBox21
+            // renderLedgeGrabCB
             // 
-            this.checkBox21.AutoSize = true;
-            this.checkBox21.Location = new System.Drawing.Point(3, 575);
-            this.checkBox21.Name = "checkBox21";
-            this.checkBox21.Size = new System.Drawing.Size(148, 17);
-            this.checkBox21.TabIndex = 70;
-            this.checkBox21.Text = "Render Ledge Grabboxes";
-            this.checkBox21.UseVisualStyleBackColor = true;
-            this.checkBox21.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderLedgeGrabCB.AutoSize = true;
+            this.renderLedgeGrabCB.Location = new System.Drawing.Point(3, 575);
+            this.renderLedgeGrabCB.Name = "renderLedgeGrabCB";
+            this.renderLedgeGrabCB.Size = new System.Drawing.Size(148, 17);
+            this.renderLedgeGrabCB.TabIndex = 70;
+            this.renderLedgeGrabCB.Text = "Render Ledge Grabboxes";
+            this.renderLedgeGrabCB.UseVisualStyleBackColor = true;
+            this.renderLedgeGrabCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
-            // checkBox17
+            // renderSpecialBubblesCB
             // 
-            this.checkBox17.AutoSize = true;
-            this.checkBox17.Location = new System.Drawing.Point(3, 346);
-            this.checkBox17.Name = "checkBox17";
-            this.checkBox17.Size = new System.Drawing.Size(140, 17);
-            this.checkBox17.TabIndex = 69;
-            this.checkBox17.Text = "Render Special Bubbles";
-            this.checkBox17.UseVisualStyleBackColor = true;
-            this.checkBox17.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderSpecialBubblesCB.AutoSize = true;
+            this.renderSpecialBubblesCB.Location = new System.Drawing.Point(3, 346);
+            this.renderSpecialBubblesCB.Name = "renderSpecialBubblesCB";
+            this.renderSpecialBubblesCB.Size = new System.Drawing.Size(140, 17);
+            this.renderSpecialBubblesCB.TabIndex = 69;
+            this.renderSpecialBubblesCB.Text = "Render Special Bubbles";
+            this.renderSpecialBubblesCB.UseVisualStyleBackColor = true;
+            this.renderSpecialBubblesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // label80
             // 
@@ -639,18 +639,18 @@
             this.btnColorUp.UseVisualStyleBackColor = true;
             this.btnColorUp.Click += new System.EventHandler(this.btnColorUp_Click);
             // 
-            // checkBox18
+            // renderPriorityTopCB
             // 
-            this.checkBox18.AutoSize = true;
-            this.checkBox18.Checked = true;
-            this.checkBox18.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox18.Location = new System.Drawing.Point(38, 52);
-            this.checkBox18.Name = "checkBox18";
-            this.checkBox18.Size = new System.Drawing.Size(201, 17);
-            this.checkBox18.TabIndex = 31;
-            this.checkBox18.Text = "Render higher priority hitboxes on top";
-            this.checkBox18.UseVisualStyleBackColor = true;
-            this.checkBox18.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderPriorityTopCB.AutoSize = true;
+            this.renderPriorityTopCB.Checked = true;
+            this.renderPriorityTopCB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.renderPriorityTopCB.Location = new System.Drawing.Point(38, 52);
+            this.renderPriorityTopCB.Name = "renderPriorityTopCB";
+            this.renderPriorityTopCB.Size = new System.Drawing.Size(201, 17);
+            this.renderPriorityTopCB.TabIndex = 31;
+            this.renderPriorityTopCB.Text = "Render higher priority hitboxes on top";
+            this.renderPriorityTopCB.UseVisualStyleBackColor = true;
+            this.renderPriorityTopCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // listViewKbColors
             // 
@@ -699,60 +699,60 @@
             this.comboBox1.TabIndex = 28;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
-            // checkBox4
+            // renderHitboxesCB
             // 
-            this.checkBox4.AutoSize = true;
-            this.checkBox4.Location = new System.Drawing.Point(6, 11);
-            this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(105, 17);
-            this.checkBox4.TabIndex = 3;
-            this.checkBox4.Text = "Render Hitboxes";
-            this.checkBox4.UseVisualStyleBackColor = true;
-            this.checkBox4.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderHitboxesCB.AutoSize = true;
+            this.renderHitboxesCB.Location = new System.Drawing.Point(6, 11);
+            this.renderHitboxesCB.Name = "renderHitboxesCB";
+            this.renderHitboxesCB.Size = new System.Drawing.Size(105, 17);
+            this.renderHitboxesCB.TabIndex = 3;
+            this.renderHitboxesCB.Text = "Render Hitboxes";
+            this.renderHitboxesCB.UseVisualStyleBackColor = true;
+            this.renderHitboxesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
-            // checkBox13
+            // renderHurtboxesCB
             // 
-            this.checkBox13.AutoSize = true;
-            this.checkBox13.Location = new System.Drawing.Point(3, 369);
-            this.checkBox13.Name = "checkBox13";
-            this.checkBox13.Size = new System.Drawing.Size(112, 17);
-            this.checkBox13.TabIndex = 23;
-            this.checkBox13.Text = "Render Hurtboxes";
-            this.checkBox13.UseVisualStyleBackColor = true;
-            this.checkBox13.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderHurtboxesCB.AutoSize = true;
+            this.renderHurtboxesCB.Location = new System.Drawing.Point(3, 369);
+            this.renderHurtboxesCB.Name = "renderHurtboxesCB";
+            this.renderHurtboxesCB.Size = new System.Drawing.Size(112, 17);
+            this.renderHurtboxesCB.TabIndex = 23;
+            this.renderHurtboxesCB.Text = "Render Hurtboxes";
+            this.renderHurtboxesCB.UseVisualStyleBackColor = true;
+            this.renderHurtboxesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
-            // checkBox15
+            // renderEnvCollisionBoxCB
             // 
-            this.checkBox15.AutoSize = true;
-            this.checkBox15.Location = new System.Drawing.Point(3, 553);
-            this.checkBox15.Name = "checkBox15";
-            this.checkBox15.Size = new System.Drawing.Size(196, 17);
-            this.checkBox15.TabIndex = 25;
-            this.checkBox15.Text = "Render Environment Collision Boxes";
-            this.checkBox15.UseVisualStyleBackColor = true;
-            this.checkBox15.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderEnvCollisionBoxCB.AutoSize = true;
+            this.renderEnvCollisionBoxCB.Location = new System.Drawing.Point(3, 553);
+            this.renderEnvCollisionBoxCB.Name = "renderEnvCollisionBoxCB";
+            this.renderEnvCollisionBoxCB.Size = new System.Drawing.Size(196, 17);
+            this.renderEnvCollisionBoxCB.TabIndex = 25;
+            this.renderEnvCollisionBoxCB.Text = "Render Environment Collision Boxes";
+            this.renderEnvCollisionBoxCB.UseVisualStyleBackColor = true;
+            this.renderEnvCollisionBoxCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
-            // checkBox14
+            // renderHurtboxZonesCB
             // 
-            this.checkBox14.AutoSize = true;
-            this.checkBox14.Location = new System.Drawing.Point(35, 390);
-            this.checkBox14.Name = "checkBox14";
-            this.checkBox14.Size = new System.Drawing.Size(145, 17);
-            this.checkBox14.TabIndex = 24;
-            this.checkBox14.Text = "Render Hurtboxes Zones";
-            this.checkBox14.UseVisualStyleBackColor = true;
-            this.checkBox14.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderHurtboxZonesCB.AutoSize = true;
+            this.renderHurtboxZonesCB.Location = new System.Drawing.Point(35, 390);
+            this.renderHurtboxZonesCB.Name = "renderHurtboxZonesCB";
+            this.renderHurtboxZonesCB.Size = new System.Drawing.Size(145, 17);
+            this.renderHurtboxZonesCB.TabIndex = 24;
+            this.renderHurtboxZonesCB.Text = "Render Hurtboxes Zones";
+            this.renderHurtboxZonesCB.UseVisualStyleBackColor = true;
+            this.renderHurtboxZonesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
-            // checkBox16
+            // renderInterpHitboxCB
             // 
-            this.checkBox16.AutoSize = true;
-            this.checkBox16.Location = new System.Drawing.Point(38, 29);
-            this.checkBox16.Name = "checkBox16";
-            this.checkBox16.Size = new System.Drawing.Size(164, 17);
-            this.checkBox16.TabIndex = 25;
-            this.checkBox16.Text = "Render Interpolated Hitboxes";
-            this.checkBox16.UseVisualStyleBackColor = true;
-            this.checkBox16.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderInterpHitboxCB.AutoSize = true;
+            this.renderInterpHitboxCB.Location = new System.Drawing.Point(38, 29);
+            this.renderInterpHitboxCB.Name = "renderInterpHitboxCB";
+            this.renderInterpHitboxCB.Size = new System.Drawing.Size(164, 17);
+            this.renderInterpHitboxCB.TabIndex = 25;
+            this.renderInterpHitboxCB.Text = "Render Interpolated Hitboxes";
+            this.renderInterpHitboxCB.UseVisualStyleBackColor = true;
+            this.renderInterpHitboxCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // tabPage1
             // 
@@ -841,22 +841,22 @@
             // 
             this.groupBox2.Controls.Add(this.drawUvCB);
             this.groupBox2.Controls.Add(this.areaLightBoundingBoxCB);
-            this.groupBox2.Controls.Add(this.checkBox11);
-            this.groupBox2.Controls.Add(this.checkBox1);
-            this.groupBox2.Controls.Add(this.checkBox7);
-            this.groupBox2.Controls.Add(this.checkBox6);
+            this.groupBox2.Controls.Add(this.renderGeneralShapesCB);
+            this.groupBox2.Controls.Add(this.renderModelCB);
+            this.groupBox2.Controls.Add(this.renderCollisionsCB);
+            this.groupBox2.Controls.Add(this.renderLvdCB);
             this.groupBox2.Controls.Add(this.wireframeCB);
-            this.groupBox2.Controls.Add(this.checkBox8);
+            this.groupBox2.Controls.Add(this.renderSpawnsCB);
             this.groupBox2.Controls.Add(this.modelSelectCB);
-            this.groupBox2.Controls.Add(this.checkBox5);
+            this.groupBox2.Controls.Add(this.renderFloorCB);
             this.groupBox2.Controls.Add(this.boundingCB);
-            this.groupBox2.Controls.Add(this.swagViewing);
-            this.groupBox2.Controls.Add(this.backgroundCB);
-            this.groupBox2.Controls.Add(this.checkBox9);
-            this.groupBox2.Controls.Add(this.checkBox12);
-            this.groupBox2.Controls.Add(this.checkBox10);
-            this.groupBox2.Controls.Add(this.checkBox2);
-            this.groupBox2.Controls.Add(this.checkBox3);
+            this.groupBox2.Controls.Add(this.showSwagDataCB);
+            this.groupBox2.Controls.Add(this.renderBackgroundCB);
+            this.groupBox2.Controls.Add(this.renderRespawnsCB);
+            this.groupBox2.Controls.Add(this.renderPassthroughCB);
+            this.groupBox2.Controls.Add(this.renderItemSpawnersCB);
+            this.groupBox2.Controls.Add(this.renderBonesCB);
+            this.groupBox2.Controls.Add(this.renderCameraPathCB);
             this.groupBox2.Location = new System.Drawing.Point(6, 6);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(244, 491);
@@ -888,49 +888,49 @@
             this.areaLightBoundingBoxCB.UseVisualStyleBackColor = true;
             this.areaLightBoundingBoxCB.CheckedChanged += new System.EventHandler(this.areaLightBoundingBoxCB_CheckedChanged);
             // 
-            // checkBox11
+            // renderGeneralShapesCB
             // 
-            this.checkBox11.AutoSize = true;
-            this.checkBox11.Location = new System.Drawing.Point(48, 370);
-            this.checkBox11.Name = "checkBox11";
-            this.checkBox11.Size = new System.Drawing.Size(193, 17);
-            this.checkBox11.TabIndex = 26;
-            this.checkBox11.Text = "Render General Shapes and Points";
-            this.checkBox11.UseVisualStyleBackColor = true;
-            this.checkBox11.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderGeneralShapesCB.AutoSize = true;
+            this.renderGeneralShapesCB.Location = new System.Drawing.Point(48, 370);
+            this.renderGeneralShapesCB.Name = "renderGeneralShapesCB";
+            this.renderGeneralShapesCB.Size = new System.Drawing.Size(193, 17);
+            this.renderGeneralShapesCB.TabIndex = 26;
+            this.renderGeneralShapesCB.Text = "Render General Shapes and Points";
+            this.renderGeneralShapesCB.UseVisualStyleBackColor = true;
+            this.renderGeneralShapesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
-            // checkBox1
+            // renderModelCB
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(16, 22);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(93, 17);
-            this.checkBox1.TabIndex = 0;
-            this.checkBox1.Text = "Render Model";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderModelCB.AutoSize = true;
+            this.renderModelCB.Location = new System.Drawing.Point(16, 22);
+            this.renderModelCB.Name = "renderModelCB";
+            this.renderModelCB.Size = new System.Drawing.Size(93, 17);
+            this.renderModelCB.TabIndex = 0;
+            this.renderModelCB.Text = "Render Model";
+            this.renderModelCB.UseVisualStyleBackColor = true;
+            this.renderModelCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
-            // checkBox7
+            // renderCollisionsCB
             // 
-            this.checkBox7.AutoSize = true;
-            this.checkBox7.Location = new System.Drawing.Point(48, 254);
-            this.checkBox7.Name = "checkBox7";
-            this.checkBox7.Size = new System.Drawing.Size(107, 17);
-            this.checkBox7.TabIndex = 6;
-            this.checkBox7.Text = "Render Collisions";
-            this.checkBox7.UseVisualStyleBackColor = true;
-            this.checkBox7.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderCollisionsCB.AutoSize = true;
+            this.renderCollisionsCB.Location = new System.Drawing.Point(48, 254);
+            this.renderCollisionsCB.Name = "renderCollisionsCB";
+            this.renderCollisionsCB.Size = new System.Drawing.Size(107, 17);
+            this.renderCollisionsCB.TabIndex = 6;
+            this.renderCollisionsCB.Text = "Render Collisions";
+            this.renderCollisionsCB.UseVisualStyleBackColor = true;
+            this.renderCollisionsCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
-            // checkBox6
+            // renderLvdCB
             // 
-            this.checkBox6.AutoSize = true;
-            this.checkBox6.Location = new System.Drawing.Point(15, 227);
-            this.checkBox6.Name = "checkBox6";
-            this.checkBox6.Size = new System.Drawing.Size(85, 17);
-            this.checkBox6.TabIndex = 5;
-            this.checkBox6.Text = "Render LVD";
-            this.checkBox6.UseVisualStyleBackColor = true;
-            this.checkBox6.CheckedChanged += new System.EventHandler(this.checkBox6_CheckedChanged);
+            this.renderLvdCB.AutoSize = true;
+            this.renderLvdCB.Location = new System.Drawing.Point(15, 227);
+            this.renderLvdCB.Name = "renderLvdCB";
+            this.renderLvdCB.Size = new System.Drawing.Size(85, 17);
+            this.renderLvdCB.TabIndex = 5;
+            this.renderLvdCB.Text = "Render LVD";
+            this.renderLvdCB.UseVisualStyleBackColor = true;
+            this.renderLvdCB.CheckedChanged += new System.EventHandler(this.checkBox6_CheckedChanged);
             // 
             // wireframeCB
             // 
@@ -943,16 +943,16 @@
             this.wireframeCB.UseVisualStyleBackColor = true;
             this.wireframeCB.CheckedChanged += new System.EventHandler(this.wireframeCB_CheckedChanged);
             // 
-            // checkBox8
+            // renderSpawnsCB
             // 
-            this.checkBox8.AutoSize = true;
-            this.checkBox8.Location = new System.Drawing.Point(48, 300);
-            this.checkBox8.Name = "checkBox8";
-            this.checkBox8.Size = new System.Drawing.Size(102, 17);
-            this.checkBox8.TabIndex = 7;
-            this.checkBox8.Text = "Render Spawns";
-            this.checkBox8.UseVisualStyleBackColor = true;
-            this.checkBox8.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderSpawnsCB.AutoSize = true;
+            this.renderSpawnsCB.Location = new System.Drawing.Point(48, 300);
+            this.renderSpawnsCB.Name = "renderSpawnsCB";
+            this.renderSpawnsCB.Size = new System.Drawing.Size(102, 17);
+            this.renderSpawnsCB.TabIndex = 7;
+            this.renderSpawnsCB.Text = "Render Spawns";
+            this.renderSpawnsCB.UseVisualStyleBackColor = true;
+            this.renderSpawnsCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // modelSelectCB
             // 
@@ -965,16 +965,16 @@
             this.modelSelectCB.UseVisualStyleBackColor = true;
             this.modelSelectCB.CheckedChanged += new System.EventHandler(this.modelSelectCB_CheckedChanged);
             // 
-            // checkBox5
+            // renderFloorCB
             // 
-            this.checkBox5.AutoSize = true;
-            this.checkBox5.Location = new System.Drawing.Point(16, 181);
-            this.checkBox5.Name = "checkBox5";
-            this.checkBox5.Size = new System.Drawing.Size(87, 17);
-            this.checkBox5.TabIndex = 4;
-            this.checkBox5.Text = "Render Floor";
-            this.checkBox5.UseVisualStyleBackColor = true;
-            this.checkBox5.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderFloorCB.AutoSize = true;
+            this.renderFloorCB.Location = new System.Drawing.Point(16, 181);
+            this.renderFloorCB.Name = "renderFloorCB";
+            this.renderFloorCB.Size = new System.Drawing.Size(87, 17);
+            this.renderFloorCB.TabIndex = 4;
+            this.renderFloorCB.Text = "Render Floor";
+            this.renderFloorCB.UseVisualStyleBackColor = true;
+            this.renderFloorCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // boundingCB
             // 
@@ -987,82 +987,82 @@
             this.boundingCB.UseVisualStyleBackColor = true;
             this.boundingCB.CheckedChanged += new System.EventHandler(this.boundingCB_CheckedChanged);
             // 
-            // swagViewing
+            // showSwagDataCB
             // 
-            this.swagViewing.AutoSize = true;
-            this.swagViewing.Location = new System.Drawing.Point(48, 112);
-            this.swagViewing.Name = "swagViewing";
-            this.swagViewing.Size = new System.Drawing.Size(109, 17);
-            this.swagViewing.TabIndex = 18;
-            this.swagViewing.Text = "Show Swag Data";
-            this.swagViewing.UseVisualStyleBackColor = true;
-            this.swagViewing.CheckedChanged += new System.EventHandler(this.swagViewing_CheckedChanged);
+            this.showSwagDataCB.AutoSize = true;
+            this.showSwagDataCB.Location = new System.Drawing.Point(48, 112);
+            this.showSwagDataCB.Name = "showSwagDataCB";
+            this.showSwagDataCB.Size = new System.Drawing.Size(109, 17);
+            this.showSwagDataCB.TabIndex = 18;
+            this.showSwagDataCB.Text = "Show Swag Data";
+            this.showSwagDataCB.UseVisualStyleBackColor = true;
+            this.showSwagDataCB.CheckedChanged += new System.EventHandler(this.swagViewing_CheckedChanged);
             // 
-            // backgroundCB
+            // renderBackgroundCB
             // 
-            this.backgroundCB.AutoSize = true;
-            this.backgroundCB.Location = new System.Drawing.Point(15, 204);
-            this.backgroundCB.Name = "backgroundCB";
-            this.backgroundCB.Size = new System.Drawing.Size(122, 17);
-            this.backgroundCB.TabIndex = 19;
-            this.backgroundCB.Text = "Render Background";
-            this.backgroundCB.UseVisualStyleBackColor = true;
-            this.backgroundCB.CheckedChanged += new System.EventHandler(this.backgroundCB_CheckedChanged);
+            this.renderBackgroundCB.AutoSize = true;
+            this.renderBackgroundCB.Location = new System.Drawing.Point(15, 204);
+            this.renderBackgroundCB.Name = "renderBackgroundCB";
+            this.renderBackgroundCB.Size = new System.Drawing.Size(122, 17);
+            this.renderBackgroundCB.TabIndex = 19;
+            this.renderBackgroundCB.Text = "Render Background";
+            this.renderBackgroundCB.UseVisualStyleBackColor = true;
+            this.renderBackgroundCB.CheckedChanged += new System.EventHandler(this.backgroundCB_CheckedChanged);
             // 
-            // checkBox9
+            // renderRespawnsCB
             // 
-            this.checkBox9.AutoSize = true;
-            this.checkBox9.Location = new System.Drawing.Point(48, 323);
-            this.checkBox9.Name = "checkBox9";
-            this.checkBox9.Size = new System.Drawing.Size(114, 17);
-            this.checkBox9.TabIndex = 8;
-            this.checkBox9.Text = "Render Respawns";
-            this.checkBox9.UseVisualStyleBackColor = true;
-            this.checkBox9.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderRespawnsCB.AutoSize = true;
+            this.renderRespawnsCB.Location = new System.Drawing.Point(48, 323);
+            this.renderRespawnsCB.Name = "renderRespawnsCB";
+            this.renderRespawnsCB.Size = new System.Drawing.Size(114, 17);
+            this.renderRespawnsCB.TabIndex = 8;
+            this.renderRespawnsCB.Text = "Render Respawns";
+            this.renderRespawnsCB.UseVisualStyleBackColor = true;
+            this.renderRespawnsCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
-            // checkBox12
+            // renderPassthroughCB
             // 
-            this.checkBox12.AutoSize = true;
-            this.checkBox12.Location = new System.Drawing.Point(77, 277);
-            this.checkBox12.Name = "checkBox12";
-            this.checkBox12.Size = new System.Drawing.Size(158, 17);
-            this.checkBox12.TabIndex = 11;
-            this.checkBox12.Text = "Render Passthrough Angles";
-            this.checkBox12.UseVisualStyleBackColor = true;
-            this.checkBox12.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderPassthroughCB.AutoSize = true;
+            this.renderPassthroughCB.Location = new System.Drawing.Point(77, 277);
+            this.renderPassthroughCB.Name = "renderPassthroughCB";
+            this.renderPassthroughCB.Size = new System.Drawing.Size(158, 17);
+            this.renderPassthroughCB.TabIndex = 11;
+            this.renderPassthroughCB.Text = "Render Passthrough Angles";
+            this.renderPassthroughCB.UseVisualStyleBackColor = true;
+            this.renderPassthroughCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
-            // checkBox10
+            // renderItemSpawnersCB
             // 
-            this.checkBox10.AutoSize = true;
-            this.checkBox10.Location = new System.Drawing.Point(48, 346);
-            this.checkBox10.Name = "checkBox10";
-            this.checkBox10.Size = new System.Drawing.Size(134, 17);
-            this.checkBox10.TabIndex = 9;
-            this.checkBox10.Text = "Render Item Spawners";
-            this.checkBox10.UseVisualStyleBackColor = true;
-            this.checkBox10.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderItemSpawnersCB.AutoSize = true;
+            this.renderItemSpawnersCB.Location = new System.Drawing.Point(48, 346);
+            this.renderItemSpawnersCB.Name = "renderItemSpawnersCB";
+            this.renderItemSpawnersCB.Size = new System.Drawing.Size(134, 17);
+            this.renderItemSpawnersCB.TabIndex = 9;
+            this.renderItemSpawnersCB.Text = "Render Item Spawners";
+            this.renderItemSpawnersCB.UseVisualStyleBackColor = true;
+            this.renderItemSpawnersCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
-            // checkBox2
+            // renderBonesCB
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(16, 91);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(94, 17);
-            this.checkBox2.TabIndex = 1;
-            this.checkBox2.Text = "Render Bones";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderBonesCB.AutoSize = true;
+            this.renderBonesCB.Location = new System.Drawing.Point(16, 91);
+            this.renderBonesCB.Name = "renderBonesCB";
+            this.renderBonesCB.Size = new System.Drawing.Size(94, 17);
+            this.renderBonesCB.TabIndex = 1;
+            this.renderBonesCB.Text = "Render Bones";
+            this.renderBonesCB.UseVisualStyleBackColor = true;
+            this.renderBonesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
-            // checkBox3
+            // renderCameraPathCB
             // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(16, 158);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(125, 17);
-            this.checkBox3.TabIndex = 2;
-            this.checkBox3.Text = "Render Camera Path";
-            this.checkBox3.UseVisualStyleBackColor = true;
-            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderCameraPathCB.AutoSize = true;
+            this.renderCameraPathCB.Location = new System.Drawing.Point(16, 158);
+            this.renderCameraPathCB.Name = "renderCameraPathCB";
+            this.renderCameraPathCB.Size = new System.Drawing.Size(125, 17);
+            this.renderCameraPathCB.TabIndex = 2;
+            this.renderCameraPathCB.Text = "Render Camera Path";
+            this.renderCameraPathCB.UseVisualStyleBackColor = true;
+            this.renderCameraPathCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // groupBox1
             // 
@@ -1580,10 +1580,10 @@
         #endregion
 
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.CheckBox checkBox23;
-        private System.Windows.Forms.CheckBox checkBox22;
-        private System.Windows.Forms.CheckBox checkBox21;
-        private System.Windows.Forms.CheckBox checkBox17;
+        private System.Windows.Forms.CheckBox renderReverseLedgeGrabCB;
+        private System.Windows.Forms.CheckBox renderTetherLedgeCB;
+        private System.Windows.Forms.CheckBox renderLedgeGrabCB;
+        private System.Windows.Forms.CheckBox renderSpecialBubblesCB;
         private System.Windows.Forms.Label label80;
         private System.Windows.Forms.Label label81;
         private System.Windows.Forms.PictureBox pbShieldColor;
@@ -1619,16 +1619,16 @@
         private System.Windows.Forms.Button btnAddColor;
         private System.Windows.Forms.Button btnColorDown;
         private System.Windows.Forms.Button btnColorUp;
-        private System.Windows.Forms.CheckBox checkBox18;
+        private System.Windows.Forms.CheckBox renderPriorityTopCB;
         private System.Windows.Forms.ListView listViewKbColors;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.CheckBox checkBox4;
-        private System.Windows.Forms.CheckBox checkBox13;
-        private System.Windows.Forms.CheckBox checkBox15;
-        private System.Windows.Forms.CheckBox checkBox14;
-        private System.Windows.Forms.CheckBox checkBox16;
+        private System.Windows.Forms.CheckBox renderHitboxesCB;
+        private System.Windows.Forms.CheckBox renderHurtboxesCB;
+        private System.Windows.Forms.CheckBox renderEnvCollisionBoxCB;
+        private System.Windows.Forms.CheckBox renderHurtboxZonesCB;
+        private System.Windows.Forms.CheckBox renderInterpHitboxCB;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.TextBox zScaleTB;
@@ -1638,22 +1638,22 @@
         private System.Windows.Forms.Label RendererLabel;
         private System.Windows.Forms.Label OpenGLVersionLabel;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.CheckBox checkBox11;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.CheckBox checkBox7;
-        private System.Windows.Forms.CheckBox checkBox6;
+        private System.Windows.Forms.CheckBox renderGeneralShapesCB;
+        private System.Windows.Forms.CheckBox renderModelCB;
+        private System.Windows.Forms.CheckBox renderCollisionsCB;
+        private System.Windows.Forms.CheckBox renderLvdCB;
         private System.Windows.Forms.CheckBox wireframeCB;
-        private System.Windows.Forms.CheckBox checkBox8;
+        private System.Windows.Forms.CheckBox renderSpawnsCB;
         private System.Windows.Forms.CheckBox modelSelectCB;
-        private System.Windows.Forms.CheckBox checkBox5;
+        private System.Windows.Forms.CheckBox renderFloorCB;
         private System.Windows.Forms.CheckBox boundingCB;
-        private System.Windows.Forms.CheckBox swagViewing;
-        private System.Windows.Forms.CheckBox backgroundCB;
-        private System.Windows.Forms.CheckBox checkBox9;
-        private System.Windows.Forms.CheckBox checkBox12;
-        private System.Windows.Forms.CheckBox checkBox10;
-        private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.CheckBox checkBox3;
+        private System.Windows.Forms.CheckBox showSwagDataCB;
+        private System.Windows.Forms.CheckBox renderBackgroundCB;
+        private System.Windows.Forms.CheckBox renderRespawnsCB;
+        private System.Windows.Forms.CheckBox renderPassthroughCB;
+        private System.Windows.Forms.CheckBox renderItemSpawnersCB;
+        private System.Windows.Forms.CheckBox renderBonesCB;
+        private System.Windows.Forms.CheckBox renderCameraPathCB;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox cameraLightCB;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;

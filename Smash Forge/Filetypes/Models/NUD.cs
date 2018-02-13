@@ -9,6 +9,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK;
 using System.Windows.Forms;
 using SALT.Graphics;
+using Smash_Forge.Rendering.Lights;
 
 namespace Smash_Forge
 {
@@ -45,7 +46,6 @@ namespace Smash_Forge
             PreRender();
         }
 
-        // gl buffer objects
         int vbo_position;
         int ibo_elements;
         int ubo_bones;
@@ -56,7 +56,6 @@ namespace Smash_Forge
         public int type = SMASH;
         public int boneCount = 0;
         public bool hasBones = false;
-        //public List<Mesh> Nodes = new List<Mesh>();
         List<Mesh> depthSortedMeshes = new List<Mesh>();
         public float[] boundingBox = new float[4];
 
@@ -71,6 +70,9 @@ namespace Smash_Forge
         public override Endianness Endian { get; set; }
 
         #region Rendering
+
+        private dVertex[] Vertices;
+        private int[] Faces;
 
         public void Destroy()
         {
@@ -143,15 +145,41 @@ namespace Smash_Forge
 
         public void PreRender()
         {
+            int poffset = 0;
+            int voffset = 0;
+            List<dVertex> Vs = new List<dVertex>();
+            List<int> Ds = new List<int>();
             for (int mes = Nodes.Count - 1; mes >= 0; mes--)
             {
                 Mesh m = (Mesh)Nodes[mes];
                 for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
                 {
                     Polygon p = (NUD.Polygon)m.Nodes[pol];
-                    p.PreRender();
+                    p.Offset = poffset * 4;
+                    List<dVertex> pv = p.PreRender();
+                    Vs.AddRange(pv);
+                    //Console.WriteLine(p.displayFaceSize + " " + p.Offset/4);
+                    for(int i = 0; i < p.displayFaceSize; i++)
+                    {
+                        Ds.Add(p.display[i] + voffset);
+                    }
+                    poffset += p.displayFaceSize;
+                    voffset += pv.Count;
                 }
             }
+
+            // Binds
+            Vertices = Vs.ToArray();
+            Faces = Ds.ToArray();
+
+            //Console.WriteLine(Vertices.Length + " " + Faces.Length);
+
+            // Bind only once!
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
+            GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(Vertices.Length * dVertex.Size), Vertices, BufferUsageHint.StaticDraw);
+
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
+            GL.BufferData<int>(BufferTarget.ElementArrayBuffer, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
 
             DepthSortMeshes();
         }
@@ -359,7 +387,7 @@ namespace Smash_Forge
 
             List<Polygon> opaque = new List<Polygon>();
             List<Polygon> trans = new List<Polygon>();
-
+            
             foreach (Mesh m in depthSortedMeshes)
             {
                 for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
@@ -498,7 +526,7 @@ namespace Smash_Forge
                     // need this
                     if (Runtime.renderModel)
                     {
-                        GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+                        GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
                     }
                 }
             }
@@ -508,34 +536,34 @@ namespace Smash_Forge
         {
             // stage light 1
             int index1 = 0 + (4 * lightSetNumber);
-            Lights.stageLight1 = Lights.stageDiffuseLightSet[index1];
+            LightTools.stageLight1 = LightTools.stageDiffuseLightSet[index1];
             int v = 0;
-            if (Lights.stageDiffuseLightSet[index1].enabled) v = 1; else v = 0;
+            if (LightTools.stageDiffuseLightSet[index1].enabled) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("renderStageLight1"), v);
-            GL.Uniform3(shader.getAttribute("stageLight1Color"), Lights.stageLight1.difR, Lights.stageLight1.difG, Lights.stageLight1.difB);
+            GL.Uniform3(shader.getAttribute("stageLight1Color"), LightTools.stageLight1.difR, LightTools.stageLight1.difG, LightTools.stageLight1.difB);
 
             // stage light 2
             int index2 = 1 + (4 * lightSetNumber);
-            Lights.stageLight2 = Lights.stageDiffuseLightSet[index2];
-            if (Lights.stageDiffuseLightSet[index2].enabled) v = 1; else v = 0;
+            LightTools.stageLight2 = LightTools.stageDiffuseLightSet[index2];
+            if (LightTools.stageDiffuseLightSet[index2].enabled) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("renderStageLight2"), v);
-            GL.Uniform3(shader.getAttribute("stageLight2Color"), Lights.stageLight2.difR, Lights.stageLight2.difG, Lights.stageLight2.difB);
+            GL.Uniform3(shader.getAttribute("stageLight2Color"), LightTools.stageLight2.difR, LightTools.stageLight2.difG, LightTools.stageLight2.difB);
 
             // stage light 3
             int index3 = 2 + (4 * lightSetNumber);
-            Lights.stageLight3 = Lights.stageDiffuseLightSet[index3];
-            if (Lights.stageDiffuseLightSet[index3].enabled) v = 1; else v = 0;
+            LightTools.stageLight3 = LightTools.stageDiffuseLightSet[index3];
+            if (LightTools.stageDiffuseLightSet[index3].enabled) v = 1; else v = 0;
             GL.Uniform1(shader.getAttribute("renderStageLight3"), v);
-            GL.Uniform3(shader.getAttribute("stageLight3Color"), Lights.stageLight3.difR, Lights.stageLight3.difG, Lights.stageLight3.difB);
+            GL.Uniform3(shader.getAttribute("stageLight3Color"), LightTools.stageLight3.difR, LightTools.stageLight3.difG, LightTools.stageLight3.difB);
 
             // stage light 4
             int index4 = 3 + (4 * lightSetNumber);
-            Lights.stageLight4 = Lights.stageDiffuseLightSet[index4];
-            ShaderTools.BoolToIntShaderUniform(shader, Lights.stageDiffuseLightSet[index4].enabled, "renderStageLight4");
+            LightTools.stageLight4 = LightTools.stageDiffuseLightSet[index4];
+            ShaderTools.BoolToIntShaderUniform(shader, LightTools.stageDiffuseLightSet[index4].enabled, "renderStageLight4");
 
-            GL.Uniform3(shader.getAttribute("stageLight4Color"), Lights.stageLight4.difR, Lights.stageLight4.difG, Lights.stageLight4.difB);
+            GL.Uniform3(shader.getAttribute("stageLight4Color"), LightTools.stageLight4.difR, LightTools.stageLight4.difG, LightTools.stageLight4.difB);
 
-            GL.Uniform3(shader.getAttribute("stageFogColor"), Lights.stageFogSet[lightSetNumber]);
+            GL.Uniform3(shader.getAttribute("stageFogColor"), LightTools.stageFogSet[lightSetNumber]);
         }
 
         private static void SetNSCUniform(Polygon p, Shader shader)
@@ -574,7 +602,7 @@ namespace Smash_Forge
         private void SetVertexAttributes(Polygon p, Shader shader)
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-            GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
+            //GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
             GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 12);
             GL.VertexAttribPointer(shader.getAttribute("vTangent"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 24);
@@ -587,8 +615,8 @@ namespace Smash_Forge
             GL.VertexAttribPointer(shader.getAttribute("vUV3"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 112);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            //GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
+            //GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
         private static void DrawModelWireframe(Polygon p, Shader shader)
@@ -598,7 +626,7 @@ namespace Smash_Forge
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1f);
-            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             GL.Uniform1(shader.getAttribute("colorOverride"), 0);
         }
@@ -616,7 +644,7 @@ namespace Smash_Forge
             GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
             GL.StencilMask(0xFF);
 
-            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
 
             GL.ColorMask(cwm[0], cwm[1], cwm[2], cwm[3]);
 
@@ -628,7 +656,7 @@ namespace Smash_Forge
 
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.LineWidth(2.0f);
-            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
             GL.Uniform1(shader.getAttribute("colorOverride"), 0);
@@ -688,8 +716,9 @@ namespace Smash_Forge
             MatPropertyShaderUniform(shader, mat, "NU_effScaleUV",        1, 1, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_effTransUV",        1, 1, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_effMaxUV",          1, 1, 0, 0);
+            MatPropertyShaderUniform(shader, mat, "NU_effUniverseParam",  1, 0, 0, 0);
 
-            // create some conditionals rather than using different shaders
+            // Create some conditionals rather than using different shaders.
             HasMatPropertyShaderUniform(shader, mat, "NU_softLightingParams",     "hasSoftLight");
             HasMatPropertyShaderUniform(shader, mat, "NU_customSoftLightParams",  "hasCustomSoftLight");
             HasMatPropertyShaderUniform(shader, mat, "NU_specularParams",         "hasSpecularParams");
@@ -830,7 +859,7 @@ namespace Smash_Forge
             }
         }
 
-        public void MakeMetal(int newDiffuseID, bool preserveDiffuse, bool useNormalMap, float[] minGain, float[] refColor, float[] fresParams, float[] fresColor)
+        public void MakeMetal(int newDifTexId, int newCubeTexId, float[] minGain, float[] refColor, float[] fresParams, float[] fresColor, bool preserveDiffuse = false, bool preserveNrmMap = true)
         {
             foreach (Mesh mesh in Nodes)
             {
@@ -838,51 +867,57 @@ namespace Smash_Forge
                 {
                     foreach (Material mat in poly.materials)
                     {
-                        float hash = -1f;
+                        float materialHash = -1f;
                         if (mat.entries.ContainsKey("NU_materialHash"))
-                            hash = mat.entries["NU_materialHash"][0];
+                            materialHash = mat.entries["NU_materialHash"][0];
 
                         mat.anims.Clear();
                         mat.entries.Clear();
 
-                        if (mat.hasNormalMap && useNormalMap)
+                        // Don't add normal maps to materials that don't use one. 
+                        if (mat.hasNormalMap && preserveNrmMap)
                             mat.Flags = 0x9601106B;
                         else
                             mat.Flags = 0x96011069;
 
+                        // The texture ID used for diffuse later. 
                         int difTexID = 0;
                         if (preserveDiffuse)
                             difTexID = mat.diffuse1ID;
                         else
-                            difTexID = newDiffuseID;
+                            difTexID = newDifTexId;
 
                         // add all the textures
                         mat.textures.Clear();
                         mat.displayTexId = -1;
 
-                        NUD.Mat_Texture dif = NUD.Polygon.makeDefault();
-                        dif.hash = difTexID; // preserve diffuse tex ID
-                        NUD.Mat_Texture cub = NUD.Polygon.makeDefault();
-                        cub.hash = 0x10102000;
+                        // Preserve diffuse tex ID.
+                        MatTexture diffuse = MatTexture.getDefault();
+                        diffuse.hash = difTexID; 
 
-                        NUD.Mat_Texture nrm = NUD.Polygon.makeDefault();
-                        nrm.hash = mat.normalID; // preserve normal map tex ID. should work for all common texture flags
+                        MatTexture cube = MatTexture.getDefault();
+                        cube.hash = newCubeTexId;
 
-                        NUD.Mat_Texture rim = NUD.Polygon.makeDefault();
-                        rim.hash = 0x10080000;
+                        // Preserve normal map tex ID. should work for all common texture flags.
+                        MatTexture normal = MatTexture.getDefault();
+                        normal.hash = mat.normalID; 
+
+                        MatTexture dummyRamp = MatTexture.getDefault();
+                        dummyRamp.hash = 0x10080000;
 
                         if (mat.hasNormalMap)
                         {
-                            mat.textures.Add(dif);
-                            mat.textures.Add(cub);
-                            mat.textures.Add(nrm);
-                            mat.textures.Add(rim);
+                            mat.textures.Add(diffuse);
+                            mat.textures.Add(cube);
+                            mat.textures.Add(normal);
+                            mat.textures.Add(dummyRamp);
                         }
                         else
-                            mat.textures.Add(dif);
-
-                        mat.textures.Add(cub);
-                        mat.textures.Add(rim);
+                        {
+                            mat.textures.Add(diffuse);
+                            mat.textures.Add(cube);
+                            mat.textures.Add(dummyRamp);
+                        }                   
 
                         // add material properties
                         mat.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
@@ -893,7 +928,7 @@ namespace Smash_Forge
                         mat.entries.Add("NU_lightMapColorOffset", new float[] { 0f, 0f, 0f, 0 });
                         mat.entries.Add("NU_fresnelParams", fresParams);
                         mat.entries.Add("NU_alphaBlendParams", new float[] { 0f, 0f, 0f, 0 });
-                        mat.entries.Add("NU_materialHash", new float[] { hash, 0f, 0f, 0 });
+                        mat.entries.Add("NU_materialHash", new float[] { materialHash, 0f, 0f, 0 });
                     }
                 }
             }
@@ -931,14 +966,14 @@ namespace Smash_Forge
                 foreach(Polygon p in m.Nodes)
                 {
                     GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-                    GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
+                    //GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
                     GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
 
                     GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
-                    GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
+                    //GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
                     GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
-                    GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+                    GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
                 }
             }
             shader.disableAttrib();
@@ -997,7 +1032,7 @@ namespace Smash_Forge
                 foreach (Polygon p in m.Nodes)
                 {
                     GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-                    GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
+                    //GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
                     GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
                     GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 72);
                     GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 88);
@@ -1008,7 +1043,7 @@ namespace Smash_Forge
                     GL.VertexAttribPointer(shader.getAttribute("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
 
                     GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
-                    GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
+                    //GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
                     GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                     
                     GL.PointSize(6f);
@@ -1054,7 +1089,7 @@ namespace Smash_Forge
                     { 0x02, TextureMagFilter.Linear}
         };
 
-        public static int BindTexture(NUD.Mat_Texture tex, int hash, int loc)
+        public static int BindTexture(NUD.MatTexture tex, int hash, int loc)
         {
             if (hash == (int) DummyTextures.StageMapLow)
             {
@@ -1356,7 +1391,7 @@ namespace Smash_Forge
 
                 for (int i = 0; i < propCount; i++)
                 {
-                    Mat_Texture tex = new Mat_Texture();
+                    MatTexture tex = new MatTexture();
                     tex.hash = d.readInt();
                     d.skip(6); // padding?
                     tex.MapMode = d.readShort();
@@ -1861,21 +1896,21 @@ namespace Smash_Forge
             }
         }
 
-        private static void writeVertex(FileOutput d, FileOutput add, Polygon m)
+        private static void writeVertex(FileOutput d, FileOutput add, Polygon poly)
         {
-            int weight = m.vertSize >> 4;
-            int vertType = m.vertSize & 0xF;
+            int weight = poly.vertSize >> 4;
+            int vertType = poly.vertSize & 0xF;
             
             if (weight > 0)
             {
-                writeUV(d, m);
+                writeUV(d, poly);
                 d = add;
             }
 
-            for (int i = 0; i < m.vertices.Count; i++)
+            for (int i = 0; i < poly.vertices.Count; i++)
             {
                 
-                Vertex v = m.vertices[i];
+                Vertex v = poly.vertices[i];
                 if (vertType < 8)
                 {
                     d.writeFloat(v.pos.X);
@@ -1914,14 +1949,14 @@ namespace Smash_Forge
                     d.writeFloat(v.nrm.Y);
                     d.writeFloat(v.nrm.Z);
                     d.writeFloat(1);
-                    d.writeFloat(m.vertices[i].bitan.X);
-                    d.writeFloat(m.vertices[i].bitan.Y);
-                    d.writeFloat(m.vertices[i].bitan.Z);
-                    d.writeFloat(m.vertices[i].bitan.W);
-                    d.writeFloat(m.vertices[i].tan.X);
-                    d.writeFloat(m.vertices[i].tan.Y);
-                    d.writeFloat(m.vertices[i].tan.Z);
-                    d.writeFloat(m.vertices[i].tan.W);
+                    d.writeFloat(poly.vertices[i].bitan.X);
+                    d.writeFloat(poly.vertices[i].bitan.Y);
+                    d.writeFloat(poly.vertices[i].bitan.Z);
+                    d.writeFloat(poly.vertices[i].bitan.W);
+                    d.writeFloat(poly.vertices[i].tan.X);
+                    d.writeFloat(poly.vertices[i].tan.Y);
+                    d.writeFloat(poly.vertices[i].tan.Z);
+                    d.writeFloat(poly.vertices[i].tan.W);
                 }
                 else if (vertType == 6)
                 {
@@ -1936,30 +1971,30 @@ namespace Smash_Forge
                     d.writeHalfFloat(v.nrm.Y);
                     d.writeHalfFloat(v.nrm.Z);
                     d.writeHalfFloat(1);
-                    d.writeHalfFloat(m.vertices[i].bitan.X);
-                    d.writeHalfFloat(m.vertices[i].bitan.Y);
-                    d.writeHalfFloat(m.vertices[i].bitan.Z);
-                    d.writeHalfFloat(m.vertices[i].bitan.W);
-                    d.writeHalfFloat(m.vertices[i].tan.X);
-                    d.writeHalfFloat(m.vertices[i].tan.Y);
-                    d.writeHalfFloat(m.vertices[i].tan.Z);
-                    d.writeHalfFloat(m.vertices[i].tan.W);
+                    d.writeHalfFloat(poly.vertices[i].bitan.X);
+                    d.writeHalfFloat(poly.vertices[i].bitan.Y);
+                    d.writeHalfFloat(poly.vertices[i].bitan.Z);
+                    d.writeHalfFloat(poly.vertices[i].bitan.W);
+                    d.writeHalfFloat(poly.vertices[i].tan.X);
+                    d.writeHalfFloat(poly.vertices[i].tan.Y);
+                    d.writeHalfFloat(poly.vertices[i].tan.Z);
+                    d.writeHalfFloat(poly.vertices[i].tan.W);
                 }
 
                 if (weight == 0)
                 {
-                    if (m.UVSize >= 18)
+                    if (poly.UVSize >= 18)
                     {
-                        d.writeByte((int)m.vertices[i].col.X);
-                        d.writeByte((int)m.vertices[i].col.Y);
-                        d.writeByte((int)m.vertices[i].col.Z);
-                        d.writeByte((int)m.vertices[i].col.W);
+                        d.writeByte((int)poly.vertices[i].col.X);
+                        d.writeByte((int)poly.vertices[i].col.Y);
+                        d.writeByte((int)poly.vertices[i].col.Z);
+                        d.writeByte((int)poly.vertices[i].col.W);
                     }
 
-                    for (int j = 0; j < m.vertices[i].uv.Count; j++)
+                    for (int j = 0; j < poly.vertices[i].uv.Count; j++)
                     {
-                        d.writeHalfFloat(m.vertices[i].uv[j].X);
-                        d.writeHalfFloat(m.vertices[i].uv[j].Y);
+                        d.writeHalfFloat(poly.vertices[i].uv[j].X);
+                        d.writeHalfFloat(poly.vertices[i].uv[j].Y);
                     }
                 }
 
@@ -2020,7 +2055,7 @@ namespace Smash_Forge
                 d.writeInt(mat.unkownWater); 
                 d.writeInt(mat.zBufferOffset); 
 
-                foreach (Mat_Texture tex in mat.textures)
+                foreach (MatTexture tex in mat.textures)
                 {
                     d.writeInt(tex.hash);
                     d.writeInt(0);
@@ -2153,8 +2188,7 @@ namespace Smash_Forge
             }
         }
 
-
-        public class Mat_Texture
+        public class MatTexture
         {
             public int hash;
             public int MapMode = 0;
@@ -2165,9 +2199,9 @@ namespace Smash_Forge
             public int mipDetail = 0;
             public int unknown = 0;
 
-            public Mat_Texture Clone()
+            public MatTexture Clone()
             {
-                Mat_Texture t = new Mat_Texture();
+                MatTexture t = new MatTexture();
                 t.hash = hash;
                 t.MapMode = MapMode;
                 t.WrapModeS = WrapModeS;
@@ -2177,6 +2211,19 @@ namespace Smash_Forge
                 t.mipDetail = mipDetail;
                 t.unknown = unknown;
                 return t;
+            }
+
+            public static MatTexture getDefault()
+            {
+                MatTexture defaultTex = new MatTexture();
+                defaultTex.WrapModeS = 1;
+                defaultTex.WrapModeT = 1;
+                defaultTex.minFilter = 3;
+                defaultTex.magFilter = 2;
+                defaultTex.mipDetail = 1;
+                defaultTex.mipDetail = 6;
+                defaultTex.hash = (int)DummyTextures.DummyRamp;
+                return defaultTex;
             }
         }
 
@@ -2194,7 +2241,7 @@ namespace Smash_Forge
         {
             public Dictionary<string, float[]> entries = new Dictionary<string, float[]>();
             public Dictionary<string, float[]> anims = new Dictionary<string, float[]>();
-            public List<Mat_Texture> textures = new List<Mat_Texture>();
+            public List<MatTexture> textures = new List<MatTexture>();
 
             private uint flag;
             public uint Flags
@@ -2259,6 +2306,7 @@ namespace Smash_Forge
 
             public Material()
             {
+
             }
 
             public Material Clone()
@@ -2282,12 +2330,60 @@ namespace Smash_Forge
                 m.unkownWater = 0;
                 m.zBufferOffset = 0;
 
-                foreach(Mat_Texture t in textures)
+                foreach(MatTexture t in textures)
                 {
                     m.textures.Add(t.Clone());
                 }
 
                 return m;
+            }
+
+            public static Material GetDefault()
+            {
+                Material material = new Material();
+                material.Flags = 0x94010161;
+                material.cullMode = 0x0405;
+                material.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
+                material.entries.Add("NU_fresnelColor", new float[] { 1, 1, 1, 1 });
+                material.entries.Add("NU_blinkColor", new float[] { 0, 0, 0, 0 });
+                material.entries.Add("NU_aoMinGain", new float[] { 0, 0, 0, 0 });
+                material.entries.Add("NU_lightMapColorOffset", new float[] { 0, 0, 0, 0 });
+                material.entries.Add("NU_fresnelParams", new float[] { 1, 0, 0, 0 });
+                material.entries.Add("NU_alphaBlendParams", new float[] { 0, 0, 0, 0 });
+                material.entries.Add("NU_materialHash", new float[] { FileData.toFloat(0x7E538F65), 0, 0, 0 });
+
+                MatTexture defaultDif = new MatTexture();
+                defaultDif.WrapModeS = 1;
+                defaultDif.WrapModeT = 1;
+                defaultDif.minFilter = 3;
+                defaultDif.magFilter = 2;
+                defaultDif.mipDetail = 1;
+                defaultDif.mipDetail = 6;
+                // The default texture looks better than a solid white texture. 
+                defaultDif.hash = 0x10000000;
+
+                material.textures.Add(defaultDif);
+                material.textures.Add(MatTexture.getDefault());
+                return material;
+            }
+
+            public static Material GetStageDefault()
+            {
+                Material material = new Material();
+                material.Flags = 0xA2001001;
+                material.RefAlpha = 128;
+                material.cullMode = 1029;
+
+                // Display a default texture rather than a dummy texture.
+                MatTexture tex = MatTexture.getDefault();
+                tex.hash = 0;
+                material.textures.Clear();
+                material.textures.Add(MatTexture.getDefault());
+
+                material.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
+                material.entries.Add("NU_diffuseColor", new float[] { 1, 1, 1, 0.5f });
+                material.entries.Add("NU_materialHash", new float[] { BitConverter.ToSingle(new byte[] { 0x12, 0xEE, 0x2A, 0x1B }, 0), 0, 0, 0 });
+                return material;
             }
 
             public uint RebuildFlag4thByte()
@@ -2397,9 +2493,9 @@ namespace Smash_Forge
 
             // for drawing
             public bool isTransparent = false;
-            public dVertex[] vertdata = new dVertex[3];
             public int[] display;
             public int[] selectedVerts;
+            public int Offset; // For Rendering
 
             public Polygon()
             {
@@ -2426,7 +2522,7 @@ namespace Smash_Forge
                 }      
             }
 
-            public void PreRender()
+            public List<dVertex> PreRender()
             {
                 // rearrange faces
                 display = getDisplayFace().ToArray();
@@ -2434,8 +2530,7 @@ namespace Smash_Forge
                 List<dVertex> vert = new List<dVertex>();
 
                 if (faces.Count <= 3)
-                    return;
-
+                    return vert;
                 foreach (Vertex v in vertices)
                 {
                     dVertex nv = new dVertex()
@@ -2444,7 +2539,7 @@ namespace Smash_Forge
                         nrm = v.nrm,
                         tan = v.tan.Xyz,
                         bit = v.bitan.Xyz,
-                        col = v.col / 0x7F,
+                        col = v.col / 127,
                         uv = v.uv.Count > 0 ? v.uv[0] : new Vector2(0, 0),
                         uv2 = v.uv.Count > 1 ? v.uv[1] : new Vector2(0, 0),
                         uv3 = v.uv.Count > 2 ? v.uv[2] : new Vector2(0, 0),
@@ -2460,16 +2555,15 @@ namespace Smash_Forge
 
                     vert.Add(nv);
                 }
-                vertdata = vert.ToArray();
-                vert = new List<dVertex>();
-                selectedVerts = new int[vertdata.Length];
+                //vertdata = vert.ToArray();
+                selectedVerts = new int[vert.Count];
+                return vert;
             }
 
             public void CalculateTangentBitangent()
             {
-                // Don't generate tangents if the vertex format doesn't support them. 
+                // Don't generate tangents and bitangents if the vertex format doesn't support them. 
                 int vertType = vertSize & 0xF;
-                Debug.WriteLine(vertType);
                 if (!(vertType == 3 || vertType == 7))
                     return;
 
@@ -2482,12 +2576,12 @@ namespace Smash_Forge
                 PreRender();
             }
 
-            public void SetVertexColor(Vector4 color)
+            public void SetVertexColor(Vector4 intColor)
             {
                 // (127, 127, 127, 255) is white.
                 foreach (Vertex v in vertices)
                 {
-                    v.col = color;
+                    v.col = intColor;
                 }
                 PreRender();
             }
@@ -2498,12 +2592,13 @@ namespace Smash_Forge
                 for (int i = 0; i < vertices.Count; i++)
                 {
                     Vertex v = vertices[i];
-                    Vector3 newTan = tanArray[i].Normalized();
-                    Vector3 newBitan = bitanArray[i].Normalized();
+                    Vector3 newTan = tanArray[i];
+                    Vector3 newBitan = bitanArray[i];
 
                     // The tangent and bitangent should be orthogonal to the normal. 
-                    // Bitangents are not calculated with a cross product to prevent flipped shading with mirrored normal maps.
-                    // Orthogonalizing the bitangent to the tangent removes some artifacts from this approach. 
+                    // Bitangents are not calculated with a cross product 
+                    // to prevent flipped shading  with mirrored normal maps.
+                    // Orthogonalizing the bitangent to the tangent removes some artifacts. 
                     v.tan = new Vector4(Vector3.Normalize(newTan - v.nrm * Vector3.Dot(v.nrm, newTan)), 1);
                     v.bitan = new Vector4(Vector3.Normalize(newBitan - v.nrm * Vector3.Dot(v.nrm, newBitan)), 1);
                     v.bitan = new Vector4(Vector3.Normalize(v.bitan.Xyz - v.tan.Xyz * Vector3.Dot(v.bitan.Xyz, v.tan.Xyz)), 1);
@@ -2640,44 +2735,15 @@ namespace Smash_Forge
 
             public void setDefaultMaterial()
             {
-                Material mat = new Material();
-                mat.Flags = 0x94010161;
-                mat.cullMode = 0x0405;
-                mat.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
-                mat.entries.Add("NU_fresnelColor", new float[] { 1, 1, 1, 1 });
-                mat.entries.Add("NU_blinkColor", new float[] { 0, 0, 0, 0 });
-                mat.entries.Add("NU_aoMinGain", new float[] { 0, 0, 0, 0 });
-                mat.entries.Add("NU_lightMapColorOffset", new float[] { 0, 0, 0, 0 });
-                mat.entries.Add("NU_fresnelParams", new float[] { 1, 0, 0, 0 });
-                mat.entries.Add("NU_alphaBlendParams", new float[] { 0, 0, 0, 0 });
-                mat.entries.Add("NU_materialHash", new float[] { FileData.toFloat(0x7E538F65), 0, 0, 0 });
+                Material mat = Material.GetDefault();
                 materials.Add(mat);
 
-                Mat_Texture defaultDif = new Mat_Texture();
-                defaultDif.WrapModeS = 1;
-                defaultDif.WrapModeT = 1;
-                defaultDif.minFilter = 3;
-                defaultDif.magFilter = 2;
-                defaultDif.mipDetail = 1;
-                defaultDif.mipDetail = 6;
+                MatTexture defaultDif = MatTexture.getDefault();
                 // The default texture looks better than a solid white texture. 
                 defaultDif.hash = 0x10000000;
 
                 mat.textures.Add(defaultDif);
-                mat.textures.Add(makeDefault());
-            }
-
-            public static Mat_Texture makeDefault()
-            {
-                Mat_Texture dif = new Mat_Texture();
-                dif.WrapModeS = 1;
-                dif.WrapModeT = 1;
-                dif.minFilter = 3;
-                dif.magFilter = 2;
-                dif.mipDetail = 1;
-                dif.mipDetail = 6;
-                dif.hash = (int) DummyTextures.DummyRamp;
-                return dif;
+                mat.textures.Add(MatTexture.getDefault());
             }
 
             public List<int> getDisplayFace()
@@ -2946,6 +3012,8 @@ namespace Smash_Forge
         {
             // Massive reductions in file size but very slow.
 
+            int MAX_BANK = 50; //  for speeding this up a little with some loss...
+
             foreach (Mesh m in Nodes)
             {
                 foreach (Polygon p in m.Nodes)
@@ -2953,13 +3021,14 @@ namespace Smash_Forge
                     List<Vertex> newVertices = new List<Vertex>();
                     List<int> newFaces = new List<int>();
 
+                    List<Vertex> vbank = new List<Vertex>(); // only check oast 50 verts - may miss far apart ones but is faster
                     foreach (int f in p.faces)
                     {
                         int newFaceIndex = -1; 
                         int i = 0;
 
                         // Has to loop through all the new vertices each time, which is very slow.
-                        foreach (Vertex v in newVertices)
+                        foreach (Vertex v in vbank)
                         {
                             if (v.Equals(p.vertices[f]))
                             {
@@ -2973,14 +3042,20 @@ namespace Smash_Forge
                         bool verticesAreEqual = newFaceIndex != -1;
                         if (verticesAreEqual)
                         {
-                            newFaces.Add(newFaceIndex);
+                            newFaces.Add(newVertices.Count + newFaceIndex);
                         }
                         else
                         {
-                            newVertices.Add(p.vertices[f]);
-                            newFaces.Add(newVertices.Count - 1);
+                            vbank.Add(p.vertices[f]);
+                            newFaces.Add(newVertices.Count + vbank.Count - 1);
+                        }
+                        if(vbank.Count > MAX_BANK)
+                        {
+                            newVertices.AddRange(vbank);
+                            vbank.Clear();
                         }
                     }
+                    newVertices.AddRange(vbank);
 
                     p.vertices = newVertices;
                     p.faces = newFaces;
@@ -3007,7 +3082,14 @@ namespace Smash_Forge
                         {
                             // Can't use single bind if some vertices aren't weighted to the same bone. 
                             if (singleBindBone == -1)
+                            {
                                 singleBindBone = v.node[0];
+                            }
+                            else if(singleBindBone != v.node[0])
+                            {
+                                isSingleBound = false;
+                                break;
+                            }
 
                             // Vertices bound to a single bone will have a node.Count of 1.
                             if (v.node.Count > 1)

@@ -29,27 +29,33 @@ namespace Smash_Forge
             trackBar.Value = newSliderValue;
         }
 
-        public static float TryParseTBFloat(TextBox textBox)
+        public static float TryParseTBFloat(TextBox textBox, bool changeTextBoxColor = true)
         {
+            // Sets the textbox backcolor to red for invalid values.
             float result = 0;
             if (float.TryParse(textBox.Text, out result))
                 textBox.BackColor = Color.White;
-            else
+            else if (changeTextBoxColor)
                 textBox.BackColor = Color.Red;
 
             return result;
         }
 
-        public static int TryParseTBInt(TextBox textBox, bool useHex = false)
+        public static int TryParseTBInt(TextBox textBox, bool useHex = false, bool changeTextBoxColor = true)
         {
+            // Returns -1 on failure. Sets the textbox backcolor to red for invalid values.
             int result = -1;
-            if (useHex)
+            if (useHex && int.TryParse(textBox.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out result))
             {
-                int.TryParse(textBox.Text, NumberStyles.HexNumber, 
-                    CultureInfo.CurrentCulture, out result);
+                textBox.BackColor = Color.White;
             }
-            else
-                int.TryParse(textBox.Text, out result);
+            else if (int.TryParse(textBox.Text, out result))
+            {
+                textBox.BackColor = Color.White;
+            } else if (changeTextBoxColor)
+            {
+                textBox.BackColor = Color.Red;
+            }
 
             return result;
         }

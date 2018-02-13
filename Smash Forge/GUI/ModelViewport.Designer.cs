@@ -464,7 +464,7 @@
 
         #endregion
 
-        private OpenTK.GLControl glViewport;
+        public OpenTK.GLControl glViewport;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button playButton;
         private System.Windows.Forms.Button endButton;
