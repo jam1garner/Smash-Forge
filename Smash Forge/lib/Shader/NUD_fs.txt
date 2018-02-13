@@ -53,6 +53,8 @@ uniform int hasUniverseParam;
 
 // Da Flags
 uniform uint flags;
+
+// Check if src, dst, alpha function are non zero.
 uniform int isTransparent;
 
 uniform int lightSet;
@@ -89,7 +91,7 @@ uniform vec4 softLightingParams;
 uniform vec4 customSoftLightParams;
 uniform vec4 effUniverseParam;
 
-// render settings
+// Render Settings
 uniform int renderDiffuse;
 uniform int renderSpecular;
 uniform int renderFresnel;
@@ -107,7 +109,7 @@ uniform float specularIntensity;
 uniform float fresnelIntensity;
 uniform float reflectionIntensity;
 
-// character lighting
+// Character Lighting
 uniform vec3 difLightColor;
 uniform vec3 ambLightColor;
 uniform vec3 difLightDirection;
@@ -120,31 +122,34 @@ uniform vec3 difLight3Color;
 uniform vec3 ambLight3Color;
 uniform vec3 difLight3Direction;
 
+uniform vec3 specLightColor;
+uniform vec3 specLightDirection;
+
+// Shared by characters and stages.
 uniform vec3 fresGroundColor;
 uniform vec3 fresSkyColor;
-uniform vec3 specLightColor;
 uniform vec3 fresSkyDirection;
 uniform vec3 fresGroundDirection;
 
-uniform vec3 specLightDirection;
+// Not found in game yet.
 uniform vec3 refLightColor;
 
-// stage light 1
+// Stage Light 1
 uniform int renderStageLight1;
 uniform vec3 stageLight1Color;
 uniform vec3 stageLight1Direction;
 
-// stage light 2
+// Stage Light 2
 uniform int renderStageLight2;
 uniform vec3 stageLight2Color;
 uniform vec3 stageLight2Direction;
 
-// stage light 3
+// Stage Light 3
 uniform int renderStageLight3;
 uniform vec3 stageLight3Color;
 uniform vec3 stageLight3Direction;
 
-// stage light 4
+// Stage Light 4
 uniform int renderStageLight4;
 uniform vec3 stageLight4Color;
 uniform vec3 stageLight4Direction;
@@ -153,8 +158,10 @@ uniform vec3 stageLight4Direction;
 uniform int renderFog;
 uniform vec3 stageFogColor;
 
+// Wireframe Rendering
 uniform int colorOverride;
 
+// Matrices
 uniform mat4 mvpMatrix;
 uniform mat4 modelViewMatrix;
 uniform mat4 sphereMapMatrix;
@@ -180,7 +187,7 @@ float Luminance(vec3 rgb)
 
 vec3 CalculateTintColor(vec3 diffuseColor, float tintAmount)
 {
-    // Approximation of overlay blend mode.
+    // Approximates an overlay blend mode. Cheaper than converting to HSV/HSL.
     return mix(vec3(1), (diffuseColor * 2), min(tintAmount * 0.5, 1));
 }
 
@@ -219,23 +226,23 @@ vec3 ScreenBlend(vec3 base, vec3 top)
     return vec3(1) - (vec3(1) - base) * (vec3(1) - top);
 }
 
-vec3 RampColor(vec3 color){
+vec3 RampColor(float rampCoord){
+    // TODO: Vertical component is always 0?
 	if(hasRamp == 1)
 	{
-		float rampCoord = Luminance(color);
 		rampCoord = clamp(rampCoord, 0.01, 0.99);
-		return texture(ramp, vec2(1 - rampCoord, 0.50)).rgb;
+		return texture(ramp, vec2(1 - rampCoord, 0.0)).rgb;
 	}
 	else
 		return vec3(0);
 }
 
-vec3 DummyRampColor(vec3 color){
+vec3 DummyRampColor(float rampCoord){
+    // TODO: Vertical component is always 0?
 	if(hasDummyRamp == 1)
 	{
-		float rampCoord = Luminance(color);
 		rampCoord = clamp(rampCoord, 0.01, 0.99);
-		return texture(dummyRamp, vec2(1 - rampCoord, 0.50)).rgb;
+		return texture(dummyRamp, vec2(1 - rampCoord, 0.0)).rgb;
 	}
 	else
 		return vec3(0);
@@ -259,16 +266,6 @@ vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift) // probably not needed
     return normalize(shiftedT);
 }
 
-vec3 RemapToVisible(vec3 value) {
-    // [-1,1] -> [0,1]
-    return value * 0.5 + 0.5;
-}
-
-float RemapToVisible(float value) {
-    // [-1,1] -> [0,1]
-    return value * 0.5 + 0.5;
-}
-
 float CalculateFresnel(vec3 I, vec3 N)
 {
     return max(1 - max(dot(I, N), 0), 0);
@@ -276,6 +273,7 @@ float CalculateFresnel(vec3 I, vec3 N)
 
 vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, float xComponent, float yComponent)
 {
+    // TODO: Figure out how this actually works...
     float shiftTex = diffuseMap.g; // vertical component of ramp?
     shiftTex = 0;
 
@@ -301,26 +299,25 @@ vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, float xComponent, float yComponen
 vec3 SoftLighting(vec3 ambient, vec3 diffuse, vec4 params,
     float darkenMultiplier, float saturationMultiplier, float halfLambert)
 {
-    // blend between a certain distance from dot(L,N) = 0.5
+    // Blends values between a certain distance from 0.5
     float edgeL = 0.5 - (params.z / 2);
     float edgeR = 0.5 + (params.z / 2);
     float smoothLambert = smoothstep(edgeL, edgeR, halfLambert);
 
-    // darken ambientIntensity color to counteract flat stage lighting
+    // Controls ambient brightness.
     float ambientGain = max(1 - (darkenMultiplier * params.y), 0);
-
-    // more saturated and darker ambient color
     ambient *= ambientGain;
-    // TODO: Pretty sure this is simpler.
-    // vec3 ambientHSV = RGB2HSV(ambient);
-    // ambientHSV = vec3(ambientHSV.x, (ambientHSV.y + (saturationMultiplier * params.x)), ambientHSV.z);
-    // ambient = HSV2RGB(ambientHSV);
 
-    // custom diffuse gradient
+    // Controls ambient saturation.
+    // TODO: Need to check the math.
+    vec3 ambientTintColor = CalculateTintColor(ambient, params.x);
+    ambient *= ambientTintColor;
+
+    // Creates a custom diffuse gradient.
     return mix(ambient, diffuse, smoothLambert);
 }
 
-vec3 FresnelPass(vec3 N, vec3 I, vec3 tintColor, vec4 diffuseMap, float aoMap, float aoMixIntensity)
+vec3 FresnelPass(vec3 N, vec3 I, vec4 diffuseMap, float aoMap, float aoMixIntensity, vec3 tintColor)
 {
     vec3 fresnelPass = vec3(0);
 
@@ -343,7 +340,7 @@ vec3 FresnelPass(vec3 N, vec3 I, vec3 tintColor, vec4 diffuseMap, float aoMap, f
     return fresnelPass;
 }
 
-vec3 ReflectionPass(vec3 I, vec3 N, vec3 tintColor, vec4 diffuseMap, float aoMap, float aoMixIntensity)
+vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoMap, float aoMixIntensity, vec3 tintColor)
 {
     vec3 reflectionPass = vec3(0);
 	// cubemap reflection
@@ -369,7 +366,7 @@ vec3 ReflectionPass(vec3 I, vec3 N, vec3 tintColor, vec4 diffuseMap, float aoMap
     return reflectionPass;
 }
 
-vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, vec3 tintColor, float aoMap, float aoMixIntensity)
+vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoMap, float aoMixIntensity, vec3 tintColor)
 {
     vec3 specularPass = vec3(0);
 
@@ -427,7 +424,7 @@ vec3 CalculateFog(vec3 inputColor)
         return inputColor;
 }
 
-vec3 CalculateUniverseColor(float param)
+vec3 CalculateUniverseColor(float universeParam)
 {
     // Account for camera position and rotation for projection.
     vec3 projVec = normalize(objectPosition.xyz - cameraPosition.xyz);
@@ -435,7 +432,7 @@ vec3 CalculateUniverseColor(float param)
     // Cheap approximations of trig functions.
     float uCoord = projVec.x * 0.5 + 0.5;
     float vCoord = projVec.y * 0.5 + 0.5;
-    return texture(dif, vec2(uCoord * param, 1- vCoord)).rgb;
+    return texture(dif, vec2(uCoord * universeParam, 1- vCoord)).rgb;
 }
 
 
@@ -470,7 +467,7 @@ vec3 CalculateLighting(vec3 N, float halfLambert)
     return lighting;
 }
 
-vec3 DiffusePass(vec3 N, float aoMap, vec4 diffuseMap)
+vec3 DiffusePass(vec3 N, vec4 diffuseMap, float aoMap)
 {
     vec3 diffusePass = vec3(0);
 
@@ -512,7 +509,7 @@ vec3 DiffusePass(vec3 N, float aoMap, vec4 diffuseMap)
 
     // Dummy ramp calculations.
     float rampIntensity = 0.75;
-    vec3 rampTotal = (0.2 * RampColor(vec3(halfLambert))) + (0.75 * DummyRampColor(vec3(halfLambert)));
+    vec3 rampTotal = (0.2 * RampColor(halfLambert)) + (0.75 * DummyRampColor(halfLambert));
     vec3 rampAdd = mix(vec3(0), rampTotal, halfLambert);
 
     diffusePass = diffuseColorFinal * lighting;
@@ -535,11 +532,8 @@ vec3 DiffusePass(vec3 N, float aoMap, vec4 diffuseMap)
     return diffusePass;
 }
 
-vec3 SmashShader(vec4 diffuseMap, float aoMap, vec3 N, vec3 I){
-    // used for wireframe rendering
-    if (colorOverride == 1)
-        return vec3(1);
-
+vec3 SmashShader(vec4 diffuseMap, float aoMap, vec3 N, vec3 I)
+{
     float aoMixIntensity = aoMinGain.w;
 
 	// Calculate the color tints
@@ -555,16 +549,16 @@ vec3 SmashShader(vec4 diffuseMap, float aoMap, vec3 N, vec3 I){
     }
 
     // render passes
-    vec3 diffusePass = DiffusePass(N, aoMap, diffuseMap);
-    vec3 specularPass = SpecularPass(N, I, diffuseMap, specTintColor, aoMap, aoMixIntensity);
-    vec3 fresnelPass = FresnelPass(N, I, fresTintColor, diffuseMap, aoMap, aoMixIntensity);
-	vec3 reflectionPass = ReflectionPass(I, N, reflTintColor, diffuseMap, aoMap, aoMixIntensity);
+    vec3 diffusePass = DiffusePass(N, diffuseMap, aoMap);
+    vec3 specularPass = SpecularPass(N, I, diffuseMap, aoMap, aoMixIntensity, specTintColor);
+    vec3 fresnelPass = FresnelPass(N, I, diffuseMap, aoMap, aoMixIntensity, fresTintColor);
+	vec3 reflectionPass = ReflectionPass(N, I, diffuseMap, aoMap, aoMixIntensity, reflTintColor);
 
 	vec3 resultingColor = vec3(0);
 
 	if(renderLighting == 1)
 	{
-        // prevent negative colors for some GPUs
+        // Prevent negative colors for some GPUs.
     	resultingColor += max((diffusePass * renderDiffuse), 0);
     	resultingColor += max((fresnelPass * renderFresnel), 0);
     	resultingColor += max((specularPass * renderSpecular), 0);
@@ -584,26 +578,23 @@ void main()
 {
     fragColor = vec4(0,0,0,1);
 
+    if (colorOverride == 1)
+    {
+        // Wireframe color.
+        fragColor = vec4(1);
+        return;
+    }
+
+    // Global vectors.
     vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
     vec3 N = CalcBumpedNormal(normal);
 
-    // remap vectors for nicer visualization
-    vec3 displayNormal = (N * 0.5) + 0.5;
-
-    // still show <0,0,0> as black
-    vec3 displayTangent = (tangent * 0.5) + 0.5;
-    if (dot(tangent, vec3(1)) == 0)
-        displayTangent = vec3(0);
-
-    // still show <0,0,0> as black
-    vec3 displayBitangent = (bitangent * 0.5) + 0.5;
-    if (dot(bitangent, vec3(1)) == 0)
-        displayBitangent = vec3(0);
-
     // zOffset correction
-    gl_FragDepth = gl_FragCoord.z - (zOffset.x / 1500); // divide by far plane?
+    // TODO: Divide by far plane?
+    gl_FragDepth = gl_FragCoord.z - (zOffset.x / 1500);
 
     // similar to du dv but uses just the normal map
+    // TODO: does du dv affect other UV channels?
     float offsetIntensity = 0;
     if(useNormalMap == 1)
         offsetIntensity = normalParams.z;
@@ -611,7 +602,7 @@ void main()
     textureOffset = (textureOffset * 2) - 1; // remap to -1 to 1?
     vec2 offsetTexCoord = texCoord + (textureOffset * offsetIntensity);
 
-    // calculate diffuse map blending to use in Shaded and Diffuse Maps render modes
+    // calculate diffuse map blending
     vec4 diffuse1 = vec4(0);
     vec4 diffuse2 = vec4(0);
     vec4 diffuse3 = texture(dif3, texCoord3);
@@ -642,6 +633,7 @@ void main()
     if (renderAlpha == 1)
         fragColor.a = texture(dif, texCoord).a;
 
+    // Some stage water materials have NU_diffuseColor but no diffuse map.
     if (hasDif != 1)
         diffuseMapTotal = vec4(diffuseColor);
 
@@ -657,12 +649,9 @@ void main()
     }
 
     // Material lighting done in SmashShader
-    float aoMap = texture(normalMap, texCoord).a;
-    if (hasColorGainOffset == 1)
-        aoMap = Luminance(texture(dif, texCoord).rgb);
-    fragColor.rgb = SmashShader(diffuseMapTotal, aoMap, N, I);
+    fragColor.rgb = SmashShader(diffuseMapTotal, texture(normalMap, texCoord).a, N, I);
 
-    // not sure why vertex color values are greater than 1
+    // TODO: Max vertex color value?
     if (renderVertColor == 1 || hasFinalColorGain == 1)
         fragColor *= min(vertexColor, vec4(1));
 
@@ -670,20 +659,14 @@ void main()
     if (hasUniverseParam != 1)
         fragColor.rgb *= effColorGain.rgb;
 
-    // correct alpha
+    // Adjust the alpha.
     fragColor.a *= finalColorGain.a;
     fragColor.a *= effColorGain.a;
-
     fragColor.a *= CalculateAngleFade(I, N);
-
     // if ((flags & 0xF0FF0000u) != 0xF0640000u) // ryu works differently.
-    // need to research this more
     fragColor.a += alphaBlendParams.x;
 
-    // alpha override
+    // Alpha override for render settings. Fixes alpha for renders.
     if (renderAlpha != 1 || isTransparent != 1)
         fragColor.a = 1;
-
-    if (fragColor.a == 0)
-        discard;
 }
