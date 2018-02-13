@@ -105,7 +105,7 @@ namespace Smash_Forge
                 n.Nodes.Add(nmesh);
                 nmesh.Text = geom.name;
                 NUD.Polygon npoly = new NUD.Polygon();
-                npoly.setDefaultMaterial();
+                npoly.AddDefaultMaterial();
                 nmesh.Nodes.Add(npoly);
 
                 for (int i = 0; i < colladaPoly.p.Length; i++)

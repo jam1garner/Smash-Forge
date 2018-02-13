@@ -94,7 +94,7 @@ namespace Smash_Forge
         public static NUD.Polygon readPoly(string input)
         {
             NUD.Polygon poly = new NUD.Polygon();
-            poly.setDefaultMaterial();
+            poly.AddDefaultMaterial();
 
             string[] lines = input.Replace("  ", " ").Split('\n');
 

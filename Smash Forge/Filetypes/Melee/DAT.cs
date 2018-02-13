@@ -685,7 +685,7 @@ namespace Smash_Forge
                     texid++;
                 }
                 NUD.Polygon polygon = new NUD.Polygon();
-                polygon.setDefaultMaterial();
+                polygon.AddDefaultMaterial();
                 polygon.materials[0].textures[0].hash = 0x401B1000 + texid;
                 polygon.materials[0].cullMode = 2;
                 switch (data.material.texture.wrap_s)
