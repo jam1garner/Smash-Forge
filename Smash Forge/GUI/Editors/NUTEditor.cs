@@ -727,15 +727,16 @@ namespace Smash_Forge
 
                     foreach (var texPath in Directory.GetFiles(f.SelectedPath))
                     {
-                        if (!(texPath.ToLower().EndsWith(".dds") || texPath.ToLower().EndsWith(".png"))) return;
+                        if (!(texPath.ToLower().EndsWith(".dds") || texPath.ToLower().EndsWith(".png"))) continue;
                         int texId;
                         bool isTex = int.TryParse(Path.GetFileNameWithoutExtension(texPath), NumberStyles.HexNumber,
                             new CultureInfo("en-US"), out texId);
 
                         NUT_Texture texture = null;
-                        foreach (NUT_Texture tex in nut.Nodes)
-                            if (tex.HASHID == texId)
-                                texture = tex;
+                        if (isTex)
+                            foreach (NUT_Texture tex in nut.Nodes)
+                                if (tex.HASHID == texId)
+                                    texture = tex;
 
                         if (texture == null)
                         {
@@ -743,7 +744,7 @@ namespace Smash_Forge
                             NUT_Texture tex = null;
                             if (texPath.ToLower().EndsWith(".png"))
                                 tex = fromPNG(texPath, 1);
-                            if (texPath.ToLower().EndsWith(".dds"))
+                            else if (texPath.ToLower().EndsWith(".dds"))
                             {
                                 DDS dds = new DDS(new FileData(texPath));
                                 tex = dds.toNUT_Texture();
@@ -764,7 +765,7 @@ namespace Smash_Forge
                             NUT_Texture ntex = null;
                             if (texPath.ToLower().EndsWith(".png"))
                                 ntex = fromPNG(texPath, 1);
-                            if (texPath.ToLower().EndsWith(".dds"))
+                            else if (texPath.ToLower().EndsWith(".dds"))
                             {
                                 DDS dds = new DDS(new FileData(texPath));
                                 ntex = dds.toNUT_Texture();

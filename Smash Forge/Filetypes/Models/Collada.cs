@@ -105,7 +105,7 @@ namespace Smash_Forge
                 n.Nodes.Add(nmesh);
                 nmesh.Text = geom.name;
                 NUD.Polygon npoly = new NUD.Polygon();
-                npoly.setDefaultMaterial();
+                npoly.AddDefaultMaterial();
                 nmesh.Nodes.Add(npoly);
 
                 for (int i = 0; i < colladaPoly.p.Length; i++)
@@ -300,14 +300,15 @@ namespace Smash_Forge
             // next will be nodes then controllers
             // craft vbn :>
             // find joint node
+            if (con.VBN == null)
+                con.VBN = new VBN();
+
+            VBN vbn = con.VBN;
             foreach (ColladaNode node in dae.scene.nodes)
             {
                 if (node.type.Equals("JOINT") && con.VBN == null)
                 {
                     // joint tree
-
-                    VBN vbn = new VBN();
-                    con.VBN = vbn;
 
                     List<ColladaNode> parenttrack = new List<ColladaNode>();
                     Queue<ColladaNode> nodes = new Queue<ColladaNode>();
@@ -319,6 +320,8 @@ namespace Smash_Forge
                         parenttrack.Add(bo);
                         foreach (ColladaNode child in bo.children)
                             nodes.Enqueue(child);
+
+                        Console.WriteLine(bo.name);
 
                         Bone bone = new Bone(vbn);
                         vbn.bones.Add(bone);
@@ -670,9 +673,9 @@ namespace Smash_Forge
         {
             Collada dae = new Collada();
 
-            if (con.dat_melee != null)
+            if (con.DAT_MELEE != null)
             {
-                Save(fname, con.dat_melee);
+                Save(fname, con.DAT_MELEE);
                 return;
             }
             NUD nud = con.NUD;

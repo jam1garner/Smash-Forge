@@ -538,7 +538,7 @@ namespace Smash_Forge
                 {
                     NUD.Polygon poly = new NUD.Polygon();
                     n_mesh.Nodes.Add(poly);
-                    poly.setDefaultMaterial();
+                    poly.AddDefaultMaterial();
 
                     List<Vertex> indexSim = new List<Vertex>();
 

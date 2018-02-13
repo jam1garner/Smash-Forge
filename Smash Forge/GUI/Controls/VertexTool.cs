@@ -12,7 +12,11 @@ namespace Smash_Forge
 {
     public partial class VertexTool : Form
     {
+        private NUD.Vertex _selectedVertex;
         public ModelViewport vp;
+        private VBN VBN;
+        
+        private int SelectedWeight = -1;
 
         public NUD.Vertex SelectedVertex
         {
@@ -26,11 +30,6 @@ namespace Smash_Forge
                 LoadVertexInfo(_selectedVertex);
             }
         }
-        private NUD.Vertex _selectedVertex;
-
-        private VBN VBN;
-
-        private int SelectedWeight = -1;
 
         public VertexTool()
         {

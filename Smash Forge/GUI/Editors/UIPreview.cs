@@ -51,8 +51,11 @@ namespace Smash_Forge
 
         private void LetsDance(object sender, EventArgs e)
         {
-            VBNViewport view = MainForm.Instance.viewports[0];
-            view.CurrentMode = VBNViewport.Mode.Normal;
+            Control c = MainForm.Instance.GetModelViewport();
+
+            if (!(c is ModelViewport)) return;
+            ModelViewport view =(ModelViewport)c;
+            view.CurrentMode = ModelViewport.Mode.Normal;
 
             NUT n = null;
             if (((MenuItem)sender).GetContextMenu().SourceControl == stock_90_renderer)
@@ -65,15 +68,15 @@ namespace Smash_Forge
                 n = chr_13;
             if (n == null) return;
 
-            byte[] data = RenderTools.DXT5ScreenShot(view.glControl1, view.shootX, view.shootY, view.shootWidth, view.shootHeight);
+            byte[] data = RenderTools.DXT5ScreenShot(view.glViewport, view.ShootX, view.ShootY, view.ShootWidth, view.ShootHeight);
             int id = n.Nodes.Count > 0 ? ((NUT_Texture)n.Nodes[0]).HASHID : 0x280052B7;
             n.Destroy();
             n.Nodes.Clear();
             n.draw.Clear();
 
             NUT_Texture tex = new NUT_Texture();
-            tex.Width = view.shootWidth;
-            tex.Height = view.shootHeight;
+            tex.Width = view.ShootWidth;
+            tex.Height = view.ShootHeight;
             tex.mipmaps.Add(FlipDXT5(data, tex.Width, tex.Height));
             tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
             tex.HASHID = id;
@@ -152,27 +155,32 @@ namespace Smash_Forge
 
         private void SnapShotMode(object sender, EventArgs e)
         {
-            MainForm.Instance.viewports[0].CurrentMode = VBNViewport.Mode.Photoshoot;
-            Console.WriteLine();
+            Control c = MainForm.Instance.GetModelViewport();
+            
+            if (!(c is ModelViewport)) return;
+            ModelViewport view = (ModelViewport)c;
+            view.CurrentMode = ModelViewport.Mode.Photoshoot;
+            //view.HideAll();
+
             if (((MenuItem)sender).GetContextMenu().SourceControl == stock_90_renderer)
             {
-                MainForm.Instance.viewports[0].shootWidth = 64;
-                MainForm.Instance.viewports[0].shootHeight = 64;
+                view.ShootWidth = 64;
+                view.ShootHeight = 64;
             }
             if (((MenuItem)sender).GetContextMenu().SourceControl == chr_00_renderer)
             {
-                MainForm.Instance.viewports[0].shootWidth = 128;
-                MainForm.Instance.viewports[0].shootHeight = 128;
+                view.ShootWidth = 128;
+                view.ShootHeight = 128;
             }
             if (((MenuItem)sender).GetContextMenu().SourceControl == chr_11_renderer)
             {
-                MainForm.Instance.viewports[0].shootWidth = 384;
-                MainForm.Instance.viewports[0].shootHeight = 384;
+                view.ShootWidth = 384;
+                view.ShootHeight = 384;
             }
             if (((MenuItem)sender).GetContextMenu().SourceControl == chr_13_renderer)
             {
-                MainForm.Instance.viewports[0].shootWidth = 416;
-                MainForm.Instance.viewports[0].shootHeight = 416;
+                view.ShootWidth = 416;
+                view.ShootHeight = 416;
             }
             Runtime.renderFloor = false;
             Runtime.renderBackGround = false;

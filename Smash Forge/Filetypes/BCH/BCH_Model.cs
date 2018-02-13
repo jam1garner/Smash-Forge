@@ -497,7 +497,7 @@ namespace Smash_Forge
         public void CreateFromNUD(NUD n)
         {
             //Alrighty.............................
-            int meshcount = Nodes.Count;
+            /*int meshcount = Nodes.Count;
 
             // First transfer over the mesh polygons?
             int i = 0;
@@ -563,7 +563,7 @@ namespace Smash_Forge
 
             Nodes.Clear();
             Nodes.AddRange(Meshes.ToArray());
-            Vertices = Verts.ToArray();
+            Vertices = Verts.ToArray();*/
         }
     }
 

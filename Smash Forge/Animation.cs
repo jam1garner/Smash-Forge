@@ -291,12 +291,16 @@ namespace Smash_Forge
                 return key;
             }
 
+            int LastFound = 0;
             public float GetValue(float frame)
             {
                 KeyFrame k1 = (KeyFrame)Keys[0], k2 = (KeyFrame)Keys[0];
-                foreach(KeyFrame k in Keys)
+                int i = 0;
+                for (i = LastFound; i < Keys.Count; i++)
                 {
-                    if(k.Frame < frame)
+                    LastFound = i;
+                    KeyFrame k = Keys[LastFound];
+                    if (k.Frame < frame)
                     {
                         k1 = k;
                     }
@@ -306,6 +310,8 @@ namespace Smash_Forge
                         break;
                     }
                 }
+                if (LastFound >= Keys.Count - 2)
+                    LastFound = 0;
 
                 if (k1.InterType == InterpolationType.COSTANT)
                     return k1.Value;

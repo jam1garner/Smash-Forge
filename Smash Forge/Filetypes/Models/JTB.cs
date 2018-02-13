@@ -46,11 +46,13 @@ namespace Smash_Forge
                     List<short> Table1 = new List<short>();
                     for (int i = 0; i < size1; i++)
                     {
+                        if (d.pos() + 2 > d.size()) break;
                         Table1.Add((short)d.readShort());
                     }
                     List<short> Table2 = new List<short>();
                     for (int i = 0; i < size2; i++)
                     {
+                        if (d.pos() + 2 > d.size()) break;
                         Table2.Add((short)d.readShort());
                     }
                     Tables = new List<List<short>>();

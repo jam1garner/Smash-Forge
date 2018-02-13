@@ -406,6 +406,8 @@ namespace Smash_Forge
                 {
                     GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
                     GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
+                    var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
+                    GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
                 }
             }
 
@@ -683,7 +685,7 @@ namespace Smash_Forge
                     texid++;
                 }
                 NUD.Polygon polygon = new NUD.Polygon();
-                polygon.setDefaultMaterial();
+                polygon.AddDefaultMaterial();
                 polygon.materials[0].textures[0].hash = 0x401B1000 + texid;
                 polygon.materials[0].cullMode = 2;
                 switch (data.material.texture.wrap_s)
@@ -1171,6 +1173,8 @@ namespace Smash_Forge
                 //dat.jobjs.Add(this);
                 node.Text = "Bone_" + dat.jobjOffsetLinker.Count;
                 node.Tag = this;
+                node.ImageKey = "bone";
+                node.SelectedImageKey = "bone";
                 parentNode.Nodes.Add(node);
 
                 if (nextOffset != 0)
@@ -1232,6 +1236,8 @@ namespace Smash_Forge
                 node.Text = "Mesh_" + d.pos().ToString("X8");
                 node.Tag = this;
                 node.Checked = true;
+                node.ImageKey = "mesh";
+                node.SelectedImageKey = "mesh";
                 parent.Nodes.Add(node);
 
                 unk1 = d.readInt();
@@ -1484,6 +1490,8 @@ namespace Smash_Forge
                 dobj.polygons.Add(this);
 
                 node.Tag = this;
+                node.ImageKey = "polygon";
+                node.SelectedImageKey = "polygon";
                 parent.Nodes.Add(node);
 
                 unk1 = d.readInt();

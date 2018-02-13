@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using Smash_Forge.Rendering.Lights;
+using OpenTK.Input;
 
 namespace Smash_Forge
 {
@@ -174,6 +175,13 @@ namespace Smash_Forge
         public MeshList MeshList = new MeshList();
         public AnimListPanel AnimList = new AnimListPanel();
         public TreeNodeCollection draw;
+
+        // Photoshoot
+        public bool freezeCamera = false;
+        public int ShootX = 0;
+        public int ShootY = 0;
+        public int ShootWidth = 50;
+        public int ShootHeight = 50;
 
         public ModelViewport()
         {
@@ -350,7 +358,7 @@ namespace Smash_Forge
 
         int dbdistance = 0;
         System.Drawing.Point _LastPoint;
-        private void glViewport_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void glViewport_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (ReadyToRender && glViewport != null)
             {
@@ -472,10 +480,10 @@ namespace Smash_Forge
                     Animation.NextFrame(m.VBN);
 
                 // Deliberately do not ever use ACMD/animFrame to modify these other types of model
-                if (m.dat_melee != null)
+                if (m.DAT_MELEE != null)
                 {
                     Animation.SetFrame(frameNum);
-                    Animation.NextFrame(m.dat_melee.bones);
+                    Animation.NextFrame(m.DAT_MELEE.bones);
                 }
                 if (m.BCH != null)
                 {
@@ -504,9 +512,9 @@ namespace Smash_Forge
                     m.VBN.reset();
 
                 // Deliberately do not ever use ACMD/animFrame to modify these other types of model
-                if (m.dat_melee != null)
+                if (m.DAT_MELEE != null)
                 {
-                    m.dat_melee.bones.reset();
+                    m.DAT_MELEE.bones.reset();
                 }
                 if (m.BCH != null)
                 {
@@ -652,15 +660,15 @@ namespace Smash_Forge
             cameraPosForm.ShowDialog();
         }
 
-        private void glViewport_MouseMove(object sender, MouseEventArgs e)
+        private void glViewport_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if(CurrentMode != Mode.Selection)
+            if (CurrentMode != Mode.Selection && !freezeCamera)
                 camera.Update();
         }
 
         #region Controls
 
-        private void ViewComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        public void HideAll()
         {
             LVDEditor.Visible = false;
             LVDList.Visible = false;
@@ -669,7 +677,11 @@ namespace Smash_Forge
             ACMDEditor.Visible = false;
             VertexTool.Visible = false;
             totalFrame.Enabled = false;
+        }
 
+        private void ViewComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            HideAll();
             // Use a string so the order of the items can be changed later. 
             switch (ViewComboBox.SelectedItem.ToString())
             {
@@ -1014,7 +1026,7 @@ namespace Smash_Forge
             
         }
 
-        private void glViewport_MouseUp(object sender, MouseEventArgs e)
+        private void glViewport_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             //checkSelect();
         }
@@ -1072,13 +1084,15 @@ namespace Smash_Forge
             // Camera Update
             // -------------------------------------------------------------
             GL.MatrixMode(MatrixMode.Projection);
-
-            bool shouldUpdateCam = glViewport.ClientRectangle.Contains(glViewport.PointToClient(Cursor.Position))
-                && glViewport.Focused && (CurrentMode == Mode.Normal) && !TransformTool.hit;
-
-            if (shouldUpdateCam)
+            if (glViewport.ClientRectangle.Contains(glViewport.PointToClient(Cursor.Position))
+             && glViewport.Focused 
+             && (CurrentMode == Mode.Normal || (CurrentMode == Mode.Photoshoot && !freezeCamera))
+             && !TransformTool.hit)
+            {
                 camera.Update();
-            
+                //if (cameraPosForm != null && !cameraPosForm.IsDisposed)
+                //    cameraPosForm.updatePosition();
+            }
             try
             {
                 if (OpenTK.Input.Mouse.GetState() != null)
@@ -1241,18 +1255,18 @@ namespace Smash_Forge
 
             }
 
-            /*if (CurrentMode == Mode.Photoshoot)
+            if (CurrentMode == Mode.Photoshoot)
             {
                 freezeCamera = false;
                 if (Keyboard.GetState().IsKeyDown(Key.W) && Mouse.GetState().IsButtonDown(MouseButton.Left))
                 {
-                    shootX = this.PointToClient(Cursor.Position).X;
-                    shootY = this.PointToClient(Cursor.Position).Y;
+                    ShootX = glViewport.PointToClient(Cursor.Position).X;
+                    ShootY = glViewport.PointToClient(Cursor.Position).Y;
                     freezeCamera = true;
                 }
                 // Hold on to your pants, boys
-                RenderTools.DrawPhotoshoot(glViewport, shootX, shootY, shootWidth, shootHeight);
-            }*/
+                RenderTools.DrawPhotoshoot(glViewport, ShootX, ShootY, ShootWidth, ShootHeight);
+            }
 
             GL.PopAttrib();
             glViewport.SwapBuffers();
