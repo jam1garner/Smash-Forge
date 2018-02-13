@@ -480,10 +480,10 @@ namespace Smash_Forge
                     Animation.NextFrame(m.VBN);
 
                 // Deliberately do not ever use ACMD/animFrame to modify these other types of model
-                if (m.dat_melee != null)
+                if (m.DAT_MELEE != null)
                 {
                     Animation.SetFrame(frameNum);
-                    Animation.NextFrame(m.dat_melee.bones);
+                    Animation.NextFrame(m.DAT_MELEE.bones);
                 }
                 if (m.BCH != null)
                 {
@@ -512,9 +512,9 @@ namespace Smash_Forge
                     m.VBN.reset();
 
                 // Deliberately do not ever use ACMD/animFrame to modify these other types of model
-                if (m.dat_melee != null)
+                if (m.DAT_MELEE != null)
                 {
-                    m.dat_melee.bones.reset();
+                    m.DAT_MELEE.bones.reset();
                 }
                 if (m.BCH != null)
                 {

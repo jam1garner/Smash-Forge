@@ -1696,33 +1696,45 @@ namespace Smash_Forge
                 if (fileName.EndsWith("AJ.dat"))
                 {
                     MessageBox.Show("This is animation; load with Animation -> Import");
+
+                    ModelViewport mv;
+                    if (CheckCurrentViewport(out mv))
+                    {
+                        foreach(ModelContainer mc in mv.MeshList.treeView1.Nodes)
+                        {
+                            if(mc.DAT_MELEE != null)
+                            {
+                                Dictionary<string, Animation> Anims = DAT_Animation.GetTracks(fileName, mc.DAT_MELEE.bones);
+                                foreach(string key in Anims.Keys)
+                                {
+                                    Anims[key].Text = key;
+                                    mv.AnimList.treeView1.Nodes.Add(Anims[key]);
+                                }
+                                return;
+                            }
+                        }
+                    }
+
                     return;
                 }
                 DAT dat = new DAT();
                 dat.filename = fileName;
                 dat.Read(new FileData(fileName));
-                ModelContainer c = new ModelContainer();
-
-                //TODO move to model viewport
-
-                //Runtime.ModelContainers.Add(c);
-                c.dat_melee = dat;
+                
                 dat.PreRender();
 
                 HashMatch();
-
-                Runtime.TargetVBN = dat.bones;
+                
                 if (dat.collisions != null)//if the dat is a stage
                 {
                     DAT_stage_list stageList = new DAT_stage_list(dat) { ShowHint = DockState.DockLeft };
                     AddDockedControl(stageList);
                 }
-                DAT_TreeView p = new DAT_TreeView() {ShowHint = DockState.DockLeft};
-                p.setDAT(dat);
-                AddDockedControl(p);
-
-                meshList.refresh();
-                resyncTargetVBN();
+                
+                ModelViewport mvp = new ModelViewport();
+                mvp.draw.Add(new ModelContainer() { DAT_MELEE = dat });
+                mvp.Text = fileName;
+                AddDockedControl(mvp);
             }
 
             if (fileName.EndsWith(".lvd"))

@@ -360,6 +360,50 @@ namespace Smash_Forge
             return animations;
         }
 
+        public static Dictionary<string, Animation> GetTracks(string fname, VBN vbn)
+        {
+            // a note, I know that the main player file has the offsets for
+            // animations, this is just for viewing
+            FileData f = new FileData(fname);
+            f.Endian = System.IO.Endianness.Big;
+
+            int pos = 0;
+
+            Dictionary<string, Animation> animations = new Dictionary<string, Animation>();
+            AnimationGroupNode group = new AnimationGroupNode() { Text = fname };
+            MainForm.Instance.animList.treeView1.Nodes.Add(group);
+            while (pos < f.size())
+            {
+                Console.WriteLine(pos.ToString("x"));
+                int len = f.readInt();
+                DAT_Animation anim = new DAT_Animation();
+                anim.Read(new FileData(f.getSection(pos, len)));
+                AnimTrack track = new AnimTrack(anim);
+
+                if (pos == 0)
+                {
+                    //track.Show();
+                }
+                group.Nodes.Add(track.toAnimation(vbn));
+                //sa.Tag = track;
+                //Runtime.Animations.Add(anim.Name, sa);
+                // MainForm.Instance.animList.treeView1.Nodes.Add(anim.Name);
+                animations.Add(anim.Name, track.toAnimation(vbn));
+
+                if (pos != 0)
+                {
+                    track.Dispose();
+                    track.Close();
+                }
+
+                f.skip(len - 4);
+                f.align(32);
+                pos = f.pos();
+            }
+
+            return animations;
+        }
+
 
         // Writing
 

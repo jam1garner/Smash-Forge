@@ -1623,17 +1623,17 @@ namespace Smash_Forge
 
         public static void DrawDATCollisions(ModelContainer m)
         {
-            float scale = m.dat_melee.stageScale;
+            float scale = m.DAT_MELEE.stageScale;
             List<int> ledges = new List<int>();
-            foreach (DAT.COLL_DATA.Link link in m.dat_melee.collisions.links)
+            foreach (DAT.COLL_DATA.Link link in m.DAT_MELEE.collisions.links)
             {
 
                 GL.Begin(PrimitiveType.Quads);
                 GL.Color4(getLinkColor(link));
-                Vector2D vi = m.dat_melee.collisions.vertices[link.vertexIndices[0]];
+                Vector2D vi = m.DAT_MELEE.collisions.vertices[link.vertexIndices[0]];
                 GL.Vertex3(vi.x * scale, vi.y * scale, 5);
                 GL.Vertex3(vi.x * scale, vi.y * scale, -5);
-                vi = m.dat_melee.collisions.vertices[link.vertexIndices[1]];
+                vi = m.DAT_MELEE.collisions.vertices[link.vertexIndices[1]];
                 GL.Vertex3(vi.x * scale, vi.y * scale, -5);
                 GL.Vertex3(vi.x * scale, vi.y * scale, 5);
                 GL.End();
@@ -1646,9 +1646,9 @@ namespace Smash_Forge
             }
 
             GL.LineWidth(4);
-            for (int i = 0; i < m.dat_melee.collisions.vertices.Count; i++)
+            for (int i = 0; i < m.DAT_MELEE.collisions.vertices.Count; i++)
             {
-                Vector2D vi = m.dat_melee.collisions.vertices[i];
+                Vector2D vi = m.DAT_MELEE.collisions.vertices[i];
                 if (ledges.Contains(i))
                     GL.Color3(Color.Purple);
                 else

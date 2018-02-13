@@ -3042,7 +3042,7 @@ namespace Smash_Forge
                         bool verticesAreEqual = newFaceIndex != -1;
                         if (verticesAreEqual)
                         {
-                            newFaces.Add(newFaceIndex);
+                            newFaces.Add(newVertices.Count + newFaceIndex);
                         }
                         else
                         {
