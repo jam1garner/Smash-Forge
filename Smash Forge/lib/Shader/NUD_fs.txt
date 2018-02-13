@@ -328,7 +328,9 @@ vec3 FresnelPass(vec3 N, vec3 I, vec4 diffuseMap, float aoMap, float aoMixIntens
     float hemiBlendGround = dot(N, fresGroundDirection) * 0.5 + 0.5;
     vec3 hemiColorGround = mix(vec3(0), fresGroundColor, hemiBlendGround);
 
-    float exponentOffset = 2.75; // could be more accurate
+    // TODO: Find a more accurate value.
+    float exponentOffset = 2.75;
+
     vec3 fresnel = clamp(((hemiColorSky + hemiColorGround) * pow(CalculateFresnel(I, N), exponentOffset + fresnelParams.x)), 0, 1);
     fresnelPass += fresnelColor.rgb * fresnel * fresnelIntensity * tintColor;
 
@@ -366,36 +368,46 @@ vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoMap, float aoMixInt
     return reflectionPass;
 }
 
+float CalculateAnisotropicExp(vec3 halfAngle, float width, float height)
+{
+    // Blinn-phong with some anistropic bits stolen from an anistropic GGX BRDF.
+    vec3 X = normalize(tangent);
+    vec3 Y = normalize(bitangent);
+    float xComponent = max(pow((dot(halfAngle, X) / width), 2), 0);
+    float yComponent = max(pow((dot(halfAngle, Y) / height), 2), 0);
+
+    return xComponent + yComponent;
+}
+
 vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoMap, float aoMixIntensity, vec3 tintColor)
 {
     vec3 specularPass = vec3(0);
 
-    // blinn phong with anisotropy
-    vec3 halfAngle = normalize(specLightDirection + I);
-    vec3 X = normalize(tangent);
-    vec3 Y = normalize(bitangent);
-    float ax = reflectionParams.z;
-    float ay = reflectionParams.w;
-    float xComponent = max(pow((dot(halfAngle, X) / ax), 2), 0);
-    float yComponent = max(pow((dot(halfAngle, Y) / ay), 2), 0);
-
-    // only use anisotropy for mats without specularparams
-    float exponent = xComponent + yComponent;
+    // Only uses the anisotropic exponent for mats without NU_specularParams.
+    vec3 halfAngle = normalize(I + specLightDirection);
+    float exponent = CalculateAnisotropicExp(halfAngle, reflectionParams.z, reflectionParams.w);
     if (hasSpecularParams == 1)
         exponent = specularParams.y;
+
 
     float blinnPhongSpec = dot(halfAngle, N);
     blinnPhongSpec = pow(blinnPhongSpec, exponent);
 
-    // flags based corrections for specular
-    if (hasBayoHair == 1) // bayo hair mats. rework this section
-        specularPass = BayoHairSpecular(diffuseMap.rgb, I, xComponent, yComponent);
-    else if (hasColorGainOffset == 1) // how does specularColorGain work?
-        specularPass += specularColor.rgb * blinnPhongSpec * (specularColorGain.rgb);
-    else if ((flags & 0x00E10000u) == 0x00E10000u) // not sure how this works. specular works differently for eye mats
-        specularPass += specularColor.rgb * blinnPhongSpec * 0;
-    else // default
-        specularPass += specularColor.rgb * blinnPhongSpec;
+    vec3 specColorTotal = specularColor.rgb * blinnPhongSpec;
+
+    // TODO: Fix bayo hair calculations.
+    if (hasBayoHair == 1)
+        specColorTotal = BayoHairSpecular(diffuseMap.rgb, I, reflectionParams.z, reflectionParams.w);
+
+    // TODO: Saturation is incorrect for Shulk's hair.
+    if (hasColorGainOffset == 1)
+        specColorTotal *= specularColorGain.rgb;
+
+    // TODO: Not sure how this works. Specular works differently for eye mats.
+    if ((flags & 0x00E10000u) == 0x00E10000u)
+        specColorTotal *= 0;
+
+    specularPass += specColorTotal;
 
     specularPass *= mix(aoMap, 1, aoMixIntensity);
     specularPass *= tintColor;
@@ -406,7 +418,7 @@ vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoMap, float aoMixInten
     return specularPass;
 }
 
-float CalculateAngleFade(vec3 I, vec3 N)
+float CalculateAngleFade(vec3 N, vec3 I)
 {
     float fresnelBlend = CalculateFresnel(I, N);
     float angleFadeAmount = mix(angleFadeParams.x, angleFadeParams.y, fresnelBlend);
@@ -532,6 +544,51 @@ vec3 DiffusePass(vec3 N, vec4 diffuseMap, float aoMap)
     return diffusePass;
 }
 
+vec2 CalculateDistortedUvCoords(vec2 texCoord)
+{
+    // Similar effectnto du dv but uses just the normal map.
+    // TODO: does du dv affect other UV channels?
+    float offsetIntensity = 0;
+    if(useNormalMap == 1)
+        offsetIntensity = normalParams.z;
+    vec2 textureOffset = 1 - texture(normalMap, normaltexCoord).xy;
+    textureOffset = (textureOffset * 2) - 1; // Remap [0,1] to [-1,1]
+    return texCoord + (textureOffset * offsetIntensity);
+}
+
+vec4 CalculateTotalDiffuseMap()
+{
+    // Some stage water materials have NU_diffuseColor but no diffuse map.
+    if (hasDif != 1)
+        return diffuseColor;
+
+    vec2 offsetTexCoord = CalculateDistortedUvCoords(texCoord);
+
+    // Blends all of the different diffuse textures together.
+    vec4 diffuseMapTotal = vec4(0);
+    if (hasDif == 1)
+    {
+        vec4 diffuse1 = texture(dif, offsetTexCoord) * finalColorGain.rgba;
+        diffuseMapTotal = diffuse1;
+
+        // TODO: 2nd diffuse texture. doesnt work properly with stages.
+        if (hasDif2 == 1 && hasDif3 != 1)
+        {
+            vec4 diffuse2 = texture(dif2, texCoord2) * finalColorGain2.rgba;
+            diffuseMapTotal = mix(diffuse2, diffuse1, diffuse1.a);
+            diffuseMapTotal.a = 1.0;
+
+            if (hasDif3 == 1)
+            {
+                vec4 diffuse3 = texture(dif3, texCoord3) * finalColorGain3.rgba;
+                diffuseMapTotal = mix(diffuse3, diffuseMapTotal, diffuse3.a);
+            }
+        }
+    }
+
+    return diffuseMapTotal;
+}
+
 vec3 SmashShader(vec4 diffuseMap, float aoMap, vec3 N, vec3 I)
 {
     float aoMixIntensity = aoMinGain.w;
@@ -593,55 +650,18 @@ void main()
     // TODO: Divide by far plane?
     gl_FragDepth = gl_FragCoord.z - (zOffset.x / 1500);
 
-    // similar to du dv but uses just the normal map
-    // TODO: does du dv affect other UV channels?
-    float offsetIntensity = 0;
-    if(useNormalMap == 1)
-        offsetIntensity = normalParams.z;
-    vec2 textureOffset = 1 - texture(normalMap, normaltexCoord).xy;
-    textureOffset = (textureOffset * 2) - 1; // remap to -1 to 1?
-    vec2 offsetTexCoord = texCoord + (textureOffset * offsetIntensity);
+    // Calculate diffuse map blending.
+    vec4 diffuseMapTotal = CalculateTotalDiffuseMap();
 
-    // calculate diffuse map blending
-    vec4 diffuse1 = vec4(0);
-    vec4 diffuse2 = vec4(0);
-    vec4 diffuse3 = texture(dif3, texCoord3);
-    vec4 diffuseMapTotal = vec4(0);
-
-    if (hasDif == 1) // 1st diffuse texture
-    {
-        diffuse1 = texture(dif, offsetTexCoord) * finalColorGain.rgba;
-        diffuseMapTotal = diffuse1;
-
-        if (hasDif2 == 1 && hasDif3 != 1) // 2nd diffuse texture. doesnt work properly with stages
-        {
-            diffuse2 = texture(dif2, texCoord2) * finalColorGain2.rgba;
-            diffuseMapTotal = mix(diffuse2, diffuse1, diffuse1.a);
-            diffuseMapTotal.a = 1.0;
-
-            if (hasDif3 == 1)
-            {
-                diffuse3 = texture(dif3, texCoord3) * finalColorGain3.rgba;
-                diffuseMapTotal = mix(diffuse3, diffuseMapTotal, diffuse3.a);
-            }
-        }
-    }
-
+    // TODO: Research how mii colors work.
     diffuseMapTotal *= characterColor.rgba;
 
-    // use texture alpha
-    if (renderAlpha == 1)
-        fragColor.a = texture(dif, texCoord).a;
-
-    // Some stage water materials have NU_diffuseColor but no diffuse map.
-    if (hasDif != 1)
-        diffuseMapTotal = vec4(diffuseColor);
-
-    vec3 difAO = texture(ao, texCoord2).rgb;
-
+    // TODO: Create uniform for flags comparison.
     if (hasAo == 1)
     {
+        vec3 difAO = texture(ao, texCoord2).rgb;
         float normalBlend = normal.y * 0.5 + 0.5;
+
         if ((flags & 0x00410000u) == 0x00410000u)
             diffuseMapTotal.rgb = mix(difAO, diffuseMapTotal.rgb, normalBlend);
         else
@@ -660,11 +680,14 @@ void main()
         fragColor.rgb *= effColorGain.rgb;
 
     // Adjust the alpha.
+    // TODO: Is this affected by multiple diffuse maps?
+    if (renderAlpha == 1)
+        fragColor.a = texture(dif, texCoord).a;
+
     fragColor.a *= finalColorGain.a;
     fragColor.a *= effColorGain.a;
-    fragColor.a *= CalculateAngleFade(I, N);
-    // if ((flags & 0xF0FF0000u) != 0xF0640000u) // ryu works differently.
-    fragColor.a += alphaBlendParams.x;
+    fragColor.a *= CalculateAngleFade(N, I);
+    fragColor.a += alphaBlendParams.x; // TODO: Ryu works differently.
 
     // Alpha override for render settings. Fixes alpha for renders.
     if (renderAlpha != 1 || isTransparent != 1)
