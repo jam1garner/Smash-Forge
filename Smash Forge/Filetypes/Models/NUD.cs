@@ -69,6 +69,21 @@ namespace Smash_Forge
 
         public override Endianness Endian { get; set; }
 
+        #region Rendering
+
+        private dVertex[] Vertices;
+        private int[] Faces;
+
+        public void Destroy()
+        {
+            GL.DeleteBuffer(vbo_position);
+            GL.DeleteBuffer(ibo_elements);
+            GL.DeleteBuffer(ubo_bones);
+            GL.DeleteBuffer(vbo_select);
+
+            Nodes.Clear();
+        }
+
         public enum TextureFlags
         {
             Glow = 0x00000080,
@@ -113,17 +128,6 @@ namespace Smash_Forge
             Zero = 0xA
         }
 
-        #region Rendering
-
-        public void Destroy()
-        {
-            GL.DeleteBuffer(vbo_position);
-            GL.DeleteBuffer(ibo_elements);
-            GL.DeleteBuffer(ubo_bones);
-            GL.DeleteBuffer(vbo_select);
-
-            Nodes.Clear();
-        }
 
         private void DepthSortMeshes()
         {
@@ -152,15 +156,41 @@ namespace Smash_Forge
 
         public void PreRender()
         {
+            int poffset = 0;
+            int voffset = 0;
+            List<dVertex> Vs = new List<dVertex>();
+            List<int> Ds = new List<int>();
             for (int mes = Nodes.Count - 1; mes >= 0; mes--)
             {
                 Mesh m = (Mesh)Nodes[mes];
                 for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
                 {
                     Polygon p = (NUD.Polygon)m.Nodes[pol];
-                    p.PreRender();
+                    p.Offset = poffset * 4;
+                    List<dVertex> pv = p.PreRender();
+                    Vs.AddRange(pv);
+                    //Console.WriteLine(p.displayFaceSize + " " + p.Offset/4);
+                    for(int i = 0; i < p.displayFaceSize; i++)
+                    {
+                        Ds.Add(p.display[i] + voffset);
+                    }
+                    poffset += p.displayFaceSize;
+                    voffset += pv.Count;
                 }
             }
+
+            // Binds
+            Vertices = Vs.ToArray();
+            Faces = Ds.ToArray();
+
+            //Console.WriteLine(Vertices.Length + " " + Faces.Length);
+
+            // Bind only once!
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
+            GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(Vertices.Length * dVertex.Size), Vertices, BufferUsageHint.StaticDraw);
+
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
+            GL.BufferData<int>(BufferTarget.ElementArrayBuffer, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
 
             DepthSortMeshes();
         }
@@ -368,7 +398,7 @@ namespace Smash_Forge
 
             List<Polygon> opaque = new List<Polygon>();
             List<Polygon> trans = new List<Polygon>();
-
+            
             foreach (Mesh m in depthSortedMeshes)
             {
                 for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
@@ -507,7 +537,7 @@ namespace Smash_Forge
                     // need this
                     if (Runtime.renderModel)
                     {
-                        GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+                        GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
                     }
                 }
             }
@@ -583,7 +613,7 @@ namespace Smash_Forge
         private void SetVertexAttributes(Polygon p, Shader shader)
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-            GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
+            //GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
             GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 12);
             GL.VertexAttribPointer(shader.getAttribute("vTangent"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 24);
@@ -596,8 +626,8 @@ namespace Smash_Forge
             GL.VertexAttribPointer(shader.getAttribute("vUV3"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 112);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            //GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
+            //GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
         private static void DrawModelWireframe(Polygon p, Shader shader)
@@ -607,7 +637,7 @@ namespace Smash_Forge
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1f);
-            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             GL.Uniform1(shader.getAttribute("colorOverride"), 0);
         }
@@ -625,7 +655,7 @@ namespace Smash_Forge
             GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
             GL.StencilMask(0xFF);
 
-            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
 
             GL.ColorMask(cwm[0], cwm[1], cwm[2], cwm[3]);
 
@@ -637,7 +667,7 @@ namespace Smash_Forge
 
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.LineWidth(2.0f);
-            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
             GL.Uniform1(shader.getAttribute("colorOverride"), 0);
@@ -854,14 +884,14 @@ namespace Smash_Forge
                 foreach(Polygon p in m.Nodes)
                 {
                     GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-                    GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
+                    //GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
                     GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
 
                     GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
-                    GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
+                    //GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
                     GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
-                    GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
+                    GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
                 }
             }
             shader.disableAttrib();
@@ -893,7 +923,7 @@ namespace Smash_Forge
                 foreach (Polygon p in m.Nodes)
                 {
                     GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-                    GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
+                    //GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
                     GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
                     GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 72);
                     GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 88);
@@ -904,7 +934,7 @@ namespace Smash_Forge
                     GL.VertexAttribPointer(shader.getAttribute("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
 
                     GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
-                    GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
+                    //GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
                     GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                     
                     GL.PointSize(6f);
@@ -2384,9 +2414,9 @@ namespace Smash_Forge
 
             // for drawing
             public bool isTransparent = false;
-            public dVertex[] vertdata = new dVertex[3];
             public int[] display;
             public int[] selectedVerts;
+            public int Offset; // For Rendering
 
             public Polygon()
             {
@@ -2413,7 +2443,7 @@ namespace Smash_Forge
                 }      
             }
 
-            public void PreRender()
+            public List<dVertex> PreRender()
             {
                 // rearrange faces
                 display = getDisplayFace().ToArray();
@@ -2421,8 +2451,7 @@ namespace Smash_Forge
                 List<dVertex> vert = new List<dVertex>();
 
                 if (faces.Count <= 3)
-                    return;
-
+                    return vert;
                 foreach (Vertex v in vertices)
                 {
                     dVertex nv = new dVertex()
@@ -2447,9 +2476,9 @@ namespace Smash_Forge
 
                     vert.Add(nv);
                 }
-                vertdata = vert.ToArray();
-                vert = new List<dVertex>();
-                selectedVerts = new int[vertdata.Length];
+                //vertdata = vert.ToArray();
+                selectedVerts = new int[vert.Count];
+                return vert;
             }
 
             public void CalculateTangentBitangent()
@@ -2903,6 +2932,8 @@ namespace Smash_Forge
         {
             // Massive reductions in file size but very slow.
 
+            int MAX_BANK = 50; //  for speeding this up a little with some loss...
+
             foreach (Mesh m in Nodes)
             {
                 foreach (Polygon p in m.Nodes)
@@ -2910,13 +2941,14 @@ namespace Smash_Forge
                     List<Vertex> newVertices = new List<Vertex>();
                     List<int> newFaces = new List<int>();
 
+                    List<Vertex> vbank = new List<Vertex>(); // only check oast 50 verts - may miss far apart ones but is faster
                     foreach (int f in p.faces)
                     {
                         int newFaceIndex = -1; 
                         int i = 0;
 
                         // Has to loop through all the new vertices each time, which is very slow.
-                        foreach (Vertex v in newVertices)
+                        foreach (Vertex v in vbank)
                         {
                             if (v.Equals(p.vertices[f]))
                             {
@@ -2930,14 +2962,20 @@ namespace Smash_Forge
                         bool verticesAreEqual = newFaceIndex != -1;
                         if (verticesAreEqual)
                         {
-                            newFaces.Add(newFaceIndex);
+                            newFaces.Add(newVertices.Count + newFaceIndex);
                         }
                         else
                         {
-                            newVertices.Add(p.vertices[f]);
-                            newFaces.Add(newVertices.Count - 1);
+                            vbank.Add(p.vertices[f]);
+                            newFaces.Add(newVertices.Count + vbank.Count - 1);
+                        }
+                        if(vbank.Count > MAX_BANK)
+                        {
+                            newVertices.AddRange(vbank);
+                            vbank.Clear();
                         }
                     }
+                    newVertices.AddRange(vbank);
 
                     p.vertices = newVertices;
                     p.faces = newFaces;
@@ -2964,7 +3002,14 @@ namespace Smash_Forge
                         {
                             // Can't use single bind if some vertices aren't weighted to the same bone. 
                             if (singleBindBone == -1)
+                            {
                                 singleBindBone = v.node[0];
+                            }
+                            else if(singleBindBone != v.node[0])
+                            {
+                                isSingleBound = false;
+                                break;
+                            }
 
                             // Vertices bound to a single bone will have a node.Count of 1.
                             if (v.node.Count > 1)

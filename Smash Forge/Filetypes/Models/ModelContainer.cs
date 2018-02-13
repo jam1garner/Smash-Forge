@@ -128,7 +128,20 @@ namespace Smash_Forge
                 Refresh();
             }
         }
-        public DAT dat_melee;
+        public DAT DAT_MELEE
+        {
+            get
+            {
+                return dat_melee;
+            }
+            set
+            {
+                dat_melee = value;
+                Refresh();
+            }
+        }
+
+        private DAT dat_melee;
 
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
         public static MovesetManager Moveset { get; set; }
@@ -152,6 +165,11 @@ namespace Smash_Forge
         {
             Nodes.Clear();
 
+            if(DAT_MELEE != null)
+            {
+                Text = "Melee DAT";
+                Nodes.AddRange(DAT_MELEE.tree.ToArray());
+            }else
             if(bch != null)
             {
                 Nodes.Add(bch);
@@ -260,9 +278,9 @@ namespace Smash_Forge
                     }
                 }
 
-                if (dat_melee != null && Runtime.shaders["DAT"].shadersCompiledSuccessfully())
+                if (DAT_MELEE != null && Runtime.shaders["DAT"].shadersCompiledSuccessfully())
                 {
-                    dat_melee.Render(camera.getMVPMatrix());
+                    DAT_MELEE.Render(camera.getMVPMatrix());
                 }
 
                 if (NUD != null && Runtime.shaders["NUD"].shadersCompiledSuccessfully() && Runtime.shaders["NUD_Debug"].shadersCompiledSuccessfully())
@@ -337,9 +355,9 @@ namespace Smash_Forge
                     RenderTools.DrawVBN(mo.skeleton);
             }
 
-            if (dat_melee != null)
+            if (DAT_MELEE != null)
             {
-                RenderTools.DrawVBN(dat_melee.bones);
+                RenderTools.DrawVBN(DAT_MELEE.bones);
             }
         }
 

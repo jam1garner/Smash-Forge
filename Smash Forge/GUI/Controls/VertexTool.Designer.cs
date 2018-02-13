@@ -31,8 +31,8 @@
             this.vertexListBox = new System.Windows.Forms.ListBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.boneWeightList = new System.Windows.Forms.ListBox();
             this.WeightValue = new System.Windows.Forms.NumericUpDown();
+            this.boneWeightList = new System.Windows.Forms.ListBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.WeightValue)).BeginInit();
@@ -57,7 +57,7 @@
             this.groupBox1.Size = new System.Drawing.Size(230, 139);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Select Vertex List";
+            this.groupBox1.Text = "Vertex List";
             // 
             // groupBox2
             // 
@@ -66,40 +66,42 @@
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(0, 139);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(230, 222);
+            this.groupBox2.Size = new System.Drawing.Size(230, 308);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Weight Tool";
             // 
-            // boneWeightList
-            // 
-            this.boneWeightList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.boneWeightList.FormattingEnabled = true;
-            this.boneWeightList.Location = new System.Drawing.Point(6, 121);
-            this.boneWeightList.Name = "boneWeightList";
-            this.boneWeightList.Size = new System.Drawing.Size(218, 95);
-            this.boneWeightList.TabIndex = 0;
-            this.boneWeightList.SelectedIndexChanged += new System.EventHandler(this.boneWeightList_SelectedIndexChanged);
-            // 
             // WeightValue
             // 
+            this.WeightValue.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.WeightValue.DecimalPlaces = 6;
             this.WeightValue.Increment = new decimal(new int[] {
             1,
             0,
             0,
             131072});
-            this.WeightValue.Location = new System.Drawing.Point(12, 19);
+            this.WeightValue.Location = new System.Drawing.Point(6, 181);
             this.WeightValue.Name = "WeightValue";
             this.WeightValue.Size = new System.Drawing.Size(86, 20);
             this.WeightValue.TabIndex = 1;
+            // 
+            // boneWeightList
+            // 
+            this.boneWeightList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.boneWeightList.FormattingEnabled = true;
+            this.boneWeightList.Location = new System.Drawing.Point(6, 207);
+            this.boneWeightList.Name = "boneWeightList";
+            this.boneWeightList.Size = new System.Drawing.Size(218, 95);
+            this.boneWeightList.TabIndex = 0;
+            this.boneWeightList.SelectedIndexChanged += new System.EventHandler(this.boneWeightList_SelectedIndexChanged);
             // 
             // VertexTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(230, 361);
+            this.ClientSize = new System.Drawing.Size(230, 447);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Name = "VertexTool";

@@ -335,9 +335,9 @@ namespace Smash_Forge
                     TargetAnim.NextFrame(m.VBN);
 
                 // Deliberately do not ever use ACMD/animFrame to modify these other types of model
-                if (m.dat_melee != null)
+                if (m.DAT_MELEE != null)
                 {
-                    TargetAnim.NextFrame(m.dat_melee.bones);
+                    TargetAnim.NextFrame(m.DAT_MELEE.bones);
                 }
                 if (m.BCH != null)
                 {
@@ -1011,9 +1011,9 @@ namespace Smash_Forge
                             RenderTools.DrawVBN(mo.skeleton);
                     }
 
-                    if (m.dat_melee != null)
+                    if (m.DAT_MELEE != null)
                     {
-                        RenderTools.DrawVBN(m.dat_melee.bones);
+                        RenderTools.DrawVBN(m.DAT_MELEE.bones);
                     }
                 }
             }
@@ -1027,48 +1027,48 @@ namespace Smash_Forge
             foreach (ModelContainer m in ModelContainers)
             {
 
-                if (m.dat_melee != null && m.dat_melee.collisions != null)
+                if (m.DAT_MELEE != null && m.DAT_MELEE.collisions != null)
                 {
                     LVD.DrawDATCollisions(m);
 
                 }
 
-                if (m.dat_melee != null && m.dat_melee.blastzones != null)
+                if (m.DAT_MELEE != null && m.DAT_MELEE.blastzones != null)
                 {
-                    LVD.DrawBounds(m.dat_melee.blastzones, Color.Red);
+                    LVD.DrawBounds(m.DAT_MELEE.blastzones, Color.Red);
                 }
 
-                if (m.dat_melee != null && m.dat_melee.cameraBounds != null)
+                if (m.DAT_MELEE != null && m.DAT_MELEE.cameraBounds != null)
                 {
-                    LVD.DrawBounds(m.dat_melee.cameraBounds, Color.Blue);
+                    LVD.DrawBounds(m.DAT_MELEE.cameraBounds, Color.Blue);
                 }
 
-                if (m.dat_melee != null && m.dat_melee.targets != null)
+                if (m.DAT_MELEE != null && m.DAT_MELEE.targets != null)
                 {
-                    foreach (Point target in m.dat_melee.targets)
+                    foreach (Point target in m.DAT_MELEE.targets)
                     {
                         RenderTools.drawCircleOutline(new Vector3(target.x, target.y, 0), 2, 30);
                         RenderTools.drawCircleOutline(new Vector3(target.x, target.y, 0), 4, 30);
                     }
                 }
 
-                if (m.dat_melee != null && m.dat_melee.respawns != null)
-                    foreach (Point r in m.dat_melee.respawns)
+                if (m.DAT_MELEE != null && m.DAT_MELEE.respawns != null)
+                    foreach (Point r in m.DAT_MELEE.respawns)
                     {
                         Spawn temp = new Spawn() { x = r.x, y = r.y };
                         LVD.DrawSpawn(temp, true);
                     }
 
-                if (m.dat_melee != null && m.dat_melee.spawns != null)
-                    foreach (Point r in m.dat_melee.spawns)
+                if (m.DAT_MELEE != null && m.DAT_MELEE.spawns != null)
+                    foreach (Point r in m.DAT_MELEE.spawns)
                     {
                         Spawn temp = new Spawn() { x = r.x, y = r.y };
                         LVD.DrawSpawn(temp, false);
                     }
 
                 GL.Color4(Color.FromArgb(200, Color.Fuchsia));
-                if (m.dat_melee != null && m.dat_melee.itemSpawns != null)
-                    foreach (Point r in m.dat_melee.itemSpawns)
+                if (m.DAT_MELEE != null && m.DAT_MELEE.itemSpawns != null)
+                    foreach (Point r in m.DAT_MELEE.itemSpawns)
                         RenderTools.drawCubeWireframe(new Vector3(r.x, r.y, 0), 3);
             }
 

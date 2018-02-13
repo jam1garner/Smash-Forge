@@ -158,8 +158,8 @@ namespace Smash_Forge
                 else if (file.Equals("--preview"))
                 {
                     Text = "Meteor Preview";
-                    superCleanPreset(new object(), new EventArgs());
-                    meshList.Show();
+                    //superCleanPreset(new object(), new EventArgs());
+                    //meshList.Show();
                     NUT chr_00_nut = null, chr_11_nut = null, chr_13_nut = null, stock_90_nut = null;
                     string chr_00_loc = null, chr_11_loc = null, chr_13_loc = null, stock_90_loc = null;
                     String nud = null, nut, vbn;
@@ -216,6 +216,7 @@ namespace Smash_Forge
                     uiPreview.ShowHint = DockState.DockRight;
                     dockPanel1.DockRightPortion = 270;
                     AddDockedControl(uiPreview);
+
                     i += 4;
                 }
                 else
@@ -250,6 +251,17 @@ namespace Smash_Forge
             }
             else if(content != null && dockPanel1 != null)
                 content.Show(dockPanel1);
+        }
+
+        public Control GetModelViewport()
+        {
+            foreach (Control c in dockPanel1.Contents)
+            {
+
+                if (c is ModelViewport)
+                    return c;
+            }
+            return null;
         }
 
         private void RegenPanels()
@@ -1684,33 +1696,45 @@ namespace Smash_Forge
                 if (fileName.EndsWith("AJ.dat"))
                 {
                     MessageBox.Show("This is animation; load with Animation -> Import");
+
+                    ModelViewport mv;
+                    if (CheckCurrentViewport(out mv))
+                    {
+                        foreach(ModelContainer mc in mv.MeshList.treeView1.Nodes)
+                        {
+                            if(mc.DAT_MELEE != null)
+                            {
+                                Dictionary<string, Animation> Anims = DAT_Animation.GetTracks(fileName, mc.DAT_MELEE.bones);
+                                foreach(string key in Anims.Keys)
+                                {
+                                    Anims[key].Text = key;
+                                    mv.AnimList.treeView1.Nodes.Add(Anims[key]);
+                                }
+                                return;
+                            }
+                        }
+                    }
+
                     return;
                 }
                 DAT dat = new DAT();
                 dat.filename = fileName;
                 dat.Read(new FileData(fileName));
-                ModelContainer c = new ModelContainer();
-
-                //TODO move to model viewport
-
-                //Runtime.ModelContainers.Add(c);
-                c.dat_melee = dat;
+                
                 dat.PreRender();
 
                 HashMatch();
-
-                Runtime.TargetVBN = dat.bones;
+                
                 if (dat.collisions != null)//if the dat is a stage
                 {
                     DAT_stage_list stageList = new DAT_stage_list(dat) { ShowHint = DockState.DockLeft };
                     AddDockedControl(stageList);
                 }
-                DAT_TreeView p = new DAT_TreeView() {ShowHint = DockState.DockLeft};
-                p.setDAT(dat);
-                AddDockedControl(p);
-
-                meshList.refresh();
-                resyncTargetVBN();
+                
+                ModelViewport mvp = new ModelViewport();
+                mvp.draw.Add(new ModelContainer() { DAT_MELEE = dat });
+                mvp.Text = fileName;
+                AddDockedControl(mvp);
             }
 
             if (fileName.EndsWith(".lvd"))
