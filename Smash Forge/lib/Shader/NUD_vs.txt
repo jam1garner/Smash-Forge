@@ -131,18 +131,17 @@ void main()
 
     if (useDirectUVTime == 1)
     {
-        texCoord = vec2((vUV * sampler1.xy) + (sampler1.zw * elapsedTime));
-        texCoord2 = vec2((vUV2 * sampler2.xy) + (sampler2.zw * elapsedTime));
-        texCoord3 = vec2((vUV3 * sampler3.xy) + (sampler3.zw * elapsedTime));
-        normaltexCoord = vec2((vUV * nrmSampler.xy) + (nrmSampler.zw * elapsedTime));
+        // UV translation animation.
+        sampler1.zw *= elapsedTime;
+        sampler2.zw *= elapsedTime;
+        sampler3.zw *= elapsedTime;
+        nrmSampler.zw *= elapsedTime;
     }
-    else
-    {
-        texCoord = vec2((vUV * sampler1.xy) + sampler1.zw);
-        texCoord2 = vec2((vUV2 * sampler2.xy) + (sampler2.zw));
-        texCoord3 = vec2((vUV3 * sampler3.xy) + (sampler3.zw));
-        normaltexCoord = vec2((vUV * nrmSampler.xy) + nrmSampler.zw);
-    }
+
+    texCoord = vec2((vUV * sampler1.xy) + sampler1.zw);
+    texCoord2 = vec2((vUV2 * sampler2.xy) + sampler2.zw);
+    texCoord3 = vec2((vUV3 * sampler3.xy) + sampler3.zw);
+    normaltexCoord = vec2((vUV * nrmSampler.xy) + nrmSampler.zw);
 
     tangent.xyz = vTangent.xyz;
     bitangent.xyz = vBiTangent.xyz;
