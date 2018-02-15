@@ -299,22 +299,22 @@ vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, float xComponent, float yComponen
 vec3 SoftLighting(vec3 ambient, vec3 diffuse, vec4 params,
     float darkenMultiplier, float saturationMultiplier, float halfLambert)
 {
-    // Blends values between a certain distance from 0.5
-    float edgeL = 0.5 - (params.z / 2);
+    // Higher blend values make the dark region smoother and larger.
+    float edgeL = 0.5;
     float edgeR = 0.5 + (params.z / 2);
     float smoothLambert = smoothstep(edgeL, edgeR, halfLambert);
 
     // Controls ambient brightness.
     float ambientGain = max(1 - (darkenMultiplier * params.y), 0);
-    ambient *= ambientGain;
 
     // Controls ambient saturation.
     // TODO: Need to check the math.
-    vec3 ambientTintColor = CalculateTintColor(ambient, params.x);
-    ambient *= ambientTintColor;
+    // This next level math hacking may or may not be right.
+    vec3 ambientTintColor = normalize(pow(diffuse, vec3(params.x * 0.3)));
 
-    // Creates a custom diffuse gradient.
-    return mix(ambient, diffuse, smoothLambert);
+    // Creates a custom diffuse gradient rather than using lighting?
+    vec3 result = diffuse * mix(ambientTintColor * ambientGain, vec3(1), smoothLambert);
+    return result;
 }
 
 vec3 FresnelPass(vec3 N, vec3 I, vec4 diffuseMap, float aoMap, float aoMixIntensity, vec3 tintColor)
