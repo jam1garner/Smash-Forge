@@ -130,7 +130,7 @@ namespace Smash_Forge
                     NUD.Polygon p = new NUD.Polygon();
                     m.Nodes.Add(p);
                     m.Nodes.Add(p);
-                    p.setDefaultMaterial();
+                    p.AddDefaultMaterial();
                     p.vertSize = 0x06;
                     p.UVSize = 0x10;
                     p.polflag = 0x00;

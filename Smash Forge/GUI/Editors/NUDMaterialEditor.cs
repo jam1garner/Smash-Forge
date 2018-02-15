@@ -397,9 +397,9 @@ namespace Smash_Forge
             NUD.MatTexture tex = materials[currentMatIndex].textures[index];
             textureIDTB.Text = tex.hash.ToString("X");
 
-            mapModeComboBox.SelectedItem = mapmode[tex.MapMode];
-            wrapXComboBox.SelectedItem = wrapmode[tex.WrapModeS];
-            wrapYComboBox.SelectedItem = wrapmode[tex.WrapModeT];
+            mapModeComboBox.SelectedItem = mapmode[tex.mapMode];
+            wrapXComboBox.SelectedItem = wrapmode[tex.wrapModeS];
+            wrapYComboBox.SelectedItem = wrapmode[tex.wrapModeT];
             minFilterComboBox.SelectedItem = minfilter[tex.minFilter];
             magFilterComboBox.SelectedItem = magfilter[tex.magFilter];
             mipDetailComboBox.SelectedItem = mip[tex.mipDetail];
@@ -466,7 +466,7 @@ namespace Smash_Forge
             foreach (int i in mapmode.Keys)
                 if (mapmode[i].Equals(mapModeComboBox.SelectedItem))
                 {
-                    materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].MapMode = i;
+                    materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].mapMode = i;
                     break;
                 }
         }
@@ -477,7 +477,7 @@ namespace Smash_Forge
                 if (wrapmode[i].Equals(wrapXComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
-                        materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].WrapModeS = i;
+                        materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].wrapModeS = i;
                     break;
                 }
         }
@@ -488,7 +488,7 @@ namespace Smash_Forge
                 if (wrapmode[i].Equals(wrapYComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
-                        materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].WrapModeT = i;
+                        materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].wrapModeT = i;
                     break;
                 }
         }

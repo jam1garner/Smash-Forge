@@ -202,7 +202,7 @@ namespace Smash_Forge
                         if (mes.Nodes.Count == 0)
                         {
                             NUD.Polygon poly = new NUD.Polygon();
-                            poly.setDefaultMaterial();
+                            poly.AddDefaultMaterial();
                             mes.Nodes.Add(poly);
                         }
                         bool found = false;

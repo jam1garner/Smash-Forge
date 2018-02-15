@@ -91,9 +91,9 @@ namespace Smash_Forge
             {
                 XmlNode texnode = doc.CreateElement("texture");
 
-                AddIntAttribute(doc, "hash", tex.hash, texnode, true);
-                AddIntAttribute(doc, "wrapmodeS", tex.WrapModeS, texnode, true);
-                AddIntAttribute(doc, "wrapmodeT", tex.WrapModeT, texnode, true);
+                AddIntAttribute(doc, "hash",      tex.hash,      texnode, true);
+                AddIntAttribute(doc, "wrapmodeS", tex.wrapModeS, texnode, true);
+                AddIntAttribute(doc, "wrapmodeT", tex.wrapModeT, texnode, true);
                 AddIntAttribute(doc, "minfilter", tex.minFilter, texnode, true);
                 AddIntAttribute(doc, "magfilter", tex.magFilter, texnode, true);
                 AddIntAttribute(doc, "mipdetail", tex.mipDetail, texnode, true);
@@ -104,24 +104,24 @@ namespace Smash_Forge
 
         private static void WriteMatParams(XmlDocument doc, NUD.Material mat, XmlNode matnode)
         {
-            foreach (KeyValuePair<string, float[]> k in mat.entries)
+            foreach (KeyValuePair<string, float[]> materialProperty in mat.entries)
             {
                 XmlNode paramnode = doc.CreateElement("param");
-                XmlAttribute a = doc.CreateAttribute("name"); a.Value = k.Key; paramnode.Attributes.Append(a);
+                XmlAttribute a = doc.CreateAttribute("name"); a.Value = materialProperty.Key; paramnode.Attributes.Append(a);
                 matnode.AppendChild(paramnode);
 
-                if (k.Key == "NU_materialHash")
+                if (materialProperty.Key == "NU_materialHash")
                 {
-                    // material hash should be in hex for easier reading
-                    foreach (float f in k.Value)
+                    // Material hash should be in hex for easier reading.
+                    foreach (float f in materialProperty.Value)
                         paramnode.InnerText += BitConverter.ToUInt32(BitConverter.GetBytes(f), 0).ToString("x") + " ";
                 }
                 else
                 {
                     int count = 0;
-                    foreach (float f in k.Value)
+                    foreach (float f in materialProperty.Value)
                     {
-                        // only need to print 4 values and avoids tons of 0's
+                        // Only print 4 values and avoids tons of trailing 0's.
                         if (count <= 4)
                             paramnode.InnerText += f.ToString() + " ";
                         count += 1;
@@ -134,24 +134,24 @@ namespace Smash_Forge
 
         private static void AddIntAttribute(XmlDocument doc, string name, int value, XmlNode node, bool useHex)
         {
-            XmlAttribute a = doc.CreateAttribute(name);
+            XmlAttribute attribute = doc.CreateAttribute(name);
             if (useHex)
-                a.Value = value.ToString("x");
+                attribute.Value = value.ToString("x");
             else
-                a.Value = value.ToString();
+                attribute.Value = value.ToString();
 
-            node.Attributes.Append(a);
+            node.Attributes.Append(attribute);
         }
 
         private static void AddUintAttribute(XmlDocument doc, string name, uint value, XmlNode node, bool useHex)
         {
-            XmlAttribute a = doc.CreateAttribute(name);
+            XmlAttribute attribute = doc.CreateAttribute(name);
             if (useHex)
-                a.Value = value.ToString("x");
+                attribute.Value = value.ToString("x");
             else
-                a.Value = value.ToString();
+                attribute.Value = value.ToString();
 
-            node.Attributes.Append(a);
+            node.Attributes.Append(attribute);
         }
 
         public static void ImportMaterialAsXml(NUD n, string filename)
@@ -169,25 +169,25 @@ namespace Smash_Forge
 
             foreach (XmlNode meshNode in main.ChildNodes)
             {
-                if (meshNode.Name.Equals("mesh"))
+                if (!(meshNode.Name.Equals("mesh")))
+                    continue;
+
+                foreach (XmlNode polynode in meshNode.ChildNodes)
                 {
-                    foreach (XmlNode polynode in meshNode.ChildNodes)
+                    if (!(polynode.Name.Equals("polygon")))
+                        continue;
+                  
+                    matCountForPolyId.Add(polynode.ChildNodes.Count);
+
+                    if (matCountForPolyId.Count > polyCount)
                     {
-                        if (polynode.Name.Equals("polygon"))
-                        {
-                            matCountForPolyId.Add(polynode.ChildNodes.Count);
-
-                            if (matCountForPolyId.Count > polyCount)
-                            {
-                                int countDif = matCountForPolyId.Count - polyCount;
-                                MessageBox.Show(String.Format("Expected {0} polygons but found {1} in the XML file. " +
-                                    "The last {2} polygon(s) will be ignored.",
-                                    polyCount, matCountForPolyId.Count, countDif));
-                            }
-
-                            ReadMaterials(materialList, polynode);
-                        }
+                        int countDif = matCountForPolyId.Count - polyCount;
+                        MessageBox.Show(String.Format("Expected {0} polygons but found {1} in the XML file. " +
+                            "The last {2} polygon(s) will be ignored.",
+                            polyCount, matCountForPolyId.Count, countDif));
                     }
+
+                    ReadMaterials(materialList, polynode);
                 }
             }
 
@@ -254,92 +254,124 @@ namespace Smash_Forge
             }
         }
 
-        private static void ReadAttributes(XmlNode matnode, NUD.Material mat)
+        private static void ReadAttributes(XmlNode materialNode, NUD.Material material)
         {
-            foreach (XmlAttribute a in matnode.Attributes)
+            foreach (XmlAttribute attribute in materialNode.Attributes)
             {
-                switch (a.Name)
+                switch (attribute.Name)
                 {
-                    case "flags": uint f = 0; if (uint.TryParse(a.Value, NumberStyles.HexNumber, null, out f)) { mat.Flags = f; }; break;
-                    case "srcFactor": int.TryParse(a.Value, out mat.srcFactor); break;
-                    case "dstFactor": int.TryParse(a.Value, out mat.dstFactor); break;
-                    case "AlphaFunc": int.TryParse(a.Value, out mat.AlphaFunc); break;
-                    case "AlphaTest": int.TryParse(a.Value, out mat.AlphaTest); break;
-                    case "RefAlpha": int.TryParse(a.Value, out mat.RefAlpha); break;
-                    case "cullmode": int cm = 0; if (int.TryParse(a.Value, NumberStyles.HexNumber, null, out cm)) { mat.cullMode = cm; }; break;
-                    case "zbuffoff": int.TryParse(a.Value, out mat.zBufferOffset); break;
+                    case "flags":
+                        uint newFlags = 0;
+                        if (uint.TryParse(attribute.Value, NumberStyles.HexNumber, null, out newFlags))
+                            material.Flags = newFlags;
+                        break;
+                    case "srcFactor":
+                        int.TryParse(attribute.Value, out material.srcFactor);
+                        break;
+                    case "dstFactor":
+                        int.TryParse(attribute.Value, out material.dstFactor);
+                        break;
+                    case "AlphaFunc":
+                        int.TryParse(attribute.Value, out material.AlphaFunc);
+                        break;
+                    case "AlphaTest":
+                        int.TryParse(attribute.Value, out material.AlphaTest);
+                        break;
+                    case "RefAlpha":
+                        int.TryParse(attribute.Value, out material.RefAlpha);
+                        break;
+                    case "cullmode":
+                        int.TryParse(attribute.Value, NumberStyles.HexNumber, null, out material.cullMode);
+                        break;
+                    case "zbuffoff":
+                        int.TryParse(attribute.Value, out material.zBufferOffset);
+                        break;
                 }
             }
         }
 
-        private static void ReadTextures(NUD.Material mat, XmlNode matNode)
+        private static void ReadTextures(NUD.Material material, XmlNode textureNode)
         {
-            if (matNode.Name.Equals("texture"))
-            {
-                NUD.MatTexture tex = new NUD.MatTexture();
-                mat.textures.Add(tex);
+            if (!(textureNode.Name.Equals("texture")))
+                return;
+            
+            NUD.MatTexture matTexture = new NUD.MatTexture();
+            material.textures.Add(matTexture);
 
-                foreach (XmlAttribute a in matNode.Attributes)
+            foreach (XmlAttribute attribute in textureNode.Attributes)
+            {
+                switch (attribute.Name)
                 {
-                    switch (a.Name)
-                    {
-                        case "hash": int f = 0; if (int.TryParse(a.Value, NumberStyles.HexNumber, null, out f)) { tex.hash = f; }; break;
-                        case "wrapmodeS": int.TryParse(a.Value, out tex.WrapModeS); break;
-                        case "wrapmodeT": int.TryParse(a.Value, out tex.WrapModeT); break;
-                        case "minfilter": int.TryParse(a.Value, out tex.minFilter); break;
-                        case "magfilter": int.TryParse(a.Value, out tex.magFilter); break;
-                        case "mipdetail": int.TryParse(a.Value, out tex.mipDetail); break;
-                    }
+                    case "hash":
+                        int.TryParse(attribute.Value, NumberStyles.HexNumber, null, out matTexture.hash);
+                        break;
+                    case "wrapmodeS":
+                        int.TryParse(attribute.Value, out matTexture.wrapModeS);
+                        break;
+                    case "wrapmodeT":
+                        int.TryParse(attribute.Value, out matTexture.wrapModeT);
+                        break;
+                    case "minfilter":
+                        int.TryParse(attribute.Value, out matTexture.minFilter);
+                        break;
+                    case "magfilter":
+                        int.TryParse(attribute.Value, out matTexture.magFilter);
+                        break;
+                    case "mipdetail":
+                        int.TryParse(attribute.Value, out matTexture.mipDetail);
+                        break;
                 }
             }
         }
 
-        private static void ReadMatParams(XmlNode polyNode, NUD.Material mat, XmlNode matNode)
+        private static void ReadMatParams(XmlNode polyNode, NUD.Material material, XmlNode materialNode)
         {
-            if (!matNode.Name.Equals("param"))
+            if (!materialNode.Name.Equals("param"))
                 return;
 
-            string name = ReadName(matNode);
-            List<float> valueList = ReadParamValues(matNode, name);
+            string name = GetNodeName(materialNode);
+            List<float> valueList = ParamValuesFromMaterialPropertyText(materialNode, name);
 
             // Parameters should always have 4 values.                                           
             if (valueList.Count != 4)
                 throw new ParamArrayLengthException(polyNode.ChildNodes.Count, name);
 
-            // Using a dictionary prevents duplicate material parameters.
-            try
+            // Prevents duplicate material parameters.
+            if (!material.entries.ContainsKey(name))
             {
-                mat.entries.Add(name, valueList.ToArray());
+                material.entries.Add(name, valueList.ToArray());
             }
-            catch (System.ArgumentException)
+            else
             {
                 MessageBox.Show(String.Format("Polygon{0} contains more than 1 instance of {1}. \n"
                     + "Only the first instance of {1} will be added.", polyNode.ChildNodes.Count.ToString(), name));
             }        
         }
 
-        private static List<float> ReadParamValues(XmlNode matNode, string name)
+        private static List<float> ParamValuesFromMaterialPropertyText(XmlNode materialPropertyNode, string propertyName)
         {
-            string[] values = matNode.InnerText.Split(' ');
+            // Only get the values and ignore any white space.
+            string[] stringValues = materialPropertyNode.InnerText.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
             List<float> valueList = new List<float>();
-            foreach (string stringValue in values)
+            foreach (string stringValue in stringValues)
             {
+                // Only read 4 values.
                 if (valueList.Count >= 4)
                     break;
 
-                float f = 0;
-
-                if (name == "NU_materialHash")
+                float newValue = 0;
+                if (propertyName == "NU_materialHash")
                 {
                     int hash;
                     if (int.TryParse(stringValue, NumberStyles.HexNumber, null, out hash))
                     {
-                        f = BitConverter.ToSingle(BitConverter.GetBytes(hash), 0);
-                        valueList.Add(f);
+                        newValue = BitConverter.ToSingle(BitConverter.GetBytes(hash), 0);
+                        valueList.Add(newValue);
                     }
                 }
-                else if (float.TryParse(stringValue, out f))
-                    valueList.Add(f);
+                else if (float.TryParse(stringValue, out newValue))
+                    valueList.Add(newValue);
                 else
                     valueList.Add(0.0f);            
             }
@@ -347,13 +379,13 @@ namespace Smash_Forge
             return valueList;
         }
 
-        private static string ReadName(XmlNode node)
+        private static string GetNodeName(XmlNode node)
         {
-            foreach (XmlAttribute a in node.Attributes)
+            foreach (XmlAttribute attribute in node.Attributes)
             {
-                if (a.Name == "name")
+                if (attribute.Name == "name")
                 {
-                    return a.Value;
+                    return attribute.Value;
                 }
             }
 
