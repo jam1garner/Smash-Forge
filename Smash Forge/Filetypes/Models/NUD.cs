@@ -1014,8 +1014,8 @@ namespace Smash_Forge
                 if (success)
                 {
                     GL.BindTexture(TextureTarget.Texture2D, texid);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[tex.WrapModeS]);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[tex.WrapModeT]);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[tex.wrapModeS]);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[tex.wrapModeT]);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minfilter[tex.minFilter]);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magfilter[tex.magFilter]);
                     GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 0.0f);
@@ -1285,9 +1285,9 @@ namespace Smash_Forge
                     MatTexture tex = new MatTexture();
                     tex.hash = d.readInt();
                     d.skip(6); // padding?
-                    tex.MapMode = d.readShort();
-                    tex.WrapModeS = d.readByte();
-                    tex.WrapModeT = d.readByte();
+                    tex.mapMode = d.readShort();
+                    tex.wrapModeS = d.readByte();
+                    tex.wrapModeT = d.readByte();
                     tex.minFilter = d.readByte();
                     tex.magFilter = d.readByte();
                     tex.mipDetail = d.readByte();
@@ -1945,9 +1945,9 @@ namespace Smash_Forge
                     d.writeInt(tex.hash);
                     d.writeInt(0);
                     d.writeShort(0);
-                    d.writeShort(tex.MapMode);
-                    d.writeByte(tex.WrapModeS);
-                    d.writeByte(tex.WrapModeT);
+                    d.writeShort(tex.mapMode);
+                    d.writeByte(tex.wrapModeS);
+                    d.writeByte(tex.wrapModeT);
                     d.writeByte(tex.minFilter);
                     d.writeByte(tex.magFilter);
                     d.writeByte(tex.mipDetail);
@@ -2076,9 +2076,9 @@ namespace Smash_Forge
         public class MatTexture
         {
             public int hash;
-            public int MapMode = 0;
-            public int WrapModeS = 1;
-            public int WrapModeT = 1;
+            public int mapMode = 0;
+            public int wrapModeS = 1;
+            public int wrapModeT = 1;
             public int minFilter = 3;
             public int magFilter = 2;
             public int mipDetail = 6;
@@ -2098,9 +2098,9 @@ namespace Smash_Forge
             {
                 MatTexture t = new MatTexture();
                 t.hash = hash;
-                t.MapMode = MapMode;
-                t.WrapModeS = WrapModeS;
-                t.WrapModeT = WrapModeT;
+                t.mapMode = mapMode;
+                t.wrapModeS = wrapModeS;
+                t.wrapModeT = wrapModeT;
                 t.minFilter = minFilter;
                 t.magFilter = magFilter;
                 t.mipDetail = mipDetail;
@@ -2517,8 +2517,7 @@ namespace Smash_Forge
                     Vector3 newBitan = bitanArray[i];
 
                     // The tangent and bitangent should be orthogonal to the normal. 
-                    // Bitangents are not calculated with a cross product 
-                    // to prevent flipped shading  with mirrored normal maps.
+                    // Bitangents are not calculated with a cross product to prevent flipped shading  with mirrored normal maps.
                     // Orthogonalizing the bitangent to the tangent removes some artifacts. 
                     v.tan = new Vector4(Vector3.Normalize(newTan - v.nrm * Vector3.Dot(v.nrm, newTan)), 1);
                     v.bitan = new Vector4(Vector3.Normalize(newBitan - v.nrm * Vector3.Dot(v.nrm, newBitan)), 1);
@@ -2814,7 +2813,7 @@ namespace Smash_Forge
                     }
                 }
 
-                //Use the one with the lowest radius
+                // Use the one with the lowest radius.
                 Vector3 temp;
                 double radius;
                 if (rad1 < rad2)
@@ -2828,7 +2827,7 @@ namespace Smash_Forge
                     radius = rad2;
                 }
 
-                //Set
+                // Set
                 for (int i = 0; i < 3; i++)
                 {
                     boundingBox[i] = temp[i];
