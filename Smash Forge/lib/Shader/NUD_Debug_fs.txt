@@ -383,24 +383,14 @@ void main()
         resultingColor.rgb = boneWeightsColored;
 
     // Toggles rendering of individual color channels for all render modes.
-    if (renderR == 1)
-    {
-        fragColor.r = resultingColor.r;
-        if (renderB == 0 && renderG == 0)
-            fragColor.rgb = resultingColor.rrr;
-    }
-    if (renderG == 1)
-    {
-        fragColor.g = resultingColor.g;
-        if (renderB == 0 && renderR == 0)
-            fragColor.rgb = resultingColor.ggg;
-    }
-    if (renderB == 1)
-    {
-        fragColor.b = resultingColor.b;
-        if (renderG == 0 && renderR == 0)
-            fragColor.rgb = resultingColor.bbb;
-    }
+    fragColor.rgb = resultingColor.rgb * vec3(renderR, renderG, renderB);
+    if (renderR == 1 && renderG == 0 && renderB == 0)
+        fragColor.rgb = resultingColor.rrr;
+    else if (renderG == 1 && renderR == 0 && renderB == 0)
+        fragColor.rgb = resultingColor.ggg;
+    else if (renderB == 1 && renderR == 0 && renderG == 0)
+        fragColor.rgb = resultingColor.bbb;
+
     if (renderAlpha == 1)
     {
         fragColor.a = resultingColor.a;

@@ -3,6 +3,7 @@ in vec2 texCoord;
 
 uniform sampler2D image;
 
+// TODO: Make vector 3
 uniform int renderR;
 uniform int renderG;
 uniform int renderB;
@@ -12,10 +13,10 @@ uniform int preserveAspectRatio;
 uniform int width;
 uniform int height;
 
-out vec4 outColor;
+out vec4 fragColor;
 
 void main()
-{   outColor = vec4(0,0,0,1);
+{   fragColor = vec4(0,0,0,1);
     vec4 textureColor = vec4(1);
     bool fill = false;
     // Perform texture aspect ratio scaling.
@@ -43,31 +44,19 @@ void main()
 
     textureColor = texture2D(image, vec2(xCoord, yCoord)).rgba;
 
-    // Control what channels are displayed. Single channels are greyscale.
-    if (renderR == 1)
-    {
-        outColor.r = textureColor.r;
-        if (renderB == 0 && renderG == 0)
-            outColor.rgb = textureColor.rrr;
-    }
-    if (renderG == 1)
-    {
-        outColor.g = textureColor.g;
-        if (renderB == 0 && renderR == 0)
-            outColor.rgb = textureColor.ggg;
-    }
-    if (renderB == 1)
-    {
-        outColor.b = textureColor.b;
-        if (renderG == 0 && renderR == 0)
-            outColor.rgb = textureColor.bbb;
-    }
+    // Toggles rendering of individual color channels for all render modes.
+    fragColor.rgb = textureColor.rgb * vec3(renderR, renderG, renderB);
+    if (renderR == 1 && renderG == 0 && renderB == 0)
+        fragColor.rgb = textureColor.rrr;
+    else if (renderG == 1 && renderR == 0 && renderB == 0)
+        fragColor.rgb = textureColor.ggg;
+    else if (renderB == 1 && renderR == 0 && renderG == 0)
+        fragColor.rgb = textureColor.bbb;
+
     if (renderAlpha == 1)
-    {
-        outColor.a = textureColor.a;
-    }
+        fragColor.a = textureColor.a;
     if (alphaOverride == 1)
-        outColor = vec4(textureColor.aaa, 1);
+        fragColor = vec4(textureColor.aaa, 1);
     if (fill)
-        outColor = vec4(1);
+        fragColor = vec4(1);
 }
