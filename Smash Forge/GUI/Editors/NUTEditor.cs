@@ -151,7 +151,7 @@ namespace Smash_Forge
 
         }
 
-        private void SelectNUT(NUT n)
+        public void SelectNUT(NUT n)
         {
             NUT = n;
             FillForm();

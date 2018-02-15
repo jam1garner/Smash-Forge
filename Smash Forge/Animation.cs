@@ -296,9 +296,9 @@ namespace Smash_Forge
             {
                 KeyFrame k1 = (KeyFrame)Keys[0], k2 = (KeyFrame)Keys[0];
                 int i = 0;
-                for (i = LastFound; i < Keys.Count; i++)
+                for (i = 0; i < Keys.Count; i++)
                 {
-                    LastFound = i;
+                    LastFound = i % (Keys.Count-1);
                     KeyFrame k = Keys[LastFound];
                     if (k.Frame < frame)
                     {

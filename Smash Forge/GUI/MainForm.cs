@@ -1754,6 +1754,7 @@ namespace Smash_Forge
             {
                 MDL0Bones mdl0 = new MDL0Bones();
                 BoneTreePanel editor = new BoneTreePanel(mdl0.GetVBN(new FileData(fileName)));
+                AddDockedControl(editor);
             }
             
             if (fileName.ToLower().EndsWith(".obj"))
@@ -2069,7 +2070,7 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn|" +
+                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn;*.mdl0|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +
@@ -2417,6 +2418,155 @@ namespace Smash_Forge
         private void forgeWikiToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("https://github.com/jam1garner/Smash-Forge/wiki");
+        }
+
+        private void importWiiUNUTAsPS3NUTToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (File.Exists("TexConv/TexConv2.exe"))
+            {
+                using (var ofd = new OpenFileDialog())
+                {
+                    ofd.Filter = "Namco Universal Texture|*.nut|" +
+                                 "All files(*.*)|*.*";
+
+                    ofd.Multiselect = true;
+
+                    if (ofd.ShowDialog() == DialogResult.OK)
+                        foreach (string filename in ofd.FileNames)
+                        {
+                            HackyWiiUtoPS3NUT(new Smash_Forge.FileData(filename));
+                        }
+
+                }
+            }
+            else
+            {
+                MessageBox.Show("Error: Get TexConv2.exe and put it in Forge's Directory");
+            }
+
+            
+        }
+
+        private void HackyWiiUtoPS3NUT(FileData data)
+        {
+            NUT n = new NUT();
+            data.Endian = Endianness.Big;
+            data.seek(0x6);
+            int count = data.readShort();
+
+            data.seek(0x10);
+
+            int padfix = 0;
+            int headerSize = 0;
+            int offheader = 0;
+            for (int i = 0; i < count; i++)
+            {
+                if(i > 0)
+                    padfix += headerSize;
+                //				String name = fname;
+                data.skip(4); //int fullsize = d.readInt();
+                data.skip(4);
+                int size = data.readInt();
+                int DDSSize = size;
+                headerSize = data.readShort();
+                data.skip(5);
+                int typet = data.readByte();
+                int Width = data.readShort();
+                int Height = data.readShort();
+
+                data.skip(8);// mipmaps and padding
+
+                int offset1 = data.readInt() + 16;
+                int offset2 = data.readInt() + 16;
+                int offset3 = data.readInt() + 16;
+                data.skip(4);
+                if (i == 0)
+                {
+                    offheader = offset3;
+                }
+
+                if (headerSize == 0x90)
+                {
+                    DDSSize = data.readInt();
+                    data.skip(0x3C);
+                }
+                if (headerSize == 0x80)
+                {
+                    DDSSize = data.readInt();
+                    data.skip(44);
+                }
+                if (headerSize == 0x70)
+                {
+                    DDSSize = data.readInt();
+                    data.skip(28);
+                }
+                if (headerSize == 0x60)
+                {
+                    DDSSize = data.readInt();
+                    data.skip(12);
+                }
+
+                data.skip(16);
+                data.skip(4);
+                data.skip(4);
+                int fileNum = data.readInt();
+                data.skip(4);
+                {
+                    {
+                        FileOutput o = new FileOutput();
+                        String mem = "4766783200000020000000070000000100000002000000000000000000000000424C4B7B0000002000000001000000000000000B0000009C0000000000000000";
+                        o.writeHex(mem);
+                        
+
+
+                        int t = data.pos();
+                        data.seek(offheader);
+                        for (int k = 0; k < 0x80; k++)
+                            o.writeByte(data.readByte());
+                        offheader += 0x80;
+                        data.seek(t);
+                        if (i > 0)
+                        {
+                            //offset1 += padfix;
+                            //offheader += 0x80;
+                        }
+
+                        mem = "00000001000102031FF87F21C40003FF068880000000000A80000010424C4B7B0000002000000001000000000000000C000800000000000000000000";
+                        o.writeHex(mem);
+
+                        //System.out.println("TextureStash\\char_" + fileNum + ".gtx");
+                        Console.WriteLine(fileNum.ToString("x"));
+                        o.writeBytes(data.getSection(offset1 + padfix, DDSSize));
+
+                        mem = "424C4B7B00000020000000010000000000000001000000000000000000000000";
+                        o.writeHex(mem);
+
+                        o.Endian = Endianness.Big;
+                        o.writeIntAt(1, 0x50);
+                        o.writeIntAt(DDSSize, 0xF0);
+
+                        o.save("TexConv/temp.gtx");
+                        
+                        String command = " -i temp.gtx -o temp.dds";
+                        ProcessStartInfo cmdsi = new ProcessStartInfo();
+                        cmdsi.Arguments = command;
+                        cmdsi.WorkingDirectory = @"TexConv\";
+                        cmdsi.FileName = @"TexConv2.exe";
+                        cmdsi.Arguments = command;
+                        //cmdsi.CreateNoWindow = true;
+                        Process cmd = Process.Start(cmdsi);
+                        cmd.WaitForExit();
+
+                        NUT_Texture tex = new DDS(new FileData("TexConv/temp.dds")).toNUT_Texture();
+                        tex.HASHID = fileNum;
+                        n.draw.Add(fileNum, NUT.loadImage(tex, true));
+                        n.Nodes.Add(tex);
+                    }
+                }
+            }
+            NUTEditor editor = new NUTEditor();
+            editor.SelectNUT(n);
+            AddDockedControl(editor);
         }
     }
 }

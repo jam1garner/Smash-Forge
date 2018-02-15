@@ -73,6 +73,8 @@
             this.renderSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importWiiUNUTAsPS3NUTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.masterpiecesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nESROMInjectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -98,6 +100,7 @@
             this.parametersToolStripMenuItem,
             this.texturesToolStripMenuItem,
             this.viewToolStripMenuItem,
+            this.toolsToolStripMenuItem,
             this.masterpiecesToolStripMenuItem,
             this.cameraToolStripMenuItem,
             this.helpToolStripMenuItem});
@@ -444,6 +447,21 @@
             this.aboutToolStripMenuItem1.Text = "About";
             this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.importWiiUNUTAsPS3NUTToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // importWiiUNUTAsPS3NUTToolStripMenuItem
+            // 
+            this.importWiiUNUTAsPS3NUTToolStripMenuItem.Name = "importWiiUNUTAsPS3NUTToolStripMenuItem";
+            this.importWiiUNUTAsPS3NUTToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            this.importWiiUNUTAsPS3NUTToolStripMenuItem.Text = "Import Wii U NUT as PS3 NUT";
+            this.importWiiUNUTAsPS3NUTToolStripMenuItem.Click += new System.EventHandler(this.importWiiUNUTAsPS3NUTToolStripMenuItem_Click);
+            // 
             // masterpiecesToolStripMenuItem
             // 
             this.masterpiecesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -638,6 +656,8 @@
         private System.Windows.Forms.ToolStripMenuItem open3DSCharacterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem forgeWikiToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importWiiUNUTAsPS3NUTToolStripMenuItem;
     }
 }
 
