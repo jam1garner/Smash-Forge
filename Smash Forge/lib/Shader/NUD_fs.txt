@@ -188,7 +188,9 @@ float Luminance(vec3 rgb)
 vec3 CalculateTintColor(vec3 diffuseColor, float tintAmount)
 {
     // Approximates an overlay blend mode. Cheaper than converting to HSV/HSL.
-    return mix(vec3(1), (diffuseColor * 2), min(tintAmount * 0.5, 1));
+    // Normalize the color to avoid color tint making the model darker.
+    vec3 colorTint = mix(vec3(1), (normalize(diffuseColor) * 2), min(tintAmount * 0.5, 1));
+    return colorTint;
 }
 
 float ShadowCalculation(vec4 fragPosLightSpace)
@@ -296,8 +298,8 @@ vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, float xComponent, float yComponen
     return (hairSpecular) * diffuseMap.r * 20;
 }
 
-vec3 SoftLighting(vec3 ambient, vec3 diffuse, vec4 params,
-    float darkenMultiplier, float saturationMultiplier, float halfLambert)
+vec3 SoftLighting(vec3 diffuse, vec4 params, float darkenMultiplier,
+    float saturationMultiplier, float halfLambert)
 {
     // Higher blend values make the dark region smoother and larger.
     float edgeL = 0.5;
@@ -438,13 +440,14 @@ vec3 CalculateFog(vec3 inputColor)
 
 vec3 CalculateUniverseColor(float universeParam)
 {
+    // TODO: Doesn't work for all angles (viewing from below).
     // Account for camera position and rotation for projection.
     vec3 projVec = normalize(objectPosition.xyz - cameraPosition.xyz);
     projVec = mat3(modelViewMatrix) * projVec;
     // Cheap approximations of trig functions.
     float uCoord = projVec.x * 0.5 + 0.5;
     float vCoord = projVec.y * 0.5 + 0.5;
-    return texture(dif, vec2(uCoord * universeParam, 1- vCoord)).rgb;
+    return texture(dif, vec2(uCoord * universeParam, 1 - vCoord)).rgb;
 }
 
 
@@ -531,9 +534,9 @@ vec3 DiffusePass(vec3 N, vec4 diffuseMap, float aoMap)
     vec3 softLightDif = diffuseColorFinal * difLightColor;
     vec3 softLightAmb = diffuseColorFinal * ambLightColor;
     if (hasSoftLight == 1)
-        diffusePass = SoftLighting(softLightAmb, softLightDif, softLightingParams, 0.3, 0.0561, halfLambert);
+        diffusePass = SoftLighting(softLightDif, softLightingParams, 0.3, 0.0561, halfLambert);
     else if (hasCustomSoftLight == 1)
-        diffusePass = SoftLighting(softLightAmb, softLightDif, customSoftLightParams, 0.3, 0.114, halfLambert);
+        diffusePass = SoftLighting(softLightDif, customSoftLightParams, 0.3, 0.114, halfLambert);
 
     // used with softlightingparams and customSoftLightParams, respectively
     // this could be moved outside the shader
