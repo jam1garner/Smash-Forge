@@ -100,13 +100,13 @@ namespace Smash_Forge
                 SaveAs();
                 return;
             }
-            FileOutput o = new FileOutput();
+            FileOutput fileOutput = new FileOutput();
             byte[] n = NUT.Rebuild();
             DialogResult dialogResult = MessageBox.Show("Would you like to compress this NUT file with zlib?\nIf you are unsure, select \"No\".", "zlib Compression", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
                 n = FileData.DeflateZLIB(n);
-            o.writeBytes(n);
-            o.save(FilePath);
+            fileOutput.writeBytes(n);
+            fileOutput.save(FilePath);
             Edited = false;
         }
 
@@ -132,8 +132,6 @@ namespace Smash_Forge
         {
             Console.WriteLine("File modified!");
             string filename = e.FullPath;
-            //Thread.Sleep(1000);
-            //importBack(filename);
         }
 
         public void FillForm()
@@ -183,27 +181,19 @@ namespace Smash_Forge
 
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.ClearColor(Color.Black);
 
             if (textureListBox.SelectedItem == null)
             {
                 glControl1.SwapBuffers();
                 return;
             }
-
-            GL.Enable(EnableCap.Texture2D);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha,BlendingFactorDest.OneMinusSrcAlpha);
-            
+           
             int width = ((NUT_Texture)textureListBox.SelectedItem).Width;
             int height = ((NUT_Texture)textureListBox.SelectedItem).Height; 
 
             int texture = NUT.draw[((NUT_Texture)textureListBox.SelectedItem).HASHID];
             bool alphaOverride = renderAlpha && !renderR && !renderG && !renderB;
+
             RenderTools.DrawTexturedQuad(texture, width, height, renderR, renderG, renderB, renderAlpha, alphaOverride, 
                 preserveAspectRatio, currentMipLevel);
 
@@ -214,52 +204,6 @@ namespace Smash_Forge
                 Runtime.shaders["Texture"].displayCompilationWarning("Texture");
             }
         }
-
-    // Some of these functions are still used...
-    #region obselete
-        private void openNUTToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (var ofd = new OpenFileDialog())
-            {
-                ofd.Filter = "Namco Universal Texture (.nut)|*.nut|" +
-                                "All files(*.*)|*.*";
-
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    if (ofd.FileName.EndsWith(".nut"))
-                    {
-                        Runtime.TextureContainers.Add(new NUT(ofd.FileName));
-                        FillForm();
-                    }
-                }
-            }
-        }
-
-        private void saveNUTToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (var sfd = new SaveFileDialog())
-            {
-                sfd.Filter = "Namco Universal Texture (.nut)|*.nut|" +
-                                "All Files (*.*)|*.*";
-
-                if (sfd.ShowDialog() == DialogResult.OK)
-                {
-                    if (sfd.FileName.EndsWith(".nut") && NUT != null)
-                    {
-                        NUT.Save(sfd.FileName);
-                        Edited = false;
-                    }
-                }
-            }
-        }
-
-        private void newNUTToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            NUT n = new NUT();
-            Runtime.TextureContainers.Add(n);
-            FillForm();
-        }
-
 
         private void exportAsDDSToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -322,9 +266,6 @@ namespace Smash_Forge
             }
         }
 
-        #endregion
-
-
         private void importToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (NUT != null)
@@ -376,7 +317,6 @@ namespace Smash_Forge
                     }
                 }
         }
-
 
         public static NUT_Texture fromPNG(string fname, int mipcount)
         {
@@ -527,14 +467,6 @@ namespace Smash_Forge
             }
         }
         
-        private void dontAskBeforeRemovingNUTsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            /*if (!dontAskBeforeRemovingNUTsToolStripMenuItem.Checked)
-                dontAskBeforeRemovingNUTsToolStripMenuItem.Checked = true;
-            else
-                dontAskBeforeRemovingNUTsToolStripMenuItem.Checked = false;*/
-        }
-
         /// <summary>
         /// Deletes all selected NUTs.
         /// Although the function can delete multiple NUTs, the rest of the application has not been updated to support selecting more than one at once...
@@ -808,17 +740,8 @@ namespace Smash_Forge
 
         private void renderChannelR_Click_1(object sender, EventArgs e)
         {
-            if (renderR)
-            {
-                renderR = false;
-                renderChannelR.ForeColor = Color.DarkGray;
-            }
-
-            else
-            {
-                renderR = true;
-                renderChannelR.ForeColor = Color.Red;
-            }
+            renderR = !renderR;
+            renderChannelR.ForeColor = renderR ? Color.Red : Color.DarkGray;
 
             // Uniforms need to be udpated.
             glControl1.Invalidate();
@@ -826,16 +749,8 @@ namespace Smash_Forge
 
         private void renderChannelG_Click(object sender, EventArgs e)
         {
-            if (renderG)
-            {
-                renderG = false;
-                renderChannelG.ForeColor = Color.DarkGray;
-            }
-            else
-            {
-                renderG = true;
-                renderChannelG.ForeColor = Color.Green;
-            }
+            renderG = !renderG;
+            renderChannelG.ForeColor = renderG ? Color.Green : Color.DarkGray;
 
             // Uniforms need to be udpated.
             glControl1.Invalidate();
@@ -843,17 +758,8 @@ namespace Smash_Forge
 
         private void renderChannelB_Click_1(object sender, EventArgs e)
         {
-            if (renderB)
-            {
-                renderB = false;
-                renderChannelB.ForeColor = Color.DarkGray;
-            }
-
-            else
-            {
-                renderB = true;
-                renderChannelB.ForeColor = Color.Blue;
-            }
+            renderB = !renderB;
+            renderChannelB.ForeColor = renderB ? Color.Blue : Color.DarkGray;
 
             // Uniforms need to be udpated.
             glControl1.Invalidate();            
@@ -861,17 +767,8 @@ namespace Smash_Forge
 
         private void renderChannelA_Click_1(object sender, EventArgs e)
         {
-            if (renderAlpha)
-            {
-                renderAlpha = false;
-                renderChannelA.ForeColor = Color.DarkGray;
-            }
-
-            else
-            {
-                renderAlpha = true;
-                renderChannelA.ForeColor = Color.Black;
-            }
+            renderAlpha = !renderAlpha;
+            renderChannelA.ForeColor = renderAlpha ? Color.Black : Color.DarkGray;
 
             // Uniforms need to be udpated.
             glControl1.Invalidate();           
