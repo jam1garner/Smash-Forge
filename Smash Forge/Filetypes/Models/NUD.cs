@@ -2495,7 +2495,6 @@ namespace Smash_Forge
 
                 CalculateTanBitanArrays(f, tanArray, bitanArray);
                 ApplyTanBitan(tanArray, bitanArray);
-                CreateDisplayVertices();
             }
 
             public void SetVertexColor(Vector4 intColor)
@@ -2505,7 +2504,6 @@ namespace Smash_Forge
                 {
                     v.col = intColor;
                 }
-                CreateDisplayVertices();
             }
 
 
@@ -2615,8 +2613,6 @@ namespace Smash_Forge
                         }
                     }
                 }
-
-                CreateDisplayVertices();
             }
 
             public void CalculateNormals()
@@ -2642,8 +2638,6 @@ namespace Smash_Forge
 
                 for (int i = 0; i < normals.Length; i++)
                     vertices[i].nrm = normals[i].Normalized();
-
-                CreateDisplayVertices();
             }
 
             private Vector3 CalculateNormal(Vertex v1, Vertex v2, Vertex v3)

@@ -149,43 +149,6 @@ namespace Smash_Forge
 
         private void treeView1_KeyPress(object sender, KeyPressEventArgs e)
         {
-            //WTF were these even
-            /*if (e.KeyChar == 'c')
-            {
-                if (treeView1.SelectedNode is NUD.Polygon)
-                {
-                    NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
-
-                    foreach (NUD.Vertex v in p.vertices)
-                    {
-                        v.col += new OpenTK.Vector4(5f);
-                    }
-
-                    foreach (ModelContainer con in Runtime.ModelContainers)
-                    {
-                        if (con.NUD != null)
-                            con.NUD.PreRender();
-                    }
-                }
-            }
-            if (e.KeyChar == 'x')
-            {
-                if (treeView1.SelectedNode is NUD.Polygon)
-                {
-                    NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
-
-                    foreach (NUD.Vertex v in p.vertices)
-                    {
-                        v.col -= new OpenTK.Vector4(5f);
-                    }
-
-                    foreach (ModelContainer con in Runtime.ModelContainers)
-                    {
-                        if (con.NUD != null)
-                            con.NUD.PreRender();
-                    }
-                }
-            }*/
             if (e.KeyChar == '=')
             {
                 if (treeView1.SelectedNode is NUD.Mesh)
@@ -317,7 +280,6 @@ namespace Smash_Forge
                 else if (treeView1.SelectedNode is NUD.Mesh)
                 {
                     NUD parent = ((NUD)treeView1.SelectedNode.Parent);
-                    //parent.Nodes.Remove((NUD.Mesh)treeView1.SelectedNode);
                     treeView1.SelectedNode.Parent.Nodes.Remove(treeView1.SelectedNode);
                     parent.UpdateVertexDataAndSort();
                 }
@@ -795,13 +757,17 @@ namespace Smash_Forge
 
             if (messageBox == DialogResult.OK)
             {
-                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
+                NUD n = (NUD)treeView1.SelectedNode;
+                foreach (NUD.Mesh mesh in n.Nodes)
                 {
                     foreach (NUD.Polygon poly in mesh.Nodes)
                     {
                         GenerateTanBitanAndFixVertType(poly);
                     }
                 }
+
+                // Update the data for rendering.
+                n.UpdateVertexDataAndSort();
             }
         }
 
@@ -811,7 +777,11 @@ namespace Smash_Forge
                 return;
             
             NUD.Polygon poly = ((NUD.Polygon)treeView1.SelectedNode);
-            GenerateTanBitanAndFixVertType(poly);         
+            GenerateTanBitanAndFixVertType(poly);
+
+            // Update the data for rendering.
+            NUD n = (NUD)poly.Parent.Parent;
+            n.UpdateVertexDataAndSort();
         }
 
         private void calculateNormalsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -821,16 +791,20 @@ namespace Smash_Forge
 
         private void calculateNormalsToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode is NUD)
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            NUD n = (NUD)treeView1.SelectedNode;
+            foreach (NUD.Mesh mesh in n.Nodes)
             {
-                foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
+                foreach (NUD.Polygon poly in mesh.Nodes)
                 {
-                    foreach (NUD.Polygon poly in mesh.Nodes)
-                    {
-                        poly.CalculateNormals();
-                    }
+                    poly.CalculateNormals();
                 }
             }
+
+            // Update the data for rendering.
+            n.UpdateVertexDataAndSort();
         }
 
         private void useAOAsSpecToolStripMenuItem_Click(object sender, EventArgs e)
@@ -917,36 +891,60 @@ namespace Smash_Forge
 
         private void recalculateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode is NUD.Mesh)
+            if (!(treeView1.SelectedNode is NUD.Mesh))
+                return;
+
+            NUD.Mesh mesh = (NUD.Mesh)treeView1.SelectedNode;
+            foreach (NUD.Polygon poly in mesh.Nodes)
             {
-                foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
-                {
-                    poly.CalculateNormals();
-                }
+                poly.CalculateNormals();
             }
+
+            // Update the data for rendering.
+            NUD n = (NUD)mesh.Parent;
+            n.UpdateVertexDataAndSort();
         }
 
         private void smoothToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode is NUD.Mesh)
+            if (!(treeView1.SelectedNode is NUD.Mesh))
+                return;
+
+            NUD.Mesh mesh = (NUD.Mesh)treeView1.SelectedNode;
+            foreach (NUD.Polygon poly in mesh.Nodes)
             {
-                foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
-                {
-                    poly.SmoothNormals();
-                }
+                poly.SmoothNormals();
             }
+
+            // Update the data for rendering.
+            NUD n = (NUD)mesh.Parent;
+            n.UpdateVertexDataAndSort();
         }
 
         private void recalculateToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode is NUD.Polygon)
-                ((NUD.Polygon)treeView1.SelectedNode).CalculateNormals();
+            if (!(treeView1.SelectedNode is NUD.Polygon))
+                return;
+
+            NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+            p.CalculateNormals();
+
+            // Update the data for rendering.
+            NUD n = (NUD)p.Parent.Parent;
+            n.UpdateVertexDataAndSort();
         }
 
         private void smoothToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode is NUD.Polygon)
-                ((NUD.Polygon)treeView1.SelectedNode).SmoothNormals();
+            if (!(treeView1.SelectedNode is NUD.Polygon))
+                return;
+
+            NUD.Polygon p = (NUD.Polygon)treeView1.SelectedNode;
+            p.SmoothNormals();
+
+            // Update the data for rendering.
+            NUD n = (NUD)p.Parent.Parent;
+            n.UpdateVertexDataAndSort();
         }
 
         private void smoothToolStripMenuItem2_Click(object sender, EventArgs e)
@@ -954,13 +952,17 @@ namespace Smash_Forge
             if (!(treeView1.SelectedNode is NUD))
                 return;
 
+            NUD n = (NUD)treeView1.SelectedNode;
             foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
             {
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {
                     poly.SmoothNormals();
                 }
-            }  
+            }
+
+            // Update the data for rendering.
+            n.UpdateVertexDataAndSort();
         }
 
         private void recalculateToolStripMenuItem2_Click(object sender, EventArgs e)
@@ -968,13 +970,17 @@ namespace Smash_Forge
             if (!(treeView1.SelectedNode is NUD))
                 return;
 
-            foreach (NUD.Mesh mesh in ((NUD)treeView1.SelectedNode).Nodes)
+            NUD n = (NUD)treeView1.SelectedNode;
+            foreach (NUD.Mesh mesh in n.Nodes)
             {
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {
                     poly.CalculateNormals();
                 }
             }
+
+            // Update the data for rendering.
+            n.UpdateVertexDataAndSort();
         }
 
         private void generateTanBitanToolStripMenuItem2_Click(object sender, EventArgs e)
@@ -989,10 +995,15 @@ namespace Smash_Forge
 
             if (messageBox == DialogResult.OK)
             {
-                foreach (NUD.Polygon poly in ((NUD.Mesh)treeView1.SelectedNode).Nodes)
+                NUD.Mesh mesh = (NUD.Mesh)treeView1.SelectedNode;
+                foreach (NUD.Polygon poly in mesh.Nodes)
                 {
                     GenerateTanBitanAndFixVertType(poly);
                 }
+
+                // Update the data for rendering.
+                NUD n = (NUD)mesh.Parent;
+                n.UpdateVertexDataAndSort();
             }               
         }
 
@@ -1161,7 +1172,6 @@ namespace Smash_Forge
                     OpenTK.Vector3 newTan = v.tan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
                     v.col = new OpenTK.Vector4(newTan * 127, 255);
                 }
-                poly.CreateDisplayVertices();
             }
 
             // Update the data for rendering.
@@ -1182,7 +1192,6 @@ namespace Smash_Forge
                     OpenTK.Vector3 newBitan = v.bitan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
                     v.col = new OpenTK.Vector4(newBitan * 127, 255);
                 }
-                poly.CreateDisplayVertices();
             }
 
             // Update the data for rendering.
@@ -1203,7 +1212,6 @@ namespace Smash_Forge
                     OpenTK.Vector3 newNrm = v.nrm * 0.5f + new OpenTK.Vector3(0.5f);
                     v.col = new OpenTK.Vector4(newNrm * 127, 255);
                 }
-                poly.CreateDisplayVertices();
             }
 
             // Update the data for rendering.
@@ -1246,7 +1254,6 @@ namespace Smash_Forge
                         OpenTK.Vector3 newTan = v.tan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
                         v.col = new OpenTK.Vector4(newTan * 127, 255);
                     }
-                    p.CreateDisplayVertices();
                 }
             }
 
@@ -1270,7 +1277,6 @@ namespace Smash_Forge
                         OpenTK.Vector3 newBitan = v.bitan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
                         v.col = new OpenTK.Vector4(newBitan * 127, 255);
                     }
-                    p.CreateDisplayVertices();
                 }
             }
 
