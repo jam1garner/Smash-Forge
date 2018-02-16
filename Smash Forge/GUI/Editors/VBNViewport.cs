@@ -598,7 +598,7 @@ namespace Smash_Forge
                 {
                     GL.PopAttrib();
                     BCH_Texture tex = ((BCH_Texture)MainForm.Instance.meshList.treeView1.SelectedNode);
-                    RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, true, true, true, false, true);
+                    RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, true, true, true, true);
                     glControl1.SwapBuffers();
                     return;
                 }
@@ -606,7 +606,7 @@ namespace Smash_Forge
                 {
                     GL.PopAttrib();
                     NUT_Texture tex = ((NUT_Texture)MainForm.Instance.meshList.treeView1.SelectedNode);
-                    RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height, true, true, true, true, false, true);
+                    RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height, true, true, true, true, true);
                     glControl1.SwapBuffers();
                     return;
                 }
