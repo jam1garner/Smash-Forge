@@ -1641,7 +1641,7 @@ namespace Smash_Forge
         }
 
         public static void DrawTexturedQuad(int texture, int width, int height, bool renderR = true, bool renderG = true, bool renderB = true, 
-            bool renderAlpha = false, bool alphaOverride = false, bool preserveAspectRatio = false)
+            bool renderAlpha = false, bool alphaOverride = false, bool preserveAspectRatio = false, int currentMipLevel = 0)
         {
             // Draws RGB and alpha channels of texture to screen quad.
             Shader shader = Runtime.shaders["Texture"];
@@ -1676,6 +1676,9 @@ namespace Smash_Forge
             float aspectRatio = (float)width / (float)height;
             GL.Uniform1(shader.getAttribute("width"), width);
             GL.Uniform1(shader.getAttribute("height"), height);
+
+            // Display certain mip levels.
+            GL.Uniform1(shader.getAttribute("currentMipLevel"), currentMipLevel);
 
             // Draw full screen "quad" (big triangle)
             DrawScreenTriangle(shader);

@@ -11,6 +11,7 @@ uniform int alphaOverride;
 uniform int preserveAspectRatio;
 uniform int width;
 uniform int height;
+uniform int currentMipLevel;
 
 out vec4 outColor;
 
@@ -41,7 +42,7 @@ void main()
         }
     }
 
-    textureColor = texture2D(image, vec2(xCoord, yCoord)).rgba;
+    textureColor = textureLod(image, vec2(xCoord, yCoord), currentMipLevel).rgba;
 
     // Control what channels are displayed. Single channels are greyscale.
     if (renderR == 1)

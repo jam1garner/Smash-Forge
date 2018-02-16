@@ -68,7 +68,7 @@ namespace Smash_Forge
                     }
                     
                 }
-                p.PreRender();
+                p.CreateDisplayVertices();
             }
         }
 

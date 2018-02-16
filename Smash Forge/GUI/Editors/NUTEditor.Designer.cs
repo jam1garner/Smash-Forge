@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textureList = new System.Windows.Forms.ListBox();
+            this.textureListBox = new System.Windows.Forms.ListBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.editingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractAndOpenInDefaultEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,27 +46,33 @@
             this.renderChannelA = new System.Windows.Forms.Button();
             this.renderChannelR = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.maxMipLevelLabel = new System.Windows.Forms.Label();
+            this.minMipLevelLabel = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.mipLevelTrackBar = new System.Windows.Forms.TrackBar();
             this.aspectRatioCB = new System.Windows.Forms.CheckBox();
             this.glControl1 = new OpenTK.GLControl();
             this.previewBox = new System.Windows.Forms.GroupBox();
+            this.preserveAspectRatioCB = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.mipLevelTrackBar)).BeginInit();
             this.previewBox.SuspendLayout();
             this.SuspendLayout();
             // 
-            // textureList
+            // textureListBox
             // 
-            this.textureList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.textureListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.textureList.FormattingEnabled = true;
-            this.textureList.Location = new System.Drawing.Point(11, 22);
-            this.textureList.Margin = new System.Windows.Forms.Padding(2);
-            this.textureList.Name = "textureList";
-            this.textureList.Size = new System.Drawing.Size(91, 433);
-            this.textureList.TabIndex = 2;
-            this.textureList.SelectedIndexChanged += new System.EventHandler(this.listBox2_SelectedIndexChanged);
-            this.textureList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBox2_MouseDown);
+            this.textureListBox.FormattingEnabled = true;
+            this.textureListBox.Location = new System.Drawing.Point(11, 22);
+            this.textureListBox.Margin = new System.Windows.Forms.Padding(2);
+            this.textureListBox.Name = "textureListBox";
+            this.textureListBox.Size = new System.Drawing.Size(91, 433);
+            this.textureListBox.TabIndex = 2;
+            this.textureListBox.SelectedIndexChanged += new System.EventHandler(this.textureListBox_SelectedIndexChanged);
+            this.textureListBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBox2_MouseDown);
             // 
             // menuStrip1
             // 
@@ -76,7 +82,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(496, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(584, 24);
             this.menuStrip1.TabIndex = 11;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -244,6 +250,11 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.preserveAspectRatioCB);
+            this.groupBox1.Controls.Add(this.maxMipLevelLabel);
+            this.groupBox1.Controls.Add(this.minMipLevelLabel);
+            this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Controls.Add(this.mipLevelTrackBar);
             this.groupBox1.Controls.Add(this.aspectRatioCB);
             this.groupBox1.Controls.Add(this.renderChannelR);
             this.groupBox1.Controls.Add(this.renderChannelA);
@@ -253,10 +264,45 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Location = new System.Drawing.Point(107, 27);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(377, 102);
+            this.groupBox1.Size = new System.Drawing.Size(465, 102);
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Texture Settings";
+            // 
+            // maxMipLevelLabel
+            // 
+            this.maxMipLevelLabel.AutoSize = true;
+            this.maxMipLevelLabel.Location = new System.Drawing.Point(420, 50);
+            this.maxMipLevelLabel.Name = "maxMipLevelLabel";
+            this.maxMipLevelLabel.Size = new System.Drawing.Size(13, 13);
+            this.maxMipLevelLabel.TabIndex = 25;
+            this.maxMipLevelLabel.Text = "0";
+            // 
+            // minMipLevelLabel
+            // 
+            this.minMipLevelLabel.AutoSize = true;
+            this.minMipLevelLabel.Location = new System.Drawing.Point(312, 50);
+            this.minMipLevelLabel.Name = "minMipLevelLabel";
+            this.minMipLevelLabel.Size = new System.Drawing.Size(13, 13);
+            this.minMipLevelLabel.TabIndex = 24;
+            this.minMipLevelLabel.Text = "1";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(246, 20);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(53, 13);
+            this.label6.TabIndex = 23;
+            this.label6.Text = "Mip Level";
+            // 
+            // mipLevelTrackBar
+            // 
+            this.mipLevelTrackBar.Location = new System.Drawing.Point(305, 18);
+            this.mipLevelTrackBar.Name = "mipLevelTrackBar";
+            this.mipLevelTrackBar.Size = new System.Drawing.Size(134, 45);
+            this.mipLevelTrackBar.TabIndex = 22;
+            this.mipLevelTrackBar.Scroll += new System.EventHandler(this.mipLevelTrackBar_Scroll);
             // 
             // aspectRatioCB
             // 
@@ -278,7 +324,7 @@
             this.glControl1.BackColor = System.Drawing.Color.Black;
             this.glControl1.Location = new System.Drawing.Point(10, 19);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(361, 295);
+            this.glControl1.Size = new System.Drawing.Size(449, 295);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = false;
             this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
@@ -292,20 +338,31 @@
             this.previewBox.Controls.Add(this.glControl1);
             this.previewBox.Location = new System.Drawing.Point(107, 135);
             this.previewBox.Name = "previewBox";
-            this.previewBox.Size = new System.Drawing.Size(377, 320);
+            this.previewBox.Size = new System.Drawing.Size(465, 320);
             this.previewBox.TabIndex = 13;
             this.previewBox.TabStop = false;
             this.previewBox.Text = "Preview";
             this.previewBox.Resize += new System.EventHandler(this.previewBox_Resize);
             // 
+            // preserveAspectRatioCB
+            // 
+            this.preserveAspectRatioCB.AutoSize = true;
+            this.preserveAspectRatioCB.Location = new System.Drawing.Point(249, 64);
+            this.preserveAspectRatioCB.Name = "preserveAspectRatioCB";
+            this.preserveAspectRatioCB.Size = new System.Drawing.Size(132, 17);
+            this.preserveAspectRatioCB.TabIndex = 26;
+            this.preserveAspectRatioCB.Text = "Preserve Aspect Ratio";
+            this.preserveAspectRatioCB.UseVisualStyleBackColor = true;
+            this.preserveAspectRatioCB.CheckedChanged += new System.EventHandler(this.preserveAspectRatioCB_CheckedChanged);
+            // 
             // NUTEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(496, 473);
+            this.ClientSize = new System.Drawing.Size(584, 473);
             this.Controls.Add(this.previewBox);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.textureList);
+            this.Controls.Add(this.textureListBox);
             this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.KeyPreview = true;
@@ -321,6 +378,7 @@
             this.tableLayoutPanel1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.mipLevelTrackBar)).EndInit();
             this.previewBox.ResumeLayout(false);
             this.previewBox.PerformLayout();
             this.ResumeLayout(false);
@@ -329,7 +387,7 @@
         }
 
         #endregion
-        private System.Windows.Forms.ListBox textureList;
+        private System.Windows.Forms.ListBox textureListBox;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem editingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractAndOpenInDefaultEditorToolStripMenuItem;
@@ -350,5 +408,10 @@
         private System.Windows.Forms.CheckBox aspectRatioCB;
         private OpenTK.GLControl glControl1;
         private System.Windows.Forms.GroupBox previewBox;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TrackBar mipLevelTrackBar;
+        private System.Windows.Forms.Label maxMipLevelLabel;
+        private System.Windows.Forms.Label minMipLevelLabel;
+        private System.Windows.Forms.CheckBox preserveAspectRatioCB;
     }
 }

@@ -224,7 +224,7 @@ namespace Smash_Forge
                 }
             }
 
-            nud.PreRender();
+            nud.UpdateVertexDataAndSort();
             return nud;
         }
 
