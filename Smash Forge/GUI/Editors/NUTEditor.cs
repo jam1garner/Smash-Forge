@@ -24,13 +24,16 @@ namespace Smash_Forge
         private FileSystemWatcher fw;
         private Dictionary<NUT_Texture,string> fileFromTexture = new Dictionary<NUT_Texture, string>();
         private Dictionary<string,NUT_Texture> textureFromFile = new Dictionary<string, NUT_Texture>();
-        private bool dontModify;
+
         private bool renderR = true;
         private bool renderG = true;
         private bool renderB = true;
         private bool renderAlpha = true;
         private bool preserveAspectRatio = false;
         private int currentMipLevel = 0;
+
+        private bool dontModify;
+        private bool _loaded = false;
 
         ContextMenu TextureMenu = new ContextMenu();
         ContextMenu NUTMenu = new ContextMenu();
@@ -142,16 +145,6 @@ namespace Smash_Forge
             }
         }
 
-        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
         public void SelectNUT(NUT n)
         {
             NUT = n;
@@ -163,23 +156,21 @@ namespace Smash_Forge
             if (textureListBox.SelectedIndex >= 0)
             {
                 NUT_Texture tex = ((NUT_Texture)textureListBox.SelectedItem);
-                textBox1.Text = tex.ToString();
-                label2.Text = "Format: " + (tex.type == PixelInternalFormat.Rgba ? "" + tex.utype : "" + tex.type);
-                label3.Text = "Width: " + tex.Width;
-                label4.Text = "Height:" + tex.Height;
-                label5.Text = "Mipmap:" + tex.mipmaps.Count;
+                textureIdTB.Text = tex.ToString();
+                formatLabel.Text = "Format: " + (tex.type == PixelInternalFormat.Rgba ? "" + tex.utype : "" + tex.type);
+                widthLabel.Text = "Width: " + tex.Width;
+                heightLabel.Text = "Height:" + tex.Height;
 
                 // Get number of mip maps for current texture.
                 mipLevelTrackBar.Maximum = tex.mipmaps.Count - 1;
-                maxMipLevelLabel.Text = tex.mipmaps.Count + "";
+                maxMipLevelLabel.Text = "Total:" + tex.mipmaps.Count + "";
             }
             else
             {
-                textBox1.Text = "";
-                label2.Text = "Format:";
-                label3.Text = "Width:";
-                label4.Text = "Height:";
-                label5.Text = "Mipmap:";
+                textureIdTB.Text = "";
+                formatLabel.Text = "Format:";
+                widthLabel.Text = "Width:";
+                heightLabel.Text = "Height:";
             }
 
             glControl1.Invalidate();
@@ -434,13 +425,13 @@ namespace Smash_Forge
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            if (textureListBox.SelectedItem != null && !textBox1.Text.Equals(""))
+            if (textureListBox.SelectedItem != null && !textureIdTB.Text.Equals(""))
             {
                 int oldid = ((NUT_Texture)textureListBox.SelectedItem).HASHID;
                 int newid = -1;
-                int.TryParse(textBox1.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out newid);
+                int.TryParse(textureIdTB.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out newid);
                 if (newid == -1)
-                    textBox1.Text = ((NUT_Texture)textureListBox.SelectedItem).HASHID.ToString("x");
+                    textureIdTB.Text = ((NUT_Texture)textureListBox.SelectedItem).HASHID.ToString("x");
                 if(oldid!=newid)
                 {
                     Edited = true;
@@ -452,7 +443,7 @@ namespace Smash_Forge
                     }
                     else
                     {
-                        textBox1.Text = (newid + 1).ToString("x") + "";
+                        textureIdTB.Text = (newid + 1).ToString("x") + "";
                     }
                 }
 
@@ -460,13 +451,6 @@ namespace Smash_Forge
                 textureListBox.DisplayMember = "test";
                 textureListBox.DisplayMember = "";
             }
-        }
-
-        private void NUTEditor_Resize(object sender, EventArgs e)
-        {
-            //int size = Math.Min(glControl1.Width, glControl1.Height);
-            //glControl1.Width = size;
-            //glControl1.Height = size;
         }
 
         private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
@@ -522,25 +506,16 @@ namespace Smash_Forge
                 Runtime.TextureContainers.Clear();
 
             }
-            else if (dialogResult == DialogResult.No)
-            {
-                //do nothing. Alternatively the else if statement can be removed.
-            }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            //if (dontAskBeforeRemovingNUTsToolStripMenuItem.Checked == false)
-            //{
-                DialogResult dialogResult = MessageBox.Show("Remove this NUT from the list?\nHint: Options -> Don't ask before removing NUTs", "Remove NUTs?", MessageBoxButtons.YesNo);
-                if (dialogResult == DialogResult.No)
-                {
-                    return;
-                }
-            //}
+            DialogResult dialogResult = MessageBox.Show("Remove this NUT from the list?\nHint: Options -> Don't ask before removing NUTs", "Remove NUTs?", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.No)
+            {
+                return;
+            }
             deleteSelectedNUTs();
-
-
         }
 
         //TODO: It doesn't work.
@@ -559,6 +534,7 @@ namespace Smash_Forge
             else
                 dontAskBeforeRemovingNUTsToolStripMenuItem.Checked = false;*/
         }
+
         /// <summary>
         /// Deletes all selected NUTs.
         /// Although the function can delete multiple NUTs, the rest of the application has not been updated to support selecting more than one at once...
@@ -679,7 +655,6 @@ namespace Smash_Forge
                 FillForm();
                 textureListBox.SelectedItem = tex;
                 glControl1.Invalidate();
-                //RenderTexture();
             }
             catch
             {
@@ -904,7 +879,7 @@ namespace Smash_Forge
 
         private void aspectRatioCB_CheckedChanged(object sender, EventArgs e)
         {
-            preserveAspectRatio = aspectRatioCB.Checked;
+            preserveAspectRatio = preserveAspectRatioCB.Checked;
             glControl1.Invalidate();
         }
 
@@ -921,7 +896,6 @@ namespace Smash_Forge
                 renderChannelA.PerformClick();
         }
 
-        private bool _loaded = false;
         private void NUTEditor_Load(object sender, EventArgs e)
         {
             _loaded = true;
@@ -930,10 +904,6 @@ namespace Smash_Forge
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
             RenderTexture();
-        }
-
-        private void listBox2_MouseClick(object sender, MouseEventArgs e)
-        {
         }
 
         private void listBox2_MouseDown(object sender, MouseEventArgs e)
@@ -946,8 +916,7 @@ namespace Smash_Forge
                     NUTMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
 
                 }
-                else
-                if (textureListBox.Items[itemindex] is NUT_Texture)
+                else if (textureListBox.Items[itemindex] is NUT_Texture)
                 {
                     textureListBox.SelectedIndex = itemindex;
                     TextureMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
@@ -957,7 +926,7 @@ namespace Smash_Forge
 
         private void previewBox_Resize(object sender, EventArgs e)
         {
-            int size = Math.Min(previewBox.Width, previewBox.Height);
+            int size = Math.Min(previewGroupBox.Width, previewGroupBox.Height);
             glControl1.Width = size;
             glControl1.Height = size;
         }
