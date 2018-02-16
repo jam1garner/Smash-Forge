@@ -1640,8 +1640,8 @@ namespace Smash_Forge
             DrawScreenTriangle(shader);          
         }
 
-        public static void DrawTexturedQuad(int texture, int width, int height, bool renderR = true, bool renderG = true, bool renderB = true, 
-            bool renderAlpha = false, bool alphaOverride = false, bool preserveAspectRatio = false, int currentMipLevel = 0)
+        public static void DrawTexturedQuad(int texture, int width, int height, bool renderR = true, bool renderG = true, bool renderB = true,
+            bool renderA = false, bool keepAspectRatio = false, int currentMipLevel = 0)
         {
             // Draws RGB and alpha channels of texture to screen quad.
             Shader shader = Runtime.shaders["Texture"];
@@ -1656,6 +1656,10 @@ namespace Smash_Forge
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
 
+            // Allow for alpha blending.
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+
             // Single texture uniform.
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, texture);
@@ -1664,15 +1668,17 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("image"), 0);
 
             // Channel toggle uniforms. 
-            ShaderTools.BoolToIntShaderUniform(shader, renderR,     "renderR");
-            ShaderTools.BoolToIntShaderUniform(shader, renderG,     "renderG");
-            ShaderTools.BoolToIntShaderUniform(shader, renderB,     "renderB");
-            ShaderTools.BoolToIntShaderUniform(shader, renderAlpha, "renderAlpha");
+            ShaderTools.BoolToIntShaderUniform(shader, renderR, "renderR");
+            ShaderTools.BoolToIntShaderUniform(shader, renderG, "renderG");
+            ShaderTools.BoolToIntShaderUniform(shader, renderB, "renderB");
+            ShaderTools.BoolToIntShaderUniform(shader, renderA, "renderAlpha");
+
+            bool alphaOverride = renderA && !renderR && !renderG && !renderB;
             ShaderTools.BoolToIntShaderUniform(shader, alphaOverride, "alphaOverride");
 
             // Perform aspect ratio calculations in shader. 
             // This only works properly if the viewport is square.
-            ShaderTools.BoolToIntShaderUniform(shader, preserveAspectRatio, "preserveAspectRatio");
+            ShaderTools.BoolToIntShaderUniform(shader, keepAspectRatio, "preserveAspectRatio");
             float aspectRatio = (float)width / (float)height;
             GL.Uniform1(shader.getAttribute("width"), width);
             GL.Uniform1(shader.getAttribute("height"), height);

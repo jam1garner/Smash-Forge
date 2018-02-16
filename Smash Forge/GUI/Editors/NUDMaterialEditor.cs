@@ -886,14 +886,14 @@ namespace Smash_Forge
             {
                 texAlphaGlControl.MakeCurrent();
                 GL.Viewport(texAlphaGlControl.ClientRectangle);
-                RenderTools.DrawTexturedQuad(texture, 1, 1, false, false, false, true, true, false);
+                RenderTools.DrawTexturedQuad(texture, 1, 1, false, false, false, true, false);
                 texAlphaGlControl.SwapBuffers();
             }
             else
             {
                 texRgbGlControl.MakeCurrent();
                 GL.Viewport(texRgbGlControl.ClientRectangle);
-                RenderTools.DrawTexturedQuad(texture, 1, 1, true, true, true, false, false, false);
+                RenderTools.DrawTexturedQuad(texture, 1, 1, true, true, true, false, false);
                 texRgbGlControl.SwapBuffers();
             }
 

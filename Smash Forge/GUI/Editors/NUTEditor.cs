@@ -29,7 +29,7 @@ namespace Smash_Forge
         private bool renderG = true;
         private bool renderB = true;
         private bool renderAlpha = true;
-        private bool preserveAspectRatio = false;
+        private bool keepAspectRatio = false;
         private int currentMipLevel = 0;
 
         private bool dontModify;
@@ -192,10 +192,9 @@ namespace Smash_Forge
             int height = ((NUT_Texture)textureListBox.SelectedItem).Height; 
 
             int texture = NUT.draw[((NUT_Texture)textureListBox.SelectedItem).HASHID];
-            bool alphaOverride = renderAlpha && !renderR && !renderG && !renderB;
 
-            RenderTools.DrawTexturedQuad(texture, width, height, renderR, renderG, renderB, renderAlpha, alphaOverride, 
-                preserveAspectRatio, currentMipLevel);
+            RenderTools.DrawTexturedQuad(texture, width, height, renderR, renderG, renderB, renderAlpha, keepAspectRatio,
+                currentMipLevel);
 
             glControl1.SwapBuffers();
 
@@ -363,7 +362,7 @@ namespace Smash_Forge
             return pix;
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void textureIdTB_TextChanged(object sender, EventArgs e)
         {
             if (textureListBox.SelectedItem != null && !textureIdTB.Text.Equals(""))
             {
@@ -383,11 +382,11 @@ namespace Smash_Forge
                     }
                     else
                     {
-                        textureIdTB.Text = (newid + 1).ToString("x") + "";
+                        textureIdTB.Text = (newid + 1).ToString("x");
                     }
                 }
 
-                // weird solution to refresh the listbox item
+                // Weird solution to refresh the listbox item
                 textureListBox.DisplayMember = "test";
                 textureListBox.DisplayMember = "";
             }
@@ -397,9 +396,9 @@ namespace Smash_Forge
         {
             using (var ofd = new OpenFileDialog())
             {
-                NUT_Texture tex = (NUT_Texture)(textureListBox.SelectedItem);
+                NUT_Texture texture = (NUT_Texture)(textureListBox.SelectedItem);
 
-                if (tex.type == PixelInternalFormat.Rgba)
+                if (texture.type == PixelInternalFormat.Rgba)
                     ofd.Filter = "Portable Networks Graphic (.png)|*.png|" +
                                  "All files(*.*)|*.*";
                 else
@@ -409,28 +408,28 @@ namespace Smash_Forge
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     Edited = true;
-                    NUT_Texture ntex = null;
+                    NUT_Texture newTexture = null;
                     if (ofd.FileName.EndsWith(".dds") && NUT != null)
                     {
                         DDS dds = new DDS(new FileData(ofd.FileName));
-                        ntex = dds.toNUT_Texture();
+                        newTexture = dds.toNUT_Texture();
                     }
 
                     if (ofd.FileName.EndsWith(".png") && NUT != null)
-                        ntex = fromPNG(ofd.FileName, 1);
+                        newTexture = fromPNG(ofd.FileName, 1);
                     
-                    tex.Height = ntex.Height;
-                    tex.Width = ntex.Width;
-                    tex.type = ntex.type;
-                    tex.mipmaps = ntex.mipmaps;
-                    tex.utype = ntex.utype;
+                    texture.Height = newTexture.Height;
+                    texture.Width = newTexture.Width;
+                    texture.type = newTexture.type;
+                    texture.mipmaps = newTexture.mipmaps;
+                    texture.utype = newTexture.utype;
 
-                    if (ntex == null)
+                    if (newTexture == null)
                         return;
                     
-                    GL.DeleteTexture(NUT.draw[tex.HASHID]);
-                    NUT.draw.Remove(tex.HASHID);
-                    NUT.draw.Add(tex.HASHID, NUT.loadImage(tex));
+                    GL.DeleteTexture(NUT.draw[texture.HASHID]);
+                    NUT.draw.Remove(texture.HASHID);
+                    NUT.draw.Add(texture.HASHID, NUT.loadImage(texture));
 
                     FillForm();
                 }
@@ -444,7 +443,6 @@ namespace Smash_Forge
             {
                 textureListBox.Items.Clear();
                 Runtime.TextureContainers.Clear();
-
             }
         }
 
@@ -621,6 +619,7 @@ namespace Smash_Forge
                             dds.Save(filename);
                         }
                     }
+
                     Process.Start("explorer.exe", f.SelectedPath);
                 }
             }
@@ -776,7 +775,7 @@ namespace Smash_Forge
 
         private void aspectRatioCB_CheckedChanged(object sender, EventArgs e)
         {
-            preserveAspectRatio = preserveAspectRatioCB.Checked;
+            keepAspectRatio = preserveAspectRatioCB.Checked;
             glControl1.Invalidate();
         }
 
@@ -836,7 +835,7 @@ namespace Smash_Forge
 
         private void preserveAspectRatioCB_CheckedChanged(object sender, EventArgs e)
         {
-            preserveAspectRatio = preserveAspectRatioCB.Checked;
+            keepAspectRatio = preserveAspectRatioCB.Checked;
             glControl1.Invalidate();
         }
     }

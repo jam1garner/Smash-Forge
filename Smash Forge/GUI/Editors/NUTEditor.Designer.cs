@@ -224,7 +224,7 @@
             this.textureIdTB.Name = "textureIdTB";
             this.textureIdTB.Size = new System.Drawing.Size(72, 20);
             this.textureIdTB.TabIndex = 3;
-            this.textureIdTB.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textureIdTB.TextChanged += new System.EventHandler(this.textureIdTB_TextChanged);
             // 
             // mipMapGroupBox
             // 
