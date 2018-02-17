@@ -1224,7 +1224,7 @@ namespace Smash_Forge
             Vector3 pos = p.useStartPos ? p.startPos : new Vector3(p.x,p.y,p.z);
 
             GL.Color3(Color.Red);
-            RenderTools.drawCubeWireframe(pos, 3);
+            RenderTools.DrawCube(pos, 3, true);
         }
 
         public static void DrawShape(object obj)
@@ -1257,9 +1257,9 @@ namespace Smash_Forge
             if(s.type == 1)
             {
                 if (useStartPos)
-                    RenderTools.drawCubeWireframe(sPos, 3);
+                    RenderTools.DrawCube(sPos, 3, true);
                 else
-                    RenderTools.drawCubeWireframe(new Vector3(s.x1, s.y1, 0), 3);
+                    RenderTools.DrawCube(new Vector3(s.x1, s.y1, 0), 3, true);
             }
             if(s.type == 3)
             {

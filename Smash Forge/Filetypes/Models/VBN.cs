@@ -103,7 +103,7 @@ namespace Smash_Forge
             else
                 GL.Color3(Color.GreenYellow);
 
-            RenderTools.drawCube(pos_c, .1f);
+            RenderTools.DrawCube(pos_c, .1f);
 
             // now draw line between parent 
             GL.Color3(Color.LightBlue);

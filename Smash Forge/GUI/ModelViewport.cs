@@ -1298,8 +1298,8 @@ namespace Smash_Forge
             {
                 Color color = Color.White;
 
-                RenderTools.drawRectangularPrismWireframe(new Vector3(light.positionX, light.positionY, light.positionZ),
-                    light.scaleX, light.scaleY, light.scaleZ, color);
+                RenderTools.DrawRectangularPrism(new Vector3(light.positionX, light.positionY, light.positionZ),
+                    light.scaleX, light.scaleY, light.scaleZ, true);
             }
         }
 

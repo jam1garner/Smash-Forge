@@ -244,13 +244,13 @@ namespace Smash_Forge
             GL.UseProgram(0);
 
             GL.Color4(Color.GhostWhite);
-            RenderTools.drawCubeWireframe(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            RenderTools.DrawCube(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3], true);
 
             GL.Color4(Color.OrangeRed);
             foreach (NUD.Mesh mesh in Nodes)
             {
                 if (mesh.Checked)
-                    RenderTools.drawCubeWireframe(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3]);
+                    RenderTools.DrawCube(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3], true);
             }
         }
 
@@ -2449,13 +2449,13 @@ namespace Smash_Forge
                 // rearrange faces
                 display = getDisplayFace().ToArray();
 
-                List<DisplayVertex> vert = new List<DisplayVertex>();
+                List<DisplayVertex> displayVertList = new List<DisplayVertex>();
 
                 if (faces.Count <= 3)
-                    return vert;
+                    return displayVertList;
                 foreach (Vertex v in vertices)
                 {
-                    DisplayVertex nv = new DisplayVertex()
+                    DisplayVertex displayVert = new DisplayVertex()
                     {
                         pos = v.pos,
                         nrm = v.nrm,
@@ -2475,11 +2475,11 @@ namespace Smash_Forge
                         v.weight.Count > 3 ? v.weight[3] : 0),
                     };
 
-                    vert.Add(nv);
+                    displayVertList.Add(displayVert);
                 }
-                //vertdata = vert.ToArray();
-                selectedVerts = new int[vert.Count];
-                return vert;
+
+                selectedVerts = new int[displayVertList.Count];
+                return displayVertList;
             }
 
             public void CalculateTangentBitangent()
@@ -2514,6 +2514,12 @@ namespace Smash_Forge
                     Vertex v = vertices[i];
                     Vector3 newTan = tanArray[i];
                     Vector3 newBitan = bitanArray[i];
+
+                    // Prevent black tangents or bitangents.
+                    if (Vector3.Dot(newTan, new Vector3(1)) == 0.0f)
+                        newTan = new Vector3(1).Normalized();
+                    if (Vector3.Dot(newBitan, new Vector3(1)) == 0.0f)
+                        newBitan = new Vector3(1).Normalized();
 
                     // The tangent and bitangent should be orthogonal to the normal. 
                     // Bitangents are not calculated with a cross product to prevent flipped shading  with mirrored normal maps.
@@ -2559,12 +2565,7 @@ namespace Smash_Forge
                     Vector3 t = new Vector3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
                         (s1 * z2 - s2 * z1) * r);
 
-                    // Prevent black tangents or bitangents.
-                    if (Vector3.Dot(s, new Vector3(1)) == 0.0f)
-                        s = new Vector3(1).Normalized();
-                    if (Vector3.Dot(t, new Vector3(1)) == 0.0f)
-                        t = new Vector3(1).Normalized();
-
+                    // Average tangents and bitangents.
                     tanArray[faces[i]] += s;
                     tanArray[faces[i + 1]] += s;
                     tanArray[faces[i + 2]] += s;

@@ -1214,9 +1214,15 @@ namespace Smash_Forge
             GL.End();
         }
 
-        public static void drawPyramid(Vector3 center, float scale)
+        public static void DrawPyramid(Vector3 center, float scale, bool useWireFrame)
         {
-            GL.Begin(PrimitiveType.Quads);
+            PrimitiveType primitiveType = PrimitiveType.Quads;
+            if (useWireFrame)
+            {
+                primitiveType = PrimitiveType.LineLoop;
+            }
+
+            GL.Begin(primitiveType);
 
             GL.Vertex3(center.X - scale, center.Y, 0);
             GL.Vertex3(center.X, center.Y - scale, 0);
@@ -1241,191 +1247,56 @@ namespace Smash_Forge
             GL.End();
         }
 
-        public static void drawPyramidWireframe(Vector3 center, float scale, float lineWidth)
+        public static void DrawCube(Vector3 center, float size, bool useWireFrame = false)
         {
-            //GL.Color4(Color.FromArgb(200, Color.Black));
-            GL.LineWidth(lineWidth);
-            GL.Begin(PrimitiveType.Lines);
-
-            GL.Vertex3(center.X - scale, center.Y, 0);
-            GL.Vertex3(center.X, center.Y - scale, 0);
-            GL.Vertex3(center.X + scale, center.Y, 0);
-            GL.Vertex3(center.X, center.Y - scale, 0);
-
-            GL.Vertex3(center.X, center.Y, -scale);
-            GL.Vertex3(center.X, center.Y - scale, 0);
-            GL.Vertex3(center.X, center.Y, scale);
-            GL.Vertex3(center.X, center.Y - scale, 0);
-
-            GL.Vertex3(center.X, center.Y, -scale);
-            GL.Vertex3(center.X + scale, center.Y, 0);
-            GL.Vertex3(center.X, center.Y, -scale);
-            GL.Vertex3(center.X - scale, center.Y, 0);
-
-            GL.Vertex3(center.X, center.Y, scale);
-            GL.Vertex3(center.X + scale, center.Y, 0);
-            GL.Vertex3(center.X, center.Y, scale);
-            GL.Vertex3(center.X - scale, center.Y, 0);
-
-            GL.End();
+            DrawRectangularPrism(center, size, size, size, useWireFrame);
         }
 
-
-        public static void drawCube(Vector3 center, float size)
+        public static void DrawRectangularPrism(Vector3 center, float sizeX, float sizeY, float sizeZ, bool useWireFrame = false)
         {
-            GL.Begin(PrimitiveType.Quads);
-            GL.Vertex3(center.X + size, center.Y + size, center.Z - size);
-            GL.Vertex3(center.X - size, center.Y + size, center.Z - size);
-            GL.Vertex3(center.X - size, center.Y + size, center.Z + size);
-            GL.Vertex3(center.X + size, center.Y + size, center.Z + size);
+            PrimitiveType primitiveType = PrimitiveType.Quads;
+            if (useWireFrame)
+            {
+                GL.LineWidth(2);
+                primitiveType = PrimitiveType.LineLoop;
+            }
 
-            GL.Vertex3(center.X + size, center.Y - size, center.Z + size);
-            GL.Vertex3(center.X - size, center.Y - size, center.Z + size);
-            GL.Vertex3(center.X - size, center.Y - size, center.Z - size);
-            GL.Vertex3(center.X + size, center.Y - size, center.Z - size);
-
-            GL.Vertex3(center.X + size, center.Y + size, center.Z + size);
-            GL.Vertex3(center.X - size, center.Y + size, center.Z + size);
-            GL.Vertex3(center.X - size, center.Y - size, center.Z + size);
-            GL.Vertex3(center.X + size, center.Y - size, center.Z + size);
-
-            GL.Vertex3(center.X + size, center.Y - size, center.Z - size);
-            GL.Vertex3(center.X - size, center.Y - size, center.Z - size);
-            GL.Vertex3(center.X - size, center.Y + size, center.Z - size);
-            GL.Vertex3(center.X + size, center.Y + size, center.Z - size);
-
-            GL.Vertex3(center.X - size, center.Y + size, center.Z + size);
-            GL.Vertex3(center.X - size, center.Y + size, center.Z - size);
-            GL.Vertex3(center.X - size, center.Y - size, center.Z - size);
-            GL.Vertex3(center.X - size, center.Y - size, center.Z + size);
-
-            GL.Vertex3(center.X + size, center.Y + size, center.Z - size);
-            GL.Vertex3(center.X + size, center.Y + size, center.Z + size);
-            GL.Vertex3(center.X + size, center.Y - size, center.Z + size);
-            GL.Vertex3(center.X + size, center.Y - size, center.Z - size);
-            GL.End();
-        }
-
-        public static void drawCubeWireframe(Vector3 center, float size)
-        {
-            //GL.Color3(Color.Red);
-            GL.Begin(PrimitiveType.LineLoop);
-            GL.Vertex3(center.X + size, center.Y + size, center.Z - size);
-            GL.Vertex3(center.X - size, center.Y + size, center.Z - size);
-            GL.Vertex3(center.X - size, center.Y + size, center.Z + size);
-            GL.Vertex3(center.X + size, center.Y + size, center.Z + size);
-            GL.End();
-
-            GL.Begin(PrimitiveType.LineLoop);
-            GL.Vertex3(center.X + size, center.Y - size, center.Z + size);
-            GL.Vertex3(center.X - size, center.Y - size, center.Z + size);
-            GL.Vertex3(center.X - size, center.Y - size, center.Z - size);
-            GL.Vertex3(center.X + size, center.Y - size, center.Z - size);
-            GL.End();
-
-            GL.Begin(PrimitiveType.LineLoop);
-            GL.Vertex3(center.X + size, center.Y + size, center.Z + size);
-            GL.Vertex3(center.X - size, center.Y + size, center.Z + size);
-            GL.Vertex3(center.X - size, center.Y - size, center.Z + size);
-            GL.Vertex3(center.X + size, center.Y - size, center.Z + size);
-            GL.End();
-
-            GL.Begin(PrimitiveType.LineLoop);
-            GL.Vertex3(center.X + size, center.Y - size, center.Z - size);
-            GL.Vertex3(center.X - size, center.Y - size, center.Z - size);
-            GL.Vertex3(center.X - size, center.Y + size, center.Z - size);
-            GL.Vertex3(center.X + size, center.Y + size, center.Z - size);
-            GL.End();
-
-            GL.Begin(PrimitiveType.LineLoop);
-            GL.Vertex3(center.X - size, center.Y + size, center.Z + size);
-            GL.Vertex3(center.X - size, center.Y + size, center.Z - size);
-            GL.Vertex3(center.X - size, center.Y - size, center.Z - size);
-            GL.Vertex3(center.X - size, center.Y - size, center.Z + size);
-            GL.End();
-
-            GL.Begin(PrimitiveType.LineLoop);
-            GL.Vertex3(center.X + size, center.Y + size, center.Z - size);
-            GL.Vertex3(center.X + size, center.Y + size, center.Z + size);
-            GL.Vertex3(center.X + size, center.Y - size, center.Z + size);
-            GL.Vertex3(center.X + size, center.Y - size, center.Z - size);
-            GL.End();
-        }
-
-        public static void drawRectangularPrism(Vector3 center, float sizeX, float sizeY, float sizeZ)
-        {
-            GL.Begin(PrimitiveType.Quads);
+            GL.Begin(primitiveType);
             GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z - sizeZ);
             GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z - sizeZ);
             GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z + sizeZ);
             GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z + sizeZ);
+            GL.End();
 
+            GL.Begin(primitiveType);
             GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z + sizeZ);
             GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z + sizeZ);
             GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z - sizeZ);
-            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z - sizeZ);
-
-            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z + sizeZ);
-            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z + sizeZ);
-            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z + sizeZ);
-            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z + sizeZ);
-
-            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z - sizeZ);
-            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z - sizeZ);
-            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z - sizeZ);
-            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z - sizeZ);
-
-            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z + sizeZ);
-            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z - sizeZ);
-            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z - sizeZ);
-            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z + sizeZ);
-
-            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z - sizeZ);
-            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z + sizeZ);
-            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z + sizeZ);
             GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z - sizeZ);
             GL.End();
-        }
 
-        public static void drawRectangularPrismWireframe(Vector3 center, float sizeX, float sizeY, float sizeZ, Color color)
-        {
-            GL.Color3(color);
-            GL.LineWidth(2);
-            GL.Begin(PrimitiveType.LineLoop);
-            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z - sizeZ);
-            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z - sizeZ);
-            GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z + sizeZ);
-            GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z + sizeZ);
-                                                    
-            GL.Begin(PrimitiveType.LineLoop);       
-            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z + sizeZ);
-            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z + sizeZ);
-            GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z - sizeZ);
-            GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z - sizeZ);
-            GL.End();                             
-       
-            GL.Begin(PrimitiveType.LineLoop);       
+            GL.Begin(primitiveType);
             GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z + sizeZ);
             GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z + sizeZ);
             GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z + sizeZ);
             GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z + sizeZ);
             GL.End();
-            
-            GL.Begin(PrimitiveType.LineLoop);       
+
+            GL.Begin(primitiveType);
             GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z - sizeZ);
             GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z - sizeZ);
             GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z - sizeZ);
             GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z - sizeZ);
             GL.End();
 
-            GL.Begin(PrimitiveType.LineLoop);
+            GL.Begin(primitiveType);
             GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z + sizeZ);
             GL.Vertex3(center.X - sizeX, center.Y + sizeY, center.Z - sizeZ);
             GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z - sizeZ);
             GL.Vertex3(center.X - sizeX, center.Y - sizeY, center.Z + sizeZ);
             GL.End();
 
-            GL.Begin(PrimitiveType.LineLoop);
+            GL.Begin(primitiveType);
             GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z - sizeZ);
             GL.Vertex3(center.X + sizeX, center.Y + sizeY, center.Z + sizeZ);
             GL.Vertex3(center.X + sizeX, center.Y - sizeY, center.Z + sizeZ);
@@ -1626,16 +1497,16 @@ namespace Smash_Forge
             }
         }
 
-        public static void DrawQuadGradient(float topR, float topG, float topB, float bottomR, float bottomG, float bottomB)
+        public static void DrawQuadGradient(Vector3 topColor, Vector3 bottomColor)
         {
             // draw RGB and alpha channels of texture to screen quad
             Shader shader = Runtime.shaders["Gradient"];
             GL.UseProgram(shader.programID);
 
-            GL.ClearColor(Color.White);
+            Setup2DRendering();
 
-            GL.Uniform3(shader.getAttribute("topColor"), topR, topG, topB);
-            GL.Uniform3(shader.getAttribute("bottomColor"), bottomR, bottomG, bottomB);
+            GL.Uniform3(shader.getAttribute("topColor"), topColor);
+            GL.Uniform3(shader.getAttribute("bottomColor"), bottomColor);
 
             DrawScreenTriangle(shader);          
         }
@@ -1647,18 +1518,7 @@ namespace Smash_Forge
             Shader shader = Runtime.shaders["Texture"];
             GL.UseProgram(shader.programID);
 
-            // Setup OpenGL settings for basic 2D rendering.
-            GL.ClearColor(Color.White);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
-
-            // Allow for alpha blending.
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            Setup2DRendering();
 
             // Single texture uniform.
             GL.ActiveTexture(TextureUnit.Texture0);
@@ -1688,6 +1548,22 @@ namespace Smash_Forge
 
             // Draw full screen "quad" (big triangle)
             DrawScreenTriangle(shader);
+        }
+
+        private static void Setup2DRendering()
+        {
+            // Setup OpenGL settings for basic 2D rendering.
+            GL.ClearColor(Color.White);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+
+            // Allow for alpha blending.
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
         }
 
         private static void DrawScreenTriangle(Shader shader)
