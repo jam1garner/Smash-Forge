@@ -19,7 +19,7 @@ namespace Smash_Forge
         public MeshMover()
         {
             InitializeComponent();
-            
+
             posIncBox.Text = "0.5";
             rotIncBox.Text = "90";
             scaIncBox.Text = "0.5";
@@ -68,8 +68,10 @@ namespace Smash_Forge
                     }
                     
                 }
-                p.CreateDisplayVertices();
             }
+
+            NUD n = (NUD)mesh.Parent;
+            n.UpdateVertexDataAndSort();
         }
 
         private void posXTB_ValueChanged(object sender, EventArgs e)

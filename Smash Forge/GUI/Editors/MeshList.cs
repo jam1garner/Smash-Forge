@@ -445,27 +445,29 @@ namespace Smash_Forge
 
         private void merge(TreeNode n)
         {
-            ModelContainer org = (ModelContainer)treeView1.SelectedNode;
-            ModelContainer nud = (ModelContainer)n;
+            ModelContainer originalModelContainer = (ModelContainer)treeView1.SelectedNode;
+            ModelContainer newModelContainer = (ModelContainer)n;
             
-            int count = org.NUD.Nodes.Count;
+            // Remove nodes from original and add to the new model container. 
+            int count = originalModelContainer.NUD.Nodes.Count;
             for (int i = 0; i < count; i++)
             {
-                TreeNode node = org.NUD.Nodes[0];
-                org.NUD.Nodes.Remove(node);
-                nud.NUD.Nodes.Add(node);
-            }
-            org.NUD.Nodes.Clear();
+                TreeNode node = originalModelContainer.NUD.Nodes[0];
+                originalModelContainer.NUD.Nodes.Remove(node);
 
-            org.NUD.Destroy();
-            nud.NUD.UpdateVertexDataAndSort();
+                // TODO: Account for merging single bound meshes. 
+
+                newModelContainer.NUD.Nodes.Add(node);
+            }
+
+            // Remove the original nodes.
+            originalModelContainer.NUD.Nodes.Clear();
+            originalModelContainer.NUD.Destroy();
+
+            newModelContainer.NUD.UpdateVertexDataAndSort();
 
             treeView1.Nodes.Remove(treeView1.SelectedNode);
             treeView1.SelectedNode = n;
-
-            // remove from model containers too
-            //ModelContainer torem = org;
-            //Runtime.ModelContainers.Remove(torem);
 
             refresh();
         }
