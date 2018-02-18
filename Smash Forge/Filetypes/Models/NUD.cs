@@ -2252,6 +2252,67 @@ namespace Smash_Forge
                 return material;
             }
 
+            public void CopyTextureIds(Material other)
+            {
+                // Copies all the texture IDs from the source material to the current material. 
+                // This is useful for preserving Tex IDs when using a preset or changing flags. 
+
+                for (int i = 0; i < textures.Count; i++)
+                {
+                    if (hasDiffuse)
+                    {
+                        textures[i].hash = other.textures[i].hash;
+                        continue;
+                    }
+                    if (hasDiffuse2)
+                    {
+                        textures[i].hash = other.textures[i].hash;
+                        continue;
+                    }
+                    if (hasDiffuse3)
+                    {
+                        textures[i].hash = other.textures[i].hash;
+                        continue;
+                    }
+                    if (hasStageMap)
+                    {
+                        // Don't preserve stageMap ID.
+                        continue;
+                    }
+                    if (hasCubeMap)
+                    {
+                        textures[i].hash = other.textures[i].hash;
+                        continue;
+                    }
+                    if (hasSphereMap)
+                    {
+                        textures[i].hash = other.textures[i].hash;
+                        continue;
+                    }
+                    if (hasAoMap)
+                    {
+                        textures[i].hash = other.textures[i].hash;
+                        continue;
+                    }
+                    if (hasNormalMap)
+                    {
+                        textures[i].hash = other.textures[i].hash;
+                        continue;
+                    }
+                    if (hasRamp)
+                    {
+                        textures[i].hash = other.textures[i].hash;
+                        continue;
+                    }
+                    if (hasDummyRamp)
+                    {
+                        // Dummy ramp should almost always be 0x10080000.
+                        continue;
+                    }
+                }
+            }
+
+
             public void MakeMetal(int newDifTexId, int newCubeTexId, float[] minGain, float[] refColor, float[] fresParams, float[] fresColor, bool preserveDiffuse = false, bool preserveNrmMap = true)
             {
                 float materialHash = -1f;
