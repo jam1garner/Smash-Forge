@@ -138,6 +138,9 @@ namespace Smash_Forge
         public HurtboxList HurtboxList;
         public VariableList VariableViewer;
 
+        // Used in ModelContainer for direct UV time animation.
+        public static Stopwatch directUVTimeStopWatch = new Stopwatch();
+
         //LVD
         public LVD LVD
         {
@@ -540,6 +543,11 @@ namespace Smash_Forge
         {
             isPlaying = !isPlaying;
             playButton.Text = isPlaying ? "Pause" : "Play";
+
+            if (isPlaying)
+                directUVTimeStopWatch.Start();
+            else
+                directUVTimeStopWatch.Stop();
         }
 
         #endregion

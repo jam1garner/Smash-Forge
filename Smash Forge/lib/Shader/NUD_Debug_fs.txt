@@ -220,33 +220,6 @@ vec3 CalcBumpedNormal(vec3 inputNormal)
     return NewNormal;
 }
 
-vec3 ScreenBlend(vec3 base, vec3 top)
-{
-    return vec3(1) - (vec3(1) - base) * (vec3(1) - top);
-}
-
-vec3 RampColor(vec3 color){
-	if(hasRamp == 1)
-	{
-		float rampInputLuminance = Luminance(color);
-		rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
-		return texture(ramp, vec2(1-rampInputLuminance, 0.50)).rgb;
-	}
-	else
-		return vec3(0);
-}
-
-vec3 DummyRampColor(vec3 color){
-	if(hasDummyRamp == 1)
-	{
-		float rampInputLuminance = Luminance(color);
-		rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
-		return texture(dummyRamp, vec2(1-rampInputLuminance, 0.50)).rgb;
-	}
-	else
-		return vec3(1);
-}
-
 vec3 CalculateLighting(vec3 N, float halfLambert)
 {
     vec3 lighting = vec3(1);
@@ -320,28 +293,9 @@ void main()
     vec2 offsetTexCoord = texCoord + (textureOffset * offsetIntensity);
 
     // calculate diffuse map blending to use in Shaded and Diffuse Maps render modes
-    vec4 diffuse1 = vec4(0);
-    vec4 diffuse2 = vec4(0);
+    vec4 diffuse1 = texture(dif, texCoord);
+    vec4 diffuse2 = texture(dif2, texCoord2);
     vec4 diffuse3 = texture(dif3, texCoord3);
-    vec4 diffuseMapTotal = vec4(0);
-    if (hasDif == 1) // 1st diffuse texture
-    {
-        diffuse1 = texture(dif, offsetTexCoord);
-        diffuseMapTotal = diffuse1;
-
-        if (hasDif2 == 1 && hasDif3 != 1) // 2nd diffuse texture. doesnt work properly with stages
-        {
-            diffuse2 = texture(dif2, texCoord2);
-            diffuseMapTotal = mix(diffuse2, diffuse1, diffuse1.a);
-            diffuseMapTotal.a = 1.0;
-
-            if (hasDif3 == 1)
-            {
-                diffuse3 = texture(dif3, texCoord3);
-                diffuseMapTotal = mix(diffuse3, diffuseMapTotal, vertexColor.a);
-            }
-        }
-    }
 
     vec3 aoBlend = vec3(1);
     float aoMap = texture(normalMap, texCoord).a;
@@ -353,11 +307,20 @@ void main()
 	aoBlend.rgb = HSV2RGB(vec3(c1.x, c2.y, c1.z));
 
     vec4 resultingColor = vec4(1);
+
+    // Sets which diffuse texture or UV coords to display based on UV channel.
+    vec4 displayDiffuse = diffuse1;
     vec2 displayTexCoord = texCoord;
     if (uvChannel == 2)
+    {
         displayTexCoord = texCoord2;
+        displayDiffuse = diffuse2;
+    }
     else if (uvChannel == 3)
+    {
         displayTexCoord = texCoord3;
+        displayDiffuse = diffuse3;
+    }
 
     // render modes
     if (renderType == 1) // normals color
@@ -368,7 +331,9 @@ void main()
         resultingColor.rgb = CalculateFog(resultingColor.rgb);
     }
     else if (renderType == 3) // diffuse map
-        resultingColor.rgba = diffuseMapTotal.rgba;
+    {
+        resultingColor.rgba = displayDiffuse;
+    }
     else if (renderType == 4) // normal map
         resultingColor.rgb = texture(normalMap, normaltexCoord).rgb;
     else if (renderType == 5) // vertexColor
@@ -417,25 +382,15 @@ void main()
     else if (renderType == 12)
         resultingColor.rgb = boneWeightsColored;
 
-    // toggle rendering of individual color channels
-    if (renderR == 1)
-    {
-        fragColor.r = resultingColor.r;
-        if (renderB == 0 && renderG == 0)
-            fragColor.rgb = resultingColor.rrr;
-    }
-    if (renderG == 1)
-    {
-        fragColor.g = resultingColor.g;
-        if (renderB == 0 && renderR == 0)
-            fragColor.rgb = resultingColor.ggg;
-    }
-    if (renderB == 1)
-    {
-        fragColor.b = resultingColor.b;
-        if (renderG == 0 && renderR == 0)
-            fragColor.rgb = resultingColor.bbb;
-    }
+    // Toggles rendering of individual color channels for all render modes.
+    fragColor.rgb = resultingColor.rgb * vec3(renderR, renderG, renderB);
+    if (renderR == 1 && renderG == 0 && renderB == 0)
+        fragColor.rgb = resultingColor.rrr;
+    else if (renderG == 1 && renderR == 0 && renderB == 0)
+        fragColor.rgb = resultingColor.ggg;
+    else if (renderB == 1 && renderR == 0 && renderG == 0)
+        fragColor.rgb = resultingColor.bbb;
+
     if (renderAlpha == 1)
     {
         fragColor.a = resultingColor.a;

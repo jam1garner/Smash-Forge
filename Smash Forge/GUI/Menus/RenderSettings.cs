@@ -224,6 +224,10 @@ namespace Smash_Forge.GUI
                     radioButton1.Visible = true;
                     radioButton2.Visible = true;
                     radioButton3.Visible = true;
+
+                    radioButton1.Text = "UV1";
+                    radioButton2.Text = "UV2";
+                    radioButton3.Text = "UV3";
                     break;
                 case Runtime.RenderTypes.UVCoords:
                     debug1CB.Visible = false;
@@ -232,6 +236,22 @@ namespace Smash_Forge.GUI
                     radioButton1.Visible = true;
                     radioButton2.Visible = true;
                     radioButton3.Visible = true;
+
+                    radioButton1.Text = "UV1";
+                    radioButton2.Text = "UV2";
+                    radioButton3.Text = "UV3";
+                    break;
+                case Runtime.RenderTypes.DiffuseMap:
+                    debug1CB.Visible = false;
+                    debug2CB.Visible = false;
+
+                    radioButton1.Visible = true;
+                    radioButton2.Visible = true;
+                    radioButton3.Visible = true;
+
+                    radioButton1.Text = "UV1";
+                    radioButton2.Text = "UV2";
+                    radioButton3.Text = "UV3";
                     break;
                 case Runtime.RenderTypes.AmbientOcclusion:
                     debug1CB.Text = "aoMinGain";
