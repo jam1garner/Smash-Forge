@@ -390,7 +390,7 @@ namespace Smash_Forge
 
             GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref modelview);
             GL.ActiveTexture(TextureUnit.Texture10);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.uvTestPattern);
             GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
 
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);

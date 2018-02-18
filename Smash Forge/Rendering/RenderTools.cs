@@ -17,8 +17,8 @@ namespace Smash_Forge
     {
         public static int defaultTex = -1, floorTexture;
         public static int cubeMapHigh, cubeMapLow;
-        public static int defaultRamp;
-        public static int UVTestPattern;
+        public static int dummyRamp;
+        public static int uvTestPattern;
         public static int boneWeightGradient;
         public static int boneWeightGradient2;
 
@@ -28,12 +28,15 @@ namespace Smash_Forge
         {
             if(defaultTex == -1)
             {
-                cubeMapHigh = LoadCubeMap(Smash_Forge.Properties.Resources._10102000, TextureUnit.Texture12);
-                cubeMapLow = LoadCubeMap(Smash_Forge.Properties.Resources._10101000, TextureUnit.Texture13);
-                defaultRamp = NUT.loadImage(Smash_Forge.Properties.Resources._10080000);
-                UVTestPattern = NUT.loadImage(Smash_Forge.Properties.Resources.UVPattern);
-                boneWeightGradient = NUT.loadImage(Smash_Forge.Properties.Resources.boneWeightGradient);
-                boneWeightGradient2 = NUT.loadImage(Smash_Forge.Properties.Resources.boneWeightGradient2);
+                // Dummy textures. 
+                cubeMapHigh = LoadCubeMap(Properties.Resources._10102000, TextureUnit.Texture12);
+                cubeMapLow = LoadCubeMap(Properties.Resources._10101000, TextureUnit.Texture13);
+                dummyRamp = NUT.loadImage(Properties.Resources._10080000);
+
+                // Helpful textures. 
+                uvTestPattern = NUT.loadImage(Properties.Resources.UVPattern);
+                boneWeightGradient = NUT.loadImage(Properties.Resources.boneWeightGradient);
+                boneWeightGradient2 = NUT.loadImage(Properties.Resources.boneWeightGradient2);
 
                 defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
 
@@ -1744,7 +1747,6 @@ void main()
     gl_FragColor = textureCube(skycube, uv);
 }";
         
-
         public static void RenderCubeMap(Matrix4 view)
         {
             Shader shader = Runtime.shaders["SkyBox"];

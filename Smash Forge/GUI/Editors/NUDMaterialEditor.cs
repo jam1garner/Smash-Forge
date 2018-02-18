@@ -110,6 +110,7 @@ namespace Smash_Forge
         public NUDMaterialEditor()
         {
             InitializeComponent();
+            RenderTools.Setup();
         }
 
         public NUDMaterialEditor(NUD.Polygon p)
@@ -120,6 +121,9 @@ namespace Smash_Forge
             Init();
             FillForm();
             matsComboBox.SelectedIndex = 0;
+
+            // The dummy textures will be used later. 
+            RenderTools.Setup();
         }
 
         public void InitPropList()
@@ -867,33 +871,41 @@ namespace Smash_Forge
                 return;
 
             // Get the selected NUT texture.
-            NUT_Texture tex = null;
-            int texture = 0;
+            NUT_Texture nutTexture = null;
+            int displayTexture = 0;
             if (materials[currentMatIndex].entries.ContainsKey("NU_materialHash") && texturesListView.SelectedIndices.Count > 0)
             {
                 int hash = materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].hash;
 
+                // Display dummy textures from resources. 
+                if (hash == 0x10080000)
+                    displayTexture = RenderTools.dummyRamp;
+
                 foreach (NUT n in Runtime.TextureContainers)
+                {
                     if (n.draw.ContainsKey(hash))
                     {
-                        n.getTextureByID(hash, out tex);
-                        texture = n.draw[hash];
+                        n.getTextureByID(hash, out nutTexture);
+                        displayTexture = n.draw[hash];
                         break;
                     }
+                }
             }
+
+
 
             if (justRenderAlpha)
             {
                 texAlphaGlControl.MakeCurrent();
                 GL.Viewport(texAlphaGlControl.ClientRectangle);
-                RenderTools.DrawTexturedQuad(texture, 1, 1, false, false, false, true, false);
+                RenderTools.DrawTexturedQuad(displayTexture, 1, 1, false, false, false, true);
                 texAlphaGlControl.SwapBuffers();
             }
             else
             {
                 texRgbGlControl.MakeCurrent();
                 GL.Viewport(texRgbGlControl.ClientRectangle);
-                RenderTools.DrawTexturedQuad(texture, 1, 1, true, true, true, false, false);
+                RenderTools.DrawTexturedQuad(displayTexture, 1, 1);
                 texRgbGlControl.SwapBuffers();
             }
 

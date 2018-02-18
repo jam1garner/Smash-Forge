@@ -762,7 +762,7 @@ namespace Smash_Forge
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
 
             GL.ActiveTexture(TextureUnit.Texture10);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.uvTestPattern);
             GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
 
             GL.ActiveTexture(TextureUnit.Texture11);
@@ -999,7 +999,7 @@ namespace Smash_Forge
             if (hash == (int)DummyTextures.DummyRamp)
             {
                 GL.ActiveTexture(TextureUnit.Texture20 + loc);
-                GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultRamp);
+                GL.BindTexture(TextureTarget.Texture2D, RenderTools.dummyRamp);
                 return 20 + loc;
             }
             GL.ActiveTexture(TextureUnit.Texture3 + loc);
