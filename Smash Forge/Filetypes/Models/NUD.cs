@@ -2555,7 +2555,7 @@ namespace Smash_Forge
                 Vector3[] bitanArray = new Vector3[vertices.Count];
 
                 CalculateTanBitanArrays(f, tanArray, bitanArray);
-                ApplyTanBitan(tanArray, bitanArray);
+                ApplyTanBitanArray(tanArray, bitanArray);
             }
 
             public void SetVertexColor(Vector4 intColor)
@@ -2568,7 +2568,7 @@ namespace Smash_Forge
             }
 
 
-            private void ApplyTanBitan(Vector3[] tanArray, Vector3[] bitanArray)
+            private void ApplyTanBitanArray(Vector3[] tanArray, Vector3[] bitanArray)
             {
                 for (int i = 0; i < vertices.Count; i++)
                 {
@@ -2576,18 +2576,10 @@ namespace Smash_Forge
                     Vector3 newTan = tanArray[i];
                     Vector3 newBitan = bitanArray[i];
 
-                    // Prevent black tangents or bitangents.
-                    if (Vector3.Dot(newTan, new Vector3(1)) == 0.0f)
-                        newTan = new Vector3(1).Normalized();
-                    if (Vector3.Dot(newBitan, new Vector3(1)) == 0.0f)
-                        newBitan = new Vector3(1).Normalized();
-
                     // The tangent and bitangent should be orthogonal to the normal. 
                     // Bitangents are not calculated with a cross product to prevent flipped shading  with mirrored normal maps.
-                    // Orthogonalizing the bitangent to the tangent removes some artifacts. 
                     v.tan = new Vector4(Vector3.Normalize(newTan - v.nrm * Vector3.Dot(v.nrm, newTan)), 1);
                     v.bitan = new Vector4(Vector3.Normalize(newBitan - v.nrm * Vector3.Dot(v.nrm, newBitan)), 1);
-                    v.bitan = new Vector4(Vector3.Normalize(v.bitan.Xyz - v.tan.Xyz * Vector3.Dot(v.bitan.Xyz, v.tan.Xyz)), 1);
                     v.bitan *= -1;
                 }
             }
@@ -2615,16 +2607,33 @@ namespace Smash_Forge
                     float t1 = v2.uv[0].Y - v1.uv[0].Y;
                     float t2 = v3.uv[0].Y - v1.uv[0].Y;
 
-                    // Prevent incorrect tangent calculation from division by 0.
-                    float r = 1.0f;
                     float div = (s1 * t2 - s2 * t1);
-                    if (div != 0)
-                        r = 1.0f / div;
+                    float r = 1.0f / div;
 
-                    Vector3 s = new Vector3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
-                        (t2 * z1 - t1 * z2) * r);
-                    Vector3 t = new Vector3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
-                        (s1 * z2 - s2 * z1) * r);
+                    // Fix +/- infinity from division by 0.
+                    if (r == float.PositiveInfinity || r == float.NegativeInfinity)
+                        r = 1.0f;
+
+                    float sX = t2 * x1 - t1 * x2;
+                    float sY = t2 * y1 - t1 * y2;
+                    float sZ = t2 * z1 - t1 * z2;
+                    Vector3 s = new Vector3(sX, sY, sZ) * r;
+
+                    float tX = s1 * x2 - s2 * x1;
+                    float tY = s1 * y2 - s2 * y1;
+                    float tZ = s1 * z2 - s2 * z1;
+                    Vector3 t = new Vector3(tX, tY, tZ) * r;
+
+                    // Prevents black tangents or bitangents due to having vertices with the same UV coordinates. 
+                    float delta = 0.00075f;
+                    bool sameU = (Math.Abs(v1.uv[0].X - v2.uv[0].X) < delta) && (Math.Abs(v2.uv[0].X - v3.uv[0].X) < delta);
+                    bool sameV = (Math.Abs(v1.uv[0].Y - v2.uv[0].Y) < delta) && (Math.Abs(v2.uv[0].Y - v3.uv[0].Y) < delta);
+                    if (sameU || sameV)
+                    {
+                        // Let's pick some arbitrary tangent vectors.
+                        s = new Vector3(1,0,0);
+                        t = new Vector3(0,1,0);
+                    }
 
                     // Average tangents and bitangents.
                     tanArray[faces[i]] += s;
@@ -2640,9 +2649,6 @@ namespace Smash_Forge
             public void SmoothNormals()
             {
                 Vector3[] normals = new Vector3[vertices.Count];
-
-                for(int i = 0; i < normals.Length; i++)
-                    normals[i] = new Vector3(0, 0, 0);
 
                 List<int> f = getDisplayFace();
 
@@ -2661,15 +2667,21 @@ namespace Smash_Forge
                 for (int i = 0; i < normals.Length; i++)
                     vertices[i].nrm = normals[i].Normalized();
 
-                foreach (Vertex v in vertices)
+                // Compare each vertex with all the remaining vertices. This might skip some.
+                for (int i = 0; i < vertices.Count; i++)
                 {
-                    foreach (Vertex v2 in vertices)
+                    Vertex v = vertices[i];
+
+                    for (int j = i + 1; j < vertices.Count; j++)
                     {
-                        if (v == v2) continue;
+                        Vertex v2 = vertices[j];
+
+                        if (v == v2)
+                            continue;
                         float dis = (float)Math.Sqrt(Math.Pow(v.pos.X - v2.pos.X, 2) + Math.Pow(v.pos.Y - v2.pos.Y, 2) + Math.Pow(v.pos.Z - v2.pos.Z, 2));
                         if (dis <= 0f) // Extra smooth
                         {
-                            Vector3 nn = ((v2.nrm + v.nrm)/2).Normalized();
+                            Vector3 nn = ((v2.nrm + v.nrm) / 2).Normalized();
                             v.nrm = nn;
                             v2.nrm = nn;
                         }
@@ -2693,9 +2705,9 @@ namespace Smash_Forge
                     Vertex v3 = vertices[f[i + 2]];
                     Vector3 nrm = CalculateNormal(v1, v2, v3);
 
-                    normals[f[i + 0]] += nrm;
-                    normals[f[i + 1]] += nrm;
-                    normals[f[i + 2]] += nrm;
+                    normals[f[i + 0]] += nrm * (nrm.Length / 2);
+                    normals[f[i + 1]] += nrm * (nrm.Length / 2);
+                    normals[f[i + 2]] += nrm * (nrm.Length / 2);
                 }
 
                 for (int i = 0; i < normals.Length; i++)
@@ -2707,7 +2719,8 @@ namespace Smash_Forge
                 Vector3 U = v2.pos - v1.pos;
                 Vector3 V = v3.pos - v1.pos;
 
-                return Vector3.Cross(U, V).Normalized();
+                // Don't normalize here, so surface area can be calculated. 
+                return Vector3.Cross(U, V);
             }
 
             public void AddDefaultMaterial()
@@ -2981,7 +2994,7 @@ namespace Smash_Forge
             // Remove Duplicates
             MergePoly();
             MergeDuplicateVertices();
-            OptimizeSingleBind(true);
+            OptimizeSingleBind(false);
         }
 
         private void MergeDuplicateVertices()
