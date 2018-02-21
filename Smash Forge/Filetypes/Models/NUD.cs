@@ -2556,31 +2556,6 @@ namespace Smash_Forge
 
                 CalculateTanBitanArrays(f, tanArray, bitanArray);
                 ApplyTanBitanArray(tanArray, bitanArray);
-                //FixBlackTanBitanForTris(f);
-            }
-
-            private void FixBlackTanBitanForTris(List<int> f)
-            {
-                for (int i = 0; i < displayFaceSize; i += 3)
-                {
-                    Vertex v1 = vertices[f[i]];
-                    Vertex v2 = vertices[f[i + 1]];
-                    Vertex v3 = vertices[f[i + 2]];
-
-                    // If all the tangents and bitangents are black for a face, then use a default value. 
-                    // This fixes black shading artifacts when using normal maps. 
-                    float bias = 0.001f;
-
-                    // Fix tangents.
-                    v1.tan.Xyz = Vector3.Normalize(v1.tan.Xyz + new Vector3(bias));
-                    v2.tan.Xyz = Vector3.Normalize(v2.tan.Xyz + new Vector3(bias));
-                    v3.tan.Xyz = Vector3.Normalize(v3.tan.Xyz + new Vector3(bias));
-
-                    // Fix bitangents.
-                    v1.bitan.Xyz = Vector3.Normalize(v1.bitan.Xyz + new Vector3(bias));
-                    v2.bitan.Xyz = Vector3.Normalize(v2.bitan.Xyz + new Vector3(bias));
-                    v3.bitan.Xyz = Vector3.Normalize(v3.bitan.Xyz + new Vector3(bias));
-                }
             }
 
             public void SetVertexColor(Vector4 intColor)
@@ -2603,10 +2578,8 @@ namespace Smash_Forge
 
                     // The tangent and bitangent should be orthogonal to the normal. 
                     // Bitangents are not calculated with a cross product to prevent flipped shading  with mirrored normal maps.
-                    // Orthogonalizing the bitangent to the tangent removes some artifacts. 
                     v.tan = new Vector4(Vector3.Normalize(newTan - v.nrm * Vector3.Dot(v.nrm, newTan)), 1);
                     v.bitan = new Vector4(Vector3.Normalize(newBitan - v.nrm * Vector3.Dot(v.nrm, newBitan)), 1);
-                    v.bitan = new Vector4(Vector3.Normalize(v.bitan.Xyz - v.tan.Xyz * Vector3.Dot(v.bitan.Xyz, v.tan.Xyz)), 1);
                     v.bitan *= -1;
                 }
             }
@@ -2634,22 +2607,33 @@ namespace Smash_Forge
                     float t1 = v2.uv[0].Y - v1.uv[0].Y;
                     float t2 = v3.uv[0].Y - v1.uv[0].Y;
 
-                    // Prevent incorrect tangent calculation from division by 0.
                     float div = (s1 * t2 - s2 * t1);
                     float r = 1.0f / div;
 
-                    Vector3 s = new Vector3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
-                        (t2 * z1 - t1 * z2) * r);
-                    Vector3 t = new Vector3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
-                        (s1 * z2 - s2 * z1) * r);
-
+                    // Fix +/- infinity from division by 0.
                     if (r == float.PositiveInfinity || r == float.NegativeInfinity)
-                    {
-                        Debug.WriteLine(s1 + ", " + s2 + ", " + t1 + ", " + t2);
-                        s = new Vector3(1);
-                        t = new Vector3(1);
-                    }
+                        r = 1.0f;
 
+                    float sX = t2 * x1 - t1 * x2;
+                    float sY = t2 * y1 - t1 * y2;
+                    float sZ = t2 * z1 - t1 * z2;
+                    Vector3 s = new Vector3(sX, sY, sZ) * r;
+
+                    float tX = s1 * x2 - s2 * x1;
+                    float tY = s1 * y2 - s2 * y1;
+                    float tZ = s1 * z2 - s2 * z1;
+                    Vector3 t = new Vector3(tX, tY, tZ) * r;
+
+                    // Prevents black tangents or bitangents due to having vertices with the same UV coordinates. 
+                    float delta = 0.00075f;
+                    bool sameU = (Math.Abs(v1.uv[0].X - v2.uv[0].X) < delta) && (Math.Abs(v2.uv[0].X - v3.uv[0].X) < delta);
+                    bool sameV = (Math.Abs(v1.uv[0].Y - v2.uv[0].Y) < delta) && (Math.Abs(v2.uv[0].Y - v3.uv[0].Y) < delta);
+                    if (sameU || sameV)
+                    {
+                        // Let's pick some arbitrary tangent vectors.
+                        s = new Vector3(1,0,0);
+                        t = new Vector3(0,1,0);
+                    }
 
                     // Average tangents and bitangents.
                     tanArray[faces[i]] += s;
