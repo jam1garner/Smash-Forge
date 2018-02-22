@@ -254,6 +254,11 @@ namespace Smash_Forge
             
         }
 
+        public Camera GetCamera()
+        {
+            return camera;
+        }
+
         public override void Save()
         {
             if (FilePath.Equals(""))

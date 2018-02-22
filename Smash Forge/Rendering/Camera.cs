@@ -18,7 +18,7 @@ namespace Smash_Forge
         private int renderWidth = 1;
         private int renderHeight = 1;
         private float farClipPlane = 10000;
-        public float fov = 0.524f;
+        public float fovRadians = 0.524f;
 
         private Matrix4 modelViewMatrix = Matrix4.Identity;
         private Matrix4 mvpMatrix = Matrix4.Identity;
@@ -38,7 +38,7 @@ namespace Smash_Forge
         public float mouseYLast = 0;
         public float mouseXLast = 0;
 
-        public float RenderDepth = 5000;
+        public float renderDepth = 5000;
 
         public Camera()
         {
@@ -187,7 +187,7 @@ namespace Smash_Forge
         {
             translation = Matrix4.CreateTranslation(position.X, -position.Y, position.Z);
             rotation = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation);
-            perspFov = Matrix4.CreatePerspectiveFieldOfView(fov, renderWidth / (float)renderHeight, 1.0f, RenderDepth);
+            perspFov = Matrix4.CreatePerspectiveFieldOfView(fovRadians, renderWidth / (float)renderHeight, 1.0f, renderDepth);
 
             modelViewMatrix = rotation * translation;
             mvpMatrix = modelViewMatrix * perspFov;
@@ -202,14 +202,21 @@ namespace Smash_Forge
             this.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
         }
 
-        public static void SetCameraFromSTPRM(ParamFile stprm)
+        public void SetCameraFromStprm(ParamFile stprm)
         {
-            if (stprm != null)
-            {
-                float fov = (float)RenderTools.GetValueFromParamFile(stprm, 0, 0, 6);
-                Runtime.fov = fov * ((float)Math.PI / 180.0f);
-                Runtime.renderDepth = (float)RenderTools.GetValueFromParamFile(stprm, 0, 0, 77);
-            }
+            if (stprm == null)
+                return;
+            
+            float newFov = (float)RenderTools.GetValueFromParamFile(stprm, 0, 0, 6);
+            fovRadians = newFov * ((float)Math.PI / 180.0f); 
+            renderDepth = (float)RenderTools.GetValueFromParamFile(stprm, 0, 0, 77);           
+        }
+
+        public void resetPositionRotation()
+        {
+            position = new Vector3(0, 10, -80);
+            cameraXRotation = 0;
+            cameraYRotation = 0;
         }
     }
 }

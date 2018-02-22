@@ -36,10 +36,10 @@ namespace Smash_Forge.GUI.Menus
             numericZoom.Minimum = Decimal.MinValue;
 
             Camera = c;
-            depthSlider.Value = Math.Min((int)Camera.RenderDepth, depthSlider.Maximum);
-            fovSlider.Value = (int)(Camera.fov * 180.0f / Math.PI);
-            fovTB.Text = (int)(Camera.fov * 180.0f / Math.PI) + "";
-            renderDepthTB.Text = Camera.RenderDepth + "";
+            depthSlider.Value = Math.Min((int)Camera.renderDepth, depthSlider.Maximum);
+            fovSlider.Value = (int)(Camera.fovRadians * 180.0f / Math.PI);
+            fovTB.Text = (int)(Camera.fovRadians * 180.0f / Math.PI) + "";
+            renderDepthTB.Text = Camera.renderDepth + "";
             updatePosition();
         }
 
@@ -123,7 +123,7 @@ namespace Smash_Forge.GUI.Menus
             if (float.TryParse(renderDepthTB.Text, out i))
             {
                 renderDepthTB.BackColor = Color.White;
-                Camera.RenderDepth = i;
+                Camera.renderDepth = i;
             }
             else
                 renderDepthTB.BackColor = Color.Red;
@@ -142,7 +142,7 @@ namespace Smash_Forge.GUI.Menus
             if (float.TryParse(fovTB.Text, out i))
             {
                 fovTB.BackColor = Color.White;
-                Camera.fov = i * (float)Math.PI / 180.0f;
+                Camera.fovRadians = i * (float)Math.PI / 180.0f;
             }
             else
                 fovTB.BackColor = Color.Red;

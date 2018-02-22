@@ -426,7 +426,6 @@ namespace Smash_Forge
             model.Text = name;
             mvp.Text = name;
 
-
             if (!pathVBN.Equals(""))
             {
                 model.VBN = new VBN(pathVBN);
@@ -500,11 +499,6 @@ namespace Smash_Forge
                 model.NUD.MergePoly();
             }
 
-            //Runtime.ModelContainers.Add(model);
-            //TODO move sorting into individual model viewport
-            //List<ModelContainer> sortedModelContainers = Runtime.ModelContainers.OrderBy(o => (o.NUD.drawingOrder)).ToList();
-            //Runtime.ModelContainers = sortedModelContainers;
-            //meshList.refresh();
             return mvp;
         }
 
@@ -1118,7 +1112,7 @@ namespace Smash_Forge
                             {
                                 // should this always replace existing settings?
                                 Runtime.stprmParam = new ParamFile(fileName);
-                                Camera.SetCameraFromSTPRM(Runtime.stprmParam);
+                                mvp.GetCamera().SetCameraFromStprm(Runtime.stprmParam);
                             }
                         }
                     }
@@ -1562,14 +1556,13 @@ namespace Smash_Forge
         public void openFile(string fileName)
         {
             glControl1.MakeCurrent();
-            //if (!fileName.EndsWith(".mta") && !fileName.EndsWith(".dat") && !fileName.EndsWith(".smd"))
-            //    openAnimation(fileName);
 
-            // Redone-----------------------------------------------------
+            // Reassigned if a valid model file is opened. 
+            ModelViewport mvp = new ModelViewport();
 
             if (fileName.EndsWith(".omo"))
             {
-                ModelViewport mvp = new ModelViewport();
+                mvp = new ModelViewport();
                 if (dockPanel1.ActiveContent is ModelViewport)
                 {
                     DialogResult dialogResult = MessageBox.Show("Import Animation Data into active viewport?", "", MessageBoxButtons.YesNo);
@@ -1590,7 +1583,7 @@ namespace Smash_Forge
 
             if (fileName.EndsWith(".pac"))
             {
-                ModelViewport mvp = new ModelViewport();
+                mvp = new ModelViewport();
                 if (dockPanel1.ActiveContent is ModelViewport)
                 {
                     DialogResult dialogResult = MessageBox.Show("Import Animation Data into active viewport?", "", MessageBoxButtons.YesNo);
@@ -1611,9 +1604,7 @@ namespace Smash_Forge
 
             if (fileName.EndsWith(".bch"))
             {
-                //BCH bch = new BCH(fileName);
-
-                ModelViewport mvp = new ModelViewport();
+                mvp = new ModelViewport();
                 //if (bch.Animations.Nodes.Count > 0)
                 {
                     // Load as Animation
@@ -1631,7 +1622,7 @@ namespace Smash_Forge
                         }
                     }
                 }
-                //mvp.draw.Add(new ModelContainer() { BCH = bch });
+
                 mvp.Text = fileName;
                 AddDockedControl(mvp);
             }
@@ -1651,7 +1642,7 @@ namespace Smash_Forge
                 }
                 ((BCH_Model)b.Models.Nodes[0]).OpenMBN(new FileData(fileName));
 
-                ModelViewport mvp = new ModelViewport();
+                mvp = new ModelViewport();
                 mvp.draw.Add(new ModelContainer() { BCH = b });
                 mvp.Text = fileName;
                 AddDockedControl(mvp);
@@ -1731,7 +1722,7 @@ namespace Smash_Forge
                     AddDockedControl(stageList);
                 }
                 
-                ModelViewport mvp = new ModelViewport();
+                mvp = new ModelViewport();
                 mvp.draw.Add(new ModelContainer() { DAT_MELEE = dat });
                 mvp.Text = fileName;
                 AddDockedControl(mvp);
@@ -1739,7 +1730,6 @@ namespace Smash_Forge
 
             if (fileName.EndsWith(".lvd"))
             {
-                ModelViewport mvp;
                 if(CheckCurrentViewport(out mvp))
                 {
                     mvp.LVD = new LVD(fileName);
@@ -1763,7 +1753,6 @@ namespace Smash_Forge
                 obj.Read(fileName);
                 ModelContainer con = (new ModelContainer() { NUD = obj.toNUD() });
 
-                ModelViewport mvp;
                 if (CheckCurrentViewport(out mvp))
                 {
                     mvp.draw.Add(con);
@@ -1851,7 +1840,7 @@ namespace Smash_Forge
                     {
                         // should this always replace existing settings?
                         Runtime.stprmParam = new ParamFile(fileName);
-                        Camera.SetCameraFromSTPRM(Runtime.stprmParam);
+                        mvp.GetCamera().SetCameraFromStprm(Runtime.stprmParam);
                     }
 
                 }
@@ -1906,25 +1895,16 @@ namespace Smash_Forge
                     // load vbn
                     con.VBN = daeImport.getVBN();
 
-                    Stopwatch sw = new Stopwatch();
-                    sw.Start();
                     Collada.DaetoNud(fileName, con, daeImport.importTexCB.Checked);
-                    Debug.WriteLine("DAEtoNUD: " + sw.ElapsedMilliseconds / 1000.0);
-                    sw.Stop();
-                    //Runtime.ModelContainers.Add(con);
-                    ModelViewport mvp = new ModelViewport();
+
+                    mvp = new ModelViewport();
                     mvp.draw.Add(con);
                     AddDockedControl(mvp);
-
-                    //Runtime.TargetVBN = con.VBN;
-                    //resyncTargetVBN();
 
                     // apply settings
                     daeImport.Apply(con.NUD);
            
                     con.NUD.MergePoly();
-
-                    //meshList.refresh();
                 }
             }
 
@@ -1970,9 +1950,6 @@ namespace Smash_Forge
                 DRPViewer v = new DRPViewer();
                 v.treeView1.Nodes.Add(drp);
                 v.Show();
-                //project.treeView1.Nodes.Add(drp);
-                //project.treeView1.Invalidate();
-                //project.treeView1.Refresh();
             }
 
             if (fileName.EndsWith(".wrkspc"))
