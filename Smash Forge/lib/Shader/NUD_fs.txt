@@ -624,6 +624,10 @@ vec3 SmashShader(vec4 diffuseMap, float aoMap, vec3 N, vec3 I)
         aoMixIntensity = 0;
     }
 
+    // Not all materials have an ambient occlusion map. 
+    if (hasNrm != 1)
+        aoMap = 1;
+
     // The diffuse map for colorGain/Offset materials does a lot of things.
     if (hasColorGainOffset == 1)
         aoMap = Luminance(diffuseMap.rgb);
