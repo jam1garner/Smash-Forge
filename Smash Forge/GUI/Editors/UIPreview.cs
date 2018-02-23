@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using OpenTK;
 using WeifenLuo.WinFormsUI.Docking;
 using OpenTK.Graphics.OpenGL;
+using Smash_Forge.Rendering;
 
 namespace Smash_Forge
 {

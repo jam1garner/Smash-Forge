@@ -42,8 +42,6 @@ namespace Smash_Forge
         public static csvHashes Hashes;
         public ProgessAlert Progress = new ProgessAlert();
 
-        Camera camera = new Camera();
-
         public MainForm()
         {
             InitializeComponent();
@@ -1112,7 +1110,7 @@ namespace Smash_Forge
                             {
                                 // should this always replace existing settings?
                                 Runtime.stprmParam = new ParamFile(fileName);
-                                mvp.GetCamera().SetCameraFromStprm(Runtime.stprmParam);
+                                mvp.GetCamera().SetValuesFromStprm(Runtime.stprmParam);
                             }
                         }
                     }
@@ -1840,7 +1838,7 @@ namespace Smash_Forge
                     {
                         // should this always replace existing settings?
                         Runtime.stprmParam = new ParamFile(fileName);
-                        mvp.GetCamera().SetCameraFromStprm(Runtime.stprmParam);
+                        mvp.GetCamera().SetValuesFromStprm(Runtime.stprmParam);
                     }
 
                 }
@@ -2308,7 +2306,7 @@ namespace Smash_Forge
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
             glControl1.MakeCurrent();
-            RenderTools.RenderBackground();
+            Rendering.RenderTools.RenderBackground();
             glControl1.SwapBuffers();
         }
 

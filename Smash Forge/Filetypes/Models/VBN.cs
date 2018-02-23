@@ -75,7 +75,7 @@ namespace Smash_Forge
 
         public static float rot90 = (float)(90*(Math.PI / 180));
 
-        public int CheckControl(Ray r)
+        public int CheckControl(Rendering.Ray r)
         {
             /*
             Vector3 pos_c = Vector3.Transform(Vector3.Zero, transform);
@@ -103,7 +103,7 @@ namespace Smash_Forge
             else
                 GL.Color3(Color.GreenYellow);
 
-            RenderTools.DrawCube(pos_c, .1f);
+            Rendering.RenderTools.DrawCube(pos_c, .1f);
 
             // now draw line between parent 
             GL.Color3(Color.LightBlue);

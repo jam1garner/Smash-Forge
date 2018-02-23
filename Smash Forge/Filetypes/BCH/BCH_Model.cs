@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using Smash_Forge.Rendering;
 
 namespace Smash_Forge
 {

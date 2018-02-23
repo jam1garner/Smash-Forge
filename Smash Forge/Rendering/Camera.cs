@@ -6,133 +6,53 @@ using System.Threading.Tasks;
 using OpenTK;
 using SALT.PARAMS;
 
-namespace Smash_Forge
+namespace Smash_Forge.Rendering
 {
     public class Camera
     {
-        //public static Camera viewportCamera = new Camera();
-
-        private Vector3 position = new Vector3(0, 10, -80);
-        private float cameraXRotation = 0;
-        private float cameraYRotation = 0;
-        private int renderWidth = 1;
-        private int renderHeight = 1;
-        private float farClipPlane = 10000;
+        // Values from camera controls or stprm.bin.
+        public Vector3 position = new Vector3(0, 10, -80);
+        public float rotX = 0;
+        public float rotY = 0;
+        public float farClipPlane = 10000;
         public float fovRadians = 0.524f;
+        public float renderDepth = 5000;
 
-        private Matrix4 modelViewMatrix = Matrix4.Identity;
-        private Matrix4 mvpMatrix = Matrix4.Identity;
-        private Matrix4 projectionMatrix = Matrix4.Identity;
-        private Matrix4 billboardMatrix = Matrix4.Identity;
-        private Matrix4 billboardYMatrix = Matrix4.Identity;
-        private Matrix4 rotation = Matrix4.Identity;
-        private Matrix4 translation = Matrix4.Identity;
-        private Matrix4 perspFov = Matrix4.Identity;
+        public int renderWidth = 1;
+        public int renderHeight = 1;
 
-        private float zoomMultiplier = Runtime.zoomModifierScale; 
-        private float zoomSpeed = Runtime.zoomspeed;
-        private float mouseTranslateSpeed = 0.050f;
-        private float scrollWheelZoomSpeed = 1.75f;
-        private float shiftZoomMultiplier = 2.5f;
+        // Matrices for rendering.
+        public Matrix4 modelViewMatrix = Matrix4.Identity;
+        public Matrix4 mvpMatrix = Matrix4.Identity;
+        public Matrix4 projectionMatrix = Matrix4.Identity;
+        public Matrix4 billboardMatrix = Matrix4.Identity;
+        public Matrix4 billboardYMatrix = Matrix4.Identity;
+        public Matrix4 rotationMatrix = Matrix4.Identity;
+        public Matrix4 translation = Matrix4.Identity;
+        public Matrix4 perspFov = Matrix4.Identity;
+
+        // Camera control settings. 
+        public float zoomMultiplier = Runtime.zoomModifierScale; 
+        public float zoomSpeed = Runtime.zoomspeed;
+        public float mouseTranslateSpeed = 0.050f;
+        public float scrollWheelZoomSpeed = 1.75f;
+        public float shiftZoomMultiplier = 2.5f;
         public float mouseSLast = 0;
         public float mouseYLast = 0;
         public float mouseXLast = 0;
-
-        public float renderDepth = 5000;
 
         public Camera()
         {
 
         }
 
-        public Camera(Vector3 position, float rotX, float rotY, int renderWidth, int renderHeight)
+        public Camera(Vector3 position, float rotX, float rotY, int renderWidth = 1, int renderHeight = 1)
         {
             this.position = position;
             this.renderHeight = renderHeight;
             this.renderWidth = renderWidth;
-            cameraXRotation = rotX;
-            cameraYRotation = rotY;
-        }
-
-        public Matrix4 getModelViewMatrix()
-        {
-            return modelViewMatrix;
-        }
-
-        public Matrix4 getMVPMatrix()
-        {
-            return mvpMatrix;
-        }
-
-        public Vector3 getPosition()
-        {
-            return position;
-        }
-
-        public float getFarClipPlane()
-        {
-            return farClipPlane;
-        }
-
-        public void setFarClipPlane(float farClip)
-        {
-            farClipPlane = farClip;
-        }
-
-        public void setRenderWidth(int width)
-        {
-            renderWidth = width;
-        }
-
-        public void setRenderHeight(int height)
-        {
-            renderHeight = height;
-        }
-
-        public int getRenderHeight()
-        {
-            return renderHeight;
-        }
-
-        public int getRenderWidth()
-        {
-            return renderWidth;
-        }
-
-
-        public float getRotX()
-        {
-            return cameraXRotation;
-        }
-
-        public float getRotY()
-        {
-            return cameraYRotation;
-        }
-
-        public void setRotX(float angle)
-        {
-            cameraXRotation = angle;
-        }
-
-        public void setRotY(float angle)
-        {
-            cameraYRotation = angle;
-        }
-
-        public Matrix4 getBillboardMatrix()
-        {
-            return billboardMatrix;
-        }
-
-        public Matrix4 getBillboardYMatrix()
-        {
-            return billboardYMatrix;
-        }
-
-        public Matrix4 getRotationMatrix()
-        {
-            return rotation;
+            this.rotX = rotX;
+            this.rotY = rotY;
         }
 
         public void Update()
@@ -149,8 +69,8 @@ namespace Smash_Forge
                 }
                 if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
                 {
-                    cameraYRotation += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                    cameraXRotation += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                    rotY += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                    rotX += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
                 }
 
                 float zoomscale = zoomSpeed;
@@ -173,36 +93,32 @@ namespace Smash_Forge
             }
             catch (Exception)
             {
+                // RIP OpenTK...
             }
 
             UpdateMatrices();
         }
 
-        public void setPosition(Vector3 newPosition)
-        {
-            this.position = newPosition;
-        }
-
         private void UpdateMatrices()
         {
             translation = Matrix4.CreateTranslation(position.X, -position.Y, position.Z);
-            rotation = Matrix4.CreateRotationY(cameraYRotation) * Matrix4.CreateRotationX(cameraXRotation);
+            rotationMatrix = Matrix4.CreateRotationY(rotY) * Matrix4.CreateRotationX(rotX);
             perspFov = Matrix4.CreatePerspectiveFieldOfView(fovRadians, renderWidth / (float)renderHeight, 1.0f, renderDepth);
 
-            modelViewMatrix = rotation * translation;
+            modelViewMatrix = rotationMatrix * translation;
             mvpMatrix = modelViewMatrix * perspFov;
             billboardMatrix = translation * perspFov;
-            billboardYMatrix = Matrix4.CreateRotationX(cameraXRotation) * translation * perspFov;
+            billboardYMatrix = Matrix4.CreateRotationX(rotX) * translation * perspFov;
         }
 
         public void TrackMouse()
         {
-            this.mouseXLast = OpenTK.Input.Mouse.GetState().X;
-            this.mouseYLast = OpenTK.Input.Mouse.GetState().Y;
-            this.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
+            mouseXLast = OpenTK.Input.Mouse.GetState().X;
+            mouseYLast = OpenTK.Input.Mouse.GetState().Y;
+            mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
         }
 
-        public void SetCameraFromStprm(ParamFile stprm)
+        public void SetValuesFromStprm(ParamFile stprm)
         {
             if (stprm == null)
                 return;
@@ -212,11 +128,11 @@ namespace Smash_Forge
             renderDepth = (float)RenderTools.GetValueFromParamFile(stprm, 0, 0, 77);           
         }
 
-        public void resetPositionRotation()
+        public void ResetPositionRotation()
         {
             position = new Vector3(0, 10, -80);
-            cameraXRotation = 0;
-            cameraYRotation = 0;
+            rotX = 0;
+            rotY = 0;
         }
     }
 }

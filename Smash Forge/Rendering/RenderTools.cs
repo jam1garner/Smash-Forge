@@ -11,7 +11,7 @@ using SALT.PARAMS;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 
-namespace Smash_Forge
+namespace Smash_Forge.Rendering
 {
     public class RenderTools
     {
