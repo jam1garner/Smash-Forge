@@ -21,6 +21,7 @@ using System.Text.RegularExpressions;
 using System.Globalization;
 using Smash_Forge.Rendering.Lights;
 using OpenTK.Input;
+using Smash_Forge.Rendering;
 
 namespace Smash_Forge
 {
@@ -30,7 +31,7 @@ namespace Smash_Forge
         bool ReadyToRender = false;
 
         // View controls
-        Camera camera = new Camera();
+        public Camera camera = new Camera();
         public Matrix4 lightMatrix, lightProjection;
         public GUI.Menus.CameraSettings cameraPosForm = null;
 
@@ -254,6 +255,11 @@ namespace Smash_Forge
             
         }
 
+        public Camera GetCamera()
+        {
+            return camera;
+        }
+
         public override void Save()
         {
             if (FilePath.Equals(""))
@@ -369,8 +375,8 @@ namespace Smash_Forge
                 GL.LoadIdentity();
                 GL.Viewport(glViewport.ClientRectangle);
 
-                camera.setRenderWidth(glViewport.Width);
-                camera.setRenderHeight(glViewport.Height);
+                camera.renderWidth = glViewport.Width;
+                camera.renderHeight = glViewport.Height;
                 camera.Update();
             }
             //Mesh Selection Test
@@ -413,7 +419,7 @@ namespace Smash_Forge
         public void CalculateLightSource()
         {
             Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, Runtime.renderDepth, out lightProjection);
-            Matrix4 lightView = Matrix4.LookAt(Vector3.TransformVector(Vector3.Zero, camera.getMVPMatrix()).Normalized(),
+            Matrix4 lightView = Matrix4.LookAt(Vector3.TransformVector(Vector3.Zero, camera.mvpMatrix).Normalized(),
                 new Vector3(0),
                 new Vector3(0, 1, 0));
             lightMatrix = lightProjection * lightView;
@@ -421,7 +427,7 @@ namespace Smash_Forge
 
         private Vector3 getScreenPoint(Vector3 pos)
         {
-            Vector4 n = Vector4.Transform(new Vector4(pos, 1), camera.getMVPMatrix());
+            Vector4 n = Vector4.Transform(new Vector4(pos, 1), camera.mvpMatrix);
             n.X /= n.W;
             n.Y /= n.W;
             n.Z /= n.W;
@@ -435,8 +441,8 @@ namespace Smash_Forge
                 GL.LoadIdentity();
                 GL.Viewport(glViewport.ClientRectangle);
 
-                camera.setRenderWidth(glViewport.Width);
-                camera.setRenderHeight(glViewport.Height);
+                camera.renderWidth = (glViewport.Width);
+                camera.renderHeight = (glViewport.Height);
                 camera.Update();
             }
         }
@@ -556,9 +562,71 @@ namespace Smash_Forge
 
         private void ResetCamera_Click(object sender, EventArgs e)
         {
-            camera.setPosition(new Vector3(0, 10, -80));
-            camera.setRotX(0);
-            camera.setRotY(0);
+            // Frame the selected NUD or mesh based on the bounding spheres. Frame the NUD if nothing is selected. 
+            FrameSelection();
+        }
+
+        public void FrameSelection()
+        {
+            if (MeshList.treeView1.SelectedNode is NUD.Mesh)
+            {
+                FrameSelectedMesh();
+            }
+            else if (MeshList.treeView1.SelectedNode is NUD)
+            {
+                FrameSelectedNud();
+            }
+            else if (MeshList.treeView1.SelectedNode is NUD.Polygon)
+            {
+                FrameSelectedPolygon();
+            }
+            else
+            {
+                FrameAllModelContainers();
+            }
+        }
+
+        private void FrameSelectedMesh()
+        {
+            NUD.Mesh mesh = (NUD.Mesh)MeshList.treeView1.SelectedNode;
+            float[] boundingBox = mesh.boundingBox;
+            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            camera.Update();
+        }
+
+        private void FrameSelectedNud()
+        {
+            NUD nud = (NUD)MeshList.treeView1.SelectedNode;
+            float[] boundingBox = nud.boundingBox;
+            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            camera.Update();
+        }
+
+        private void FrameSelectedPolygon()
+        {
+            NUD.Mesh mesh = (NUD.Mesh)MeshList.treeView1.SelectedNode.Parent;
+            float[] boundingBox = mesh.boundingBox;
+            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            camera.Update();
+        }
+
+        private void FrameAllModelContainers()
+        {
+            // Find the max NUD bounding box for all models. 
+            float[] boundingBox = new float[] { 0, 0, 0, 0 };
+            foreach (TreeNode node in MeshList.treeView1.Nodes)
+            {
+                if (node is ModelContainer)
+                {
+                    ModelContainer modelContainer = (ModelContainer)node;
+                    if (modelContainer.NUD.boundingBox[3] > boundingBox[3])
+                    {
+                        boundingBox = modelContainer.NUD.boundingBox;
+                    }
+                }
+            }
+
+            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
         }
 
@@ -961,7 +1029,7 @@ namespace Smash_Forge
                 {
                     // single vertex
                     // Selects the closest vertex
-                    Ray r = RenderTools.createRay(camera.getMVPMatrix(), GetMouseOnViewport());
+                    Ray r = RenderTools.createRay(camera.mvpMatrix, GetMouseOnViewport());
                     Vector3 close = Vector3.Zero;
                     foreach (TreeNode node in draw)
                     {
@@ -1110,7 +1178,7 @@ namespace Smash_Forge
 
             }
 
-            Matrix4 matrix = camera.getMVPMatrix();
+            Matrix4 matrix = camera.mvpMatrix;
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref matrix);
 
@@ -1136,7 +1204,7 @@ namespace Smash_Forge
             if (Runtime.renderModel || Runtime.renderModelWireframe)
                 foreach (TreeNode m in draw)
                     if(m is ModelContainer)
-                        ((ModelContainer)m).Render(camera, 0, Matrix4.Zero, camera.getMVPMatrix());
+                        ((ModelContainer)m).Render(camera, 0, Matrix4.Zero, camera.mvpMatrix);
 
             if (ViewComboBox.SelectedIndex == 1)
                 foreach (TreeNode m in draw)
@@ -1280,6 +1348,21 @@ namespace Smash_Forge
             glViewport.SwapBuffers();
         }
 
+        private void glViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        {
+            // toggle channel rendering
+            if (e.KeyChar == 'f')
+                FrameSelection();
+            if (e.KeyChar == 'r')
+                Runtime.renderR = !Runtime.renderR;
+            if (e.KeyChar == 'g')
+                Runtime.renderG = !Runtime.renderG;
+            if (e.KeyChar == 'b')
+                Runtime.renderB = !Runtime.renderB;
+            if (e.KeyChar == 'a')
+                Runtime.renderAlpha = !Runtime.renderAlpha;
+        }
+
         private void DrawNutTexAndUvs()
         {
             GL.PopAttrib();
@@ -1322,7 +1405,7 @@ namespace Smash_Forge
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
 
             foreach (ModelContainer m in draw)
-                m.RenderShadow(camera, 0, Matrix4.Zero, camera.getMVPMatrix());
+                m.RenderShadow(camera, 0, Matrix4.Zero, camera.mvpMatrix);
 
             // reset matrices and viewport for model rendering again
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);

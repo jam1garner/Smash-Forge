@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using OpenTK;
 using System.Windows.Forms;
 
-namespace Smash_Forge
+namespace Smash_Forge.Rendering
 {
     public class Ray
     {
@@ -27,8 +27,8 @@ namespace Smash_Forge
 
             float x = (2.0f * mouse_x) / Viewport.Width - 1.0f;
             float y = 1.0f - (2.0f * mouse_y) / Viewport.Height;
-            Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), Camera.getMVPMatrix().Inverted());
-            Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), Camera.getMVPMatrix().Inverted());
+            Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), Camera.mvpMatrix.Inverted());
+            Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), Camera.mvpMatrix.Inverted());
 
             p1 = va.Xyz;
             p2 = p1 - (va - (va + vb)).Xyz * 100;
@@ -39,12 +39,12 @@ namespace Smash_Forge
 
         public void Unproject(Camera camera)
         {
-            p1 =  (camera.getMVPMatrix().Inverted() * new Vector4(
+            p1 =  (camera.mvpMatrix.Inverted() * new Vector4(
                 2.0f * (mouse_x / Width) - 1.0f,
                 2.0f * ((Height - mouse_y) / Height) - 1.0f,
                 2.0f * 0 - 1.0f,
                 1.0f)).Xyz;
-            p2 = (camera.getMVPMatrix().Inverted() * new Vector4(
+            p2 = (camera.mvpMatrix.Inverted() * new Vector4(
                 2.0f * (mouse_x / Width) - 1.0f,
                 2.0f * ((Height - mouse_y) / Height) - 1.0f,
                 2.0f * 1 - 1.0f,

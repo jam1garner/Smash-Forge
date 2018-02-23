@@ -10,6 +10,7 @@ using OpenTK;
 using System.Windows.Forms;
 using SALT.Graphics;
 using Smash_Forge.Rendering.Lights;
+using Smash_Forge.Rendering;
 
 namespace Smash_Forge
 {
@@ -461,7 +462,7 @@ namespace Smash_Forge
             SetNSCUniform(p, shader);
 
             // Used for NU_universe material projection coords. 
-            GL.Uniform3(shader.getAttribute("cameraPosition"), camera.getPosition());
+            GL.Uniform3(shader.getAttribute("cameraPosition"), camera.position);
          
             p.isTransparent = false;
             if (material.srcFactor > 0 || material.dstFactor > 0 || material.AlphaFunc > 0 || material.AlphaTest > 0)
@@ -899,11 +900,11 @@ namespace Smash_Forge
             GL.UseProgram(0);
         }
 
-        public void DrawPoints(Camera cam, VBN vbn, PrimitiveType type)
+        public void DrawPoints(Camera camera, VBN vbn, PrimitiveType type)
         {
             Shader shader = Runtime.shaders["Point"];
             GL.UseProgram(shader.programID);
-            Matrix4 mat = cam.getMVPMatrix();
+            Matrix4 mat = camera.mvpMatrix;
             GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mat);
 
             if (type == PrimitiveType.Points)

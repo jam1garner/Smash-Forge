@@ -21,6 +21,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Gif.Components;
 using Smash_Forge.Rendering.Lights;
+using Smash_Forge.Rendering;
 
 namespace Smash_Forge
 {
@@ -82,8 +83,8 @@ namespace Smash_Forge
                 GL.LoadIdentity();
                 GL.Viewport(glControl1.ClientRectangle);
 
-                vbnViewportCamera.setRenderWidth(glControl1.Width);
-                vbnViewportCamera.setRenderHeight(glControl1.Height);
+                vbnViewportCamera.renderWidth = (glControl1.Width);
+                vbnViewportCamera.renderHeight = (glControl1.Height);
                 vbnViewportCamera.Update();
             }
 
@@ -567,7 +568,7 @@ namespace Smash_Forge
         public void CalculateLightSource()
         {
             Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, Runtime.renderDepth, out lightProjection);
-            Matrix4 lightView = Matrix4.LookAt(Vector3.TransformVector(Vector3.Zero, vbnViewportCamera.getMVPMatrix()).Normalized(),
+            Matrix4 lightView = Matrix4.LookAt(Vector3.TransformVector(Vector3.Zero, vbnViewportCamera.mvpMatrix).Normalized(),
                 new Vector3(0),
                 new Vector3(0, 1, 0));
             lightMatrix = lightProjection * lightView;
@@ -637,7 +638,7 @@ namespace Smash_Forge
             vbnViewportCamera.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
             SetCameraAnimation();
 
-            Matrix4 matrix = vbnViewportCamera.getMVPMatrix();
+            Matrix4 matrix = vbnViewportCamera.mvpMatrix;
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref matrix);
 
@@ -724,7 +725,7 @@ namespace Smash_Forge
                 2.0f * (x / glControl1.Width) - 1.0f,
                 2.0f * ((glControl1.Height - y) / glControl1.Height) - 1.0f,
                 2.0f * z - 1.0f,
-                1.0f), vbnViewportCamera.getMVPMatrix().Inverted()).Xyz;
+                1.0f), vbnViewportCamera.mvpMatrix.Inverted()).Xyz;
         }
 
 
@@ -771,11 +772,11 @@ namespace Smash_Forge
             {
                 if (c.NUD != null)
                 {
-                    c.NUD.RenderShadow(lightMatrix, vbnViewportCamera.getMVPMatrix(), modelMatrix);
+                    c.NUD.RenderShadow(lightMatrix, vbnViewportCamera.mvpMatrix, modelMatrix);
                 }
             }
 
-            Matrix4 matrix = vbnViewportCamera.getMVPMatrix();
+            Matrix4 matrix = vbnViewportCamera.mvpMatrix;
             // reset matrices and viewport for model rendering again
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             GL.LoadMatrix(ref matrix);
@@ -1807,9 +1808,7 @@ namespace Smash_Forge
 
         private void button1_Click(object sender, EventArgs e)
         {
-            vbnViewportCamera.setPosition(new Vector3(0, 10, -80));
-            vbnViewportCamera.setRotX(0);
-            vbnViewportCamera.setRotY(0);
+            vbnViewportCamera.ResetPositionRotation();
             UpdateMousePosition();
             UpdateCameraPositionControl();
         }
@@ -1953,8 +1952,8 @@ namespace Smash_Forge
 
             float x = (2.0f * mouse_x) / glControl1.Width - 1.0f;
             float y = 1.0f - (2.0f * mouse_y) / glControl1.Height;
-            Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), vbnViewportCamera.getMVPMatrix().Inverted());
-            Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), vbnViewportCamera.getMVPMatrix().Inverted());
+            Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), vbnViewportCamera.mvpMatrix.Inverted());
+            Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), vbnViewportCamera.mvpMatrix.Inverted());
 
             p1 = va.Xyz;
             p2 = p1 - (va - (va + vb)).Xyz * 100;
@@ -2052,8 +2051,8 @@ namespace Smash_Forge
 
                 float x = (2.0f * mouse_x) / glControl1.Width - 1.0f;
                 float y = 1.0f - (2.0f * mouse_y) / glControl1.Height;
-                Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), vbnViewportCamera.getMVPMatrix().Inverted());
-                Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), vbnViewportCamera.getMVPMatrix().Inverted());
+                Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), vbnViewportCamera.mvpMatrix.Inverted());
+                Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), vbnViewportCamera.mvpMatrix.Inverted());
 
                 p1 = va.Xyz;
                 p2 = p1 - (va - (va + vb)).Xyz * 100;

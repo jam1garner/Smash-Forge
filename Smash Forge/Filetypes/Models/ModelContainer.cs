@@ -7,6 +7,7 @@ using OpenTK;
 using System.Drawing;
 using System.Diagnostics;
 using Smash_Forge.Rendering.Lights;
+using Smash_Forge.Rendering;
 
 
 namespace Smash_Forge
@@ -229,18 +230,18 @@ namespace Smash_Forge
 
             int renderType = (int)Runtime.renderType;
             
-            Matrix4 mvpMatrix = camera.getMVPMatrix();
+            Matrix4 mvpMatrix = camera.mvpMatrix;
             GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
 
             // Perform the calculations here to reduce render times in shader
-            Matrix4 modelViewMatrix = camera.getModelViewMatrix();
+            Matrix4 modelViewMatrix = camera.modelViewMatrix;
             Matrix4 sphereMapMatrix = modelViewMatrix;
             sphereMapMatrix.Invert();
             sphereMapMatrix.Transpose();
             GL.UniformMatrix4(shader.getAttribute("modelViewMatrix"), false, ref modelViewMatrix);
             GL.UniformMatrix4(shader.getAttribute("sphereMapMatrix"), false, ref sphereMapMatrix);
 
-            Matrix4 rotationMatrix = camera.getRotationMatrix();
+            Matrix4 rotationMatrix = camera.rotationMatrix;
             GL.UniformMatrix4(shader.getAttribute("rotationMatrix"), false, ref rotationMatrix);
 
 
@@ -251,7 +252,7 @@ namespace Smash_Forge
 
             if (Runtime.cameraLight)
             {
-                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(new Vector3(0f, 0f, -1f), camera.getMVPMatrix().Inverted()).Normalized());
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(new Vector3(0f, 0f, -1f), camera.mvpMatrix.Inverted()).Normalized());
             }
             else
             {
@@ -274,13 +275,13 @@ namespace Smash_Forge
                 {
                     foreach (BCH_Model mo in BCH.Models.Nodes)
                     {
-                        mo.Render(camera.getMVPMatrix());
+                        mo.Render(camera.mvpMatrix);
                     }
                 }
 
                 if (DAT_MELEE != null && Runtime.shaders["DAT"].shadersCompiledSuccessfully())
                 {
-                    DAT_MELEE.Render(camera.getMVPMatrix());
+                    DAT_MELEE.Render(camera.mvpMatrix);
                 }
 
                 if (NUD != null && Runtime.shaders["NUD"].shadersCompiledSuccessfully() && Runtime.shaders["NUD_Debug"].shadersCompiledSuccessfully())
@@ -351,10 +352,8 @@ namespace Smash_Forge
 
             if (NUD != null)
             {
-                NUD.RenderShadow(lightMatrix, camera.getMVPMatrix(), modelMatrix);
+                NUD.RenderShadow(lightMatrix, camera.mvpMatrix, modelMatrix);
             }
-
-            Matrix4 matrix = camera.getMVPMatrix();
         }
 
         public void RenderBones()
@@ -454,9 +453,10 @@ namespace Smash_Forge
             GL.Uniform3(shader.getAttribute("stageLight4Direction"), LightTools.stageLight4.direction);
 
 
-            if (Runtime.cameraLight) // camera light should only affects character lighting
+            if (Runtime.cameraLight) 
             {
-                Matrix4 invertedCamera = camera.getMVPMatrix().Inverted();
+                // Camera light should only affect character lighting.
+                Matrix4 invertedCamera = camera.mvpMatrix.Inverted();
                 Vector3 lightDirection = new Vector3(0f, 0f, -1f);
                 GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
                 GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
