@@ -338,9 +338,6 @@ vec3 FresnelPass(vec3 N, vec3 I, vec4 diffuseMap, float aoMap, float aoMixIntens
     vec3 fresnel = clamp(((hemiColorSky + hemiColorGround) * pow(Fresnel(I, N), exponentOffset + fresnelParams.x)), 0, 1);
     fresnelPass += fresnelColor.rgb * fresnel * fresnelIntensity * tintColor;
 
-    if ((flags & 0x0000FF00u) == 0x00003000u)
-        fresnelPass *= diffuseMap.rgb;
-
     fresnelPass *= mix(aoMap, 1, aoMixIntensity);
 
     return fresnelPass;
@@ -514,7 +511,11 @@ vec3 DiffusePass(vec3 N, vec4 diffuseMap, float aoMap)
     vec3 diffuseColorFinal = vec3(0); // result of diffuse map, aoBlend, and some NU_values
     float diffuseLuminance = Luminance(diffuseMap.rgb); // used for colorGain and colorOffset
 
-    // Ambient occlusion calculations
+    // Ambient occlusion calculations. TODO: Separate ao for diffuse from other render passes.
+    if (hasNrm == 1)
+        aoMap = texture(normalMap, texCoord).a;
+    else
+        aoMap = 1;
     vec3 aoBlend = AOBlend(aoMap);
     float aoMixIntensity = aoMinGain.a;
 
@@ -617,20 +618,20 @@ vec3 SmashShader(vec4 diffuseMap, float aoMap, vec3 N, vec3 I)
 	vec3 fresTintColor = TintColor(diffuseMap.rgb, fresnelColor.a);
 	vec3 reflTintColor = TintColor(diffuseMap.rgb, reflectionColor.a);
 
-    if (useDiffuseBlend == 1) // aomingain but no ao map (mainly for trophies)
-    {
-        // TODO: Should this use color? The party ball item is not saturated enough.
-        aoMap = Luminance(diffuseMap.rgb);
-        aoMixIntensity = 0;
-    }
-
-    // Not all materials have an ambient occlusion map. 
+    // Not all materials have an ambient occlusion map.
     if (hasNrm != 1)
         aoMap = 1;
 
     // The diffuse map for colorGain/Offset materials does a lot of things.
     if (hasColorGainOffset == 1)
         aoMap = Luminance(diffuseMap.rgb);
+
+    if (useDiffuseBlend == 1) // aomingain but no ao map (mainly for trophies)
+    {
+        // TODO: Should this use color? The party ball item is not saturated enough.
+        aoMap = Luminance(diffuseMap.rgb);
+        aoMixIntensity = 0;
+    }
 
     // Separate render pass calculations.
     vec3 diffusePass = DiffusePass(N, diffuseMap, aoMap);
