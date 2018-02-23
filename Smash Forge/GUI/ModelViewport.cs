@@ -31,7 +31,7 @@ namespace Smash_Forge
         bool ReadyToRender = false;
 
         // View controls
-        Camera camera = new Camera();
+        public Camera camera = new Camera();
         public Matrix4 lightMatrix, lightProjection;
         public GUI.Menus.CameraSettings cameraPosForm = null;
 
@@ -562,8 +562,46 @@ namespace Smash_Forge
 
         private void ResetCamera_Click(object sender, EventArgs e)
         {
-            camera.ResetPositionRotation();
-            camera.Update();
+            // Frame the selected NUD or mesh based on the bounding spheres. Frame the NUD if nothing is selected. 
+            FrameSelection();
+        }
+
+        private void FrameSelection()
+        {
+            if (MeshList.treeView1.SelectedNode is NUD.Mesh)
+            {
+                NUD.Mesh mesh = (NUD.Mesh)MeshList.treeView1.SelectedNode;
+                float[] boundingBox = mesh.boundingBox;
+                camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+                camera.Update();
+            }
+            else if (MeshList.treeView1.SelectedNode is NUD)
+            {
+                NUD nud = (NUD)MeshList.treeView1.SelectedNode;
+                float[] boundingBox = nud.boundingBox;
+                camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+                camera.Update();
+            }
+            else if (MeshList.treeView1.SelectedNode is NUD.Polygon)
+            {
+                NUD.Mesh mesh = (NUD.Mesh)MeshList.treeView1.SelectedNode.Parent;
+                float[] boundingBox = mesh.boundingBox;
+                camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+                camera.Update();
+            }
+            else
+            {
+                foreach (TreeNode node in MeshList.treeView1.Nodes)
+                {
+                    if (node is ModelContainer)
+                    {
+                        ModelContainer modelContainer = (ModelContainer)node;
+                        float[] boundingBox = modelContainer.NUD.boundingBox;
+                        camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+                        camera.Update();
+                    }
+                }
+            }
         }
 
         #endregion

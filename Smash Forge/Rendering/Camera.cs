@@ -134,5 +134,18 @@ namespace Smash_Forge.Rendering
             rotX = 0;
             rotY = 0;
         }
+
+        public void FrameSelection(Vector3 center, float radius)
+        {
+            // Calculate a right triangle using the bounding box radius as the height and the fov as the angle.
+            // The distance is the base of the triangle. 
+            float distance = radius / (float)Math.Tan(fovRadians / 2.0f);
+            float offset = 10 / fovRadians;
+            rotX = 0;
+            rotY = 0;
+            position.X = -center.X;
+            position.Y = center.Y;
+            position.Z = -1 * (distance + offset);
+        }
     }
 }
