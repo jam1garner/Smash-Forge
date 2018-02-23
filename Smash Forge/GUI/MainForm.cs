@@ -497,6 +497,9 @@ namespace Smash_Forge
                 model.NUD.MergePoly();
             }
 
+            // Reset the camera. 
+            mvp.FrameSelection();
+
             return mvp;
         }
 
@@ -1901,7 +1904,6 @@ namespace Smash_Forge
 
                     // apply settings
                     daeImport.Apply(con.NUD);
-           
                     con.NUD.MergePoly();
                 }
             }

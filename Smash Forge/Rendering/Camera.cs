@@ -75,21 +75,21 @@ namespace Smash_Forge.Rendering
 
                 float zoomscale = zoomSpeed;
 
-                // hold shift to change zoom speed
+                // Holding shift changes zoom speed.
                 if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
                     zoomscale *= shiftZoomMultiplier;
 
-                // zoom in or out with arrow keys
+                // Zooms in or out with arrow keys.
                 if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Down))
                     position.Z -= 1 * zoomscale;
                 if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Up))
                     position.Z += 1 * zoomscale;
 
-                this.mouseXLast = OpenTK.Input.Mouse.GetState().X;
-                this.mouseYLast = OpenTK.Input.Mouse.GetState().Y;
-
+                // Scroll wheel zooms in or out.
                 position.Z += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale * scrollWheelZoomSpeed;
 
+                // Update the mouse values. 
+                TrackMouse();
             }
             catch (Exception)
             {

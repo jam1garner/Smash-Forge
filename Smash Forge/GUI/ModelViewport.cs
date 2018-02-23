@@ -566,42 +566,68 @@ namespace Smash_Forge
             FrameSelection();
         }
 
-        private void FrameSelection()
+        public void FrameSelection()
         {
             if (MeshList.treeView1.SelectedNode is NUD.Mesh)
             {
-                NUD.Mesh mesh = (NUD.Mesh)MeshList.treeView1.SelectedNode;
-                float[] boundingBox = mesh.boundingBox;
-                camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
-                camera.Update();
+                FrameSelectedMesh();
             }
             else if (MeshList.treeView1.SelectedNode is NUD)
             {
-                NUD nud = (NUD)MeshList.treeView1.SelectedNode;
-                float[] boundingBox = nud.boundingBox;
-                camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
-                camera.Update();
+                FrameSelectedNud();
             }
             else if (MeshList.treeView1.SelectedNode is NUD.Polygon)
             {
-                NUD.Mesh mesh = (NUD.Mesh)MeshList.treeView1.SelectedNode.Parent;
-                float[] boundingBox = mesh.boundingBox;
-                camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
-                camera.Update();
+                FrameSelectedPolygon();
             }
             else
             {
-                foreach (TreeNode node in MeshList.treeView1.Nodes)
+                FrameAllModelContainers();
+            }
+        }
+
+        private void FrameSelectedMesh()
+        {
+            NUD.Mesh mesh = (NUD.Mesh)MeshList.treeView1.SelectedNode;
+            float[] boundingBox = mesh.boundingBox;
+            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            camera.Update();
+        }
+
+        private void FrameSelectedNud()
+        {
+            NUD nud = (NUD)MeshList.treeView1.SelectedNode;
+            float[] boundingBox = nud.boundingBox;
+            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            camera.Update();
+        }
+
+        private void FrameSelectedPolygon()
+        {
+            NUD.Mesh mesh = (NUD.Mesh)MeshList.treeView1.SelectedNode.Parent;
+            float[] boundingBox = mesh.boundingBox;
+            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            camera.Update();
+        }
+
+        private void FrameAllModelContainers()
+        {
+            // Find the max NUD bounding box for all models. 
+            float[] boundingBox = new float[] { 0, 0, 0, 0 };
+            foreach (TreeNode node in MeshList.treeView1.Nodes)
+            {
+                if (node is ModelContainer)
                 {
-                    if (node is ModelContainer)
+                    ModelContainer modelContainer = (ModelContainer)node;
+                    if (modelContainer.NUD.boundingBox[3] > boundingBox[3])
                     {
-                        ModelContainer modelContainer = (ModelContainer)node;
-                        float[] boundingBox = modelContainer.NUD.boundingBox;
-                        camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
-                        camera.Update();
+                        boundingBox = modelContainer.NUD.boundingBox;
                     }
                 }
             }
+
+            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            camera.Update();
         }
 
         #endregion
