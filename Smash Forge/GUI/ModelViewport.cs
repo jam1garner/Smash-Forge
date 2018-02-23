@@ -1348,6 +1348,21 @@ namespace Smash_Forge
             glViewport.SwapBuffers();
         }
 
+        private void glViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        {
+            // toggle channel rendering
+            if (e.KeyChar == 'f')
+                FrameSelection();
+            if (e.KeyChar == 'r')
+                Runtime.renderR = !Runtime.renderR;
+            if (e.KeyChar == 'g')
+                Runtime.renderG = !Runtime.renderG;
+            if (e.KeyChar == 'b')
+                Runtime.renderB = !Runtime.renderB;
+            if (e.KeyChar == 'a')
+                Runtime.renderAlpha = !Runtime.renderAlpha;
+        }
+
         private void DrawNutTexAndUvs()
         {
             GL.PopAttrib();
