@@ -31,9 +31,13 @@ namespace Smash_Forge
             import.Click += Import;
             cm.MenuItems.Add(import);
 
-            MenuItem create = new MenuItem("Create New Animation");
+            MenuItem create = new MenuItem("Create New Skeletal Animation");
             create.Click += Create;
             cm.MenuItems.Add(create);
+
+            MenuItem createmat = new MenuItem("Create New Material Animation");
+            createmat.Click += CreateMat;
+            cm.MenuItems.Add(createmat);
 
             MenuItem remove = new MenuItem("Remove Group");
             remove.Click += Remove;
@@ -92,7 +96,12 @@ namespace Smash_Forge
 
         public void Create(object sender, EventArgs args)
         {
-            Nodes.Add(new Animation("New Animation"));
+            Nodes.Add(new Animation("NewSkeletalAnimation"));
+        }
+
+        public void CreateMat(object sender, EventArgs args)
+        {
+            Nodes.Add(new MTA() { Text = "NewMaterialAnimation" });
         }
 
         public void Import(object sender, EventArgs args)

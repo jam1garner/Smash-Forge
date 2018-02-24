@@ -385,7 +385,9 @@ namespace Smash_Forge
             Endian = Endianness.Big;
             ImageKey = "image";
             SelectedImageKey = "image";
-
+            
+            numFrames = 0;
+            frameRate = 60;
 
             ContextMenu = new ContextMenu();
 
@@ -398,6 +400,10 @@ namespace Smash_Forge
             save.Click += Save;*/
         }
 
+        public MTA(string Name) : base()
+        {
+            Text = Name;
+        }
 
         private void OpenEditor(object sender, EventArgs args)
         {
@@ -564,7 +570,7 @@ namespace Smash_Forge
                 f += $"Material Hash,{matEntry.matHash.ToString("X")}\n";
                 f += $"Has PAT0,{matEntry.hasPat}\n";
                 if (matEntry.matHash2 != 0)
-                    f += $"Second Material Hash,{matEntry.matHash2.ToString("X")}";
+                    f += $"Second Material Hash,{matEntry.matHash2.ToString("X")}\n";
                 f += "###\n";
 
                 foreach(MatData matProp in matEntry.properties)
@@ -621,6 +627,8 @@ namespace Smash_Forge
 
         public void Compile(List<string> f)
         {
+            matEntries.Clear();
+            visEntries.Clear();
             Nodes.Clear();
             unknown = Convert.ToUInt32(f[1].Split(',')[1]);
             numFrames = Convert.ToUInt32(f[2].Split(',')[1]);

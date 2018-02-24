@@ -11,12 +11,44 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Smash_Forge
 {
-    public partial class MTAEditorGUI : DockContent
+    public partial class MTAEditorGUI : EditorBase
     {
         public MTAEditorGUI(MTA mta)
         {
             InitializeComponent();
             this.mta = mta;
+        }
+
+        public override void Save()
+        {
+            if (FilePath.Equals(""))
+            {
+                SaveAs();
+                return;
+            }
+            FileOutput o = new FileOutput();
+            byte[] n = mta.Rebuild();
+            o.writeBytes(n);
+            o.save(FilePath);
+            Edited = false;
+        }
+
+        public override void SaveAs()
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Material Animation (.mta)|*.mta|" +
+                             "All Files (*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    if (sfd.FileName.EndsWith(".mta"))
+                    {
+                        FilePath = sfd.FileName;
+                        Save();
+                    }
+                }
+            }
         }
 
         private void MTAEditorGUI_Load(object sender, EventArgs e)

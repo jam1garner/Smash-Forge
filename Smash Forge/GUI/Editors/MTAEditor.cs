@@ -64,7 +64,7 @@ namespace Smash_Forge
         {
             //try
             //{
-            mta = new MTA();
+            /*mta = new MTA();
             mta.Compile(new List<string>(richTextBox1.Text.Split('\n')));
             using (var sfd = new SaveFileDialog())
             {
@@ -75,7 +75,7 @@ namespace Smash_Forge
                 {
                     File.WriteAllBytes(sfd.FileName,mta.Rebuild());
                 }
-            }
+            }*/
             //}
             /*catch (Exception ex)
             {
@@ -83,6 +83,9 @@ namespace Smash_Forge
                 Console.WriteLine(ex.ToString());
                 MessageBox.Show("Failed to build MTA, make sure your formatting is correct", "MTA Build Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }*/
+            mta.Compile(new List<string>(richTextBox1.Text.Split('\n')));
+            richTextBox1.Text = mta.Decompile();
+            //Close();
         }
 
         private void button2_Click(object sender, EventArgs e)
