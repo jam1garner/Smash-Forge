@@ -611,7 +611,6 @@ namespace Smash_Forge
 
                     refresh();
                 }
-                nud.PreRender();
             }
         }
 
@@ -643,7 +642,6 @@ namespace Smash_Forge
 
                     refresh();
                 }
-                nud.PreRender();
             }
         }
 

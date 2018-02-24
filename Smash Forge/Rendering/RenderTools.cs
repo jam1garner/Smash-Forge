@@ -1466,12 +1466,19 @@ namespace Smash_Forge.Rendering
                         vbn.SwingBones.TryGetEntry(bone.boneId, out sb);
                         if (sb != null)
                         {
-                            /*bone.rot = VBN.FromEulerAngles(
-                                (sb.rz1 + (sb.rz2 - sb.rz1) * (swinganim / 100f)) * ToRad,
-                                (sb.ry1 + (sb.ry2 - sb.ry1) * (swinganim / 100f)) * ToRad,
-                                (sb.rx1 + (sb.rx2 - sb.rx1) * (swinganim / 100f)) * ToRad);*/
+                            float sf = Math.Abs(((swinganim - 50) / 50f));
+                            bone.rot = VBN.FromEulerAngles(bone.rotation[2], bone.rotation[1], bone.rotation[0]) *
+                                VBN.FromEulerAngles((sb.rz1 + (sb.rz2 - sb.rz1) * sf) * ToRad, (sb.ry1 + (sb.ry2 - sb.ry1) * sf)* ToRad, 0);
+                            
 
-                            /*GL.PushMatrix();
+                            /*Matrix4 RotTran = bone.transform *
+                                Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(((sb.rz2 + sb.rz1) / 2) * ToRad, ((sb.ry2 + sb.ry1) / 2f)* ToRad, 0))
+                                * Matrix4.CreateTranslation(0, 0, 0);
+
+                            Vector3 pos_c = Vector3.TransformPosition(Vector3.Zero, bone.transform);
+                            Vector3 pos_e = Vector3.TransformPosition(Vector3.Zero, RotTran);
+
+                            GL.PushMatrix();
                             GL.MultMatrix(ref RotTran);
                             RenderTools.drawCircle(Vector3.Zero, 5, 10);
                             GL.PopMatrix();
@@ -1527,6 +1534,9 @@ namespace Smash_Forge.Rendering
                     GL.Clear(ClearBufferMask.DepthBufferBit);
                     selectedBone.Draw();
                 }
+
+                if (vbn.SwingBones != null && Runtime.renderSwag)
+                    vbn.update();
             }
         }
 
