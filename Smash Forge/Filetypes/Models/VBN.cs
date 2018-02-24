@@ -216,6 +216,20 @@ namespace Smash_Forge
             ContextMenu.MenuItems.Add(save);
             save.Click += Save;
 
+
+            MenuItem swingMAX = new MenuItem("Preview Swing MAX");
+            ContextMenu.MenuItems.Add(swingMAX);
+            swingMAX.Click += SetSwingMax;
+
+            MenuItem swingMID = new MenuItem("Preview Swing MID");
+            ContextMenu.MenuItems.Add(swingMID);
+            swingMID.Click += SetSwingMid;
+
+            MenuItem swingMIN = new MenuItem("Preview Swing MIN");
+            ContextMenu.MenuItems.Add(swingMIN);
+            swingMIN.Click += SetSwingMin;
+
+
             ResetNodes();
         }
 
@@ -291,6 +305,66 @@ namespace Smash_Forge
             
             Nodes.Add(RootNode);
             Nodes.Add(SwingBones);
+        }
+
+
+        public void SetSwingMax(object sender, EventArgs args)
+        {
+            float ToRad = (float)Math.PI / 180;
+            if(_swingBones != null)
+            {
+                foreach(SB.SBEntry sb in _swingBones.bones)
+                {
+                    foreach(Bone b in bones)
+                    {
+                        if(b.boneId == sb.hash)
+                        {
+                            b.rot = FromEulerAngles(b.rotation[2], b.rotation[1], b.rotation[0]) * 
+                                FromEulerAngles(sb.rz2 * ToRad, sb.ry2 * ToRad, 0);
+                            break;
+                        }
+                    }
+                }
+            }
+            update(false);
+        }
+        public void SetSwingMin(object sender, EventArgs args)
+        {
+            float ToRad = (float)Math.PI / 180;
+            if (_swingBones != null)
+            {
+                foreach (SB.SBEntry sb in _swingBones.bones)
+                {
+                    foreach (Bone b in bones)
+                    {
+                        if (b.boneId == sb.hash)
+                        {
+                            b.rot = FromEulerAngles(b.rotation[2], b.rotation[1], b.rotation[0]) *
+                                FromEulerAngles(sb.rz1 * ToRad, sb.ry1 * ToRad, 0);
+                        }
+                    }
+                }
+            }
+            update(false);
+        }
+        public void SetSwingMid(object sender, EventArgs args)
+        {
+            float ToRad = (float)Math.PI / 180;
+            if (_swingBones != null)
+            {
+                foreach (SB.SBEntry sb in _swingBones.bones)
+                {
+                    foreach (Bone b in bones)
+                    {
+                        if (b.boneId == sb.hash)
+                        {
+                            b.rot = FromEulerAngles(b.rotation[2], b.rotation[1], b.rotation[0]) *
+                                FromEulerAngles((sb.rz1+sb.rz2)/2 * ToRad, (sb.ry1 + sb.ry2) / 2 * ToRad, 0);
+                        }
+                    }
+                }
+            }
+            update(false);
         }
 
         public void Save(object sender, EventArgs args)

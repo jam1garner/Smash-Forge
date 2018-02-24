@@ -7,10 +7,13 @@ using OpenTK;
 using System.Windows.Forms;
 using System.ComponentModel;
 
+using System.IO;
+
 namespace Smash_Forge
 {
     public class AnimationGroupNode : TreeNode
     {
+        public bool UseGroupName = false;
 
         public AnimationGroupNode()
         {
@@ -36,7 +39,46 @@ namespace Smash_Forge
             remove.Click += Remove;
             cm.MenuItems.Add(remove);
 
+            MenuItem replaceImport = new MenuItem("Replace Import");
+            replaceImport.Click += ReplaceImport;
+            //cm.MenuItems.Add(replaceImport);
+
             ContextMenu = cm;
+        }
+
+        public void ReplaceImport(object sender, EventArgs args)
+        {
+            using (var ofd = new FolderSelectDialog())
+            {
+                ofd.Title = "Animation Folder";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    String Files = ofd.SelectedPath;
+
+                    string[] fls = Directory.GetFiles(ofd.SelectedPath);
+
+                    foreach(string s in fls)
+                    {
+                        string f = Path.GetFileName(s);
+                        string key = f.Substring(0, f.IndexOf("-"));
+                        //Console.WriteLine(key);
+
+                        foreach(Animation a in Nodes)
+                        {
+                            if (a.Text.Contains(key))
+                            {
+                                Console.WriteLine("Matched " + key);
+                                Animation an = new Animation("");
+                                SMD.read(s, an, null);
+                                
+                                a.ReplaceMe(an);
+                                break;
+                            }
+                        }
+                    }
+
+                }
+            }
         }
 
         public void Remove(object sender, EventArgs args)
@@ -108,7 +150,7 @@ namespace Smash_Forge
         public static String FileName;
         public static TreeNode Node;
 
-        public static void Save(object sender, EventArgs args)
+        public void Save(object sender, EventArgs args)
         {
             //BackgroundWorker worker = sender as BackgroundWorker;
 
@@ -138,7 +180,7 @@ namespace Smash_Forge
                     else
                         bytes = OMOOld.CreateOMOFromAnimation(anim, Runtime.TargetVBN);
 
-                    pac.Files.Add(anim.Text.EndsWith(".omo") ? anim.Text : anim.Text + ".omo", bytes);
+                    pac.Files.Add((UseGroupName ? Text : "") + (anim.Text.EndsWith(".omo") ? anim.Text : anim.Text + ".omo"), bytes);
                 }
                 pac.Save(FileName);
             }

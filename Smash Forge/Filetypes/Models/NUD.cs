@@ -2931,7 +2931,7 @@ namespace Smash_Forge
         {
             // Massive reductions in file size but very slow.
 
-            int MAX_BANK = 50; //  for speeding this up a little with some loss...
+            int MAX_BANK = 30000; //  for speeding this up a little with some loss...
 
             foreach (Mesh m in Nodes)
             {

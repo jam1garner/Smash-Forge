@@ -87,6 +87,8 @@ namespace Smash_Forge
             listBox1.Items.Clear();
             foreach (var item in VBN.bones)
                 listBox1.Items.Add(item);
+
+            cBLE.Checked = VBN.Endian == Endianness.Little;
         }
 
         public void Clear()
@@ -321,6 +323,16 @@ namespace Smash_Forge
                 if (bone.boneId == 0)
                     bone.boneId = Crc32.Compute(bone.Text);
             }
+        }
+
+        private void cBLE_CheckedChanged(object sender, EventArgs e)
+        {
+            if(cBLE.Checked)
+                VBN.Endian = Endianness.Little;
+            else
+                VBN.Endian = Endianness.Big;
+
+            Edited = true;
         }
     }
 }

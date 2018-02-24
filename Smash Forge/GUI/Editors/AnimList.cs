@@ -311,7 +311,7 @@ namespace Smash_Forge
                 PAC p = new PAC();
                 p.Read(filename);
                 AnimationGroupNode animGroup = new AnimationGroupNode() { Text = filename };
-
+                string groupname = null;
                 foreach (var pair in p.Files)
                 {
                     if (pair.Key.EndsWith(".omo"))
@@ -319,6 +319,9 @@ namespace Smash_Forge
                         var anim = OMOOld.read(new FileData(pair.Value));
                         animGroup.Nodes.Add(anim);
                         string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
+
+                        if(groupname == null)
+                            groupname = pair.Key.Replace(AnimName, "");
                         if (!string.IsNullOrEmpty(AnimName))
                         {
                             anim.Text = AnimName;
@@ -332,6 +335,12 @@ namespace Smash_Forge
                         mta.Text = pair.Key;
                         animGroup.Nodes.Add(mta);
                     }
+                }
+
+                if (groupname != null && !groupname.Equals(""))
+                {
+                    animGroup.UseGroupName = true;
+                    animGroup.Text = groupname;
                 }
 
                 treeView1.Nodes.Add(animGroup);

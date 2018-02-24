@@ -706,6 +706,27 @@ namespace Smash_Forge
         {
             if (vbn == null || a == null)
                 return new byte[] { };
+
+            // Test Actual Bones
+            //-------------------------
+
+            List<Animation.KeyNode> toRem = new List<Animation.KeyNode>();
+            for (int j = 0; j < a.Bones.Count; j++)
+            {
+                Animation.KeyNode keynode = ((Animation.KeyNode)a.Bones[j]);
+                Bone b = vbn.getBone(keynode.Text);
+
+                if (b == null)
+                    toRem.Add(keynode);
+            }
+            foreach (Animation.KeyNode r in toRem)
+            {
+                Console.WriteLine("Removing " + r.Text);
+                a.Bones.Remove(r);
+            }
+
+            //-------------------------
+
             FileOutput o = new FileOutput();
             o.Endian = Endianness.Big;
 
@@ -801,6 +822,43 @@ namespace Smash_Forge
                     }
 
                     Bone b = vbn.getBone(keynode.Text);
+                    for (int i = 0; i < a.FrameCount; i++)
+                    {
+                        Quaternion r = new Quaternion();
+                        if (keynode.RotType == Animation.RotationType.QUATERNION)
+                        {
+                            Animation.KeyFrame[] x = keynode.XROT.GetFrame(i);
+                            Animation.KeyFrame[] y = keynode.YROT.GetFrame(i);
+                            Animation.KeyFrame[] z = keynode.ZROT.GetFrame(i);
+                            Animation.KeyFrame[] w = keynode.WROT.GetFrame(i);
+                            Quaternion q1 = new Quaternion(x[0].Value, y[0].Value, z[0].Value, w[0].Value);
+                            Quaternion q2 = new Quaternion(x[1].Value, y[1].Value, z[1].Value, w[1].Value);
+                            if (x[0].Frame == i)
+                                r = q1;
+                            else
+                            if (x[1].Frame == i)
+                                r = q2;
+                            else
+                                r = Quaternion.Slerp(q1, q2, (i - x[0].Frame) / (x[1].Frame - x[0].Frame));
+                        }
+                        else
+                        if (keynode.RotType == Animation.RotationType.EULER)
+                        {
+                            float x = keynode.XROT.HasAnimation() ? keynode.XROT.GetValue(i) : b.rotation[0];
+                            float y = keynode.YROT.HasAnimation() ? keynode.YROT.GetValue(i) : b.rotation[1];
+                            float z = keynode.ZROT.HasAnimation() ? keynode.ZROT.GetValue(i) : b.rotation[2];
+                            r = Animation.EulerToQuat(z, y, x);
+                        }
+                        r.Normalize();
+
+                        maxR[j].X = Math.Max(maxR[j].X, r.X);
+                        minR[j].X = Math.Min(minR[j].X, r.X);
+                        maxR[j].Y = Math.Max(maxR[j].Y, r.Y);
+                        minR[j].Y = Math.Min(minR[j].Y, r.Y);
+                        maxR[j].Z = Math.Max(maxR[j].Z, r.Z);
+                        minR[j].Z = Math.Min(minR[j].Z, r.Z);
+                    }
+
                     //if (b == null)continue;
                     if (b != null)
                     {
@@ -822,7 +880,7 @@ namespace Smash_Forge
             }
 
             //TODO: Euler Rotation Values
-            VBN tempvbn = new VBN();
+            /*VBN tempvbn = new VBN();
             a.SetFrame(0);
             for (int i = 0; i < a.FrameCount; i++)
             {
@@ -846,7 +904,7 @@ namespace Smash_Forge
                     //Frames[i].Add(f1);
                 }
                 a.NextFrame(vbn);
-            }
+            }*/
 
             // NODE INFO
 
@@ -986,22 +1044,48 @@ namespace Smash_Forge
             bool go = true;
             for (int i = 0; i < a.FrameCount; i++)
             {
-                a.NextFrame(vbn);
+                //a.NextFrame(vbn);
                 for (int j = 0; j < a.Bones.Count; j++)
                 {
                     Bone node = vbn.getBone(a.Bones[j].Text);
-                    if (node == null) continue;
+                    
+                    Animation.KeyNode anode = a.Bones[j];
+                    //if (node == null) continue;
 
                     if (hasTrans[j] && !conTrans[j])
                     {
-                        t2.writeShort((int)(((node.pos.X - minT[j].X) / maxT[j].X) * 0xFFFF));
-                        t2.writeShort((int)(((node.pos.Y - minT[j].Y) / maxT[j].Y) * 0xFFFF));
-                        t2.writeShort((int)(((node.pos.Z - minT[j].Z) / maxT[j].Z) * 0xFFFF));
+                        t2.writeShort((int)(((anode.XPOS.GetValue(i) - minT[j].X) / maxT[j].X) * 0xFFFF));
+                        t2.writeShort((int)(((anode.YPOS.GetValue(i) - minT[j].Y) / maxT[j].Y) * 0xFFFF));
+                        t2.writeShort((int)(((anode.ZPOS.GetValue(i) - minT[j].Z) / maxT[j].Z) * 0xFFFF));
                     }
 
                     if (hasRot[j] && !conRot[j])
                     {
-                        Quaternion r = node.rot;
+                        Quaternion r = new Quaternion();
+                        if (anode.RotType == Animation.RotationType.QUATERNION)
+                        {
+                            Animation.KeyFrame[] x = anode.XROT.GetFrame(i);
+                            Animation.KeyFrame[] y = anode.YROT.GetFrame(i);
+                            Animation.KeyFrame[] z = anode.ZROT.GetFrame(i);
+                            Animation.KeyFrame[] w = anode.WROT.GetFrame(i);
+                            Quaternion q1 = new Quaternion(x[0].Value, y[0].Value, z[0].Value, w[0].Value);
+                            Quaternion q2 = new Quaternion(x[1].Value, y[1].Value, z[1].Value, w[1].Value);
+                            if (x[0].Frame == i)
+                                r = q1;
+                            else
+                            if (x[1].Frame == i)
+                                r = q2;
+                            else
+                                r = Quaternion.Slerp(q1, q2, (i - x[0].Frame) / (x[1].Frame - x[0].Frame));
+                        }
+                        else
+                        if (anode.RotType == Animation.RotationType.EULER)
+                        {
+                            float x = anode.XROT.HasAnimation() ? anode.XROT.GetValue(i) : node.rotation[0];
+                            float y = anode.YROT.HasAnimation() ? anode.YROT.GetValue(i) : node.rotation[1];
+                            float z = anode.ZROT.HasAnimation() ? anode.ZROT.GetValue(i) : node.rotation[2];
+                            r = Animation.EulerToQuat(z, y, x);
+                        }
                         r.Normalize();
                         t2.writeShort((int)(((r.X - minR[j].X) / maxR[j].X) * 0xFFFF));
                         t2.writeShort((int)(((r.Y - minR[j].Y) / maxR[j].Y) * 0xFFFF));
@@ -1010,9 +1094,9 @@ namespace Smash_Forge
 
                     if (hasScale[j] && !conScale[j])
                     {
-                        t2.writeShort((int)(((node.sca.X - minS[j].X) / maxS[j].X) * 0xFFFF));
-                        t2.writeShort((int)(((node.sca.Y - minS[j].Y) / maxS[j].Y) * 0xFFFF));
-                        t2.writeShort((int)(((node.sca.Z - minS[j].Z) / maxS[j].Z) * 0xFFFF));
+                        t2.writeShort((int)(((anode.XSCA.GetValue(i) - minS[j].X) / maxS[j].X) * 0xFFFF));
+                        t2.writeShort((int)(((anode.YSCA.GetValue(i) - minS[j].Y) / maxS[j].Y) * 0xFFFF));
+                        t2.writeShort((int)(((anode.ZSCA.GetValue(i) - minS[j].Z) / maxS[j].Z) * 0xFFFF));
                     }
                 }
 

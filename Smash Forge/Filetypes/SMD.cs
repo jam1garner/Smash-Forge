@@ -20,7 +20,7 @@ namespace Smash_Forge
             KeyFrame k = new KeyFrame();
 
             VBN vbn = v;
-            if (v.bones.Count == 0)
+            if (v != null && v.bones.Count == 0)
             {
                 readBones = true;
             }
@@ -132,13 +132,31 @@ namespace Smash_Forge
                     n.Value = float.Parse(args[6]);
                     n.Frame = frame;
                     bone.ZROT.Keys.Add(n);
+
+                    if(args.Length > 7)
+                    {
+                        n = new Animation.KeyFrame();
+                        n.Value = float.Parse(args[7]);
+                        n.Frame = frame;
+                        bone.XSCA.Keys.Add(n);
+
+                        n = new Animation.KeyFrame();
+                        n.Value = float.Parse(args[8]);
+                        n.Frame = frame;
+                        bone.YSCA.Keys.Add(n);
+
+                        n = new Animation.KeyFrame();
+                        n.Value = float.Parse(args[9]);
+                        n.Frame = frame;
+                        bone.ZSCA.Keys.Add(n);
+                    }
                 }
             }
 
             a.FrameCount = frame;
 
-            v.boneCountPerType[0] = (uint)vbn.bones.Count;
-            v.update();
+            vbn.boneCountPerType[0] = (uint)vbn.bones.Count;
+            vbn.update();
         }
 
         public static NUD toNUD(string fname)

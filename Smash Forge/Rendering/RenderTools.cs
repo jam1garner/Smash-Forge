@@ -1569,8 +1569,12 @@ namespace Smash_Forge
             }
         }
 
+        public static float ToRad = (float)Math.PI / 180;
+        public static int swinganim = 0;
         public static void DrawVBN(VBN vbn)
         {
+            swinganim++;
+            if (swinganim > 100) swinganim = 0;
             if (vbn != null)
             {
                 Bone selectedBone = null;
@@ -1581,6 +1585,32 @@ namespace Smash_Forge
                     else
                         selectedBone = bone;
 
+                    if (vbn.SwingBones != null && Runtime.renderSwag)
+                    {
+
+                        SB.SBEntry sb = null;
+                        vbn.SwingBones.TryGetEntry(bone.boneId, out sb);
+                        if (sb != null)
+                        {
+                            /*bone.rot = VBN.FromEulerAngles(
+                                (sb.rz1 + (sb.rz2 - sb.rz1) * (swinganim / 100f)) * ToRad,
+                                (sb.ry1 + (sb.ry2 - sb.ry1) * (swinganim / 100f)) * ToRad,
+                                (sb.rx1 + (sb.rx2 - sb.rx1) * (swinganim / 100f)) * ToRad);*/
+
+                            /*GL.PushMatrix();
+                            GL.MultMatrix(ref RotTran);
+                            RenderTools.drawCircle(Vector3.Zero, 5, 10);
+                            GL.PopMatrix();
+
+                            GL.Color3(Color.ForestGreen);
+
+                            GL.Begin(PrimitiveType.LineLoop);
+                            GL.Vertex3(pos_c);
+                            GL.Vertex3(pos_e);
+                            GL.End();*/
+                        }
+
+                    }
                     // if swing bones then draw swing radius
                     /*if (vbn.swingBones.bones.Count > 0 && Runtime.renderSwag)
                     {
