@@ -56,7 +56,6 @@ namespace Smash_Forge
         {
             mta = new MTA();
             mta.Compile(new List<string>(richTextBox1.Text.Split('\n')));
-            MainForm.Instance.viewports[0].loadMTA(mta);
         }
     }
 }
